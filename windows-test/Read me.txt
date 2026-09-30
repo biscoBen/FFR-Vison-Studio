@@ -13,6 +13,15 @@ The shortcut downloads only test builds that passed our branch's checks.
 If an update cannot be retrieved, it opens the installed test version.
 Close Studio Test before opening the shortcut again to check for an update.
 
+The first launch with this importer copies saved visions from official Studio,
+including their sprite/animation files. Close official Studio first. When an
+older shortcut downloads this update, close Test and reopen it once more to
+run the new importer. This import happens once, without changing official
+Studio. The test app must have no saved visions for this one-time import.
+Vision IDs and all saved details stay the same as in the official version.
+The import keeps a copy of the original vision list in Official Vision Import.
+It leaves your chosen test game folder and settings as they are.
+
 Settings, units, the engine and logs stay in Studio Test Data in this folder.
 Updates retain that data. Your regular Studio keeps its own data.
 Installing a mod affects the game folder selected in Studio, so use a copied

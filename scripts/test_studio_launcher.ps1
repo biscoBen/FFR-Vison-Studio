@@ -14,6 +14,7 @@ function New-Fixture([long]$Run, [string]$Branch = "Sephira's-Update") {
     [IO.File]::WriteAllText((Join-Path $folder 'App/FFR Vision Studio.exe'), "MZ-test-$Run")
     [IO.File]::WriteAllText((Join-Path $folder 'App/flutter_windows.dll'), 'fixture runtime')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot '../windows-test/Update Studio Test.ps1') -Destination $folder
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot '../windows-test/Import Official Visions.ps1') -Destination $folder
     $build = [PSCustomObject]@{
         channel = 'sephira-test'; repository = 'biscoBen/FFR-Vison-Studio'; branch = $Branch
         commit = ('a' * 39) + ($Run % 10); run_id = $Run; build = 15
@@ -110,6 +111,20 @@ try {
     } finally { $held.Dispose() }
     Assert-Check (-not (Test-StudioIsOpen $root)) 'A closed app was treated as open.'
     $checks++; Write-Host 'PASS: running app is left alone'
+
+    $importRoot = Join-Path $temporary 'import-launcher'
+    Copy-Item -LiteralPath $first.Folder -Destination $importRoot -Recurse
+    $official = Join-Path $temporary 'official-profile'
+    $officialSpec = Join-Path $official 'engine/mods/EstherTsukiko/units.json'
+    [void][IO.Directory]::CreateDirectory((Split-Path $officialSpec -Parent))
+    [IO.File]::WriteAllText($officialSpec, '[{"key":"official","id":13500,"stats":{"Attack":29}}]')
+    $officialHash = (Get-FileHash $officialSpec).Hash
+    $withImport = Invoke-StudioTest -Root $importRoot -NoLaunch -NoShortcut -OfficialData $official -GetUpdate { throw 'Offline fixture' }
+    Assert-Check ($withImport.run_id -eq 1) 'Vision import changed the installed app selection.'
+    Assert-Check (Test-Path (Join-Path $importRoot 'official-visions-import.json')) 'The shortcut did not run its one-time import.'
+    $copiedSpec = Join-Path $importRoot 'Studio Test Data/FFR Vision Studio/engine/mods/EstherTsukiko/units.json'
+    Assert-Check ((Get-FileHash $copiedSpec).Hash -eq $officialHash -and (Get-FileHash $officialSpec).Hash -eq $officialHash) 'The shortcut changed the copied or original vision details.'
+    $checks++; Write-Host 'PASS: normal shortcut imports official visions even when update checks are offline'
 
     if ($env:GITHUB_ACTIONS -eq 'true' -and $env:OS -eq 'Windows_NT') {
         $desktopLink = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Sephira Studio Test.lnk'

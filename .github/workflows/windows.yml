@@ -29,7 +29,9 @@ jobs:
       - run: python -m unittest discover -s scripts -p "test_*.py" -v
       - name: Test Windows shortcut and updater
         shell: powershell
-        run: ./scripts/test_studio_launcher.ps1
+        run: |
+          ./scripts/test_studio_launcher.ps1
+          ./scripts/test_official_visions_import.ps1
       - name: Build
         shell: pwsh
         env:

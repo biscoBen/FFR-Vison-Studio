@@ -18,7 +18,7 @@ class TestPackageTests(unittest.TestCase):
             metadata = package(app, output, 'a' * 40, 123)
             with zipfile.ZipFile(output) as archive:
                 self.assertEqual(json.loads(archive.read('test-build.json')), metadata)
-                for name in ['Start Studio Test.cmd', 'Launch Studio Test.ps1', 'Update Studio Test.ps1', 'App/FFR Vision Studio.exe']:
+                for name in ['Start Studio Test.cmd', 'Launch Studio Test.ps1', 'Update Studio Test.ps1', 'Import Official Visions.ps1', 'App/FFR Vision Studio.exe']:
                     self.assertIn(name, archive.namelist())
                 self.assertIn(b'\r\n', archive.read('Start Studio Test.cmd'))
                 self.assertFalse(any(name.startswith('Studio Test Data/') for name in archive.namelist()))

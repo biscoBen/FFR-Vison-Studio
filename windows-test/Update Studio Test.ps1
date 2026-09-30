@@ -1,5 +1,6 @@
 param([string]$Root = $PSScriptRoot, [switch]$NoLaunch, [switch]$NoShortcut)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'Import Official Visions.ps1')
 
 function Assert-TestBuild($Build) {
     if ($Build.channel -ne 'sephira-test' -or $Build.branch -cne "Sephira's-Update" -or
@@ -27,7 +28,7 @@ function Assert-TestFolder([string]$Folder, $Expected) {
     if ($build.commit -ne $Expected.commit -or [long]$build.run_id -ne [long]$Expected.run_id) {
         throw 'The package does not match the selected update.'
     }
-    foreach ($name in @('App/FFR Vision Studio.exe', 'App/flutter_windows.dll', 'Update Studio Test.ps1')) {
+    foreach ($name in @('App/FFR Vision Studio.exe', 'App/flutter_windows.dll', 'Update Studio Test.ps1', 'Import Official Visions.ps1')) {
         if (-not (Test-Path -LiteralPath (Join-Path $Folder $name) -PathType Leaf)) {
             throw 'The test package is incomplete.'
         }
@@ -152,13 +153,7 @@ function Install-TestUpdate([string]$Root, $Update, [scriptblock]$Download) {
 }
 
 function Test-StudioIsOpen([string]$Root) {
-    $path = Join-Path $Root 'Studio Test Data/FFR Vision Studio/app.lock'
-    if (-not (Test-Path -LiteralPath $path)) { return $false }
-    try {
-        $file = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
-        $file.Dispose()
-        return $false
-    } catch [IO.IOException] { return $true }
+    return Test-StudioDataIsOpen (Join-Path $Root 'Studio Test Data/FFR Vision Studio')
 }
 
 function Set-TestDesktopShortcut([string]$Root, [string]$App) {
@@ -173,7 +168,7 @@ function Set-TestDesktopShortcut([string]$Root, [string]$App) {
     $shortcut.Save()
 }
 
-function Invoke-StudioTest([string]$Root, [switch]$NoLaunch, [switch]$NoShortcut,
+function Invoke-StudioTest([string]$Root, [switch]$NoLaunch, [switch]$NoShortcut, [string]$OfficialData,
     [scriptblock]$GetUpdate = { Get-PublishedTestRelease },
     [scriptblock]$Download = { param($Url, $File) Invoke-WebRequest -Uri $Url -OutFile $File -UseBasicParsing -TimeoutSec 120 }) {
     $Root = [IO.Path]::GetFullPath($Root)
@@ -198,6 +193,11 @@ function Invoke-StudioTest([string]$Root, [switch]$NoLaunch, [switch]$NoShortcut
             Write-Host 'The update could not be retrieved. Using the installed test version.'
         }
         $app = Get-PathInsideRoot $Root $current.app
+        try { Import-OfficialVisions -Root $Root -OfficialData $OfficialData }
+        catch {
+            Add-Content -LiteralPath (Join-Path $Root 'update.log') -Value ("$(Get-Date -Format o) Vision import: $($_.Exception.Message)")
+            Write-Host 'The saved visions could not be copied. Keeping your test data; the next launch will retry.'
+        }
         if (-not $NoShortcut) {
             try { Set-TestDesktopShortcut $Root $app }
             catch { Write-Host 'The desktop shortcut could not be created. You can still use Start Studio Test.cmd.' }
