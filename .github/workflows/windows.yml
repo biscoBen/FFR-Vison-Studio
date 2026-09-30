@@ -27,10 +27,15 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       - run: python -m unittest discover -s scripts -p "test_*.py" -v
+      - name: Test Windows shortcut and updater
+        shell: powershell
+        run: ./scripts/test_studio_launcher.ps1
       - name: Build
         shell: pwsh
         env:
           APP_BUILD: ${{ inputs.build }}
+          BUILD_BRANCH: ${{ github.ref_name }}
+          BUILD_COMMIT: ${{ github.sha }}
         run: |
           $build = $env:APP_BUILD
           if (-not $build) { $build = "15" }
@@ -45,7 +50,9 @@ jobs:
           if ($manifest.minApp -and ([version]"1.0.0.$build" -lt [version]$manifest.minApp)) {
             throw "Build 1.0.0.$build is below the host's minimum app version $($manifest.minApp)."
           }
-          flutter build windows --release --build-name 1.0.0 --build-number $build --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=$build
+          $channel = 'stable'
+          if ($env:BUILD_BRANCH -eq "Sephira's-Update") { $channel = 'sephira-test' }
+          flutter build windows --release --build-name 1.0.0 --build-number $build --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=$build --dart-define=APP_CHANNEL=$channel --dart-define=APP_COMMIT=$env:BUILD_COMMIT
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Rename-Item build/windows/x64/runner/Release/ffr_vision_studio.exe "FFR Vision Studio.exe"
       - uses: actions/upload-artifact@v4
@@ -93,3 +100,51 @@ jobs:
           gh release create "cloud-test-$RUN_ID" FFR-Vision-Studio-windows.zip \
             --repo "$REPO" --draft --target "$COMMIT_SHA" \
             --title "Temporary cloud test build (run $RUN_ID)" --notes-file build-provenance.json
+
+  test-release:
+    if: ${{ github.repository == 'biscoBen/FFR-Vison-Studio' && github.ref_name == 'Sephira''s-Update' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    needs: windows
+    runs-on: ubuntu-latest
+    concurrency:
+      group: sephira-test-releases
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: FFR-Vision-Studio-windows
+          path: bundle
+      - name: Publish the tested branch package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          BUILD_NUMBER: ${{ inputs.build || '15' }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          from urllib.parse import quote
+          import sys
+          sys.path.insert(0, 'scripts')
+          from package_test_studio import package
+          from pathlib import Path
+          branch = "Sephira's-Update"
+          head = json.loads(subprocess.check_output([
+              'gh', 'api', f"repos/{os.environ['REPO']}/git/ref/heads/{quote(branch, safe='')}",
+          ]))['object']['sha']
+          if head != os.environ['COMMIT_SHA']:
+              print('A newer commit is on the branch; keeping the latest tested download.')
+              sys.exit(0)
+          package(Path('bundle'), Path('Sephira-Studio-Test.zip'), os.environ['COMMIT_SHA'],
+                  int(os.environ['RUN_ID']), build=int(os.environ['BUILD_NUMBER']))
+          subprocess.run([
+              'gh', 'release', 'create', f"sephira-test-{os.environ['RUN_ID']}", 'Sephira-Studio-Test.zip',
+              '--repo', os.environ['REPO'], '--target', os.environ['COMMIT_SHA'],
+              '--prerelease', '--latest=false', '--title', 'Sephira Studio Test ' + os.environ['COMMIT_SHA'][:12],
+              '--notes-file', 'Sephira-Studio-Test.json',
+          ], check=True)
+          PY

@@ -35,6 +35,17 @@ exe next to the engine and the data packs.
 
 ## Cloud builds
 
+Windows users can install the separate test copy from a `Sephira-Studio-Test.zip` package. Extract it and run
+`Start Studio Test.cmd` once; it creates a **Sephira Studio Test** desktop shortcut. Opening the shortcut checks for
+the latest validated `Sephira's-Update` prerelease, verifies its SHA256 digest, and launches it. Settings and units
+remain in `Studio Test Data` beside the launcher. Failed/offline updates retain the installed app. Close the test app
+before reopening the shortcut to check again. Use a copied game folder to keep installed test mods separate too.
+
+Successful builds on this development branch automatically publish those test packages. The test app uses its own
+shortcut for frontend updates and continues to fetch engine/data packs from the original host. It does not offer the
+original project's frontend updater. The release label remains build 15; the shortcut identifies updates by their
+workflow run and commit. These packages are prereleases and do not replace the fork's stable release or change master.
+
 From this checkout, use the helper to build the development branch and download the resulting Windows app:
 
 ```
@@ -50,7 +61,8 @@ only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance rec
 If the cloud proxy blocks GitHub's artifact storage, use `python3 scripts/cloud_windows_build.py --cloud-download`
 on the development branch. The workflow creates a temporary **unpublished draft** download through GitHub's release-asset
 endpoint. The helper verifies its branch, commit, run and SHA256 digest, downloads it, and deletes the draft. This requires
-Contents read/write in addition to Actions access. Normal push builds do not create drafts or publish releases.
+Contents read/write in addition to Actions access. Normal push builds do not create temporary drafts; successful
+development-branch builds publish the separate test prerelease described above.
 
 The platform's GitHub integration may allow code pushes while denying Actions administration. In that case, supply a
 fine-grained GitHub token securely as `FFR_GITHUB_ACTIONS_TOKEN` in the cloud environment's secret settings, scoped only

@@ -6,6 +6,8 @@ needs them.
 
 ## Unreleased
 
+- Add a Windows test shortcut that retrieves validated branch updates, preserves test data, and creates a desktop shortcut.
+- Publish tested development packages automatically; test builds use that channel instead of the original app updater.
 - Add an optional temporary unpublished download route so cloud tests can retrieve builds when artifact storage is blocked.
 - Keep Windows builds working when the updater website blocks the runner's manifest request.
 - Add a cloud build helper that requests and downloads a Windows artifact for the selected branch and verifies its commit.

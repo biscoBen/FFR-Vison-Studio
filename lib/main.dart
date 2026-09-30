@@ -40,7 +40,7 @@ Future<void> main() async {
   await windowManager.ensureInitialized();
   final alreadyRunning = !_acquireLock();
   await windowManager.waitUntilReadyToShow(
-      WindowOptions(size: alreadyRunning ? const Size(520, 300) : const Size(1320, 860), minimumSize: alreadyRunning ? const Size(520, 300) : const Size(960, 600), title: 'FFR Vision Studio', backgroundColor: Guide.desk), () async {
+      WindowOptions(size: alreadyRunning ? const Size(520, 300) : const Size(1320, 860), minimumSize: alreadyRunning ? const Size(520, 300) : const Size(960, 600), title: isTestBuild ? 'Sephira Studio Test' : 'FFR Vision Studio', backgroundColor: Guide.desk), () async {
     await windowManager.show();
     await windowManager.focus();
   });

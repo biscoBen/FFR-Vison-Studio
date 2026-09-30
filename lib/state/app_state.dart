@@ -80,7 +80,7 @@ class AppState extends ChangeNotifier {
   Future<void> boot() async {
     try {
       // Find the game first so the folder is already filled in while the packs download.
-      if (gameRoot == null) GameLocator.detect().then((g) { if (g != null && gameRoot == null) { gameRoot = g; notifyListeners(); } });
+      if (!isTestBuild && gameRoot == null) GameLocator.detect().then((g) { if (g != null && gameRoot == null) { gameRoot = g; notifyListeners(); } });
       final installed = _readInstalled();
       final haveEngine = installed['engine'] != null && File(paths.engineExe).existsSync();
       JsonMap? man;
@@ -96,15 +96,15 @@ class AppState extends ChangeNotifier {
         manifest = man;
         final tag = man['version'].toString();
         final minApp = (man['minApp'] ?? '').toString();
-        if (compareTags(tag, appTag) > 0 && (man['packs'] as JsonMap?)?['app'] != null) {
+        if (!isTestBuild && compareTags(tag, appTag) > 0 && (man['packs'] as JsonMap?)?['app'] != null) {
           updateAvailable = man['displayVersion'] != null ? '${man['displayVersion']} build ${man['build']}' : tag;
         }
         final tooNew = minApp.isNotEmpty && compareTags(minApp, appTag) > 0;
         if (tooNew) {
           // The host's engine needs a newer app than this one. Keep what is installed rather than mixing versions.
-          if (!haveEngine) throw StateError('This copy of the app ($appLabel) is older than the packs on the host. Download the new app from $downloadPage.');
+          if (!haveEngine) throw StateError(isTestBuild ? 'This test build needs an update before it can use the latest packs. Close Studio and reopen the Sephira Studio Test shortcut.' : 'This copy of the app ($appLabel) is older than the packs on the host. Download the new app from $downloadPage.');
           _markInstalled(installed);
-          banner = 'A newer version is on the host and needs the new app. Press Update now, or download it from the page; this copy keeps working as it is.';
+          banner = isTestBuild ? 'The latest packs need a newer test build. Close Studio and reopen the Sephira Studio Test shortcut to check; the installed packs keep working.' : 'A newer version is on the host and needs the new app. Press Update now, or download it from the page; this copy keeps working as it is.';
         } else {
           final packs = man['packs'] as JsonMap;
           // A pack carries its own version when its content is older than the manifest (it did not change in this build):
@@ -146,7 +146,7 @@ class AppState extends ChangeNotifier {
         try { hostIndex = json.decode(File(p.join(paths.root, 'ffbe_index_cache.json')).readAsStringSync()) as JsonMap; } catch (_) {}
       }
       await _startEngine(bootSteps[4]);
-      gameRoot ??= await GameLocator.detect();
+      if (!isTestBuild) gameRoot ??= await GameLocator.detect();
       final st = await api!.status();
       phase = (st['setupNeeded'] == true) ? Phase.setup : Phase.ready;
       if (phase == Phase.ready) await loadAll();
@@ -180,7 +180,7 @@ class AppState extends ChangeNotifier {
       paths.engineExe,
       logPath: p.join(logsDir, 'engine-$day.log'),
       logDir: logsDir,
-      header: ['app $appLabel', 'host $hostBase', 'engine ${File(paths.engineExe).path}'],
+      header: ['app $appLabel', if (appCommit.isNotEmpty) 'commit $appCommit', 'host $hostBase', 'engine ${File(paths.engineExe).path}'],
       onExit: (code) {
         engineDown = true;
         api = null;
@@ -364,6 +364,10 @@ class AppState extends ChangeNotifier {
   /// A running exe cannot replace itself, so: stage the new app next to the app data, write a small script that waits for
   /// this process to end, copies the staged folder over the one the exe lives in and starts the new exe, then leave.
   Future<void> updateApp() async {
+    if (isTestBuild) {
+      showNotice('Close Studio and reopen the Sephira Studio Test shortcut to get test updates.');
+      return;
+    }
     final info = (manifest?['packs'] as JsonMap?)?['app'] as JsonMap?;
     if (info == null || updating) return;
     final exePath = Platform.resolvedExecutable;

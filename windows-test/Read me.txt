@@ -1,0 +1,19 @@
+Sephira Studio Test
+
+1. Extract the entire ZIP to a folder on your Windows PC.
+   If you already have the earlier test copy, extract into that same folder.
+   Your existing Studio Test Data folder is retained.
+2. Double-click Start Studio Test.cmd once.
+   It checks for an update and creates a Sephira Studio Test desktop shortcut.
+3. Use that desktop shortcut from then on. Keep this extracted folder in place.
+4. On first setup, select a copy of the game folder containing FFRS.exe.
+   Launch that copied game's FFRS.exe to try your test mods.
+
+The shortcut downloads only test builds that passed our branch's checks.
+If an update cannot be retrieved, it opens the installed test version.
+Close Studio Test before opening the shortcut again to check for an update.
+
+Settings, units, the engine and logs stay in Studio Test Data in this folder.
+Updates retain that data. Your regular Studio keeps its own data.
+Installing a mod affects the game folder selected in Studio, so use a copied
+game when you want test mods kept separate from your regular game.
