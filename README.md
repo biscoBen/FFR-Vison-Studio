@@ -47,6 +47,11 @@ The helper defaults to `Sephira's-Update` and build 15, checks the remote commit
 only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance record alongside the executable under
 `/workspace/.runtime/ffr/builds`. Commit and push changes before building them.
 
+If the cloud proxy blocks GitHub's artifact storage, use `python3 scripts/cloud_windows_build.py --cloud-download`
+on the development branch. The workflow creates a temporary **unpublished draft** download through GitHub's release-asset
+endpoint. The helper verifies its branch, commit, run and SHA256 digest, downloads it, and deletes the draft. This requires
+Contents read/write in addition to Actions access. Normal push builds do not create drafts or publish releases.
+
 The platform's GitHub integration may allow code pushes while denying Actions administration. In that case, supply a
 fine-grained GitHub token securely as `FFR_GITHUB_ACTIONS_TOKEN` in the cloud environment's secret settings, scoped only
 to `biscoBen/FFR-Vison-Studio`. It needs **Actions: read and write** to enable workflows, request builds, watch runs, and

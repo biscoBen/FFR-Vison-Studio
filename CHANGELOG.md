@@ -6,6 +6,7 @@ needs them.
 
 ## Unreleased
 
+- Add an optional temporary unpublished download route so cloud tests can retrieve builds when artifact storage is blocked.
 - Keep Windows builds working when the updater website blocks the runner's manifest request.
 - Add a cloud build helper that requests and downloads a Windows artifact for the selected branch and verifies its commit.
 - Default the app version stamp, executable metadata, and Windows workflow to build 15.

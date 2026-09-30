@@ -3,13 +3,17 @@
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
+import tempfile
 import time
 from urllib.parse import quote, urlencode
+import zipfile
 
 REPOSITORY = "biscoBen/FFR-Vison-Studio"
 DEFAULT_BRANCH = "Sephira's-Update"
@@ -37,7 +41,9 @@ def gh(*arguments, body=None):
         env=github_environment(),
     )
     if result.returncode:
-        raise BuildError(result.stderr.strip() or "GitHub command failed.")
+        # Download errors can contain signed URLs; never echo those credentials.
+        message = re.sub(r'https?://[^\s"<>]+', '[download URL]', result.stderr.strip())
+        raise BuildError(message or "GitHub command failed.")
     return result.stdout
 
 
@@ -59,6 +65,44 @@ def matching_run(runs, *, branch, commit, previous_ids):
         and run["event"] == "workflow_dispatch"
     ]
     return min(candidates, key=lambda run: run["id"]) if candidates else None
+
+
+def extract_verified_zip(archive, destination, digest):
+    if not digest or not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+        raise BuildError("GitHub did not provide a valid SHA256 digest for the download.")
+    with archive.open("rb") as stream:
+        actual = hashlib.file_digest(stream, "sha256").hexdigest()
+    if digest != f"sha256:{actual}":
+        raise BuildError("Downloaded ZIP does not match GitHub's SHA256 digest.")
+    with zipfile.ZipFile(archive) as bundle:
+        for member in bundle.infolist():
+            target = (destination / member.filename.replace("\\", "/")).resolve()
+            if not target.is_relative_to(destination.resolve()):
+                raise BuildError("Downloaded ZIP contains a path outside its destination.")
+        bundle.extractall(destination)
+
+
+def download_cloud_release(run, artifact, destination):
+    tag = f"cloud-test-{run['id']}"
+    releases = [r for r in api("releases?per_page=100") if r["tag_name"] == tag and r["draft"]]
+    if len(releases) != 1:
+        raise BuildError("Expected one unpublished download copy from this workflow run.")
+    release = api(f"releases/{releases[0]['id']}")
+    expected = {
+        "commit": run["head_sha"], "branch": run["head_branch"],
+        "run_id": run["id"], "artifact_id": artifact["id"],
+    }
+    if release["target_commitish"] != run["head_sha"] or json.loads(release["body"]) != expected:
+        raise BuildError("Unpublished download copy does not match the selected branch, commit and run.")
+    assets = [a for a in release["assets"] if a["name"] == f"{ARTIFACT}.zip"]
+    if len(assets) != 1:
+        raise BuildError("Expected one ZIP in the unpublished download copy.")
+    asset = assets[0]
+    with tempfile.TemporaryDirectory(prefix="ffr-download-") as temporary:
+        gh("release", "download", tag, "--repo", REPOSITORY,
+           "--pattern", asset["name"], "--dir", temporary)
+        extract_verified_zip(Path(temporary) / asset["name"], destination, asset.get("digest"))
+    return {"temporary_release_id": release["id"], "download_sha256": asset["digest"]}
 
 
 def build(args):
@@ -91,10 +135,13 @@ def build(args):
     query = urlencode({"head_sha": commit, "event": "workflow_dispatch", "per_page": 100})
     endpoint = f"actions/workflows/{WORKFLOW}/runs?{query}"
     previous_ids = {run["id"] for run in api(endpoint)["workflow_runs"]}
+    inputs = {"build": str(args.build)}
+    if args.cloud_download:
+        inputs["cloud_download"] = "true"
     api(
         f"actions/workflows/{WORKFLOW}/dispatches",
         method="POST",
-        body={"ref": args.ref, "inputs": {"build": str(args.build)}},
+        body={"ref": args.ref, "inputs": inputs},
     )
     print("Build requested; waiting for a run at the selected commit.", flush=True)
 
@@ -135,11 +182,21 @@ def build(args):
     destination = args.output.resolve() / f"{commit[:12]}-run-{run['id']}"
     if destination.exists():
         raise BuildError(f"Refusing to overwrite existing files: {destination}")
-    destination.mkdir(parents=True)
-    gh(
-        "run", "download", str(run["id"]), "--repo", REPOSITORY,
-        "--name", ARTIFACT, "--dir", str(destination),
-    )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    download_record = {}
+    with tempfile.TemporaryDirectory(prefix="ffr-build-", dir=destination.parent) as temporary:
+        staging = Path(temporary)
+        if args.cloud_download:
+            download_record = download_cloud_release(run, matches[0], staging)
+        else:
+            gh("run", "download", str(run["id"]), "--repo", REPOSITORY,
+               "--name", ARTIFACT, "--dir", str(staging))
+        executables = list(staging.rglob("FFR Vision Studio.exe"))
+        if len(executables) != 1:
+            raise BuildError("Downloaded artifact does not contain exactly one app executable.")
+        if not (executables[0].parent / "flutter_windows.dll").is_file():
+            raise BuildError("Downloaded app is missing its Flutter runtime.")
+        staging.rename(destination)
     executables = list(destination.rglob("FFR Vision Studio.exe"))
     if len(executables) != 1:
         raise BuildError("Downloaded artifact does not contain exactly one app executable.")
@@ -156,8 +213,12 @@ def build(args):
         "artifact_id": matches[0]["id"],
         "executable": str(executable),
         "downloaded_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        **download_record,
     }
     (destination / "build-record.json").write_text(json.dumps(record, indent=2) + "\n")
+    if args.cloud_download:
+        api(f"releases/{download_record['temporary_release_id']}", method="DELETE")
+        print("Temporary unpublished download copy removed.", flush=True)
     print(f"Verified build provenance; executable: {executable}", flush=True)
     return record
 
@@ -168,6 +229,8 @@ def main():
     parser.add_argument("--build", type=int, default=15)
     parser.add_argument("--enable-actions", action="store_true",
                         help="Enable repository Actions (requires Administration: write).")
+    parser.add_argument("--cloud-download", action="store_true",
+                        help="Use a temporary unpublished release when the cloud proxy blocks artifact storage.")
     parser.add_argument("--output", type=Path, default=Path("/workspace/.runtime/ffr/builds"))
     parser.add_argument("--timeout", type=int, default=1800)
     args = parser.parse_args()
