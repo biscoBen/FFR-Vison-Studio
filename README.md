@@ -78,6 +78,11 @@ Full mod tests still need the game's installation and extracted data.
 
 ## Saved character configurations
 
+The character page's **MR** tab edits the rewards at each of the ten ranks. Select a rank, then add stat bonuses,
+abilities, passives, or the vision's master reward. Rewards can be moved to another rank or removed, and stat amounts
+can be edited directly. The engine supports five rewards per rank. Existing rewards and unlock-point requirements
+are preserved until edited; character config files include these rewards. Build/install afterward to apply them in-game.
+
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
 settings, and advanced fields. Studio suggests its persistent `Character Configs` folder, or you can choose another folder.

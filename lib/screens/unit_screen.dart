@@ -9,10 +9,11 @@ import 'steps/abilities_step.dart';
 import 'steps/bonuses_step.dart';
 import 'steps/resonance_step.dart';
 import 'steps/stats_step.dart';
+import 'steps/mr_step.dart';
 import 'unit_anim_pane.dart';
 import 'character_config_buttons.dart';
 
-/// A unit's page: left, the character entry (sprite, stats); right, the walkthrough in four numbered steps.
+/// A unit's page: the character entry and its editable configuration.
 class UnitScreen extends StatefulWidget {
   const UnitScreen({super.key});
   @override
@@ -73,7 +74,7 @@ class _UnitScreenState extends State<UnitScreen> {
           Container(
             color: Guide.paper2,
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-            child: PageTabs(tabs: const ['Abilities', 'Bonuses', 'Stats', 'Resonance'], index: step, onSelect: (i) => setState(() => step = i)),
+            child: PageTabs(tabs: const ['Abilities', 'Bonuses', 'Stats', 'Resonance', 'MR'], index: step, onSelect: (i) => setState(() => step = i)),
           ),
           Container(height: 2, color: Guide.ink),
           Expanded(
@@ -84,6 +85,7 @@ class _UnitScreenState extends State<UnitScreen> {
                 0 => AbilitiesStep(key: const ValueKey('a'), unit: u, set: set),
                 1 => BonusesStep(key: const ValueKey('b'), unit: u, set: set),
                 2 => StatsStep(key: const ValueKey('s'), unit: u, set: set),
+                4 => MrStep(key: const ValueKey('mr'), unit: u, set: set),
                 _ => ResonanceStep(key: const ValueKey('r'), unit: u, set: set),
               },
             ),
