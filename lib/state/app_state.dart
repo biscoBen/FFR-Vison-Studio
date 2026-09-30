@@ -434,6 +434,53 @@ class AppState extends ChangeNotifier {
     return CharacterConfig.copy(unit);
   });
 
+  Future<List<JsonMap>> snapshotCharacters() => _withRoster(() async {
+    if (api != null && !engineDown) { await _savePending(); }
+    return units.cast<JsonMap>().map(CharacterConfig.copy).toList();
+  });
+
+  Future<void> _checkCharacterArtwork(JsonMap saved) async {
+    if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
+    final directory = p.joinAll([paths.engineDir, ...(saved['ffbe']['dir'] as String).replaceAll('\\', '/').split('/')]);
+    final form = saved['ffbe']['id'];
+    if (!File(p.join(directory, 'unit_anime_$form.png')).existsSync() || !File(p.join(directory, 'unit_cgg_$form.csv')).existsSync()) {
+      throw StateError('The artwork for ${saved['en']} is missing. Add or import this character using Add a unit first, then load its saved config.');
+    }
+  }
+
+  Future<List<JsonMap>> loadAllCharacterConfigs(List<JsonMap> saved, {required List<String?> expectedTargetKeys}) => _withRoster(() async {
+    CharacterConfig.validateAll(saved);
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel();
+    await _savePending();
+    for (final unit in saved) { await _checkCharacterArtwork(unit); }
+    await _savePending();
+    final current = _mergePending(await api!.spec());
+    final targets = CharacterConfig.targets(saved, current);
+    if (!listEquals(targets.map((u) => u?['key'] as String?).toList(), expectedTargetKeys)) {
+      throw StateError('The roster changed while choosing the file. Load it again to review the characters being restored.');
+    }
+    final loaded = CharacterConfig.restoreAll(saved, current, targets);
+    final backup = File(p.join(paths.configBackups, 'roster-${DateTime.now().microsecondsSinceEpoch}.json'));
+    await backup.parent.create(recursive: true);
+    await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
+    final replacements = {for (var i = 0; i < saved.length; i++) if (targets[i] != null) targets[i]!['key']: loaded[i]};
+    final next = [
+      for (final unit in _mergePending(current)) replacements[unit['key']] ?? unit,
+      for (var i = 0; i < loaded.length; i++) if (targets[i] == null) loaded[i],
+    ];
+    final revision = _rosterRevision;
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    units = _mergePending(next);
+    if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending();
+    _anims.clear();
+    selectedKey = null;
+    notifyListeners();
+    return loaded;
+  });
+
   /// Restore a single spec through the same queue as autosave, remove and build.
   /// The full roster is backed up before replacement, and unrelated edits made
   /// while the request is in flight are merged and saved afterward.
@@ -443,12 +490,7 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel();
     await _savePending();
-    if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
-    final directory = p.joinAll([paths.engineDir, ...(saved['ffbe']['dir'] as String).replaceAll('\\', '/').split('/')]);
-    final form = saved['ffbe']['id'];
-    if (!File(p.join(directory, 'unit_anime_$form.png')).existsSync() || !File(p.join(directory, 'unit_cgg_$form.csv')).existsSync()) {
-      throw StateError('The artwork for this character is missing. Add or import this character using Add a unit first, then load its saved config.');
-    }
+    await _checkCharacterArtwork(saved);
     final current = _mergePending(await api!.spec());
     final target = CharacterConfig.target(saved, current);
     if (target?['key'] != expectedTargetKey) { throw StateError('The roster changed while choosing the file. Load it again to review the character being restored.'); }

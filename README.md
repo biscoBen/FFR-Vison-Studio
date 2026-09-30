@@ -91,6 +91,12 @@ These files save configuration, not artwork. Removing a vision keeps its cached 
 artwork is repaired automatically. On another installation, first add/import the character to obtain its artwork,
 then load the saved file. Build or install the mod afterward to apply the restored setup to the game.
 
+The **Your visions** page also has **Save all character configs** and **Load all character configs**. Save all writes
+every current unit to one `.visions.json` file. Load all restores missing units and replaces matching setups after
+confirmation, while keeping other units in the current roster. Every saved entry and its artwork are checked before
+the roster is written once; a missing asset or invalid entry prevents the entire import. IDs and references between
+saved units are adjusted together if necessary. A full roster backup is kept before applying the import.
+
 ## Layout
 
 - `lib/main.dart` window, single-instance lock, header, engine-down banner

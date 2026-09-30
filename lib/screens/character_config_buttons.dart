@@ -11,26 +11,36 @@ import '../state/app_state.dart';
 
 /// Fixed to the bottom of the character/roster page, outside the scroll area.
 class CharacterConfigButtons extends StatefulWidget {
-  const CharacterConfigButtons({super.key});
+  const CharacterConfigButtons({super.key, this.includeAll = false});
+  final bool includeAll;
   @override
   State<CharacterConfigButtons> createState() => _CharacterConfigButtonsState();
 }
 
 class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
   bool busy = false;
+  String _count(int count, String label) =>
+      '$count $label${count == 1 ? '' : 's'}';
 
-  Future<void> _save(AppState app, String key) async {
+  Future<void> _save(AppState app, String? key, {bool all = false}) async {
     setState(() => busy = true);
     try {
-      final unit = await app.snapshotCharacter(key);
-      final contents = CharacterConfig.encode(unit);
+      final units = all
+          ? await app.snapshotCharacters()
+          : [await app.snapshotCharacter(key!)];
+      final contents = all
+          ? CharacterConfig.encodeAll(units)
+          : CharacterConfig.encode(units.single);
       await Directory(app.paths.characterConfigs).create(recursive: true);
-      final name = (unit['en'] as String)
+      final name = (all ? 'All Characters' : units.single['en'] as String)
           .replaceAll(RegExp(r'[<>:"/\\|?*\x00-\x1f]'), '_')
           .replaceAll(RegExp(r'[. ]+$'), '');
       final destination = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save character config',
-        fileName: '${name.isEmpty ? 'Character' : name}.vision.json',
+        dialogTitle: all
+            ? 'Save all character configs'
+            : 'Save character config',
+        fileName:
+            '${name.isEmpty ? 'Character' : name}.${all ? 'visions' : 'vision'}.json',
         initialDirectory: app.paths.characterConfigs,
         type: FileType.custom,
         allowedExtensions: ['json'],
@@ -41,7 +51,7 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
       }
       final path = destination.toLowerCase().endsWith('.json')
           ? destination
-          : '$destination.vision.json';
+          : '$destination.${all ? 'visions' : 'vision'}.json';
       // Encode first, then replace atomically so a failed write keeps an older save.
       final temporary = File(
         '$path.${DateTime.now().microsecondsSinceEpoch}.tmp',
@@ -56,13 +66,20 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
       }
       if (mounted) {
         _message(
-          'Character config saved',
-          '${unit['en']} was saved to:\n$path\n\nYou can remove the character and load this file later to restore its setup.',
+          all ? 'All character configs saved' : 'Character config saved',
+          all
+              ? '${units.length} character setups were saved to:\n$path\n\nLoad this file later to restore all of them.'
+              : '${units.single['en']} was saved to:\n$path\n\nYou can remove the character and load this file later to restore its setup.',
         );
       }
     } catch (e) {
       if (mounted) {
-        _message('Could not save character config', e.toString());
+        _message(
+          all
+              ? 'Could not save all character configs'
+              : 'Could not save character config',
+          e.toString(),
+        );
       }
     } finally {
       if (mounted) {
@@ -71,14 +88,16 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
     }
   }
 
-  Future<void> _load(AppState app) async {
+  Future<void> _load(AppState app, {bool all = false}) async {
     final navigator = Navigator.of(context);
     setState(() => busy = true);
     var progressOpen = false;
     try {
       await Directory(app.paths.characterConfigs).create(recursive: true);
       final picked = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Load character config',
+        dialogTitle: all
+            ? 'Load all character configs'
+            : 'Load character config',
         initialDirectory: app.paths.characterConfigs,
         type: FileType.custom,
         allowedExtensions: ['json'],
@@ -94,32 +113,44 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
           'This file is too large to be a character config.',
         );
       }
-      final saved = CharacterConfig.decode(await file.readAsString());
-      final target = CharacterConfig.target(saved, app.units);
+      final contents = await file.readAsString();
+      final saved = all
+          ? CharacterConfig.decodeAll(contents)
+          : [CharacterConfig.decode(contents)];
+      final targets = all
+          ? CharacterConfig.targets(saved, app.units)
+          : [CharacterConfig.target(saved.single, app.units)];
+      final replaced = targets.whereType<Map>().length;
+      final target = targets.first;
       if (!mounted) {
         return;
       }
       final ok = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
+          scrollable: true,
           backgroundColor: Guide.paper,
           shape: Border.fromBorderSide(Guide.frame),
           title: Text(
-            target == null
-                ? 'Restore ${saved['en']}?'
+            all
+                ? 'Load all character configs?'
+                : target == null
+                ? 'Restore ${saved.single['en']}?'
                 : 'Load config for ${target['en']}?',
             style: Guide.h2(),
           ),
           content: Text(
-            target == null
-                ? 'Adds ${saved['en']} back to your visions with the saved abilities, passives, stats and Resonance.'
+            all
+                ? 'Loads ${_count(saved.length, 'saved character setup')}: ${saved.map((u) => u['en']).join(', ')}.\n\nRestores ${_count(saved.length - replaced, 'missing unit')} and replaces ${_count(replaced, 'matching setup')}. Keeps ${_count(app.units.length - replaced, 'other unit')}. A backup of your current roster is kept automatically.'
+                : target == null
+                ? 'Adds ${saved.single['en']} back to your visions with the saved abilities, passives, stats and Resonance.'
                 : 'Replaces ${target['en']}\'s current setup with the saved abilities, passives, stats and Resonance. A backup of your current roster is kept automatically.',
             style: Guide.text(),
           ),
           actions: [
             GuideButton('Cancel', onPressed: () => Navigator.pop(c, false)),
             GuideButton(
-              'Load character config',
+              all ? 'Load all character configs' : 'Load character config',
               onPressed: () => Navigator.pop(c, true),
             ),
           ],
@@ -144,24 +175,40 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
                   child: CircularProgressIndicator(),
                 ),
                 const SizedBox(width: 16),
-                Text('Loading character config…', style: Guide.text()),
+                Flexible(
+                  child: Text(
+                    all
+                        ? 'Loading all character configs…'
+                        : 'Loading character config…',
+                    style: Guide.text(),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       );
-      await app.loadCharacterConfig(
-        saved,
-        expectedTargetKey: target?['key'] as String?,
-      );
+      if (all) {
+        await app.loadAllCharacterConfigs(
+          saved,
+          expectedTargetKeys: targets.map((u) => u?['key'] as String?).toList(),
+        );
+      } else {
+        await app.loadCharacterConfig(
+          saved.single,
+          expectedTargetKey: target?['key'] as String?,
+        );
+      }
       if (navigator.mounted) {
         navigator.pop();
         progressOpen = false;
       }
       if (navigator.mounted) {
         _message(
-          'Character config loaded',
-          '${saved['en']} is ready with its saved setup. Build or install the mod to apply it to the game.',
+          all ? 'All character configs loaded' : 'Character config loaded',
+          all
+              ? '${saved.length} character setups are ready. Build or install the mod to apply them to the game.'
+              : '${saved.single['en']} is ready with its saved setup. Build or install the mod to apply it to the game.',
           dialogContext: navigator.context,
         );
       }
@@ -171,7 +218,12 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
         progressOpen = false;
       }
       if (mounted) {
-        _message('Could not load character config', e.toString());
+        _message(
+          all
+              ? 'Could not load all character configs'
+              : 'Could not load character config',
+          e.toString(),
+        );
       }
     } finally {
       if (mounted) {
@@ -220,6 +272,25 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
                 ? null
                 : () => _load(app),
           ),
+          if (widget.includeAll) ...[
+            const SizedBox(height: 8),
+            GuideButton(
+              'Save all character configs',
+              icon: Icons.save_outlined,
+              onPressed: busy || app.units.isEmpty
+                  ? null
+                  : () => _save(app, null, all: true),
+            ),
+            const SizedBox(height: 8),
+            GuideButton(
+              'Load all character configs',
+              icon: Icons.folder_open,
+              onPressed:
+                  busy || app.api == null || app.engineDown || app.building
+                  ? null
+                  : () => _load(app, all: true),
+            ),
+          ],
         ],
       ),
     );

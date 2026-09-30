@@ -25,12 +25,12 @@ class HomeScreen extends StatelessWidget {
                 ? _empty(context)
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 112, crossAxisSpacing: 12, mainAxisSpacing: 12),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
                     itemCount: app.units.length + 1,
                     itemBuilder: (_, i) => i == app.units.length ? _addEntry(context) : _entry(context, app, app.units[i] as Map<String, dynamic>),
                   ),
           ),
-          const CharacterConfigButtons(),
+          const CharacterConfigButtons(includeAll: true),
         ]),
       ),
       Container(width: 2, color: Guide.ink),

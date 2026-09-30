@@ -386,6 +386,7 @@ void main() {
   Future<void> buttons(
     WidgetTester tester, {
     bool followSelection = false,
+    bool includeAll = false,
   }) async {
     await tester.pumpWidget(
       ChangeNotifierProvider<AppState>.value(
@@ -400,6 +401,7 @@ void main() {
                   width: 300,
                   child: CharacterConfigButtons(
                     key: followSelection ? ValueKey(state.selectedKey) : null,
+                    includeAll: includeAll,
                   ),
                 ),
               ),
@@ -419,12 +421,312 @@ void main() {
       });
       await tester.pump(const Duration(milliseconds: 5));
       if (find.byType(AlertDialog).evaluate().isNotEmpty &&
-          find.text('Loading character config…').evaluate().isEmpty) {
+          find.text('Loading character config…').evaluate().isEmpty &&
+          find.text('Loading all character configs…').evaluate().isEmpty) {
         break;
       }
     }
     await tester.pumpAndSettle();
   }
+
+  void cacheArtwork(Map<String, dynamic> unit) {
+    final directory = Directory(
+      p.join(app.paths.engineDir, unit['ffbe']['dir'] as String),
+    )..createSync(recursive: true);
+    for (final name in [
+      'unit_anime_${unit['ffbe']['id']}.png',
+      'unit_cgg_${unit['ffbe']['id']}.csv',
+    ]) {
+      File(p.join(directory.path, name))
+          .writeAsStringSync('mock cached artwork');
+    }
+  }
+
+  test('all-character file round trips every unit and rejects invalid or duplicate entries', () {
+    final all = [saved, other()];
+    expect(CharacterConfig.decodeAll(CharacterConfig.encodeAll(all)), all);
+    for (final units in [
+      [],
+      [saved, saved],
+      [
+        saved,
+        {'key': 'incomplete'},
+      ],
+    ]) {
+      expect(() => CharacterConfig.encodeAll(units), throwsFormatException);
+    }
+    expect(
+      () => CharacterConfig.decodeAll(CharacterConfig.encode(saved)),
+      throwsFormatException,
+    );
+    expect(
+      () => CharacterConfig.decode(CharacterConfig.encodeAll(all)),
+      throwsFormatException,
+    );
+  });
+
+  test('batch allocation reserves later original IDs and keeps references between saved units', () {
+    final second = other();
+    saved['awakening'][0].add([
+      'ActiveSkill',
+      CharacterConfig.skillBase(second['id'] as int),
+    ]);
+    saved['ffbeMap']['skills']['otherMove'] = CharacterConfig.skillBase(
+      second['id'] as int,
+    );
+    second['synchro'][0].add(['MasterSkill', saved['master']['id']]);
+    // A re-added Fina has the ID previously belonging to the second saved unit.
+    final currentFina = CharacterConfig.restore(saved, [saved]);
+    final targets = CharacterConfig.targets([saved, second], [currentFina]);
+    final loaded = CharacterConfig.restoreAll(
+      [saved, second],
+      [currentFina],
+      targets,
+    );
+    expect(loaded[0]['id'], currentFina['id']);
+    expect(loaded[1]['id'], isNot(second['id']));
+    expect(
+      loaded[0]['awakening'][0].where(
+        (g) =>
+            g[0] == 'ActiveSkill' &&
+            g[1] == CharacterConfig.skillBase(loaded[0]['id'] as int),
+      ),
+      isNotEmpty,
+    );
+    expect(loaded[0]['awakening'][0].last, [
+      'ActiveSkill',
+      CharacterConfig.skillBase(loaded[1]['id'] as int),
+    ]);
+    expect(
+      loaded[0]['ffbeMap']['skills']['otherMove'],
+      CharacterConfig.skillBase(loaded[1]['id'] as int),
+    );
+    expect(loaded[1]['synchro'][0].last, [
+      'MasterSkill',
+      loaded[0]['master']['id'],
+    ]);
+    expect(loaded[0]['lb_custom'], saved['lb_custom']);
+  });
+
+  test(
+    'an earlier ID collision does not consume a later saved unit original ID',
+    () {
+      final second = other();
+      final occupied = CharacterConfig.copy(saved)
+        ..['key'] = 'occupied'
+        ..['ffbe']['base'] = 'unrelated';
+      final loaded = CharacterConfig.restoreAll([saved, second], [occupied], [
+        null,
+        null,
+      ]);
+      expect(loaded[0]['id'], 13505);
+      expect(loaded[1]['id'], second['id']);
+    },
+  );
+
+  test('exact duplicate-character entries are reserved before a renamed copy is matched', () {
+    final secondCopy = CharacterConfig.restore(saved, [saved])
+      ..['key'] = 'second_copy';
+    final renamedFirst = CharacterConfig.copy(saved)..['key'] = 'renamed_first';
+    final targets = CharacterConfig.targets(
+      [saved, secondCopy],
+      [secondCopy, renamedFirst],
+    );
+    expect(targets.map((u) => u!['key']), ['renamed_first', 'second_copy']);
+    expect(CharacterConfig.restoreAll([saved, secondCopy], [], [null, null]), [
+      saved,
+      secondCopy,
+    ]);
+  });
+
+  test('all snapshots include pending edits; bulk restore writes once and preserves additional units', () async {
+    final second = other();
+    cacheArtwork(second);
+    api.roster = [clone(saved), clone(second)];
+    app.units = clone(api.roster) as List;
+    app.update(CharacterConfig.copy(second)..['stats']['Attack'] = 123);
+    final snapshot = await app.snapshotCharacters();
+    expect(snapshot[1]['stats']['Attack'], 123);
+    final extra = CharacterConfig.restore(second, snapshot)
+      ..['key'] = 'extra'
+      ..['ffbe']['base'] = 'extra';
+    api.roster = [extra, clone(second)];
+    app.units = clone(api.roster) as List;
+    final countBefore = api.saves;
+    await app.loadAllCharacterConfigs(
+      snapshot,
+      expectedTargetKeys: [null, second['key'] as String],
+    );
+    expect(api.saves, countBefore + 1);
+    expect(api.roster, [extra, snapshot[1], snapshot[0]]);
+    expect(app.selectedKey, isNull);
+    expect(
+      json.decode(
+        Directory(app.paths.configBackups)
+            .listSync()
+            .whereType<File>()
+            .single
+            .readAsStringSync(),
+      ),
+      [extra, second],
+    );
+  });
+
+  test('a bad later entry, missing artwork or changed target cannot partially restore a batch', () async {
+    final second = other();
+    final before = clone(api.roster);
+    await expectLater(
+      app.loadAllCharacterConfigs(
+        [saved, second],
+        expectedTargetKeys: [saved['key'] as String, null],
+      ),
+      throwsA(predicate((e) => e.toString().contains('artwork'))),
+    );
+    cacheArtwork(second);
+    await expectLater(
+      app.loadAllCharacterConfigs(
+        [
+          saved,
+          {'key': 'invalid'},
+        ],
+        expectedTargetKeys: [null, null],
+      ),
+      throwsFormatException,
+    );
+    await expectLater(
+      app.loadAllCharacterConfigs(
+        [saved, second],
+        expectedTargetKeys: [null, null],
+      ),
+      throwsStateError,
+    );
+    expect(api.saves, 0);
+    expect(api.roster, before);
+  });
+
+  test(
+    'bulk engine failure leaves the roster unchanged and retains its backup',
+    () async {
+      final second = other();
+      cacheArtwork(second);
+      api.fail = true;
+      final before = clone(api.roster);
+      await expectLater(
+        app.loadAllCharacterConfigs(
+          [saved, second],
+          expectedTargetKeys: [saved['key'] as String, null],
+        ),
+        throwsStateError,
+      );
+      expect(api.roster, before);
+      expect(app.units, before);
+      expect(Directory(app.paths.configBackups).listSync(), hasLength(1));
+    },
+  );
+
+  test(
+    'edits to additional units during a bulk request survive the restore',
+    () async {
+      final second = other();
+      cacheArtwork(second);
+      final extra = CharacterConfig.restore(second, [saved, second])
+        ..['key'] = 'extra'
+        ..['ffbe']['base'] = 'extra';
+      api.roster = [extra];
+      app.units = clone(api.roster) as List;
+      var changed = false;
+      api.beforeSave = () async {
+        if (!changed) {
+          changed = true;
+          app.update(CharacterConfig.copy(extra)..['stats']['Attack'] = 999);
+        }
+      };
+      await app.loadAllCharacterConfigs(
+        [saved, second],
+        expectedTargetKeys: [null, null],
+      );
+      expect(api.roster.first['stats']['Attack'], 999);
+      expect(api.roster.skip(1), [saved, second]);
+      expect(app.dirty, isFalse);
+    },
+  );
+
+  testWidgets('bulk buttons appear only on the main-page footer', (
+    tester,
+  ) async {
+    await buttons(tester);
+    expect(find.text('Save all character configs'), findsNothing);
+    expect(find.text('Load all character configs'), findsNothing);
+    await buttons(tester, includeAll: true);
+    expect(find.text('Save all character configs'), findsOneWidget);
+    expect(find.text('Load all character configs'), findsOneWidget);
+  });
+
+  testWidgets(
+    'Save all writes one file and Load all restores every setup with confirmation',
+    (tester) async {
+      final second = other();
+      cacheArtwork(second);
+      api.roster.add(second);
+      app.units = clone(api.roster) as List;
+      app.selectedKey = null;
+      picker.savePath = p.join(temporary.path, 'all.visions.json');
+      picker.loadPath = picker.savePath;
+      await buttons(tester, includeAll: true);
+      await tester.tap(find.text('Save all character configs'));
+      await completeIo(tester);
+      expect(
+        CharacterConfig.decodeAll(File(picker.savePath!).readAsStringSync()),
+        [saved, second],
+      );
+      expect(picker.defaultName, 'All Characters.visions.json');
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      api.roster = [];
+      app.units = [];
+      app.select(null);
+      await tester.pump();
+      await tester.tap(find.text('Load all character configs'));
+      await completeIo(tester);
+      expect(find.text('Load all character configs?'), findsOneWidget);
+      expect(find.textContaining('Restores 2 missing units'), findsOneWidget);
+      await tester.tap(
+        find.widgetWithText(GuideButton, 'Load all character configs').last,
+      );
+      await completeIo(tester);
+      expect(find.text('All character configs loaded'), findsOneWidget);
+      expect(api.roster, [saved, second]);
+      expect(app.selectedKey, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'empty roster disables Save all and cancelled bulk load changes nothing',
+    (tester) async {
+      picker.loadPath = p.join(temporary.path, 'all.visions.json');
+      File(picker.loadPath!)
+          .writeAsStringSync(CharacterConfig.encodeAll([saved]));
+      api.roster = [];
+      app.units = [];
+      app.selectedKey = null;
+      await buttons(tester, includeAll: true);
+      expect(
+        tester
+            .widget<GuideButton>(
+              find.widgetWithText(GuideButton, 'Save all character configs'),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.text('Load all character configs'));
+      await completeIo(tester);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(api.saves, 0);
+      expect(api.roster, isEmpty);
+    },
+  );
 
   testWidgets('bottom-left Save writes a reusable file with every field', (
     tester,
@@ -440,7 +742,12 @@ void main() {
     );
     expect(picker.defaultName, 'Crystal Fina.vision.json');
     expect(picker.initial, app.paths.characterConfigs);
-    expect(temporary.listSync().whereType<File>().any((f) => f.path.endsWith('.tmp')), isFalse);
+    expect(
+      temporary.listSync().whereType<File>().any(
+        (f) => f.path.endsWith('.tmp'),
+      ),
+      isFalse,
+    );
     expect(find.text('Character config saved'), findsOneWidget);
   });
 

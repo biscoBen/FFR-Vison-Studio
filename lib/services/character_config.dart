@@ -4,6 +4,7 @@ import 'dart:convert';
 /// Artwork stays in the Studio cache when a vision is removed.
 class CharacterConfig {
   static const format = 'FFR Vision Studio character config';
+  static const allFormat = 'FFR Vision Studio character configs';
   static const maxBytes = 16 * 1024 * 1024;
 
   static Map<String, dynamic> copy(Map<String, dynamic> unit) =>
@@ -27,6 +28,185 @@ class CharacterConfig {
     final unit = document['unit'] as Map<String, dynamic>;
     validate(unit);
     return copy(unit);
+  }
+
+  static String encodeAll(List<dynamic> units) {
+    validateAll(units);
+    return '${const JsonEncoder.withIndent('  ').convert({'format': allFormat, 'version': 1, 'units': units})}\n';
+  }
+
+  static List<Map<String, dynamic>> decodeAll(String contents) {
+    final document = json.decode(contents);
+    if (document is! Map ||
+        document['format'] != allFormat ||
+        document['version'] != 1 ||
+        document['units'] is! List) {
+      throw const FormatException(
+        'Choose a file made with Save all character configs (version 1).',
+      );
+    }
+    final units = document['units'] as List;
+    validateAll(units);
+    return units.cast<Map<String, dynamic>>().map(copy).toList();
+  }
+
+  static void validateAll(List<dynamic> units) {
+    if (units.isEmpty) {
+      throw const FormatException('This file contains no character configs.');
+    }
+    final keys = <String>{},
+        ids = <int>{},
+        commands = <int>{},
+        masters = <int>{},
+        skills = <int>{};
+    for (final unit in units) {
+      if (unit is! Map<String, dynamic>) {
+        throw const FormatException(
+          'This file contains an invalid character config.',
+        );
+      }
+      validate(unit);
+      if (!keys.add(unit['key'] as String) ||
+          !ids.add(unit['id'] as int) ||
+          !commands.add(unit['command']['id'] as int) ||
+          !masters.add(unit['master']['id'] as int) ||
+          !(unit['skills'] as Map).keys.every(
+            (id) => skills.add(int.parse(id.toString())),
+          ) ||
+          (unit['lb_custom'] != null &&
+              !skills.add(resonanceId(unit['id'] as int)))) {
+        throw const FormatException(
+          'This file contains duplicate character or skill IDs. Your roster has not been changed.',
+        );
+      }
+    }
+  }
+
+  /// Match every saved entry against the original roster before allocating IDs.
+  /// Reserve exact entries first so a renamed/re-added duplicate cannot take
+  /// the target belonging to another saved copy of the same character.
+  static List<Map<String, dynamic>?> targets(
+    List<Map<String, dynamic>> saved,
+    List<dynamic> roster,
+  ) {
+    final result = List<Map<String, dynamic>?>.filled(saved.length, null);
+    final used = <String>{};
+    for (var i = 0; i < saved.length; i++) {
+      final exact = roster
+          .cast<Map<String, dynamic>>()
+          .where(
+            (u) => u['key'] == saved[i]['key'] && sameCharacter(saved[i], u),
+          )
+          .toList();
+      if (exact.length == 1) {
+        result[i] = exact.single;
+        used.add(exact.single['key'] as String);
+      }
+    }
+    for (var i = 0; i < saved.length; i++) {
+      if (result[i] != null) {
+        continue;
+      }
+      result[i] = target(
+        saved[i],
+        roster.where((u) => !used.contains(u['key'])).toList(),
+      );
+      if (result[i] != null) {
+        used.add(result[i]!['key'] as String);
+      }
+    }
+    return result;
+  }
+
+  static List<Map<String, dynamic>> restoreAll(
+    List<Map<String, dynamic>> saved,
+    List<dynamic> roster,
+    List<Map<String, dynamic>?> replacing,
+  ) {
+    validateAll(saved);
+    if (saved.length != replacing.length) {
+      throw ArgumentError('One target is required for each config.');
+    }
+    final targetKeys = replacing.whereType<Map>().map((u) => u['key']).toSet();
+    final other = roster
+        .cast<Map<String, dynamic>>()
+        .where((u) => !targetKeys.contains(u['key']))
+        .toList();
+    // Reserve the preferred IDs of later characters so an earlier collision
+    // cannot unnecessarily displace another saved or re-added character.
+    final reserved = [
+      for (var i = 0; i < saved.length; i++)
+        restore(saved[i], [], replacing: replacing[i]),
+    ];
+    // Existing characters keep their current IDs ahead of a missing character
+    // whose old ID has since been reused by one of them.
+    final existingReservations = [
+      for (var i = 0; i < saved.length; i++)
+        if (replacing[i] != null) reserved[i],
+    ];
+    final reserve = [
+      for (var i = 0; i < saved.length; i++)
+        replacing[i] != null ||
+            restore(reserved[i], existingReservations)['id'] ==
+                reserved[i]['id'],
+    ];
+    final loaded = <Map<String, dynamic>>[];
+    for (var i = 0; i < saved.length; i++) {
+      loaded.add(
+        restore(saved[i], [
+          ...other,
+          ...loaded,
+          for (var j = i + 1; j < reserved.length; j++)
+            if (reserve[j]) reserved[j],
+        ], replacing: replacing[i]),
+      );
+    }
+    final activeIds = <int, int>{}, masterIds = <int, int>{};
+    for (var i = 0; i < saved.length; i++) {
+      final oldId = saved[i]['id'] as int, newId = loaded[i]['id'] as int;
+      masterIds[saved[i]['master']['id'] as int] =
+          loaded[i]['master']['id'] as int;
+      for (final key in (saved[i]['skills'] as Map).keys) {
+        final id = int.parse(key.toString());
+        activeIds[id] = skillBase(newId) + id - skillBase(oldId);
+      }
+      if (saved[i]['lb_custom'] != null) {
+        activeIds[resonanceId(oldId)] = resonanceId(newId);
+      }
+    }
+    // Use the original references once, rather than remapping an already
+    // remapped value that happens to equal another character's previous ID.
+    for (var i = 0; i < saved.length; i++) {
+      final original = copy(saved[i]);
+      for (final field in ['awakening', 'synchro']) {
+        for (final tier in original[field] as List) {
+          for (final grant in tier as List) {
+            final ids = grant[0] == 'ActiveSkill'
+                ? activeIds
+                : grant[0] == 'MasterSkill'
+                ? masterIds
+                : const <int, int>{};
+            if (ids.containsKey(grant[1])) {
+              grant[1] = ids[grant[1]];
+            }
+          }
+        }
+        loaded[i][field] = original[field];
+      }
+      final mapping = (original['ffbeMap'] as Map?)?['skills'] as Map?;
+      if (mapping != null) {
+        for (final key in mapping.keys.toList()) {
+          if (activeIds.containsKey(mapping[key])) {
+            mapping[key] = activeIds[mapping[key]];
+          }
+        }
+        loaded[i]['ffbeMap'] = original['ffbeMap'];
+      }
+      if (activeIds.containsKey(original['lb'])) {
+        loaded[i]['lb'] = activeIds[original['lb']];
+      }
+    }
+    return loaded;
   }
 
   static void validate(Map<String, dynamic> unit) {
