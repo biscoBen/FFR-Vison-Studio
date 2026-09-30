@@ -7,6 +7,7 @@ import '../design/widgets.dart';
 import '../state/app_state.dart';
 import 'add_unit_dialog.dart';
 import 'build_status.dart';
+import 'character_config_buttons.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -29,6 +30,7 @@ class HomeScreen extends StatelessWidget {
                     itemBuilder: (_, i) => i == app.units.length ? _addEntry(context) : _entry(context, app, app.units[i] as Map<String, dynamic>),
                   ),
           ),
+          const CharacterConfigButtons(),
         ]),
       ),
       Container(width: 2, color: Guide.ink),

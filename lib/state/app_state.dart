@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 import '../services/api.dart';
 import '../services/bundled_features.dart';
+import '../services/character_config.dart';
 import '../services/crystal_fina.dart';
 import '../services/downloader.dart';
 import '../services/engine.dart';
@@ -425,6 +426,55 @@ class AppState extends ChangeNotifier {
   });
 
   bool get hasCrystalFina => units.any((u) => CrystalFina.matches(u as Map));
+
+  Future<JsonMap> snapshotCharacter(String key) => _withRoster(() async {
+    if (api != null && !engineDown) { await _savePending(); }
+    final unit = units.cast<JsonMap>().where((u) => u['key'] == key).firstOrNull;
+    if (unit == null) { throw StateError('This character has been removed.'); }
+    return CharacterConfig.copy(unit);
+  });
+
+  /// Restore a single spec through the same queue as autosave, remove and build.
+  /// The full roster is backed up before replacement, and unrelated edits made
+  /// while the request is in flight are merged and saved afterward.
+  Future<JsonMap> loadCharacterConfig(JsonMap saved, {required String? expectedTargetKey}) => _withRoster(() async {
+    CharacterConfig.validate(saved);
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel();
+    await _savePending();
+    if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
+    final directory = p.joinAll([paths.engineDir, ...(saved['ffbe']['dir'] as String).replaceAll('\\', '/').split('/')]);
+    final form = saved['ffbe']['id'];
+    if (!File(p.join(directory, 'unit_anime_$form.png')).existsSync() || !File(p.join(directory, 'unit_cgg_$form.csv')).existsSync()) {
+      throw StateError('The artwork for this character is missing. Add or import this character using Add a unit first, then load its saved config.');
+    }
+    final current = _mergePending(await api!.spec());
+    final target = CharacterConfig.target(saved, current);
+    if (target?['key'] != expectedTargetKey) { throw StateError('The roster changed while choosing the file. Load it again to review the character being restored.'); }
+    final unit = CharacterConfig.restore(saved, current, replacing: target);
+    final backup = File(p.join(paths.configBackups, 'roster-${DateTime.now().microsecondsSinceEpoch}.json'));
+    await backup.parent.create(recursive: true);
+    await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
+    final next = _mergePending([
+      for (final existing in current) if (existing['key'] != target?['key']) existing,
+    ]);
+    if (target == null) {
+      next.add(unit);
+    } else {
+      // Keep the character's place in the roster when replacing its setup.
+      next.insert(current.indexWhere((u) => u['key'] == target['key']), unit);
+    }
+    final revision = _rosterRevision;
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    units = _mergePending(next);
+    if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending();
+    _anims.clear();
+    selectedKey = unit['key'] as String;
+    notifyListeners();
+    return unit;
+  });
 
   Future<JsonMap> addBundledUnit({void Function(String)? onStep}) => _withRoster(() async {
     if (api == null) { throw StateError('The engine is not running.'); }

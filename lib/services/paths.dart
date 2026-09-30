@@ -31,4 +31,6 @@ class AppPaths {
   String get installedManifest => p.join(root, 'installed.json');
   String get engineData => p.join(engineDir, 'data');
   String get engineSprites => p.join(engineDir, 'data', 'ffbe', 'sprites');
+  String get characterConfigs => p.join(root, 'Character Configs');
+  String get configBackups => p.join(root, 'config-backups');
 }

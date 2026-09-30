@@ -10,6 +10,7 @@ import 'steps/bonuses_step.dart';
 import 'steps/resonance_step.dart';
 import 'steps/stats_step.dart';
 import 'unit_anim_pane.dart';
+import 'character_config_buttons.dart';
 
 /// A unit's page: left, the character entry (sprite, stats); right, the walkthrough in four numbered steps.
 class UnitScreen extends StatefulWidget {
@@ -63,6 +64,7 @@ class _UnitScreenState extends State<UnitScreen> {
               ]),
             ),
           ),
+          const CharacterConfigButtons(),
         ]),
       ),
       Container(width: 2, color: Guide.ink),
@@ -97,7 +99,7 @@ Future<void> confirmRemove(BuildContext context, AppState app, Map<String, dynam
   final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
     backgroundColor: Guide.paper, shape: Border.fromBorderSide(Guide.frame),
     title: Text('Remove ${u['en']} from the mod?', style: Guide.h2()),
-    content: Text('The unit and its choices are deleted from the mod. The next install removes it from the game.', style: Guide.text()),
+    content: Text('The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.', style: Guide.text()),
     actions: [GuideButton('Keep', onPressed: () => Navigator.pop(c, false)), GuideButton('Remove', danger: true, onPressed: () => Navigator.pop(c, true))],
   ));
   if (ok == true) await app.removeUnit(u['key'] as String);

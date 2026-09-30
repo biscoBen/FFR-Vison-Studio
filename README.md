@@ -76,6 +76,21 @@ Use `--ref master` to download a separate baseline build without changing or mer
 Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
 Full mod tests still need the game's installation and extracted data.
 
+## Saved character configurations
+
+Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
+character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
+settings, and advanced fields. Studio suggests its persistent `Character Configs` folder, or you can choose another folder.
+
+Use **Load character config** from a character page or **Your visions**. A removed character is restored directly;
+an existing matching character requires confirmation before replacing its setup. An unrelated selected character is
+never overwritten. Studio keeps a full roster backup under `config-backups` before loading and allocates free IDs and
+internal table row names when necessary. Re-added characters keep their current ID whenever it is available.
+
+These files save configuration, not artwork. Removing a vision keeps its cached artwork, and Crystal Fina's bundled
+artwork is repaired automatically. On another installation, first add/import the character to obtain its artwork,
+then load the saved file. Build or install the mod afterward to apply the restored setup to the game.
+
 ## Layout
 
 - `lib/main.dart` window, single-instance lock, header, engine-down banner
