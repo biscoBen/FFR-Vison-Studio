@@ -28,11 +28,16 @@ jobs:
         env:
           APP_BUILD: ${{ inputs.build }}
         run: |
-          $manifest = Invoke-RestMethod -Uri 'https://ffbe.luminest.io/manifest.json'
           $build = $env:APP_BUILD
           if (-not $build) { $build = "15" }
           if ($build -notmatch '^\d+$') { throw 'Build number must be a nonnegative integer.' }
           $build = [int]$build
+          $manifest = $null
+          try {
+            $manifest = Invoke-RestMethod -Uri 'https://ffbe.luminest.io/manifest.json' -TimeoutSec 20
+          } catch {
+            Write-Warning 'The updater manifest is unavailable. Continuing with the requested build number; the app checks compatibility at startup.'
+          }
           if ($manifest.minApp -and ([version]"1.0.0.$build" -lt [version]$manifest.minApp)) {
             throw "Build 1.0.0.$build is below the host's minimum app version $($manifest.minApp)."
           }

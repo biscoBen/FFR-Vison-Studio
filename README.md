@@ -25,7 +25,9 @@ flutter build windows --release --build-name 1.0.0 --build-number <n> \
 
 `.github/workflows/windows.yml` on this fork's development branch runs analyze, test and the Windows build on pushes to
 `Sephira's-Update`, `main`, and `master`, as well as pull requests. It attaches the Release folder as the
-`FFR-Vision-Studio-windows` artifact. Automatic builds default to build 15 and check the host's minimum-version requirement.
+`FFR-Vision-Studio-windows` artifact. Automatic builds default to build 15 and check the host's minimum-version requirement
+when its manifest is reachable. A blocked or unavailable updater host does not prevent compilation; the app still checks
+compatibility at startup.
 A manual run ("Run workflow") can supply a different compatible build number.
 If GitHub Actions is disabled on the fork, enable it from the repository's Actions page first. The zips people
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
@@ -36,10 +38,11 @@ exe next to the engine and the data packs.
 From this checkout, use the helper to build the development branch and download the resulting Windows app:
 
 ```
-python3 scripts/cloud_windows_build.py --enable-actions
+python3 scripts/cloud_windows_build.py
 ```
 
-The first run can enable repository Actions. Later runs can omit `--enable-actions`.
+Enable repository Actions from its Actions page first. The helper can also do this with `--enable-actions` if its credential
+has Administration permission.
 The helper defaults to `Sephira's-Update` and build 15, checks the remote commit, waits for its workflow run, and downloads
 only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance record alongside the executable under
 `/workspace/.runtime/ffr/builds`. Commit and push changes before building them.

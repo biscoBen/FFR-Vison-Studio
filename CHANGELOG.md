@@ -6,6 +6,7 @@ needs them.
 
 ## Unreleased
 
+- Keep Windows builds working when the updater website blocks the runner's manifest request.
 - Add a cloud build helper that requests and downloads a Windows artifact for the selected branch and verifies its commit.
 - Default the app version stamp, executable metadata, and Windows workflow to build 15.
 - Build Windows test artifacts automatically for pushes to `Sephira's-Update`, with a stamp compatible with the live host.
