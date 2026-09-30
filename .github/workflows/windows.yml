@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       build:
-        description: Optional build number (blank uses the live host's version)
-        default: ""
+        description: Build number to stamp (defaults to 15)
+        default: "15"
 
 jobs:
   windows:
@@ -29,12 +29,7 @@ jobs:
         run: |
           $manifest = Invoke-RestMethod -Uri 'https://ffbe.luminest.io/manifest.json'
           $build = $env:APP_BUILD
-          if (-not $build) {
-            if ($manifest.version -notmatch '^1\.0\.0\.(\d+)$') {
-              throw "Unsupported host version: $($manifest.version)"
-            }
-            $build = $Matches[1]
-          }
+          if (-not $build) { $build = "15" }
           if ($build -notmatch '^\d+$') { throw 'Build number must be a nonnegative integer.' }
           $build = [int]$build
           if ($manifest.minApp -and ([version]"1.0.0.$build" -lt [version]$manifest.minApp)) {

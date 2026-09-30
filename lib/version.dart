@@ -1,6 +1,6 @@
-/// Stamped by a numbered build (--dart-define APP_VERSION/APP_BUILD). A developer build is build 0.
+/// Stamped by a numbered build (--dart-define APP_VERSION/APP_BUILD). Defaults to build 15.
 const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0');
-const appBuild = String.fromEnvironment('APP_BUILD', defaultValue: '0');
+const appBuild = String.fromEnvironment('APP_BUILD', defaultValue: '15');
 const appTag = '$appVersion.$appBuild';
 const appLabel = 'version $appVersion · build $appBuild';
 

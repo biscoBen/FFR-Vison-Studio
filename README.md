@@ -12,11 +12,11 @@ source, the pack builder and the project notes live in a separate project reposi
 flutter pub get
 flutter analyze
 flutter test
-flutter build windows --release            # a developer build (version 1.0.0, build 0)
+flutter build windows --release            # defaults to version 1.0.0, build 15
 ```
 
-A build talks to the live host, which can require a minimum app version in its manifest. A default build 0 may therefore
-be refused on first launch. Use a compatible numbered build to stamp the version into the exe and the app's version check:
+A build talks to the live host, which can require a minimum app version in its manifest. This branch defaults to build 15
+in both the executable metadata and the app's version check. To use another compatible build number:
 
 ```
 flutter build windows --release --build-name 1.0.0 --build-number <n> \
@@ -25,8 +25,8 @@ flutter build windows --release --build-name 1.0.0 --build-number <n> \
 
 `.github/workflows/windows.yml` on this fork's development branch runs analyze, test and the Windows build on pushes to
 `Sephira's-Update`, `main`, and `master`, as well as pull requests. It attaches the Release folder as the
-`FFR-Vision-Studio-windows` artifact. Automatic builds use the live host's advertised build number so the app can pass
-its minimum-version check. A manual run ("Run workflow") can supply a different compatible build number.
+`FFR-Vision-Studio-windows` artifact. Automatic builds default to build 15 and check the host's minimum-version requirement.
+A manual run ("Run workflow") can supply a different compatible build number.
 If GitHub Actions is disabled on the fork, enable it from the repository's Actions page first. The zips people
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
 exe next to the engine and the data packs.
