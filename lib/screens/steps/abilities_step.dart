@@ -20,6 +20,15 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
   String q = '';
   String group = 'all';
 
+  String _title(Map<String, dynamic> s) {
+    final verified = (s['seq'] as List?)?.isNotEmpty == true &&
+        s['hasUnit'] == 'All' &&
+        ['Ability', 'Magic', 'MagicSword'].contains(s['attr']) &&
+        (s['id'] as num) < 460000;
+    final name = (s['name'] as String?)?.isNotEmpty == true ? s['name'] as String : 'skill ${s['id']}';
+    return verified ? name : '$name (Unverified)';
+  }
+
   String _group(Map<String, dynamic> s) {
     final attr = s['attr'];
     final supportive = s['relation'] == 'Friendlies' || s['dmgType'] == 'None';
@@ -36,12 +45,12 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
     final app = context.read<AppState>();
     final cat = app.catalog!;
     final skills = (cat['skills'] as List).cast<Map<String, dynamic>>();
-    final lib = skills.where((s) => (s['seq'] as List).isNotEmpty && s['hasUnit'] == 'All' && ['Ability', 'Magic', 'MagicSword'].contains(s['attr']) && (s['id'] as num) < 460000).toList()
+    final lib = skills.toList()
       ..sort((a, b) { final g = _group(a).compareTo(_group(b)); return g != 0 ? g : (a['name'] as String).compareTo(b['name'] as String); });
     final studio = ((cat['studioSkills'] as List?) ?? []).cast<Map<String, dynamic>>();
     final groups = [if (studio.isNotEmpty) 'Studio moves', ...lib.map(_group).toSet()];
     final s = q.trim().toLowerCase();
-    final shown = lib.where((x) => (group == 'all' || _group(x) == group) && (s.isEmpty || (x['name'] as String).toLowerCase().contains(s) || describe(x).toLowerCase().contains(s))).toList();
+    final shown = lib.where((x) => (group == 'all' || _group(x) == group) && (s.isEmpty || _title(x).toLowerCase().contains(s) || describe(x).toLowerCase().contains(s))).toList();
     final aw = awakening(widget.unit);
     final granted = <num>{for (final t in aw) for (final g in t) if (g[0] == 'ActiveSkill') g[1] as num};
     final byId = {for (final x in skills) x['id'] as num: x};
@@ -92,7 +101,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               ),
             ]),
           ),
-          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". Every ability here already has its animation, icon and hit effects in the game.', style: Guide.small())),
+          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". All catalog abilities are listed, including specialized moves and entries without an animation sequence.', style: Guide.small())),
           Expanded(
             child: Container(
               margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -119,7 +128,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                         final done = granted.contains(x['id'] as num);
                         return LibraryRow(
                           zebra: i.isOdd,
-                          title: x['name'] as String,
+                          title: _title(x),
                           detail: '${describe(x)}${(x['cost'] as num? ?? 0) > 0 ? ' · ${x['cost']} MP' : ''} · ${_group(x)}',
                           leading: ElementSwatch(x['element'] as String?),
                           icon: png != null ? Frame(padding: 1, width: 1, child: Image.network(app.api!.iconUrl(png), width: 22, height: 22)) : null,
@@ -155,7 +164,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                 const SizedBox(width: 8),
                 Expanded(child: custom != null
                     ? Row(children: [Text(custom['en'].toString(), style: Guide.strong()), const SizedBox(width: 6), Text('CUSTOM', style: Guide.label(Guide.purple).copyWith(fontSize: 10))])
-                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(x?['name']?.toString() ?? 'skill ${g[1]}', style: Guide.strong()), Text(describe(x), style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)])),
+                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(x != null ? _title(x) : 'skill ${g[1]}', style: Guide.strong()), Text(describe(x), style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)])),
                 GrantTools(tier: i, onMove: (t) => move(g, i, t), onRemove: () => remove(i, j)),
               ]),
             );

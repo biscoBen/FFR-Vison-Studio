@@ -21,14 +21,21 @@ class _BonusesStepState extends State<BonusesStep> {
   final amounts = <int, int>{for (final p in statParams) p.$1: p.$3};
   final _jp = RegExp(r'[぀-ヿ一-鿿]');
 
+  String _title(Map<String, dynamic> p) {
+    final name = p['name'] as String?;
+    final verified = name != null && name.isNotEmpty && !_jp.hasMatch(name);
+    final label = name != null && name.isNotEmpty ? name : 'passive ${p['id']}';
+    return verified ? label : '$label (Unverified)';
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog!;
-    final passives = (cat['passives'] as List).cast<Map<String, dynamic>>().where((p) => (p['name'] as String?)?.isNotEmpty == true && !_jp.hasMatch(p['name'] as String)).toList()
-      ..sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+    final passives = (cat['passives'] as List).cast<Map<String, dynamic>>().toList()
+      ..sort((a, b) => _title(a).compareTo(_title(b)));
     final s = q.trim().toLowerCase();
-    final shown = passives.where((p) => s.isEmpty || (p['name'] as String).toLowerCase().contains(s) || (p['desc'] ?? '').toString().toLowerCase().contains(s)).toList();
+    final shown = passives.where((p) => s.isEmpty || _title(p).toLowerCase().contains(s) || (p['desc'] ?? '').toString().toLowerCase().contains(s)).toList();
     final aw = awakening(widget.unit);
     final grantedP = <num>{for (final t in aw) for (final g in t) if (g[0] == 'PassiveSkill') g[1] as num};
     final byId = {for (final p in passives) p['id'] as num: p};
@@ -94,7 +101,7 @@ class _BonusesStepState extends State<BonusesStep> {
                   final png = iconPng(cat, p['icon'] as String?);
                   return LibraryRow(
                     zebra: i.isOdd,
-                    title: p['name'] as String,
+                    title: _title(p),
                     detail: (p['desc'] ?? '').toString(),
                     icon: png != null ? Image.network(app.api!.iconUrl(png), width: 22, height: 22) : null,
                     payload: DragPayload('grant', ['PassiveSkill', p['id']]),
@@ -143,7 +150,7 @@ class _BonusesStepState extends State<BonusesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p?['name']?.toString() ?? 'passive ${g[1]}', style: Guide.strong()), Text((p?['desc'] ?? '').toString(), style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)])),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p != null ? _title(p) : 'passive ${g[1]}', style: Guide.strong()), Text((p?['desc'] ?? '').toString(), style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)])),
                 GrantTools(tier: i, onMove: (t) => move(g, i, j, t), onRemove: () => remove(i, j)),
               ]),
             );

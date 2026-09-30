@@ -4,6 +4,11 @@ FFR Vision Studio, the Windows app. The product is 1.0.0 while the first release
 build (`1.0.0.<build>` in file names, the manifest and the app's own version check). Engine changes are listed when the app
 needs them.
 
+## Unreleased
+
+- Show every catalog ability and passive in the selection lists, including specialized abilities, entries without animation
+  sequences, and passives with Japanese names. Mark newly exposed entries "(Unverified)" in the library and assigned tiers.
+
 ## 1.0.0 build 7 — 2026-09-06
 
 - The host answered with 429 (too many requests) and 404s once many people used the app at the same time. The add-unit
