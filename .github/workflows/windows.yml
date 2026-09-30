@@ -2,13 +2,13 @@ name: Windows build
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, "Sephira's-Update"]
   pull_request:
   workflow_dispatch:
     inputs:
       build:
-        description: build number to stamp (1.0.0.<build>)
-        default: "0"
+        description: Optional build number (blank uses the live host's version)
+        default: ""
 
 jobs:
   windows:
@@ -24,10 +24,24 @@ jobs:
       - run: flutter test
       - name: Build
         shell: pwsh
+        env:
+          APP_BUILD: ${{ inputs.build }}
         run: |
-          $build = "${{ github.event.inputs.build }}"
-          if (-not $build) { $build = "0" }
+          $manifest = Invoke-RestMethod -Uri 'https://ffbe.luminest.io/manifest.json'
+          $build = $env:APP_BUILD
+          if (-not $build) {
+            if ($manifest.version -notmatch '^1\.0\.0\.(\d+)$') {
+              throw "Unsupported host version: $($manifest.version)"
+            }
+            $build = $Matches[1]
+          }
+          if ($build -notmatch '^\d+$') { throw 'Build number must be a nonnegative integer.' }
+          $build = [int]$build
+          if ($manifest.minApp -and ([version]"1.0.0.$build" -lt [version]$manifest.minApp)) {
+            throw "Build 1.0.0.$build is below the host's minimum app version $($manifest.minApp)."
+          }
           flutter build windows --release --build-name 1.0.0 --build-number $build --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=$build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Rename-Item build/windows/x64/runner/Release/ffr_vision_studio.exe "FFR Vision Studio.exe"
       - uses: actions/upload-artifact@v4
         with:

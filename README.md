@@ -15,16 +15,19 @@ flutter test
 flutter build windows --release            # a developer build (version 1.0.0, build 0)
 ```
 
-A developer build is enough to work on the app: it talks to the live host exactly like a release does. A numbered
-build stamps the version into the exe and into the app's own version check:
+A build talks to the live host, which can require a minimum app version in its manifest. A default build 0 may therefore
+be refused on first launch. Use a compatible numbered build to stamp the version into the exe and the app's version check:
 
 ```
 flutter build windows --release --build-name 1.0.0 --build-number <n> \
   --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=<n>
 ```
 
-`.github/workflows/windows.yml` runs analyze, test and that build on every push (build 0) and attaches the Release
-folder as an artifact; a numbered build is a manual run ("Run workflow" with the build number). The zips people
+`.github/workflows/windows.yml` on this fork's development branch runs analyze, test and the Windows build on pushes to
+`Sephira's-Update`, `main`, and `master`, as well as pull requests. It attaches the Release folder as the
+`FFR-Vision-Studio-windows` artifact. Automatic builds use the live host's advertised build number so the app can pass
+its minimum-version check. A manual run ("Run workflow") can supply a different compatible build number.
+If GitHub Actions is disabled on the fork, enable it from the repository's Actions page first. The zips people
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
 exe next to the engine and the data packs.
 
@@ -42,6 +45,11 @@ exe next to the engine and the data packs.
 Start the built exe with `LOCALAPPDATA` pointed at a scratch folder: the app keeps everything (engine, packs, units, logs)
 under `<LOCALAPPDATA>\FFR Vision Studio`. `FFR_STUDIO_HOST` points it at another host tree (a local copy served on
 127.0.0.1, for instance); it defaults to the live host, which is all a developer build needs.
+
+To compare `Sephira's-Update` with a clean `master` build, keep the executables in separate folders and give each its own
+scratch `LOCALAPPDATA` directory. This separates settings, engine files, and units. On Linux, run the Windows build
+through Wine or Proton; compiling the Windows executable still requires Windows. Keep `master` unchanged when testing
+the development branch.
 
 ## Files
 
