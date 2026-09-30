@@ -31,6 +31,31 @@ If GitHub Actions is disabled on the fork, enable it from the repository's Actio
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
 exe next to the engine and the data packs.
 
+## Cloud builds
+
+From this checkout, use the helper to build the development branch and download the resulting Windows app:
+
+```
+python3 scripts/cloud_windows_build.py --enable-actions
+```
+
+The first run can enable repository Actions. Later runs can omit `--enable-actions`.
+The helper defaults to `Sephira's-Update` and build 15, checks the remote commit, waits for its workflow run, and downloads
+only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance record alongside the executable under
+`/workspace/.runtime/ffr/builds`. Commit and push changes before building them.
+
+The platform's GitHub integration may allow code pushes while denying Actions administration. In that case, supply a
+fine-grained GitHub token securely as `FFR_GITHUB_ACTIONS_TOKEN` in the cloud environment's secret settings, scoped only
+to `biscoBen/FFR-Vison-Studio`. It needs **Actions: read and write** to enable workflows, request builds, watch runs, and
+download artifacts; **Contents: read** to verify the selected commit; and **Administration: read and write** for the
+one-time repository Actions activation. Administration permission can be removed after activation.
+The helper uses the existing injected GitHub authentication when this additional binding is absent. Never put token
+values in the repository or chat.
+
+Use `--ref master` to download a separate baseline build without changing or merging `master`.
+Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
+Full mod tests still need the game's installation and extracted data.
+
 ## Layout
 
 - `lib/main.dart` window, single-instance lock, header, engine-down banner
