@@ -415,17 +415,35 @@ void main() {
 
   Future<void> completeIo(WidgetTester tester) async {
     // Real file I/O completes outside the widget test's fake clock.
-    for (var i = 0; i < 100; i++) {
+    final deadline = DateTime.now().add(const Duration(seconds: 15));
+    var completed = false;
+    while (DateTime.now().isBefore(deadline)) {
       await tester.runAsync(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
       });
-      await tester.pump(const Duration(milliseconds: 5));
-      if (find.byType(AlertDialog).evaluate().isNotEmpty &&
-          find.text('Loading character config…').evaluate().isEmpty &&
-          find.text('Loading all character configs…').evaluate().isEmpty) {
+      await tester.pump(const Duration(milliseconds: 20));
+      final loading =
+          find.text('Loading character config…').evaluate().isNotEmpty ||
+          find.text('Loading all character configs…').evaluate().isNotEmpty;
+      final footerLoad = find.descendant(
+        of: find.byType(CharacterConfigButtons),
+        matching: find.widgetWithText(GuideButton, 'Load character config'),
+      );
+      final idle =
+          footerLoad.evaluate().isNotEmpty &&
+          tester.widget<GuideButton>(footerLoad).onPressed != null;
+      if (!loading &&
+          (find.byType(AlertDialog).evaluate().isNotEmpty || idle)) {
+        completed = true;
         break;
       }
     }
+    expect(
+      completed,
+      isTrue,
+      reason:
+          'The config file operation must finish before settling its dialog.',
+    );
     await tester.pumpAndSettle();
   }
 
