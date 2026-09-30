@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "files": {
+    "engine/install_crystalfina.py": "81eec0ed26c3654a4d08899ec3621b8f23ab9517f080702e711a30194df5d52d",
+    "engine/payload/_ffr_crystalfina.py": "b0615482ba9ed7e97decd8effd660ba6ead88bbae096432041cfc3e032867752",
+    "engine/payload/manifest.json": "3c2061a860eb6f856b62ac3d402726cb2715d9ca6e574cfc89b33103fbcfaa4b",
+    "engine/payload/material/FFRS/Content/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_13503.uasset": "5121040b48a33e584efb5e6916d2e2a8d5cc05b5a5df5dda46cac354d97dc38e",
+    "engine/payload/material/FFRS/Content/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_13503.uexp": "1de128858ac012cdb86d9c6b35a5d86088726b85ea10f285390aec071a1a8fde",
+    "profile.json": "8d07c3213d2099e829e2c3201c2df3c274d687e059b130d4bbc0f4f219d44e70",
+    "units/custom/crystal_fina_2/animations.json": "7832e5bba4884025657f8014a4659cfc7107efcd4812232527a4dc586bce76c5",
+    "units/custom/crystal_fina_2/detail.json": "d6a43b30842ae461caf48abf9e090b9d2bee122834ff275b5e0da2d3ae06dc05",
+    "units/custom/crystal_fina_2/resonance.json": "94ece963bcbae4eef4dc76b5c77f7e83aa7632a098efb8483878f00ce98aa142",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_anime_99887755552703.png": "cb4648d3c1339150ab00b65b09a36269262a4d08bf244aaf03450f92af4be601",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_atk_cgs_99887755552703.csv": "d0b2dbcdf060cb4f0a4cb991c13d6cfaa24335e522272890d2f48ec9df180d79",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_cgg_99887755552703.csv": "642d5f7c48f39ae9656d718cf7ee7820a9e7f2d692663d0ecdaffb7cd1abe8d9",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_icon_99887755552703.png": "98985752fd355ab79592370f1c62717968cd442b7ac885fdcbc91f8b32399fa5",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_idle_cgs_99887755552703.csv": "ddb78e688cf8229ef965af6206a638c22c722145a702974cafddeba13b102444",
+    "units/custom/crystal_fina_2/sprites/99887755552703/unit_limitatk_cgs_99887755552703.csv": "eb8fc02a6c8c7a0d4a71dc43d6c76959d085093ac32bf504bf76183f16162774",
+    "units/custom/crystal_fina_2/unit.json": "4fca1c7ba6e85a64deeafc7ba9f51820bde452167cd4f5edba404a4601b4bb9c"
+  },
+  "feature": "custom.crystal_fina.v1"
+}

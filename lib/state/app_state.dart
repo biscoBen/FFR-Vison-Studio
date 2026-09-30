@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import '../services/api.dart';
+import '../services/bundled_features.dart';
+import '../services/crystal_fina.dart';
 import '../services/downloader.dart';
 import '../services/engine.dart';
 import '../services/game_locator.dart';
@@ -28,9 +30,11 @@ class Progress {
 typedef JsonMap = Map<String, dynamic>;
 
 class AppState extends ChangeNotifier {
-  AppState({required this.hostBase}) { _loadSettings(); _afterUpdate(); }
+  AppState({required this.hostBase, AppPaths? appPaths, BundledFeatures? bundledFeatures})
+      : paths = appPaths ?? AppPaths.resolve(), features = bundledFeatures ?? BundledFeatures() { _loadSettings(); _afterUpdate(); }
   final String hostBase;
-  final paths = AppPaths.resolve();
+  final AppPaths paths;
+  final BundledFeatures features;
   late final Downloader dl = Downloader(hostBase);
   Engine? engine;
   Api? api;
@@ -175,6 +179,9 @@ class AppState extends ChangeNotifier {
 
   Future<void> _startEngine(Progress s) async {
     s.state = 'working'; s.detail = null; notifyListeners();
+    await engine?.stop();
+    s.detail = 'Preparing bundled units'; notifyListeners();
+    await features.prepareEngine(paths, engineRunning: engine?.running ?? false);
     final day = DateTime.now().toIso8601String().substring(0, 10);
     engine = Engine(
       paths.engineExe,
@@ -288,26 +295,51 @@ class AppState extends ChangeNotifier {
   void update(JsonMap unit) {
     units = units.map((u) => (u as JsonMap)['key'] == unit['key'] ? unit : u).toList();
     dirty = true;
+    _pendingEdits[unit['key'] as String] = unit;
+    _rosterRevision++;
     notifyListeners();
     _saveSoon();
   }
 
   Timer? _saveTimer;
+  Future<void> _rosterQueue = Future<void>.value();
+  final _pendingEdits = <String, JsonMap>{};
+  int _rosterRevision = 0;
+
+  Future<T> _withRoster<T>(Future<T> Function() action) {
+    final result = _rosterQueue.then((_) => action());
+    _rosterQueue = result.then<void>((_) {}, onError: (Object error, StackTrace stack) {});
+    return result;
+  }
+
+  List<dynamic> _mergePending(List<dynamic> remote) => remote.map((unit) => _pendingEdits[(unit as Map)['key']] ?? unit).toList();
+
+  Future<void> _savePending() async {
+    while (dirty && api != null) {
+      final revision = _rosterRevision;
+      final snapshot = json.decode(json.encode(units)) as List;
+      await api!.saveSpec(snapshot);
+      if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    }
+  }
   void _saveSoon() {
     _saveTimer?.cancel();
     _saveTimer = Timer(const Duration(milliseconds: 700), save);
   }
 
   Future<void> save() async {
-    if (!dirty || api == null) return;
-    try { await api!.saveSpec(units); dirty = false; notice = null; } catch (e) { notice = 'Could not save: $e'; }
+    try { await _withRoster(_savePending); notice = null; } catch (e) { notice = 'Could not save: $e'; }
     notifyListeners();
   }
 
-  Future<bool> removeUnit(String key) async {
+  Future<bool> removeUnit(String key) => _withRoster(() async {
     try {
+      if (building) { throw StateError('Wait for the current build to finish.'); }
+      await _savePending();
       await api!.deleteUnit(key);
-      units = await api!.spec();
+      _pendingEdits.remove(key);
+      units = _mergePending(await api!.spec());
+      await _savePending();
       if (selectedKey == key) selectedKey = null;
       notifyListeners();
       return true;
@@ -315,7 +347,7 @@ class AppState extends ChangeNotifier {
       showNotice('Could not remove the unit: $e');
       return false;
     }
-  }
+  });
 
   /// The face icon of a unit form, from the icons pack on disk (one download at setup; nothing is fetched per row: the host
   /// answered the old one-request-per-icon pickers with 429s once many people used the app at the same time).
@@ -350,15 +382,42 @@ class AppState extends ChangeNotifier {
     return a;
   }
 
-  Future<JsonMap> addUnit(String ffbeId, String form, String name, {void Function(String)? onStep}) async {
+  Future<JsonMap> addUnit(String ffbeId, String form, String name, {void Function(String)? onStep}) => _withRoster(() async {
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await _savePending();
     await ensureSprites(form, onStep: onStep);
     onStep?.call('adding to the mod');
     final u = await api!.addUnit(ffbeId, form: form, name: name);
-    units = await api!.spec();
+    units = _mergePending(await api!.spec());
+    await _savePending();
     selectedKey = u['key'] as String?;
     notifyListeners();
     return u;
-  }
+  });
+
+  bool get hasCrystalFina => units.any((u) => CrystalFina.matches(u as Map));
+
+  Future<JsonMap> addBundledUnit({void Function(String)? onStep}) => _withRoster(() async {
+    if (api == null) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    if (hasCrystalFina) { throw StateError('Crystal Fina is already in your roster.'); }
+    _saveTimer?.cancel();
+    await _savePending();
+    onStep?.call('Preparing Crystal Fina');
+    await features.ensureUnitAssets(paths);
+    final current = _mergePending(await api!.spec());
+    final unit = CrystalFina.instantiate(await features.profile(), current);
+    final next = [...current, unit];
+    final revision = _rosterRevision;
+    onStep?.call('Adding to the mod');
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    units = _mergePending(next);
+    if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending();
+    selectedKey = unit['key'] as String;
+    notifyListeners();
+    return unit;
+  });
 
   // ---------------------------------------------------------------- self-update
   /// A running exe cannot replace itself, so: stage the new app next to the app data, write a small script that waits for
@@ -453,9 +512,10 @@ class AppState extends ChangeNotifier {
   // ---------------------------------------------------------------- build / install
   bool get building => buildState?['running'] == true;
 
-  Future<void> startBuild({required bool install}) async {
-    await save();
+  Future<void> startBuild({required bool install}) => _withRoster(() async {
     try {
+      if (building) { throw StateError('A build is already running.'); }
+      await _savePending();
       await api!.build(install: install);
     } catch (e) {
       showNotice(e.toString()); return;
@@ -470,7 +530,7 @@ class AppState extends ChangeNotifier {
       } catch (_) {}
       notifyListeners();
     });
-  }
+  });
 
   /// Removes what the studio placed in the game folder and puts back what was there before; or puts one backup back.
   Future<Map<String, dynamic>> restoreGame({String? backup}) async {

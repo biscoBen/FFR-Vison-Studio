@@ -6,6 +6,7 @@ import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
 import '../state/catalog_helpers.dart';
+import '../services/crystal_fina.dart';
 
 Future<void> showAddUnit(BuildContext context) => showDialog<void>(context: context, builder: (_) => const AddUnitDialog());
 
@@ -37,9 +38,10 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     if (hosted != null) {
       final named = hosted.where((u) => (u['name'] ?? '').toString().isNotEmpty).toList()
         ..sort((x, y) { final a = x['hasSprites'] == true ? 0 : 1, b = y['hasSprites'] == true ? 0 : 1; return a != b ? a - b : x['name'].toString().toLowerCase().compareTo(y['name'].toString().toLowerCase()); });
-      setState(() => list = named);
+      setState(() => list = [Map<String, dynamic>.from(CrystalFina.entry), ...named]);
     } else {
-      app.api!.ffbeUnits().then((l) => setState(() => list = l.cast<Map<String, dynamic>>())).catchError((e) => setState(() => err = e.toString()));
+      list = [Map<String, dynamic>.from(CrystalFina.entry)];
+      app.api!.ffbeUnits().then((l) { if (mounted) { setState(() => list = [Map<String, dynamic>.from(CrystalFina.entry), ...l.cast<Map<String, dynamic>>()]); } }).catchError((e) { if (mounted) { setState(() => err = e.toString()); } });
     }
   }
 
@@ -49,6 +51,13 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     setState(() { sel = u; detail = null; err = null; loadingAssets = true; });
     final app = context.read<AppState>();
     try {
+      if (u['bundledPreset'] == CrystalFina.presetId) {
+        await app.features.ensureUnitAssets(app.paths);
+        final d = await app.features.detail();
+        if (!mounted || seq != _pickSeq) { return; }
+        setState(() { detail = d; form = CrystalFina.spriteId; name.text = d['name'] as String; });
+        return;
+      }
       var d = await app.api!.ffbeUnit(u['id'] as String);
       if (seq != _pickSeq) return;
       final forms = (d['forms'] as Map?)?.keys.map((k) => k.toString()).toList() ?? [];
@@ -96,19 +105,20 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final app = context.read<AppState>();
+    final app = context.watch<AppState>();
     final s = q.trim().toLowerCase();
     final shown = (s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s))).take(200).toList();
     final inMod = app.units.map((u) => (u as Map)['ffbe']?['base']?.toString()).toSet();
     final packs = sel == null ? <String>{} : ((sel!['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
     final hasPack = packs.contains(form);
+    final bundled = sel?['bundledPreset'] == CrystalFina.presetId;
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(32),
       child: Paper(
         width: 940,
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Band('Add a unit from Brave Exvius'),
+          const Band('Add a unit'),
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
@@ -126,7 +136,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                           itemBuilder: (_, i) {
                             final u = shown[i];
                             final has = u['hasSprites'] == true || ((u['packs'] as List?)?.isNotEmpty ?? false);
-                            final here = inMod.contains(u['id']?.toString());
+                            final here = u['bundledPreset'] == CrystalFina.presetId ? app.hasCrystalFina : inMod.contains(u['id']?.toString());
                             final active = sel?['id'] == u['id'];
                             return Material(
                               color: active ? Guide.paper3 : (i.isOdd ? Guide.paper2 : Guide.paper),
@@ -140,7 +150,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                                     Expanded(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                         Text((u['name'] ?? u['jpname'] ?? u['id']).toString(), style: Guide.strong(has ? Guide.ink : Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                        Text('${rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        Text('${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
                                       ]),
                                     ),
                                     if (here) _chip('in mod', Guide.blue) else if (!has) _chip('no sprites yet', Guide.inkFaint),
@@ -179,10 +189,14 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
               if (err != null && detail != null) Expanded(child: Text(err!, style: Guide.small(Guide.red))) else if (step != null && busy) Expanded(child: Text(step!, style: Guide.small())) else const Spacer(),
               GuideButton('Cancel', onPressed: busy ? null : () => Navigator.of(context).pop()),
               const SizedBox(width: 8),
-              GoButton(busy ? 'Adding' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets ? null : () async {
+              GoButton(bundled && app.hasCrystalFina ? 'Already in mod' : busy ? 'Adding' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets || (bundled && app.hasCrystalFina) ? null : () async {
                 setState(() { busy = true; err = null; });
                 try {
-                  await app.addUnit(sel!['id'] as String, form, name.text, onStep: (s) => setState(() => step = s));
+                  if (bundled) {
+                    await app.addBundledUnit(onStep: (s) { if (mounted) { setState(() => step = s); } });
+                  } else {
+                    await app.addUnit(sel!['id'] as String, form, name.text, onStep: (s) { if (mounted) { setState(() => step = s); } });
+                  }
                   if (context.mounted) Navigator.of(context).pop();
                 } catch (e) {
                   setState(() { err = e.toString(); busy = false; });
@@ -197,6 +211,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
 
   /// The face icon: from the icons pack on disk, else from the engine (downloaded sprites). Never from the host per row.
   Widget _icon(AppState app, String form) {
+    if (form == CrystalFina.spriteId) { return Image.asset(CrystalFina.iconAsset, width: 44, height: 30, fit: BoxFit.contain, filterQuality: FilterQuality.none); }
     final f = app.iconFile(form);
     if (f.existsSync()) return Image.file(f, width: 44, height: 30, fit: BoxFit.cover, filterQuality: FilterQuality.none, gaplessPlayback: true);
     if (app.api == null) return Center(child: Text('?', style: Guide.small(Guide.inkFaint)));
@@ -217,7 +232,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     final st = (d['ffrStats'] as Map?) ?? {};
     final anims = ((forms[form]?['sprites'] as List?) ?? []).map((e) => e.toString()).toList();
     final ordered = orderAnims(anims);
-    Widget stat(String l, dynamic v) => Expanded(child: Row(children: [Text(l, style: Guide.small()), const Spacer(), Text('${v ?? '-'}', style: Guide.num())]));
+    Widget stat(String l, dynamic v) => Expanded(child: Row(children: [Expanded(child: Text(l, style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)), const SizedBox(width: 4), Text('${v ?? '-'}', style: Guide.num())]));
     Widget row(List<Widget> cells, {bool zebra = false}) => Container(
           color: zebra ? Guide.paper2 : Guide.paper,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -237,7 +252,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         Expanded(flex: 3, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('NAME IN THE GAME', style: Guide.label()),
           const SizedBox(height: 4),
-          TextField(controller: name),
+          TextField(controller: name, readOnly: sel?['bundledPreset'] == CrystalFina.presetId),
         ])),
         const SizedBox(width: 10),
         Expanded(flex: 2, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -270,7 +285,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ]),
       ),
       const SizedBox(height: 6),
-      Text('Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
+      Text(sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
       if (!hasPack) ...[const SizedBox(height: 8), Box(fill: Guide.warn, child: Text('No sprite pack for this look is on the host yet, so it cannot be added. Pick another look, or ask for it to be added.', style: Guide.small(Guide.ink)))],
     ]);
   }

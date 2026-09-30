@@ -1,0 +1,48 @@
+{
+  "id": "99887755552703",
+  "name": "Crystal Fina 2",
+  "region": "CUSTOM",
+  "roles": [
+    "Mage"
+  ],
+  "description": "An original vision.",
+  "forms": {
+    "99887755552703": {
+      "rarity": "NV",
+      "sprites": [
+        "idle",
+        "atk",
+        "limitatk"
+      ],
+      "limitburst": {
+        "name": "Radiant Strike",
+        "effects": [
+          "1 hits of Light magic damage to all enemies."
+        ],
+        "element": [
+          "Light"
+        ],
+        "attack_count": [
+          1
+        ]
+      }
+    }
+  },
+  "maxForm": "99887755552703",
+  "rarity": [
+    "NV",
+    "NV"
+  ],
+  "ffrStats": {
+    "MaxHitPoint": 800,
+    "MaxMagicPoint": 100,
+    "Attack": 25,
+    "Defence": 30,
+    "Intelligence": 10,
+    "Mind": 20,
+    "Agility": 15
+  },
+  "abilities": [],
+  "passives": [],
+  "skills": []
+}

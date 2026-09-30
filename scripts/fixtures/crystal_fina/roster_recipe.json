@@ -1,0 +1,4818 @@
+{
+  "legacyRoot": "$ENGINE_ROOT/extracted/legacy",
+  "outRoot": "$ENGINE_ROOT/build/visions_mod/assets",
+  "tables": [
+    {
+      "asset": "FFRS/Content/Datatable/Unit/LevelParameter/DT_UnitLevelParameterList",
+      "add": [
+        {
+          "row": "ビジョン_Christine",
+          "cloneFrom": "ビジョン_ティナ",
+          "set": {
+            "ID": 10100,
+            "DataTable": "/Game/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterChristine"
+          }
+        },
+        {
+          "row": "ビジョン_Crystal Fina 2",
+          "cloneFrom": "ビジョン_ティナ",
+          "set": {
+            "ID": 10101,
+            "DataTable": "/Game/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterCrystal_fina_2"
+          }
+        },
+        {
+          "row": "ビジョン_A2",
+          "cloneFrom": "ビジョン_ライトニング",
+          "set": {
+            "ID": 10102,
+            "DataTable": "/Game/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterA2"
+          }
+        },
+        {
+          "row": "ビジョン_Mystea",
+          "cloneFrom": "ビジョン_ティナ",
+          "set": {
+            "ID": 10103,
+            "DataTable": "/Game/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterMystea"
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Unit/DT_UnitParameter",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13500,
+            "SortId": 13500,
+            "SaveId": 13500,
+            "FaceIconId": 13500,
+            "LevelParamId": 10100,
+            "Name": "Christine",
+            "Description": "A vision of Christine",
+            "ElementResistanceList": {},
+            "MaxHitPoint": 823,
+            "MaxMagicPoint": 97,
+            "Attack": 23,
+            "Defence": 36,
+            "Intelligence": 11,
+            "Mind": 21,
+            "Agility": 15,
+            "HitPoint": 0,
+            "MagicPoint": 97
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13503,
+            "SortId": 13503,
+            "SaveId": 13503,
+            "FaceIconId": 13503,
+            "LevelParamId": 10101,
+            "Name": "Crystal Fina",
+            "Description": "An original vision.",
+            "ElementResistanceList": {
+              "eElement::Light": "eResistance::Halved"
+            },
+            "MaxHitPoint": 600,
+            "MaxMagicPoint": 100,
+            "Attack": 30,
+            "Defence": 30,
+            "Intelligence": 40,
+            "Mind": 50,
+            "Agility": 30,
+            "HitPoint": 0,
+            "MagicPoint": 100
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "ID": 13504,
+            "SortId": 13504,
+            "SaveId": 13504,
+            "FaceIconId": 13504,
+            "LevelParamId": 10102,
+            "Name": "A2",
+            "Description": "A vision of A2, ported from Final Fantasy Brave Exvius.",
+            "ElementResistanceList": {},
+            "MaxHitPoint": 863,
+            "MaxMagicPoint": 87,
+            "Attack": 36,
+            "Defence": 39,
+            "Intelligence": 5,
+            "Mind": 16,
+            "Agility": 15,
+            "HitPoint": 0,
+            "MagicPoint": 87
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13505,
+            "SortId": 13505,
+            "SaveId": 13505,
+            "FaceIconId": 13505,
+            "LevelParamId": 10103,
+            "Name": "Mystea",
+            "Description": "A mage from the Dragon's Village of Paladia. Mystea comes from a long line of barrier mages, a type of magic outside the realm of black and white magic that only a few people are able to wield. Currently she hides her identity under a visor, and rumor has it that only a handful of the villagers have ever seen her true identity.",
+            "ElementResistanceList": {},
+            "MaxHitPoint": 1000,
+            "MaxMagicPoint": 100,
+            "Attack": 40,
+            "Defence": 50,
+            "Intelligence": 30,
+            "Mind": 30,
+            "Agility": 20,
+            "HitPoint": 0,
+            "MagicPoint": 100
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Item/Vision/DT_VisionItemData",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13500,
+            "SortId": 13570,
+            "finishBlowSkill": 444010,
+            "CommandId": 320,
+            "attackType": "eSkillDamageType::Magic",
+            "roles": [
+              "eUnitRole::Attacker"
+            ],
+            "Name": "Christine",
+            "nameSg": "Christine",
+            "namePl": "Christine",
+            "nameDetSg": "Christine",
+            "nameDetPl": "Christine",
+            "Description": "A vision of Christine",
+            "buyingPrice": 1,
+            "sellingPrice": 0,
+            "isAvailableSale": false
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13503,
+            "SortId": 13573,
+            "finishBlowSkill": 444040,
+            "CommandId": 323,
+            "attackType": "eSkillDamageType::Magic",
+            "roles": [
+              "eUnitRole::Healer"
+            ],
+            "Name": "Crystal Fina",
+            "nameSg": "Crystal Fina",
+            "namePl": "Crystal Fina",
+            "nameDetSg": "Crystal Fina",
+            "nameDetPl": "Crystal Fina",
+            "Description": "An original vision.",
+            "buyingPrice": 1,
+            "sellingPrice": 0,
+            "isAvailableSale": false
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "ID": 13504,
+            "SortId": 13574,
+            "finishBlowSkill": 444050,
+            "CommandId": 324,
+            "attackType": "eSkillDamageType::Physic",
+            "roles": [
+              "eUnitRole::Attacker"
+            ],
+            "Name": "A2",
+            "nameSg": "A2",
+            "namePl": "A2",
+            "nameDetSg": "A2",
+            "nameDetPl": "A2",
+            "Description": "A vision of A2, ported from Final Fantasy Brave Exvius.",
+            "buyingPrice": 1,
+            "sellingPrice": 0,
+            "isAvailableSale": false
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13505,
+            "SortId": 13575,
+            "finishBlowSkill": 444060,
+            "CommandId": 325,
+            "attackType": "eSkillDamageType::Physic",
+            "roles": [
+              "eUnitRole::Defender"
+            ],
+            "Name": "Mystea",
+            "nameSg": "Mystea",
+            "namePl": "Mystea",
+            "nameDetSg": "Mystea",
+            "nameDetPl": "Mystea",
+            "Description": "A mage from the Dragon's Village of Paladia. Mystea comes from a long line of barrier mages, a type of magic outside the realm of black and white magic that only a few people are able to wield. Currently she hides her identity under a visor, and rumor has it that only a handful of the villagers have ever seen her true identity.",
+            "buyingPrice": 1,
+            "sellingPrice": 0,
+            "isAvailableSale": false
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Skill/DT_CommandSkillData",
+      "add": [
+        {
+          "row": "Christineの技",
+          "cloneFrom": "ティナの技",
+          "set": {
+            "ID": 320,
+            "SortId": 320,
+            "unitIdToUseSkill": 13500,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13104",
+            "Name": "Christine's Skills",
+            "Description": "Skills unique to Christine."
+          }
+        },
+        {
+          "row": "Crystal Fina 2の技",
+          "cloneFrom": "ティナの技",
+          "set": {
+            "ID": 323,
+            "SortId": 323,
+            "unitIdToUseSkill": 13503,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13106",
+            "Name": "Crystal Fina Skills",
+            "Description": "Skills unique to Crystal Fina 2."
+          }
+        },
+        {
+          "row": "A2の技",
+          "cloneFrom": "ライトニングの技",
+          "set": {
+            "ID": 324,
+            "SortId": 324,
+            "unitIdToUseSkill": 13504,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13107",
+            "Name": "A2's Skills",
+            "Description": "Skills unique to A2."
+          }
+        },
+        {
+          "row": "Mysteaの技",
+          "cloneFrom": "ティナの技",
+          "set": {
+            "ID": 325,
+            "SortId": 325,
+            "unitIdToUseSkill": 13505,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13109",
+            "Name": "Mystea's Skills",
+            "Description": "Skills unique to Mystea."
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/UI/Skill/DT_CommandSkillIcon",
+      "add": [],
+      "set": [
+        {
+          "row": "Command_カイン",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13500",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13500.ICON_Ability_summon13500"
+          }
+        },
+        {
+          "row": "Command_ファリス",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13503",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13503.ICON_Ability_summon13503"
+          }
+        },
+        {
+          "row": "Command_ロック",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13504",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13504.ICON_Ability_summon13504"
+          }
+        },
+        {
+          "row": "Command_セリス",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13505",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13505.ICON_Ability_summon13505"
+          }
+        }
+      ]
+    },
+    {
+      "asset": "FFRS/Content/Datatable/UI/Skill/CDT_SkillIcon",
+      "add": [],
+      "set": [
+        {
+          "row": "Command_カイン",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13500",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13500.ICON_Ability_summon13500"
+          }
+        },
+        {
+          "row": "Command_ファリス",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13503",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13503.ICON_Ability_summon13503"
+          }
+        },
+        {
+          "row": "Command_ロック",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13504",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13504.ICON_Ability_summon13504"
+          }
+        },
+        {
+          "row": "Command_セリス",
+          "set": {
+            "Brush.ResourceObject": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13505",
+            "Brush.ImageSize": {
+              "X": 64.0,
+              "Y": 64.0
+            },
+            "Brush.bIsDynamicallyLoaded": true,
+            "Brush.ResourceName": "/Game/UI/Textures/Icon/menu/ICON_Ability_summon13505.ICON_Ability_summon13505"
+          }
+        }
+      ]
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Skill/Other/DT_SkillSealPointData",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13500
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13503
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "VisionId": 13504
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13505
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Skill/DT_MasterSkillData",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 1350000,
+            "SortId": 1350000,
+            "VisionId": 13500,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13104",
+            "Name": "Spirit of Christine",
+            "Description": "Christine's resonance flows into the wearer."
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 1350300,
+            "SortId": 1350300,
+            "VisionId": 13503,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13106",
+            "Name": "Spirit of Crystal Fina",
+            "Description": "Crystal Fina's resonance flows into the wearer."
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "ID": 1350400,
+            "SortId": 1350400,
+            "VisionId": 13504,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13107",
+            "Name": "Spirit of A2",
+            "Description": "A2's resonance flows into the wearer."
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 1350500,
+            "SortId": 1350500,
+            "VisionId": 13505,
+            "SkillIcon.TagName": "UI.Skill.Command.Icon.13109",
+            "Name": "Spirit of Mystea",
+            "Description": "Mystea's resonance flows into the wearer."
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Skill/DT_SkillData",
+      "add": [
+        {
+          "row": "Christine_LB",
+          "cloneFrom": "ロータス・ライオットソード",
+          "set": {
+            "ID": 444010,
+            "SortId": 444010,
+            "Name": "Snowbear Rampage",
+            "Description": "Temporary resonance: 10 hits of non-elemental physical damage to all enemies.",
+            "skillAttrType": "FinishBlow",
+            "skillEffectType": "DamageAndRecovery",
+            "parameterType": "HitPoint",
+            "parameterVariationType": "Decrease",
+            "accuracy": 500,
+            "criticalHitRate": 25,
+            "Cost": 0,
+            "breakDamageValue": 0,
+            "effectBundleList": [
+              {
+                "effectId": 13301,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": 12966,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              }
+            ],
+            "magnification": 36,
+            "hitCount": 10,
+            "hitDamageRatioList": [
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "TargetType": "Group",
+            "targetRage": "None",
+            "defaultTargetRelation": "Enemies",
+            "defaultTargetState": "Alive",
+            "isSameRelationTargetingDisabled": true,
+            "isHostilityRelationTargetingDisabled": false,
+            "isReverseDamageToUndead": false,
+            "totalDamageDisplayRule": "Default",
+            "element": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Attack"
+          }
+        },
+        {
+          "row": "Crystal Fina 2_Raegen Blast",
+          "cloneFrom": "セイクリッドウェーブ",
+          "set": {
+            "ID": 485300,
+            "SortId": 485300,
+            "Name": "Raegen Blast",
+            "Description": "Staggers every enemy instantly. No damage.",
+            "magnification": 0,
+            "breakDamageValue": 9999,
+            "accuracy": 500,
+            "Cost": 0,
+            "element": "Thunder",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder",
+            "effectBundleList[0].effectId": -1,
+            "effectBundleList[1].effectId": -1,
+            "totalDamageDisplayRule": "Hidden"
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB",
+          "cloneFrom": "アヤカ_LB　エンジェリックフェザー",
+          "set": {
+            "ID": 444040,
+            "SortId": 444040,
+            "Name": "Crystal Restoration",
+            "Description": "Restore HP to all allies and cures status",
+            "element": "None",
+            "hitCount": 1,
+            "DamageType": "Magic",
+            "damageCalcType": "Magic"
+          }
+        },
+        {
+          "row": "A2_LB",
+          "cloneFrom": "クライムハザード",
+          "set": {
+            "ID": 444050,
+            "SortId": 444050,
+            "Name": "Berserk Mode",
+            "Description": "Temporary resonance: 10 hits of non-elemental physical damage to all enemies.",
+            "skillAttrType": "FinishBlow",
+            "skillEffectType": "DamageAndRecovery",
+            "parameterType": "HitPoint",
+            "parameterVariationType": "Decrease",
+            "accuracy": 500,
+            "criticalHitRate": 25,
+            "Cost": 0,
+            "breakDamageValue": 0,
+            "effectBundleList": [
+              {
+                "effectId": 13301,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": 12966,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              }
+            ],
+            "magnification": 36,
+            "hitCount": 10,
+            "hitDamageRatioList": [
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "TargetType": "Group",
+            "targetRage": "None",
+            "defaultTargetRelation": "Enemies",
+            "defaultTargetState": "Alive",
+            "isSameRelationTargetingDisabled": true,
+            "isHostilityRelationTargetingDisabled": false,
+            "isReverseDamageToUndead": false,
+            "totalDamageDisplayRule": "Default",
+            "element": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Attack"
+          }
+        },
+        {
+          "row": "Mystea_LB",
+          "cloneFrom": "ヴィルヘルム_LB　グレートウォール",
+          "set": {
+            "ID": 444060,
+            "SortId": 444060,
+            "Name": "Field of Resistance",
+            "Description": "Temporary resonance: 10 hits of non-elemental physical damage to all enemies.",
+            "skillAttrType": "FinishBlow",
+            "skillEffectType": "DamageAndRecovery",
+            "parameterType": "HitPoint",
+            "parameterVariationType": "Decrease",
+            "accuracy": 500,
+            "criticalHitRate": 25,
+            "Cost": 0,
+            "breakDamageValue": 0,
+            "effectBundleList": [
+              {
+                "effectId": 13301,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": 12966,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "BeforeDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              }
+            ],
+            "magnification": 36,
+            "hitCount": 10,
+            "hitDamageRatioList": [
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.1,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "TargetType": "Group",
+            "targetRage": "None",
+            "defaultTargetRelation": "Enemies",
+            "defaultTargetState": "Alive",
+            "isSameRelationTargetingDisabled": true,
+            "isHostilityRelationTargetingDisabled": false,
+            "isReverseDamageToUndead": false,
+            "totalDamageDisplayRule": "Default",
+            "element": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Attack"
+          }
+        }
+      ],
+      "set": [
+        {
+          "row": "Crystal Fina 2_LB",
+          "set": {
+            "hitCount": 1,
+            "hitDamageRatioList": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Asset/Sound/DT_SoundCueSheetAsset",
+      "add": [
+        {
+          "row": "FFBE_LB_5bfe3768cc6e",
+          "cloneFrom": "SE_BTL",
+          "set": {
+            "CueSheetName": "FFBE_LB_5bfe3768cc6e",
+            "pCueSheet": "/Game/Sound/FFBE/FFBE_LB_5bfe3768cc6e"
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Asset/Sound/CDT_SoundCueSheetAsset_Demo",
+      "add": [
+        {
+          "row": "FFBE_LB_5bfe3768cc6e",
+          "cloneFrom": "SE_BTL",
+          "set": {
+            "CueSheetName": "FFBE_LB_5bfe3768cc6e",
+            "pCueSheet": "/Game/Sound/FFBE/FFBE_LB_5bfe3768cc6e"
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Asset/Skill/DT_SkillAsset",
+      "add": [
+        {
+          "row": "Christine_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444011,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Christine_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444012,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Crystal Fina 2_Raegen Blast_1",
+          "cloneFrom": "セイクリッドウェーブ",
+          "set": {
+            "ID": 485301
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444041,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444042,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "A2_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444051,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444050/444051/SEQ_Battle_444051_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "A2_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444052,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444050/444051/SEQ_Battle_444051_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Mystea_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444061,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444060/444061/SEQ_Battle_444061_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Mystea_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444062,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444060/444061/SEQ_Battle_444061_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Asset/Skill/CDT_SkillAsset_Demo",
+      "add": [
+        {
+          "row": "Christine_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444011,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Christine_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444012,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Crystal Fina 2_Raegen Blast_1",
+          "cloneFrom": "セイクリッドウェーブ",
+          "set": {
+            "ID": 485301
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444041,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444042,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "A2_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444051,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444050/444051/SEQ_Battle_444051_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "A2_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444052,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444050/444051/SEQ_Battle_444051_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Mystea_LB_1",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444061,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444060/444061/SEQ_Battle_444061_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        },
+        {
+          "row": "Mystea_LB_2",
+          "cloneFrom": "FB＿クライムハザード",
+          "set": {
+            "ID": 444062,
+            "LevelSequence": "/Game/Sequencer/Battle/Skill/444060/444061/SEQ_Battle_444061_Master",
+            "soundSequence": "None",
+            "bChangeNearClipPlane": false
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/PostProcess/DT_ColorGradingParameter",
+      "add": [
+        {
+          "row": "FFBE_Field_444010",
+          "cloneFrom": "クライムハザード_チャージ時",
+          "set": {
+            "ID": 444010,
+            "bOverride_ColorSaturationGlobal": false,
+            "bOverride_ColorContrastGlobal": true,
+            "bOverride_ColorGammaGlobal": true,
+            "bOverride_ColorGainGlobal": true,
+            "bOverride_ColorOffsetGlobal": false,
+            "bOverride_ColorSaturationHighlights": false,
+            "bOverride_ColorContrastHighlights": false,
+            "bOverride_ColorGammaHighlights": false,
+            "bOverride_ColorGainHighlights": false,
+            "bOverride_ColorOffsetHighlights": false,
+            "bOverride_ColorSaturationShadows": false,
+            "bOverride_ColorContrastShadows": false,
+            "bOverride_ColorGammaShadows": false,
+            "bOverride_ColorGainShadows": false,
+            "bOverride_ColorOffsetShadows": false,
+            "bOverride_ColorSaturationMidtones": false,
+            "bOverride_ColorContrastMidtones": false,
+            "bOverride_ColorGammaMidtones": false,
+            "bOverride_ColorGainMidtones": false,
+            "bOverride_ColorOffsetMidtones": false,
+            "colorGainGlobal": {
+              "X": 0.7011764705882353,
+              "Y": 0.7011764705882353,
+              "Z": 0.7011764705882353,
+              "W": 1.0
+            },
+            "colorGammaGlobal": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0,
+              "W": 0.9
+            },
+            "colorContrastGlobal": {
+              "X": 1.15,
+              "Y": 1.15,
+              "Z": 1.15,
+              "W": 1.0
+            }
+          }
+        },
+        {
+          "row": "FFBE_Field_444040",
+          "cloneFrom": "クライムハザード_チャージ時",
+          "set": {
+            "ID": 444040,
+            "bOverride_ColorSaturationGlobal": false,
+            "bOverride_ColorContrastGlobal": true,
+            "bOverride_ColorGammaGlobal": true,
+            "bOverride_ColorGainGlobal": true,
+            "bOverride_ColorOffsetGlobal": false,
+            "bOverride_ColorSaturationHighlights": false,
+            "bOverride_ColorContrastHighlights": false,
+            "bOverride_ColorGammaHighlights": false,
+            "bOverride_ColorGainHighlights": false,
+            "bOverride_ColorOffsetHighlights": false,
+            "bOverride_ColorSaturationShadows": false,
+            "bOverride_ColorContrastShadows": false,
+            "bOverride_ColorGammaShadows": false,
+            "bOverride_ColorGainShadows": false,
+            "bOverride_ColorOffsetShadows": false,
+            "bOverride_ColorSaturationMidtones": false,
+            "bOverride_ColorContrastMidtones": false,
+            "bOverride_ColorGammaMidtones": false,
+            "bOverride_ColorGainMidtones": false,
+            "bOverride_ColorOffsetMidtones": false,
+            "colorGainGlobal": {
+              "X": 0.7011764705882353,
+              "Y": 0.7011764705882353,
+              "Z": 0.7011764705882353,
+              "W": 1.0
+            },
+            "colorGammaGlobal": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0,
+              "W": 0.9
+            },
+            "colorContrastGlobal": {
+              "X": 1.15,
+              "Y": 1.15,
+              "Z": 1.15,
+              "W": 1.0
+            }
+          }
+        },
+        {
+          "row": "FFBE_Field_444050",
+          "cloneFrom": "クライムハザード_チャージ時",
+          "set": {
+            "ID": 444050,
+            "bOverride_ColorSaturationGlobal": false,
+            "bOverride_ColorContrastGlobal": true,
+            "bOverride_ColorGammaGlobal": true,
+            "bOverride_ColorGainGlobal": true,
+            "bOverride_ColorOffsetGlobal": false,
+            "bOverride_ColorSaturationHighlights": false,
+            "bOverride_ColorContrastHighlights": false,
+            "bOverride_ColorGammaHighlights": false,
+            "bOverride_ColorGainHighlights": false,
+            "bOverride_ColorOffsetHighlights": false,
+            "bOverride_ColorSaturationShadows": false,
+            "bOverride_ColorContrastShadows": false,
+            "bOverride_ColorGammaShadows": false,
+            "bOverride_ColorGainShadows": false,
+            "bOverride_ColorOffsetShadows": false,
+            "bOverride_ColorSaturationMidtones": false,
+            "bOverride_ColorContrastMidtones": false,
+            "bOverride_ColorGammaMidtones": false,
+            "bOverride_ColorGainMidtones": false,
+            "bOverride_ColorOffsetMidtones": false,
+            "colorGainGlobal": {
+              "X": 0.7011764705882353,
+              "Y": 0.7011764705882353,
+              "Z": 0.7011764705882353,
+              "W": 1.0
+            },
+            "colorGammaGlobal": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0,
+              "W": 0.9
+            },
+            "colorContrastGlobal": {
+              "X": 1.15,
+              "Y": 1.15,
+              "Z": 1.15,
+              "W": 1.0
+            }
+          }
+        },
+        {
+          "row": "FFBE_Field_444060",
+          "cloneFrom": "クライムハザード_チャージ時",
+          "set": {
+            "ID": 444060,
+            "bOverride_ColorSaturationGlobal": false,
+            "bOverride_ColorContrastGlobal": true,
+            "bOverride_ColorGammaGlobal": true,
+            "bOverride_ColorGainGlobal": true,
+            "bOverride_ColorOffsetGlobal": false,
+            "bOverride_ColorSaturationHighlights": false,
+            "bOverride_ColorContrastHighlights": false,
+            "bOverride_ColorGammaHighlights": false,
+            "bOverride_ColorGainHighlights": false,
+            "bOverride_ColorOffsetHighlights": false,
+            "bOverride_ColorSaturationShadows": false,
+            "bOverride_ColorContrastShadows": false,
+            "bOverride_ColorGammaShadows": false,
+            "bOverride_ColorGainShadows": false,
+            "bOverride_ColorOffsetShadows": false,
+            "bOverride_ColorSaturationMidtones": false,
+            "bOverride_ColorContrastMidtones": false,
+            "bOverride_ColorGammaMidtones": false,
+            "bOverride_ColorGainMidtones": false,
+            "bOverride_ColorOffsetMidtones": false,
+            "colorGainGlobal": {
+              "X": 0.7011764705882353,
+              "Y": 0.7011764705882353,
+              "Z": 0.7011764705882353,
+              "W": 1.0
+            },
+            "colorGammaGlobal": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0,
+              "W": 0.9
+            },
+            "colorContrastGlobal": {
+              "X": 1.15,
+              "Y": 1.15,
+              "Z": 1.15,
+              "W": 1.0
+            }
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Battle/Sequencer/DT_BtlHitEffectData",
+      "add": [
+        {
+          "row": "Christine_LB",
+          "cloneFrom": "FB＿クリティカルスロー無し",
+          "set": {
+            "ID": 444010
+          }
+        },
+        {
+          "row": "Crystal Fina 2_Raegen Blast",
+          "cloneFrom": "セイクリッドウェーブ",
+          "set": {
+            "ID": 485300
+          }
+        },
+        {
+          "row": "Crystal Fina 2_LB",
+          "cloneFrom": "FB＿クリティカルスロー無し",
+          "set": {
+            "ID": 444040
+          }
+        },
+        {
+          "row": "A2_LB",
+          "cloneFrom": "FB＿クリティカルスロー無し",
+          "set": {
+            "ID": 444050
+          }
+        },
+        {
+          "row": "Mystea_LB",
+          "cloneFrom": "FB＿クリティカルスロー無し",
+          "set": {
+            "ID": 444060
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Item/Vision/DT_VisionAwakeningMasteryData",
+      "add": [
+        {
+          "row": "Christine覚醒度1の恩恵",
+          "cloneFrom": "ティナ覚醒度1の恩恵",
+          "set": {
+            "ID": 13500,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220050,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220130,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1275,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1132,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  250170,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230060,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1129,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1033,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Christine覚醒度2の恩恵",
+          "cloneFrom": "ティナ覚醒度2の恩恵",
+          "set": {
+            "ID": 13500,
+            "Level": 1,
+            "masteryPoint": 1,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220060,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220140,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1315,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220180,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1083,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1255,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1363,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1463,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Christine覚醒度3の恩恵",
+          "cloneFrom": "ティナ覚醒度3の恩恵",
+          "set": {
+            "ID": 13500,
+            "Level": 2,
+            "masteryPoint": 2,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220070,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220150,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1304,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220190,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230070,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1256,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1045,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1344,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Christine覚醒度4の恩恵",
+          "cloneFrom": "ティナ覚醒度4の恩恵",
+          "set": {
+            "ID": 13500,
+            "Level": 3,
+            "masteryPoint": 3,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  220340,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1355,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1417,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  225140,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  225050,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  225110,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2覚醒度1の恩恵",
+          "cloneFrom": "ティナ覚醒度1の恩恵",
+          "set": {
+            "ID": 13503,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  240230,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  240010,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210050,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230040,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1304,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1352,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1282,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2覚醒度2の恩恵",
+          "cloneFrom": "ティナ覚醒度2の恩恵",
+          "set": {
+            "ID": 13503,
+            "Level": 1,
+            "masteryPoint": 1,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210260,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210120,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210020,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230060,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210140,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1401,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1391,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1283,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2覚醒度3の恩恵",
+          "cloneFrom": "ティナ覚醒度3の恩恵",
+          "set": {
+            "ID": 13503,
+            "Level": 2,
+            "masteryPoint": 2,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  445020,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  210030,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230050,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230070,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1353,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1408,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1375,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2覚醒度4の恩恵",
+          "cloneFrom": "ティナ覚醒度4の恩恵",
+          "set": {
+            "ID": 13503,
+            "Level": 3,
+            "masteryPoint": 3,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230140,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  300110,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1349,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1355,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1045,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1256,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1456,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2覚醒度1の恩恵",
+          "cloneFrom": "ライトニング覚醒度1の恩恵",
+          "set": {
+            "ID": 13504,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2覚醒度2の恩恵",
+          "cloneFrom": "ライトニング覚醒度2の恩恵",
+          "set": {
+            "ID": 13504,
+            "Level": 1,
+            "masteryPoint": 1,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2覚醒度3の恩恵",
+          "cloneFrom": "ライトニング覚醒度3の恩恵",
+          "set": {
+            "ID": 13504,
+            "Level": 2,
+            "masteryPoint": 2,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2覚醒度4の恩恵",
+          "cloneFrom": "ライトニング覚醒度4の恩恵",
+          "set": {
+            "ID": 13504,
+            "Level": 3,
+            "masteryPoint": 3,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Mystea覚醒度1の恩恵",
+          "cloneFrom": "ティナ覚醒度1の恩恵",
+          "set": {
+            "ID": 13505,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421400,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421190,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230040,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1313,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1452,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Mystea覚醒度2の恩恵",
+          "cloneFrom": "ティナ覚醒度2の恩恵",
+          "set": {
+            "ID": 13505,
+            "Level": 1,
+            "masteryPoint": 1,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  414700,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421410,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421200,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230100,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1290,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1321,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Mystea覚醒度3の恩恵",
+          "cloneFrom": "ティナ覚醒度3の恩恵",
+          "set": {
+            "ID": 13505,
+            "Level": 2,
+            "masteryPoint": 2,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  414710,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421420,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  421210,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::ActiveSkill",
+                "params": [
+                  230050,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1106,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1379,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Mystea覚醒度4の恩恵",
+          "cloneFrom": "ティナ覚醒度4の恩恵",
+          "set": {
+            "ID": 13505,
+            "Level": 3,
+            "masteryPoint": 3,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1453,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::PassiveSkill",
+                "params": [
+                  1454,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Item/Vision/DT_VisionSynchroMasteryData",
+      "add": [
+        {
+          "row": "ChristineSLv0",
+          "cloneFrom": "ティナSLv0",
+          "set": {
+            "ID": 13500,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv1",
+          "cloneFrom": "ティナSLv1",
+          "set": {
+            "ID": 13500,
+            "Level": 1,
+            "masteryPoint": 10,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv2",
+          "cloneFrom": "ティナSLv2",
+          "set": {
+            "ID": 13500,
+            "Level": 2,
+            "masteryPoint": 35,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv3",
+          "cloneFrom": "ティナSLv3",
+          "set": {
+            "ID": 13500,
+            "Level": 3,
+            "masteryPoint": 95,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  6,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv4",
+          "cloneFrom": "ティナSLv4",
+          "set": {
+            "ID": 13500,
+            "Level": 4,
+            "masteryPoint": 195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  2,
+                  10
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv5",
+          "cloneFrom": "ティナSLv5",
+          "set": {
+            "ID": 13500,
+            "Level": 5,
+            "masteryPoint": 435,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  7,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv6",
+          "cloneFrom": "ティナSLv6",
+          "set": {
+            "ID": 13500,
+            "Level": 6,
+            "masteryPoint": 795,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  8,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv7",
+          "cloneFrom": "ティナSLv7",
+          "set": {
+            "ID": 13500,
+            "Level": 7,
+            "masteryPoint": 1545,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  9,
+                  3
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv8",
+          "cloneFrom": "ティナSLv8",
+          "set": {
+            "ID": 13500,
+            "Level": 8,
+            "masteryPoint": 2595,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "ChristineSLv9",
+          "cloneFrom": "ティナSLv9",
+          "set": {
+            "ID": 13500,
+            "Level": 9,
+            "masteryPoint": 5095,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  11,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::MasterSkill",
+                "params": [
+                  1350000,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv0",
+          "cloneFrom": "ティナSLv0",
+          "set": {
+            "ID": 13503,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv1",
+          "cloneFrom": "ティナSLv1",
+          "set": {
+            "ID": 13503,
+            "Level": 1,
+            "masteryPoint": 10,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv2",
+          "cloneFrom": "ティナSLv2",
+          "set": {
+            "ID": 13503,
+            "Level": 2,
+            "masteryPoint": 35,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv3",
+          "cloneFrom": "ティナSLv3",
+          "set": {
+            "ID": 13503,
+            "Level": 3,
+            "masteryPoint": 95,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  6,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv4",
+          "cloneFrom": "ティナSLv4",
+          "set": {
+            "ID": 13503,
+            "Level": 4,
+            "masteryPoint": 195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  2,
+                  10
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv5",
+          "cloneFrom": "ティナSLv5",
+          "set": {
+            "ID": 13503,
+            "Level": 5,
+            "masteryPoint": 435,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  7,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv6",
+          "cloneFrom": "ティナSLv6",
+          "set": {
+            "ID": 13503,
+            "Level": 6,
+            "masteryPoint": 795,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  8,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv7",
+          "cloneFrom": "ティナSLv7",
+          "set": {
+            "ID": 13503,
+            "Level": 7,
+            "masteryPoint": 1545,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  9,
+                  3
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv8",
+          "cloneFrom": "ティナSLv8",
+          "set": {
+            "ID": 13503,
+            "Level": 8,
+            "masteryPoint": 2595,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "Crystal Fina 2SLv9",
+          "cloneFrom": "ティナSLv9",
+          "set": {
+            "ID": 13503,
+            "Level": 9,
+            "masteryPoint": 5095,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  11,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::MasterSkill",
+                "params": [
+                  1350300,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv0",
+          "cloneFrom": "ライトニングSLv0",
+          "set": {
+            "ID": 13504,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv1",
+          "cloneFrom": "ライトニングSLv1",
+          "set": {
+            "ID": 13504,
+            "Level": 1,
+            "masteryPoint": 10,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv2",
+          "cloneFrom": "ライトニングSLv2",
+          "set": {
+            "ID": 13504,
+            "Level": 2,
+            "masteryPoint": 35,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv3",
+          "cloneFrom": "ライトニングSLv3",
+          "set": {
+            "ID": 13504,
+            "Level": 3,
+            "masteryPoint": 95,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  6,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv4",
+          "cloneFrom": "ライトニングSLv4",
+          "set": {
+            "ID": 13504,
+            "Level": 4,
+            "masteryPoint": 195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  2,
+                  10
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv5",
+          "cloneFrom": "ライトニングSLv5",
+          "set": {
+            "ID": 13504,
+            "Level": 5,
+            "masteryPoint": 395,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  7,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv6",
+          "cloneFrom": "ライトニングSLv6",
+          "set": {
+            "ID": 13504,
+            "Level": 6,
+            "masteryPoint": 695,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  8,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv7",
+          "cloneFrom": "ライトニングSLv7",
+          "set": {
+            "ID": 13504,
+            "Level": 7,
+            "masteryPoint": 1195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  9,
+                  3
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv8",
+          "cloneFrom": "ライトニングSLv8",
+          "set": {
+            "ID": 13504,
+            "Level": 8,
+            "masteryPoint": 2195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "A2SLv9",
+          "cloneFrom": "ライトニングSLv9",
+          "set": {
+            "ID": 13504,
+            "Level": 9,
+            "masteryPoint": 5195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  11,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::MasterSkill",
+                "params": [
+                  1350400,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv0",
+          "cloneFrom": "ティナSLv0",
+          "set": {
+            "ID": 13505,
+            "Level": 0,
+            "masteryPoint": 0,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv1",
+          "cloneFrom": "ティナSLv1",
+          "set": {
+            "ID": 13505,
+            "Level": 1,
+            "masteryPoint": 10,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv2",
+          "cloneFrom": "ティナSLv2",
+          "set": {
+            "ID": 13505,
+            "Level": 2,
+            "masteryPoint": 35,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv3",
+          "cloneFrom": "ティナSLv3",
+          "set": {
+            "ID": 13505,
+            "Level": 3,
+            "masteryPoint": 95,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  6,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv4",
+          "cloneFrom": "ティナSLv4",
+          "set": {
+            "ID": 13505,
+            "Level": 4,
+            "masteryPoint": 195,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  2,
+                  10
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv5",
+          "cloneFrom": "ティナSLv5",
+          "set": {
+            "ID": 13505,
+            "Level": 5,
+            "masteryPoint": 435,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  7,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv6",
+          "cloneFrom": "ティナSLv6",
+          "set": {
+            "ID": 13505,
+            "Level": 6,
+            "masteryPoint": 795,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  8,
+                  5
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv7",
+          "cloneFrom": "ティナSLv7",
+          "set": {
+            "ID": 13505,
+            "Level": 7,
+            "masteryPoint": 1545,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  9,
+                  3
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv8",
+          "cloneFrom": "ティナSLv8",
+          "set": {
+            "ID": 13505,
+            "Level": 8,
+            "masteryPoint": 2595,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  1,
+                  50
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "row": "MysteaSLv9",
+          "cloneFrom": "ティナSLv9",
+          "set": {
+            "ID": 13505,
+            "Level": 9,
+            "masteryPoint": 5095,
+            "detailData": [
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  5,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::BaseParameter",
+                "params": [
+                  11,
+                  8
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::MasterSkill",
+                "params": [
+                  1350500,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "parameterType": "eVisionMasteryParameterType::None",
+                "params": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Asset/Battle/Unit/DT_BtlUnitAsset",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13500,
+            "animationAssetList[0].Ss6Project": "/Game/Chara/summon/summon13500/summon13500",
+            "animationAssetList[0].textureBaseColor": "/Game/Chara/summon/summon13500/summon13500_tex",
+            "animationAssetList[0].textureNormal": "/Game/Chara/summon/summon13500/summon13500_normal",
+            "animationAssetList[0].textureMetallicRoughness": "/Game/Chara/summon/summon13500/summon13500_mreo"
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13503,
+            "animationAssetList[0].Ss6Project": "/Game/Chara/summon/summon13503/summon13503",
+            "animationAssetList[0].textureBaseColor": "/Game/Chara/summon/summon13503/summon13503_tex",
+            "animationAssetList[0].textureNormal": "/Game/Chara/summon/summon13503/summon13503_normal",
+            "animationAssetList[0].textureMetallicRoughness": "/Game/Chara/summon/summon13503/summon13503_mreo"
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "ID": 13504,
+            "animationAssetList[0].Ss6Project": "/Game/Chara/summon/summon13504/summon13504",
+            "animationAssetList[0].textureBaseColor": "/Game/Chara/summon/summon13504/summon13504_tex",
+            "animationAssetList[0].textureNormal": "/Game/Chara/summon/summon13504/summon13504_normal",
+            "animationAssetList[0].textureMetallicRoughness": "/Game/Chara/summon/summon13504/summon13504_mreo"
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13505,
+            "animationAssetList[0].Ss6Project": "/Game/Chara/summon/summon13505/summon13505",
+            "animationAssetList[0].textureBaseColor": "/Game/Chara/summon/summon13505/summon13505_tex",
+            "animationAssetList[0].textureNormal": "/Game/Chara/summon/summon13505/summon13505_normal",
+            "animationAssetList[0].textureMetallicRoughness": "/Game/Chara/summon/summon13505/summon13505_mreo"
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Battle/Unit/DT_BtlUnitDesignParameter",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13500
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13503
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "ID": 13504
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "ID": 13505
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/UI/Vision/DT_VisionUpgrade_VisionUpgradeData",
+      "add": [
+        {
+          "row": "Christine",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13500
+          }
+        },
+        {
+          "row": "Crystal Fina 2",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13503
+          }
+        },
+        {
+          "row": "A2",
+          "cloneFrom": "ライトニング",
+          "set": {
+            "VisionId": 13504
+          }
+        },
+        {
+          "row": "Mystea",
+          "cloneFrom": "ティナ",
+          "set": {
+            "VisionId": 13505
+          }
+        }
+      ],
+      "set": []
+    },
+    {
+      "asset": "FFRS/Content/Datatable/Shop/DT_ShopList",
+      "add": [],
+      "set": [
+        {
+          "row": "ミトラ_道具　1章",
+          "set": {
+            "ItemList": [
+              {
+                "ItemId": 1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 4,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 7,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 24,
+                "Condition": "",
+                "MaxOrderNum": 3,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 13500,
+                "Condition": "",
+                "MaxOrderNum": 1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 13503,
+                "Condition": "",
+                "MaxOrderNum": 1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 13504,
+                "Condition": "",
+                "MaxOrderNum": 1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": 13505,
+                "Condition": "",
+                "MaxOrderNum": 1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              },
+              {
+                "ItemId": -1,
+                "Condition": "",
+                "MaxOrderNum": -1,
+                "PriceRatio": 1.0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "asset": "FFRS/Content/Datatable/UI/Unit/Asset/DA_MenuUnitSsProject",
+      "mapAdd": {
+        "assetMap": {
+          "13500": "/Game/Chara/menu/summon13500/summon13500.summon13500",
+          "13503": "/Game/Chara/menu/summon13503/summon13503.summon13503",
+          "13504": "/Game/Chara/menu/summon13504/summon13504.summon13504",
+          "13505": "/Game/Chara/menu/summon13505/summon13505.summon13505"
+        }
+      }
+    },
+    {
+      "asset": "FFRS/Content/Datatable/UI/Unit/Asset/DA_UnitIcon_Timeline",
+      "mapAdd": {
+        "assetMap": {
+          "13500": "/Game/UI/Textures/Icon/Vision_Face/ICON_UnitFace_summon13500.ICON_UnitFace_summon13500",
+          "13503": "/Game/UI/Textures/Icon/Vision_Face/ICON_UnitFace_summon13503.ICON_UnitFace_summon13503",
+          "13504": "/Game/UI/Textures/Icon/Vision_Face/ICON_UnitFace_summon13504.ICON_UnitFace_summon13504",
+          "13505": "/Game/UI/Textures/Icon/Vision_Face/ICON_UnitFace_summon13505.ICON_UnitFace_summon13505"
+        }
+      }
+    },
+    {
+      "asset": "FFRS/Content/Datatable/UI/Unit/Asset/DA_UnitIconTexture",
+      "mapAdd": {
+        "assetMap": {
+          "13500": "/Game/UI/Textures/Icon/Unit_Face_Timeline/ICON_UnitFace_summon13500.ICON_UnitFace_summon13500",
+          "13503": "/Game/UI/Textures/Icon/Unit_Face_Timeline/ICON_UnitFace_summon13503.ICON_UnitFace_summon13503",
+          "13504": "/Game/UI/Textures/Icon/Unit_Face_Timeline/ICON_UnitFace_summon13504.ICON_UnitFace_summon13504",
+          "13505": "/Game/UI/Textures/Icon/Unit_Face_Timeline/ICON_UnitFace_summon13505.ICON_UnitFace_summon13505"
+        }
+      }
+    },
+    {
+      "asset": "FFRS/Content/UI/Unit/UIUnitSs/Data/DA_UIUnitSsLayout",
+      "mapAdd": {
+        "LayoutOverrideDataMap": {
+          "13500": {
+            "bOverrideOffset": false,
+            "bOverrideScale": true,
+            "Scale": 2.52,
+            "bOverrideFlippedHorizontally": false,
+            "bFlippedHorizontally": false
+          },
+          "13503": {
+            "bOverrideOffset": false,
+            "bOverrideScale": true,
+            "Scale": 2.52,
+            "bOverrideFlippedHorizontally": false,
+            "bFlippedHorizontally": false
+          },
+          "13504": {
+            "bOverrideOffset": false,
+            "bOverrideScale": true,
+            "Scale": 2.52,
+            "bOverrideFlippedHorizontally": false,
+            "bFlippedHorizontally": false
+          },
+          "13505": {
+            "bOverrideOffset": false,
+            "bOverrideScale": true,
+            "Scale": 2.52,
+            "bOverrideFlippedHorizontally": false,
+            "bFlippedHorizontally": false
+          }
+        }
+      }
+    }
+  ],
+  "clones": [
+    {
+      "from": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterTina",
+      "to": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterChristine",
+      "rename": [
+        [
+          "DT_UnitLevelParameterTina",
+          "DT_UnitLevelParameterChristine"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000",
+      "to": "FFRS/Content/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master",
+      "rename": [
+        [
+          "SEQ_Battle_440111_Cut_000",
+          "SEQ_Battle_444011_Master"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterTina",
+      "to": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterCrystal_fina_2",
+      "rename": [
+        [
+          "DT_UnitLevelParameterTina",
+          "DT_UnitLevelParameterCrystal_fina_2"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000",
+      "to": "FFRS/Content/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master",
+      "rename": [
+        [
+          "SEQ_Battle_440111_Cut_000",
+          "SEQ_Battle_444041_Master"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterLightning",
+      "to": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterA2",
+      "rename": [
+        [
+          "DT_UnitLevelParameterLightning",
+          "DT_UnitLevelParameterA2"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000",
+      "to": "FFRS/Content/Sequencer/Battle/Skill/444050/444051/SEQ_Battle_444051_Master",
+      "rename": [
+        [
+          "SEQ_Battle_440111_Cut_000",
+          "SEQ_Battle_444051_Master"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterTina",
+      "to": "FFRS/Content/Datatable/Unit/LevelParameter/Vision/DT_UnitLevelParameterMystea",
+      "rename": [
+        [
+          "DT_UnitLevelParameterTina",
+          "DT_UnitLevelParameterMystea"
+        ]
+      ]
+    },
+    {
+      "from": "FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000",
+      "to": "FFRS/Content/Sequencer/Battle/Skill/444060/444061/SEQ_Battle_444061_Master",
+      "rename": [
+        [
+          "SEQ_Battle_440111_Cut_000",
+          "SEQ_Battle_444061_Master"
+        ]
+      ]
+    }
+  ]
+}

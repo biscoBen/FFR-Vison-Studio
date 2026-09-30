@@ -1,0 +1,36 @@
+{
+  "schema": 2,
+  "fps": 60,
+  "unitId": "99887755552703",
+  "lbId": "99887755552703",
+  "availableLbIds": [
+    "99887755552703"
+  ],
+  "name": "Radiant Strike",
+  "elements": [
+    "Light"
+  ],
+  "moveType": 0,
+  "movement": {
+    "type": 0
+  },
+  "damageComponent": 0,
+  "components": [
+    {
+      "index": 0,
+      "type": 15,
+      "target": 1,
+      "range": 2
+    }
+  ],
+  "hitFrames": [
+    134
+  ],
+  "hitPercents": [
+    100
+  ],
+  "sounds": [],
+  "source": {
+    "presentation": "Authored custom unit animation"
+  }
+}

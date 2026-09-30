@@ -8,6 +8,11 @@ class AppPaths {
   AppPaths._(this.root);
   final String root;
 
+  static AppPaths at(String root) {
+    Directory(root).createSync(recursive: true);
+    return AppPaths._(root);
+  }
+
   static AppPaths resolve() {
     final base = Platform.environment['LOCALAPPDATA'] ??
         Platform.environment['APPDATA'] ??

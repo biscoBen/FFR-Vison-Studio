@@ -1,0 +1,27 @@
+{
+  "schema": "ffr-custom-unit-1",
+  "name": "Crystal Fina 2",
+  "key": "crystal_fina_2",
+  "description": "An original vision.",
+  "attackType": "Magic",
+  "element": "Light",
+  "stats": {
+    "MaxHitPoint": 800,
+    "MaxMagicPoint": 100,
+    "Attack": 25,
+    "Defence": 30,
+    "Intelligence": 10,
+    "Mind": 20,
+    "Agility": 15
+  },
+  "price": 1,
+  "menuScale": 2.52,
+  "skills": [],
+  "resonance": {
+    "name": "Radiant Strike",
+    "hitFrames": [
+      134
+    ],
+    "moveType": 0
+  }
+}
