@@ -1,7 +1,11 @@
 function Read-VisionSpec([string]$Path) {
     $json = Get-Content -LiteralPath $Path -Raw -Encoding UTF8
     if (-not $json.TrimStart().StartsWith('[')) { throw 'The saved visions are not a list.' }
-    $units = @($json | ConvertFrom-Json)
+    # Windows PowerShell 5.1 emits the JSON array as one pipeline object;
+    # PowerShell 7 emits its members. Normalize after assigning the result.
+    $parsed = $json | ConvertFrom-Json
+    $units = @()
+    if ($null -ne $parsed) { $units = @($parsed) }
     $keys = @{}
     foreach ($unit in $units) {
         if ([string]::IsNullOrWhiteSpace($unit.key) -or [long]$unit.id -le 0 -or $keys.ContainsKey($unit.key)) {

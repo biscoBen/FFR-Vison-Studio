@@ -62,6 +62,13 @@ try {
     Assert-Import (-not (Test-Path (Join-Path $root 'Studio Test Data/FFR Vision Studio/engine/config.json'))) 'Official game configuration was copied.'
     $checks++; Write-Host 'PASS: complete visions copy without changing the official profile or test game settings'
 
+    $manySource = New-Official 'multiple-official' @((New-Vision 'esther' 13500), (New-Vision 'tsukiko' 13501))
+    $manyRoot = New-TestRoot 'multiple-test'
+    Import-OfficialVisions $manyRoot $manySource
+    $many = Read-VisionSpec (Spec-Path $manyRoot)
+    Assert-Import ($many.Count -eq 2 -and $many[0].key -eq 'esther' -and $many[1].key -eq 'tsukiko') 'A saved vision list was nested or its members were lost.'
+    $checks++; Write-Host 'PASS: multiple saved visions remain a flat list'
+
     $imported[0].stats.Attack = 77
     Write-ImportJson (Spec-Path $root) @($imported)
     Write-ImportJson $sourceSpec @((New-Vision 'later' 13501))
