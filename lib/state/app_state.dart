@@ -373,6 +373,35 @@ class AppState extends ChangeNotifier {
     _anims.remove(form);
   }
 
+  /// Prepare the complete on-demand unit pack before displaying a hosted look.
+  /// New packs include the unit record as well as sheets; sheets alone leave the
+  /// engine's lightweight picker record with an empty animation list.
+  Future<void> prepareUnitPreview(String ffbeId, String form, {void Function(String)? onStep}) async {
+    final client = api;
+    if (client == null) { throw StateError('The engine is not running.'); }
+    JsonMap job;
+    try {
+      job = await client.prepareAssets(ffbeId, form);
+    } on ApiException catch (error) {
+      if (error.statusCode != 404 && error.statusCode != 405) { rethrow; }
+      // Older engines with complete local FFBE tables use sprite-only packs.
+      await ensureSprites(form, onStep: onStep);
+      return;
+    }
+    final id = job['job'];
+    if (id is! String || id.isEmpty) { throw StateError('The engine did not start unit preparation.'); }
+    final deadline = DateTime.now().add(const Duration(minutes: 10));
+    while (true) {
+      final progress = await client.assetProgress(id);
+      onStep?.call((progress['stage'] ?? 'Preparing unit previews').toString());
+      if (progress['state'] == 'done') { _anims.clear(); return; }
+      if (progress['state'] == 'failed') { throw StateError((progress['error'] ?? 'Unit preparation failed.').toString()); }
+      if (progress['state'] != 'running') { throw StateError('The engine returned an unknown unit preparation status.'); }
+      if (DateTime.now().isAfter(deadline)) { throw TimeoutException('Unit preparation took too long. Select the unit again to retry.'); }
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
+  }
+
   /// Animation names for a form, from the engine, cached.
   Future<List<String>> animsFor(String form) async {
     final c = _anims[form];

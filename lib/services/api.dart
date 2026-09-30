@@ -17,7 +17,7 @@ class Api {
         final b = json.decode(r.body);
         if (b is Map && b['detail'] != null) msg = b['detail'].toString();
       } catch (_) {}
-      throw ApiException('$what: $msg');
+      throw ApiException('$what: $msg', statusCode: r.statusCode);
     }
     return json.decode(utf8.decode(r.bodyBytes));
   }
@@ -38,6 +38,10 @@ class Api {
   Future<void> deleteUnit(String key) => delete('/api/spec/$key');
   Future<List<dynamic>> ffbeUnits() async => (await get('/api/ffbe/units')) as List<dynamic>;
   Future<void> rebuildFfbeIndex() => post('/api/ffbe/units/rebuild');
+  Future<Map<String, dynamic>> prepareAssets(String ffbeId, String form) async =>
+      (await post('/api/assets/prepare', {'ffbeId': ffbeId, 'form': form})) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> assetProgress(String job) async =>
+      (await get('/api/assets/prepare/${Uri.encodeComponent(job)}')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> ffbeUnit(String id) async => (await get('/api/ffbe/unit/$id')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> ffbeLb(String form, {String? lbId, String source = 'JP'}) async {
     final query = {'source': source};
@@ -64,8 +68,9 @@ class Api {
 }
 
 class ApiException implements Exception {
-  ApiException(this.message);
+  ApiException(this.message, {this.statusCode});
   final String message;
+  final int? statusCode;
   @override
   String toString() => message;
 }

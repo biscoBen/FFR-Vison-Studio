@@ -59,7 +59,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         return;
       }
       var d = await app.api!.ffbeUnit(u['id'] as String);
-      if (seq != _pickSeq) return;
+      if (!mounted || seq != _pickSeq) return;
       final forms = (d['forms'] as Map?)?.keys.map((k) => k.toString()).toList() ?? [];
       final packs = ((u['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
       final prefer = forms.where(packs.contains).toList();
@@ -67,16 +67,17 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
       final f = plain.isNotEmpty ? plain.last : prefer.isNotEmpty ? prefer.last : (d['maxForm']?.toString() ?? u['id'] as String);
       setState(() { detail = d; form = f; name.text = (d['name'] as String?) ?? (u['name'] as String? ?? ''); });
       if (packs.contains(f)) {
-        await app.ensureSprites(f);
+        await app.prepareUnitPreview(u['id'] as String, f);
+        if (!mounted || seq != _pickSeq) return;
         final base = ((d['forms'] as Map?)?[f] as Map?)?['shift']?['base']?.toString();
-        if (base != null && packs.contains(base)) await app.ensureSprites(base); // a shifted look borrows its victory from the base form
-        if (seq != _pickSeq) return;
+        if (base != null && packs.contains(base)) await app.prepareUnitPreview(u['id'] as String, base); // a shifted look borrows its victory from the base form
+        if (!mounted || seq != _pickSeq) return;
         d = await app.api!.ffbeUnit(u['id'] as String); // now with the animation list for the fetched look
-        if (seq != _pickSeq) return;
+        if (!mounted || seq != _pickSeq) return;
         setState(() => detail = d);
       }
     } catch (e) {
-      if (seq == _pickSeq) setState(() => err = e.toString());
+      if (mounted && seq == _pickSeq) setState(() => err = e.toString());
     } finally {
       if (seq == _pickSeq && mounted) setState(() => loadingAssets = false);
     }
@@ -85,19 +86,22 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
   /// Switching the look fetches that look's sprites too.
   Future<void> setForm(String f) async {
     final app = context.read<AppState>();
-    final packs = ((sel!['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
+    final picked = sel!;
+    if (picked['bundledPreset'] == CrystalFina.presetId) return;
+    final packs = ((picked['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
+    final seq = ++_pickSeq;
     setState(() { form = f; loadingAssets = packs.contains(f); });
     if (!packs.contains(f)) return;
-    final seq = _pickSeq;
     try {
-      await app.ensureSprites(f);
+      await app.prepareUnitPreview(picked['id'] as String, f);
+      if (!mounted || seq != _pickSeq) return;
       final base = ((detail?['forms'] as Map?)?[f] as Map?)?['shift']?['base']?.toString();
-      if (base != null && packs.contains(base)) await app.ensureSprites(base);
-      if (seq != _pickSeq) return;
-      final d = await app.api!.ffbeUnit(sel!['id'] as String);
-      if (seq == _pickSeq) setState(() => detail = d);
+      if (base != null && packs.contains(base)) await app.prepareUnitPreview(picked['id'] as String, base);
+      if (!mounted || seq != _pickSeq) return;
+      final d = await app.api!.ffbeUnit(picked['id'] as String);
+      if (mounted && seq == _pickSeq) setState(() => detail = d);
     } catch (e) {
-      if (seq == _pickSeq) setState(() => err = e.toString());
+      if (mounted && seq == _pickSeq) setState(() => err = e.toString());
     } finally {
       if (seq == _pickSeq && mounted) setState(() => loadingAssets = false);
     }
