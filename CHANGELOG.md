@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published startup character sprites — 2026-10-01
+
+Changes through [`e71d92b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e71d92b8b1be2f25162057e8e4b5ec83b086dc7c),
+[test package 36933213624](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36933213624).
+
 - Download all hosted character sprite forms on startup, including units never selected in Add a unit. Check the full
   sprite-file inventory each launch, restore missing sheets, icons and animation files, and reuse complete packs and
   verified ZIPs. Keep existing artwork and roster edits. Prepare the engine's unit data before opening the roster;
@@ -19,7 +26,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Startup regressions cover all forms without picker interaction, persistent cache reuse, deleted files, retained artwork,
   incomplete markers, checksum errors, preparation/index failures, offline starts and retrying deferred downloads.
   Recheck deferred unit preparation after first-run game setup, before showing the roster.
-  The Windows package is pending; the first full download takes longer and needs space for all hosted forms.
+  Windows CI passed analysis and the full suite, the frozen-engine fresh setup, Python tests, launcher/import checks
+  and the release build. Both sprite builds reused the cached engine archive without downloading from its original host.
+  The downloaded test ZIP's SHA-256, integrity and branch/commit/run metadata were verified. Live character rendering
+  still needs verification on a tester's PC. The first full download takes longer and needs space for all hosted forms.
 
 ## Published cached Windows engine — 2026-10-01
 
