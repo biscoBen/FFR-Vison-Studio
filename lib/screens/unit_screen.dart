@@ -107,15 +107,3 @@ class _UnitScreenState extends State<UnitScreen> {
     ]);
   }
 }
-
-/// Asks, then removes the unit from the mod (the next install removes it from the game).
-Future<void> confirmRemove(BuildContext context, AppState app, Map<String, dynamic> u) async {
-  final native = u['native'] != null;
-  final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
-    backgroundColor: Guide.paper, shape: Border.fromBorderSide(Guide.frame),
-    title: Text(native ? 'Reset ${u['en']} to the game defaults?' : 'Remove ${u['en']} from the mod?', style: Guide.h2()),
-    content: Text(native ? 'This removes your model and configuration overrides. Save its character config first to keep this setup. The vision stays in the game; the next build/install restores its defaults.' : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.', style: Guide.text()),
-    actions: [GuideButton('Keep', onPressed: () => Navigator.pop(c, false)), GuideButton('Remove', danger: true, onPressed: () => Navigator.pop(c, true))],
-  ));
-  if (ok == true) await app.removeUnit(u['key'] as String);
-}

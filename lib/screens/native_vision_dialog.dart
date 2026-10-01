@@ -5,12 +5,14 @@ import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
 import 'add_unit_dialog.dart';
+import 'remove_unit_dialog.dart';
 
 Future<void> chooseNativeVision(
   BuildContext context,
   Map<String, dynamic> vision,
 ) async {
   final app = context.read<AppState>();
+  final edited = app.units.any((u) => u['key'] == vision['key']);
   final choice = await showDialog<String>(
     context: context,
     builder: (c) => AlertDialog(
@@ -18,13 +20,20 @@ Future<void> chooseNativeVision(
       shape: Border.fromBorderSide(Guide.frame),
       title: Text(vision['en'].toString(), style: Guide.h2()),
       content: Text(
-        'Change this game vision\'s model, or edit its current abilities, bonuses, stats and MR rewards. Changing the model keeps its current configuration.',
+        'Change this game vision\'s model, edit its current configuration, or revert all its edits to the original. Changing the model keeps its current configuration.',
         style: Guide.text(),
       ),
       actions: [
         GuideButton('Cancel', onPressed: () => Navigator.pop(c)),
         GuideButton('Edit vision', onPressed: () => Navigator.pop(c, 'edit')),
         GuideButton('Change model', onPressed: () => Navigator.pop(c, 'model')),
+        GuideButton(
+          'Revert to original',
+          danger: true,
+          onPressed: app.building || !edited
+              ? null
+              : () => Navigator.pop(c, 'revert'),
+        ),
       ],
     ),
   );
@@ -33,6 +42,10 @@ Future<void> chooseNativeVision(
   }
   if (choice == 'model') {
     await showChangeModel(context, vision['id'] as int);
+    return;
+  }
+  if (choice == 'revert') {
+    await confirmRemove(context, app, vision);
     return;
   }
   try {

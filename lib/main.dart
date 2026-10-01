@@ -25,6 +25,7 @@ import 'design/wordmark.dart';
 import 'screens/about_dialog.dart';
 import 'screens/copy_vision_dialog.dart';
 import 'screens/home_screen.dart';
+import 'screens/remove_unit_dialog.dart';
 import 'screens/setup_screen.dart';
 import 'screens/unit_screen.dart';
 import 'services/paths.dart';

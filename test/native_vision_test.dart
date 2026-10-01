@@ -271,14 +271,193 @@ void main() {
   }
 
   testWidgets(
+    'reverting from the home popup restores the original and preserves other roster edits',
+    (tester) async {
+      final cloud = (await tester.runAsync(
+        () => app.editNativeVision(13110, appearance: profile()),
+      ))!;
+      cloud['stats']['Attack'] = 999;
+      cloud['awakening'][0].add(['ActiveSkill', 485300]);
+      cloud['synchro'][0].add(['PassiveSkill', 1234, 8]);
+      cloud['lb'] = 485300;
+      app.update(cloud);
+
+      final tronn = (await tester.runAsync(() => app.editNativeVision(13024)))!;
+      tronn['stats']['Attack'] = 222;
+      tronn['synchro'][0].add(['PassiveSkill', 1234, 3]);
+      app.update(tronn);
+      final added = CharacterConfig.copy(app.units.first as JsonMap)
+        ..['stats']['Attack'] = 333;
+      app.update(added);
+      app.select(null);
+      final remaining = clone(
+        app.units.where((u) => u['key'] != cloud['key']).toList(),
+      );
+
+      await show(tester);
+      await tester.tap(find.text('CLOUD'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
+      await tester.pumpAndSettle();
+      expect(find.text('Revert Cloud to original?'), findsOneWidget);
+      expect(
+        find.textContaining(
+          'The next build/install applies the original vision',
+        ),
+        findsOneWidget,
+      );
+      await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
+      await wait(
+        tester,
+        () => app.units.every((u) => u['key'] != cloud['key']),
+      );
+      expect(app.units, remaining);
+      expect(api.roster, remaining);
+      expect(find.text('CLOUD'), findsOneWidget);
+      expect(find.text('Game vision · defaults'), findsOneWidget);
+
+      await tester.tap(find.text('CLOUD'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<GuideButton>(
+              find.widgetWithText(GuideButton, 'Revert to original'),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.widgetWithText(GuideButton, 'Edit vision'));
+      await wait(tester, () => app.selected != null);
+      expect(app.selected, originalFixture());
+      expect(api.roster, [...remaining, originalFixture()]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('cancelling a revert keeps the model and all vision edits', (
+    tester,
+  ) async {
+    final cloud = (await tester.runAsync(
+      () => app.editNativeVision(13110, appearance: profile()),
+    ))!;
+    cloud['stats']['Attack'] = 999;
+    cloud['synchro'][0].add(['PassiveSkill', 1234, 8]);
+    app.update(cloud);
+    await tester.runAsync(app.save);
+    app.select(null);
+    final before = clone(app.units);
+    final saves = api.saves;
+
+    await show(tester);
+    await tester.tap(find.text('CLOUD'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(GuideButton, 'Keep'));
+    await tester.pumpAndSettle();
+
+    expect(app.units, before);
+    expect(api.roster, before);
+    expect(api.saves, saves);
+    expect(find.text('CLOUD'), findsOneWidget);
+    expect(find.text('Game vision · your edits'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the last reverted vision can still be rebuilt and installed', (
+    tester,
+  ) async {
+    api.roster = [];
+    app.units = [];
+    app.modInstalled = true;
+    final cloud = (await tester.runAsync(() => app.editNativeVision(13110)))!;
+    cloud['stats']['Attack'] = 999;
+    app.update(cloud);
+    app.select(null);
+
+    await show(tester);
+    await tester.tap(find.text('CLOUD'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
+    await wait(tester, () => app.units.isEmpty);
+
+    expect(api.roster, isEmpty);
+    expect(find.text('CLOUD'), findsOneWidget);
+    expect(
+      tester
+          .widget<GoButton>(
+            find.widgetWithText(GoButton, 'INSTALL INTO THE GAME'),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    expect(
+      tester
+          .widget<GuideButton>(
+            find.widgetWithText(GuideButton, 'Build without installing'),
+          )
+          .onPressed,
+      isNotNull,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('revert is disabled for untouched visions and during a build', (
+    tester,
+  ) async {
+    await show(tester);
+    await tester.tap(find.text('CLOUD'));
+    await tester.pumpAndSettle();
+    final revert = find.widgetWithText(GuideButton, 'Revert to original');
+    expect(tester.widget<GuideButton>(revert).onPressed, isNull);
+    await tester.tap(revert);
+    await tester.pumpAndSettle();
+    expect(api.roster, [profile()]);
+    expect(api.saves, 0);
+    await tester.tap(find.widgetWithText(GuideButton, 'Cancel'));
+    await tester.pumpAndSettle();
+
+    await tester.runAsync(() => app.editNativeVision(13110));
+    app.buildState = {'running': true};
+    app.select(null);
+    await tester.pump();
+    final before = clone(api.roster);
+    final saves = api.saves;
+    await tester.tap(find.text('CLOUD'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.widget<GuideButton>(revert).onPressed, isNull);
+    await tester.tap(revert);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(app.units, before);
+    expect(api.roster, before);
+    expect(api.saves, saves);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
     'opening screen lists untouched game visions; viewing Resonance never creates a custom LB',
     (tester) async {
       await show(tester);
       expect(find.text('CLOUD'), findsOneWidget);
       expect(find.text('ADDED VISIONS'), findsOneWidget);
       expect(find.text('DEFAULT VISIONS'), findsOneWidget);
-      expect(find.descendant(of: find.byKey(const Key('default-visions')), matching: find.text('CLOUD')), findsOneWidget);
-      expect(find.descendant(of: find.byKey(const Key('added-visions')), matching: find.text('CLOUD')), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('default-visions')),
+          matching: find.text('CLOUD'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('added-visions')),
+          matching: find.text('CLOUD'),
+        ),
+        findsNothing,
+      );
       expect(api.roster, hasLength(1));
       await tester.tap(find.text('CLOUD'));
       await tester.pumpAndSettle();

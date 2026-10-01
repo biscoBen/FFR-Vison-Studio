@@ -333,6 +333,44 @@ class NativeVisionTests(unittest.TestCase):
             self.assertFalse(any('LevelParameter' in t['asset'] for t in result['tables']))
 
 
+    def test_reverted_final_vision_builds_original_rows_without_stale_sprite_overrides(self):
+        game, rows, _ = fixture(13110)
+        game['Shop/DT_ShopList'] = {'fixture shop': {'ItemList': [{'ItemId': 1001, 'MaxOrderNum': 99, 'PriceRatio': 1.0}]}}
+        before = copy.deepcopy(game)
+        source = (ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()
+        patched = installer.hook_builder(fina_installer.hook_builder(source))
+        main, = [n for n in ast.parse(patched).body if isinstance(n, ast.FunctionDef) and n.name == 'main']
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); build = root / 'build/visions_mod'; out = build / 'assets'
+            layout = build / 'check/da/DA_UIUnitSsLayout.json'
+            layout.parent.mkdir(parents=True); layout.write_text(json.dumps({'Properties': {'LayoutOverrideDataMap': []}}))
+            stale = out / 'FFRS/Content/Chara/summon/summon13110/replaced.uasset'
+            stale.parent.mkdir(parents=True); stale.write_bytes(b'previous model override')
+            env = {'UNITS': [], 'ROOT': str(root), 'BUILD': str(build), 'OUT': str(out), 'LEGACY': str(root / 'legacy'),
+                   'DT': 'FFRS/Content/Datatable/', 'SHOP_ROW': 'fixture shop', 'FFRDT': ['fixture serializer'], 'USMAP': 'fixture.usmap',
+                   'rows': rows, 'sys': SimpleNamespace(argv=['builder', '--no-install']),
+                   'os': os, 'json': json, 'stage': lambda text: None,
+                   'generate_sprites': mock.Mock(side_effect=AssertionError('A reverted vision must use original sprites')),
+                   'clone_sequence': mock.Mock(side_effect=AssertionError('A reverted vision must use original sequences')),
+                   'seq_dumps': mock.Mock(side_effect=AssertionError('No animation dump is needed for original visions')),
+                   'event_keys': mock.Mock(side_effect=AssertionError('No animation edits are needed for original visions')),
+                   'run': mock.Mock(side_effect=AssertionError('No sprite extraction is needed for original visions')),
+                   'subprocess': SimpleNamespace(run=lambda *a, **k: SimpleNamespace(returncode=0, stdout='', stderr='')),
+                   'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
+                   'ffbe_audio': SimpleNamespace(banks=lambda a: [])}
+            fina = SimpleNamespace(prepare=lambda *args: None, copy_material=lambda *args: None)
+            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}):
+                exec(compile(ast.Module(body=[main], type_ignores=[]), 'restored_builder_fixture', 'exec'), env)
+                env['main']()
+            result = json.loads((build / 'patch.json').read_text())
+            self.assertFalse(stale.exists())
+            self.assertEqual(game, before)
+            self.assertEqual(result['clones'], [])
+            self.assertEqual(result['tables'], [{'asset': 'FFRS/Content/Datatable/Shop/DT_ShopList', 'add': [],
+                                                'set': [{'row': 'fixture shop', 'set': {'ItemList': before['Shop/DT_ShopList']['fixture shop']['ItemList']}}]}])
+            self.assertTrue(all(not obj['mapAdd']['assetMap'] for obj in result['objects']))
+
+
 class NativeInstallerTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)

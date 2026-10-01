@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    final canBuild = app.units.isNotEmpty || app.modInstalled;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => u['native'] == null).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -57,11 +58,11 @@ class HomeScreen extends StatelessWidget {
                     : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity.', style: Guide.text()),
                 const SizedBox(height: 14),
                 Row(children: [
-                  GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: app.units.isEmpty || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
+                  GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
                 ]),
                 const SizedBox(height: 10),
                 Wrap(spacing: 8, runSpacing: 8, children: [
-                  GuideButton('Build without installing', onPressed: app.units.isEmpty || app.building ? null : () => app.startBuild(install: false)),
+                  GuideButton('Build without installing', onPressed: !canBuild || app.building ? null : () => app.startBuild(install: false)),
                   GuideButton('Install the last build', onPressed: app.gameRunning || app.building ? null : app.installLast),
                   GuideButton('Advanced studio', icon: Icons.open_in_new, onPressed: app.api == null ? null : () => launchUrl(Uri.parse(app.api!.advancedUrl()))),
                 ]),

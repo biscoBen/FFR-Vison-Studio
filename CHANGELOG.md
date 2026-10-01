@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Add **Revert to original** to the default vision popup beside **Edit vision** and **Change model**. Reuse the
+  full reset action to restore the original model, abilities, passives, stats, Resonance and MR rewards by removing
+  only that vision's overrides. Confirmation explains that the next build/install applies the reset to the game.
+  Cancel keeps edits intact. The button is disabled for untouched visions and while a build is running.
+- Share the reset confirmation between the popup and character-page reset, with a clearly labelled **Revert to original**
+  confirmation button for default visions. Added units retain their existing Remove action.
+- Keep build/install available after reverting the last edited vision when a Studio mod is already installed, so
+  the original roster can replace that installed build without requiring a new custom vision.
 
 ## Published compact ability library — 2026-10-01
 
