@@ -15,6 +15,13 @@ try {
     Expand-Archive -LiteralPath $archive -DestinationPath $env:FFR_STUDIO_ENGINE_FIXTURE
     flutter test test/windows_bundled_startup_test.dart
     if ($LASTEXITCODE -ne 0) { throw 'The fresh Windows bundled startup test failed.' }
+} catch {
+    # Expose the actual failure through the Checks API as well as the console.
+    # This keeps cloud diagnosis possible when the log storage cannot be reached.
+    $details = "$($_.Exception.Message)`n$($_.ScriptStackTrace)"
+    $details = $details.Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+    Write-Output "::error::$details"
+    throw
 } finally {
     $env:FFR_STUDIO_ENGINE_FIXTURE = $previousFixture
     if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Recurse -Force }

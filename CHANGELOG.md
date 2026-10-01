@@ -17,6 +17,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   qualified internal labels, explicit awakening tiers, all picker hiding rules and saved/equipped grants. The full
   document leaves 61 original game definitions without a confirmed source; those remain unlabelled unless game
   tables establish an owner.
+- Include fresh Windows engine setup errors in GitHub check annotations so cloud testing can diagnose failures
+  when the separate log storage is unavailable. Keep the pinned checksum and required startup test.
 - Validation: freshly extracted all PDF tables and compared every assigned ID, owner, explicit awakening tier and
   internal-label qualification with the bundled mapping. Both extension checksum checks passed. Added regressions
   for late-page enemy/party/item/esper/equipment sources and for preserving filters and saved grants. Local Flutter
