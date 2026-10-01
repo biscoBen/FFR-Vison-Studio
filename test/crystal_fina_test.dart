@@ -163,6 +163,31 @@ void main() {
     await expectLater(features.prepareEngine(paths, engineRunning: false), throwsA(predicate((e) => e.toString().contains('unsupported upstream layout'))));
   });
 
+  test('fresh portable setup keeps verified installer payloads below Windows MAX_PATH', () async {
+    paths = AppPaths.at(p.join(temporary.path, 'Windows Downloads ').padRight(120, 'x'));
+    var calls = 0;
+    final features = BundledFeatures(readAsset: diskAsset, runProcess: (exe, args, directory) async {
+      calls++;
+      final installer = File(args[1]);
+      final existing = installer.path.endsWith('install_existing_visions.py');
+      final payload = Directory(p.join(installer.parent.path, 'payload'));
+      final manifest = json.decode(File(p.join(payload.path, 'manifest.json')).readAsStringSync()) as Map;
+      for (final relative in (manifest['files'] as Map).keys.cast<String>()) {
+        final staged = File(p.joinAll([payload.path, ...relative.split('/')]));
+        expect(staged.path.length, lessThan(260), reason: 'The frozen engine must be able to open $relative.');
+        final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
+        expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
+      }
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.1.0' : '1.1.1'}), '');
+    });
+    await features.prepareEngine(paths, engineRunning: false);
+    final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
+    material.deleteSync();
+    await features.prepareEngine(paths, engineRunning: false);
+    expect(material.existsSync(), isTrue);
+    expect(calls, 6);
+  });
+
   test('adding Fina flushes edits and preserves the current remote roster', () async {
     final other = {'key': 'other', 'id': 13503, 'en': 'My edited unit', 'stats': {'Attack': 88}};
     final api = RosterApi([other, {'key': 'remote', 'id': 13514, 'custom': {'keep': true}}]);

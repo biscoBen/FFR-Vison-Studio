@@ -191,7 +191,14 @@ class BundledFeatures {
             ),
           )
           .toString();
-      final staged = p.join(paths.root, 'bundled', 'crystal-fina-$fingerprint');
+      // The frozen Windows engine can encounter MAX_PATH when the material's
+      // nested Unreal path follows a full hash. Keep directory names compact;
+      // every payload file still uses its complete SHA-256 for verification.
+      final staged = p.join(
+        paths.root,
+        'bundled',
+        'cf-${fingerprint.substring(0, 16)}',
+      );
       for (final entry in files.entries.where(
         (e) => e.key.startsWith('engine/'),
       )) {
@@ -259,7 +266,7 @@ class BundledFeatures {
     final staged = p.join(
       paths.root,
       'bundled',
-      'existing-visions-$fingerprint',
+      'ev-${fingerprint.substring(0, 16)}',
     );
     for (final entry in files.entries) {
       await _write(_file(staged, entry.key), entry.value);
