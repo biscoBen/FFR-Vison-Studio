@@ -2,3 +2,5 @@
 # byte-for-byte on Windows as well as Linux; never normalize these assets.
 assets/crystal_fina/** -text
 assets/existing_visions/** -text
+# Keep the reference engine sources' supplied line endings for compatibility tests.
+scripts/fixtures/engine_motion/*.py -text whitespace=cr-at-eol
