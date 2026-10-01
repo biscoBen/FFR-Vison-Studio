@@ -26,8 +26,18 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+      - name: Test engine archive cache
+        shell: pwsh
+        run: ./scripts/test_verified_engine_archive.ps1
+      - name: Reuse the checksum-pinned engine archive
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/ffr-studio-engine-cache
+          key: ffr-windows-engine-1.0.0.15-1c6e4d4b348b048404b6578bf10010c4caa873a5599d9dcbb9f64b00d299c41d
       - name: Test fresh bundled engine setup on Windows
         shell: pwsh
+        env:
+          FFR_STUDIO_ENGINE_CACHE: ${{ runner.temp }}/ffr-studio-engine-cache
         run: ./scripts/test_windows_bundled_startup.ps1
       - name: Install sprite test dependency
         run: python -m pip install "Pillow>=11,<13"

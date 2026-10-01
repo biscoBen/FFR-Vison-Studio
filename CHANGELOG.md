@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Reuse the Windows startup test engine archive from a cache keyed by its pinned SHA-256, independent of app commits.
+  Verify cached bytes on every build and keep extracting a fresh engine for the startup test. Fetch from the existing
+  engine URL only when the archive is missing; failed downloads and checksum mismatches never become cached copies.
+  Cache regressions passed locally in PowerShell, including reuse, corrupt copies and partial-download cleanup;
+  all 95 Python regressions and both extension checksums passed. Real cache persistence requires Windows CI.
+  GitHub may evict an unused cache, which restores the existing download path.
+
+## Published complete ability sources and build diagnostics — 2026-10-01
+
+Changes through [`b05e63c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b05e63c9672a1c40f1ff50c4233266db18d1a76f),
+[test package 36926851597](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36926851597).
+
 - Fix incomplete PDF source labels: include the additional game abilities and passives on pages 39–90, which were
   omitted from the first reference update. Add the missing 812 assigned ability sources and 61 passive sources;
   the complete reference now covers **1,141 ability IDs** and **343 passive IDs**. Preserve exact-ID matching,
@@ -19,10 +31,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   tables establish an owner.
 - Include fresh Windows engine setup errors in GitHub check annotations so cloud testing can diagnose failures
   when the separate log storage is unavailable. Keep the pinned checksum and required startup test.
-- Validation: freshly extracted all PDF tables and compared every assigned ID, owner, explicit awakening tier and
-  internal-label qualification with the bundled mapping. Both extension checksum checks passed. Added regressions
-  for late-page enemy/party/item/esper/equipment sources and for preserving filters and saved grants. Local Flutter
-  execution remains limited by cloud process/thread exhaustion; the full suite and release build run on Windows CI.
+- Validation: PDF mappings were checked against all tables, including late-page sources and unchanged filters/saved
+  grants. Windows CI passed Flutter analysis and the full suite, genuine frozen-engine fresh startup, 95 Python tests,
+  launcher/import checks and the release build. The downloaded test ZIP's SHA-256 and branch/commit/run metadata were
+  verified. Previous engine downloads returned HTTP 403; the unchanged workflow's retry succeeded. Direct artifact
+  downloading from this cloud workspace returned Forbidden; the existing published test ZIP was downloaded successfully.
+  In-game rendering still requires a tester's PC.
 
 ## Published PDF sources and awakening tiers — 2026-10-01
 

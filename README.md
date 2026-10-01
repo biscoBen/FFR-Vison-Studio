@@ -61,6 +61,12 @@ The helper defaults to `Sephira's-Update` and build 15, checks the remote commit
 only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance record alongside the executable under
 `/workspace/.runtime/ffr/builds`. Commit and push changes before building them.
 
+Windows CI reuses its startup-test engine ZIP through an Actions cache keyed by the pinned SHA-256, so app commits
+do not require another engine transfer after the cache is populated. Every build verifies that checksum and extracts
+a fresh engine for startup testing. A cache miss uses the existing `ffr.luminest.io` URL; partial downloads and corrupt
+archives are rejected. GitHub can evict unused caches. For repeated local Windows startup tests, set
+`FFR_STUDIO_ENGINE_CACHE` to a persistent directory; a verified archive is retained there under its SHA-256 filename.
+
 If the cloud proxy blocks GitHub's artifact storage, use `python3 scripts/cloud_windows_build.py --cloud-download`
 on the development branch. The workflow creates a temporary **unpublished draft** download through GitHub's release-asset
 endpoint. The helper verifies its branch, commit, run and SHA256 digest, downloads it, and deletes the draft. This requires
