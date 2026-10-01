@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published skill-library cleanup — 2026-09-30
+
+Changes in [`b23d052`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b23d0525eeeee24960bb3c491073636c12c5b7d8),
+[test package 36821957800](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36821957800).
+
 - Show the owning default vision names beside **(Unverified)** on abilities and passives, including MR reward pickers.
   Ownership comes from original awakening/MR grants, commands, level-up skills, base passives and alternate target modes.
 - Hide an unused Unverified ability when a verified version has identical combat mechanics. Matching ignores internal
