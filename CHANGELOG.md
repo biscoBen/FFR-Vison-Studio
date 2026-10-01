@@ -11,11 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published cached Windows engine — 2026-10-01
+
+Changes in [`61e4c7a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/61e4c7aeb9b1ab183fa4c87c2761554ff9df5c88),
+[test package 36928203827](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36928203827).
+
 - Reuse the Windows startup test engine archive from a cache keyed by its pinned SHA-256, independent of app commits.
   Verify cached bytes on every build and keep extracting a fresh engine for the startup test. Fetch from the existing
   engine URL only when the archive is missing; failed downloads and checksum mismatches never become cached copies.
   Cache regressions passed locally in PowerShell, including reuse, corrupt copies and partial-download cleanup;
-  all 95 Python regressions and both extension checksums passed. Real cache persistence requires Windows CI.
+  all 95 Python regressions and both extension checksums passed. Windows CI passed Flutter analysis and the full suite,
+  cache regressions, genuine frozen-engine fresh startup, Python tests, launcher/import checks and the release build,
+  and saved the verified engine archive to the Actions cache.
   GitHub may evict an unused cache, which restores the existing download path.
 
 ## Published complete ability sources and build diagnostics — 2026-10-01
