@@ -64,7 +64,53 @@ def fixture(vid=13110):
     return tables, rows, spec
 
 
+def sprite_fixture(legacy, folder, vid):
+    """Explicit file-presence fixtures; these are not game assets."""
+    base = Path(legacy) / 'FFRS/Content' / folder / f'summon{vid}'
+    base.parent.mkdir(parents=True, exist_ok=True)
+    for suffix in ('.uasset', '.uexp'):
+        base.with_suffix(suffix).write_bytes(b'explicit sprite extraction fixture')
+
+
 class NativeVisionTests(unittest.TestCase):
+    def test_all_26_missing_sprite_donors_are_extracted_once_and_cached_files_preserved(self):
+        for vid in CATALOG_IDS:
+            with self.subTest(vid=vid), tempfile.TemporaryDirectory() as temp:
+                _, _, spec = fixture(vid); before = copy.deepcopy(spec); calls = []
+                def extract(folder):
+                    calls.append(folder); sprite_fixture(temp, folder, vid)
+                native.ensure_sprite_templates(spec, temp, extract)
+                self.assertEqual(calls, [f'Chara/summon/summon{vid}/', f'Chara/menu/summon{vid}/'])
+                files = {p: p.read_bytes() for p in Path(temp).rglob('*') if p.is_file()}
+                native.ensure_sprite_templates(spec, temp, extract)
+                self.assertEqual(len(calls), 2); self.assertEqual(spec, before)
+                self.assertEqual(files, {p: p.read_bytes() for p in files})
+
+    def test_partial_or_empty_sprite_extraction_is_repaired_without_reextracting_complete_donors(self):
+        for suffix, absent in (('.uexp', True), ('.uexp', False), ('.uasset', False)):
+            with self.subTest(suffix=suffix, absent=absent), tempfile.TemporaryDirectory() as temp:
+                _, _, spec = fixture(13045); calls = []
+                for kind in ('summon', 'menu'): sprite_fixture(temp, f'Chara/{kind}/summon13045/', 13045)
+                broken = Path(temp) / f'FFRS/Content/Chara/menu/summon13045/summon13045{suffix}'
+                if absent: broken.unlink()
+                else: broken.write_bytes(b'')
+                def extract(folder):
+                    calls.append(folder); sprite_fixture(temp, folder, 13045)
+                native.ensure_sprite_templates(spec, temp, extract)
+                self.assertEqual(calls, ['Chara/menu/summon13045/'])
+
+    def test_failed_or_incomplete_extraction_stops_before_sprite_conversion(self):
+        _, _, spec = fixture(13045); spec['en'] = 'Leah'
+        with tempfile.TemporaryDirectory() as temp:
+            extract = mock.Mock(side_effect=RuntimeError('game archives unavailable'))
+            with self.assertRaisesRegex(RuntimeError, 'game archives unavailable'):
+                native.ensure_sprite_templates(spec, temp, extract)
+            extract.assert_called_once_with('Chara/summon/summon13045/')
+            extract = mock.Mock()
+            with self.assertRaisesRegex(RuntimeError, 'original summon sprite files for Leah'):
+                native.ensure_sprite_templates(spec, temp, extract)
+            extract.assert_called_once_with('Chara/summon/summon13045/')
+
     def test_catalog_route_lists_all_26_and_returns_each_original_without_changing_rows(self):
         game = {}; catalog = {'visions': []}
         for vid in CATALOG_IDS:
@@ -238,8 +284,8 @@ class NativeVisionTests(unittest.TestCase):
         row['animationAssetList'][0]['Material'] = 'unintended'
         self.assertFalse(native.expected_row_change(native.BATTLE, 'Cloud', game[native.BATTLE]['Cloud'], row, edits, lambda a,b: a == b))
 
-    def test_full_native_only_builder_writes_overrides_and_generates_under_original_id(self):
-        game, rows, spec = fixture(); spec['ffbe'] = {'id': '207000117', 'source': 'JP'}
+    def test_full_native_only_builder_prepares_missing_leah_sprites_before_conversion_under_original_id(self):
+        game, rows, spec = fixture(13045); spec['ffbe'] = {'id': '207000117', 'source': 'JP'}
         game['Shop/DT_ShopList'] = {'fixture shop': {'ItemList': [{'ItemId': 1001, 'MaxOrderNum': 99, 'PriceRatio': 1.0}]}}
         source = (ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()
         patched = installer.hook_builder(fina_installer.hook_builder(source)); tree = ast.parse(patched)
@@ -247,12 +293,21 @@ class NativeVisionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp); build = root / 'build/visions_mod'; layout = build / 'check/da/DA_UIUnitSsLayout.json'
             layout.parent.mkdir(parents=True); layout.write_text(json.dumps({'Properties': {'LayoutOverrideDataMap': []}}))
-            converted = []
+            converted = []; extracted = []
+            def extract(args):
+                self.assertEqual(args[:3], [str(root / 'tools/extract_legacy.py'), '--filter', args[2]])
+                extracted.append(args[2]); sprite_fixture(root / 'legacy', args[2], 13045)
+            def generate(unit):
+                self.assertEqual(extracted, ['Chara/summon/summon13045/', 'Chara/menu/summon13045/'])
+                for kind in ('summon', 'menu'):
+                    for suffix in ('.uasset', '.uexp'):
+                        self.assertTrue((root / f'legacy/FFRS/Content/Chara/{kind}/summon13045/summon13045{suffix}').is_file())
+                converted.append(unit['id'])
             env = {'UNITS': [spec], 'ROOT': str(root), 'BUILD': str(build), 'OUT': str(build / 'assets'), 'LEGACY': str(root / 'legacy'),
                    'DT': 'FFRS/Content/Datatable/', 'SHOP_ROW': 'fixture shop', 'FFRDT': ['fixture serializer'], 'USMAP': 'fixture.usmap',
                    'rows': lambda rel: copy.deepcopy(game.get(rel, {})), 'sys': SimpleNamespace(argv=['builder', '--no-install']),
                    'os': os, 'json': json, 'stage': lambda text: None, 'unique_skill_base': lambda vid: 445000+(vid-13100)*100,
-                   'has_sequence': lambda sid: True, 'generate_sprites': lambda u: converted.append(u['id']),
+                   'has_sequence': lambda sid: True, 'generate_sprites': generate, 'run': extract,
                    'subprocess': SimpleNamespace(run=lambda *a, **k: SimpleNamespace(returncode=0, stdout='', stderr='')),
                    'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
                    'ffbe_audio': SimpleNamespace(banks=lambda a: [])}
@@ -261,7 +316,7 @@ class NativeVisionTests(unittest.TestCase):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'native_builder_fixture', 'exec'), env)
                 env['main']()
             result = json.loads((build / 'patch.json').read_text())
-            self.assertEqual(converted, [13110]); self.assertEqual(env['UNITS'], [])
+            self.assertEqual(converted, [13045]); self.assertEqual(env['UNITS'], [])
             self.assertTrue(all(not t['add'] for t in result['tables']))
             self.assertEqual(next(t for t in result['tables'] if t['asset'].endswith(native.BATTLE))['set'][0]['row'], 'Cloud')
             self.assertFalse(any('LevelParameter' in t['asset'] for t in result['tables']))

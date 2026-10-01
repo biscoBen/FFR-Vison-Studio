@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 import tempfile
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -82,6 +82,10 @@ def hook_builder(raw):
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
     prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
+               'for u in native_units:', '    if u.get("ffbe"):',
+               '        stage("Preparing original sprites: " + u["en"])',
+               '        _ffr_existingvisions.ensure_sprite_templates(u, LEGACY,',
+               '            lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))',
                'def _native_skills(u):',
                '    nonlocal clones, post_objects, post_bytecode, post_frames, post_retime, authored_sequences, effect_jobs, built_effects',
                '    vid = u["id"]', '    d = u["donor"]',

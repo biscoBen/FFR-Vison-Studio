@@ -116,6 +116,23 @@ def split(units, rows):
     return native, added
 
 
+def ensure_sprite_templates(unit, legacy, extract):
+    """Prepare original SS6 donors omitted by the engine's three-donor setup."""
+    vid = unit['id']
+    if type(vid) is not int or vid <= 0 or unit.get('donor') != vid:
+        raise ValueError('Original vision identity cannot be changed.')
+    for kind in ('summon', 'menu'):
+        folder = f'Chara/{kind}/summon{vid}/'
+        base = Path(legacy) / 'FFRS/Content' / folder / f'summon{vid}'
+        files = [base.with_suffix(suffix) for suffix in ('.uasset', '.uexp')]
+        def ready(): return all(p.is_file() and p.stat().st_size > 0 for p in files)
+        if ready(): continue
+        extract(folder)
+        if not ready():
+            raise RuntimeError(f'Could not prepare the original {kind} sprite files for {unit["en"]}. '
+                               'Check the game location and prepare the game files again.')
+
+
 def prepare(tables, objects, units, root, rows):
     def put(rel, row, updates):
         if updates: tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['set'].append({'row': row, 'set': updates})
