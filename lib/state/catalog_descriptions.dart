@@ -13,6 +13,7 @@ const _catalogFields = {
   'hits': 'hitCount',
   'ratios': 'hitDamageRatioList',
   'equipCost': 'equipCost',
+  'criticalHitRate': 'criticalHitRate',
 };
 
 // Fixed ordering and an explicit player-facing field list keep voices, row IDs,
@@ -99,6 +100,149 @@ String _playerText(dynamic value) {
   return text.replaceFirst(RegExp(r'^\[[^\]]+\]\s*'), '');
 }
 
+Map<String, dynamic> _recordedData(Map catalog, String kind, Map row) {
+  final policy = catalog['duplicatePolicy'] as Map?;
+  final details = policy?['available'] == true
+      ? ((policy?['details'] as Map?)?[kind] as Map?)
+      : null;
+  final raw = details?['${row['id']}'];
+  final data = <String, dynamic>{
+    for (final e in _catalogFields.entries)
+      if (row[e.key] != null) e.value: row[e.key],
+    if (raw is Map) ...Map<String, dynamic>.from(raw),
+  };
+  // Older engines supply differing values rather than complete raw rows.
+  if (raw is! Map && policy?['available'] == true) {
+    final variants = (policy?['variants'] as Map?)?[kind] as Map?;
+    for (final note in (variants?['${row['id']}'] as List? ?? []).cast<Map>()) {
+      final field = note['field'].toString();
+      if (!field.contains('.') &&
+          note['missing'] != true &&
+          note['value'] != null) {
+        data[field] = note['value'];
+      }
+    }
+  }
+  return data;
+}
+
+class CatalogAbilitySummary {
+  const CatalogAbilitySummary({required this.description, required this.stats});
+  final String description;
+  final String stats;
+}
+
+String _enum(dynamic value) => (value ?? '').toString().split('::').last;
+
+String _abilityProse(Map row, Map data, Map<dynamic, Map> effects) {
+  final original = _playerText(row['desc']);
+  if (original.isNotEmpty) return original;
+  final power = data['magnification'];
+  final hasPower = power is num && power > 0;
+  final damage = _enum(data['DamageType']);
+  final relation = _enum(data['defaultTargetRelation']);
+  final effect = _enum(data['skillEffectType']);
+  final stat = _enum(data['parameterType']);
+  final change = _enum(data['parameterVariationType']);
+  final lines = <String>[];
+  if (hasPower &&
+      (_enum(data['mapEffectType']) == 'RecoveryHP' ||
+          (relation == 'Friendlies' &&
+              effect == 'DamageAndRecovery' &&
+              (stat.isEmpty || stat == 'HitPoint') &&
+              (change.isEmpty || change == 'Increase')))) {
+    lines.add('Restore HP.');
+  } else if (hasPower &&
+      relation == 'Friendlies' &&
+      stat == 'MagicPoint' &&
+      change == 'Increase') {
+    lines.add('Restore MP.');
+  } else if (hasPower &&
+      relation == 'Enemies' &&
+      effect == 'DamageAndRecovery' &&
+      ['Magic', 'Physic'].contains(damage) &&
+      (stat.isEmpty || stat == 'HitPoint') &&
+      (change.isEmpty || change == 'Decrease')) {
+    final element = _enum(data['element']);
+    final prefix = element.isEmpty || element == 'None'
+        ? ''
+        : '${_words(element).toLowerCase()}-type ';
+    lines.add(
+      'Deal $prefix${damage == 'Magic' ? 'magic' : 'physical'} damage.',
+    );
+  }
+  // Give a reading of the recorded effect type. Unknown parameters, durations
+  // and amounts stay in the complete hover text instead of being guessed.
+  for (final detail in _effectDescriptions(
+    data,
+    (row['effects'] as List?) ?? [],
+    effects,
+  )) {
+    final type = detail
+        .split(';')
+        .first
+        .replaceFirst(RegExp(r'^Effect \d+: '), '');
+    final sentence = switch (type) {
+      'Instant Death' => 'Inflict instant death.',
+      'Steal' => 'Steal an item.',
+      'Over Heal' => 'Healing can exceed max HP.',
+      'None' || 'Unknown' => '',
+      _ => 'Apply ${type.toLowerCase()}.',
+    };
+    if (sentence.isNotEmpty && !lines.contains(sentence)) lines.add(sentence);
+  }
+  return lines.isEmpty
+      ? 'See full details for the recorded effects.'
+      : lines.join(' ');
+}
+
+/// Compact rows use real recorded values, independently of the complete hover
+/// description. Missing fields stay absent, while recorded zeroes stay visible.
+Map<num, CatalogAbilitySummary> catalogAbilitySummaries(
+  Map<String, dynamic> catalog,
+) {
+  final effects = <dynamic, Map>{
+    for (final e in catalog['effects'] as List? ?? []) (e as Map)['id']: e,
+  };
+  return {
+    for (final row in (catalog['skills'] as List? ?? []).cast<Map>())
+      row['id'] as num: () {
+        final data = _recordedData(catalog, 'skills', row);
+        final stats = <String>[];
+        if (data['DamageType'] != null) {
+          stats.add('Type=${_fieldValue('DamageType', data['DamageType'])}');
+        }
+        if (data['TargetType'] != null) {
+          final target = _fieldValue('TargetType', data['TargetType']);
+          stats.add(
+            target
+                .split(' ')
+                .map(
+                  (word) => word.isEmpty
+                      ? word
+                      : '${word[0].toUpperCase()}${word.substring(1)}',
+                )
+                .join(' '),
+          );
+        }
+        for (final (field, label) in [
+          ('accuracy', 'Accuracy'),
+          ('breakDamageValue', 'Break'),
+          ('magnification', 'Power'),
+          ('Cost', 'MP'),
+          ('hitCount', 'Hits'),
+          ('criticalHitRate', 'Crit Chance'),
+        ]) {
+          if (data[field] != null) stats.add('$label=${_value(data[field])}');
+        }
+        return CatalogAbilitySummary(
+          description: _abilityProse(row, data, effects),
+          stats: stats.join('; '),
+        );
+      }(),
+  };
+}
+
 List<String> _effectDescriptions(
   Map data,
   List<dynamic> fallbackIds,
@@ -160,9 +304,6 @@ Map<num, String> catalogDescriptions(
 ) {
   final rows = ((catalog[kind] as List?) ?? []).cast<Map>();
   final policy = catalog['duplicatePolicy'] as Map?;
-  final details = policy?['available'] == true
-      ? ((policy?['details'] as Map?)?[kind] as Map?)
-      : null;
   final variants = policy?['available'] == true
       ? ((policy?['variants'] as Map?)?[kind] as Map?)
       : null;
@@ -173,25 +314,7 @@ Map<num, String> catalogDescriptions(
   return {
     for (final row in rows)
       row['id'] as num: () {
-        final data = <String, dynamic>{
-          for (final e in _catalogFields.entries)
-            if (row[e.key] != null) e.value: row[e.key],
-          if (details?['${row['id']}'] is Map)
-            ...Map<String, dynamic>.from(details!['${row['id']}'] as Map),
-        };
-        // Older engines supply full differing values but not complete raw rows.
-        // Use their known stats without dumping unknown/debug fields into the UI.
-        if (details?['${row['id']}'] is! Map) {
-          for (final note
-              in (variants?['${row['id']}'] as List? ?? []).cast<Map>()) {
-            final field = note['field'].toString();
-            if (!field.contains('.') &&
-                note['missing'] != true &&
-                note['value'] != null) {
-              data[field] = note['value'];
-            }
-          }
-        }
+        final data = _recordedData(catalog, kind, row);
         final parts = <String>[];
         for (final field
             in (kind == 'skills' ? _skillFields : <String, String>{}).entries) {

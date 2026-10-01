@@ -1,7 +1,15 @@
+import 'dart:convert';
+
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/screens/steps/abilities_step.dart';
 import 'package:ffr_vision_studio/screens/steps/bonuses_step.dart';
 import 'package:ffr_vision_studio/screens/steps/tiers.dart';
+import 'package:ffr_vision_studio/screens/steps/mr_step.dart';
+import 'package:ffr_vision_studio/screens/steps/native_resonance_step.dart';
+import 'package:ffr_vision_studio/design/description_tooltip.dart';
+
+import 'catalog_compact_summaries_test.dart' show compactExamples;
+
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -101,7 +109,7 @@ void main() {
   }
 
   testWidgets(
-    'all previously excluded ability types can be searched and granted',
+    'ordinary unverified abilities remain grantable while Resonances stay out of the library',
     (tester) async {
       final unit = <String, dynamic>{};
       await showStep(
@@ -109,14 +117,10 @@ void main() {
         (unit, set) => AbilitiesStep(unit: unit, set: set),
         unit,
       );
-      for (final name in [
-        'No sequence',
-        'Unit-specific',
-        'Limit burst',
-        'High ID',
-      ]) {
+      for (final name in ['No sequence', 'Unit-specific', 'High ID']) {
         expect(find.text('$name (Unverified)'), findsOneWidget);
       }
+      expect(find.text('Limit burst (Unverified)'), findsNothing);
       expect(find.text('Regular ability'), findsOneWidget);
       expect(find.text('Regular ability (Unverified)'), findsNothing);
       await tester.enterText(find.byType(TextField), 'High ID');
@@ -141,37 +145,44 @@ void main() {
     },
   );
 
-  testWidgets('Japanese passives can be searched and granted', (tester) async {
-    final unit = <String, dynamic>{};
-    await showStep(
-      tester,
-      (unit, set) => BonusesStep(unit: unit, set: set),
-      unit,
-    );
-    expect(find.text('English passive'), findsOneWidget);
-    expect(find.text('English passive (Unverified)'), findsNothing);
-    expect(find.text('攻撃力アップ (Unverified)'), findsOneWidget);
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Search passives'),
-      '攻撃',
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('English passive'), findsNothing);
-    final row = find.ancestor(
-      of: find.text('攻撃力アップ (Unverified)'),
-      matching: find.byType(LibraryRow),
-    );
-    await tester.tap(find.descendant(of: row, matching: find.byType(TierMenu)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Tier 2'));
-    await tester.pumpAndSettle();
-    expect((unit['awakening'] as List)[1], [
-      ['PassiveSkill', 1001],
-    ]);
-    expect(find.text('granted'), findsOneWidget);
-    expect(find.text('攻撃力アップ (Unverified)'), findsNWidgets(2));
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'untranslated passives are hidden in selection but existing grants survive',
+    (tester) async {
+      final unit = <String, dynamic>{
+        'awakening': [
+          [],
+          [
+            ['PassiveSkill', 1001],
+          ],
+          [],
+          [],
+        ],
+      };
+      final before = unit['awakening'];
+      await showStep(
+        tester,
+        (unit, set) => BonusesStep(unit: unit, set: set),
+        unit,
+      );
+      expect(find.text('English passive'), findsOneWidget);
+      expect(find.text('攻撃力アップ (Unverified)'), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: find.text('攻撃力アップ (Unverified)'),
+          matching: find.byType(LibraryRow),
+        ),
+        findsNothing,
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search passives'),
+        '攻撃',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Nothing matches.'), findsOneWidget);
+      expect(unit['awakening'], before);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'Curaga picker keeps different combat variants and labels assigned unverified moves',
@@ -234,11 +245,115 @@ void main() {
       );
       expect(find.text('Curaga'), findsNWidgets(2));
       expect(find.text('Curaga (Unverified)'), findsNWidgets(2));
-      expect(
-        find.text('Aetherial Wind (Unverified) — Y’shtola'),
-        findsOneWidget,
-      );
+      expect(find.text('Aetherial Wind (Unverified) — Y’shtola'), findsNothing);
       expect(find.textContaining('voice Label'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'compact ability rows wrap every stat and retain full hover details at minimum width',
+    (tester) async {
+      final app = CatalogState()
+        ..catalog = {...compactExamples(), 'icons': [], 'passives': []};
+      await showStep(
+        tester,
+        (unit, set) => AbilitiesStep(unit: unit, set: set),
+        {},
+        state: app,
+      );
+      tester.view.physicalSize = const Size(960, 1100);
+      await tester.pumpAndSettle();
+      expect(find.text('Deal dark-type magic damage.'), findsOneWidget);
+      const stats =
+          'Type=Magic; All Targets; Accuracy=500; Break=12; Power=36; MP=0; Hits=3; Crit Chance=0';
+      final text = tester.widget<Text>(find.text(stats));
+      expect(text.maxLines, isNull);
+      expect(find.textContaining('Hit damage shares:'), findsNothing);
+      final preview = tester.widget<DescriptionTooltip>(
+        find.byWidgetPredicate(
+          (w) => w is DescriptionTooltip && w.title == 'Execution (Unverified)',
+        ),
+      );
+      expect(preview.description, contains('Hit damage shares: 0.2, 0.3, 0.5'));
+      expect(preview.description, contains('Critical chance: 0'));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('MR hides restricted choices while preserving existing rewards', (
+    tester,
+  ) async {
+    final app = CatalogState();
+    (app.catalog!['skills'] as List).addAll([
+      {'id': 501000, 'name': 'Attack', 'attr': 'Fight'},
+      {'id': 501010, 'name': '針千本', 'attr': 'Ability'},
+    ]);
+    final unit = <String, dynamic>{
+      'synchro': [
+        [
+          ['ActiveSkill', 440010],
+          ['ActiveSkill', 501000],
+          ['ActiveSkill', 501010],
+          ['PassiveSkill', 1001],
+        ],
+      ],
+    };
+    final before = jsonEncode(unit);
+    await showStep(
+      tester,
+      (unit, set) => MrStep(unit: unit, set: set),
+      unit,
+      state: app,
+    );
+    for (final title in [
+      'Limit burst (Unverified)',
+      'Attack (Unverified)',
+      '針千本 (Unverified)',
+      '攻撃力アップ (Unverified)',
+    ]) {
+      expect(
+        find.text(title),
+        findsOneWidget,
+      ); // Existing reward, not a picker entry.
+    }
+    expect(jsonEncode(unit), before);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'all 26 default Resonances remain available in the Resonance selector',
+    (tester) async {
+      final app = CatalogState();
+      app.catalog = {
+        'skills': [
+          for (var i = 0; i < 26; i++)
+            {
+              'id': 440000 + i,
+              'name': 'Resonance $i',
+              'attr': 'FinishBlow',
+              'seq': [1],
+            },
+        ],
+        'visions': [
+          for (var i = 0; i < 26; i++)
+            {'name': 'Vision $i', 'finishBlow': 440000 + i},
+        ],
+      };
+      final unit = <String, dynamic>{'lb': 440000};
+      await showStep(
+        tester,
+        (unit, set) => NativeResonanceStep(unit: unit, set: set),
+        unit,
+        state: app,
+      );
+      final picker = tester.widget<DropdownButton<num>>(
+        find.byType(DropdownButton<num>),
+      );
+      expect(picker.items!.length, 26);
+      expect(picker.items!.map((item) => item.value).toSet(), {
+        for (var i = 0; i < 26; i++) 440000 + i,
+      });
+      expect(unit['lb'], 440000);
       expect(tester.takeException(), isNull);
     },
   );

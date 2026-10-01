@@ -101,16 +101,17 @@ class _MrStepState extends State<MrStep> {
     String passiveTitle(Map<String, dynamic> row) =>
         catalogEntryTitle(cat, 'passives', row);
     final skillDescriptions = catalogDescriptions(cat, 'skills');
+    final skillSummaries = catalogAbilitySummaries(cat);
     final passiveDescriptions = catalogDescriptions(cat, 'passives');
     final visibleSkills = {
-      for (final s in catalogLibrary(cat, 'skills', [
+      for (final s in catalogSelectableLibrary(cat, 'skills', [
         ...app.units,
         widget.unit,
       ]))
         s['id'],
     };
     final visiblePassives = {
-      for (final p in catalogLibrary(cat, 'passives', [
+      for (final p in catalogSelectableLibrary(cat, 'passives', [
         ...app.units,
         widget.unit,
       ]))
@@ -344,12 +345,26 @@ class _MrStepState extends State<MrStep> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  Text(
-                                    (r['desc'] ?? '').toString(),
-                                    style: Guide.small(),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  if (r['kind'] == 'ActiveSkill' &&
+                                      r['custom'] != true) ...[
+                                    Text(
+                                      skillSummaries[r['id']]?.description ??
+                                          '',
+                                      style: Guide.small(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      skillSummaries[r['id']]?.stats ?? '',
+                                      style: Guide.small(),
+                                    ),
+                                  ] else
+                                    Text(
+                                      (r['desc'] ?? '').toString(),
+                                      style: Guide.small(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                 ],
                               ),
                             ),

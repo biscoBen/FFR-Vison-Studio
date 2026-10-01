@@ -28,7 +28,7 @@ class _BonusesStepState extends State<BonusesStep> {
     String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'passives', row);
     final allPassives = (cat['passives'] as List).cast<Map<String, dynamic>>();
     final descriptions = catalogDescriptions(cat, 'passives');
-    final passives = catalogLibrary(cat, 'passives', [...app.units, widget.unit])
+    final passives = catalogSelectableLibrary(cat, 'passives', [...app.units, widget.unit])
       ..sort((a, b) => title(a).compareTo(title(b)));
     final s = q.trim().toLowerCase();
     final shown = passives.where((p) => s.isEmpty || title(p).toLowerCase().contains(s) || (descriptions[p['id']] ?? '').toLowerCase().contains(s)).toList();

@@ -101,7 +101,17 @@ is hidden when a verified same-name version has matching complete combat data, e
 or internal IDs differ. Real differences in targets, power, MP cost, accuracy, hit data and effects remain selectable.
 Default-owned and roster-used IDs are retained. This filters Studio's pickers; it does not delete or remap game rows.
 
-Descriptions show recorded stats and effects in a consistent order, with internal voice/debug metadata removed.
+The default visions' Resonance moves are reserved for Resonance selection and hidden from Abilities and MR ability
+pickers. Untranslated names and entries named **Attack** are also hidden from ordinary selection. Existing learned
+abilities and MR rewards keep their IDs and remain editable. Ability rows show short prose and recorded
+**Type; Target; Accuracy; Break; Power; MP; Hits; Crit Chance**, with the full stat line wrapping as needed.
+
+**Source: <unit names>** identifies confirmed non-vision users, including enemies and base party members. The engine
+traces original commands, level grants, passives, explicit AI skill IDs and alternate target rows, using the prepared
+game's English unit names. Missing or ambiguous sources stay unlabelled. Source labels do not verify compatibility
+on added visions or change **(Unverified)** status.
+
+Hover descriptions show recorded stats and effects in a consistent order, with internal voice/debug metadata removed.
 Extracted values take precedence; absent values are omitted, and undocumented effect parameters are shown as recorded
 numbers. Hover to read the full description. Duplicate matching requires the prepared game's full extracted tables.
 

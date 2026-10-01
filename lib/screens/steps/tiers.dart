@@ -124,11 +124,13 @@ class GrantTools extends StatelessWidget {
       ]);
 }
 
-/// A draggable library row: icon, title, one line of detail, and the add menu.
+/// A draggable library row with optional compact prose and full hover details.
 class LibraryRow extends StatelessWidget {
-  const LibraryRow({super.key, required this.title, required this.detail, this.icon, this.leading, required this.payload, required this.onAdd, this.done = false, this.doneText = 'learned', this.zebra = false});
+  const LibraryRow({super.key, required this.title, required this.detail, this.summary, this.fullDescription, this.icon, this.leading, required this.payload, required this.onAdd, this.done = false, this.doneText = 'learned', this.zebra = false});
   final String title;
   final String detail;
+  final String? summary;
+  final String? fullDescription;
   final Widget? icon;
   final Widget? leading;
   final DragPayload payload;
@@ -144,9 +146,10 @@ class LibraryRow extends StatelessWidget {
       child: Row(children: [
         if (leading != null) ...[leading!, const SizedBox(width: 8)],
         if (icon != null) ...[icon!, const SizedBox(width: 8)],
-        Expanded(child: DescriptionTooltip(title: title, description: detail, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(child: DescriptionTooltip(title: title, description: fullDescription ?? detail, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Guide.strong(done ? Guide.inkFaint : Guide.ink), maxLines: 1, overflow: TextOverflow.ellipsis),
-          Text(detail, style: Guide.small(done ? Guide.inkFaint : Guide.inkSoft), maxLines: 2, overflow: TextOverflow.ellipsis),
+          if (summary != null) Text(summary!, style: Guide.small(done ? Guide.inkFaint : Guide.inkSoft), maxLines: 2, overflow: TextOverflow.ellipsis),
+          if (detail.isNotEmpty) Text(detail, style: Guide.small(done ? Guide.inkFaint : Guide.inkSoft), maxLines: summary == null ? 2 : null, overflow: summary == null ? TextOverflow.ellipsis : TextOverflow.clip),
         ]))),
         const SizedBox(width: 8),
         if (done) Text(doneText, style: Guide.small(Guide.inkFaint)) else TierMenu(onPick: onAdd),

@@ -11,7 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Reserve the 26 default vision Resonances and their alternate-target row for Resonance selection. Hide them from
+  ordinary Abilities and MR ability pickers, together with untranslated names and entries named **Attack**. Keep
+  existing equipped abilities, MR rewards, full catalog rows and saved configurations intact.
+- Show ability rows as a short effect description followed by **Type; Target; Accuracy; Break; Power; MP; Hits;
+  Crit Chance**. Wrap the stat line instead of cutting it off. Preserve real variant values and recorded zeroes;
+  omit missing values. Generate missing damage/healing/effect summaries only from recorded mechanics.
+- Keep the previous complete recorded descriptions, effects and variant details in scrollable hover text, including
+  library and learned rows. Apply the same compact ability display to MR reward selection.
+- Add **Source: <unit names>** labels for confirmed non-vision users, including enemies and base party members.
+  Trace original command assignments, level grants, passives, explicit AI skill IDs and alternate-target references;
+  resolve English unit names from the game's localization. Source ownership does not change **(Unverified)** status.
+  Missing/ambiguous sources remain unlabelled; matching skill names alone never proves ownership.
+- Validation: game source labels require the prepared game tables on the tester's PC. Cloud regression fixtures verify
+  tracing/filtering, compact values and full hover behavior; a full game install and in-game rendering are unavailable here.
 
 ## Published skill-library cleanup — 2026-09-30
 

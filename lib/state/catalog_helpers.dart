@@ -1,6 +1,36 @@
 /// Plain-language readings of the engine's catalog rows, mirroring tools/devui/web/src/api.ts `describe` and Easy.tsx.
 const cgResonanceIds = {440010, 440090, 440110};
 
+/// The catalog falls back to source names for untranslated entries. Keep Latin
+/// names and English punctuation, including accented names and apostrophes.
+bool catalogNameIsEnglish(dynamic value) {
+  final name = (value ?? '').toString().trim();
+  return RegExp(r'[A-Za-z]').hasMatch(name) &&
+      !RegExp(r'[\u0370-\u052f\u0590-\u06ff\u0900-\u0e7f\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uf900-\ufaff]').hasMatch(name);
+}
+
+/// Selection filters do not remove full catalog rows or existing saved grants.
+List<Map<String, dynamic>> catalogSelectableLibrary(
+  Map<String, dynamic> catalog,
+  String kind,
+  Iterable<dynamic> roster,
+) {
+  final resonanceIds = {
+    for (final vision in catalog['visions'] as List? ?? [])
+      if (vision['finishBlow'] is num) vision['finishBlow'],
+  };
+  return catalogLibrary(catalog, kind, roster).where((row) {
+    if (!catalogNameIsEnglish(row['name'])) return false;
+    if (kind == 'skills' &&
+        (row['name'].toString().trim().toLowerCase() == 'attack' ||
+            row['attr'].toString().split('::').last == 'FinishBlow' ||
+            resonanceIds.contains(row['id']))) {
+      return false;
+    }
+    return true;
+  }).toList();
+}
+
 /// Collapse only duplicates proven to have identical extracted game mechanics.
 /// Prefer verified combat matches unless a default vision or current roster uses
 /// the unverified ID. Original game rows and equipped-ID lookups stay intact.
@@ -147,9 +177,15 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
   final label = name.isEmpty
       ? '${kind == 'skills' ? 'skill' : 'passive'} ${row['id']}'
       : name;
-  if (verified ?? catalogEntryVerified(row, kind)) return label;
   final owners = catalogDefaultOwners(catalog, kind, row);
-  return '$label (Unverified)${owners.isEmpty ? '' : ' — ${owners.join(', ')}'}';
+  final sources = {
+    for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['id']}'] as List? ?? []))
+      if (catalogNameIsEnglish(name)) name.toString(),
+  }.toList()..sort();
+  final unverified = !(verified ?? catalogEntryVerified(row, kind));
+  return '$label${unverified ? ' (Unverified)' : ''}'
+      '${unverified && owners.isNotEmpty ? ' — ${owners.join(', ')}' : ''}'
+      '${sources.isNotEmpty ? ' — Source: ${sources.join(', ')}' : ''}';
 }
 
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {

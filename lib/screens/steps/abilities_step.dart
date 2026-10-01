@@ -40,7 +40,8 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
     String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'skills', row);
     final skills = (cat['skills'] as List).cast<Map<String, dynamic>>();
     final descriptions = catalogDescriptions(cat, 'skills');
-    final lib = catalogLibrary(cat, 'skills', [...app.units, widget.unit])
+    final summaries = catalogAbilitySummaries(cat);
+    final lib = catalogSelectableLibrary(cat, 'skills', [...app.units, widget.unit])
       ..sort((a, b) { final g = _group(a).compareTo(_group(b)); return g != 0 ? g : (a['name'] as String).compareTo(b['name'] as String); });
     final studio = ((cat['studioSkills'] as List?) ?? []).cast<Map<String, dynamic>>();
     final groups = [if (studio.isNotEmpty) 'Studio moves', ...lib.map(_group).toSet()];
@@ -97,7 +98,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               ),
             ]),
           ),
-          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". Specialized and unverified moves are included; unused exact duplicates are collapsed.', style: Guide.small())),
+          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". Hover for full details. Resonance moves are reserved for Resonance selection.', style: Guide.small())),
           Expanded(
             child: Container(
               margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -125,7 +126,9 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                         return LibraryRow(
                           zebra: i.isOdd,
                           title: title(x),
-                          detail: descriptions[x['id']] ?? describe(x),
+                          summary: summaries[x['id']]?.description,
+                          detail: summaries[x['id']]?.stats ?? '',
+                          fullDescription: descriptions[x['id']] ?? '',
                           leading: ElementSwatch(x['element'] as String?),
                           icon: png != null ? Frame(padding: 1, width: 1, child: Image.network(app.api!.iconUrl(png), width: 22, height: 22)) : null,
                           payload: DragPayload('skill', x['id'] as num),
@@ -160,7 +163,13 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                 const SizedBox(width: 8),
                 Expanded(child: DescriptionTooltip(title: custom != null ? custom['en'].toString() : x != null ? title(x) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
                     ? Row(children: [Text(custom['en'].toString(), style: Guide.strong()), const SizedBox(width: 6), Text('CUSTOM', style: Guide.label(Guide.purple).copyWith(fontSize: 10))])
-                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(x != null ? title(x) : 'skill ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
+                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(x != null ? title(x) : 'skill ${g[1]}', style: Guide.strong()),
+                        if (summaries[g[1]] != null) ...[
+                          Text(summaries[g[1]]!.description, style: Guide.small(), maxLines: 2, overflow: TextOverflow.ellipsis),
+                          if (summaries[g[1]]!.stats.isNotEmpty) Text(summaries[g[1]]!.stats, style: Guide.small()),
+                        ],
+                      ]))),
                 GrantTools(tier: i, onMove: (t) => move(g, i, t), onRemove: () => remove(i, j)),
               ]),
             );

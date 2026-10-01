@@ -1,6 +1,7 @@
 """Identify exact unused catalogue duplicates without deleting any game rows."""
 import copy
 import json
+import re
 from pathlib import Path
 
 _cached = None
@@ -118,6 +119,107 @@ def integers(value):
         for item in value: yield from integers(item)
 
 
+def other_unit_sources(catalog, rows, raw, root):
+    """Confirmed usage by non-vision units, including enemies and base party.
+
+    Never infer an owner from a skill name, row name, voice or nearby integer.
+    Source labels describe usage, not playable compatibility or verification.
+    """
+    loaded = {}
+    def optional(rel):
+        if rel not in loaded:
+            try: loaded[rel] = rows(rel)
+            except FileNotFoundError: loaded[rel] = {}
+        return loaded[rel]
+    loc = {}
+    for rel in ('extracted/locres_en.json', 'data/locres_en.json'):
+        path = Path(root) / rel
+        if path.exists():
+            loc = json.loads(path.read_bytes()); break
+    def english(value):
+        return (isinstance(value, str) and bool(re.search(r'[A-Za-z]', value))
+                and not re.search(r'[\u3040-\u30ff\u3400-\u9fff]', value))
+    def name(unit):
+        value = unit.get('Name')
+        if isinstance(value, dict):
+            namespace = str(value.get('table') or '').split('/')[-1].split('.')[-1]
+            value = loc.get(namespace, {}).get(value.get('key'))
+        # The same canonical localization key used by the original game.
+        if not english(value): value = loc.get('ST_UnitName', {}).get(f"UnitName{unit.get('ID')}")
+        return value.strip() if english(value) else None
+    default_ids = {v['id'] for v in catalog.get('visions', [])}
+    units = {u['ID']: u for u in optional('Unit/DT_UnitParameter').values()
+             if type(u.get('ID')) is int and u['ID'] not in default_ids}
+    labels = {uid: name(u) for uid, u in units.items()}
+    assigned = {kind: {} for kind in raw}
+    available_ids = {kind: {row['ID'] for row in definitions.values()} for kind, definitions in raw.items()}
+    def add(kind, sid, uid):
+        if type(sid) is int and sid in available_ids[kind] and labels.get(uid):
+            assigned[kind].setdefault(sid, set()).add(uid)
+    commands = {}
+    for command in optional('Skill/DT_CommandSkillData').values():
+        uid = command.get('unitIdToUseSkill')
+        if uid in units: commands.setdefault(command.get('ID'), set()).add(uid)
+    for row in raw['skills'].values():
+        for command in row.get('belongCommandList') or []:
+            for uid in commands.get(command, []): add('skills', row['ID'], uid)
+    levels = {r.get('ID'): r.get('DataTable') for r in optional('Unit/LevelParameter/DT_UnitLevelParameterList').values()}
+    level_paths = {}
+    for directory, suffix in ((Path(root) / 'extracted/rows', '.json'),
+                              (Path(root) / 'extracted/legacy/FFRS/Content/Datatable', '.uasset')):
+        for path in (directory / 'Unit/LevelParameter').rglob('*' + suffix):
+            level_paths.setdefault(path.stem, set()).add(path.relative_to(directory).with_suffix('').as_posix())
+    for uid, unit in units.items():
+        for sid in unit.get('passiveSkillList') or []: add('passives', sid, uid)
+        table = levels.get(unit.get('LevelParamId'))
+        if isinstance(table, str):
+            basename = table.replace('\\', '/').split('/')[-1].split('.')[0]
+            candidates = level_paths.get(basename, set())
+            normalized = table.replace('\\', '/').split('.')[0]
+            prefix = '/Game/Datatable/'
+            if normalized.startswith(prefix):
+                candidates = candidates & {normalized[len(prefix):]}
+            elif len(candidates) != 1:
+                candidates = set()  # An ambiguous basename does not prove usage.
+            for rel in sorted(candidates):
+                for level in optional(rel).values():
+                    for sid in level.get('AddSkills') or []: add('skills', sid, uid)
+    def ai_skills(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                normalized = key.replace('_', '').lower()
+                if normalized in ('skillid', 'useskillid', 'activeskillid', 'skillids', 'skillidlist', 'skilllist'):
+                    if type(child) is int: yield child
+                    elif isinstance(child, list):
+                        yield from (i for i in child if type(i) is int)
+                yield from ai_skills(child)
+        elif isinstance(value, list):
+            for item in value: yield from ai_skills(item)
+    linked_ai = {}
+    for uid, unit in units.items():
+        for key, value in unit.items():
+            if key.replace('_', '').lower() in ('aiid', 'aiparamid', 'aiparameterid', 'btlunitaiparameterid') and type(value) is int:
+                linked_ai.setdefault(value, set()).add(uid)
+    for row in optional('Unit/AI/DT_BtlUnitAIParameter').values():
+        uid = row.get('UnitId', row.get('unitId'))
+        assigned_units = {uid} if uid in units else linked_ai.get(row.get('ID'), set())
+        for uid in assigned_units:
+            for sid in ai_skills(row): add('skills', sid, uid)
+    # Follow actual alternate target references, with cycle protection.
+    by_id = {r['ID']: r for r in raw['skills'].values()}
+    pending = [(sid, uid) for sid, ids in assigned['skills'].items() for uid in ids]
+    seen = set()
+    while pending:
+        sid, uid = pending.pop()
+        if (sid, uid) in seen: continue
+        seen.add((sid, uid))
+        twin = by_id.get(sid, {}).get('skillIdAfterModeChange')
+        if type(twin) is int and twin in by_id:
+            add('skills', twin, uid); pending.append((twin, uid))
+    return {kind: {str(sid): sorted({labels[uid] for uid in ids}) for sid, ids in sources.items()}
+            for kind, sources in assigned.items()}
+
+
 def variant_fields(named):
     """Report differing values, including fields omitted from the UI catalog."""
     def leaves(value, prefix=''):
@@ -171,9 +273,10 @@ def analyze(catalog, root, row_loader=None):
     def mechanics(row):
         return {k: copy.deepcopy(v) for k, v in row.items() if k not in ('ID', 'SortId', 'Name', 'Description')}
     owners, complete = default_owners(catalog, rows, raw)
+    sources = other_unit_sources(catalog, rows, raw, root)
     result = {'schema': 2, 'available': True, 'groups': {}, 'variants': {},
               'protected': {k: sorted(v & referenced) for k, v in ids.items()},
-              'owners': owners, 'ownersComplete': complete, 'details': {}, 'verifiedMatches': {}, 'combatVariants': {}}
+              'owners': owners, 'sources': sources, 'ownersComplete': complete, 'details': {}, 'verifiedMatches': {}, 'combatVariants': {}}
     for kind, definitions in raw.items():
         by_id = {v['ID']: v for v in definitions.values()}; groups = {}; named = {}; combat_groups = {}; combat_named = {}; details = {}
         for entry in catalog[kind]:
@@ -214,7 +317,9 @@ def install(catalog_module, root):
         global _cached
         catalog = original(*args, **kwargs)
         base = Path(root) / 'extracted/rows'
-        files = sorted(base.rglob('*.json'))
+        files = sorted(base.rglob('*.json')) + [p for p in (
+            Path(root) / 'extracted/locres_en.json', Path(root) / 'data/locres_en.json'
+        ) if p.exists()]
         fingerprint = (tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files),
                        json.dumps({k: catalog.get(k, []) for k in ('skills', 'passives', 'visions')}, sort_keys=True))
         try:
