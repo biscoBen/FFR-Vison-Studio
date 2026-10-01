@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published default vision revert — 2026-10-01
+
+Changes in [`f36e8cd`](https://github.com/biscoBen/FFR-Vison-Studio/commit/f36e8cd37477c7781b261223a4e48bdd61f873b2),
+[test package 36893119483](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36893119483).
+
 - Add **Revert to original** to the default vision popup beside **Edit vision** and **Change model**. Reuse the
   full reset action to restore the original model, abilities, passives, stats, Resonance and MR rewards by removing
   only that vision's overrides. Confirmation explains that the next build/install applies the reset to the game.
@@ -19,6 +26,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   confirmation button for default visions. Added units retain their existing Remove action.
 - Keep build/install available after reverting the last edited vision when a Studio mod is already installed, so
   the original roster can replace that installed build without requiring a new custom vision.
+
+Windows validation passed: analysis, **110 Flutter tests**, a separate genuine frozen-engine fresh-start check,
+**95 Python tests**, launcher/import checks and the release build. Regression checks cover full reset, cancellation,
+preserving other roster edits, disabled actions and removing stale model output during a clean rebuild. The
+downloaded ZIP's checksum, branch/commit metadata and bundled native-vision sources were verified. Applying the
+reset to an actual game installation still needs a build/install and in-game check on the tester's PC.
 
 ## Published compact ability library — 2026-10-01
 
