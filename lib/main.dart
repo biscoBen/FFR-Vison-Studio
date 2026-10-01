@@ -214,6 +214,13 @@ class Shell extends StatelessWidget {
               ]),
             ),
           ],
+          if (app.spriteWarning != null && !app.engineDown) ...[
+            const SizedBox(height: 10),
+            Box(fill: Guide.warn, child: Row(children: [
+              Expanded(child: Text(app.spriteWarning!, style: Guide.small())),
+              GuideButton('Open logs', small: true, onPressed: app.openLogs),
+            ])),
+          ],
           const SizedBox(height: 12),
           Expanded(child: Paper(child: AnimatedSwitcher(duration: Guide.fast, layoutBuilder: (current, previous) => Stack(fit: StackFit.expand, children: [...previous, ?current]), child: u == null ? const HomeScreen(key: ValueKey('home')) : UnitScreen(key: ValueKey(u['key']))))),
         ]),

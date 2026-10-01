@@ -85,6 +85,18 @@ Use `--ref master` to download a separate baseline build without changing or mer
 Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
 Full mod tests still need the game's installation and extracted data.
 
+## Character sprites at startup
+
+Studio checks every hosted character form before opening the roster, including units never selected in **Add a unit**.
+The first launch downloads all available sprite packs and prepares their unit data, with progress on the startup page.
+Later launches reuse complete packs and download only what is missing. A file inventory detects missing sheets, icons
+and animation files even when an older completion marker remains. Repairs retain existing artwork and can reuse a
+checksum-verified ZIP already on disk.
+
+The first complete download takes longer and needs space for the sprite packs, their cached ZIPs and unit data.
+If a download fails, Studio opens with its installed assets, shows the error and retries missing forms next launch.
+Details are saved to `logs/sprite-startup.log` in the Studio data folder; **Open logs** opens that folder.
+
 ## Automatic animation repair
 
 Fresh roster builds first try to reuse a native animation for a missing ordinary ability or spell. A donor must be

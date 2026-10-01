@@ -120,7 +120,7 @@ class Downloader {
 
   /// Extracts a zip into `dir` (streamed from disk, so large engine archives do not sit in memory twice).
   /// Entry names that would escape `dir` are skipped.
-  static Future<void> unzip(File zip, String dir, {void Function(int, int)? onProgress}) async {
+  static Future<void> unzip(File zip, String dir, {void Function(int, int)? onProgress, bool overwriteExisting = true}) async {
     Directory(dir).createSync(recursive: true);
     final root = p.normalize(p.absolute(dir));
     final input = InputFileStream(zip.path);
@@ -135,6 +135,7 @@ class Downloader {
         if (!p.isWithin(root, out) && out != root) continue;
         if (e.isFile) {
           final of = File(out);
+          if (!overwriteExisting && of.existsSync() && of.lengthSync() > 0) continue;
           of.parent.createSync(recursive: true);
           final os = OutputFileStream(of.path);
           e.writeContent(os);

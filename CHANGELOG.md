@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Download all hosted character sprite forms on startup, including units never selected in Add a unit. Check the full
+  sprite-file inventory each launch, restore missing sheets, icons and animation files, and reuse complete packs and
+  verified ZIPs. Keep existing artwork and roster edits. Prepare the engine's unit data before opening the roster;
+  show progress during the first download, report failures, and retry missing forms on the next launch.
+  Flutter analysis, 133 Flutter tests, 95 Python regressions and both bundled-extension checksum checks passed.
+  Startup regressions cover all forms without picker interaction, persistent cache reuse, deleted files, retained artwork,
+  incomplete markers, checksum errors, preparation/index failures, offline starts and retrying deferred downloads.
+  The Windows package is pending; the first full download takes longer and needs space for all hosted forms.
 
 ## Published cached Windows engine — 2026-10-01
 

@@ -13,6 +13,7 @@ import '../services/downloader.dart';
 import '../services/engine.dart';
 import '../services/game_locator.dart';
 import '../services/paths.dart';
+import '../services/sprite_cache.dart';
 import '../version.dart';
 import 'catalog_helpers.dart';
 
@@ -37,6 +38,7 @@ class AppState extends ChangeNotifier {
   final AppPaths paths;
   final BundledFeatures features;
   late final Downloader dl = Downloader(hostBase);
+  late final SpriteCache _sprites = SpriteCache(paths, dl);
   Engine? engine;
   Api? api;
 
@@ -48,6 +50,7 @@ class AppState extends ChangeNotifier {
     Progress('Download the Brave Exvius tables'),
     Progress('Download the unit icons'),
     Progress('Start the engine'),
+    Progress('Download missing character sprites'),
   ];
   String? gameRoot;
   bool gameRunning = false;
@@ -70,6 +73,7 @@ class AppState extends ChangeNotifier {
   Timer? _statusTimer;
   String? notice; // one-line message in the header for a few seconds
   String? banner; // a standing message (offline, old app); shown until the situation changes
+  String? spriteWarning;
   String? updateAvailable; // "1.0.0 build 5" when the host has a newer app
   bool engineDown = false; // the engine process ended on its own
   bool updating = false;
@@ -152,12 +156,15 @@ class AppState extends ChangeNotifier {
         try { hostIndex = json.decode(File(p.join(paths.root, 'ffbe_index_cache.json')).readAsStringSync()) as JsonMap; } catch (_) {}
       }
       await _startEngine(bootSteps[4]);
+      await prepareStartupSprites();
+      if (_stopping) return;
       if (!isTestBuild) gameRoot ??= await GameLocator.detect();
       final st = await api!.status();
       phase = (st['setupNeeded'] == true) ? Phase.setup : Phase.ready;
       if (phase == Phase.ready) await loadAll();
       _statusTimer = Timer.periodic(const Duration(seconds: 8), (_) => refreshStatus());
     } catch (e) {
+      if (_stopping) return;
       final working = bootSteps.where((s) => s.state == 'working');
       for (final s in working) { s.state = 'failed'; s.detail = e.toString(); }
       fatal = e.toString();
@@ -207,6 +214,8 @@ class AppState extends ChangeNotifier {
   Future<void> restartEngine() async {
     try {
       await _startEngine(bootSteps[4]);
+      await prepareStartupSprites();
+      if (_stopping) return;
       if (phase == Phase.ready) await loadAll();
       showNotice('The engine is back.');
     } catch (e) {
@@ -357,24 +366,100 @@ class AppState extends ChangeNotifier {
   /// answered the old one-request-per-icon pickers with 429s once many people used the app at the same time).
   File iconFile(String form) => File(p.join(paths.icons, '$form.png'));
 
-  /// Makes sure a form's sprite pack is on this machine: downloads it from its shard and lets the engine index it.
-  /// A pack counts as present only when its sheet, its parts file and the completion marker are all there.
+  /// Download only missing sprite files and let the engine index a repaired pack.
   Future<void> ensureSprites(String form, {void Function(String)? onStep}) async {
-    final spriteDir = p.join(paths.engineSprites, form);
-    final complete = File(p.join(spriteDir, '.complete')).existsSync() ||
-        (File(p.join(spriteDir, 'unit_anime_$form.png')).existsSync() && File(p.join(spriteDir, 'unit_cgg_$form.csv')).existsSync());
-    if (complete) return;
     final forms = (hostIndex?['forms'] as JsonMap?) ?? {};
     final info = forms[form] as JsonMap?;
-    if (info == null) throw StateError(banner != null && banner!.startsWith('Could not reach') ? 'the sprites for this look are not on this machine and the download host is unreachable' : 'no sprite pack for form $form is available on the host yet');
-    onStep?.call('downloading the sprites');
-    final f = await dl.download(info['url'] as String, p.join(paths.downloads, '$form.zip'), sha256: info['sha256'] as String?);
-    await Downloader.unzip(f, spriteDir);
-    if (!File(p.join(spriteDir, 'unit_anime_$form.png')).existsSync()) throw StateError('the sprite pack for $form is incomplete');
-    File(p.join(spriteDir, '.complete')).writeAsStringSync(DateTime.now().toIso8601String());
+    if (!await _sprites.ensure(form, info, onStep: onStep)) return;
     onStep?.call('indexing');
     await api!.rebuildFfbeIndex();
     _anims.remove(form);
+  }
+
+  /// Prepare all hosted forms before showing the roster, including never-picked units.
+  Future<void> prepareStartupSprites() async {
+    final step = bootSteps[5];
+    step.state = 'working'; step.fraction = null; step.detail = 'Checking saved sprites';
+    spriteWarning = null;
+    notifyListeners();
+    final hosted = hostIndex?['units'] as List?;
+    if (hosted == null) {
+      spriteWarning = 'Could not check missing character sprites. Studio will retry next start.';
+      step.state = 'done'; step.detail = 'Character list unavailable; retry next start';
+      notifyListeners();
+      return;
+    }
+    final targets = <String, String>{};
+    for (final unit in hosted.cast<JsonMap>()) {
+      for (final form in (unit['packs'] as List? ?? [])) {
+        targets.putIfAbsent(form.toString(), () => unit['id'].toString());
+      }
+    }
+    final missing = targets.entries.where((entry) =>
+        !_sprites.isComplete(entry.key) || !_sprites.previewReady(entry.key)).toList();
+    var ready = targets.length - missing.length;
+    var consecutiveFailures = 0;
+    final rebuildNeeded = missing.isNotEmpty;
+    final prepared = <String>[];
+    String? firstError;
+    void recordError(String form, Object error) {
+      firstError ??= error.toString();
+      try {
+        final log = File(p.join(logsDir, 'sprite-startup.log'));
+        log.parent.createSync(recursive: true);
+        log.writeAsStringSync('${DateTime.now().toIso8601String()} $form: $error\n', mode: FileMode.append);
+      } catch (_) {}
+    }
+    final offline = banner?.startsWith('Could not reach the download host.') == true;
+    for (final entry in missing) {
+      if (_stopping) return;
+      try {
+        if (offline) { throw StateError('The download host is unreachable.'); }
+        void progress(String stage) {
+          if (_stopping) return;
+          step.detail = '$ready/${targets.length} forms ready · ${entry.key}: $stage';
+          step.fraction = targets.isEmpty ? 1 : ready / targets.length;
+          notifyListeners();
+        }
+        final info = (hostIndex?['forms'] as JsonMap?)?[entry.key] as JsonMap?;
+        await _sprites.ensure(entry.key, info, onStep: progress);
+        await prepareUnitPreview(entry.value, entry.key, onStep: progress);
+        if (_stopping) return;
+        prepared.add(entry.key);
+        _anims.remove(entry.key);
+        ready++;
+        consecutiveFailures = 0;
+      } catch (error) {
+        recordError(entry.key, error);
+        consecutiveFailures++;
+        // Avoid thousands of repeated failures when an asset host is unavailable.
+        if (offline || consecutiveFailures >= 3) break;
+      }
+    }
+    if (_stopping) return;
+    if (rebuildNeeded) {
+      try {
+        step.detail = 'Refreshing the character list'; notifyListeners();
+        await api!.rebuildFfbeIndex();
+      } catch (error) {
+        recordError('character list', error);
+        ready -= prepared.length;
+        prepared.clear();
+      }
+    }
+    if (_stopping) return;
+    for (final form in prepared) {
+      try { _sprites.previewMarker(form).writeAsStringSync('1'); }
+      catch (error) { recordError(form, error); ready--; }
+    }
+    final remaining = targets.length - ready;
+    if (remaining > 0) {
+      spriteWarning = 'Sprites for $remaining character form${remaining == 1 ? '' : 's'} could not be prepared. Studio will retry next start. '
+          'First error: $firstError';
+    }
+    step.state = 'done'; step.fraction = 1;
+    step.detail = '$ready/${targets.length} forms ready${remaining > 0 ? '; $remaining retry next start' : ''}';
+    notifyListeners();
   }
 
   /// Prepare the complete on-demand unit pack before displaying a hosted look.
