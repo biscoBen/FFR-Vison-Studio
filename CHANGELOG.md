@@ -25,6 +25,9 @@ Changes in [`61e4c7a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/61e4c
   all 95 Python regressions and both extension checksums passed. Windows CI passed Flutter analysis and the full suite,
   cache regressions, genuine frozen-engine fresh startup, Python tests, launcher/import checks and the release build,
   and saved the verified engine archive to the Actions cache.
+  A subsequent [test package 36929060613](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36929060613)
+  passed the same Windows checks and confirmed that real startup reused the checksum-verified cache without downloading
+  from the engine host. The downloaded test ZIP's SHA-256 and branch/commit/run metadata were verified.
   GitHub may evict an unused cache, which restores the existing download path.
 
 ## Published complete ability sources and build diagnostics — 2026-10-01

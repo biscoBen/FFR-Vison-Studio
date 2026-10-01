@@ -62,9 +62,9 @@ only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance rec
 `/workspace/.runtime/ffr/builds`. Commit and push changes before building them.
 
 Windows CI reuses its startup-test engine ZIP through an Actions cache keyed by the pinned SHA-256, so app commits
-do not require another engine transfer after the cache is populated. Every build verifies that checksum and extracts
-a fresh engine for startup testing. A cache miss uses the existing `ffr.luminest.io` URL; partial downloads and corrupt
-archives are rejected. GitHub can evict unused caches. For repeated local Windows startup tests, set
+do not require another download from the engine host after the cache is populated. Every build verifies that checksum
+and extracts a fresh engine for startup testing. A cache miss uses the existing `ffr.luminest.io` URL; partial downloads
+and corrupt archives are rejected. GitHub can evict unused caches. For repeated local Windows startup tests, set
 `FFR_STUDIO_ENGINE_CACHE` to a persistent directory; a verified archive is retained there under its SHA-256 filename.
 
 If the cloud proxy blocks GitHub's artifact storage, use `python3 scripts/cloud_windows_build.py --cloud-download`
