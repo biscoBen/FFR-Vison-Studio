@@ -73,6 +73,12 @@ is preserved; choose a different `--output` directory for another download. Comm
 After publication, updating README/CHANGELOG release notes needs no further application build; the published package
 continues to identify its original tested commit.
 
+The verified [workflow 36935925830](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/36935925830) took 4m18s
+from creation through publication, compared with 6m00s for the previous final sprite build. Parallel execution used
+7m40s of runner time versus 5m52s; SDK/Pub cache setup still took 91–105s per Windows runner. A subsequent helper call
+reused the verified package in 7.36s without dispatching another workflow. These single-run measurements show the
+elapsed-time/runner-usage tradeoff; cache restoration, Windows compilation and queue time still vary.
+
 Windows CI reuses its startup-test engine ZIP through an Actions cache keyed by the pinned SHA-256, so app commits
 do not require another download from the engine host after the cache is populated. Every build verifies that checksum
 and extracts a fresh engine for startup testing. A cache miss uses the existing `ffr.luminest.io` URL; partial downloads

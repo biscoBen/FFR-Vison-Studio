@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published faster build and release workflow — 2026-10-01
+
+Changes in [`f749adf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/f749adfd32f6500ab3c5ae5cda9b83e131ea0e31),
+[test package 36935925830](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36935925830).
+
 - Avoid Windows rebuilds and extra releases for README/CHANGELOG-only updates while completing the existing check.
   Run full Windows validation and compilation concurrently, preserve every required check, and publish only after both
   succeed. Pin the verified Flutter version, keep safe SDK/Pub/engine caches, and avoid repeated package resolution.
@@ -18,7 +25,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Reuse the exact commit's running or successful build before dispatching, verifying workflow/build inputs and downloaded
   provenance. Keep explicit force rebuilds and authenticated downloads; reuse the verified test ZIP if artifact storage
   is blocked. Reject incompatible or missing build outputs without substituting another commit's binary.
-  Focused regression checks passed; the final Windows package and delivery timings are pending.
+  Windows CI passed analysis, 134 Flutter tests plus the separate real frozen-engine startup test, 113 Python tests,
+  both bundled-extension checks, 12 launcher/updater checks, 10 official-vision import checks and compilation.
+  The genuine startup test restored and checksum-verified the existing engine cache without another host download.
+  The published ZIP's SHA-256, branch/commit/run/build metadata and embedded build provenance were verified through
+  the authenticated release endpoint. The helper joined the push build and then reused its successful package in
+  7.36 seconds, with only one workflow run for the code commit.
+- Measured workflow wall time was 4m18s, compared with 6m00s for the previous final sprite build (1m42s less).
+  Summed runner execution increased from 5m52s to 7m40s because the two Windows jobs each prepare Flutter.
+  Flutter/Pub cache setup remained the largest cost: 91s for validation and 105s for compilation. These are observations
+  from individual runs, not guaranteed savings. First complete candidate to verified release took 8m44s, including
+  review corrections, local checks, CI waiting and download verification; final documentation verification is additional.
 
 ## Published startup character sprites — 2026-10-01
 
