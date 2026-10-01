@@ -467,7 +467,10 @@ void main() {
       await tester.tap(find.text('4  RESONANCE'));
       await tester.pumpAndSettle();
       expect(find.text('Climhazzard'), findsOneWidget);
-      expect(find.text('Climhazzard (Unverified)'), findsOneWidget);
+      expect(
+        find.text('Climhazzard (Unverified) — Source: Cloud'),
+        findsOneWidget,
+      );
       expect(app.selected!['lb_custom'], isNull);
       expect(api.roster.last, originalFixture());
       expect(tester.takeException(), isNull);

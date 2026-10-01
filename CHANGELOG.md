@@ -11,7 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Label visible abilities, passives and Resonance options from the October 1, 2026 ability-source PDF by exact ID,
+  including verified entries and documented esper/equipment sources. Keep one sorted, deduplicated **Source: <unit names>**
+  label alongside known game-table owners. The reference covers 611 owner labels across the Studio's 635 entries;
+  shared abilities may have other sources. Qualify the six internal-owner-only labels and leave the 24 entries without
+  assignments unlabelled unless the game tables establish a source.
+- Add **awakening=N** for the 322 explicitly documented tiers, identifying the reference owner when several sources
+  are shown. Bond rewards and linked variants do not imply a tier. Preserve all hiding rules, verification status,
+  equipped/saved IDs, compact descriptions, click-to-open selectable details and drag-to-equip behavior.
+- Validation: independently extracted all 635 Studio PDF rows and checked every bundled mapping. Flutter analysis
+  passed with no issues; **118 Flutter tests** and **95 Python tests** passed, including hiding, click/drag and source-label
+  regressions. Both bundled extensions passed checksum checks. The Windows-only fresh-engine test was skipped on Linux;
+  a Windows build, fresh bundled-engine startup and in-game rendering require the Windows runner or a tester's PC.
 
 ## Published click descriptions and source labels — 2026-10-01
 

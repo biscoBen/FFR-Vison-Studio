@@ -1,3 +1,5 @@
+import 'catalog_source_reference.dart';
+
 /// Plain-language readings of the engine's catalog rows, mirroring tools/devui/web/src/api.ts `describe` and Easy.tsx.
 const cgResonanceIds = {440010, 440090, 440110};
 
@@ -179,13 +181,28 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       : name;
   final owners = catalogDefaultOwners(catalog, kind, row);
   final unverified = !(verified ?? catalogEntryVerified(row, kind));
-  final sources = {
+  final reference = row['custom'] == true
+      ? null
+      : catalogSourceReferences[kind]?[row['id']];
+  final confirmedSources = {
     if (unverified) ...owners,
     for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['id']}'] as List? ?? []))
       if (catalogNameIsEnglish(name)) name.toString(),
+    if (reference != null && !reference.internalLabelOnly) reference.owner,
+  };
+  final sources = {
+    ...confirmedSources,
+    if (reference != null) reference.owner,
   }.toList()..sort();
+  final sourceLabels = sources.map((name) =>
+      reference?.internalLabelOnly == true &&
+              name == reference!.owner && !confirmedSources.contains(name)
+          ? '$name (internal label only)'
+          : name);
+  final awakening = reference?.awakening;
   return '$label${unverified ? ' (Unverified)' : ''}'
-      '${sources.isNotEmpty ? ' — Source: ${sources.join(', ')}' : ''}';
+      '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
+      '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}';
 }
 
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {

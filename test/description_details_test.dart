@@ -65,7 +65,8 @@ void main() {
   Finder preview(String step) => find.byWidgetPredicate(
     (widget) =>
         widget is DescriptionDetails &&
-        widget.title == (step == 'passives' ? 'Grit' : 'Fire') &&
+        widget.title ==
+            (step == 'passives' ? 'Grit' : 'Fire — Source: Archwitch Fina') &&
         widget.description.contains(
           step == 'passives' ? 'Equipment cost: 20' : 'Power: 17',
         ),

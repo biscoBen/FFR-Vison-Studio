@@ -188,10 +188,13 @@ void main() {
         await tester.enterText(search, choice.$1);
         await tester.pumpAndSettle();
         if (choice.$1 == 'English') {
-          expect(find.text('English passive'), findsOneWidget);
+          expect(find.text('English passive — Source: Terra'), findsOneWidget);
         }
         if (choice.$1 == 'No sequence') {
-          expect(find.text('No sequence (Unverified)'), findsOneWidget);
+          expect(
+            find.text('No sequence (Unverified) — Source: Archwitch Fina'),
+            findsOneWidget,
+          );
         }
         await tester.tap(find.byTooltip('Add to MR 3'));
         await tester.pumpAndSettle();

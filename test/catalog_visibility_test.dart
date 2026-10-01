@@ -117,15 +117,25 @@ void main() {
         (unit, set) => AbilitiesStep(unit: unit, set: set),
         unit,
       );
-      for (final name in ['No sequence', 'Unit-specific', 'High ID']) {
-        expect(find.text('$name (Unverified)'), findsOneWidget);
+      for (final title in [
+        'No sequence (Unverified) — Source: Archwitch Fina',
+        'Unit-specific (Unverified)',
+        'High ID (Unverified)',
+      ]) {
+        expect(find.text(title), findsOneWidget);
       }
-      expect(find.text('Limit burst (Unverified)'), findsNothing);
+      expect(
+        find.text('Limit burst (Unverified) — Source: Warrior of Light'),
+        findsNothing,
+      );
       expect(find.text('Regular ability'), findsOneWidget);
       expect(find.text('Regular ability (Unverified)'), findsNothing);
       await tester.enterText(find.byType(TextField), 'High ID');
       await tester.pumpAndSettle();
-      expect(find.text('No sequence (Unverified)'), findsNothing);
+      expect(
+        find.text('No sequence (Unverified) — Source: Archwitch Fina'),
+        findsNothing,
+      );
       final row = find.ancestor(
         of: find.text('High ID (Unverified)'),
         matching: find.byType(LibraryRow),
@@ -164,7 +174,7 @@ void main() {
         (unit, set) => BonusesStep(unit: unit, set: set),
         unit,
       );
-      expect(find.text('English passive'), findsOneWidget);
+      expect(find.text('English passive — Source: Terra'), findsOneWidget);
       expect(find.text('攻撃力アップ (Unverified)'), findsOneWidget);
       expect(
         find.ancestor(
@@ -243,7 +253,8 @@ void main() {
         {},
         state: app,
       );
-      expect(find.text('Curaga'), findsNWidgets(2));
+      expect(find.text('Curaga — Source: Ayaka; awakening=3'), findsOneWidget);
+      expect(find.text('Curaga — Source: Leah'), findsOneWidget);
       expect(find.text('Curaga (Unverified)'), findsNWidgets(2));
       expect(
         find.text('Aetherial Wind (Unverified) — Source: Y’shtola'),
@@ -311,7 +322,7 @@ void main() {
       state: app,
     );
     for (final title in [
-      'Limit burst (Unverified)',
+      'Limit burst (Unverified) — Source: Warrior of Light',
       'Attack (Unverified)',
       '針千本 (Unverified)',
       '攻撃力アップ (Unverified)',
