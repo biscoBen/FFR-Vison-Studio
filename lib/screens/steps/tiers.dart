@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../design/theme.dart';
+import '../../design/description_tooltip.dart';
 import '../../design/widgets.dart';
 import '../../state/catalog_helpers.dart';
 
@@ -143,10 +144,10 @@ class LibraryRow extends StatelessWidget {
       child: Row(children: [
         if (leading != null) ...[leading!, const SizedBox(width: 8)],
         if (icon != null) ...[icon!, const SizedBox(width: 8)],
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(child: DescriptionTooltip(title: title, description: detail, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Guide.strong(done ? Guide.inkFaint : Guide.ink), maxLines: 1, overflow: TextOverflow.ellipsis),
           Text(detail, style: Guide.small(done ? Guide.inkFaint : Guide.inkSoft), maxLines: 2, overflow: TextOverflow.ellipsis),
-        ])),
+        ]))),
         const SizedBox(width: 8),
         if (done) Text(doneText, style: Guide.small(Guide.inkFaint)) else TierMenu(onPick: onAdd),
       ]),

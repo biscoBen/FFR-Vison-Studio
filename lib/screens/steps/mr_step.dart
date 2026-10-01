@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
+import '../../design/description_tooltip.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
+import '../../state/catalog_descriptions.dart';
 import 'tiers.dart';
 
 /// MR rewards use the engine's separate, zero-based synchro mastery rows.
@@ -114,12 +116,29 @@ class _MrStepState extends State<MrStep> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog ?? {};
-    final visibleSkills = {for (final s in catalogLibrary(cat, 'skills', [...app.units, widget.unit])) s['id']};
-    final visiblePassives = {for (final p in catalogLibrary(cat, 'passives', [...app.units, widget.unit])) p['id']};
+    final skillDescriptions = catalogDescriptions(cat, 'skills');
+    final passiveDescriptions = catalogDescriptions(cat, 'passives');
+    final visibleSkills = {
+      for (final s in catalogLibrary(cat, 'skills', [
+        ...app.units,
+        widget.unit,
+      ]))
+        s['id'],
+    };
+    final visiblePassives = {
+      for (final p in catalogLibrary(cat, 'passives', [
+        ...app.units,
+        widget.unit,
+      ]))
+        p['id'],
+    };
     final rows = _rewards();
     final skills = <num, Map<String, dynamic>>{
       for (final s in (cat['skills'] as List? ?? []))
-        (s as Map)['id'] as num: Map<String, dynamic>.from(s),
+        (s as Map)['id'] as num: {
+          ...Map<String, dynamic>.from(s),
+          'desc': skillDescriptions[s['id']] ?? '',
+        },
       for (final e in (widget.unit['skills'] as Map? ?? {}).entries)
         int.parse(e.key.toString()): {
           'id': int.parse(e.key.toString()),
@@ -130,16 +149,19 @@ class _MrStepState extends State<MrStep> {
     };
     final passives = <num, Map<String, dynamic>>{
       for (final p in (cat['passives'] as List? ?? []))
-        (p as Map)['id'] as num: Map<String, dynamic>.from(p),
+        (p as Map)['id'] as num: {
+          ...Map<String, dynamic>.from(p),
+          'desc': passiveDescriptions[p['id']] ?? '',
+        },
     };
     final master = widget.unit['master'] as Map?;
     final library = <Map<String, dynamic>>[
       for (final s in skills.values)
         if (s['custom'] == true || visibleSkills.contains(s['id']))
-        {...s, 'kind': 'ActiveSkill', 'title': _abilityTitle(s)},
+          {...s, 'kind': 'ActiveSkill', 'title': _abilityTitle(s)},
       for (final p in passives.values)
         if (visiblePassives.contains(p['id']))
-        {...p, 'kind': 'PassiveSkill', 'title': _passiveTitle(p)},
+          {...p, 'kind': 'PassiveSkill', 'title': _passiveTitle(p)},
       if (master != null)
         {
           'id': master['id'],
@@ -172,6 +194,12 @@ class _MrStepState extends State<MrStep> {
       'MasterSkill' when g[1] == master?['id'] =>
         (master?['en'] ?? 'Master reward').toString(),
       _ => '${g[0]} ${g[1]}',
+    };
+    String grantDescription(Grant g) => switch (g[0]) {
+      'ActiveSkill' => (skills[g[1]]?['desc'] ?? '').toString(),
+      'PassiveSkill' => (passives[g[1]]?['desc'] ?? '').toString(),
+      'MasterSkill' => (master?['desc'] ?? '').toString(),
+      _ => '',
     };
 
     return Row(
@@ -320,22 +348,26 @@ class _MrStepState extends State<MrStep> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  r['title'].toString(),
-                                  style: Guide.strong(),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  (r['desc'] ?? '').toString(),
-                                  style: Guide.small(),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                            child: DescriptionTooltip(
+                              title: r['title'].toString(),
+                              description: (r['desc'] ?? '').toString(),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    r['title'].toString(),
+                                    style: Guide.strong(),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    (r['desc'] ?? '').toString(),
+                                    style: Guide.small(),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           IconButton(
@@ -419,11 +451,17 @@ class _MrStepState extends State<MrStep> {
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: Text(
-                                        grantName(rows[i][j]),
-                                        style: Guide.strong(),
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
+                                      child: DescriptionTooltip(
+                                        title: grantName(rows[i][j]),
+                                        description: grantDescription(
+                                          rows[i][j],
+                                        ),
+                                        child: Text(
+                                          grantName(rows[i][j]),
+                                          style: Guide.strong(),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
                                     if (rows[i][j][0] == 'BaseParameter')

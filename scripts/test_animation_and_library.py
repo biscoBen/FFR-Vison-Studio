@@ -155,7 +155,24 @@ class DuplicateTests(unittest.TestCase):
             before=copy.deepcopy(cat); result=library.analyze(cat,root)
             self.assertEqual(result['groups'],{'skills':[[10,20]],'passives':[[101,102]]})
             self.assertIn(20,result['protected']['skills']);self.assertIn(102,result['protected']['passives'])
+            self.assertEqual(result['variants']['skills']['10'], [{'field':'magnification','value':50,'missing':False}])
+            self.assertEqual(result['variants']['skills']['30'], [{'field':'magnification','value':80,'missing':False}])
+            self.assertEqual(result['variants']['passives']['101'], [{'field':'equipCost','value':20,'missing':False}])
+            self.assertEqual(result['variants']['passives']['103'], [{'field':'equipCost','value':40,'missing':False}])
             self.assertEqual(cat,before)
+
+    def test_variant_details_cover_hidden_fields_effect_parameters_and_missing_values(self):
+        common = {'effectBundleList': [{'effectId': {'mechanics': {'EffectType': 'Counter', 'ParamList': [6, 400120]}}}]}
+        alternative = copy.deepcopy(common)
+        alternative['effectBundleList'][0]['effectId']['mechanics']['ParamList'][1] = -1
+        alternative['onlyWhenFullHP'] = True
+        result = library.variant_fields({'counter': [(10, common), (20, alternative)]})
+        self.assertEqual(result['10'][0], {'field':'effectBundleList.0.effectId.mechanics.ParamList.1', 'value':400120, 'missing':False, 'effectType':'Counter'})
+        self.assertEqual(result['20'][0]['value'], -1)
+        self.assertTrue(result['10'][1]['missing'])
+        self.assertEqual(result['20'][1]['value'], True)
+        self.assertNotIn('EffectType', [r['field'] for r in result['10']])
+        self.assertEqual(library.variant_fields({'same': [(1,common),(2,copy.deepcopy(common))]}), {})
 
 
 if __name__=='__main__':unittest.main()

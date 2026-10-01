@@ -15,6 +15,39 @@ def integers(value):
         for item in value: yield from integers(item)
 
 
+def variant_fields(named):
+    """Report differing values, including fields omitted from the UI catalog."""
+    def leaves(value, prefix=''):
+        if isinstance(value, dict) and value:
+            return {path: item for key, item in value.items()
+                    for path, item in leaves(item, f'{prefix}.{key}' if prefix else key).items()}
+        if isinstance(value, list) and value:
+            return {path: item for index, item in enumerate(value)
+                    for path, item in leaves(item, f'{prefix}.{index}').items()}
+        return {prefix: value}
+    result = {}
+    for versions in named.values():
+        if len(versions) < 2: continue
+        flattened = {sid: leaves(data) for sid, data in versions}
+        keys = sorted({key for fields in flattened.values() for key in fields})
+        changed = [key for key in keys if len({json.dumps([key in fields, fields.get(key)], sort_keys=True)
+                   for fields in flattened.values()}) > 1]
+        if not changed: continue
+        for sid, data in versions:
+            notes = []
+            for key in changed:
+                fields = flattened[sid]
+                note = {'field': key, 'value': fields.get(key), 'missing': key not in fields}
+                if key.startswith('effectBundleList.'):
+                    index = int(key.split('.')[1])
+                    bundle = data.get('effectBundleList', [])
+                    if index < len(bundle) and isinstance(bundle[index].get('effectId'), dict):
+                        note['effectType'] = bundle[index]['effectId']['mechanics'].get('EffectType')
+                notes.append(note)
+            result[str(sid)] = notes
+    return result
+
+
 def analyze(catalog, root):
     """Compare complete extracted mechanics, not just names or descriptions."""
     base = Path(root) / 'extracted/rows'
@@ -30,9 +63,9 @@ def analyze(catalog, root):
         referenced.update(integers(json.loads(path.read_bytes())))
     def mechanics(row):
         return {k: copy.deepcopy(v) for k, v in row.items() if k not in ('ID', 'SortId', 'Name', 'Description')}
-    result = {'schema': 1, 'available': True, 'groups': {}, 'protected': {k: sorted(v & referenced) for k, v in ids.items()}}
+    result = {'schema': 1, 'available': True, 'groups': {}, 'variants': {}, 'protected': {k: sorted(v & referenced) for k, v in ids.items()}}
     for kind, definitions in raw.items():
-        by_id = {v['ID']: v for v in definitions.values()}; groups = {}
+        by_id = {v['ID']: v for v in definitions.values()}; groups = {}; named = {}
         for entry in catalog[kind]:
             row = by_id.get(entry['id'])
             if row is None: continue
@@ -42,9 +75,12 @@ def analyze(catalog, root):
                     eid = bundle.get('effectId')
                     if eid in effects:
                         bundle['effectId'] = {'mechanics': mechanics(effects[eid])}
-            key = json.dumps([entry.get('name', '').strip().casefold(), data], sort_keys=True, ensure_ascii=False)
+            name = entry.get('name', '').strip().casefold()
+            key = json.dumps([name, data], sort_keys=True, ensure_ascii=False)
             groups.setdefault(key, []).append(entry['id'])
+            if name: named.setdefault(name, []).append((entry['id'], data))
         result['groups'][kind] = [sorted(v) for v in groups.values() if len(v) > 1]
+        result['variants'][kind] = variant_fields(named)
     return result
 
 

@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
+import '../../design/description_tooltip.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
+import '../../state/catalog_descriptions.dart';
 import 'tiers.dart';
 
 /// Step 1: the game's own abilities, granted by id to awakening tiers.
@@ -45,12 +47,13 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
     final app = context.read<AppState>();
     final cat = app.catalog!;
     final skills = (cat['skills'] as List).cast<Map<String, dynamic>>();
+    final descriptions = catalogDescriptions(cat, 'skills');
     final lib = catalogLibrary(cat, 'skills', [...app.units, widget.unit])
       ..sort((a, b) { final g = _group(a).compareTo(_group(b)); return g != 0 ? g : (a['name'] as String).compareTo(b['name'] as String); });
     final studio = ((cat['studioSkills'] as List?) ?? []).cast<Map<String, dynamic>>();
     final groups = [if (studio.isNotEmpty) 'Studio moves', ...lib.map(_group).toSet()];
     final s = q.trim().toLowerCase();
-    final shown = lib.where((x) => (group == 'all' || _group(x) == group) && (s.isEmpty || _title(x).toLowerCase().contains(s) || describe(x).toLowerCase().contains(s))).toList();
+    final shown = lib.where((x) => (group == 'all' || _group(x) == group) && (s.isEmpty || _title(x).toLowerCase().contains(s) || (descriptions[x['id']] ?? '').toLowerCase().contains(s))).toList();
     final aw = awakening(widget.unit);
     final granted = <num>{for (final t in aw) for (final g in t) if (g[0] == 'ActiveSkill') g[1] as num};
     final byId = {for (final x in skills) x['id'] as num: x};
@@ -130,7 +133,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                         return LibraryRow(
                           zebra: i.isOdd,
                           title: _title(x),
-                          detail: '${describe(x)}${(x['cost'] as num? ?? 0) > 0 ? ' · ${x['cost']} MP' : ''} · ${_group(x)}',
+                          detail: '${descriptions[x['id']] ?? describe(x)}${(x['cost'] as num? ?? 0) > 0 ? ' · ${x['cost']} MP' : ''} · ${_group(x)}',
                           leading: ElementSwatch(x['element'] as String?),
                           icon: png != null ? Frame(padding: 1, width: 1, child: Image.network(app.api!.iconUrl(png), width: 22, height: 22)) : null,
                           payload: DragPayload('skill', x['id'] as num),
@@ -163,9 +166,9 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: custom != null
+                Expanded(child: DescriptionTooltip(title: custom != null ? custom['en'].toString() : x != null ? _title(x) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
                     ? Row(children: [Text(custom['en'].toString(), style: Guide.strong()), const SizedBox(width: 6), Text('CUSTOM', style: Guide.label(Guide.purple).copyWith(fontSize: 10))])
-                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(x != null ? _title(x) : 'skill ${g[1]}', style: Guide.strong()), Text(describe(x), style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)])),
+                    : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(x != null ? _title(x) : 'skill ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
                 GrantTools(tier: i, onMove: (t) => move(g, i, t), onRemove: () => remove(i, j)),
               ]),
             );
