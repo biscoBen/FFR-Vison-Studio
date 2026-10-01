@@ -11,11 +11,25 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published click descriptions and source labels — 2026-10-01
+
+Changes in [`ce453b6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ce453b6f8ed562a2b7ba360b4395601dbf15a762),
+[test package 36898247358](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36898247358).
+
 - Open complete ability/passive descriptions by clicking their name/description area instead of hovering. Use a
   scrollable window with selectable text and a Close button across library, learned and MR entries. Keep dragging
   library entries to equip them; a drag does not open details or change the compact row descriptions.
 - Standardize displayed owner names as **Source: <unit names>**. Combine default vision owners and confirmed enemy/party
   sources into one sorted label without duplicates, preserving existing verification status and ownership rules.
+
+Windows validation passed: analysis, **112 Flutter tests**, a separate genuine frozen-engine fresh-start check,
+**95 Python tests**, launcher/import checks and the release build. Mouse interaction checks verify no description
+on hover, clicking equipped/unequipped entries without changing the roster, dragging abilities/passives to tiers
+without opening details, and scrolling complete selectable descriptions. Source-label checks cover default vision
+owners, confirmed non-vision sources and deduplication. The downloaded package's checksum, branch/commit metadata
+and bundled library sources match the tested commit.
 
 ## Published default vision revert — 2026-10-01
 
