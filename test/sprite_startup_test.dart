@@ -17,6 +17,7 @@ class SpriteApi extends Api {
   final failures = <String>{};
   var legacy = false;
   var failRebuild = false;
+  var needsGameData = false;
   var rebuilds = 0;
 
   @override
@@ -29,6 +30,9 @@ class SpriteApi extends Api {
 
   @override
   Future<JsonMap> prepareAssets(String ffbeId, String form) async {
+    if (needsGameData) {
+      throw ApiException('Prepare the game data first', statusCode: 422);
+    }
     if (legacy) {
       throw ApiException('Old engine', statusCode: 404);
     }
@@ -58,6 +62,25 @@ class SpriteApi extends Api {
   @override
   Future<List<String>> anims(String form) async =>
       prepared.contains(form) ? ['idle', 'atk'] : [];
+  @override
+  Future<void> setup(String game) async {
+    needsGameData = false;
+  }
+
+  @override
+  Future<JsonMap> setupLog() async => {
+    'running': false,
+    'result': 'ok',
+    'log': <String>[],
+  };
+  @override
+  Future<JsonMap> catalog() async => {};
+  @override
+  Future<List<dynamic>> spec() async => [];
+  @override
+  Future<List<dynamic>> nativeVisions() async => [];
+  @override
+  Future<JsonMap> status() async => {'setupNeeded': false};
   @override
   Future<void> saveSpec(List<dynamic> units) async =>
       throw StateError('Startup must not save the roster.');
@@ -344,5 +367,19 @@ void main() {
     expect(app.bootSteps.last.state, 'done');
     expect(app.spriteWarning, contains('retry next start'));
     expect(downloads, isEmpty);
+  });
+
+  test('first-run game setup finishes deferred unit preparation before opening the roster', () async {
+    api.needsGameData = true;
+    app.phase = Phase.setup;
+    await app.prepareStartupSprites();
+    expect(app.spriteWarning, contains('Prepare the game data first'));
+    downloads.clear();
+    await app.runSetup('fixture game');
+    expect(downloads, isEmpty);
+    expect(api.prepared, {'101', '102', '201'});
+    expect(app.spriteWarning, isNull);
+    expect(app.phase, Phase.ready);
+    expect(app.setupProgress!.state, 'done');
   });
 }

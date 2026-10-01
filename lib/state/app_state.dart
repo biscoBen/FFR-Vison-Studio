@@ -269,6 +269,8 @@ class AppState extends ChangeNotifier {
         if (l['running'] != true) {
           if (l['result'] == 'ok') {
             setupProgress!.state = 'done';
+            await prepareStartupSprites();
+            if (_stopping) return;
             phase = Phase.ready;
             await loadAll();
           } else {
