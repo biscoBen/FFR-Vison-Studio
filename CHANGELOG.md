@@ -11,10 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published on-demand sprites and restored character previews — 2026-10-01
+
+Changes in [`bdc92b4`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bdc92b4d335a0673699548b48f97ddb7bca5f1fa),
+[test package 36938521499](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36938521499).
+
 - Restore character sprite downloads on demand; startup, restart and game setup no longer download every hosted form.
 - Restore the selected appearance and required base-form artwork when loading character configs, and prepare missing
   engine preview data when reopening the character. Keep saved settings, existing artwork and cached downloads.
-  Config preparation failures preserve the roster and can be retried. Windows package verification is pending.
+  Config preparation failures preserve the roster and can be retried. Analysis and all 136 Flutter tests passed locally
+  and on Windows. Windows also passed the separate genuine engine-startup test, 113 Python tests, both extension
+  checks, 12 launcher/updater checks and 10 vision-import checks. One code push produced one Windows build; the helper
+  reused that run and verified the published ZIP checksum and exact commit/build provenance.
 
 ## Published faster build and release workflow — 2026-10-01
 
