@@ -159,6 +159,13 @@ class NativeVisionTests(unittest.TestCase):
 
     def test_bundle_hashes_match(self):
         module('bundle', ROOT / 'scripts/verify_existing_visions_bundle.py').verify()
+        portraits = ROOT / 'assets/native_portraits'
+        manifest = json.loads((portraits / 'manifest.json').read_bytes())
+        self.assertEqual({p['visionId'] for p in manifest['portraits']}, set(CATALOG_IDS))
+        for portrait in manifest['portraits']:
+            data = (portraits / portrait['file']).read_bytes()
+            self.assertEqual(installer.sha(data), portrait['sha256'])
+            self.assertTrue(data.startswith(b'\x89PNG\r\n\x1a\n'))
 
     def test_opening_original_creates_no_gameplay_or_sprite_patch(self):
         _, rows, spec = fixture(); tables = {}; objects = []
@@ -309,6 +316,9 @@ class NativeVisionTests(unittest.TestCase):
                    'rows': lambda rel: copy.deepcopy(game.get(rel, {})), 'sys': SimpleNamespace(argv=['builder', '--no-install']),
                    'os': os, 'json': json, 'stage': lambda text: None, 'unique_skill_base': lambda vid: 445000+(vid-13100)*100,
                    'has_sequence': lambda sid: True, 'generate_sprites': generate, 'run': extract,
+                   'clone_sequence': mock.Mock(side_effect=AssertionError('No native animation donor in this fixture')),
+                   'seq_dumps': mock.Mock(side_effect=AssertionError('No native sequence in this fixture')),
+                   'event_keys': mock.Mock(side_effect=AssertionError('No native sequence in this fixture')),
                    'subprocess': SimpleNamespace(run=lambda *a, **k: SimpleNamespace(returncode=0, stdout='', stderr='')),
                    'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
                    'ffbe_audio': SimpleNamespace(banks=lambda a: [])}

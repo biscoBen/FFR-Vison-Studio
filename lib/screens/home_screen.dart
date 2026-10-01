@@ -9,6 +9,7 @@ import 'add_unit_dialog.dart';
 import 'build_status.dart';
 import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
+import 'native_portrait.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -17,21 +18,18 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
-    final entries = [...app.units, ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))];
+    final added = app.units.where((u) => u['native'] == null).cast<Map<String, dynamic>>().toList();
+    final defaults = [...app.units.where((u) => u['native'] != null), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
         flex: 7,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Band('Your visions', trailing: Text('${app.units.length} in the mod', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
           Expanded(
-            child: entries.isEmpty
-                ? _empty(context)
-                : GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
-                    itemCount: entries.length + 1,
-                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i] as Map<String, dynamic>),
-                  ),
+            child: _visionBox(context, app, added, title: 'Added visions', key: const Key('added-visions'), allowAdd: true),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: _visionBox(context, app, defaults, title: 'Default visions', key: const Key('default-visions')),
           ),
           const CharacterConfigButtons(includeAll: true),
         ]),
@@ -93,6 +91,24 @@ class HomeScreen extends StatelessWidget {
     ]);
   }
 
+  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false}) => Container(
+        key: key,
+        decoration: BoxDecoration(border: Border.all(color: Guide.ink, width: 1.5)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Band(title, trailing: Text('${entries.length} vision${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
+          Expanded(
+            child: entries.isEmpty
+                ? allowAdd ? SingleChildScrollView(child: _empty(context)) : Center(child: Text('No default visions loaded.', style: Guide.small()))
+                : GridView.builder(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
+                    itemCount: entries.length + (allowAdd ? 1 : 0),
+                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i]),
+                  ),
+          ),
+        ]),
+      );
+
   Widget _empty(BuildContext context) => Padding(
         padding: const EdgeInsets.all(24),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -130,7 +146,9 @@ class HomeScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Frame(padding: 2, child: PixelImage(native && u['ffbe'] == null ? app.api!.nativeIcon(u['id'] as int) : app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
+            Frame(padding: 2, child: native && u['ffbe'] == null
+                ? NativePortrait(visionId: u['id'] as int, fallbackUrl: app.api!.nativeIcon(u['id'] as int), width: 72, height: 72)
+                : PixelImage(app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

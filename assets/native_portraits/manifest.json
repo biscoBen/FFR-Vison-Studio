@@ -1,0 +1,243 @@
+{
+  "schema": 1,
+  "source": {
+    "description": "Original Studio FFBE unit icons pack, selected using its bundled FFBE catalog. PNG bytes are unchanged.",
+    "packSha256": "64106794ffe960cb723aab0fa91c67302dc8554a845e40a9ac1500f5f31e6280"
+  },
+  "portraits": [
+    {
+      "visionId": 13017,
+      "visionName": "Amelia",
+      "ffbeUnitId": "100007004",
+      "ffbeName": "Amelia",
+      "form": "100007006",
+      "file": "100007006.png",
+      "sha256": "bee5ee0da37a4c8e5a61d124d8854758680f6fa853eaacc8a9747ab5bc538a17"
+    },
+    {
+      "visionId": 13024,
+      "visionName": "Tronn",
+      "ffbeUnitId": "100001101",
+      "ffbeName": "Tronn",
+      "form": "100001102",
+      "file": "100001102.png",
+      "sha256": "58a6ad1fbee14ee95f6ae1b7b307a1d005e4bce0f3cdba267c9ed761b3d8a91e"
+    },
+    {
+      "visionId": 13027,
+      "visionName": "Victoria",
+      "ffbeUnitId": "100006904",
+      "ffbeName": "Victoria",
+      "form": "100006906",
+      "file": "100006906.png",
+      "sha256": "a0cfe09a21191acd30b9816705e3265a9e58dfd8449637600adfb43bb4eddcad"
+    },
+    {
+      "visionId": 13033,
+      "visionName": "Camille",
+      "ffbeUnitId": "100006603",
+      "ffbeName": "Camille",
+      "form": "100006606",
+      "file": "100006606.png",
+      "sha256": "0de79d447e483d1fabcfb1a3b5fccc9434a0e18555fc009e5484c8bf80f3efb8"
+    },
+    {
+      "visionId": 13045,
+      "visionName": "Leah",
+      "ffbeUnitId": "100001001",
+      "ffbeName": "Leah",
+      "form": "100001002",
+      "file": "100001002.png",
+      "sha256": "b8620b94b0c0a79a7cbd26dc93ef8d06860d9abd860eafb7f3a9dddadf0208d3"
+    },
+    {
+      "visionId": 13051,
+      "visionName": "Ayaka",
+      "ffbeUnitId": "100008605",
+      "ffbeName": "Ayaka",
+      "form": "100008607",
+      "file": "100008607.png",
+      "sha256": "7f657b630c06b797f7fba40269c5a9cdfcc2f45446e66bff0958cb4930e43920"
+    },
+    {
+      "visionId": 13060,
+      "visionName": "Charlotte",
+      "ffbeUnitId": "100004303",
+      "ffbeName": "Charlotte",
+      "form": "100004306",
+      "file": "100004306.png",
+      "sha256": "9f05717bc1d52cf4b2f82e396a0c63b2b97939cce0a19c0efdd32b4d5682bcd2"
+    },
+    {
+      "visionId": 13062,
+      "visionName": "Wilhelm",
+      "ffbeUnitId": "100006105",
+      "ffbeName": "Wilhelm",
+      "form": "100006107",
+      "file": "100006107.png",
+      "sha256": "793bcf12762966ad90546917fa01c8059a43adc1186b780a597c5c6290e9a7ab"
+    },
+    {
+      "visionId": 13080,
+      "visionName": "Aileen",
+      "ffbeUnitId": "100005905",
+      "ffbeName": "Aileen",
+      "form": "100005917",
+      "file": "100005917.png",
+      "sha256": "05bac9a158ae41ba644883f34b75e7dce6e092a93dcc9d495bb3e601858f3550"
+    },
+    {
+      "visionId": 13100,
+      "visionName": "Warrior of Light",
+      "ffbeUnitId": "201000104",
+      "ffbeName": "Warrior of Light",
+      "form": "201000106",
+      "file": "201000106.png",
+      "sha256": "0f2d9c3c69b9c578fb244ecc05a406828e9e2097307a045eebce32ddd7e12634"
+    },
+    {
+      "visionId": 13101,
+      "visionName": "Firion",
+      "ffbeUnitId": "202000103",
+      "ffbeName": "Firion",
+      "form": "202000106",
+      "file": "202000106.png",
+      "sha256": "2919cc56f47b11816d3ebffa12fa6d56165944e568a1576043d82dcddaeaa773"
+    },
+    {
+      "visionId": 13102,
+      "visionName": "Onion Knight",
+      "ffbeUnitId": "203000105",
+      "ffbeName": "Onion Knight",
+      "form": "203000107",
+      "file": "203000107.png",
+      "sha256": "c3e092eef231c05731a76a23bc8bd0ac3ffee64b32b025e3aa7710fce58790a1"
+    },
+    {
+      "visionId": 13103,
+      "visionName": "Cecil",
+      "ffbeUnitId": "204000103",
+      "ffbeName": "Cecil",
+      "form": "204000106",
+      "file": "204000106.png",
+      "sha256": "0b4a7a38d8c356f15a15596d08872606dc08107a38d8315a8b6dc026bd0ac696"
+    },
+    {
+      "visionId": 13105,
+      "visionName": "Bartz",
+      "ffbeUnitId": "205000103",
+      "ffbeName": "Bartz",
+      "form": "205000106",
+      "file": "205000106.png",
+      "sha256": "7c087881f7e48efd587e72613dcfd49c3885f76f489a0c7b5ca5c559aff0828c"
+    },
+    {
+      "visionId": 13108,
+      "visionName": "Terra",
+      "ffbeUnitId": "206000103",
+      "ffbeName": "Terra",
+      "form": "206000106",
+      "file": "206000106.png",
+      "sha256": "48fd363b46b9690a9fc7d7509b7fb3948d34c0cc12584b48131d2552521a34b6"
+    },
+    {
+      "visionId": 13110,
+      "visionName": "Cloud",
+      "ffbeUnitId": "207000105",
+      "ffbeName": "Cloud",
+      "form": "207000117",
+      "file": "207000117.png",
+      "sha256": "d5da5b8df0e8196ad89dbfe51007ece05e22edc90cc4cf0ab34d3fb550c889dc"
+    },
+    {
+      "visionId": 13113,
+      "visionName": "Sephiroth",
+      "ffbeUnitId": "207001005",
+      "ffbeName": "Sephiroth",
+      "form": "207001007",
+      "file": "207001007.png",
+      "sha256": "5d1b021846d8815494b9c2b9f92124358fe69892baa98e5033f3b6d40b640e03"
+    },
+    {
+      "visionId": 13116,
+      "visionName": "Squall",
+      "ffbeUnitId": "208000105",
+      "ffbeName": "Squall",
+      "form": "208000107",
+      "file": "208000107.png",
+      "sha256": "47d92aee2a7d0dc79efd3da0abfe72fae8af8ef0be6895dcfb36d00e6380ff5d"
+    },
+    {
+      "visionId": 13118,
+      "visionName": "Zidane",
+      "ffbeUnitId": "209000103",
+      "ffbeName": "Zidane",
+      "form": "209000106",
+      "file": "209000106.png",
+      "sha256": "243ba70f7cb27af1e9cb37fc51144c7b081df0135556c6b8c1b2cf424aec50e7"
+    },
+    {
+      "visionId": 13120,
+      "visionName": "Tidus",
+      "ffbeUnitId": "210000105",
+      "ffbeName": "Tidus",
+      "form": "210000107",
+      "file": "210000107.png",
+      "sha256": "4464cc03b05a43c289b6932bbf74eed0de54771f6bc1d96df94cff26dbbb8f3c"
+    },
+    {
+      "visionId": 13123,
+      "visionName": "Shantotto",
+      "ffbeUnitId": "211000103",
+      "ffbeName": "Shantotto",
+      "form": "211000105",
+      "file": "211000105.png",
+      "sha256": "b062a5c135a5e1dc8801afdeecdaa91511197286cb6bdbe31ea10a344e23a5ec"
+    },
+    {
+      "visionId": 13124,
+      "visionName": "Vaan",
+      "ffbeUnitId": "212000103",
+      "ffbeName": "Vaan",
+      "form": "212000106",
+      "file": "212000106.png",
+      "sha256": "e0e63c50dbd1e7a3934a3f3407db47d0c2872d94d3655185f74ee3207a164b12"
+    },
+    {
+      "visionId": 13125,
+      "visionName": "Lightning",
+      "ffbeUnitId": "213000105",
+      "ffbeName": "Lightning",
+      "form": "213000117",
+      "file": "213000117.png",
+      "sha256": "79951605c35d5cf06138593789fb1c967e5626a024d54a1dac9fd455f14a8b23"
+    },
+    {
+      "visionId": 13127,
+      "visionName": "Y’shtola",
+      "ffbeUnitId": "214000105",
+      "ffbeName": "Y'shtola",
+      "form": "214000106",
+      "file": "214000106.png",
+      "sha256": "f91a8fe8fd03a5198d136f82d282a945886769ff1952263d2037f228726edd5e"
+    },
+    {
+      "visionId": 13128,
+      "visionName": "Noctis",
+      "ffbeUnitId": "215000105",
+      "ffbeName": "Noctis",
+      "form": "215000107",
+      "file": "215000107.png",
+      "sha256": "e9d62218f2f67f421a1b948b755ff715ef5d10668ef2eecaf888c7cb0db9eac7"
+    },
+    {
+      "visionId": 13130,
+      "visionName": "Clive",
+      "ffbeUnitId": "216000107",
+      "ffbeName": "Clive Rosfield",
+      "form": "216000127",
+      "file": "216000127.png",
+      "sha256": "d0d580480a494812d524e4b670556f3c46edf8bc0f6064b61d5c414f5194bd2d"
+    }
+  ]
+}

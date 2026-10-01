@@ -137,6 +137,125 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(game,before)
 
 
+class NativeAnimationTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)
+        self.skill = {'ID':240030, 'Name':'Curaga', 'hasUnit':'All', 'skillAttrType':'Magic',
+                      'DamageType':'None', 'TargetType':'Single', 'defaultTargetRelation':'Friendlies',
+                      'defaultTargetState':'Alive', 'hitCount':1, 'magnification':900, 'Cost':15,
+                      'SkillIcon':{'TagName':'UI.Skill.Action.Icon.Heal'},
+                      'effectBundleList':[{'effectId':10, 'TargetType':'Single'}]}
+        donor = {**copy.deepcopy(self.skill), 'ID':210030, 'magnification':500, 'Cost':10,
+                 'SkillIcon':{'TagName':'UI.Skill.Action.Icon.Support'}}
+        folder = 'Sequencer/Battle/Magic/210030/210031'
+        self.asset = {'ID':210031, 'LevelSequence':f'/Game/{folder}/SEQ_Battle_210031_Master', 'soundSequence':'None'}
+        self.game = {'Skill/DT_SkillData':{'source':self.skill, 'donor':donor},
+                     'Skill/DT_SkillEffectData':{'heal':{'ID':10, 'EffectType':'Recovery', 'ParamList':[1,5]}},
+                     'Asset/Skill/DT_SkillAsset':{'donor_single':self.asset, 'shell':{'ID':440111}},
+                     'Asset/Skill/CDT_SkillAsset_Demo':{'donor_single':copy.deepcopy(self.asset), 'shell':{'ID':440111}},
+                     'Battle/Sequencer/DT_BtlHitEffectData':{'heal':{'ID':210030}, 'generic':{'ID':449999}}}
+        self.unit = {'awakening':[[['ActiveSkill',240030]]], 'synchro':[[['ActiveSkill',240030]]], 'skills':{}}
+        self.events = {'1:cast':{'EventType':'UnitPlayAnimByName','Unit_PlayAnimByName_AnimationName':'magic_attack'},
+                       '2:heal':{'EventType':'OtherReaction','Other_Reaction_Id':210030,'Otber_Reaction_ReactionNum':-1}}
+        self.tj = {'Imports':[], 'Exports':[]}
+        self.files = []
+        self.path = self.root / 'extracted/legacy/FFRS/Content' / folder / 'SEQ_Battle_210031_Master.uasset'
+        self.path.parent.mkdir(parents=True); self.path.write_bytes(b'explicit native sequence fixture, not a game asset')
+        shell = self.root / 'extracted/legacy' / (resonance.SHELL + '.uasset')
+        shell.parent.mkdir(parents=True); shell.write_bytes(b'explicit generic timeline fixture')
+        def clone(asset, source, sid, dest, mute, clones, objects, swaps, edits, bytecode):
+            self.files.append((source,sid,dest,copy.deepcopy(edits)))
+            clones.append({'from':asset['LevelSequence'], 'to':f'fixture/{sid}/{dest}'})
+            bytecode.extend(copy.deepcopy(edits['master']))
+            return {'LevelSequence':f'/Game/fixture/{sid}/{dest}', 'soundSequence':'None'}
+        self.support = {'clone':clone, 'dumps':lambda path:(copy.deepcopy(self.tj),copy.deepcopy(self.events)),
+                        'keys':lambda path:[(i*100,e['EventType'],k.split(':',1)[1]) for i,(k,e) in enumerate(self.events.items())],
+                        'objects':[], 'bytecode':[]}
+        self.tables = {}; self.clones = []; self.jobs = []
+    def tearDown(self): self.temp.cleanup()
+    def run_repair(self):
+        with mock.patch.dict('sys.modules',{'ffbe_resonance':resonance}):
+            return motion.prepare_sequences(self.tables,self.clones,self.jobs,[self.unit],self.root,
+                lambda rel:copy.deepcopy(self.game[rel]),mock.Mock(side_effect=AssertionError('fixtures already extracted')),
+                native_support=self.support)
+    def report(self): return json.loads((self.root/'build/animation-repair-report.json').read_bytes())['skills']
+    def test_reuses_native_heal_with_original_mechanics_sound_binding_and_retargeted_hits(self):
+        before = copy.deepcopy(self.game)
+        self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.jobs,[])
+        self.assertNotIn('Skill/DT_SkillData',self.tables)
+        for rel in ('Asset/Skill/DT_SkillAsset','Asset/Skill/CDT_SkillAsset_Demo'):
+            entry, = self.tables[rel]['add']; self.assertEqual(entry['cloneFrom'],'donor_single')
+            self.assertEqual(entry['set']['ID'],240031);self.assertEqual(self.tables[rel]['set'],[])
+        self.assertEqual(self.support['bytecode'][0]['set'],{'Other_Reaction_Id':240030})
+        self.assertEqual(self.report(),[{'id':240030,'status':'native_reuse','donor':210030}])
+        count=len(self.clones);self.assertEqual(self.run_repair(),[]);self.assertEqual(len(self.clones),count)
+        self.assertEqual(self.game,before)
+    def test_complete_mechanics_reject_target_liveness_and_effect_parameter_differences(self):
+        for field,value in (('defaultTargetState','Dead'),('TargetType','Group'),('hitCount',2),('effectBundleList',[{'effectId':11,'TargetType':'Single'}])):
+            with self.subTest(field=field):
+                before=copy.deepcopy(self.game['Skill/DT_SkillData']['donor'])
+                self.game['Skill/DT_SkillEffectData']['other']={'ID':11,'EffectType':'Recovery','ParamList':[1,99]}
+                self.game['Skill/DT_SkillData']['donor'][field]=value
+                native=motion.NativeAnimations(lambda rel:copy.deepcopy(self.game[rel]),self.root,mock.Mock(),self.support)
+                self.assertEqual(native.candidates(self.skill),[])
+                self.game['Skill/DT_SkillData']['donor']=before
+    def test_equivalent_effect_ids_can_match_but_owner_specific_skill_cannot(self):
+        self.game['Skill/DT_SkillEffectData']['same']={'ID':11,'EffectType':'Recovery','ParamList':[1,5]}
+        self.game['Skill/DT_SkillData']['donor']['effectBundleList'][0]['effectId']=11
+        native=motion.NativeAnimations(lambda rel:copy.deepcopy(self.game[rel]),self.root,mock.Mock(),self.support)
+        self.assertEqual(native.candidates(self.skill),[210030])
+        self.game['Skill/DT_SkillData']['donor']['hasUnit']='Fina'
+        native=motion.NativeAnimations(lambda rel:copy.deepcopy(self.game[rel]),self.root,mock.Mock(),self.support)
+        self.assertEqual(native.candidates(self.skill),[])
+    def test_group_variant_retargets_actual_shared_sequence_and_reaction_id(self):
+        self.skill['TargetType']='Group';self.game['Skill/DT_SkillData']['donor']['TargetType']='Group'
+        self.game['Skill/DT_SkillData']['donor']['ID']=215020
+        for rel in ('Asset/Skill/DT_SkillAsset','Asset/Skill/CDT_SkillAsset_Demo'):
+            self.game[rel]['donor_single']['ID']=215022
+        self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.jobs,[])
+        self.assertEqual(self.files[0][:3],(210031,240030,240032))
+        edit=self.support['bytecode'][0]
+        self.assertEqual(edit['match']['Other_Reaction_Id'],210030)
+        self.assertEqual(edit['set']['Other_Reaction_Id'],240030)
+        self.assertEqual(self.tables['Battle/Sequencer/DT_BtlHitEffectData']['add'][0]['cloneFrom'],'heal')
+        self.assertEqual(self.report()[0]['donor'],215020)
+    def test_movie_owner_motion_unknown_events_and_wrong_hit_routing_fall_back(self):
+        cases=[('movie',lambda:self.tj['Imports'].append({'ObjectName':'MovieSceneMediaTrack'})),
+               ('owner',lambda:self.tj['Imports'].append({'ObjectName':'/Game/Chara/summon/summon13110/summon13110'})),
+               ('motion',lambda:self.events['1:cast'].update(Unit_PlayAnimByName_AnimationName='LB1')),
+               ('special event',lambda:self.events['1:cast'].update(EventType='OtherChangeSubSpaceColor')),
+               ('wrong hits',lambda:self.events.pop('2:heal')),
+               ('reaction owner',lambda:self.events['2:heal'].update(Other_Reaction_Id=440110))]
+        for label,change in cases:
+            with self.subTest(label=label):
+                events=copy.deepcopy(self.events); tj=copy.deepcopy(self.tj); change()
+                self.tables={};self.clones=[];self.jobs=[];self.files=[]
+                self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.files,[])
+                self.assertEqual(len(self.jobs),1);self.assertEqual(self.report()[0]['status'],'motion_fallback')
+                self.events=events;self.tj=tj
+    def test_existing_sequence_and_explicit_custom_visuals_take_precedence(self):
+        self.game['Asset/Skill/DT_SkillAsset']['original']={'ID':240031,'LevelSequence':'/Game/Original'}
+        self.assertEqual(self.run_repair(),[]);self.assertEqual(self.tables,{})
+        self.assertEqual(self.report()[0]['status'],'existing_sequence')
+        self.assertEqual(self.files,[])
+    def test_group_skill_requires_group_binding_and_secondary_collision_is_preserved(self):
+        self.skill['TargetType']='Group';self.game['Skill/DT_SkillData']['donor']['TargetType']='Group'
+        self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.files,[]) # single-only donor rejected
+        self.tables={};self.jobs=[];self.clones=[]
+        self.skill['TargetType']='Single';self.game['Skill/DT_SkillData']['donor']['TargetType']='Single'
+        existing={'ID':240031,'LevelSequence':'/Game/OriginalSecondary'}
+        self.game['Asset/Skill/CDT_SkillAsset_Demo']['existing']=existing
+        self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.files,[])
+        self.assertEqual(self.game['Asset/Skill/CDT_SkillAsset_Demo']['existing'],existing)
+    def test_unavailable_native_files_and_specialized_resonance_remain_in_coverage_report(self):
+        self.path.unlink();self.unit['lb']=440020
+        native=motion.NativeAnimations(lambda rel:copy.deepcopy(self.game[rel]),self.root,lambda folder:None,self.support)
+        self.assertIn('absent',native.audit(self.asset,210030,1))
+        self.path.write_bytes(b'explicit fixture')
+        self.run_repair()
+        self.assertIn({'id':440020,'status':'unresolved','role':'resonance'},self.report())
+
+
 class DuplicateTests(unittest.TestCase):
     def test_full_mechanics_and_original_references_protect_variants_and_equipped_entries(self):
         with tempfile.TemporaryDirectory() as temp:

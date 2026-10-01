@@ -108,7 +108,9 @@ def hook_builder(raw):
     before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
                     '_ffr_animation_repair.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
-                    '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))']
+                    '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
+                    '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
+                    '                    "objects": post_objects, "bytecode": post_bytecode})']
     before_pack = [MARKER, 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)']

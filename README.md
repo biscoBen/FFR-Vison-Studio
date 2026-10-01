@@ -76,7 +76,27 @@ Use `--ref master` to download a separate baseline build without changing or mer
 Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
 Full mod tests still need the game's installation and extracted data.
 
+## Automatic animation repair
+
+Fresh roster builds first try to reuse a native animation for a missing ordinary ability or spell. A donor must be
+a general-use version of the same named skill with matching complete mechanics, targets, hit counts, hit ratios and
+effect bundles. Strength, MP cost, accuracy and stagger power may differ; the recipient retains its own values.
+Studio extracts and inspects the actual donor timeline before cloning it. Specialized events, incompatible hit timing,
+owner-specific actors, voices and cinematic tracks are excluded. Copied hit/reaction references point to the recipient.
+Existing sequences and explicitly configured custom animations take precedence, and saved roster settings are preserved.
+
+Skills without a verified donor continue to use the available unit attack/casting fallback. This fallback does not restore
+their original spell particles or sound. Special actions and unsupported Resonances can still lack animations. Each build
+writes `engine/build/animation-repair-report.json` with the selected skills' existing, reused, fallback or unresolved status.
+Native reuse is validated against the local game files; actual rendering still requires an in-game test.
+
 ## Saved character configurations
+
+The home screen separates **Added visions** from **Default visions**. Edited original visions remain in the default box
+and appear once with their current edits. Each box scrolls independently; adding units and saving/loading all configs
+remain available from the home screen.
+Default portraits use bundled FFBE icons matched to all 26 original visions, with the original portrait as a fallback.
+These portraits appear in Studio's list and character page; selecting a replacement model shows that model's portrait.
 
 The character page's **MR** tab edits the rewards at each of the ten ranks. Select a rank, then add stat bonuses,
 abilities, passives, or the vision's master reward. Rewards can be moved to another rank or removed, and stat amounts

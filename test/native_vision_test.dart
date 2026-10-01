@@ -275,6 +275,10 @@ void main() {
     (tester) async {
       await show(tester);
       expect(find.text('CLOUD'), findsOneWidget);
+      expect(find.text('ADDED VISIONS'), findsOneWidget);
+      expect(find.text('DEFAULT VISIONS'), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('default-visions')), matching: find.text('CLOUD')), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('added-visions')), matching: find.text('CLOUD')), findsNothing);
       expect(api.roster, hasLength(1));
       await tester.tap(find.text('CLOUD'));
       await tester.pumpAndSettle();

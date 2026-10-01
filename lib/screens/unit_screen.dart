@@ -14,6 +14,7 @@ import 'steps/native_resonance_step.dart';
 import 'native_vision_dialog.dart';
 import 'unit_anim_pane.dart';
 import 'character_config_buttons.dart';
+import 'native_portrait.dart';
 
 /// A unit's page: the character entry and its editable configuration.
 class UnitScreen extends StatefulWidget {
@@ -42,7 +43,9 @@ class _UnitScreenState extends State<UnitScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(14),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                if (form != null) UnitAnimPane(unit: u, height: 210) else Frame(padding: 8, child: PixelImage(u['native'] == null ? api.unitIcon(u['key'] as String, 'face') : api.nativeIcon(u['id'] as int), width: 128, height: 128)),
+                if (form != null) UnitAnimPane(unit: u, height: 210) else Frame(padding: 8, child: u['native'] != null
+                    ? NativePortrait(visionId: u['id'] as int, fallbackUrl: api.nativeIcon(u['id'] as int), width: 128, height: 128)
+                    : PixelImage(api.unitIcon(u['key'] as String, 'face'), width: 128, height: 128)),
                 if (u['native'] != null) ...[
                   const SizedBox(height: 8),
                   GuideButton('Change model', onPressed: app.building ? null : () => showChangeModel(context, u['id'] as int)),
