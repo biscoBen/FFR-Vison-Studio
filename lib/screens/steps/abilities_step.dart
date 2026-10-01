@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
-import '../../design/description_tooltip.dart';
+import '../../design/description_details.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
@@ -161,7 +161,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: DescriptionTooltip(title: custom != null ? custom['en'].toString() : x != null ? title(x) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
+                Expanded(child: DescriptionDetails(title: custom != null ? custom['en'].toString() : x != null ? title(x) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
                     ? Row(children: [Text(custom['en'].toString(), style: Guide.strong()), const SizedBox(width: 6), Text('CUSTOM', style: Guide.label(Guide.purple).copyWith(fontSize: 10))])
                     : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(x != null ? title(x) : 'skill ${g[1]}', style: Guide.strong()),

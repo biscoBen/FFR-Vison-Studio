@@ -238,7 +238,12 @@ void main() {
     };
     expect(
       catalogEntryTitle(cat, 'skills', row),
-      '10,000 Needles (Unverified) — Leah — Source: Cactuar, Metal Cactuar',
+      '10,000 Needles (Unverified) — Source: Cactuar, Leah, Metal Cactuar',
+    );
+    cat['duplicatePolicy']['sources']['skills']['5'].add('Leah');
+    expect(
+      catalogEntryTitle(cat, 'skills', row),
+      '10,000 Needles (Unverified) — Source: Cactuar, Leah, Metal Cactuar',
     );
     cat.remove('duplicatePolicy');
     expect(

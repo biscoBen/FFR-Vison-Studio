@@ -172,7 +172,7 @@ String _abilityProse(Map row, Map data, Map<dynamic, Map> effects) {
     );
   }
   // Give a reading of the recorded effect type. Unknown parameters, durations
-  // and amounts stay in the complete hover text instead of being guessed.
+  // and amounts stay in the complete description text instead of being guessed.
   for (final detail in _effectDescriptions(
     data,
     (row['effects'] as List?) ?? [],
@@ -196,7 +196,7 @@ String _abilityProse(Map row, Map data, Map<dynamic, Map> effects) {
       : lines.join(' ');
 }
 
-/// Compact rows use real recorded values, independently of the complete hover
+/// Compact rows use real recorded values, independently of the complete
 /// description. Missing fields stay absent, while recorded zeroes stay visible.
 Map<num, CatalogAbilitySummary> catalogAbilitySummaries(
   Map<String, dynamic> catalog,

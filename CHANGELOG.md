@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Open complete ability/passive descriptions by clicking their name/description area instead of hovering. Use a
+  scrollable window with selectable text and a Close button across library, learned and MR entries. Keep dragging
+  library entries to equip them; a drag does not open details or change the compact row descriptions.
+- Standardize displayed owner names as **Source: <unit names>**. Combine default vision owners and confirmed enemy/party
+  sources into one sorted label without duplicates, preserving existing verification status and ownership rules.
 
 ## Published default vision revert — 2026-10-01
 

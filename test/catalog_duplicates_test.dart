@@ -142,7 +142,7 @@ void main() {
     expect(catalogLibrary(cat, 'skills', []).map((s) => s['id']), [10, 20, 30]);
     expect(
       catalogEntryTitle(cat, 'skills', cat['skills'][1]),
-      'Cure (Unverified) — Ayaka, Cloud, Leah',
+      'Cure (Unverified) — Source: Ayaka, Cloud, Leah',
     );
     expect(catalogEntryTitle(cat, 'skills', cat['skills'][0]), 'Cure');
     cat['visions'] = [];
@@ -167,7 +167,7 @@ void main() {
     };
     expect(
       catalogEntryTitle(cat, 'passives', {'id': 1, 'name': '攻撃アップ'}),
-      '攻撃アップ (Unverified) — Cloud',
+      '攻撃アップ (Unverified) — Source: Cloud',
     );
     expect(
       catalogEntryTitle(cat, 'skills', {

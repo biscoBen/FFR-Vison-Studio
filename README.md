@@ -95,7 +95,7 @@ Native reuse is validated against the local game files; actual rendering still r
 
 ## Ability and passive libraries
 
-Unverified entries used by default visions show their original owners beside **(Unverified)**. Ownership includes
+Unverified entries used by default visions show **Source: <unit names>** beside **(Unverified)**. Ownership includes
 awakening and MR rewards, command/level-up skills, base passives and alternate target modes. An unused Unverified ability
 is hidden when a verified same-name version has matching complete combat data, even if presentation, menu/map effects
 or internal IDs differ. Real differences in targets, power, MP cost, accuracy, hit data and effects remain selectable.
@@ -106,14 +106,18 @@ pickers. Untranslated names and entries named **Attack** are also hidden from or
 abilities and MR rewards keep their IDs and remain editable. Ability rows show short prose and recorded
 **Type; Target; Accuracy; Break; Power; MP; Hits; Crit Chance**, with the full stat line wrapping as needed.
 
-**Source: <unit names>** identifies confirmed non-vision users, including enemies and base party members. The engine
+The same **Source: <unit names>** label identifies confirmed non-vision users, including enemies and base party members.
+When both kinds of ownership are known, their names share one sorted label without duplicates. The engine
 traces original commands, level grants, passives, explicit AI skill IDs and alternate target rows, using the prepared
 game's English unit names. Missing or ambiguous sources stay unlabelled. Source labels do not verify compatibility
 on added visions or change **(Unverified)** status.
 
-Hover descriptions show recorded stats and effects in a consistent order, with internal voice/debug metadata removed.
+Click a skill or passive's name/description area to open its full description in a scrollable, selectable window.
+Dragging a library entry still equips it; dragging does not open its description. Details are also available on learned
+entries and MR rewards. The descriptions show recorded stats and effects in a consistent order, with internal
+voice/debug metadata removed.
 Extracted values take precedence; absent values are omitted, and undocumented effect parameters are shown as recorded
-numbers. Hover to read the full description. Duplicate matching requires the prepared game's full extracted tables.
+numbers. Duplicate matching requires the prepared game's full extracted tables.
 
 ## Saved character configurations
 

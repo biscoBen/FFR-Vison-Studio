@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
-import '../../design/description_tooltip.dart';
+import '../../design/description_details.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
@@ -333,7 +333,7 @@ class _MrStepState extends State<MrStep> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: DescriptionTooltip(
+                            child: DescriptionDetails(
                               title: r['title'].toString(),
                               description: (r['desc'] ?? '').toString(),
                               child: Column(
@@ -450,7 +450,7 @@ class _MrStepState extends State<MrStep> {
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: DescriptionTooltip(
+                                      child: DescriptionDetails(
                                         title: grantName(rows[i][j]),
                                         description: grantDescription(
                                           rows[i][j],

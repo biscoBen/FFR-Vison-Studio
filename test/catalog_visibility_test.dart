@@ -6,7 +6,7 @@ import 'package:ffr_vision_studio/screens/steps/bonuses_step.dart';
 import 'package:ffr_vision_studio/screens/steps/tiers.dart';
 import 'package:ffr_vision_studio/screens/steps/mr_step.dart';
 import 'package:ffr_vision_studio/screens/steps/native_resonance_step.dart';
-import 'package:ffr_vision_studio/design/description_tooltip.dart';
+import 'package:ffr_vision_studio/design/description_details.dart';
 
 import 'catalog_compact_summaries_test.dart' show compactExamples;
 
@@ -245,13 +245,16 @@ void main() {
       );
       expect(find.text('Curaga'), findsNWidgets(2));
       expect(find.text('Curaga (Unverified)'), findsNWidgets(2));
-      expect(find.text('Aetherial Wind (Unverified) — Y’shtola'), findsNothing);
+      expect(
+        find.text('Aetherial Wind (Unverified) — Source: Y’shtola'),
+        findsNothing,
+      );
       expect(find.textContaining('voice Label'), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );
   testWidgets(
-    'compact ability rows wrap every stat and retain full hover details at minimum width',
+    'compact ability rows wrap every stat and retain full click details at minimum width',
     (tester) async {
       final app = CatalogState()
         ..catalog = {...compactExamples(), 'icons': [], 'passives': []};
@@ -269,9 +272,9 @@ void main() {
       final text = tester.widget<Text>(find.text(stats));
       expect(text.maxLines, isNull);
       expect(find.textContaining('Hit damage shares:'), findsNothing);
-      final preview = tester.widget<DescriptionTooltip>(
+      final preview = tester.widget<DescriptionDetails>(
         find.byWidgetPredicate(
-          (w) => w is DescriptionTooltip && w.title == 'Execution (Unverified)',
+          (w) => w is DescriptionDetails && w.title == 'Execution (Unverified)',
         ),
       );
       expect(preview.description, contains('Hit damage shares: 0.2, 0.3, 0.5'));

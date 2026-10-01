@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
-import '../../design/description_tooltip.dart';
+import '../../design/description_details.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
@@ -146,7 +146,7 @@ class _BonusesStepState extends State<BonusesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: DescriptionTooltip(title: p != null ? title(p) : 'passive ${g[1]}', description: descriptions[g[1]] ?? '', child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p != null ? title(p) : 'passive ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
+                Expanded(child: DescriptionDetails(title: p != null ? title(p) : 'passive ${g[1]}', description: descriptions[g[1]] ?? '', child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p != null ? title(p) : 'passive ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
                 GrantTools(tier: i, onMove: (t) => move(g, i, j, t), onRemove: () => remove(i, j)),
               ]),
             );

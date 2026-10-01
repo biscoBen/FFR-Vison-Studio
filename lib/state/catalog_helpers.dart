@@ -178,13 +178,13 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       ? '${kind == 'skills' ? 'skill' : 'passive'} ${row['id']}'
       : name;
   final owners = catalogDefaultOwners(catalog, kind, row);
+  final unverified = !(verified ?? catalogEntryVerified(row, kind));
   final sources = {
+    if (unverified) ...owners,
     for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['id']}'] as List? ?? []))
       if (catalogNameIsEnglish(name)) name.toString(),
   }.toList()..sort();
-  final unverified = !(verified ?? catalogEntryVerified(row, kind));
   return '$label${unverified ? ' (Unverified)' : ''}'
-      '${unverified && owners.isNotEmpty ? ' — ${owners.join(', ')}' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sources.join(', ')}' : ''}';
 }
 
