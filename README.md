@@ -31,6 +31,12 @@ flutter build windows --release --build-name 1.0.0 --build-number <n> \
 `FFR-Vision-Studio-windows` artifact. Automatic builds default to build 15 and check the host's minimum-version requirement
 when its manifest is reachable. A blocked or unavailable updater host does not prevent compilation; the app still checks
 compatibility at startup.
+README/CHANGELOG-only changes complete the inexpensive `plan` and `windows` checks, without a Windows build or release.
+All other paths retain full coverage. Manual builds always run. Validation and compilation run concurrently on Windows;
+the `windows` check requires both to succeed before either download publication job can run. Superseded automatic
+validation/compilation jobs on `Sephira's-Update` can be cancelled; manual builds and release publication are protected.
+CI pins the verified Flutter 3.47.6 toolchain, retains Flutter/Pub caches, enforces `pubspec.lock`, and resolves packages
+once per runner. It extracts a fresh engine for its real startup test and does not reuse generated build directories.
 A manual run ("Run workflow") can supply a different compatible build number.
 If GitHub Actions is disabled on the fork, enable it from the repository's Actions page first. The zips people
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
@@ -57,9 +63,15 @@ python3 scripts/cloud_windows_build.py
 
 Enable repository Actions from its Actions page first. The helper can also do this with `--enable-actions` if its credential
 has Administration permission.
-The helper defaults to `Sephira's-Update` and build 15, checks the remote commit, waits for its workflow run, and downloads
-only that run's `FFR-Vision-Studio-windows` artifact. It writes a provenance record alongside the executable under
-`/workspace/.runtime/ffr/builds`. Commit and push changes before building them.
+The helper defaults to `Sephira's-Update` and build 15. It checks the remote commit and searches for a successful or
+running build with that exact commit, workflow and build/download inputs. It reuses a verified build or waits for the
+matching running build; otherwise it dispatches one run. `--force-rebuild` deliberately requests a new run.
+Missing, expired or incompatible artifacts cause a new build unless the same run has a verified published test ZIP.
+Downloads validate the SHA-256 and embedded commit, workflow, pinned Flutter version and build inputs before delivery.
+The helper writes `build-record.json` alongside the executable under `/workspace/.runtime/ffr/builds`. Existing output
+is preserved; choose a different `--output` directory for another download. Commit and push code before building it.
+After publication, updating README/CHANGELOG release notes needs no further application build; the published package
+continues to identify its original tested commit.
 
 Windows CI reuses its startup-test engine ZIP through an Actions cache keyed by the pinned SHA-256, so app commits
 do not require another download from the engine host after the cache is populated. Every build verifies that checksum
@@ -67,7 +79,9 @@ and extracts a fresh engine for startup testing. A cache miss uses the existing 
 and corrupt archives are rejected. GitHub can evict unused caches. For repeated local Windows startup tests, set
 `FFR_STUDIO_ENGINE_CACHE` to a persistent directory; a verified archive is retained there under its SHA-256 filename.
 
-If the cloud proxy blocks GitHub's artifact storage, use `python3 scripts/cloud_windows_build.py --cloud-download`
+If the cloud proxy blocks GitHub's artifact storage, the helper first reuses the exact run's authenticated published
+test ZIP when available, verifying both its release metadata and embedded build identity. No second build is needed.
+For runs without a usable published test ZIP, use `python3 scripts/cloud_windows_build.py --cloud-download`
 on the development branch. The workflow creates a temporary **unpublished draft** download through GitHub's release-asset
 endpoint. The helper verifies its branch, commit, run and SHA256 digest, downloads it, and deletes the draft. This requires
 Contents read/write in addition to Actions access. Normal push builds do not create temporary drafts; successful
@@ -81,7 +95,8 @@ one-time repository Actions activation. Administration permission can be removed
 The helper uses the existing injected GitHub authentication when this additional binding is absent. Never put token
 values in the repository or chat.
 
-Use `--ref master` to download a separate baseline build without changing or merging `master`.
+Older baseline workflows without the build-input/provenance contract can still be built manually in Actions; the helper
+rejects unprovable workflow inputs rather than attributing their binaries to a requested build. This does not change master.
 Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
 Full mod tests still need the game's installation and extracted data.
 

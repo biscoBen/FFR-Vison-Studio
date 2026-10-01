@@ -12,7 +12,7 @@ try {
         -Uri 'https://ffr.luminest.io/engine/engine-1.0.0.15.zip'
     $env:FFR_STUDIO_ENGINE_FIXTURE = Join-Path $temporary 'engine'
     Expand-Archive -LiteralPath $archive -DestinationPath $env:FFR_STUDIO_ENGINE_FIXTURE
-    flutter test test/windows_bundled_startup_test.dart
+    flutter test --no-pub test/windows_bundled_startup_test.dart
     if ($LASTEXITCODE -ne 0) { throw 'The fresh Windows bundled startup test failed.' }
 } catch {
     # Expose the actual failure through the Checks API as well as the console.

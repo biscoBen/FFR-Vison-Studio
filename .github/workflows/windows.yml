@@ -1,4 +1,8 @@
 name: Windows build
+run-name: "ffr-windows-v1 build=${{ inputs.build || '15' }} cloud=${{ inputs.cloud_download && 'true' || 'false' }}"
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -15,17 +19,36 @@ on:
         default: false
 
 jobs:
-  windows:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      build_required: ${{ steps.plan.outputs.build_required }}
+      build: ${{ steps.plan.outputs.build }}
+      workflow_sha: ${{ steps.plan.outputs.workflow_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        env:
+          REQUESTED_BUILD: ${{ inputs.build || '15' }}
+        run: python3 scripts/workflow_plan.py plan
+
+  validate:
+    needs: plan
+    if: ${{ needs.plan.outputs.build_required == 'true' }}
     runs-on: windows-latest
+    concurrency:
+      group: validate-${{ github.event_name == 'push' && github.ref_name == 'Sephira''s-Update' && github.ref || github.run_id }}
+      cancel-in-progress: ${{ github.event_name == 'push' && github.ref_name == 'Sephira''s-Update' }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.6'
           cache: true
-      - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter analyze --no-pub
+      - run: flutter test --no-pub
       - name: Test engine archive cache
         shell: pwsh
         run: ./scripts/test_verified_engine_archive.ps1
@@ -40,17 +63,37 @@ jobs:
           FFR_STUDIO_ENGINE_CACHE: ${{ runner.temp }}/ffr-studio-engine-cache
         run: ./scripts/test_windows_bundled_startup.ps1
       - name: Install sprite test dependency
-        run: python -m pip install "Pillow>=11,<13"
+        run: python -m pip install -r scripts/requirements-test.txt
       - run: python -m unittest discover -s scripts -p "test_*.py" -v
+      - name: Verify bundled extensions
+        run: |
+          python scripts/verify_existing_visions_bundle.py
+          python scripts/verify_crystal_fina_bundle.py
       - name: Test Windows shortcut and updater
         shell: powershell
         run: |
           ./scripts/test_studio_launcher.ps1
           ./scripts/test_official_visions_import.ps1
+
+  compile:
+    needs: plan
+    if: ${{ needs.plan.outputs.build_required == 'true' }}
+    runs-on: windows-latest
+    concurrency:
+      group: compile-${{ github.event_name == 'push' && github.ref_name == 'Sephira''s-Update' && github.ref || github.run_id }}
+      cancel-in-progress: ${{ github.event_name == 'push' && github.ref_name == 'Sephira''s-Update' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.6'
+          cache: true
+      - run: flutter pub get --enforce-lockfile
       - name: Build
         shell: pwsh
         env:
-          APP_BUILD: ${{ inputs.build }}
+          APP_BUILD: ${{ needs.plan.outputs.build }}
           BUILD_BRANCH: ${{ github.ref_name }}
           BUILD_COMMIT: ${{ github.sha }}
         run: |
@@ -69,17 +112,35 @@ jobs:
           }
           $channel = 'stable'
           if ($env:BUILD_BRANCH -eq "Sephira's-Update") { $channel = 'sephira-test' }
-          flutter build windows --release --build-name 1.0.0 --build-number $build --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=$build --dart-define=APP_CHANNEL=$channel --dart-define=APP_COMMIT=$env:BUILD_COMMIT
+          flutter build windows --no-pub --release --build-name 1.0.0 --build-number $build --dart-define=APP_VERSION=1.0.0 --dart-define=APP_BUILD=$build --dart-define=APP_CHANNEL=$channel --dart-define=APP_COMMIT=$env:BUILD_COMMIT
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Rename-Item build/windows/x64/runner/Release/ffr_vision_studio.exe "FFR Vision Studio.exe"
+      - name: Record the exact build request
+        env:
+          REQUESTED_BUILD: ${{ needs.plan.outputs.build }}
+          CLOUD_DOWNLOAD: ${{ inputs.cloud_download && 'true' || 'false' }}
+        run: python scripts/workflow_plan.py manifest --output build/windows/x64/runner/Release/build-provenance.json
       - uses: actions/upload-artifact@v4
         with:
           name: FFR-Vision-Studio-windows
           path: build/windows/x64/runner/Release/
 
+  # Preserve the existing check name, including a successful documentation-only
+  # result. Workflow-level path exclusions would leave required checks pending.
+  windows:
+    if: ${{ always() }}
+    needs: [plan, validate, compile]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require every validation and compilation job
+        env:
+          JOB_RESULTS: ${{ toJSON(needs) }}
+        run: python3 scripts/workflow_plan.py gate
+
   cloud-download:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.cloud_download }}
-    needs: windows
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.cloud_download && needs.plan.outputs.build_required == 'true' && needs.windows.result == 'success' }}
+    needs: [plan, windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -119,8 +180,8 @@ jobs:
             --title "Temporary cloud test build (run $RUN_ID)" --notes-file build-provenance.json
 
   test-release:
-    if: ${{ github.repository == 'biscoBen/FFR-Vison-Studio' && github.ref_name == 'Sephira''s-Update' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
-    needs: windows
+    if: ${{ needs.plan.outputs.build_required == 'true' && needs.windows.result == 'success' && github.repository == 'biscoBen/FFR-Vison-Studio' && github.ref_name == 'Sephira''s-Update' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    needs: [plan, windows]
     runs-on: ubuntu-latest
     concurrency:
       group: sephira-test-releases
@@ -140,7 +201,9 @@ jobs:
           REPO: ${{ github.repository }}
           COMMIT_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
-          BUILD_NUMBER: ${{ inputs.build || '15' }}
+          BUILD_NUMBER: ${{ needs.plan.outputs.build }}
+          WORKFLOW_SHA: ${{ needs.plan.outputs.workflow_sha }}
+          CLOUD_DOWNLOAD: ${{ inputs.cloud_download && 'true' || 'false' }}
         run: |
           python3 - <<'PY'
           import json, os, subprocess
@@ -148,14 +211,27 @@ jobs:
           import sys
           sys.path.insert(0, 'scripts')
           from package_test_studio import package
+          from build_contract import documentation_only, request_identity
           from pathlib import Path
           branch = "Sephira's-Update"
           head = json.loads(subprocess.check_output([
               'gh', 'api', f"repos/{os.environ['REPO']}/git/ref/heads/{quote(branch, safe='')}",
           ]))['object']['sha']
           if head != os.environ['COMMIT_SHA']:
-              print('A newer commit is on the branch; keeping the latest tested download.')
-              sys.exit(0)
+              comparison = json.loads(subprocess.check_output([
+                  'gh', 'api', f"repos/{os.environ['REPO']}/compare/{os.environ['COMMIT_SHA']}...{head}",
+              ]))
+              paths = [path for file in comparison.get('files', [])
+                       for path in (file['filename'], file.get('previous_filename', file['filename']))]
+              if comparison.get('status') != 'ahead' or not documentation_only(paths):
+                  print('A newer code commit is on the branch; keeping the latest tested download.')
+                  sys.exit(0)
+              print('Only README/CHANGELOG advanced; publishing the original tested commit without relabelling it.')
+          expected = request_identity(os.environ['COMMIT_SHA'], branch, int(os.environ['BUILD_NUMBER']),
+                                      os.environ['CLOUD_DOWNLOAD'] == 'true', os.environ['WORKFLOW_SHA'],
+                                      int(os.environ['RUN_ID']), int(os.environ['GITHUB_RUN_ATTEMPT']))
+          if json.loads(Path('bundle/build-provenance.json').read_text()) != expected:
+              raise RuntimeError('Compiled artifact does not match this validated workflow request.')
           package(Path('bundle'), Path('Sephira-Studio-Test.zip'), os.environ['COMMIT_SHA'],
                   int(os.environ['RUN_ID']), build=int(os.environ['BUILD_NUMBER']))
           subprocess.run([

@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Avoid Windows rebuilds and extra releases for README/CHANGELOG-only updates while completing the existing check.
+  Run full Windows validation and compilation concurrently, preserve every required check, and publish only after both
+  succeed. Pin the verified Flutter version, keep safe SDK/Pub/engine caches, and avoid repeated package resolution.
+  Protect manual builds and publication while cancelling superseded automatic validation/compilation jobs.
+- Reuse the exact commit's running or successful build before dispatching, verifying workflow/build inputs and downloaded
+  provenance. Keep explicit force rebuilds and authenticated downloads; reuse the verified test ZIP if artifact storage
+  is blocked. Reject incompatible or missing build outputs without substituting another commit's binary.
+  Focused regression checks passed; the final Windows package and delivery timings are pending.
 
 ## Published startup character sprites — 2026-10-01
 
