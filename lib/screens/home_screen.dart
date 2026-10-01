@@ -8,6 +8,7 @@ import '../state/app_state.dart';
 import 'add_unit_dialog.dart';
 import 'build_status.dart';
 import 'character_config_buttons.dart';
+import 'native_vision_dialog.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -15,19 +16,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
+    final entries = [...app.units, ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))];
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
         flex: 7,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Band('Your visions', trailing: Text('${app.units.length} in the mod', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
           Expanded(
-            child: app.units.isEmpty
+            child: entries.isEmpty
                 ? _empty(context)
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
-                    itemCount: app.units.length + 1,
-                    itemBuilder: (_, i) => i == app.units.length ? _addEntry(context) : _entry(context, app, app.units[i] as Map<String, dynamic>),
+                    itemCount: entries.length + 1,
+                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i] as Map<String, dynamic>),
                   ),
           ),
           const CharacterConfigButtons(includeAll: true),
@@ -53,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 Text(app.gameRunning
                     ? 'Close the game to install. You can keep editing meanwhile.'
-                    : 'Builds the mod from your units and copies it into the game. The new visions are sold in the Mitra item shop.', style: Guide.text()),
+                    : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity.', style: Guide.text()),
                 const SizedBox(height: 14),
                 Row(children: [
                   GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: app.units.isEmpty || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
@@ -112,6 +115,8 @@ class HomeScreen extends StatelessWidget {
       );
 
   Widget _entry(BuildContext context, AppState app, Map<String, dynamic> u) {
+    final native = u['native'] != null;
+    final edited = app.units.any((x) => x['key'] == u['key']);
     final aw = (u['awakening'] as List? ?? []).cast<List>();
     final abilities = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] == 'ActiveSkill').length);
     final bonuses = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] != 'ActiveSkill').length);
@@ -120,12 +125,12 @@ class HomeScreen extends StatelessWidget {
       color: Guide.paper,
       shape: Border.fromBorderSide(BorderSide(color: Guide.ink, width: 1.5)),
       child: InkWell(
-        onTap: () => app.select(u['key'] as String),
+        onTap: () => native ? chooseNativeVision(context, u) : app.select(u['key'] as String),
         hoverColor: Guide.paper2,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Frame(padding: 2, child: PixelImage(app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
+            Frame(padding: 2, child: PixelImage(native && u['ffbe'] == null ? app.api!.nativeIcon(u['id'] as int) : app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -134,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                 Text('${u['attackType'] == 'Magic' ? 'Magic' : 'Physical'} · ${((u['roles'] as List?) ?? []).map((r) => r.toString().replaceAll('eUnitRole::', '')).join(', ')}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 6),
                 Text('$abilities abilities · $bonuses bonuses', style: Guide.small(Guide.ink)),
-                Text('Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(native ? (edited ? 'Game vision · your edits' : 'Game vision · defaults') : 'Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
               ]),
             ),
           ]),

@@ -235,13 +235,57 @@ class CharacterConfig {
       invalid();
     }
     final ffbe = unit['ffbe'];
-    if (ffbe is! Map || ffbe['id'] is! String || ffbe['dir'] is! String) {
+    final native = unit['native'];
+    if (native != null &&
+        (native is! Map ||
+            native['version'] != 1 ||
+            native['id'] != unit['id'] ||
+            (unit['id'] as int) < 13100 ||
+            native['baseline'] is! Map ||
+            native['baseline']['id'] != unit['id'] ||
+            native['baseline']['native'] != null ||
+            unit['donor'] != unit['id'] ||
+            unit['lb_custom'] != null)) {
       invalid();
     }
-    final directory = (ffbe['dir'] as String).replaceAll('\\', '/');
-    if (!directory.startsWith('units/') ||
-        directory.contains(':') ||
-        directory.split('/').any((v) => v.isEmpty || v == '..' || v == '.')) {
+    if (native != null) {
+      final baseline = Map<String, dynamic>.from(native['baseline'] as Map);
+      // Validate the complete original snapshot without requiring custom artwork.
+      validate({
+        ...baseline,
+        'ffbe': baseline['ffbe'] ?? {'id': '0', 'dir': 'units/original'},
+      });
+      for (final field in ['command', 'master']) {
+        if (unit[field] is! Map || unit[field]['id'] != baseline[field]['id']) {
+          invalid();
+        }
+      }
+      for (final field in ['awakening', 'synchro']) {
+        if (unit[field] is! List ||
+            unit[field].length != baseline[field].length) {
+          invalid();
+        }
+      }
+      final caps = native['synchroCaps'];
+      if (caps is! List ||
+          caps.length != baseline['synchro'].length ||
+          !caps.every((v) => v is int && v >= 0)) {
+        invalid();
+      }
+    }
+    if ((native == null || ffbe != null) &&
+        (ffbe is! Map || ffbe['id'] is! String || ffbe['dir'] is! String)) {
+      invalid();
+    }
+    final directory = ffbe == null
+        ? null
+        : (ffbe['dir'] as String).replaceAll('\\', '/');
+    if (directory != null &&
+        (!directory.startsWith('units/') ||
+            directory.contains(':') ||
+            directory
+                .split('/')
+                .any((v) => v.isEmpty || v == '..' || v == '.'))) {
       invalid();
     }
     for (final field in ['command', 'master']) {
@@ -331,6 +375,11 @@ class CharacterConfig {
   static int resonanceId(int id) => 440000 + (id - 13099) * 10;
 
   static bool sameCharacter(Map saved, Map current) {
+    if (saved['native'] != null || current['native'] != null) {
+      return saved['native'] != null &&
+          current['native'] != null &&
+          saved['native']['id'] == current['native']['id'];
+    }
     final a = saved['ffbe'] as Map?, b = current['ffbe'] as Map?;
     if (a == null || b == null) {
       return false;
@@ -360,7 +409,10 @@ class CharacterConfig {
       return exact.single;
     }
     final sameForm = candidates
-        .where((u) => u['ffbe']['id'] == saved['ffbe']['id'])
+        .where(
+          (u) =>
+              saved['native'] != null || u['ffbe']['id'] == saved['ffbe']['id'],
+        )
         .toList();
     if (sameForm.length == 1) {
       return sameForm.single;
@@ -388,6 +440,17 @@ class CharacterConfig {
         .toList();
     final result = copy(saved);
     final oldId = saved['id'] as int;
+    if (saved['native'] != null) {
+      if (other.any((u) => u['id'] == oldId || u['key'] == saved['key'])) {
+        throw StateError(
+          'This original vision has a conflicting roster entry. Its game ID cannot be reassigned.',
+        );
+      }
+      if (replacing != null && replacing['id'] != oldId) {
+        throw StateError('An original vision must keep its game ID.');
+      }
+      return result;
+    }
     final owned = (saved['skills'] as Map).keys
         .map((v) => int.parse(v.toString()))
         .toList();

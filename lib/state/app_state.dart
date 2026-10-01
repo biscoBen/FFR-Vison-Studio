@@ -78,6 +78,7 @@ class AppState extends ChangeNotifier {
   bool _stopping = false;
 
   JsonMap? get selected => units.cast<JsonMap?>().firstWhere((u) => u?['key'] == selectedKey, orElse: () => null);
+  List<dynamic> nativeVisions = [];
   String get logsDir => p.join(paths.root, 'logs');
   String get downloadPage => hostBase.endsWith('/') ? hostBase : '$hostBase/';
 
@@ -279,6 +280,8 @@ class AppState extends ChangeNotifier {
   Future<void> loadAll() async {
     catalog = await api!.catalog();
     units = await api!.spec();
+    try { nativeVisions = await api!.nativeVisions(); }
+    catch (e) { notice = 'Could not load the original game visions: $e'; }
     if (catalog?['ffbeResonance'] != null) {
       units = units.map((u) {
         final upgraded = migrateCgResonance(u as JsonMap);
@@ -425,7 +428,7 @@ class AppState extends ChangeNotifier {
     return u;
   });
 
-  bool get hasCrystalFina => units.any((u) => CrystalFina.matches(u as Map));
+  bool get hasCrystalFina => units.any((u) => u['native'] == null && CrystalFina.matches(u as Map));
 
   Future<JsonMap> snapshotCharacter(String key) => _withRoster(() async {
     if (api != null && !engineDown) { await _savePending(); }
@@ -440,6 +443,11 @@ class AppState extends ChangeNotifier {
   });
 
   Future<void> _checkCharacterArtwork(JsonMap saved) async {
+    if (saved['native'] != null) {
+      final original = await api!.nativeVision(saved['id'] as int);
+      if (original['native']?['id'] != saved['native']['id']) { throw StateError('This original vision is not available in the prepared game.'); }
+      if (saved['ffbe'] == null) { return; }
+    }
     if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
     final directory = p.joinAll([paths.engineDir, ...(saved['ffbe']['dir'] as String).replaceAll('\\', '/').split('/')]);
     final form = saved['ffbe']['id'];
@@ -539,6 +547,44 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     return unit;
   });
+
+  /// Original visions keep their game identity. Merely opening the editor
+  /// creates an unchanged snapshot; the builder only applies later differences.
+  Future<JsonMap> editNativeVision(int id, {JsonMap? appearance}) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel(); await _savePending();
+    final current = _mergePending(await api!.spec());
+    final matches = current.where((u) => u['native']?['id'] == id).toList();
+    if (matches.length > 1) { throw StateError('This original vision has duplicate overrides.'); }
+    final unit = CharacterConfig.copy(matches.isEmpty ? await api!.nativeVision(id) : matches.single as JsonMap);
+    if (unit['id'] != id || unit['native']?['id'] != id || current.any((u) => u['id'] == id && u['native'] == null)) {
+      throw StateError('This original vision conflicts with a roster entry. Your roster has not been changed.');
+    }
+    if (appearance != null) {
+      unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
+      unit['menuScale'] = appearance['menuScale'] ?? 2.52;
+      if (appearance['icon'] != null) { unit['icon'] = CharacterConfig.copy(appearance['icon'] as JsonMap); }
+      await _checkCharacterArtwork(unit);
+    }
+    final next = [for (final u in current) u['native']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
+    final revision = _rosterRevision;
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    units = _mergePending(next);
+    if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending(); selectedKey = unit['key'] as String; _anims.clear(); notifyListeners();
+    return unit;
+  });
+
+  void useOriginalModel(JsonMap unit) {
+    final restored = CharacterConfig.copy(unit);
+    final baseline = restored['native']['baseline'] as Map;
+    for (final field in ['ffbe', 'menuScale', 'icon']) {
+      if (baseline.containsKey(field)) { restored[field] = json.decode(json.encode(baseline[field])); }
+      else { restored.remove(field); }
+    }
+    update(restored); _anims.clear();
+  }
 
   // ---------------------------------------------------------------- self-update
   /// A running exe cannot replace itself, so: stage the new app next to the app data, write a small script that waits for

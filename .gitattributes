@@ -1,3 +1,4 @@
 # Bundled payloads are checksum-verified. Preserve supplied LF/CRLF and binaries
 # byte-for-byte on Windows as well as Linux; never normalize these assets.
 assets/crystal_fina/** -text
+assets/existing_visions/** -text

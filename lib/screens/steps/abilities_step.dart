@@ -76,7 +76,8 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
       final vid = (widget.unit['id'] as num).toInt();
       final base = 445000 + (vid - 13100) * 100;
       int? id;
-      for (var slot = 0; slot < 10; slot++) { if (!mySkills.containsKey('${base + 10 * slot}')) { id = base + 10 * slot; break; } }
+      final originalIds = widget.unit['native'] == null ? <num>{} : byId.keys.toSet();
+      for (var slot = 0; slot < 10; slot++) { if (!mySkills.containsKey('${base + 10 * slot}') && !originalIds.contains(base + 10 * slot)) { id = base + 10 * slot; break; } }
       if (id == null) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Guide.ink, content: Text('This unit already has ten custom moves.', style: Guide.text(Guide.paper)))); return; }
       final r = sk['recipe'] as Map;
       final skillsNew = Map<String, dynamic>.from(mySkills);

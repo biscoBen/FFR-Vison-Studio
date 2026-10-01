@@ -142,17 +142,20 @@ void main() {
       starts++;
       expect(exe, paths.engineExe);
       expect(args.first, '--run');
-      expect(args.sublist(2), ['--engine', paths.engineDir, '--action', 'Apply']);
+      final existing = args[1].endsWith('install_existing_visions.py');
+      final action = args.last;
+      expect(args.sublist(2), ['--engine', paths.engineDir, '--action', action]);
+      expect(action, existing && starts % 3 == 1 ? 'Restore' : 'Apply');
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, '{"status":"active","patchVersion":"1.1.0"}', '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.0.0' : '1.1.0'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
-    expect(starts, 2);
+    expect(starts, 6);
     await expectLater(features.prepareEngine(paths, engineRunning: true), throwsStateError);
-    expect(starts, 2);
+    expect(starts, 6);
   });
 
   test('installer failure is visible and does not report engine readiness', () async {

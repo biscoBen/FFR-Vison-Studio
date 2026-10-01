@@ -12,7 +12,8 @@ Future<void> showAddUnit(BuildContext context) => showDialog<void>(context: cont
 
 /// Pick a Brave Exvius unit. Picking one fetches its sprites (a small download) so the look can be previewed here.
 class AddUnitDialog extends StatefulWidget {
-  const AddUnitDialog({super.key});
+  const AddUnitDialog({super.key, this.replaceVisionId});
+  final int? replaceVisionId;
   @override
   State<AddUnitDialog> createState() => _AddUnitDialogState();
 }
@@ -122,7 +123,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
       child: Paper(
         width: 940,
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Band('Add a unit'),
+          Band(widget.replaceVisionId == null ? 'Add a unit' : 'Choose a replacement model'),
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
@@ -193,10 +194,15 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
               if (err != null && detail != null) Expanded(child: Text(err!, style: Guide.small(Guide.red))) else if (step != null && busy) Expanded(child: Text(step!, style: Guide.small())) else const Spacer(),
               GuideButton('Cancel', onPressed: busy ? null : () => Navigator.of(context).pop()),
               const SizedBox(width: 8),
-              GoButton(bundled && app.hasCrystalFina ? 'Already in mod' : busy ? 'Adding' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets || (bundled && app.hasCrystalFina) ? null : () async {
+              GoButton(widget.replaceVisionId != null ? (busy ? 'Applying' : 'Use this model') : bundled && app.hasCrystalFina ? 'Already in mod' : busy ? 'Adding' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets || (widget.replaceVisionId == null && bundled && app.hasCrystalFina) ? null : () async {
                 setState(() { busy = true; err = null; });
                 try {
-                  if (bundled) {
+                  if (widget.replaceVisionId != null) {
+                    Map<String, dynamic> appearance;
+                    if (bundled) { appearance = await app.features.profile(); }
+                    else { await app.prepareUnitPreview(sel!['id'] as String, form); appearance = await app.api!.nativeModel(sel!['id'] as String, form); }
+                    await app.editNativeVision(widget.replaceVisionId!, appearance: appearance);
+                  } else if (bundled) {
                     await app.addBundledUnit(onStep: (s) { if (mounted) { setState(() => step = s); } });
                   } else {
                     await app.addUnit(sel!['id'] as String, form, name.text, onStep: (s) { if (mounted) { setState(() => step = s); } });
@@ -254,9 +260,9 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
       const SizedBox(height: 10),
       Row(children: [
         Expanded(flex: 3, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('NAME IN THE GAME', style: Guide.label()),
+          Text(widget.replaceVisionId == null ? 'NAME IN THE GAME' : 'REPLACEMENT MODEL', style: Guide.label()),
           const SizedBox(height: 4),
-          TextField(controller: name, readOnly: sel?['bundledPreset'] == CrystalFina.presetId),
+          TextField(controller: name, readOnly: widget.replaceVisionId != null || sel?['bundledPreset'] == CrystalFina.presetId),
         ])),
         const SizedBox(width: 10),
         Expanded(flex: 2, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -289,7 +295,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ]),
       ),
       const SizedBox(height: 6),
-      Text(sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
+      Text(widget.replaceVisionId != null ? 'Only this look is applied. The game vision keeps its current name, abilities, stats, MR and Resonance.' : sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
       if (!hasPack) ...[const SizedBox(height: 8), Box(fill: Guide.warn, child: Text('No sprite pack for this look is on the host yet, so it cannot be added. Pick another look, or ask for it to be added.', style: Guide.small(Guide.ink)))],
     ]);
   }

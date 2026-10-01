@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "files": {
+    "install_existing_visions.py": "cb2054feb07a2258dacd53bd10522264f75c7f41ec90508e5d9d44076de637f6",
+    "payload/_ffr_existingvisions.py": "f03b4f7da935ca4ae46a13d43bd966d4f8d8bfc7a787ee1aad3a523f095cc1dd",
+    "payload/manifest.json": "2460c6a21059ab1fc50c45adaa3c9bc9b351bdc14c7d8ca602a34887ad805252"
+  }
+}

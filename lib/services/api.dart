@@ -32,6 +32,11 @@ class Api {
   Future<Map<String, dynamic>> status() async => (await get('/api/status')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> catalog() async => (await get('/api/ffr/catalog')) as Map<String, dynamic>;
   Future<List<dynamic>> spec() async => (await get('/api/spec')) as List<dynamic>;
+  Future<List<dynamic>> nativeVisions() async => (await get('/api/native/catalog')) as List<dynamic>;
+  Future<Map<String, dynamic>> nativeVision(int id) async => (await get('/api/native/vision/$id')) as Map<String, dynamic>;
+  String nativeIcon(int id) => '$base/api/native/icon/$id';
+  Future<Map<String, dynamic>> nativeModel(String id, String form) async =>
+      (await get('/api/native/model/${Uri.encodeComponent(id)}/${Uri.encodeComponent(form)}')) as Map<String, dynamic>;
   Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);
   Future<Map<String, dynamic>> addUnit(String ffbeId, {String? form, String? name}) async =>
       (await post('/api/spec/add', {'ffbeId': ffbeId, 'form': form, 'name': name, 'autoport': false})) as Map<String, dynamic>;

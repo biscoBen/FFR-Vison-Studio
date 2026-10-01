@@ -74,6 +74,26 @@ void main() {
   }
 
   testWidgets(
+    'original visions use their actual rank count and reward capacities',
+    (tester) async {
+      final unit = fina();
+      unit['synchro'] = <dynamic>[<dynamic>[]];
+      unit['native'] = {
+        'synchroCaps': [1],
+      };
+      await show(tester, unit);
+      await tester.tap(find.byTooltip('Add HP to MR 1'));
+      await tester.pumpAndSettle();
+      expect(unit['synchro'], hasLength(1));
+      expect(unit['synchro'][0], hasLength(1));
+      await tester.tap(find.byTooltip('Add HP to MR 1'));
+      await tester.pumpAndSettle();
+      expect(unit['synchro'][0], hasLength(1));
+      expect(find.textContaining('already has 1 rewards'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
     'opening MR preserves the full profile and displays inherited rewards',
     (tester) async {
       final unit = fina();
@@ -88,10 +108,12 @@ void main() {
       await tester.scrollUntilVisible(
         find.byKey(const ValueKey('mr-rank-9')),
         200,
-        scrollable: find.descendant(
-          of: find.byKey(const ValueKey('mr-ranks')),
-          matching: find.byType(Scrollable),
-        ).first,
+        scrollable: find
+            .descendant(
+              of: find.byKey(const ValueKey('mr-ranks')),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       expect(find.byKey(const ValueKey('mr-rank-9')), findsOneWidget);
       expect(tester.takeException(), isNull);

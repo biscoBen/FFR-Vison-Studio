@@ -183,9 +183,11 @@ class Shell extends StatelessWidget {
               const SizedBox(width: 14),
               const ThemeToggle(),
             ] else ...[
-              GuideButton('Play like a vision the game has', icon: Icons.content_copy, small: true, onPressed: () => showCopyVision(context, u, (patch) => app.update({...u, ...patch}))),
-              const SizedBox(width: 8),
-              GuideButton('Remove', icon: Icons.delete_outline, small: true, danger: true, onPressed: () => confirmRemove(context, app, u)),
+              if (u['native'] == null) ...[
+                GuideButton('Play like a vision the game has', icon: Icons.content_copy, small: true, onPressed: () => showCopyVision(context, u, (patch) => app.update({...u, ...patch}))),
+                const SizedBox(width: 8),
+              ],
+              GuideButton(u['native'] != null ? 'Reset vision' : 'Remove', icon: Icons.delete_outline, small: true, danger: true, onPressed: () => confirmRemove(context, app, u)),
             ],
           ]),
           if (app.engineDown) ...[

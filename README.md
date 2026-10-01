@@ -102,13 +102,31 @@ confirmation, while keeping other units in the current roster. Every saved entry
 the roster is written once; a missing asset or invalid entry prevents the entire import. IDs and references between
 saved units are adjusted together if necessary. A full roster backup is kept before applying the import.
 
+## Editing original game visions
+
+After game preparation, **Your visions** also lists the supported original game visions. Click one and choose
+**Edit vision** to adjust its kit or **Change model** to select replacement artwork from the normal unit picker,
+including Crystal Fina. Changing artwork keeps the original vision's game ID, stats, abilities, passives, MR rewards,
+Resonance and acquisition/progression data. Original visions are updated in place, rather than added as duplicate units.
+Only original visions you choose to edit are stored in your mod roster or included in saved configs.
+
+The character page has **Change model** and **Use original model**. Restoring the model keeps your kit edits.
+**Reset vision** removes the entire override; build/install afterward to restore that vision's game defaults.
+If no overrides or added units remain, use **Restore original game** to remove the installed mod.
+Single and bulk config saves include original-vision edits and replacement-model selections.
+
+The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another
+existing game Resonance; creating a custom Resonance remains available for separately added units. Unsupported original
+sprite layouts and incomplete placeholders are excluded. Engine integration runs automatically at startup and after
+compatible updates, alongside Crystal Fina's transparency integration. No separate script is required.
+
 ## Layout
 
 - `lib/main.dart` window, single-instance lock, header, engine-down banner
 - `lib/state/app_state.dart` boot (downloads, offline start, update notice), engine supervision, units, build, restore
 - `lib/services/` engine process, downloader (resume + checksum), engine API client, game folder detection, paths
 - `lib/design/` the guide's tokens (`Guide`, day and night editions), parts, wordmark, motion viewer, choice
-- `lib/screens/` setup, home (spread), unit page and its four steps, add-unit, copy-a-vision, about, build status
+- `lib/screens/` setup, home (spread), unit page and its five tabs, add-unit, copy-a-vision, about, build status
 - `windows/runner/Runner.rc` exe metadata; `windows/runner/resources/app_icon.ico` Rain's face
 
 ## Developing without touching your real install

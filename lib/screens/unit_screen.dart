@@ -10,6 +10,8 @@ import 'steps/bonuses_step.dart';
 import 'steps/resonance_step.dart';
 import 'steps/stats_step.dart';
 import 'steps/mr_step.dart';
+import 'steps/native_resonance_step.dart';
+import 'native_vision_dialog.dart';
 import 'unit_anim_pane.dart';
 import 'character_config_buttons.dart';
 
@@ -40,7 +42,12 @@ class _UnitScreenState extends State<UnitScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(14),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                if (form != null) UnitAnimPane(unit: u, height: 210) else Frame(padding: 8, child: PixelImage(api.unitIcon(u['key'] as String, 'face'), width: 128, height: 128)),
+                if (form != null) UnitAnimPane(unit: u, height: 210) else Frame(padding: 8, child: PixelImage(u['native'] == null ? api.unitIcon(u['key'] as String, 'face') : api.nativeIcon(u['id'] as int), width: 128, height: 128)),
+                if (u['native'] != null) ...[
+                  const SizedBox(height: 8),
+                  GuideButton('Change model', onPressed: app.building ? null : () => showChangeModel(context, u['id'] as int)),
+                  if (form != null) GuideButton('Use original model', onPressed: app.building ? null : () => app.useOriginalModel(u)),
+                ],
                 const SizedBox(height: 6),
                 Text('${u['attackType'] == 'Magic' ? 'Magic' : 'Physical'} · ${((u['roles'] as List?) ?? []).map((r) => r.toString().replaceAll('eUnitRole::', '')).join(', ')}', style: Guide.small()),
                 const SizedBox(height: 14),
@@ -57,8 +64,9 @@ class _UnitScreenState extends State<UnitScreen> {
                   final lb = u['lb_custom'] as Map?;
                   final tpl = (app.catalog?['lbTemplates'] as List?)?.cast<Map>().where((t) => t['id'] == (lb?['visuals'] ?? lb?['from'])).firstOrNull;
                   final el = (lb?['set'] as Map?)?['element']?.toString();
+                  final originalLb = ((app.catalog?['skills'] as List?) ?? []).cast<Map>().where((s) => s['id'] == u['lb']).firstOrNull;
                   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(lb?['desc']?.toString().isNotEmpty == true ? lb!['desc'].toString() : 'Set in step 4.', style: Guide.small(Guide.ink)),
+                    Text(lb?['desc']?.toString().isNotEmpty == true ? lb!['desc'].toString() : u['native'] != null ? (originalLb?['desc'] ?? originalLb?['name'] ?? 'Original game Resonance').toString() : 'Set in step 4.', style: Guide.small(Guide.ink)),
                     if (tpl != null) Padding(padding: const EdgeInsets.only(top: 4), child: Text('${tpl['name']}${el != null && el != 'None' ? ' · $el' : ''}${tpl['good'] == true ? '' : ' · no limit-burst motion'}', style: Guide.small(tpl['good'] == true ? Guide.inkSoft : Guide.red))),
                   ]);
                 })),
@@ -86,6 +94,7 @@ class _UnitScreenState extends State<UnitScreen> {
                 1 => BonusesStep(key: const ValueKey('b'), unit: u, set: set),
                 2 => StatsStep(key: const ValueKey('s'), unit: u, set: set),
                 4 => MrStep(key: const ValueKey('mr'), unit: u, set: set),
+                3 when u['native'] != null => NativeResonanceStep(key: const ValueKey('native-r'), unit: u, set: set),
                 _ => ResonanceStep(key: const ValueKey('r'), unit: u, set: set),
               },
             ),
@@ -98,10 +107,11 @@ class _UnitScreenState extends State<UnitScreen> {
 
 /// Asks, then removes the unit from the mod (the next install removes it from the game).
 Future<void> confirmRemove(BuildContext context, AppState app, Map<String, dynamic> u) async {
+  final native = u['native'] != null;
   final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
     backgroundColor: Guide.paper, shape: Border.fromBorderSide(Guide.frame),
-    title: Text('Remove ${u['en']} from the mod?', style: Guide.h2()),
-    content: Text('The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.', style: Guide.text()),
+    title: Text(native ? 'Reset ${u['en']} to the game defaults?' : 'Remove ${u['en']} from the mod?', style: Guide.h2()),
+    content: Text(native ? 'This removes your model and configuration overrides. Save its character config first to keep this setup. The vision stays in the game; the next build/install restores its defaults.' : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.', style: Guide.text()),
     actions: [GuideButton('Keep', onPressed: () => Navigator.pop(c, false)), GuideButton('Remove', danger: true, onPressed: () => Navigator.pop(c, true))],
   ));
   if (ok == true) await app.removeUnit(u['key'] as String);

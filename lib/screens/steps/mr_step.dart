@@ -18,7 +18,11 @@ class MrStep extends StatefulWidget {
 }
 
 class _MrStepState extends State<MrStep> {
-  static const cap = 5; // The donor's synchro rows have five reward slots.
+  int _cap(int target) {
+    final caps = (widget.unit['native'] as Map?)?['synchroCaps'] as List?;
+    return caps != null && target < caps.length ? caps[target] as int : 5;
+  }
+
   static const stats = [...statParams, (11, 'Equip cost', 8)];
   final amounts = <int, int>{for (final p in stats) p.$1: p.$3};
   int rank = 0;
@@ -32,7 +36,7 @@ class _MrStepState extends State<MrStep> {
               (row as List).map((g) => List<dynamic>.from(g as List)).toList(),
         )
         .toList();
-    while (rows.length < 10) {
+    while (widget.unit['native'] == null && rows.length < 10) {
       rows.add([]);
     }
     return rows;
@@ -41,14 +45,14 @@ class _MrStepState extends State<MrStep> {
   void _full(int target) => ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
-        'MR ${target + 1} already has $cap rewards. Remove or move one first.',
+        'MR ${target + 1} already has ${_cap(target)} rewards. Remove or move one first.',
       ),
     ),
   );
 
   void _add(Grant grant) {
     final rows = _rewards();
-    if (rows[rank].length >= cap) {
+    if (rows[rank].length >= _cap(rank)) {
       _full(rank);
       return;
     }
@@ -66,7 +70,7 @@ class _MrStepState extends State<MrStep> {
       return;
     }
     final rows = _rewards();
-    if (rows[to].length >= cap) {
+    if (rows[to].length >= _cap(to)) {
       _full(to);
       return;
     }
@@ -198,7 +202,7 @@ class _MrStepState extends State<MrStep> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Up to five rewards per rank. Unlock points stay unchanged.',
+                        'Up to ${_cap(rank)} rewards at this rank. Unlock points stay unchanged.',
                         style: Guide.small(),
                       ),
                     ),
@@ -388,7 +392,7 @@ class _MrStepState extends State<MrStep> {
                                     Text('MR ${i + 1}', style: Guide.label()),
                                     const Spacer(),
                                     Text(
-                                      '${rows[i].length}/$cap',
+                                      '${rows[i].length}/${_cap(i)}',
                                       style: Guide.num(),
                                     ),
                                   ],
