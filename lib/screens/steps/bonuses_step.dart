@@ -32,13 +32,14 @@ class _BonusesStepState extends State<BonusesStep> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog!;
-    final passives = (cat['passives'] as List).cast<Map<String, dynamic>>().toList()
+    final allPassives = (cat['passives'] as List).cast<Map<String, dynamic>>();
+    final passives = catalogLibrary(cat, 'passives', [...app.units, widget.unit])
       ..sort((a, b) => _title(a).compareTo(_title(b)));
     final s = q.trim().toLowerCase();
     final shown = passives.where((p) => s.isEmpty || _title(p).toLowerCase().contains(s) || (p['desc'] ?? '').toString().toLowerCase().contains(s)).toList();
     final aw = awakening(widget.unit);
     final grantedP = <num>{for (final t in aw) for (final g in t) if (g[0] == 'PassiveSkill') g[1] as num};
-    final byId = {for (final p in passives) p['id'] as num: p};
+    final byId = {for (final p in allPassives) p['id'] as num: p};
 
     void add(int tier, Grant g) {
       if (g[0] == 'PassiveSkill' && grantedP.contains(g[1] as num)) return;

@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 
 class CatalogState extends ChangeNotifier implements AppState {
   @override
+  List<dynamic> units = [];
+  @override
   JsonMap? catalog = {
     'skills': [
       {

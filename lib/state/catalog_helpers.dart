@@ -1,6 +1,47 @@
 /// Plain-language readings of the engine's catalog rows, mirroring tools/devui/web/src/api.ts `describe` and Easy.tsx.
 const cgResonanceIds = {440010, 440090, 440110};
 
+/// Collapse only duplicates proven to have identical extracted game mechanics.
+/// Keep every entry referenced by original game tables or the current roster.
+/// The full catalog stays intact for saved configs and equipped-ID lookups.
+List<Map<String, dynamic>> catalogLibrary(
+  Map<String, dynamic> catalog,
+  String kind,
+  Iterable<dynamic> roster,
+) {
+  final entries = ((catalog[kind] as List?) ?? [])
+      .map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  final policy = catalog['duplicatePolicy'] as Map?;
+  if (policy?['schema'] != 1 || policy?['available'] != true) return entries;
+  final protected = <num>{
+    for (final id in ((policy?['protected'] as Map?)?[kind] as List? ?? []))
+      if (id is num) id,
+  };
+  void retain(dynamic value) {
+    if (value is num) { protected.add(value); }
+    else if (value is Map) { for (final v in value.values) { retain(v); } }
+    else if (value is Iterable) { for (final v in value) { retain(v); } }
+  }
+  for (final unit in roster) { retain(unit); }
+  final byId = {for (final entry in entries) entry['id'] as num: entry};
+  final hidden = <num>{};
+  for (final group in ((policy?['groups'] as Map?)?[kind] as List? ?? [])) {
+    if (group is! List || group.length < 2 || group.any((id) => !byId.containsKey(id))) continue;
+    final ids = group.cast<num>().toSet();
+    final kept = ids.intersection(protected);
+    if (kept.isEmpty) {
+      final ranked = ids.toList()..sort((a, b) {
+        final aa = (byId[a]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
+        final bb = (byId[b]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
+        return aa != bb ? aa.compareTo(bb) : a.compareTo(b);
+      });
+      kept.add(ranked.first);
+    }
+    hidden.addAll(ids.difference(kept));
+  }
+  return entries.where((e) => !hidden.contains(e['id'])).toList();
+}
+
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {
   final lb = unit['lb_custom'] as Map?;
   if (unit['ffbe'] != null && lb != null &&

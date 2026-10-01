@@ -133,6 +133,21 @@ def ensure_sprite_templates(unit, legacy, extract):
                                'Check the game location and prepare the game files again.')
 
 
+def command_icon(unit, added, reserved, rows):
+    """Use a registered donor command icon once the spare icon tags run out.
+
+    Only the small command/master icon is shared. Portraits and the unit's
+    model, identity, skills and progression still belong to that unit.
+    """
+    index = added.index(unit)
+    if index < len(reserved): return f'UI.Skill.Command.Icon.{reserved[index]}'
+    _, donor = one(rows, 'Skill/DT_CommandSkillData', 'unitIdToUseSkill', unit['donor'])
+    tag = (donor.get('SkillIcon') or {}).get('TagName')
+    if not isinstance(tag, str) or not tag.startswith('UI.Skill.Command.Icon.'):
+        raise ValueError('The command icon donor has no registered command icon.')
+    return tag
+
+
 def prepare(tables, objects, units, root, rows):
     def put(rel, row, updates):
         if updates: tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['set'].append({'row': row, 'set': updates})
@@ -218,6 +233,11 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 def register(app, env):
     from fastapi import HTTPException
     from fastapi.responses import FileResponse
+    if env.get('unit_downloads') is not None:
+        import _ffr_animation_repair
+        import _ffr_library
+        _ffr_animation_repair.install_preview_hooks(env)
+        _ffr_library.install(env['ffr_catalog'], env['ROOT'])
     def locale():
         path = Path(env['ROOT']) / 'extracted/locres_en.json'
         return json.loads(path.read_bytes()) if path.is_file() else {}

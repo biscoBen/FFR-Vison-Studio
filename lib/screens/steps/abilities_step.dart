@@ -45,7 +45,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
     final app = context.read<AppState>();
     final cat = app.catalog!;
     final skills = (cat['skills'] as List).cast<Map<String, dynamic>>();
-    final lib = skills.toList()
+    final lib = catalogLibrary(cat, 'skills', [...app.units, widget.unit])
       ..sort((a, b) { final g = _group(a).compareTo(_group(b)); return g != 0 ? g : (a['name'] as String).compareTo(b['name'] as String); });
     final studio = ((cat['studioSkills'] as List?) ?? []).cast<Map<String, dynamic>>();
     final groups = [if (studio.isNotEmpty) 'Studio moves', ...lib.map(_group).toSet()];
@@ -102,7 +102,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               ),
             ]),
           ),
-          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". All catalog abilities are listed, including specialized moves and entries without an animation sequence.', style: Guide.small())),
+          Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". Specialized and unverified moves are included; unused exact duplicates are collapsed.', style: Guide.small())),
           Expanded(
             child: Container(
               margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),

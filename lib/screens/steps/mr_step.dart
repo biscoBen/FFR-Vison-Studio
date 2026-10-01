@@ -112,7 +112,10 @@ class _MrStepState extends State<MrStep> {
 
   @override
   Widget build(BuildContext context) {
-    final cat = context.read<AppState>().catalog ?? {};
+    final app = context.read<AppState>();
+    final cat = app.catalog ?? {};
+    final visibleSkills = {for (final s in catalogLibrary(cat, 'skills', [...app.units, widget.unit])) s['id']};
+    final visiblePassives = {for (final p in catalogLibrary(cat, 'passives', [...app.units, widget.unit])) p['id']};
     final rows = _rewards();
     final skills = <num, Map<String, dynamic>>{
       for (final s in (cat['skills'] as List? ?? []))
@@ -132,8 +135,10 @@ class _MrStepState extends State<MrStep> {
     final master = widget.unit['master'] as Map?;
     final library = <Map<String, dynamic>>[
       for (final s in skills.values)
+        if (s['custom'] == true || visibleSkills.contains(s['id']))
         {...s, 'kind': 'ActiveSkill', 'title': _abilityTitle(s)},
       for (final p in passives.values)
+        if (visiblePassives.contains(p['id']))
         {...p, 'kind': 'PassiveSkill', 'title': _passiveTitle(p)},
       if (master != null)
         {

@@ -12,11 +12,12 @@ from pathlib import Path
 import sys
 import tempfile
 
-VERSION = '1.0.2'
+VERSION = '1.1.0'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
+RESOURCES = ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json')
 
 
 def sha(data):
@@ -79,9 +80,23 @@ def hook_builder(raw):
              and ast.unparse(n.value.func) == 'stage' and 'Packing the mod' in ast.unparse(n.value)]
     if not loop.end_lineno < patch.lineno < pack.lineno:
         raise RuntimeError('Unsupported native vision build order.')
+    icon_tag, = [n for n in loop.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'icon_tag']
+    icon_loop, = [n for n in loop.body if isinstance(n, ast.For) and ast.unparse(n.target) == 'rel'
+                 and 'UI/Skill/DT_CommandSkillIcon' in ast.unparse(n.iter)]
+    if 'UNUSED_ICON_TAGS' not in ast.unparse(icon_tag.value):
+        raise RuntimeError('Unsupported command icon allocation.')
+    generator, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'generate_sprites']
+    sprite_call, = [n for n in ast.walk(generator) if isinstance(n, ast.Call) and ast.unparse(n.func) == 'ffrenv.py'
+                    and n.args and 'build_sprites.py' in ast.unparse(n.args[0])]
+    timeline_loop, = [n for n in main.body if isinstance(n, ast.For) and ast.unparse(n.target) == 'job'
+                     and ast.unparse(n.iter) == 'authored_sequences']
+    timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
+                      and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
+               'for u in native_units + UNITS:', '    if u.get("ffbe"):',
+               '        _ffr_animation_repair.repair_unit(u, ROOT)',
                'for u in native_units:', '    if u.get("ffbe"):',
                '        stage("Preparing original sprites: " + u["en"])',
                '        _ffr_existingvisions.ensure_sprite_templates(u, LEGACY,',
@@ -91,13 +106,25 @@ def hook_builder(raw):
                '    vid = u["id"]', '    d = u["donor"]',
                *['    ' + s for s in skill_body.splitlines()]]
     before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
-                    '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)']
+                    '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
+                    '_ffr_animation_repair.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
+                    '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))']
     before_pack = [MARKER, 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
-    nl = '\r\n' if '\r\n' in text else '\n'; out = []
-    for i, line in enumerate(text.splitlines(keepends=True), 1):
+    nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
+    argument = sprite_call.args[0]
+    if argument.lineno != argument.end_lineno: raise RuntimeError('Unsupported sprite converter call layout.')
+    lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),
+                                                                                'os.path.join(ROOT, "tools", "_ffr_build_sprites.py")')
+    stage_indent = ' ' * timeline_stage.col_offset
+    lines[timeline_stage.lineno - 1] = stage_indent + 'stage("Writing attack and casting animations" if job.get("kind") == "skill_motion" else "Writing the FFBE limit-burst timeline")' + nl
+    indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
+    lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
+    for i in range(icon_loop.lineno - 1, icon_loop.end_lineno): lines[i] = '    ' + lines[i]
+    lines[icon_loop.lineno - 1] = indent + 'if UNITS.index(u) < len(UNUSED_ICON_TAGS):' + nl + lines[icon_loop.lineno - 1]
+    for i, line in enumerate(lines, 1):
         out.append(line)
         if i in additions: out.append(nl.join('    ' + s for s in additions[i]) + nl)
     result = ''.join(out); compile(result, 'make_vision_mod.py', 'exec')
@@ -169,9 +196,14 @@ def run(root, action):
     helper = checked(root, HELPER)
     if helper.exists() and (not saved or sha(helper.read_bytes()) != saved['helper']):
         raise RuntimeError('The existing vision helper has external edits; no files changed.')
+    resources = {name: checked(root, 'tools/' + name) for name in RESOURCES}
+    for name, path in resources.items():
+        if path.exists() and (not saved or sha(path.read_bytes()) != saved.get('resources', {}).get(name)):
+            raise RuntimeError('A managed vision resource has external edits; no files changed.')
     if action == 'Restore':
         changes = {checked(root, rel): raw for rel, raw in original.items()}
         if helper.exists(): changes[helper] = None
+        changes.update({path: None for path in resources.values() if path.exists()})
         transact(changes)
         return {'status': 'restored', 'patchVersion': VERSION}
     version = checked(root, 'VERSION').read_text().strip().split('.')
@@ -179,17 +211,22 @@ def run(root, action):
         raise RuntimeError('Existing visions need a compatible engine 1.0.0.15 or newer.')
     payload = Path(__file__).parent / 'payload'; manifest = json.loads((payload / 'manifest.json').read_bytes())
     module = (payload / '_ffr_existingvisions.py').read_bytes()
-    if manifest.get('schema') != 1 or manifest.get('files') != {'_ffr_existingvisions.py': sha(module)}:
+    resource_data = {name: (payload / name).read_bytes() for name in RESOURCES}
+    if manifest.get('schema') != 1 or manifest.get('files') != {'_ffr_existingvisions.py': sha(module), **{k: sha(v) for k, v in resource_data.items()}}:
         raise RuntimeError('Existing vision payload checksum mismatch.')
     compile(module, HELPER, 'exec')
+    for name, raw in resource_data.items():
+        if name.endswith('.py'): compile(raw, name, 'exec')
+        else: json.loads(raw)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}
-    changes = {helper: module}; records = {}
+    changes = {helper: module, **{resources[name]: raw for name, raw in resource_data.items()}}; records = {}
     for rel in SOURCES:
         digest = sha(original[rel]); backup = checked(root, STATE + '/backups/' + digest + '.py')
         if backup.exists() and backup.read_bytes() != original[rel]: raise RuntimeError('Existing vision backup changed.')
         if not backup.exists(): write(backup, original[rel])
         records[rel] = {'original': digest, 'patched': sha(patched[rel])}
-    changes[checked(root, STATE + '/state.json')] = json.dumps({'schema': 1, 'version': VERSION, 'sources': records, 'helper': sha(module)}).encode()
+    changes[checked(root, STATE + '/state.json')] = json.dumps({'schema': 1, 'version': VERSION, 'sources': records, 'helper': sha(module),
+                                                            'resources': {k: sha(v) for k, v in resource_data.items()}}).encode()
     changes.update({checked(root, rel): raw for rel, raw in patched.items()})
     transact(changes)
     return {'status': 'active', 'patchVersion': VERSION}

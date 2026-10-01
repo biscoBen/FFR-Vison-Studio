@@ -6,6 +6,11 @@ needs them.
 
 ## Unreleased
 
+- Allow rosters beyond the 16 reserved command-icon tags, sharing a registered donor command icon for additional units.
+- Recover missing FFBE sprite motions from verified asset-dump files and add motion-only timelines for selected skills with
+  no game sequence. Preserve existing skill mechanics, original sequences, and edited sprite assets.
+- Collapse unused exact skill/passive duplicates in the libraries while preserving entries referenced by original game
+  data, the current roster, and saved character configurations.
 - Add a Windows test shortcut that retrieves validated branch updates, preserves test data, and creates a desktop shortcut.
 - Publish tested development packages automatically; test builds use that channel instead of the original app updater.
 - Add an optional temporary unpublished download route so cloud tests can retrieve builds when artifact storage is blocked.

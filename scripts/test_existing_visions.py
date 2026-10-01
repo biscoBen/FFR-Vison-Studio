@@ -21,6 +21,7 @@ def module(name, path):
 
 
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
+animation = module('animation', ROOT / 'assets/existing_visions/payload/_ffr_animation_repair.py')
 installer = module('native_installer', ROOT / 'assets/existing_visions/install_existing_visions.py')
 fina_installer = module('fina_installer', ROOT / 'assets/crystal_fina/engine/install_crystalfina.py')
 
@@ -312,7 +313,7 @@ class NativeVisionTests(unittest.TestCase):
                    'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
                    'ffbe_audio': SimpleNamespace(banks=lambda a: [])}
             fina = SimpleNamespace(prepare=lambda *args: None, copy_material=lambda *args: None)
-            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina}):
+            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'native_builder_fixture', 'exec'), env)
                 env['main']()
             result = json.loads((build / 'patch.json').read_text())
