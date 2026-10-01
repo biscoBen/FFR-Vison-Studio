@@ -1,5 +1,8 @@
 # FFR Vision Studio (Windows app)
 
+This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), separately from the original project's
+release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
+
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
 This repository is the app on its own: it needs nothing else on disk to build, and at runtime it talks only to the
@@ -90,6 +93,18 @@ their original spell particles or sound. Special actions and unsupported Resonan
 writes `engine/build/animation-repair-report.json` with the selected skills' existing, reused, fallback or unresolved status.
 Native reuse is validated against the local game files; actual rendering still requires an in-game test.
 
+## Ability and passive libraries
+
+Unverified entries used by default visions show their original owners beside **(Unverified)**. Ownership includes
+awakening and MR rewards, command/level-up skills, base passives and alternate target modes. An unused Unverified ability
+is hidden when a verified same-name version has matching complete combat data, even if presentation, menu/map effects
+or internal IDs differ. Real differences in targets, power, MP cost, accuracy, hit data and effects remain selectable.
+Default-owned and roster-used IDs are retained. This filters Studio's pickers; it does not delete or remap game rows.
+
+Descriptions show recorded stats and effects in a consistent order, with internal voice/debug metadata removed.
+Extracted values take precedence; absent values are omitted, and undocumented effect parameters are shown as recorded
+numbers. Hover to read the full description. Duplicate matching requires the prepared game's full extracted tables.
+
 ## Saved character configurations
 
 The home screen separates **Added visions** from **Default visions**. Edited original visions remain in the default box
@@ -151,6 +166,10 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 - `windows/runner/Runner.rc` exe metadata; `windows/runner/resources/app_icon.ico` Rain's face
 
 ## Developing without touching your real install
+
+Update the fork section of [CHANGELOG.md](CHANGELOG.md) with each user-facing change. Keep work under **Unreleased**
+until its Windows package passes the required checks; then record its date, commit and test-release link. Preserve the
+original project's release notes below the fork history.
 
 Start the built exe with `LOCALAPPDATA` pointed at a scratch folder: the app keeps everything (engine, packs, units, logs)
 under `<LOCALAPPDATA>\FFR Vision Studio`. `FFR_STUDIO_HOST` points it at another host tree (a local copy served on

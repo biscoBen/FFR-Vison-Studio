@@ -74,13 +74,14 @@ void main() {
     WidgetTester tester,
     Widget Function(Map<String, dynamic>, ValueChanged<Map<String, dynamic>>)
     step,
-    Map<String, dynamic> unit,
-  ) async {
+    Map<String, dynamic> unit, {
+    CatalogState? state,
+  }) async {
     tester.view.physicalSize = const Size(1500, 1100);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final app = CatalogState();
+    final app = state ?? CatalogState();
     addTearDown(app.dispose);
     await tester.pumpWidget(
       ChangeNotifierProvider<AppState>.value(
@@ -171,4 +172,74 @@ void main() {
     expect(find.text('攻撃力アップ (Unverified)'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Curaga picker keeps different combat variants and labels assigned unverified moves',
+    (tester) async {
+      final app = CatalogState();
+      app.catalog = {
+        'skills': [
+          for (final (id, target, power, damage, side, sequence) in [
+            (210030, 'Single', 1500, 'Magic', 'Friendlies', [1, 2]),
+            (215020, 'Group', 1500, 'Magic', 'Friendlies', [1, 2]),
+            (240030, 'Single', 1500, 'Magic', 'Friendlies', <int>[]),
+            (245020, 'Group', 600, 'Magic', 'Friendlies', <int>[]),
+            (506110, 'Group', 600, 'None', 'Enemies', <int>[]),
+          ])
+            {
+              'id': id,
+              'name': 'Curaga',
+              'target': target,
+              'mag': power,
+              'dmgType': damage,
+              'relation': side,
+              'seq': sequence,
+              'attr': 'Magic',
+              'hasUnit': 'All',
+            },
+          {
+            'id': 440280,
+            'name': 'Aetherial Wind',
+            'attr': 'FinishBlow',
+            'seq': <int>[],
+            'hasUnit': 'All',
+          },
+        ],
+        'visions': [
+          {'id': 13127, 'name': 'Y’shtola', 'finishBlow': 440280},
+        ],
+        'effects': [],
+        'icons': [],
+        'passives': [],
+        'duplicatePolicy': {
+          'schema': 2,
+          'ownersComplete': true,
+          'available': true,
+          'groups': {},
+          'protected': {
+            'skills': [240030],
+          },
+          'verifiedMatches': {
+            'skills': {
+              '240030': [210030],
+            },
+          },
+        },
+      };
+      await showStep(
+        tester,
+        (unit, set) => AbilitiesStep(unit: unit, set: set),
+        {},
+        state: app,
+      );
+      expect(find.text('Curaga'), findsNWidgets(2));
+      expect(find.text('Curaga (Unverified)'), findsNWidgets(2));
+      expect(
+        find.text('Aetherial Wind (Unverified) — Y’shtola'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('voice Label'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

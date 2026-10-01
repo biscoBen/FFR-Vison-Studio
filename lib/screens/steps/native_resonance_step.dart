@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../../design/theme.dart';
 import '../../design/widgets.dart';
 import '../../state/app_state.dart';
+import '../../state/catalog_helpers.dart';
+import '../../state/catalog_descriptions.dart';
 
 /// Keep native Resonances intact until the user selects another existing one.
 class NativeResonanceStep extends StatelessWidget {
@@ -19,6 +21,7 @@ class NativeResonanceStep extends StatelessWidget {
         .where((s) => s['attr'] == 'FinishBlow')
         .toList();
     final selected = choices.where((s) => s['id'] == unit['lb']).firstOrNull;
+    final descriptions = catalogDescriptions(cat, 'skills');
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -32,7 +35,7 @@ class NativeResonanceStep extends StatelessWidget {
                 style: Guide.h2(),
               ),
               const SizedBox(height: 8),
-              Text((selected?['desc'] ?? '').toString(), style: Guide.text()),
+              Text(descriptions[selected?['id']] ?? '', style: Guide.text()),
               const SizedBox(height: 16),
               Text(
                 'Changing the model preserves this Resonance and its cinematic. Choose another existing Resonance below to replace it.',
@@ -48,7 +51,12 @@ class NativeResonanceStep extends StatelessWidget {
                     DropdownMenuItem(
                       value: s['id'] as num,
                       child: Text(
-                        '${s['name']}${(s['seq'] as List?)?.isNotEmpty == true ? '' : ' (Unverified)'}',
+                        catalogEntryTitle(
+                          cat,
+                          'skills',
+                          s,
+                          verified: (s['seq'] as List?)?.isNotEmpty == true,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

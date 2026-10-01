@@ -1,25 +1,103 @@
 # Changelog
 
-FFR Vision Studio, the Windows app. The product is 1.0.0 while the first release is being finished; every packaging run is a
-build (`1.0.0.<build>` in file names, the manifest and the app's own version check). Engine changes are listed when the app
-needs them.
+Fork-specific changes for [biscoBen/FFR-Vison-Studio](https://github.com/biscoBen/FFR-Vison-Studio),
+on `Sephira's-Update`, compared with the inherited `master` snapshot
+[`d94c685`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d94c685c9dd1b1502c8676e03e679f54a9a05086).
+The original project's release notes are preserved below the fork history.
+
+Windows test packages keep version **1.0.0, build 15** for host compatibility. Their commit and workflow run identify
+which changes they contain. Dates below use America/Los_Angeles. Published entries describe tested branch packages;
+**Unreleased** entries are work awaiting a successful package build.
 
 ## Unreleased
 
-- Allow rosters beyond the 16 reserved command-icon tags, sharing a registered donor command icon for additional units.
-- Recover missing FFBE sprite motions from verified asset-dump files and add motion-only timelines for selected skills with
-  no game sequence. Preserve existing skill mechanics, original sequences, and edited sprite assets.
-- Collapse unused exact skill/passive duplicates in the libraries while preserving entries referenced by original game
-  data, the current roster, and saved character configurations.
-- Add a Windows test shortcut that retrieves validated branch updates, preserves test data, and creates a desktop shortcut.
-- Publish tested development packages automatically; test builds use that channel instead of the original app updater.
-- Add an optional temporary unpublished download route so cloud tests can retrieve builds when artifact storage is blocked.
-- Keep Windows builds working when the updater website blocks the runner's manifest request.
-- Add a cloud build helper that requests and downloads a Windows artifact for the selected branch and verifies its commit.
-- Default the app version stamp, executable metadata, and Windows workflow to build 15.
-- Build Windows test artifacts automatically for pushes to `Sephira's-Update`, with a stamp compatible with the live host.
-- Show every catalog ability and passive in the selection lists, including specialized abilities, entries without animation
-  sequences, and passives with Japanese names. Mark newly exposed entries "(Unverified)" in the library and assigned tiers.
+- Show the owning default vision names beside **(Unverified)** on abilities and passives, including MR reward pickers.
+  Ownership comes from original awakening/MR grants, commands, level-up skills, base passives and alternate target modes.
+- Hide an unused Unverified ability when a verified version has identical combat mechanics. Matching ignores internal
+  IDs, icons, voices, debug/command lists, alternate-target menu settings and map/menu effects. Default-owned or
+  roster-used IDs remain visible; different combat targets, power, costs, accuracy, hit data and effects remain distinct.
+  Filtering affects Studio's pickers only; original game tables, saved configurations and equipped IDs remain intact.
+- Standardize ability/passive descriptions with consistently ordered recorded stats and effects. Remove voice labels,
+  internal IDs, debug fields and temporary placeholder descriptions. Missing values are omitted; undocumented effect
+  parameters remain their recorded numbers. Full descriptions remain available on hover.
+- Expand this changelog to cover all fork additions and fixes, link it from the README and document keeping it current.
+
+## Published fork test updates — 2026-09-30
+
+Changes through [`dcdab31`](https://github.com/biscoBen/FFR-Vison-Studio/commit/dcdab31ce2f2940530b728c0ee9549e2fbf84f94),
+[test package 36817188628](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36817188628).
+
+### Vision roster and editing
+
+- Expose previously hidden abilities and passives, including specialized moves, skills without dedicated sequences,
+  unit-restricted moves and Japanese passives. Mark the exposed entries **(Unverified)**.
+- Edit all **26 original visions**, including the nine original FFBE visions. Keep their original game identities,
+  acquisition/progression data and existing Resonances while changing kits or models.
+- Add **Change model**, **Use original model** and **Reset vision**. Replacement sprites can come from the normal
+  FFBE picker or bundled Crystal Fina. Restoring a model preserves kit edits; resetting removes the original override.
+- Add a per-vision **MR** tab for all ten ranks: edit stat rewards, abilities, passives and master rewards; move or remove
+  rewards. Preserve original unlock-point requirements and untouched rewards, with up to five rewards per rank.
+- Split the home roster into independently scrolling **Added visions** and **Default visions** boxes. Edited original
+  visions appear once in the default box with their current edits.
+- Bundle FFBE portrait PNGs for all 26 default visions in Studio's list and character page. Original portraits provide
+  a fallback; replacement models show their selected model's portrait.
+
+### Saving and migration
+
+- Add **Save character config** and **Load character config**. Save the full kit, stats, passives, resistances, MR rewards,
+  Resonance mechanics, animation settings and advanced configuration. Restore removed characters and resolve ID/name
+  collisions; back up the roster before applying imports.
+- Add **Save all character configs** and **Load all character configs** to the main page. Validate and restore a whole
+  saved roster together while preserving other entries. Original-vision overrides and model selections are included.
+- Copy official Studio visions once into an empty test profile, including imported artwork. Keep official and test
+  profiles separate. Normalize migrated arrays correctly under Windows PowerShell 5.1.
+
+### Crystal Fina
+
+- Add **Crystal Fina** to the normal Add unit picker with the supplied profile, abilities, passives, stats and
+  **Crystal Restoration Resonance**, and bundle all supplied sprite and animation assets.
+- Install her engine integration automatically at startup and after compatible engine updates. Apply the supplied
+  transparency material only to Crystal Fina in each fresh full-roster build; allocate free IDs and retarget texture
+  references when needed. Preserve imported/user-edited profiles and artwork.
+- Preserve binary material/sprite bytes across Windows checkouts and verify managed asset checksums.
+
+### Animations, library and build fixes
+
+- Prepare complete unit packs before Add unit previews, so animations appear before adding a character.
+- Prepare original sprite assets before building model replacements, fixing Leah's missing-asset installation error
+  and the same failure for other original visions.
+- Remove the accidental ceiling imposed by 16 reserved command-icon tags. Extra added visions share a registered donor
+  command icon. Automated checks cover 64 added entries; actual game capacity still needs in-game testing.
+- Recover missing FFBE attack, magic and other sprite motions from matching, checksum-verified asset-dump files.
+  Preserve existing and edited artwork; keep original assets if a repair is unavailable or incompatible.
+- Generate basic attack/casting timelines for selected ordinary skills without a game sequence, including awakening
+  and MR ActiveSkill grants. Basic fallbacks supply unit movement, not missing original particles or audio.
+- Automatically reuse compatible same-name native game animations after auditing complete mechanics and actual
+  timelines. Retarget hit/reaction references, preserve native effects/audio and recipient stats, and reject specialized
+  or owner-specific timelines. Existing/custom sequences take precedence. Write a per-build animation repair report.
+- Collapse proven unused exact skill/passive duplicates in Studio while keeping original-referenced and roster-used IDs.
+  Explain actual same-name differences and show complete descriptions in scrollable hover text.
+- Shorten managed Crystal Fina/native-extension staging paths, fixing fresh setup failures in long Windows paths such as
+  Downloads/Sephira-Studio-Test. Verify compact staging folders against their full bundle checksums.
+- Preserve engine-fixture line endings and wait for configuration file operations in tests, improving Windows validation.
+
+### Test distribution and development
+
+- Publish validated Windows prereleases automatically for `Sephira's-Update`, and build the branch on pushes and manual
+  workflow runs. Run Flutter analysis/tests, Python checks, genuine frozen-engine setup tests and launcher/import tests.
+- Add **Start Studio Test.cmd** and the **Sephira Studio Test** desktop shortcut. Check for the latest tested branch
+  package, verify its SHA256 digest and launch it. Preserve settings and roster data across updates, and retain the
+  installed app when updates fail or the network is unavailable.
+- Give test packages a separate frontend update channel and local data folder. Keep `master` available as a clean
+  inherited baseline. Keep the executable and workflow version stamp at compatible build 15.
+- Add a cloud build helper that requests, tracks and downloads Windows artifacts, checking branch, commit and run.
+  Support a temporary unpublished download when artifact storage is blocked. Compile when the host's version manifest
+  is unavailable, while retaining runtime compatibility checks.
+
+These are Windows test packages. Cloud checks cover app/engine startup and update preservation; game rendering,
+combat behavior and full-roster mod installation still require testing against an installed game.
+
+## Original project release history
 
 ## 1.0.0 build 7 — 2026-09-06
 

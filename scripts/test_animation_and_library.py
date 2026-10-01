@@ -257,6 +257,94 @@ class NativeAnimationTests(unittest.TestCase):
 
 
 class DuplicateTests(unittest.TestCase):
+    def test_verified_combat_matches_ignore_presentation_and_menu_fields_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); base = root / 'extracted/rows'
+            common = {'ID':210030, 'Name':'Curaga', 'magnification':1500, 'Cost':50,
+                      'DamageType':'Magic', 'TargetType':'Single', 'defaultTargetRelation':'Friendlies',
+                      'accuracy':100, 'breakDamageValue':60, 'hitCount':1, 'hitDamageRatioList':[1.0],
+                      'availableLocation':'Anywhere', 'defaultTargetState':'Live',
+                      'mapEffectType':'RecoveryHP', 'isApplyAllMag':True, 'skillIdAfterModeChange':215020,
+                      'voiceLabel':'VO BTL ALB 05', 'selfSkillActivateVoiceLabel':'VO BTL ALB 16',
+                      'isStopVoiceOnEnemyTarget':True, 'belongCommandList':[1],
+                      'SkillIcon':{'TagName':'Heal'}, 'effectBundleList':[{'effectId':1}]}
+            enemy = {**copy.deepcopy(common), 'ID':240030, 'Name':'Enemy heal',
+                     'mapEffectType':'None', 'isApplyAllMag':False, 'skillIdAfterModeChange':245020,
+                     'voiceLabel':'None', 'selfSkillActivateVoiceLabel':'None', 'isStopVoiceOnEnemyTarget':False,
+                     'belongCommandList':[], 'SkillIcon':{'TagName':'Other'}, 'effectBundleList':[{'effectId':2}]}
+            tables = {'Skill/DT_SkillData':{'verified':common,'enemy':enemy},
+                      'Skill/DT_PassiveSkillData':{},
+                      'Skill/DT_SkillEffectData':{'a':{'ID':1,'EffectType':'RecoveryHP','ParamList':[1500]},
+                                                'b':{'ID':2,'EffectType':'RecoveryHP','ParamList':[1500]}},
+                      'Unit/NPCLoadout':{'npc':{'ActiveSkills':[240030]}}}
+            def save():
+                for rel, data in tables.items():
+                    p=base/(rel+'.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps({'rows':data}))
+            cat={'skills':[{'id':sid,'name':'Curaga','seq':seq,'hasUnit':'All','attr':'Magic'}
+                           for sid,seq in [(210030,[1,2]),(240030,[])]], 'passives':[], 'visions':[]}
+            save(); before=copy.deepcopy(tables)
+            result=library.analyze(cat,root)
+            self.assertEqual(result['verifiedMatches']['skills'],{'240030':[210030]})
+            self.assertIn(240030,result['protected']['skills'])  # NPC references do not force UI visibility.
+            self.assertEqual(result['owners']['skills'],{})
+            self.assertEqual(result['details']['skills']['240030']['accuracy'],100)
+            self.assertEqual(tables,before)
+            for field, value in [('magnification',600),('accuracy',500),('breakDamageValue',25),
+                                 ('TargetType','Group'),('defaultTargetRelation','Enemies'),('hitCount',3),
+                                 ('hitDamageRatioList',[0.5,0.5]),('availableLocation','BattleOnly'),
+                                 ('defaultTargetState','Dead'),('Cost',51),('unknownCombatFlag',True)]:
+                with self.subTest(field=field):
+                    tables['Skill/DT_SkillData']['enemy']={**enemy,field:value};save()
+                    self.assertEqual(library.analyze(cat,root)['verifiedMatches']['skills'],{})
+            tables['Skill/DT_SkillData']['enemy']=enemy
+            tables['Skill/DT_SkillEffectData']['b']['ParamList']=[600];save()
+            self.assertEqual(library.analyze(cat,root)['verifiedMatches']['skills'],{})
+
+    def test_default_owners_include_original_mr_commands_levels_and_target_twins_not_npcs(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);base=root/'extracted/rows'
+            tables={
+                'Skill/DT_SkillData':{'learned':{'ID':10,'skillIdAfterModeChange':20},
+                                    'twin':{'ID':20,'skillIdAfterModeChange':10},
+                                    'command':{'ID':30,'belongCommandList':[202]}, 'level':{'ID':40},
+                                    'NPC':{'ID':50,'belongCommandList':[999]},'MR':{'ID':60},'LB':{'ID':70}},
+                'Skill/DT_PassiveSkillData':{'base':{'ID':100},'MR':{'ID':101}},'Skill/DT_SkillEffectData':{},
+                'Skill/DT_CommandSkillData':{'Cloud':{'ID':202,'unitIdToUseSkill':13110},
+                                            'NPC':{'ID':999,'unitIdToUseSkill':999}},
+                'Unit/DT_UnitParameter':{'Cloud':{'ID':13110,'LevelParamId':1,'passiveSkillList':[100]},'Leah':{'ID':13045}},
+                'Unit/LevelParameter/DT_UnitLevelParameterList':{'one':{'ID':1,'DataTable':'Cloud'}},
+                'Unit/LevelParameter/Vision/Cloud':{'level':{'AddSkills':[40]}},
+                'Item/Vision/DT_VisionSynchroMasteryData':{
+                    'Cloud':{'ID':13110,'detailData':[{'parameterType':'ActiveSkill','params':[60]},
+                                                   {'parameterType':'PassiveSkill','params':[101]}]},
+                    'Leah':{'ID':13045,'detailData':[]}},
+                'Item/Vision/DT_VisionAwakeningMasteryData':{
+                    'Cloud':{'ID':13110,'detailData':[]},'Leah':{'ID':13045,'detailData':[]}},
+            }
+            for rel,data in tables.items():
+                p=base/(rel+'.json');p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps({'rows':data}))
+            cat={'skills':[{'id':sid,'name':f'Skill {sid}'} for sid in (10,20,30,40,50,60,70)],
+                 'passives':[{'id':sid,'name':f'Passive {sid}'} for sid in (100,101)],
+                 'visions':[{'id':13110,'name':'Cloud','finishBlow':70,'awakening':[[['ActiveSkill',10]]]},
+                            {'id':13045,'name':'Leah','awakening':[[['ActiveSkill',10]]]}]}
+            metadata=library.analyze(cat,root); result=metadata['owners']
+            self.assertTrue(metadata['ownersComplete'])
+            self.assertEqual(result['skills']['10'],['Leah','Cloud'])
+            self.assertEqual(result['skills']['20'],['Leah','Cloud'])
+            for sid in (30,40,60,70): self.assertEqual(result['skills'][str(sid)],['Cloud'])
+            self.assertNotIn('50',result['skills'])
+            self.assertEqual(result['passives'],{'100':['Cloud'],'101':['Cloud']})
+            rel='Item/Vision/DT_VisionSynchroMasteryData'
+            (base/(rel+'.json')).unlink()
+            self.assertFalse(library.analyze(cat,root)['ownersComplete'])
+            legacy=root/'extracted/legacy/FFRS/Content/Datatable'/(rel+'.uasset')
+            legacy.parent.mkdir(parents=True,exist_ok=True);legacy.write_bytes(b'Explicit legacy table fixture')
+            loader=mock.Mock(side_effect=lambda name:copy.deepcopy(tables[name]))
+            repaired=library.analyze(cat,root,loader)
+            self.assertTrue(repaired['ownersComplete'])
+            self.assertEqual(repaired['owners'],result)
+            loader.assert_called_once_with(rel)
+
     def test_full_mechanics_and_original_references_protect_variants_and_equipped_entries(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp); base=root/'extracted/rows'

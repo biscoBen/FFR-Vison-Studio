@@ -2,7 +2,8 @@
 const cgResonanceIds = {440010, 440090, 440110};
 
 /// Collapse only duplicates proven to have identical extracted game mechanics.
-/// Keep every entry referenced by original game tables or the current roster.
+/// Prefer verified combat matches unless a default vision or current roster uses
+/// the unverified ID. Original game rows and equipped-ID lookups stay intact.
 /// The full catalog stays intact for saved configs and equipped-ID lookups.
 List<Map<String, dynamic>> catalogLibrary(
   Map<String, dynamic> catalog,
@@ -10,36 +11,145 @@ List<Map<String, dynamic>> catalogLibrary(
   Iterable<dynamic> roster,
 ) {
   final entries = ((catalog[kind] as List?) ?? [])
-      .map((e) => Map<String, dynamic>.from(e as Map)).toList();
+      .map((e) => Map<String, dynamic>.from(e as Map))
+      .toList();
   final policy = catalog['duplicatePolicy'] as Map?;
-  if (policy?['schema'] != 1 || policy?['available'] != true) return entries;
+  if (![1, 2].contains(policy?['schema']) || policy?['available'] != true) {
+    return entries;
+  }
+  if (policy?['schema'] == 2 && policy?['ownersComplete'] != true) {
+    return entries;
+  }
   final protected = <num>{
     for (final id in ((policy?['protected'] as Map?)?[kind] as List? ?? []))
       if (id is num) id,
   };
+  final equipped = <num>{};
   void retain(dynamic value) {
-    if (value is num) { protected.add(value); }
-    else if (value is Map) { for (final v in value.values) { retain(v); } }
-    else if (value is Iterable) { for (final v in value) { retain(v); } }
+    if (value is num) {
+      equipped.add(value);
+    } else if (value is Map) {
+      for (final v in value.values) {
+        retain(v);
+      }
+    } else if (value is Iterable) {
+      for (final v in value) {
+        retain(v);
+      }
+    }
   }
-  for (final unit in roster) { retain(unit); }
+
+  for (final unit in roster) {
+    retain(unit);
+  }
+  protected.addAll(equipped);
+  for (final entry in entries) {
+    if (catalogDefaultOwners(catalog, kind, entry).isNotEmpty) {
+      protected.add(entry['id'] as num);
+    }
+  }
   final byId = {for (final entry in entries) entry['id'] as num: entry};
+  final verifiedMatches = (policy?['verifiedMatches'] as Map?)?[kind] as Map?;
+  final replaced = <num>{};
+  if (kind == 'skills' && policy?['schema'] == 2) {
+    for (final entry in entries) {
+      final donors = ((verifiedMatches?['${entry['id']}'] as List?) ?? [])
+          .whereType<num>()
+          .where(
+            (id) => byId[id] != null && catalogEntryVerified(byId[id]!, kind),
+          )
+          .toList();
+      if (donors.isEmpty) continue;
+      protected.addAll(donors);
+      if (!catalogEntryVerified(entry, kind) &&
+          !equipped.contains(entry['id']) &&
+          catalogDefaultOwners(catalog, kind, entry).isEmpty) {
+        replaced.add(entry['id'] as num);
+      }
+    }
+  }
   final hidden = <num>{};
   for (final group in ((policy?['groups'] as Map?)?[kind] as List? ?? [])) {
-    if (group is! List || group.length < 2 || group.any((id) => !byId.containsKey(id))) continue;
+    if (group is! List ||
+        group.length < 2 ||
+        group.any((id) => !byId.containsKey(id))) {
+      continue;
+    }
     final ids = group.cast<num>().toSet();
     final kept = ids.intersection(protected);
     if (kept.isEmpty) {
-      final ranked = ids.toList()..sort((a, b) {
-        final aa = (byId[a]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
-        final bb = (byId[b]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
-        return aa != bb ? aa.compareTo(bb) : a.compareTo(b);
-      });
+      final ranked = ids.toList()
+        ..sort((a, b) {
+          final aa = (byId[a]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
+          final bb = (byId[b]?['seq'] as List?)?.isNotEmpty == true ? 0 : 1;
+          return aa != bb ? aa.compareTo(bb) : a.compareTo(b);
+        });
       kept.add(ranked.first);
     }
     hidden.addAll(ids.difference(kept));
   }
-  return entries.where((e) => !hidden.contains(e['id'])).toList();
+  return entries
+      .where((e) => !hidden.contains(e['id']) && !replaced.contains(e['id']))
+      .toList();
+}
+
+bool catalogEntryVerified(Map row, String kind) {
+  if (row['custom'] == true) return true;
+  final name = (row['name'] ?? '').toString();
+  if (kind == 'passives') {
+    return name.isNotEmpty && !RegExp(r'[぀-ヿ一-鿿]').hasMatch(name);
+  }
+  return (row['seq'] as List?)?.isNotEmpty == true &&
+      row['hasUnit'] == 'All' &&
+      ['Ability', 'Magic', 'MagicSword'].contains(row['attr']) &&
+      row['id'] is num &&
+      (row['id'] as num) < 460000;
+}
+
+List<String> catalogDefaultOwners(
+  Map<String, dynamic> catalog,
+  String kind,
+  Map row,
+) {
+  final owners = <String>{
+    for (final name
+        in (((catalog['duplicatePolicy'] as Map?)?['owners'] as Map?)?[kind]
+                    as Map?)?['${row['id']}']
+                as List? ??
+            [])
+      if (name is String && name.isNotEmpty) name,
+  };
+  for (final vision in catalog['visions'] as List? ?? []) {
+    final name = (vision['name'] ?? '').toString();
+    if (name.isEmpty) continue;
+    if (kind == 'skills' &&
+        (vision['finishBlow'] == row['id'] || row['hasUnit'] == name)) {
+      owners.add(name);
+    }
+    for (final field in ['awakening', 'synchro']) {
+      for (final tier in vision[field] as List? ?? []) {
+        for (final grant in tier as List) {
+          if (grant is List &&
+              grant.length >= 2 &&
+              grant[0] == (kind == 'skills' ? 'ActiveSkill' : 'PassiveSkill') &&
+              grant[1] == row['id']) {
+            owners.add(name);
+          }
+        }
+      }
+    }
+  }
+  return owners.toList()..sort();
+}
+
+String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bool? verified}) {
+  final name = (row['name'] ?? '').toString();
+  final label = name.isEmpty
+      ? '${kind == 'skills' ? 'skill' : 'passive'} ${row['id']}'
+      : name;
+  if (verified ?? catalogEntryVerified(row, kind)) return label;
+  final owners = catalogDefaultOwners(catalog, kind, row);
+  return '$label (Unverified)${owners.isEmpty ? '' : ' — ${owners.join(', ')}'}';
 }
 
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {

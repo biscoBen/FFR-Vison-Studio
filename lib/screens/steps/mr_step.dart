@@ -92,30 +92,14 @@ class _MrStepState extends State<MrStep> {
     widget.set({'synchro': rows});
   }
 
-  String _abilityTitle(Map<String, dynamic> s) {
-    final name = (s['name'] ?? 'Ability ${s['id']}').toString();
-    if (s['custom'] == true) {
-      return name;
-    }
-    final verified =
-        (s['seq'] as List?)?.isNotEmpty == true &&
-        s['hasUnit'] == 'All' &&
-        ['Ability', 'Magic', 'MagicSword'].contains(s['attr']) &&
-        (s['id'] as num) < 460000;
-    return verified ? name : '$name (Unverified)';
-  }
-
-  String _passiveTitle(Map<String, dynamic> p) {
-    final name = (p['name'] ?? 'Passive ${p['id']}').toString();
-    return name.isEmpty || RegExp(r'[぀-ヿ一-鿿]').hasMatch(name)
-        ? '$name (Unverified)'
-        : name;
-  }
-
   @override
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog ?? {};
+    String abilityTitle(Map<String, dynamic> row) =>
+        catalogEntryTitle(cat, 'skills', row);
+    String passiveTitle(Map<String, dynamic> row) =>
+        catalogEntryTitle(cat, 'passives', row);
     final skillDescriptions = catalogDescriptions(cat, 'skills');
     final passiveDescriptions = catalogDescriptions(cat, 'passives');
     final visibleSkills = {
@@ -158,10 +142,10 @@ class _MrStepState extends State<MrStep> {
     final library = <Map<String, dynamic>>[
       for (final s in skills.values)
         if (s['custom'] == true || visibleSkills.contains(s['id']))
-          {...s, 'kind': 'ActiveSkill', 'title': _abilityTitle(s)},
+          {...s, 'kind': 'ActiveSkill', 'title': abilityTitle(s)},
       for (final p in passives.values)
         if (visiblePassives.contains(p['id']))
-          {...p, 'kind': 'PassiveSkill', 'title': _passiveTitle(p)},
+          {...p, 'kind': 'PassiveSkill', 'title': passiveTitle(p)},
       if (master != null)
         {
           'id': master['id'],
@@ -186,11 +170,11 @@ class _MrStepState extends State<MrStep> {
     String grantName(Grant g) => switch (g[0]) {
       'BaseParameter' => statName(g[1] as num),
       'ActiveSkill' =>
-        skills[g[1]] == null ? 'Ability ${g[1]}' : _abilityTitle(skills[g[1]]!),
+        skills[g[1]] == null ? 'Ability ${g[1]}' : abilityTitle(skills[g[1]]!),
       'PassiveSkill' =>
         passives[g[1]] == null
             ? 'Passive ${g[1]}'
-            : _passiveTitle(passives[g[1]]!),
+            : passiveTitle(passives[g[1]]!),
       'MasterSkill' when g[1] == master?['id'] =>
         (master?['en'] ?? 'Master reward').toString(),
       _ => '${g[0]} ${g[1]}',

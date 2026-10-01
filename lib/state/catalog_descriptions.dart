@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'catalog_helpers.dart';
-
-const _fields = {
+const _catalogFields = {
   'attr': 'skillAttrType',
   'effectType': 'skillEffectType',
   'dmgType': 'DamageType',
@@ -16,30 +12,40 @@ const _fields = {
   'accuracy': 'accuracy',
   'hits': 'hitCount',
   'ratios': 'hitDamageRatioList',
-  'hasUnit': 'hasUnit',
   'equipCost': 'equipCost',
 };
 
-const _labels = {
-  'skillAttrType': 'Ability type',
-  'skillEffectType': 'Effect type',
+// Fixed ordering and an explicit player-facing field list keep voices, row IDs,
+// debug commands and other implementation details out of the picker.
+const _skillFields = {
   'DamageType': 'Damage type',
-  'damageCalcType': 'Damage calculation',
-  'element': 'Element',
   'TargetType': 'Target',
-  'defaultTargetRelation': 'Target side',
-  'Cost': 'MP cost',
-  'magnification': 'Power',
-  'breakDamageValue': 'Break power',
   'accuracy': 'Accuracy',
+  'availableLocation': 'Location',
+  'breakDamageValue': 'Break Power',
+  'defaultTargetRelation': 'Target side',
+  'magnification': 'Power',
+};
+const _extraFields = {
+  'Cost': 'MP cost',
   'hitCount': 'Hits',
-  'hasUnit': 'Unit restriction',
+  'element': 'Element',
+  'damageCalcType': 'Damage calculation',
   'equipCost': 'Equipment cost',
-  'EffectType': 'Type',
+  'defaultTargetState': 'Target state',
+  'targetRage': 'Target range',
+  'criticalHitRate': 'Critical chance',
   'statusCondition': 'Status',
-  'addProbability': 'Chance',
-  'ParamList': 'Parameters',
-  'hitDamageRatioList': 'Hit damage shares',
+  'addProbability': 'Status chance',
+  'parameterType': 'Stat',
+  'parameterVariationType': 'Stat change',
+  'onlyWhenFullHP': 'Requires full HP',
+  'isTargetIgnoreSelf': 'Excludes self',
+  'isIgnoreDefence': 'Ignores defence',
+  'isIgnoreResistance': 'Ignores resistance',
+  'isAlwaysHit': 'Always hits',
+  'isReflect': 'Can be reflected',
+  'isCover': 'Can be covered',
 };
 
 String _words(String value) => value
@@ -49,7 +55,6 @@ String _words(String value) => value
     .replaceAll('_', ' ');
 
 String _value(dynamic value) {
-  if (value == null) return 'not set';
   if (value is bool) return value ? 'yes' : 'no';
   if (value is num) {
     return value == value.roundToDouble() ? '${value.toInt()}' : '$value';
@@ -65,142 +70,193 @@ String _value(dynamic value) {
   return _words('$value');
 }
 
-String _note(Map note, Map<num, Map> skills) {
-  final path = note['field'].toString().split('.');
-  final value = note['missing'] == true ? null : note['value'];
-  var label = _labels[path.first] ?? _words(path.first);
-  var text = _value(value);
-  if (path.first == 'TargetType') {
-    text = switch (value) {
+String _fieldValue(String field, dynamic value) {
+  if (field == 'TargetType') {
+    return switch (value.toString().split('::').last) {
       'Single' => 'single target',
       'Group' => 'all targets',
       'Self' => 'self',
       'Random' => 'random targets',
       'Spread' => 'targets in a line',
       'SingleAndGroup' => 'single, then all targets',
-      _ => text,
+      _ => _value(value),
     };
-  } else if (path.first == 'DamageType' && value == 'Physic') {
-    text = 'physical';
-  } else if (path.first == 'hitDamageRatioList' && path.length > 1) {
-    label = 'Hit ${int.parse(path[1]) + 1} damage share';
-  } else if (path.first == 'SkillIcon') {
-    label = 'Icon';
-    text = value == null ? 'not set' : value.toString().split('.').last;
-  } else if (path.first == 'effectBundleList') {
-    if (path.length == 1) return 'Effects: $text';
-    label = 'Effect ${int.parse(path[1]) + 1}';
-    final position = path.indexOf('mechanics');
-    final property = position >= 0 && position + 1 < path.length
-        ? path[position + 1]
-        : path.last;
-    if (property == 'ParamList' && int.tryParse(path.last) != null) {
-      final type = note['effectType'];
-      label +=
-          '${type == null ? '' : ' (${_words(type.toString())})'} parameter ${int.parse(path.last) + 1}';
-      // A referenced ability can be named without guessing unknown effect rules.
-      if (value is num && skills.containsKey(value)) {
-        text = '${skills[value]!['name']}';
-      }
-    } else {
-      label += ' ${_labels[property] ?? _words(property)}';
-    }
-  } else if (path.length > 1) {
-    label += ' ${path.skip(1).map(_words).join(' ')}';
   }
-  return '$label: $text';
+  if (field == 'DamageType' && value.toString().split('::').last == 'Physic') {
+    return 'Physical';
+  }
+  return _value(value);
 }
 
-/// Complete display descriptions; raw catalog rows and saved configs stay intact.
+String _playerText(dynamic value) {
+  final text = (value ?? '').toString().trim();
+  if (text.isEmpty ||
+      RegExp(r'[぀-ヿ一-鿿]').hasMatch(text) ||
+      RegExp(r'\b(TEMP|DEBUG|TODO)\b', caseSensitive: false).hasMatch(text) ||
+      RegExp(r'\{[^}]+\}').hasMatch(text)) {
+    return '';
+  }
+  return text.replaceFirst(RegExp(r'^\[[^\]]+\]\s*'), '');
+}
+
+List<String> _effectDescriptions(
+  Map data,
+  List<dynamic> fallbackIds,
+  Map<dynamic, Map> effects,
+) {
+  final bundles = data['effectBundleList'] as List?;
+  final items = <(Map, Map)>[];
+  if (bundles != null) {
+    for (final bundle in bundles.cast<Map>()) {
+      final reference = bundle['effectId'];
+      final effect = reference is Map
+          ? reference['mechanics'] as Map?
+          : effects[reference];
+      if (effect != null) items.add((bundle, effect));
+    }
+  } else {
+    for (final id in fallbackIds) {
+      if (effects[id] != null) items.add(({}, effects[id]!));
+    }
+  }
+  return [
+    for (var i = 0; i < items.length; i++)
+      () {
+        final (bundle, effect) = items[i];
+        final type = effect['EffectType'] ?? effect['type'];
+        final parts = <String>['Effect ${i + 1}: ${_value(type ?? 'Unknown')}'];
+        for (final (field, label) in [
+          ('TargetType', 'Target'),
+          ('targetRelation', 'Target side'),
+        ]) {
+          if (bundle[field] != null) {
+            parts.add('$label: ${_fieldValue(field, bundle[field])}');
+          }
+        }
+        final status = effect['statusCondition'] ?? effect['status'];
+        if (status != null && status.toString().split('::').last != 'None') {
+          parts.add('Status: ${_value(status)}');
+        }
+        final chance = effect['addProbability'] ?? effect['prob'];
+        if (chance != null &&
+            (status != null && status != 'None' || chance != 100)) {
+          parts.add('Chance: ${_value(chance)}');
+        }
+        final params = (effect['ParamList'] ?? effect['params']) as List?;
+        if (params != null && params.any((p) => p != -1)) {
+          // Preserve recorded parameters rather than guessing undocumented rules.
+          parts.add('Parameters: ${params.map(_value).join(', ')}');
+        }
+        return parts.join('; ');
+      }(),
+  ];
+}
+
+/// Consistent recorded stats and effects, without rewriting the source catalog.
+/// Extracted values take precedence; absent values are never filled with guesses.
 Map<num, String> catalogDescriptions(
   Map<String, dynamic> catalog,
   String kind,
 ) {
   final rows = ((catalog[kind] as List?) ?? []).cast<Map>();
-  final effects = {
+  final policy = catalog['duplicatePolicy'] as Map?;
+  final details = policy?['available'] == true
+      ? ((policy?['details'] as Map?)?[kind] as Map?)
+      : null;
+  final variants = policy?['available'] == true
+      ? ((policy?['variants'] as Map?)?[kind] as Map?)
+      : null;
+  final effects = <dynamic, Map>{
     for (final e in catalog['effects'] as List? ?? []) (e as Map)['id']: e,
   };
-  final skills = <num, Map>{
-    for (final s in catalog['skills'] as List? ?? [])
-      (s as Map)['id'] as num: s,
-  };
-  final named = <String, List<Map>>{};
-  for (final row in rows) {
-    final name = (row['name'] ?? '').toString().trim().toLowerCase();
-    if (name.isNotEmpty) named.putIfAbsent(name, () => []).add(row);
-  }
-  final fallback = <num, List<Map>>{};
-  for (final versions in named.values.where((v) => v.length > 1)) {
-    final mechanics = <num, Map<String, dynamic>>{};
-    for (final row in versions) {
-      final values = <String, dynamic>{
-        for (final e in _fields.entries)
-          if (row.containsKey(e.key)) e.value: row[e.key],
-      };
-      for (var i = 0; i < ((row['effects'] as List?) ?? []).length; i++) {
-        final id = row['effects'][i];
-        final effect = effects[id];
-        if (effect == null) continue;
-        for (final field in ['type', 'status', 'prob']) {
-          if (effect.containsKey(field)) {
-            values['effectBundleList.$i.effectId.mechanics.${{'type': 'EffectType', 'status': 'statusCondition', 'prob': 'addProbability'}[field]}'] =
-                effect[field];
-          }
-        }
-        for (var j = 0; j < ((effect['params'] as List?) ?? []).length; j++) {
-          values['effectBundleList.$i.effectId.mechanics.ParamList.$j'] =
-              effect['params'][j];
-        }
-      }
-      mechanics[row['id'] as num] = values;
-    }
-    final fields = mechanics.values.expand((v) => v.keys).toSet();
-    final changed = fields.where(
-      (f) =>
-          mechanics.values
-              .map((v) => json.encode([v.containsKey(f), v[f]]))
-              .toSet()
-              .length >
-          1,
-    );
-    for (final row in versions) {
-      final values = mechanics[row['id']]!;
-      fallback[row['id'] as num] = [
-        for (final field in changed)
-          {
-            'field': field,
-            'value': values[field],
-            'missing': !values.containsKey(field),
-            if (field.startsWith('effectBundleList.'))
-              'effectType':
-                  values['${field.split('.').take(4).join('.')}.EffectType'],
-          },
-      ];
-    }
-  }
-  final policy = catalog['duplicatePolicy'] as Map?;
-  final authoritative =
-      policy?['available'] == true &&
-      (policy?['variants'] as Map?)?.containsKey(kind) == true;
-  final variants = (policy?['variants'] as Map?)?[kind] as Map?;
+  final combatVariants = (policy?['combatVariants'] as Map?)?[kind] as Map?;
   return {
     for (final row in rows)
       row['id'] as num: () {
-        final original = (row['desc'] ?? '').toString().trim();
-        final generated = kind == 'skills' && row.containsKey('target')
-            ? describe(Map<String, dynamic>.from(row))
-            : '';
-        final notes = authoritative
-            ? ((variants?['${row['id']}'] as List?) ?? []).cast<Map>()
-            : fallback[row['id']] ?? <Map>[];
-        final differences = notes
-            .map((n) => _note(n, skills))
-            .toSet()
-            .join('; ');
+        final data = <String, dynamic>{
+          for (final e in _catalogFields.entries)
+            if (row[e.key] != null) e.value: row[e.key],
+          if (details?['${row['id']}'] is Map)
+            ...Map<String, dynamic>.from(details!['${row['id']}'] as Map),
+        };
+        // Older engines supply full differing values but not complete raw rows.
+        // Use their known stats without dumping unknown/debug fields into the UI.
+        if (details?['${row['id']}'] is! Map) {
+          for (final note
+              in (variants?['${row['id']}'] as List? ?? []).cast<Map>()) {
+            final field = note['field'].toString();
+            if (!field.contains('.') &&
+                note['missing'] != true &&
+                note['value'] != null) {
+              data[field] = note['value'];
+            }
+          }
+        }
+        final parts = <String>[];
+        for (final field
+            in (kind == 'skills' ? _skillFields : <String, String>{}).entries) {
+          if (data[field.key] != null) {
+            parts.add(
+              '${field.value}: ${_fieldValue(field.key, data[field.key])}',
+            );
+          }
+        }
+        if (kind == 'skills') {
+          final mapEffect = data['mapEffectType'];
+          final effect =
+              mapEffect != null &&
+                  mapEffect.toString().split('::').last != 'None'
+              ? mapEffect
+              : data['skillEffectType'];
+          if (effect != null) parts.add('Effect type: ${_value(effect)}');
+        }
+        for (final field in _extraFields.entries) {
+          final value = data[field.key];
+          if (value == null) continue;
+          if (['element', 'statusCondition'].contains(field.key) &&
+              value.toString().split('::').last == 'None') {
+            continue;
+          }
+          final differs = (variants?['${row['id']}'] as List? ?? []).any(
+            (n) => n['field'] == field.key,
+          );
+          if (value is bool && !value && !differs) continue;
+          parts.add('${field.value}: ${_fieldValue(field.key, value)}');
+        }
+        final ratios = data['hitDamageRatioList'] as List?;
+        if (ratios != null && (data['hitCount'] as num? ?? 0) > 1) {
+          parts.add(
+            'Hit damage shares: ${_value(ratios.where((v) => v != 0).toList())}',
+          );
+        }
+        // Retain real same-name differences in less common game fields without
+        // reintroducing presentation/debug metadata or guessing their meaning.
+        for (final note
+            in (combatVariants?['${row['id']}'] as List? ?? []).cast<Map>()) {
+          final field = note['field'].toString();
+          if (field.contains('.') ||
+              _skillFields.containsKey(field) ||
+              _extraFields.containsKey(field) ||
+              [
+                'skillEffectType',
+                'hitDamageRatioList',
+                'effectBundleList',
+              ].contains(field)) {
+            continue;
+          }
+          parts.add(
+            '${_words(field)}: ${note['missing'] == true ? 'not provided' : _value(note['value'])}',
+          );
+        }
+        final original = _playerText(row['desc']);
         return [
-          if (differences.isNotEmpty) 'Same-name version: $differences.',
+          if (parts.isNotEmpty) parts.join('; '),
           if (original.isNotEmpty) original,
-          if (generated.isNotEmpty && generated != original) generated,
+          ..._effectDescriptions(
+            data,
+            (row['effects'] as List?) ?? [],
+            effects,
+          ),
         ].join('\n');
       }(),
   };

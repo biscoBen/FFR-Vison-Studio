@@ -6,6 +6,109 @@ from pathlib import Path
 _cached = None
 DEFINITIONS = {'Skill/DT_SkillData.json', 'Skill/DT_PassiveSkillData.json', 'Skill/DT_SkillEffectData.json'}
 
+# These select presentation, menus, debug lists or alternate target modes;
+# they do not change the combat mechanics of the selected skill. The user
+# explicitly prefers the verified copy when only the map/menu effect differs.
+LIBRARY_METADATA = {
+    'ID', 'SortId', 'Name', 'Description', 'SkillIcon', 'hasUnit',
+    'belongCommandList', 'commandIdBelongDebuggingAllSkills',
+    'skillIdAfterModeChange', 'isApplyAllMag', 'mapEffectType',
+    'voiceLabel', 'selfSkillActivateVoiceLabel', 'isStopVoiceOnEnemyTarget',
+    'playSequencerId', 'totalDamageDisplayRule',
+}
+
+
+def verified_skill(entry):
+    return (bool(entry.get('seq')) and entry.get('hasUnit') == 'All'
+            and entry.get('attr') in ('Ability', 'Magic', 'MagicSword')
+            and entry['id'] < 460000)
+
+
+def default_owners(catalog, rows, raw):
+    """Read actual original vision grants, commands, levels and target twins.
+
+    Enemy/script references never count as default vision ownership. Cached
+    awakening grants remain useful when an optional table is unavailable.
+    """
+    visions = {v['id']: v for v in catalog.get('visions', [])}
+    owners = {kind: {} for kind in raw}
+    loaded = {}
+    complete = True
+    def add(kind, sid, vid):
+        if type(sid) is int and sid > 0 and vid in visions:
+            owners[kind].setdefault(sid, set()).add(vid)
+    def grants(vid, tiers):
+        for tier in tiers:
+            for grant in tier:
+                if len(grant) < 2: continue
+                if str(grant[0]).split('::')[-1] == 'ActiveSkill': add('skills', grant[1], vid)
+                elif str(grant[0]).split('::')[-1] == 'PassiveSkill': add('passives', grant[1], vid)
+    def optional(rel):
+        if rel not in loaded:
+            try: loaded[rel] = rows(rel)
+            except FileNotFoundError: loaded[rel] = {}
+        return loaded[rel]
+    commands = {}
+    for vid, vision in visions.items():
+        grants(vid, vision.get('awakening', []))
+        grants(vid, vision.get('synchro', []))
+        add('skills', vision.get('finishBlow'), vid)
+        if vision.get('commandId') is not None:
+            commands.setdefault(vision['commandId'], set()).add(vid)
+    for item in optional('Item/Vision/DT_VisionItemData').values():
+        vid = item.get('ID')
+        if vid not in visions: continue
+        add('skills', item.get('finishBlowSkill'), vid)
+        if item.get('CommandId') is not None:
+            commands.setdefault(item['CommandId'], set()).add(vid)
+    for command in optional('Skill/DT_CommandSkillData').values():
+        vid = command.get('unitIdToUseSkill')
+        if vid in visions and command.get('ID') is not None:
+            commands.setdefault(command['ID'], set()).add(vid)
+    for rel in ('Item/Vision/DT_VisionAwakeningMasteryData', 'Item/Vision/DT_VisionSynchroMasteryData'):
+        for row in optional(rel).values():
+            grants(row.get('ID'), [[[d.get('parameterType', ''), *(d.get('params') or [])]
+                                  for d in row.get('detailData', [])]])
+    levels = {r.get('ID'): r.get('DataTable') for r in optional('Unit/LevelParameter/DT_UnitLevelParameterList').values()}
+    for unit in optional('Unit/DT_UnitParameter').values():
+        vid = unit.get('ID')
+        if vid not in visions: continue
+        for sid in unit.get('passiveSkillList') or []: add('passives', sid, vid)
+        table = levels.get(unit.get('LevelParamId')) or visions[vid].get('levelTable')
+        if isinstance(table, str):
+            found = False
+            for sub in ('Vision', 'Playable', 'summon'):
+                level_rows = optional(f'Unit/LevelParameter/{sub}/{table}')
+                found = found or bool(level_rows)
+                for level in level_rows.values():
+                    for sid in level.get('AddSkills') or []: add('skills', sid, vid)
+            complete = complete and found
+    for row in raw['skills'].values():
+        for command in row.get('belongCommandList') or []:
+            for vid in commands.get(command, []): add('skills', row['ID'], vid)
+    for entry in catalog.get('skills', []):
+        for vid, vision in visions.items():
+            if entry.get('hasUnit') == vision.get('name'):
+                add('skills', entry['id'], vid)
+    # A learned skill can expose a different single/all-target row at runtime.
+    by_id = {r['ID']: r for r in raw['skills'].values()}
+    pending = [(sid, vid) for sid, ids in owners['skills'].items() for vid in ids]
+    seen = set()
+    while pending:
+        sid, vid = pending.pop()
+        if (sid, vid) in seen: continue
+        seen.add((sid, vid))
+        twin = by_id.get(sid, {}).get('skillIdAfterModeChange')
+        if type(twin) is int and twin in by_id:
+            add('skills', twin, vid); pending.append((twin, vid))
+    if visions:
+        # Missing original MR/level/base-unit rows cannot prove an ID unused.
+        for rel in ('Unit/DT_UnitParameter', 'Item/Vision/DT_VisionAwakeningMasteryData',
+                    'Item/Vision/DT_VisionSynchroMasteryData'):
+            complete = complete and set(visions).issubset({r.get('ID') for r in optional(rel).values()})
+    return ({kind: {str(sid): [visions[vid]['name'] for vid in sorted(ids)]
+                    for sid, ids in assigned.items()} for kind, assigned in owners.items()}, complete)
+
 
 def integers(value):
     if type(value) is int: yield value
@@ -48,10 +151,14 @@ def variant_fields(named):
     return result
 
 
-def analyze(catalog, root):
+def analyze(catalog, root, row_loader=None):
     """Compare complete extracted mechanics, not just names or descriptions."""
     base = Path(root) / 'extracted/rows'
-    def rows(rel): return json.loads((base / (rel + '.json')).read_bytes())['rows']
+    def rows(rel):
+        path = base / (rel + '.json')
+        if not path.exists() and row_loader and (Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (rel + '.uasset')).exists():
+            return row_loader(rel)  # Use the SDK to convert prepared legacy tables on demand.
+        return json.loads(path.read_bytes())['rows']
     raw = {'skills': rows('Skill/DT_SkillData'), 'passives': rows('Skill/DT_PassiveSkillData')}
     effects = {r['ID']: r for r in rows('Skill/DT_SkillEffectData').values()}
     ids = {kind: {int(r['id']) for r in catalog[kind]} for kind in raw}
@@ -63,9 +170,12 @@ def analyze(catalog, root):
         referenced.update(integers(json.loads(path.read_bytes())))
     def mechanics(row):
         return {k: copy.deepcopy(v) for k, v in row.items() if k not in ('ID', 'SortId', 'Name', 'Description')}
-    result = {'schema': 1, 'available': True, 'groups': {}, 'variants': {}, 'protected': {k: sorted(v & referenced) for k, v in ids.items()}}
+    owners, complete = default_owners(catalog, rows, raw)
+    result = {'schema': 2, 'available': True, 'groups': {}, 'variants': {},
+              'protected': {k: sorted(v & referenced) for k, v in ids.items()},
+              'owners': owners, 'ownersComplete': complete, 'details': {}, 'verifiedMatches': {}, 'combatVariants': {}}
     for kind, definitions in raw.items():
-        by_id = {v['ID']: v for v in definitions.values()}; groups = {}; named = {}
+        by_id = {v['ID']: v for v in definitions.values()}; groups = {}; named = {}; combat_groups = {}; combat_named = {}; details = {}
         for entry in catalog[kind]:
             row = by_id.get(entry['id'])
             if row is None: continue
@@ -79,8 +189,22 @@ def analyze(catalog, root):
             key = json.dumps([name, data], sort_keys=True, ensure_ascii=False)
             groups.setdefault(key, []).append(entry['id'])
             if name: named.setdefault(name, []).append((entry['id'], data))
+            details[str(entry['id'])] = data
+            combat = {k: v for k, v in data.items() if k not in LIBRARY_METADATA}
+            if name: combat_named.setdefault(name, []).append((entry['id'], combat))
+            if kind == 'skills':
+                combat_groups.setdefault(json.dumps([name, combat], sort_keys=True, ensure_ascii=False), []).append(entry)
         result['groups'][kind] = [sorted(v) for v in groups.values() if len(v) > 1]
         result['variants'][kind] = variant_fields(named)
+        result['details'][kind] = details
+        result['combatVariants'][kind] = variant_fields(combat_named)
+        matches = {}
+        for group in combat_groups.values():
+            verified = sorted(e['id'] for e in group if verified_skill(e))
+            if verified:
+                for entry in group:
+                    if not verified_skill(entry): matches[str(entry['id'])] = verified
+        result['verifiedMatches'][kind] = matches
     return result
 
 
@@ -91,10 +215,11 @@ def install(catalog_module, root):
         catalog = original(*args, **kwargs)
         base = Path(root) / 'extracted/rows'
         files = sorted(base.rglob('*.json'))
-        fingerprint = tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files)
+        fingerprint = (tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in files),
+                       json.dumps({k: catalog.get(k, []) for k in ('skills', 'passives', 'visions')}, sort_keys=True))
         try:
             if _cached is None or _cached[0] != fingerprint:
-                _cached = fingerprint, analyze(catalog, root)
+                _cached = fingerprint, analyze(catalog, root, getattr(catalog_module, 'rows', None))
             metadata = _cached[1]
         except (OSError, ValueError, KeyError):
             metadata = {'schema': 1, 'available': False, 'groups': {}, 'protected': {}}
