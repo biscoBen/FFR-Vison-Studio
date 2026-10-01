@@ -181,13 +181,13 @@ void main() {
       await selectRank(tester, 3);
       final search = find.widgetWithText(TextField, 'Search MR rewards');
       for (final choice in [
-        ('English passive', 'PassiveSkill', 1000),
+        ('English', 'PassiveSkill', 1000),
         ('No sequence', 'ActiveSkill', 400010),
         ('Custom fixture', 'ActiveSkill', 485300),
       ]) {
         await tester.enterText(search, choice.$1);
         await tester.pumpAndSettle();
-        if (choice.$1 == 'English passive') {
+        if (choice.$1 == 'English') {
           expect(find.text('English passive'), findsOneWidget);
         }
         if (choice.$1 == 'No sequence') {
