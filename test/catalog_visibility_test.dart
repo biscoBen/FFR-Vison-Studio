@@ -119,7 +119,7 @@ void main() {
       );
       for (final title in [
         'No sequence (Unverified) — Source: Archwitch Fina',
-        'Unit-specific (Unverified)',
+        'Unit-specific (Unverified) — Source: Archwitch Fina',
         'High ID (Unverified)',
       ]) {
         expect(find.text(title), findsOneWidget);
@@ -255,7 +255,15 @@ void main() {
       );
       expect(find.text('Curaga — Source: Ayaka; awakening=3'), findsOneWidget);
       expect(find.text('Curaga — Source: Leah'), findsOneWidget);
-      expect(find.text('Curaga (Unverified)'), findsNWidgets(2));
+      expect(
+        find.text('Curaga (Unverified) — Source: Aether’s Guardian'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Curaga (Unverified) — Source: Gilgamesh'),
+        findsOneWidget,
+      );
+      expect(find.text('Curaga (Unverified) — Source: Ayaka'), findsNothing);
       expect(
         find.text('Aetherial Wind (Unverified) — Source: Y’shtola'),
         findsNothing,
@@ -285,7 +293,7 @@ void main() {
       expect(find.textContaining('Hit damage shares:'), findsNothing);
       final preview = tester.widget<DescriptionDetails>(
         find.byWidgetPredicate(
-          (w) => w is DescriptionDetails && w.title == 'Execution (Unverified)',
+          (w) => w is DescriptionDetails && w.title == 'Execution (Unverified) — Source: Dark Bahamut',
         ),
       );
       expect(preview.description, contains('Hit damage shares: 0.2, 0.3, 0.5'));
@@ -323,8 +331,8 @@ void main() {
     );
     for (final title in [
       'Limit burst (Unverified) — Source: Warrior of Light',
-      'Attack (Unverified)',
-      '針千本 (Unverified)',
+      'Attack (Unverified) — Source: A-Type Magitek Armor+',
+      '針千本 (Unverified) — Source: Black Shark',
       '攻撃力アップ (Unverified)',
     ]) {
       expect(
