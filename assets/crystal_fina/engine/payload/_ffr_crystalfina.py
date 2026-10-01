@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import tempfile
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 STATE = '.ffr-crystalfina'
 SPRITE_ID = '99887755552703'
 VISION_ID = 13503
@@ -31,7 +31,12 @@ def target_unit(units):
     if len(targets) != 1:
         fail('the custom sprite appears on multiple visions; refusing an ambiguous material assignment.')
     unit = targets[0]
-    if type(unit.get('id')) is not int or unit['id'] < 13100:
+    native = unit.get('native')
+    baseline = native.get('baseline') if isinstance(native, dict) else None
+    original = (isinstance(native, dict) and isinstance(baseline, dict)
+                and native.get('version') == 1 and native.get('id') == unit.get('id')
+                and baseline.get('id') == unit.get('id') and unit.get('donor') == unit.get('id'))
+    if type(unit.get('id')) is not int or unit['id'] <= 0 or (unit['id'] < 13100 and not original):
         fail('the custom vision has an invalid game ID.')
     if (unit.get('ffbe') or {}).get('source') != 'CUSTOM':
         fail('the matching sprite is no longer a custom source; refusing to change an unrelated vision.')

@@ -14,7 +14,7 @@ import re
 import sys
 import tempfile
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 MARKER = '# FFR-CRYSTALFINA-TRANSPARENCY v1'
 MODULE = '_ffr_crystalfina'
 STATE_DIR = '.ffr-crystalfina'

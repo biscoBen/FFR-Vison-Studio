@@ -240,7 +240,6 @@ class CharacterConfig {
         (native is! Map ||
             native['version'] != 1 ||
             native['id'] != unit['id'] ||
-            (unit['id'] as int) < 13100 ||
             native['baseline'] is! Map ||
             native['baseline']['id'] != unit['id'] ||
             native['baseline']['native'] != null ||

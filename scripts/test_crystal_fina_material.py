@@ -119,6 +119,20 @@ class FreshBuildMaterialTests(unittest.TestCase):
         helper.prepare(self.patch, self.units, self.root)
         self.assertEqual(self.fina_row['set']['animationAssetList[0].Material'], helper.MATERIAL.replace('13503', '13514'))
 
+    def test_lower_id_original_receives_transparency_without_permitting_low_custom_ids(self):
+        self.fina['id'] = 13024
+        self.fina_row['set']['ID'] = 13024
+        for key in ('animationAssetList[0].Ss6Project', 'animationAssetList[0].textureBaseColor'):
+            self.fina_row['set'][key] = self.fina_row['set'][key].replace('13503', '13024')
+        self.assert_prepare_rejected_without_mutation('invalid game ID')
+        self.fina['donor'] = 13024
+        self.fina['native'] = {'version': 1, 'id': 13024, 'baseline': {'id': 13024}}
+        helper.prepare(self.patch, self.units, self.root)
+        self.assertEqual(self.fina_row['set']['animationAssetList[0].Material'], helper.MATERIAL.replace('13503', '13024'))
+        self.assertIs(self.fina_row['set']['animationAssetList[0].isVisionCharacter'], False)
+        self.fina['native']['baseline']['id'] = 13503
+        self.assert_prepare_rejected_without_mutation('invalid game ID')
+
     def test_noncustom_source_fails_closed(self):
         self.fina['ffbe']['source'] = 'FFBE'
         self.assert_prepare_rejected_without_mutation('no longer a custom source')

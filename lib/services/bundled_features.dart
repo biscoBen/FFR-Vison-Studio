@@ -210,7 +210,7 @@ class BundledFeatures {
         throw StateError(result.stderr.toString().trim());
       }
       final status = json.decode(result.stdout.toString()) as Map;
-      if (status['status'] != 'active' || status['patchVersion'] != '1.1.0') {
+      if (status['status'] != 'active' || status['patchVersion'] != '1.1.1') {
         throw StateError(
           'The engine did not confirm the Crystal Fina extension.',
         );
@@ -280,7 +280,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.0.0' ||
+    if (status['patchVersion'] != '1.0.1' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

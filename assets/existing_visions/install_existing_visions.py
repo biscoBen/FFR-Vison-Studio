@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 import tempfile
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')

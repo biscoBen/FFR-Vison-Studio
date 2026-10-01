@@ -104,7 +104,8 @@ saved units are adjusted together if necessary. A full roster backup is kept bef
 
 ## Editing original game visions
 
-After game preparation, **Your visions** also lists the supported original game visions. Click one and choose
+After game preparation, **Your visions** also lists the original game visions, including the nine original FFBE visions
+(Amelia, Tronn, Victoria, Camille, Leah, Ayaka, Wilhelm, Aileen and Charlotte). Click one and choose
 **Edit vision** to adjust its kit or **Change model** to select replacement artwork from the normal unit picker,
 including Crystal Fina. Changing artwork keeps the original vision's game ID, stats, abilities, passives, MR rewards,
 Resonance and acquisition/progression data. Original visions are updated in place, rather than added as duplicate units.

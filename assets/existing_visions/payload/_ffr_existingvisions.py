@@ -41,7 +41,9 @@ def text(value, catalog_name, fallback='', locale=None):
 
 
 def snapshot(vid, rows, catalog, locale=None):
-    if type(vid) is not int or vid < 13100: raise ValueError('Select an original game vision.')
+    # The original FFBE visions have 130xx IDs; the numbered-FF visions use 131xx.
+    # Membership is established by the original vision/unit rows, not that cutoff.
+    if type(vid) is not int or vid <= 0: raise ValueError('Select an original game vision.')
     uk, u = one(rows, UNIT, 'ID', vid); _, v = one(rows, VISION, 'ID', vid)
     _, asset = one(rows, BATTLE, 'ID', vid)
     animations = asset.get('animationAssetList') or []
@@ -211,7 +213,6 @@ def register(app, env):
         try:
             source = env['ffr_catalog'].load(); strings = locale()
             for v in source['visions']:
-                if v['id'] < 13100: continue
                 try: result.append(snapshot(v['id'], env['ffr_catalog'].rows, source, strings))
                 except (ValueError, KeyError, TypeError): continue # Incomplete/unsupported placeholders are excluded.
         except OSError as e:

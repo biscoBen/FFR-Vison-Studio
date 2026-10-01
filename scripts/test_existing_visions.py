@@ -25,7 +25,14 @@ installer = module('native_installer', ROOT / 'assets/existing_visions/install_e
 fina_installer = module('fina_installer', ROOT / 'assets/crystal_fina/engine/install_crystalfina.py')
 
 
-def fixture():
+# The published catalogue has these 26 IDs. All row contents below are explicit
+# synthetic test fixtures, never substituted for extracted game data.
+CATALOG_IDS = (13017, 13024, 13027, 13033, 13045, 13051, 13062, 13080, 13060,
+               13100, 13101, 13102, 13103, 13105, 13108, 13110, 13116, 13118,
+               13120, 13123, 13124, 13125, 13127, 13128, 13130, 13113)
+
+
+def fixture(vid=13110):
     empty = lambda n: [{'parameterType': 'None', 'params': [-1, -1]} for _ in range(n)]
     tables = {
         native.UNIT: {'Cloud': {'ID': 13110, 'SaveId': 13110, 'LevelParamId': 10112, 'FaceIconId': 13110,
@@ -43,12 +50,66 @@ def fixture():
     }
     tables[native.AWAKENING]['Aw0']['detailData'][0] = {'parameterType': 'ActiveSkill', 'params': [446000, -1]}
     tables[native.SYNCHRO]['Mr1']['detailData'][0] = {'parameterType': 'BaseParameter', 'params': [1, 50]}
+    if vid != 13110:
+        for values in tables.values():
+            for row in values.values():
+                for field in ('ID', 'VisionId', 'SaveId', 'FaceIconId', 'unitIdToUseSkill'):
+                    if row.get(field) == 13110: row[field] = vid
+        tables[native.VISION]['Cloud']['CommandId'] = 30000 + vid
+        tables['Skill/DT_CommandSkillData']['Cloud command']['ID'] = 30000 + vid
+        tables['Skill/DT_MasterSkillData']['Cloud master']['ID'] = vid * 100
+        tables[native.BATTLE]['Cloud']['animationAssetList'][0]['Ss6Project'] = f'/Game/Chara/summon/summon{vid}/summon{vid}'
     rows = lambda rel: copy.deepcopy(tables[rel])
-    spec = native.snapshot(13110, rows, {'visions': [{'id': 13110, 'name': 'Cloud'}]})
+    spec = native.snapshot(vid, rows, {'visions': [{'id': vid, 'name': 'Fixture vision'}]})
     return tables, rows, spec
 
 
 class NativeVisionTests(unittest.TestCase):
+    def test_catalog_route_lists_all_26_and_returns_each_original_without_changing_rows(self):
+        game = {}; catalog = {'visions': []}
+        for vid in CATALOG_IDS:
+            tables, _, _ = fixture(vid)
+            catalog['visions'].append({'id': vid, 'name': f'Fixture {vid}'})
+            for rel, values in tables.items():
+                game.setdefault(rel, {}).update({f'{vid}:{k}': row for k, row in values.items()})
+        before = copy.deepcopy(game); routes = {}
+        class App:
+            def get(self, route):
+                def add(func): routes[route] = func; return func
+                return add
+        class HTTPException(Exception):
+            def __init__(self, status_code, detail): super().__init__(detail); self.status_code = status_code
+        with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {
+            'fastapi': SimpleNamespace(HTTPException=HTTPException),
+            'fastapi.responses': SimpleNamespace(FileResponse=object),
+        }):
+            native.register(App(), {'ROOT': root, 'ffr_catalog': SimpleNamespace(load=lambda: catalog, rows=lambda rel: copy.deepcopy(game[rel]))})
+            result = routes['/api/native/catalog']()
+            self.assertEqual({u['id'] for u in result}, set(CATALOG_IDS)); self.assertEqual(len(result), 26)
+            for vid in CATALOG_IDS:
+                spec = routes['/api/native/vision/{vid}'](vid)
+                self.assertEqual(spec['native']['id'], vid); self.assertEqual(spec['donor'], vid)
+                patch = {}; native.prepare(patch, [], [spec], root, lambda rel: copy.deepcopy(game[rel]))
+                self.assertEqual(patch, {})
+        self.assertEqual(game, before)
+
+    def test_all_nine_lower_ids_support_model_and_mr_edits_without_new_identity_rows(self):
+        for vid in CATALOG_IDS[:9]:
+            with self.subTest(vid=vid):
+                game, rows, spec = fixture(vid); before = copy.deepcopy(game)
+                spec['ffbe'] = {'id': '207000117', 'source': 'JP'}
+                spec['synchro'][0].append(['PassiveSkill', 1234, 8])
+                patch = {}; native.prepare(patch, [], [spec], '/unused', rows)
+                self.assertEqual(set(patch), {native.BATTLE, native.SYNCHRO})
+                self.assertTrue(all(not table['add'] for table in patch.values()))
+                self.assertTrue(all(str(vid) in value for value in patch[native.BATTLE]['set'][0]['set'].values()))
+                self.assertEqual(game, before)
+
+    def test_nonvision_rows_and_nonpositive_ids_still_cannot_be_opened(self):
+        _, rows, _ = fixture()
+        for vid in (0, -1, True, 13024, 12001):
+            with self.subTest(vid=vid), self.assertRaises(ValueError): native.snapshot(vid, rows, {'visions': []})
+
     def test_bundle_hashes_match(self):
         module('bundle', ROOT / 'scripts/verify_existing_visions_bundle.py').verify()
 

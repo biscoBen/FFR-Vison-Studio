@@ -15,20 +15,28 @@ import 'package:provider/provider.dart';
 
 import 'character_config_test.dart' show ConfigApi, profile, clone;
 
-Map<String, dynamic> originalFixture() {
+Map<String, dynamic> originalFixture({int id = 13110, String name = 'Cloud'}) {
   final u = profile()
     ..remove('ffbe')
     ..remove('lb_custom')
     ..remove('custom');
   u.addAll({
-    'key': 'native_13110',
-    'id': 13110,
-    'donor': 13110,
-    'en': 'Cloud',
-    'jp': 'Cloud',
-    'lb': 440110,
-    'command': {'id': 202, 'en': 'Cloud skills', 'desc': ''},
-    'master': {'id': 500, 'en': 'Spirit of Cloud', 'desc': ''},
+    'key': 'native_$id',
+    'id': id,
+    'donor': id,
+    'en': name,
+    'jp': name,
+    'lb': id == 13024 ? 414090 : 440110,
+    'command': {
+      'id': id == 13024 ? 200 : 202,
+      'en': '$name skills',
+      'desc': '',
+    },
+    'master': {
+      'id': id == 13024 ? 1302400 : 500,
+      'en': 'Spirit of $name',
+      'desc': '',
+    },
     'awakening': [
       [
         ['ActiveSkill', 446000],
@@ -42,7 +50,7 @@ Map<String, dynamic> originalFixture() {
   });
   u['native'] = {
     'version': 1,
-    'id': 13110,
+    'id': id,
     'baseline': clone(u),
     'synchroCaps': List.filled(10, 5),
   };
@@ -52,7 +60,8 @@ Map<String, dynamic> originalFixture() {
 class NativeApi extends ConfigApi {
   NativeApi(super.roster);
   @override
-  Future<Map<String, dynamic>> nativeVision(int id) async => originalFixture();
+  Future<Map<String, dynamic>> nativeVision(int id) async =>
+      originalFixture(id: id, name: id == 13024 ? 'Tronn' : 'Cloud');
   @override
   Future<List<dynamic>> nativeVisions() async => [originalFixture()];
   @override
@@ -145,6 +154,38 @@ void main() {
     app.useOriginalModel(native);
     await app.save();
     expect(api.roster.last, originalFixture());
+  });
+
+  test('lower-ID original can change models, edit MR and round-trip single and bulk configs', () async {
+    final added = clone(api.roster.first);
+    final native = await app.editNativeVision(13024, appearance: profile());
+    expect(native['id'], 13024);
+    expect(native['donor'], 13024);
+    expect(native['lb'], 414090);
+    native['synchro'][0].add(['PassiveSkill', 1234, 8]);
+    app.update(native);
+    await app.save();
+    final single = CharacterConfig.decode(CharacterConfig.encode(native));
+    expect(single, native);
+    final all = CharacterConfig.decodeAll(
+      CharacterConfig.encodeAll([added, native]),
+    );
+    expect(
+      CharacterConfig.restoreAll(
+        all,
+        api.roster,
+        api.roster.cast<Map<String, dynamic>?>(),
+      ),
+      [added, native],
+    );
+    expect(api.roster.first, added);
+    app.useOriginalModel(native);
+    await app.save();
+    expect(api.roster.last['id'], 13024);
+    expect(api.roster.last['ffbe'], isNull);
+    expect(api.roster.last['synchro'][0], [
+      ['PassiveSkill', 1234, 8],
+    ]);
   });
 
   test('incomplete original snapshots and changed native identities are rejected before loading', () {
@@ -246,6 +287,22 @@ void main() {
       expect(find.text('Climhazzard (Unverified)'), findsOneWidget);
       expect(app.selected!['lb_custom'], isNull);
       expect(api.roster.last, originalFixture());
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'lower-ID original appears on the opening screen and can be edited',
+    (tester) async {
+      app.nativeVisions = [originalFixture(id: 13024, name: 'Tronn')];
+      await show(tester);
+      expect(find.text('TRONN'), findsOneWidget);
+      await tester.tap(find.text('TRONN'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(GuideButton, 'Edit vision'));
+      await wait(tester, () => app.selected != null);
+      expect(app.selected!['id'], 13024);
+      expect(find.text('Change model'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
