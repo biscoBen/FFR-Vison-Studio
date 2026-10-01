@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published ability visual profiles and reaction-color correction — 2026-10-01
+
+Changes through [`b275160`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b27516073c7543ed1f627b9d5f4f2f7408315a06),
+[test package 36942693908](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36942693908).
+
 - Restore reaction color handling in generated ordinary-skill fallback timelines, which previously inherited the
   limit-burst scheduler's disabled color flag. Keep hit count, targets and mechanics intact. This is a candidate fix
   for friendly targets remaining white after unverified skills; persistence/recovery still needs an in-game test.
@@ -20,6 +27,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   revival visuals with the receiving vision's preparation/release motions. Preserve original mechanics, hit ratios,
   consecutive-use bonuses and full revival strength. Keep donor assets separate, fit motions to the sequence's timing,
   and report a fallback when game assets cannot pass the audit. In-game appearance still requires testing.
+
+- Windows passed analysis, 136 Flutter tests plus the separate genuine engine-startup test, 123 Python tests, both
+  extension checks, 12 launcher/updater checks, 10 vision-import checks and compilation. The helper reused the push run
+  and verified the published ZIP checksum and exact commit/build provenance. A first run caught Windows-specific paths
+  in two new tests; the corrected final commit passed every required gate. The final workflow took 4m15s, with 6m49s
+  of summed job execution; Flutter setup took 91s in validation and 73s in compilation. These are measured run timings.
+- A separate 175-skill animation plan contains searchable HTML, CSV and Markdown proposals; only the four profiles above
+  were implemented. Update Studio and rebuild/install the roster mod before testing; existing mods are not replaced by
+  the app update. The plan was delivered separately because GitHub rejected its release upload with HTTP 400.
 
 ## Published on-demand sprites and restored character previews — 2026-10-01
 
