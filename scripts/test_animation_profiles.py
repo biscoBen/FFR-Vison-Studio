@@ -141,7 +141,7 @@ class AnimationProfileTests(unittest.TestCase):
         self.assertEqual(self.cloned, [])
 
     def test_missing_recovery_or_unbalanced_movement_reports_a_fallback(self):
-        path = next(p for p in self.events if '/220170/' in p)
+        path = next(p for p in self.events if '220170' in Path(p).parts)
         self.events[path] = [e for e in self.events[path] if e[1] != 'idle']
         self.repair([420130])
         self.assertEqual(self.cloned, [])
@@ -149,7 +149,7 @@ class AnimationProfileTests(unittest.TestCase):
         self.assertIn('recovery', self.report()['skills'][0]['profileReason'])
 
     def test_owner_actor_and_voice_are_rejected(self):
-        path = next(p for p in self.events if '/220170/' in p)
+        path = next(p for p in self.events if '220170' in Path(p).parts)
         native = motion.NativeAnimations(lambda rel: copy.deepcopy(self.game[rel]), self.root, mock.Mock(), self.support)
         self.imports[path] = [{'ObjectName': '/Game/Chara/monster/FixtureMonster'}]
         result, reason = native.profile(420130, self.game['Skill/DT_SkillData']['420130'], [self.unit], {}, [])
