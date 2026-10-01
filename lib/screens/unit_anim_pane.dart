@@ -18,25 +18,31 @@ class _UnitAnimPaneState extends State<UnitAnimPane> {
   List<String>? anims;
   bool loading = true;
   String? form;
+  String? error;
+  int _loadVersion = 0;
 
   @override
   void initState() { super.initState(); _load(); }
   @override
   void didUpdateWidget(UnitAnimPane old) {
     super.didUpdateWidget(old);
-    if ((widget.unit['ffbe'] as Map?)?['id']?.toString() != form) _load();
+    if ((widget.unit['ffbe'] as Map?)?['id']?.toString() != form ||
+        (!loading && anims?.isEmpty == true)) {
+      _load();
+    }
   }
 
   Future<void> _load() async {
+    final version = ++_loadVersion;
     final ff = widget.unit['ffbe'] as Map?;
     form = ff?['id']?.toString();
     if (form == null) { setState(() { anims = []; loading = false; }); return; }
-    setState(() => loading = true);
+    setState(() { loading = true; error = null; });
     try {
-      final a = await context.read<AppState>().animsFor(form!);
-      if (mounted) setState(() { anims = a; loading = false; });
-    } catch (_) {
-      if (mounted) setState(() { anims = []; loading = false; });
+      final a = await context.read<AppState>().characterAnims(widget.unit);
+      if (mounted && version == _loadVersion) setState(() { anims = a; loading = false; });
+    } catch (e) {
+      if (mounted && version == _loadVersion) setState(() { anims = []; loading = false; error = e.toString(); });
     }
   }
 
@@ -52,7 +58,7 @@ class _UnitAnimPaneState extends State<UnitAnimPane> {
       height: widget.height,
       loading: loading,
       loadingText: 'loading the motions',
-      emptyText: 'No sprites for this unit on this machine.',
+      emptyText: error == null ? 'No sprites for this unit on this machine.' : 'Could not load sprites: $error',
     );
   }
 }

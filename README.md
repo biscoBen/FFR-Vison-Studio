@@ -106,17 +106,13 @@ rejects unprovable workflow inputs rather than attributing their binaries to a r
 Run the downloaded executable through the prepared Wine runtime with separate scratch application data.
 Full mod tests still need the game's installation and extracted data.
 
-## Character sprites at startup
+## Character sprites
 
-Studio checks every hosted character form before opening the roster, including units never selected in **Add a unit**.
-The first launch downloads all available sprite packs and prepares their unit data, with progress on the startup page.
-Later launches reuse complete packs and download only what is missing. A file inventory detects missing sheets, icons
-and animation files even when an older completion marker remains. Repairs retain existing artwork and can reuse a
-checksum-verified ZIP already on disk.
-
-The first complete download takes longer and needs space for the sprite packs, their cached ZIPs and unit data.
-If a download fails, Studio opens with its installed assets, shows the error and retries missing forms next launch.
-Details are saved to `logs/sprite-startup.log` in the Studio data folder; **Open logs** opens that folder.
+Character sprites download on demand when you choose a character in **Add a unit**, load its saved config, or open
+an existing character whose preview data is missing. Startup does not download the whole hosted roster.
+Config loading restores only the selected appearance and its required base form, keeps existing artwork and reuses
+cached files. Single-character and **Load all character configs** saves retain their appearances when reopened.
+A failed preparation reports its error and keeps the roster unchanged; retry loading the config after the host recovers.
 
 ## Automatic animation repair
 

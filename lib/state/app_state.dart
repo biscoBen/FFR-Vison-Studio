@@ -50,7 +50,6 @@ class AppState extends ChangeNotifier {
     Progress('Download the Brave Exvius tables'),
     Progress('Download the unit icons'),
     Progress('Start the engine'),
-    Progress('Download missing character sprites'),
   ];
   String? gameRoot;
   bool gameRunning = false;
@@ -73,7 +72,6 @@ class AppState extends ChangeNotifier {
   Timer? _statusTimer;
   String? notice; // one-line message in the header for a few seconds
   String? banner; // a standing message (offline, old app); shown until the situation changes
-  String? spriteWarning;
   String? updateAvailable; // "1.0.0 build 5" when the host has a newer app
   bool engineDown = false; // the engine process ended on its own
   bool updating = false;
@@ -156,7 +154,6 @@ class AppState extends ChangeNotifier {
         try { hostIndex = json.decode(File(p.join(paths.root, 'ffbe_index_cache.json')).readAsStringSync()) as JsonMap; } catch (_) {}
       }
       await _startEngine(bootSteps[4]);
-      await prepareStartupSprites();
       if (_stopping) return;
       if (!isTestBuild) gameRoot ??= await GameLocator.detect();
       final st = await api!.status();
@@ -205,6 +202,7 @@ class AppState extends ChangeNotifier {
     );
     await engine!.start();
     api = Api(engine!.baseUrl);
+    _anims.clear();
     engineDown = false;
     s.state = 'done'; s.detail = 'port ${engine!.port}'; notifyListeners();
     await refreshStatus();
@@ -214,7 +212,6 @@ class AppState extends ChangeNotifier {
   Future<void> restartEngine() async {
     try {
       await _startEngine(bootSteps[4]);
-      await prepareStartupSprites();
       if (_stopping) return;
       if (phase == Phase.ready) await loadAll();
       showNotice('The engine is back.');
@@ -269,7 +266,6 @@ class AppState extends ChangeNotifier {
         if (l['running'] != true) {
           if (l['result'] == 'ok') {
             setupProgress!.state = 'done';
-            await prepareStartupSprites();
             if (_stopping) return;
             phase = Phase.ready;
             await loadAll();
@@ -372,96 +368,12 @@ class AppState extends ChangeNotifier {
   Future<void> ensureSprites(String form, {void Function(String)? onStep}) async {
     final forms = (hostIndex?['forms'] as JsonMap?) ?? {};
     final info = forms[form] as JsonMap?;
-    if (!await _sprites.ensure(form, info, onStep: onStep)) return;
+    final changed = await _sprites.ensure(form, info, onStep: onStep);
+    if (!changed && _sprites.previewReady(form)) return;
     onStep?.call('indexing');
     await api!.rebuildFfbeIndex();
     _anims.remove(form);
-  }
-
-  /// Prepare all hosted forms before showing the roster, including never-picked units.
-  Future<void> prepareStartupSprites() async {
-    final step = bootSteps[5];
-    step.state = 'working'; step.fraction = null; step.detail = 'Checking saved sprites';
-    spriteWarning = null;
-    notifyListeners();
-    final hosted = hostIndex?['units'] as List?;
-    if (hosted == null) {
-      spriteWarning = 'Could not check missing character sprites. Studio will retry next start.';
-      step.state = 'done'; step.detail = 'Character list unavailable; retry next start';
-      notifyListeners();
-      return;
-    }
-    final targets = <String, String>{};
-    for (final unit in hosted.cast<JsonMap>()) {
-      for (final form in (unit['packs'] as List? ?? [])) {
-        targets.putIfAbsent(form.toString(), () => unit['id'].toString());
-      }
-    }
-    final missing = targets.entries.where((entry) =>
-        !_sprites.isComplete(entry.key) || !_sprites.previewReady(entry.key)).toList();
-    var ready = targets.length - missing.length;
-    var consecutiveFailures = 0;
-    final rebuildNeeded = missing.isNotEmpty;
-    final prepared = <String>[];
-    String? firstError;
-    void recordError(String form, Object error) {
-      firstError ??= error.toString();
-      try {
-        final log = File(p.join(logsDir, 'sprite-startup.log'));
-        log.parent.createSync(recursive: true);
-        log.writeAsStringSync('${DateTime.now().toIso8601String()} $form: $error\n', mode: FileMode.append);
-      } catch (_) {}
-    }
-    final offline = banner?.startsWith('Could not reach the download host.') == true;
-    for (final entry in missing) {
-      if (_stopping) return;
-      try {
-        if (offline) { throw StateError('The download host is unreachable.'); }
-        void progress(String stage) {
-          if (_stopping) return;
-          step.detail = '$ready/${targets.length} forms ready · ${entry.key}: $stage';
-          step.fraction = targets.isEmpty ? 1 : ready / targets.length;
-          notifyListeners();
-        }
-        final info = (hostIndex?['forms'] as JsonMap?)?[entry.key] as JsonMap?;
-        await _sprites.ensure(entry.key, info, onStep: progress);
-        await prepareUnitPreview(entry.value, entry.key, onStep: progress);
-        if (_stopping) return;
-        prepared.add(entry.key);
-        _anims.remove(entry.key);
-        ready++;
-        consecutiveFailures = 0;
-      } catch (error) {
-        recordError(entry.key, error);
-        consecutiveFailures++;
-        // Avoid thousands of repeated failures when an asset host is unavailable.
-        if (offline || consecutiveFailures >= 3) break;
-      }
-    }
-    if (_stopping) return;
-    if (rebuildNeeded) {
-      try {
-        step.detail = 'Refreshing the character list'; notifyListeners();
-        await api!.rebuildFfbeIndex();
-      } catch (error) {
-        recordError('character list', error);
-        ready -= prepared.length;
-        prepared.clear();
-      }
-    }
-    if (_stopping) return;
-    for (final form in prepared) {
-      try { _sprites.previewMarker(form).writeAsStringSync('1'); }
-      catch (error) { recordError(form, error); ready--; }
-    }
-    final remaining = targets.length - ready;
-    if (remaining > 0) {
-      spriteWarning = 'Sprites for $remaining character form${remaining == 1 ? '' : 's'} could not be prepared. Studio will retry next start. '
-          'First error: $firstError';
-    }
-    step.state = 'done'; step.fraction = 1;
-    step.detail = '$ready/${targets.length} forms ready${remaining > 0 ? '; $remaining retry next start' : ''}';
-    notifyListeners();
+    _sprites.previewMarker(form).writeAsStringSync('1');
   }
 
   /// Prepare the complete on-demand unit pack before displaying a hosted look.
@@ -498,8 +410,21 @@ class AppState extends ChangeNotifier {
     final c = _anims[form];
     if (c != null) return c;
     final a = await api!.anims(form);
-    _anims[form] = a;
+    if (a.isNotEmpty) _anims[form] = a;
     return a;
+  }
+
+  /// A restored config may have artwork but no prepared engine preview data.
+  /// Repair only this character on opening it, never the full hosted roster.
+  Future<List<String>> characterAnims(JsonMap unit) async {
+    final form = (unit['ffbe'] as Map?)?['id'] as String?;
+    if (form == null) return [];
+    final existing = await animsFor(form);
+    if (CrystalFina.matches(unit) || unit['ffbe']['source'] == 'CUSTOM') return existing;
+    if (existing.isNotEmpty && _sprites.hasSheets(form)) return existing;
+    await _checkCharacterArtwork(unit);
+    _anims.remove(form);
+    return animsFor(form);
   }
 
   Future<JsonMap> addUnit(String ffbeId, String form, String name, {void Function(String)? onStep}) => _withRoster(() async {
@@ -536,9 +461,45 @@ class AppState extends ChangeNotifier {
       if (saved['ffbe'] == null) { return; }
     }
     if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
-    final directory = p.joinAll([paths.engineDir, ...(saved['ffbe']['dir'] as String).replaceAll('\\', '/').split('/')]);
-    final form = saved['ffbe']['id'];
-    if (!File(p.join(directory, 'unit_anime_$form.png')).existsSync() || !File(p.join(directory, 'unit_cgg_$form.csv')).existsSync()) {
+    final ffbe = saved['ffbe'] as JsonMap;
+    final form = ffbe['id'] as String;
+    final hosted = ((hostIndex?['units'] as List?) ?? []).cast<JsonMap>().where(
+      (u) => (u['packs'] as List? ?? []).map((f) => f.toString()).contains(form),
+    ).firstOrNull;
+    final base = ffbe['base']?.toString();
+    final uid = ffbe['source'] == 'CUSTOM' ? null : hosted?['id']?.toString() ??
+        (base != null && RegExp(r'^\d+$').hasMatch(base) &&
+         (ffbe['dir'] as String).replaceAll('\\', '/').startsWith('units/ffbe/') ? base : null);
+    String directory(String relative) => p.joinAll([paths.engineDir, ...relative.replaceAll('\\', '/').split('/')]);
+    bool hasArtwork(String relative, String id) =>
+        ['unit_anime_$id.png', 'unit_cgg_$id.csv'].every((name) {
+          final file = File(p.join(directory(relative), name));
+          return file.existsSync() && file.lengthSync() > 0;
+        });
+    Future<void> restoreForm(String id, String relative) async {
+      if (uid == null) return;
+      if (hasArtwork(relative, id) && _sprites.hasSheets(id) && (await api!.anims(id)).isNotEmpty) return;
+      await prepareUnitPreview(uid, id);
+      final source = Directory(_sprites.directory(id));
+      if (!source.existsSync()) return;
+      final target = Directory(directory(relative))..createSync(recursive: true);
+      for (final file in source.listSync().whereType<File>()) {
+        if (p.basename(file.path).startsWith('.')) continue;
+        final destination = File(p.join(target.path, p.basename(file.path)));
+        // Retain locally edited artwork; restore only missing or empty files.
+        if (!destination.existsSync() || destination.lengthSync() == 0) {
+          await file.copy(destination.path);
+        }
+      }
+    }
+    await restoreForm(form, ffbe['dir'] as String);
+    if (ffbe['baseForm'] is String && ffbe['baseDir'] is String && ffbe['baseForm'] != form) {
+      await restoreForm(ffbe['baseForm'] as String, ffbe['baseDir'] as String);
+      if (!hasArtwork(ffbe['baseDir'] as String, ffbe['baseForm'] as String)) {
+        throw StateError('The base-form artwork for ${saved['en']} is missing. Choose its model using Add a unit first, then load its saved config.');
+      }
+    }
+    if (!hasArtwork(ffbe['dir'] as String, form)) {
       throw StateError('The artwork for ${saved['en']} is missing. Add or import this character using Add a unit first, then load its saved config.');
     }
   }

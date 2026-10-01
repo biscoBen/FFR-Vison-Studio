@@ -44,7 +44,7 @@ class _SetupScreenState extends State<SetupScreen> {
             Padding(
               padding: const EdgeInsets.all(28),
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                Text('The first start downloads the engine, game-side data and all available character sprites, then reads your copy of the game once. Later starts check for missing sprites and download only what is needed. Nothing in the game folder changes until you press "Install into the game".', style: Guide.text()),
+                Text('The first start downloads the engine and game-side data, then reads your copy of the game once. Character sprites download when you choose a character or load its saved config. Nothing in the game folder changes until you press "Install into the game".', style: Guide.text()),
                 const SizedBox(height: 18),
                 Box(
                   padding: EdgeInsets.zero,
@@ -56,10 +56,6 @@ class _SetupScreenState extends State<SetupScreen> {
                         : StatusCell(_state(app.setupProgress!.state), text: app.setupProgress!.detail), zebra: true),
                   ]),
                 ),
-                if (app.spriteWarning != null) ...[
-                  const SizedBox(height: 14),
-                  Box(fill: Guide.warn, child: Text(app.spriteWarning!, style: Guide.small())),
-                ],
                 if (app.fatal != null) ...[
                   const SizedBox(height: 14),
                   Box(fill: const Color(0xFFFBEAEA), child: Text(app.fatal!, style: Guide.text(Guide.red))),

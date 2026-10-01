@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/design/widgets.dart';
 import 'package:ffr_vision_studio/screens/character_config_buttons.dart';
+import 'package:ffr_vision_studio/screens/unit_anim_pane.dart';
+import 'package:ffr_vision_studio/design/anim_viewer.dart';
 import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/bundled_features.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
@@ -27,6 +29,38 @@ class ConfigApi extends Api {
   int saves = 0;
   bool fail = false;
   Future<void> Function()? beforeSave;
+  AppPaths? paths;
+  final prepared = <String>{};
+  final preparations = <String>[];
+  bool failPreparation = false;
+  @override
+  Future<List<String>> anims(String form) async =>
+      prepared.contains(form) ? ['idle', 'atk'] : [];
+  @override
+  Future<Map<String, dynamic>> prepareAssets(String ffbeId, String form) async {
+    preparations.add('$ffbeId:$form');
+    if (failPreparation) {
+      throw ApiException('HTTP 429: the host is busy', statusCode: 429);
+    }
+    final directory = Directory(p.join(paths!.engineSprites, form))
+      ..createSync(recursive: true);
+    for (final name in [
+      'unit_anime_$form.png',
+      'unit_cgg_$form.csv',
+      'unit_idle_cgs_$form.csv',
+    ]) {
+      final file = File(p.join(directory.path, name));
+      if (!file.existsSync()) file.writeAsStringSync('cached $name');
+    }
+    return {'job': form};
+  }
+
+  @override
+  Future<Map<String, dynamic>> assetProgress(String job) async {
+    prepared.add(job);
+    return {'state': 'done'};
+  }
+
   @override
   Future<List<dynamic>> spec() async => clone(roster) as List;
   @override
@@ -117,6 +151,7 @@ void main() {
           ..api = api
           ..units = clone(api.roster) as List
           ..selectedKey = saved['key'] as String;
+    api.paths = app.paths;
     picker = ConfigFilePicker();
     FilePicker.platform = picker;
   });
@@ -134,6 +169,207 @@ void main() {
     unit['ffbe']['id'] = 'different';
     return unit;
   }
+
+  Map<String, dynamic> hostedCharacter() {
+    final unit = CharacterConfig.copy(saved)..remove('bundledPreset');
+    unit['key'] = 'hosted_character';
+    unit['ffbe'] = {
+      'id': '102',
+      'base': '10',
+      'source': 'JP',
+      'dir': 'units/ffbe/hosted_character/sprites/102',
+    };
+    app.hostIndex = {
+      'units': [
+        {
+          'id': '10',
+          'packs': ['101', '102'],
+        },
+        {
+          'id': '20',
+          'packs': ['201'],
+        },
+      ],
+    };
+    return unit;
+  }
+
+  test('saved hosted config restores missing artwork and preview data without searching first', () async {
+    final unit = hostedCharacter();
+    final snapshot = CharacterConfig.decode(CharacterConfig.encode(unit));
+    api.roster = [];
+    app.units = [];
+    expect(await app.animsFor('102'), isEmpty);
+    final restored = await app.loadCharacterConfig(
+      snapshot,
+      expectedTargetKey: null,
+    );
+    expect(restored, unit);
+    expect(api.preparations, ['10:102']);
+    expect(await app.characterAnims(restored), ['idle', 'atk']);
+    expect(
+      File(
+        p.join(
+          app.paths.engineDir,
+          unit['ffbe']['dir'],
+          'unit_idle_cgs_102.csv',
+        ),
+      ).readAsStringSync(),
+      'cached unit_idle_cgs_102.csv',
+    );
+    expect(api.roster.single, unit);
+  });
+
+  test('remove and restore retains edited artwork and the chosen appearance across reopening Studio', () async {
+    final unit = hostedCharacter();
+    api.roster = [unit];
+    app.units = [unit];
+    final art = File(
+      p.join(app.paths.engineDir, unit['ffbe']['dir'], 'unit_anime_102.png'),
+    );
+    art.parent.createSync(recursive: true);
+    art.writeAsStringSync('my edited artwork');
+    File(p.join(art.parent.path, 'unit_cgg_102.csv'))
+        .writeAsStringSync('my motion layout');
+    final snapshot = await app.snapshotCharacter(unit['key']);
+    await app.removeUnit(unit['key']);
+    final restored = await app.loadCharacterConfig(
+      CharacterConfig.decode(CharacterConfig.encode(snapshot)),
+      expectedTargetKey: null,
+    );
+    expect(art.readAsStringSync(), 'my edited artwork');
+    expect(
+      File(p.join(art.parent.path, 'unit_cgg_102.csv')).readAsStringSync(),
+      'my motion layout',
+    );
+    final reopened = AppState(hostBase: 'http://unused', appPaths: app.paths)
+      ..api = api;
+    addTearDown(reopened.dispose);
+    expect(await reopened.characterAnims(restored), ['idle', 'atk']);
+    expect(api.preparations, ['10:102']);
+    expect(restored['ffbe'], unit['ffbe']);
+  });
+
+  test('reopening repairs missing sprite sheets even when animation names are cached', () async {
+    final unit = hostedCharacter();
+    api.roster = [];
+    app.units = [];
+    await app.loadCharacterConfig(unit, expectedTargetKey: null);
+    expect(await app.characterAnims(unit), ['idle', 'atk']);
+    Directory(p.join(app.paths.engineSprites, '102'))
+        .deleteSync(recursive: true);
+    expect(await app.characterAnims(unit), ['idle', 'atk']);
+    expect(api.preparations, ['10:102', '10:102']);
+    expect(
+      File(p.join(app.paths.engineSprites, '102', 'unit_anime_102.png'))
+          .existsSync(),
+      isTrue,
+    );
+    expect(api.roster.single, unit);
+  });
+
+  test('a shifted saved appearance restores only its selected and base-form artwork', () async {
+    final unit = hostedCharacter();
+    unit['ffbe'].addAll({
+      'baseForm': '101',
+      'baseDir': 'units/ffbe/hosted_character/sprites/101',
+      'shift': 'brave',
+    });
+    api.roster = [];
+    app.units = [];
+    await app.loadCharacterConfig(unit, expectedTargetKey: null);
+    expect(api.preparations, ['10:102', '10:101']);
+    expect(
+      File(
+        p.join(
+          app.paths.engineDir,
+          unit['ffbe']['baseDir'],
+          'unit_anime_101.png',
+        ),
+      ).existsSync(),
+      isTrue,
+    );
+    expect(api.roster.single, unit);
+    final unsafe = CharacterConfig.copy(unit)
+      ..['ffbe']['baseDir'] = 'units/../../outside';
+    expect(() => CharacterConfig.encode(unsafe), throwsFormatException);
+  });
+
+  test('load all prepares only the saved characters and keeps their complete configs', () async {
+    final first = hostedCharacter();
+    final second = CharacterConfig.restore(first, [first])
+      ..['key'] = 'second_hosted';
+    second['ffbe'] = {
+      'id': '201',
+      'base': '20',
+      'source': 'GL',
+      'dir': 'units/ffbe/second_hosted/sprites/201',
+    };
+    final configs = CharacterConfig.decodeAll(
+      CharacterConfig.encodeAll([first, second]),
+    );
+    api.roster = [];
+    app.units = [];
+    final restored = await app.loadAllCharacterConfigs(
+      configs,
+      expectedTargetKeys: [null, null],
+    );
+    expect(api.preparations, ['10:102', '20:201']);
+    expect(restored, configs);
+    expect(api.roster, configs);
+  });
+
+  test(
+    'a failed config sprite preparation keeps the roster and can be retried',
+    () async {
+      final unit = hostedCharacter();
+      final before = clone(api.roster);
+      api.failPreparation = true;
+      await expectLater(
+        app.loadCharacterConfig(unit, expectedTargetKey: null),
+        throwsA(predicate((e) => e.toString().contains('HTTP 429'))),
+      );
+      expect(api.roster, before);
+      expect(api.saves, 0);
+      api.failPreparation = false;
+      await app.loadCharacterConfig(unit, expectedTargetKey: null);
+      expect(await app.characterAnims(unit), ['idle', 'atk']);
+      expect(api.preparations, ['10:102', '10:102']);
+    },
+  );
+
+  testWidgets(
+    'a loaded character still displays motions after leaving and reopening its page',
+    (tester) async {
+      final unit = hostedCharacter();
+      api.roster = [];
+      app.units = [];
+      await tester.runAsync(
+        () => app.loadCharacterConfig(unit, expectedTargetKey: null),
+      );
+      Future<void> open() async {
+        await tester.pumpWidget(
+          ChangeNotifierProvider<AppState>.value(
+            value: app,
+            child: MaterialApp(
+              home: Scaffold(body: UnitAnimPane(unit: unit)),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final viewer = tester.widget<AnimViewer>(find.byType(AnimViewer));
+        expect(viewer.anims, ['idle', 'atk']);
+        expect(viewer.loading, isFalse);
+        expect(viewer.url('idle'), endsWith('/102/idle.webp'));
+      }
+
+      await open();
+      await tester.pumpWidget(const SizedBox.shrink());
+      await open();
+      expect(api.preparations, ['10:102']);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   test('save and load preserve every setting, including custom Resonance and future fields', () {
     final restored = CharacterConfig.decode(CharacterConfig.encode(saved));

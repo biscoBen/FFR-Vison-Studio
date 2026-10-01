@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Restore character sprite downloads on demand; startup, restart and game setup no longer download every hosted form.
+- Restore the selected appearance and required base-form artwork when loading character configs, and prepare missing
+  engine preview data when reopening the character. Keep saved settings, existing artwork and cached downloads.
+  Config preparation failures preserve the roster and can be retried. Windows package verification is pending.
 
 ## Published faster build and release workflow — 2026-10-01
 

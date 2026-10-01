@@ -276,16 +276,15 @@ class CharacterConfig {
         (ffbe is! Map || ffbe['id'] is! String || ffbe['dir'] is! String)) {
       invalid();
     }
-    final directory = ffbe == null
-        ? null
-        : (ffbe['dir'] as String).replaceAll('\\', '/');
-    if (directory != null &&
-        (!directory.startsWith('units/') ||
-            directory.contains(':') ||
-            directory
-                .split('/')
-                .any((v) => v.isEmpty || v == '..' || v == '.'))) {
-      invalid();
+    for (final field in ['dir', 'baseDir']) {
+      if (ffbe == null || ffbe[field] == null) continue;
+      if (ffbe[field] is! String) invalid();
+      final directory = (ffbe[field] as String).replaceAll('\\', '/');
+      if (!directory.startsWith('units/') ||
+          directory.contains(':') ||
+          directory.split('/').any((v) => v.isEmpty || v == '..' || v == '.')) {
+        invalid();
+      }
     }
     for (final field in ['command', 'master']) {
       final definition = unit[field];
