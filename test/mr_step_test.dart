@@ -181,14 +181,14 @@ void main() {
       await selectRank(tester, 3);
       final search = find.widgetWithText(TextField, 'Search MR rewards');
       for (final choice in [
-        ('攻撃', 'PassiveSkill', 1001),
+        ('English passive', 'PassiveSkill', 1000),
         ('No sequence', 'ActiveSkill', 400010),
         ('Custom fixture', 'ActiveSkill', 485300),
       ]) {
         await tester.enterText(search, choice.$1);
         await tester.pumpAndSettle();
-        if (choice.$1 == '攻撃') {
-          expect(find.text('攻撃力アップ (Unverified)'), findsOneWidget);
+        if (choice.$1 == 'English passive') {
+          expect(find.text('English passive'), findsOneWidget);
         }
         if (choice.$1 == 'No sequence') {
           expect(find.text('No sequence (Unverified)'), findsOneWidget);

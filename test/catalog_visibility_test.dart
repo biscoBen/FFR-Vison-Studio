@@ -158,7 +158,7 @@ void main() {
           [],
         ],
       };
-      final before = unit['awakening'];
+      final before = jsonEncode(unit);
       await showStep(
         tester,
         (unit, set) => BonusesStep(unit: unit, set: set),
@@ -178,8 +178,8 @@ void main() {
         '攻撃',
       );
       await tester.pumpAndSettle();
-      expect(find.text('Nothing matches.'), findsOneWidget);
-      expect(unit['awakening'], before);
+      expect(find.byType(LibraryRow), findsNothing);
+      expect(jsonEncode(unit), before);
       expect(tester.takeException(), isNull);
     },
   );
@@ -284,10 +284,12 @@ void main() {
     tester,
   ) async {
     final app = CatalogState();
-    (app.catalog!['skills'] as List).addAll([
+    app.catalog!['skills'] = <Map<String, dynamic>>[
+      for (final row in app.catalog!['skills'])
+        Map<String, dynamic>.from(row as Map),
       {'id': 501000, 'name': 'Attack', 'attr': 'Fight'},
       {'id': 501010, 'name': '針千本', 'attr': 'Ability'},
-    ]);
+    ];
     final unit = <String, dynamic>{
       'synchro': [
         [
