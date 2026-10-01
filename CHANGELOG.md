@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published compact ability library — 2026-10-01
+
+Changes through [`703858c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/703858cc7e7908bb60c0a85a191627168629855f),
+[test package 36887346776](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36887346776).
+
 - Reserve the 26 default vision Resonances and their alternate-target row for Resonance selection. Hide them from
   ordinary Abilities and MR ability pickers, together with untranslated names and entries named **Attack**. Keep
   existing equipped abilities, MR rewards, full catalog rows and saved configurations intact.
@@ -25,6 +32,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Missing/ambiguous sources remain unlabelled; matching skill names alone never proves ownership.
 - Validation: game source labels require the prepared game tables on the tester's PC. Cloud regression fixtures verify
   tracing/filtering, compact values and full hover behavior; a full game install and in-game rendering are unavailable here.
+
+Windows validation passed: analysis, **106 Flutter tests**, a separate genuine frozen-engine fresh-start check,
+**94 Python tests**, launcher/import checks and the release build. The downloaded package's SHA-256 and bundled
+managed sources match the tested commit. Local Flutter/PowerShell execution remains limited by cloud workspace
+process/thread exhaustion; fresh-start validation ran on the Windows runner.
 
 ## Published skill-library cleanup — 2026-09-30
 
