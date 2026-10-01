@@ -8,25 +8,91 @@ void main() {
   String title(int id, {String name = 'Move', String kind = 'skills'}) =>
       catalogEntryTitle({}, kind, {'id': id, 'name': name});
 
-  test(
-    'the PDF covers all assigned Studio IDs, with explicit awakening only',
-    () {
-      final references = catalogSourceReferences.values.expand(
-        (rows) => rows.values,
-      );
-      expect(catalogSourceReferences['skills']!.length, 329);
-      expect(catalogSourceReferences['passives']!.length, 282);
-      expect(references.where((r) => r.internalLabelOnly).length, 6);
-      expect(references.where((r) => r.awakening != null).length, 322);
-      expect(
-        references.every(
-          (r) =>
-              r.awakening == null || (r.awakening! >= 1 && r.awakening! <= 4),
-        ),
-        isTrue,
-      );
-    },
-  );
+  test('the full 91-page PDF covers every assigned game ID, with explicit awakening only', () {
+    final references = catalogSourceReferences.values.expand(
+      (rows) => rows.values,
+    );
+    expect(catalogSourceReferences['skills']!.length, 1141);
+    expect(catalogSourceReferences['passives']!.length, 343);
+    expect(references.where((r) => r.internalLabelOnly).length, 6);
+    expect(references.where((r) => r.awakening != null).length, 322);
+    expect(
+      references.every(
+        (r) => r.awakening == null || (r.awakening! >= 1 && r.awakening! <= 4),
+      ),
+      isTrue,
+    );
+  });
+
+  test('additional PDF sections label enemies, party members, espers and items by ID', () {
+    expect(
+      title(500270, name: '1,000 Needles'),
+      '1,000 Needles (Unverified) — Source: Cactuar',
+    );
+    expect(
+      title(505110, name: '10,000 Needles'),
+      '10,000 Needles (Unverified) — Source: Gigantuar',
+    );
+    expect(
+      title(571030, name: '100,000 Needles'),
+      '100,000 Needles (Unverified) — Source: Gargantuan Gigantuar',
+    );
+    expect(
+      title(408040, name: 'Abyss Graviton'),
+      'Abyss Graviton (Unverified) — Source: Archwitch Fina',
+    );
+    expect(title(300370), 'Move (Unverified) — Source: Leviathan');
+    expect(title(100070), 'Move (Unverified) — Source: Antidote Herb');
+    expect(title(1550, kind: 'passives'), 'Move — Source: Mastery Ring');
+    expect(title(1136, kind: 'passives'), 'Move — Source: Elnath');
+    expect(title(505130, name: 'Tidal Wave'), 'Tidal Wave (Unverified)');
+    expect(title(1541, kind: 'passives'), 'Move');
+  });
+
+  test('additional source metadata never unhides a duplicate, Attack, untranslated or Resonance row', () {
+    final cat = <String, dynamic>{
+      'skills': [
+        {'id': 500270, 'name': '1,000 Needles', 'seq': [], 'attr': 'Ability'},
+        {'id': 505110, 'name': '10,000 Needles', 'seq': [], 'attr': 'Ability'},
+        {'id': 413600, 'name': 'Attack', 'attr': 'Fight'},
+        {'id': 300370, 'name': '(召喚獣用)ウォタガ全体化', 'attr': 'Magic'},
+        {'id': 440280, 'name': 'Aetherial Wind', 'attr': 'FinishBlow'},
+      ],
+      'duplicatePolicy': {
+        'schema': 2,
+        'available': true,
+        'ownersComplete': true,
+        'groups': {
+          'skills': [
+            [500270, 505110],
+          ],
+        },
+      },
+    };
+    final before = jsonEncode(cat);
+    for (final row in cat['skills']) {
+      expect(catalogEntryTitle(cat, 'skills', row), contains('Source:'));
+      expect(catalogDefaultOwners(cat, 'skills', row), isEmpty);
+    }
+    expect(
+      catalogSelectableLibrary(cat, 'skills', []).map((row) => row['id']),
+      [500270],
+    );
+    final saved = {
+      'awakening': [
+        [
+          ['ActiveSkill', 505110],
+        ],
+      ],
+    };
+    final savedBefore = jsonEncode(saved);
+    expect(
+      catalogSelectableLibrary(cat, 'skills', [saved]).map((row) => row['id']),
+      [505110],
+    );
+    expect(jsonEncode(cat), before);
+    expect(jsonEncode(saved), savedBefore);
+  });
 
   test('same-name IDs keep their documented source and exact awakening', () {
     expect(

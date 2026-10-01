@@ -112,9 +112,10 @@ traces original commands, level grants, passives, explicit AI skill IDs and alte
 game's English unit names. Missing or ambiguous sources stay unlabelled. Source labels do not verify compatibility
 on added visions or change **(Unverified)** status.
 
-The bundled October 1, 2026 ability-source reference also labels the Studio's abilities, passives and Resonance options
-by exact ID, including verified entries and documented esper/equipment sources. Its owner is representative; known
-game-table sources still join the same sorted, deduplicated **Source: <unit names>** label. Explicit awakening tiers
+The bundled October 1, 2026 ability-source reference covers all 91 pages, including the additional game abilities
+and passives. It labels 1,141 assigned ability IDs and 343 passive IDs, including enemy, party, esper, consumable
+and equipment sources. All hiding rules still apply; this also covers already-equipped hidden IDs. Its owner is
+representative; known game-table sources still join the same sorted, deduplicated **Source: <unit names>** label. Explicit awakening tiers
 appear as **awakening=N** (with the reference owner named when multiple sources are listed). Bond rewards and linked
 variants do not imply an awakening tier. Six internal owner labels are marked **(internal label only)** without claiming
 an unlock; entries without an assignment remain unlabelled unless the game tables establish a source. This reference

@@ -11,6 +11,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Fix incomplete PDF source labels: include the additional game abilities and passives on pages 39–90, which were
+  omitted from the first reference update. Add the missing 812 assigned ability sources and 61 passive sources;
+  the complete reference now covers **1,141 ability IDs** and **343 passive IDs**. Preserve exact-ID matching,
+  qualified internal labels, explicit awakening tiers, all picker hiding rules and saved/equipped grants. The full
+  document leaves 61 original game definitions without a confirmed source; those remain unlabelled unless game
+  tables establish an owner.
+- Validation: freshly extracted all PDF tables and compared every assigned ID, owner, explicit awakening tier and
+  internal-label qualification with the bundled mapping. Both extension checksum checks passed. Added regressions
+  for late-page enemy/party/item/esper/equipment sources and for preserving filters and saved grants. Local Flutter
+  execution remains limited by cloud process/thread exhaustion; the full suite and release build run on Windows CI.
+
+## Published PDF sources and awakening tiers — 2026-10-01
+
+Changes in [`867109e`](https://github.com/biscoBen/FFR-Vison-Studio/commit/867109eaceefbd1350af841daea81ae4820db020),
+[test package 36911084005](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36911084005).
+
 - Label visible abilities, passives and Resonance options from the October 1, 2026 ability-source PDF by exact ID,
   including verified entries and documented esper/equipment sources. Keep one sorted, deduplicated **Source: <unit names>**
   label alongside known game-table owners. The reference covers 611 owner labels across the Studio's 635 entries;
@@ -22,7 +38,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Validation: independently extracted all 635 Studio PDF rows and checked every bundled mapping. Flutter analysis
   passed with no issues; **118 Flutter tests** and **95 Python tests** passed, including hiding, click/drag and source-label
   regressions. Both bundled extensions passed checksum checks. The Windows-only fresh-engine test was skipped on Linux;
-  a Windows build, fresh bundled-engine startup and in-game rendering require the Windows runner or a tester's PC.
+  Windows CI subsequently passed the release build, genuine frozen-engine fresh startup and launcher/import checks.
+  The published ZIP checksum and commit metadata were verified; in-game rendering still needs a tester's PC.
 
 ## Published click descriptions and source labels — 2026-10-01
 
