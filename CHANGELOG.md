@@ -11,7 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Restore reaction color handling in generated ordinary-skill fallback timelines, which previously inherited the
+  limit-burst scheduler's disabled color flag. Keep hit count, targets and mechanics intact. This is a candidate fix
+  for friendly targets remaining white after unverified skills; persistence/recovery still needs an in-game test.
+
+- Add visual-only animation profiles for Bladeblitz, Aero Blade, Aquatic Synergy and Arise when those abilities are
+  selected and lack an existing or explicit custom sequence. Reuse audited native slash, wind, three-hit water and
+  revival visuals with the receiving vision's preparation/release motions. Preserve original mechanics, hit ratios,
+  consecutive-use bonuses and full revival strength. Keep donor assets separate, fit motions to the sequence's timing,
+  and report a fallback when game assets cannot pass the audit. In-game appearance still requires testing.
 
 ## Published on-demand sprites and restored character previews — 2026-10-01
 

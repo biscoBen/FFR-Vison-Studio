@@ -128,6 +128,18 @@ their original spell particles or sound. Special actions and unsupported Resonan
 writes `engine/build/animation-repair-report.json` with the selected skills' existing, reused, fallback or unresolved status.
 Native reuse is validated against the local game files; actual rendering still requires an in-game test.
 
+Bladeblitz, Aero Blade, Aquatic Synergy and Arise also have explicit visual profiles using Grand Slash, Aero, Waterga
+and Raise respectively. The builder audits their actual timelines, adapts preparation/release motions to the receiving
+vision, and fits longer motions into the existing timing. Only visual sequence and hit-effect bindings are borrowed;
+the receiving ability keeps its own mechanics. Aquatic Synergy remains a three-hit Water attack with its consecutive-use
+bonus; Arise still restores full HP. Existing/custom sequences take precedence. Unusable donors retain the basic fallback
+and record `profileReason` in the animation report. Rebuild/install the roster mod to apply these profiles; installing
+the Studio update alone does not replace a previously built mod. Visual appearance and battle completion need in-game testing.
+
+Generated ordinary-skill fallbacks now retain reaction color handling instead of inheriting the limit-burst scheduler's
+disabled flag. This correction addresses friendly targets remaining white after an unverified skill; confirm recovery
+after the skill and on the next turn in-game. Existing native sequences and Resonance scheduling are preserved.
+
 ## Ability and passive libraries
 
 Unverified entries used by default visions show **Source: <unit names>** beside **(Unverified)**. Ownership includes

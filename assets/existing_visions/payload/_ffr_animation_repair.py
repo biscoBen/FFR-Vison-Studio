@@ -8,6 +8,7 @@ import copy
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -186,6 +187,25 @@ NORMAL_EVENTS = {'None', 'UnitPlayAnimByName', 'UnitMoveToTarget', 'UnitMoveToDe
                  'PostSetDefaultColorGrading', 'PostSetColorGradingGlobalParameter'}
 NORMAL_MOTIONS = {'idle', 'command', 'magic_idle', 'magic_attack', 'M_attack01', 'M_attack02',
                   'attack_A', 'attack_B', 'attack_C', 'attack_D', 'attack_E'}
+RELEASE_MOTIONS = NORMAL_MOTIONS - {'idle', 'command', 'magic_idle'}
+
+# Explicit visual-only prototypes. A source label is never an automatic donor.
+# These IDs and donor bindings are from the supported game's catalog. Effects,
+# damage, ratios and targeting always remain those of the receiving skill.
+ANIMATION_PROFILES = {
+    400310: {'name': 'Bladeblitz', 'donor': 501310, 'donorName': 'Grand Slash',
+             'prepare': 'command', 'release': 'attack_A',
+             'expected': ('Ability', 'Physic', 'None', 'Group', 'Enemies', 1)},
+    420130: {'name': 'Aero Blade', 'donor': 220170, 'donorName': 'Aero',
+             'prepare': 'magic_idle', 'release': 'attack_A',
+             'expected': ('MagicSword', 'Physic', 'Wind', 'Single', 'Enemies', 1)},
+    414410: {'name': 'Aquatic Synergy', 'donor': 220150, 'donorName': 'Waterga',
+             'prepare': 'command', 'release': 'attack_A',
+             'expected': ('Ability', 'Physic', 'Water', 'Single', 'Enemies', 3)},
+    210150: {'name': 'Arise', 'donor': 210140, 'donorName': 'Raise',
+             'prepare': 'magic_idle', 'release': 'magic_attack',
+             'expected': ('Magic', 'Magic', 'None', 'Single', 'Friendlies', 1)},
+}
 
 
 def enum(value):
@@ -339,6 +359,114 @@ class NativeAnimations:
             return donor, None
         return None, reason
 
+    def profile(self, sid, skill, owners, tables, clones):
+        """Borrow an audited visual timeline, never its mechanics or hit count.
+
+        Unlike automatic same-name matching, only these four explicit mappings
+        may use a mechanically different donor. Each must have matching targets
+        and hit counts, portable events, and complete prepare/release/idle phases.
+        """
+        profile = ANIMATION_PROFILES[sid]
+        actual = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'element',
+                       'TargetType', 'defaultTargetRelation')) + (int(skill.get('hitCount') or 1),)
+        if self.names.get(sid) != profile['name'] or actual != profile['expected']:
+            return None, 'The skill no longer matches its animation profile.'
+        donor = self.skills.get(profile['donor'])
+        if (not donor or self.names.get(donor['ID']) != profile['donorName']
+                or enum(donor.get('hasUnit')) != 'All'
+                or enum(donor.get('TargetType')) != actual[3]
+                or enum(donor.get('defaultTargetRelation')) != actual[4]
+                or int(donor.get('hitCount') or 1) != actual[5]):
+            return None, 'The visual donor has incompatible targeting or hit count.'
+        offset = 2 if actual[3] == 'Group' else 1
+        assets = self.assets['Asset/Skill/DT_SkillAsset']
+        binding = next(((k, r) for k, r in assets.items() if r['ID'] == donor['ID'] + offset), None)
+        binding = binding or next(((k, r) for k, r in assets.items() if r['ID'] == donor['ID']), None)
+        if not binding: return None, 'The visual donor has no target-compatible binding.'
+        secondary = next(((k, r) for k, r in self.assets['Asset/Skill/CDT_SkillAsset_Demo'].items()
+                          if r['ID'] == binding[1]['ID']), None)
+        if not secondary or secondary[1].get('LevelSequence') != binding[1].get('LevelSequence'):
+            return None, 'The donor lookup tables disagree.'
+        # Reserve private sequence identities even if a donor happens to use
+        # the recipient's original sequence path (Grand Slash/Bladeblitz).
+        sequence = 800000000 + sid + 1
+        if any(re.search(rf'/SEQ_Battle_{sequence}_Master(?:\.|$)', r.get('LevelSequence', ''))
+               for original in self.assets.values() for r in original.values()):
+            return None, 'The private animation sequence identity is already in use.'
+        verified = self.audit(binding[1], donor['ID'], actual[5])
+        if not isinstance(verified, dict): return None, verified
+        try:
+            motion_edits, rates = self.profile_motions(binding[1], owners, profile)
+        except (OSError, ValueError, KeyError, TypeError, IndexError, RuntimeError, subprocess.SubprocessError) as error:
+            return None, f'The visual phases could not be verified: {error}'
+        edits = {kind: [{'match': {'EventType': 'OtherReaction', 'Other_Reaction_Id': verified['reactionId']},
+                         'set': {'Other_Reaction_Id': sid}}, *copy.deepcopy(motion_edits)]
+                 for kind in ('master', 'cut', 'effect', 'sound')}
+        copied = self.support['clone'](binding[1], verified['sequenceId'], sid, sequence, (), clones,
+                                       self.support['objects'], (), edits, self.support['bytecode'])
+        for rel, key in (('Asset/Skill/DT_SkillAsset', binding[0]), ('Asset/Skill/CDT_SkillAsset_Demo', secondary[0])):
+            occupied = {r['ID'] for r in self.assets[rel].values()}
+            occupied.update(r['set']['ID'] for r in tables.get(rel, {}).get('add', []) if 'ID' in r.get('set', {}))
+            for off in (1, 2):
+                if sid + off in occupied: continue
+                tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append({
+                    'row': f'Studio_Profile_{sid}_{off}', 'cloneFrom': key, 'set': {'ID': sid + off, **copied}})
+        rel = 'Battle/Sequencer/DT_BtlHitEffectData'
+        occupied = {r['ID'] for r in self.reactions.values()}
+        occupied.update(r['set']['ID'] for r in tables.get(rel, {}).get('add', []) if 'ID' in r.get('set', {}))
+        if sid not in occupied:
+            reaction = next(k for k, r in self.reactions.items() if r['ID'] == verified['reactionId'])
+            tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append({
+                'row': f'Studio_Profile_{sid}', 'cloneFrom': reaction, 'set': {'ID': sid}})
+        return {'profile': profile['name'], 'donor': donor['ID'], 'prepareMotion': profile['prepare'],
+                'releaseMotion': profile['release'], 'playRates': rates}, None
+
+    def profile_motions(self, asset, owners, profile):
+        folder = self.root / 'extracted/legacy/FFRS/Content' / str(Path(asset['LevelSequence'].split('.')[0].removeprefix('/Game/')).parent)
+        motions = []; moves = []; returns = []
+        for path in sorted(folder.rglob('*.uasset')):
+            tj, dump = self.support['dumps'](str(path))
+            if any('/Chara/' in str(i.get('ObjectName', '')) and '/Chara/effect/' not in str(i.get('ObjectName', ''))
+                   for i in tj.get('Imports', [])):
+                raise ValueError('The timeline imports an owner-specific character.')
+            events = {k.split(':', 1)[-1]: v for k, v in dump.items()}
+            for tick, kind, name in self.support['keys'](str(path)):
+                event = events[name]
+                if isinstance(tick, bool) or not math.isfinite(tick) or tick < 0:
+                    raise ValueError('The timeline has an invalid event time.')
+                if enum(kind) == 'SoundPlayHitSound' and re.search(r'\bVO[_ ]', json.dumps(event)):
+                    raise ValueError('The timeline uses an owner-specific voice.')
+                if enum(kind) == 'UnitPlayAnimByName': motions.append((tick, event))
+                elif enum(kind) == 'UnitMoveToTarget': moves.append(tick)
+                elif enum(kind) == 'UnitMoveToDefaultLocation': returns.append(tick)
+        motions.sort(key=lambda item: item[0])
+        if moves and (not returns or max(returns) <= max(moves)):
+            raise ValueError('The timeline does not return the caster to its position.')
+        names = {e.get('Unit_PlayAnimByName_AnimationName') for _, e in motions}
+        if not names.intersection({'command', 'magic_idle'}) or not names.intersection(RELEASE_MOTIONS) or 'idle' not in names:
+            raise ValueError('The timeline lacks separate preparation, release or recovery.')
+        seconds = max(motion_seconds(u, self.root, profile['release'] == 'magic_attack') for u in owners)
+        rates = {}
+        for tick, event in motions:
+            name = event.get('Unit_PlayAnimByName_AnimationName')
+            if name not in RELEASE_MOTIONS: continue
+            end = next((t for t, _ in motions if t > tick), None)
+            if end is None: raise ValueError('The release has no recovery phase.')
+            # Fit the longest participating vision into the donor's motion
+            # window. Hit keys/effects remain in place; no damage events added.
+            rates[name] = max(rates.get(name, 1.0), 1.0, seconds * 24000 / (end - tick))
+        last_release = max(t for t, e in motions if e.get('Unit_PlayAnimByName_AnimationName') in RELEASE_MOTIONS)
+        if not any(t > last_release and e.get('Unit_PlayAnimByName_AnimationName') == 'idle' for t, e in motions):
+            raise ValueError('The caster never returns to idle after release.')
+        edits = [{'match': {'EventType': 'UnitPlayAnimByName', 'Unit_PlayAnimByName_AnimationName': name},
+                  'set': {'Unit_PlayAnimByName_AnimationName': profile['prepare']}}
+                 for name in sorted(names.intersection({'command', 'magic_idle'}))]
+        edits += [{'match': {'EventType': 'UnitPlayAnimByName', 'Unit_PlayAnimByName_AnimationName': name},
+                   'set': {'Unit_PlayAnimByName_AnimationName': profile['release'], 'Unit_PlayAnimByName_InStartFrame': 0,
+                           'Unit_PlayAnimByName_InPlayRate': rate, 'Unit_PlayAnimByName_InLoopCount': 1}}
+                  for name, rate in sorted(rates.items())]
+        return edits, rates
+
 
 def motion_seconds(unit, root, magic):
     ff = unit.get('ffbe') or {}; motion = 'magicatk' if magic else 'atk'
@@ -374,6 +502,12 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         if not base:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Skill definition unavailable.'}); continue
         skill = {**base, **((recipe or {}).get('set') or {})}
+        profile_reason = None
+        if sid in ANIMATION_PROFILES and not recipe:
+            presentation, profile_reason = native.profile(sid, skill, owners, tables, clones) if native else (None, 'Native sequence audit unavailable.')
+            if presentation:
+                repaired.append(sid)
+                coverage.append({'id': sid, 'status': 'animation_profile', **presentation}); continue
         donor, reason = native.reuse(sid, skill, tables, clones) if native else (None, 'Native sequence audit unavailable.')
         if donor is not None:
             repaired.append(sid); reused.append((sid, donor))
@@ -393,6 +527,12 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                           ('PostSetDefaultColorGrading', 'PostSetColorGradingGlobalParameter', 'CameraSetDefault', 'OtherSetGameSpeed')]
         for event in plan['events']:
             st = event['set']
+            if st['EventType'] == 'OtherReaction':
+                # Ordinary actions need the engine's reaction-colour lifecycle.
+                # The LB scheduler disables it; carrying that flag into a normal
+                # action can strand a friendly target in its white hit state.
+                # Keep the same reaction/hit rather than adding a cleanup hit.
+                st['Otber_Reaction_bChangeColor'] = True
             if st.get('Unit_PlayAnimByName_AnimationName') == 'LB1': st['Unit_PlayAnimByName_AnimationName'] = 'magic_attack' if magic else 'attack_A'
             elif st.get('Unit_PlayAnimByName_AnimationName') == 'LB1_before': st['Unit_PlayAnimByName_AnimationName'] = 'magic_idle' if magic else 'command'
         asset = f'FFRS/Content/Sequencer/Battle/Skill/{sid}/{sid+1}/SEQ_Battle_{sid+1}_Master'
@@ -417,7 +557,13 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                 'row': f'Studio_Motion_{sid}', 'cloneFrom': donor,
                 'set': ffbe_resonance.reaction_settings(sid) if supportive else {'ID': sid}})
         repaired.append(sid)
-        coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason})
+        coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
+                         **({'profileReason': profile_reason} if profile_reason else {})})
+    for entry in coverage:
+        if entry['status'] == 'animation_profile':
+            print(f'  {entry["profile"]}: audited visual profile from {entry["donor"]}; original mechanics retained.')
+        elif entry.get('profileReason'):
+            print(f'  {ANIMATION_PROFILES[entry["id"]]["name"]}: keeping motion fallback: {entry["profileReason"]}')
     if reused:
         print('  Reused audited native animations (skill <- animation donor): ' + ', '.join(f'{sid} <- {donor}' for sid, donor in reused))
     fallback = [entry['id'] for entry in coverage if entry['status'] == 'motion_fallback']
