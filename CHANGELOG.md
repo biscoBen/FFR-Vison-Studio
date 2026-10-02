@@ -11,11 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published Mitra shop practice battle — 2026-10-02
+
+Changes in [`ce9d895`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ce9d89517acebd168fb9d46d660266ff10b10d2f),
+[test package 37076779355](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37076779355).
+
 - Optional **Shop practice battle**: Young Woman in Mitra's item shop starts a repeatable fight with three level-1
   Steel Bats after her dialogue. Uses the current party and a native plains backdrop, with guaranteed escape and
   the existing one-battle MR setting when enabled. Disable and reinstall to restore her original interaction.
   Shop inventory, story flags, random encounters and pending ability-hiding decisions are preserved.
   Actual battle entry, return to the shop and repeat interaction require in-game confirmation.
+- Passed local analysis, 19 focused Flutter tests and 188 Python tests. Windows passed the full Flutter/Python suites,
+  real frozen-engine startup, launcher/updater/import checks and compilation. Verified the published ZIP's checksum,
+  exact commit, all bundled extension files and retained party portraits. Master is unchanged.
+- Actual engine serialization preserved every original row across all seven affected tables, including 26 original
+  vision grants, 11,430 MR AP and the new private encounter. Patch both native parent and combined event/map tables.
+- One code push and one reused push build. CI took 5m21s; summed job execution was 9m01s. First complete candidate:
+  16:15:23 PDT; ZIP verified at 16:21:54 PDT (6m31s including final local checks, push, CI and download).
+  Publication notes use the documentation-only path; the binary retains its tested code commit.
 
 ## Published original vision and MR testing — 2026-10-02
 
