@@ -7,9 +7,9 @@
     "payload/_ffr_existingvisions.py": "e66caf2dd74e79b0d16a47cc6f3871af91bd1deffcc8f0a05d3e955c4b23d933",
     "payload/_ffr_library.py": "021d47a5081789b99ddb1cf15dc49332cf2f5b708be8fa65f12d3e525f8eb2bc",
     "payload/_ffr_party.py": "577607ba1e2a237948ba18004f6b676d7f57c7904476f9952cead79b149624ff",
-    "payload/_ffr_testing.py": "81b9f5723106982bf0fe1ef440223edfb6adfad3e84240870578ccb561c6e2e5",
+    "payload/_ffr_testing.py": "99cf562ab49d62a80c79df8dab99a22acc9b7c2b783389ddd9aa32affa4eb92a",
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
-    "payload/manifest.json": "071e06ffc1e67036a5f96f00c859464cb9e75942eb792c5da2beeddb0aff8afe"
+    "payload/manifest.json": "8f288fb48f09134ed0308dd668fe61bfa0f6ad3350de858eabe883bcd0bbc88e"
   }
 }

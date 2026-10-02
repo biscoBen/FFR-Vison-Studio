@@ -24,7 +24,8 @@ def game():
     grant = copy.deepcopy(noop)
     grant.update(ObtainItemList=[{'Condition': '', 'ID': 13024, 'Num': 1, 'Text': ''}],
                  OnFlagList=[105], ProgressList=[{'ID': 0, 'Value': 1080}], IsSetAutoSave=True)
-    tables[testing.EVENT] = {'C01_ArijigokuEncount': noop, 'C01_014_03': grant}
+    tables[testing.COMPOSITE] = {'C01_ArijigokuEncount': noop, 'C01_014_03': grant}
+    tables[testing.EVENT] = {'C01_014_03': copy.deepcopy(grant)}
     tables[testing.COMMON] = {'tutorial': {'eventCondition': 'BattleBegin', 'eventDataList': [
         {'playSetting': {'Condition': '{progress:0}>=1050&!{flag:1188}', 'EventList': [
             {'EventId': 'Tutorial_EnemyLevel', 'Weight': 1, 'MoveInfo': {'MoveType': 'Walk'},
@@ -46,14 +47,14 @@ class NativeTestingTests(unittest.TestCase):
         original, rows, unit = game(); before = copy.deepcopy(original); unit['testAcquire'] = True
         with tempfile.TemporaryDirectory() as root: ops = testing.prepare({}, [unit], root, rows)
         self.assertEqual(original, before)
-        self.assertEqual(set(ops), {testing.EVENT, testing.COMMON})
+        self.assertEqual(set(ops), {testing.EVENT, testing.COMPOSITE, testing.COMMON})
         for rel, operation in ops.items():
             self.assertEqual(operation['set'], [])
             added, = operation['add']
             built = copy.deepcopy(original[rel])
             built[testing.NAME] = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
             testing.check_rows(original[rel], built, operation)
-            if rel == testing.EVENT:
+            if rel in (testing.EVENT, testing.COMPOSITE):
                 event = built[testing.NAME]
                 self.assertEqual(event['ObtainItemList'], [{'Condition': '{item:13110}==0', 'ID': 13110, 'Num': 1, 'Text': ''}])
                 self.assertEqual(event['OnFlagList'], []); self.assertEqual(event['ProgressList'], [])

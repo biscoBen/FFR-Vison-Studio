@@ -8,7 +8,8 @@ import subprocess
 import tempfile
 
 GROUP = 'Encount/DT_BattleGroup'
-EVENT = 'Event/TalkEvent/CDT_TalkEventData_Demo'
+EVENT = 'Event/TalkEvent/MainEvent/DT_TalkEventData_Chapter01'
+COMPOSITE = 'Event/TalkEvent/CDT_TalkEventData_Demo'
 COMMON = 'Event/BattleEvent/DT_BtlCmnEventDataBundle'
 NAME = 'Studio_TestNativeVisions'
 CONFIG = 'mods/EstherTsukiko/testing.json'
@@ -54,8 +55,8 @@ def prepare(tables, units, root, rows):
     def table(rel):
         return tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
     if selected:
-        events = rows(EVENT); common = rows(COMMON)
-        if NAME in events or NAME in common:
+        events = rows(COMPOSITE); parent = rows(EVENT); common = rows(COMMON)
+        if NAME in events or NAME in parent or NAME in common:
             raise ValueError('The test event identity already exists in the original game tables.')
         # This original event has no timeline, dialogue, Blueprint or story flags.
         donor = events['C01_ArijigokuEncount']
@@ -73,11 +74,14 @@ def prepare(tables, units, root, rows):
         # game's original Rain/Tronn vision grant; replace ALL its story state
         # with the checked no-op template before adding our selected items.
         grant = events['C01_014_03']
-        if not grant.get('ObtainItemList'):
+        if not grant.get('ObtainItemList') or parent.get('C01_014_03') != grant:
             raise ValueError('The native vision-grant template is unavailable.')
         desired = apply_fields(donor, updates)
         updates = field_delta(grant, desired)
-        table(EVENT)['add'].append({'row': NAME, 'cloneFrom': 'C01_014_03', 'set': updates})
+        # CompositeDataTable rebuilds its runtime map from ParentTables. Patch
+        # the registered parent AND its cooked composite cache, as for skill assets.
+        for rel in (EVENT, COMPOSITE):
+            table(rel)['add'].append({'row': NAME, 'cloneFrom': 'C01_014_03', 'set': copy.deepcopy(updates)})
         key, source = next((k, v) for k, v in common.items() if v['eventCondition'] == 'BattleBegin')
         event = copy.deepcopy(source['eventDataList'][0])
         if len(source['eventDataList']) != 1 or len(event['playSetting']['EventList']) != 1 or event['ParameterList']:
