@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published same-name and elemental target effects — 2026-10-01
+
+Changes in [`b927015`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b927015e7467270902130cf9d38a74c349ce019d),
+[test package 36947606617](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36947606617).
+
 - Reuse native target particle effects for missing same-name skills even when their mechanics differ, then select
   elemental/power-tier effects for remaining physical and magic attacks. Stone Slam/Surge's three tiers use Stone,
   Stonera and Stonega Blade. Preserve receiving skills' damage, targets, hit counts/ratios, costs and gameplay effects,
@@ -19,6 +26,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Mark covered entries **(Verified)** while retaining source/awakening descriptions and every existing hiding rule.
   This label tracks the new visual mappings; in-game effect appearance still needs testing. Keep the white-state
   correction, which the user confirmed works, and existing/custom sequences and Resonance behavior.
+- Windows passed analysis, 139 Flutter tests plus the separate genuine engine-startup test, 132 Python regressions,
+  both extension checks, 12 launcher/updater checks, 10 vision-import checks and compilation. The helper joined the
+  automatic run and verified the published ZIP's SHA-256 and exact commit/build provenance through authenticated
+  downloads. One code push produced one build. The workflow took 6m33s, with 9m53s of summed job execution; Flutter
+  setup took 216s in validation and 86s in compilation. These are measured timings; slower SDK setup was the bottleneck.
+  The catalog mapping covers 113 of the original 175 entries and additional same-name variants such as Tronn's Fira.
+  Rebuild/install the roster mod after updating Studio, then test the new target effects in-game.
 
 ## Published ability visual profiles and reaction-color correction — 2026-10-01
 
