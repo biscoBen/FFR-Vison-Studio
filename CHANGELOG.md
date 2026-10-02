@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published native-kit and batch effect repair — 2026-10-01
+
+Changes in [`dfb763c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/dfb763cd71f47097c7a7dbd999c956d976420fa1),
+[test package 36970064551](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36970064551).
+
 - Keep inherited abilities out of custom-animation repair when opening original visions, including unchanged Aileen.
   Explicit additions and replaced FFBE models still receive repair. Preserve original visions' shared impact rows.
 - Validate donor Niagara imports against their actual class/package instead of the filtered UI effects index, avoiding
@@ -19,6 +26,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Add regressions for all 26 original vision IDs, new grants, model replacement, off-roster shared reactions, common
   particles and batch failures. Actual Crust Driver/Needles appearance still needs the user's extracted game references;
   keep the current tested Steal/Barrage/Needles presentations while collecting those references.
+- Windows passed analysis, 142 Flutter tests, separate real engine startup, 158 Python tests including the actual
+  particle patcher, both bundles, 12 launcher/updater checks, 10 vision-import checks and compilation. Reused the single
+  push build and verified the published ZIP checksum, exact commit/provenance and packaged repair files. CI took 4m47s
+  with 8m54s of summed job execution. Publication notes use the documentation-only path.
 
 ## Published borrowed-effect table verification fix — 2026-10-01
 
