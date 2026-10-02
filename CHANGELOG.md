@@ -11,10 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published party install fix and portraits — 2026-10-02
+
+Changes in [`8d6f0be`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8d6f0be5347f90d880299fa2f0c973cf59e65cc7),
+[test package 37017624549](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37017624549).
+
 - Fix party replacements failing at install because the engine's vision loader added an empty abilities field.
   Keep party identity and appearance-only validation intact, and cover the actual saved-roster loader in regression tests.
 - Show bundled classic FFBE portraits for all eight original party characters on the main page and character page.
   Replacement models retain their own previews. Portraits require no sprite downloads.
+- Windows passed the full Flutter suite, real engine startup, 169 Python tests including the actual engine roster loader,
+  both bundles, 12 launcher/updater checks, 10 vision-import checks and compilation. Verified exact-commit provenance,
+  ZIP checksum, all eight packaged portraits and the loader fix. One code push/build; CI took 4m18s.
 
 ## Published battle-only party appearances — 2026-10-02
 
