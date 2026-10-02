@@ -48,6 +48,7 @@ foreach ($row in $rows) {
         if ($path -cne '/Game/Chara/StudioParty/party1001/unit0010') { throw 'Rain did not use the private battle model.' }
         $mat = $row.Value | Where-Object { $_.Name.ToString() -ceq 'Material' }
         $resolved = $mat.Value.ToImport($asset)
+        if ($resolved.ClassName.ToString() -cne 'Material') { throw 'Wrong party material class.' }
         if ($resolved.ObjectName.ToString() -cne 'M_StudioParty1001') { throw 'Wrong party material.' }
     } else {
         if (-not $path.StartsWith('/Game/Chara/unit/')) { throw 'An unselected character changed model.' }

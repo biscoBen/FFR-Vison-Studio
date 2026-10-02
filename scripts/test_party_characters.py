@@ -84,6 +84,7 @@ class PartyCharacterTests(unittest.TestCase):
         self.assertEqual(a[1:], b[1:]); self.assertNotEqual(a[0], b[0])
         material = next(p for p in b[0]['Value'] if p['Name'] == 'Material')['Value']
         self.assertEqual(edited['Imports'][-material-1]['ObjectName'], 'M_StudioParty1001')
+        self.assertEqual(edited['Imports'][-material-1]['ClassName'], 'Material')
 
     def test_verifier_rejects_other_rows_and_wrong_hard_reference_paths(self):
         original = original_view(); chosen = unit(); edited = party.table_view(original, [chosen])

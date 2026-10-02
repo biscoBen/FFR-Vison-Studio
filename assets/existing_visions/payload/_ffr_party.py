@@ -99,8 +99,8 @@ def table_view(original, units):
         imports.append(dict(template, ObjectName=path, OuterIndex=0,
                             ClassName='Package', ClassPackage='/Script/CoreUObject'))
         imports.append(dict(template, ObjectName=leaf, OuterIndex=-start-1,
-                            ClassName='MaterialInstanceConstant', ClassPackage='/Script/Engine'))
-        for name in (path, leaf, 'MaterialInstanceConstant'):
+                            ClassName='Material', ClassPackage='/Script/Engine'))
+        for name in (path, leaf):
             if name not in edited['NameMap']: edited['NameMap'].append(name)
         export = next(e for e in edited['Exports'] if 'Table' in e)
         row = next(r for r in export['Table']['Data'] if r['Name'] == u['jp'])
@@ -195,6 +195,10 @@ def generate(u, env):
         original_json = work / 'material-original.json'; edited_json = work / 'material-edited.json'
         run(tool + ['tojson', str(source), str(original_json), '--usmap', usmap])
         original = json.loads(original_json.read_text(encoding='utf-8-sig'))
+        export = original['Exports'][0]
+        class_index = export['ClassIndex']
+        if class_index >= 0 or original['Imports'][-class_index-1]['ObjectName'] != 'Material':
+            raise ValueError('The Crystal Fina material class changed; the party reference cannot be resolved safely.')
         changes = {fina.MATERIAL: material(u),
                    f'/Game/Chara/summon/summon{fina.VISION_ID}/summon{fina.VISION_ID}_tex': target + '_tex'}
         def replace(v):
