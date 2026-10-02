@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Correct the shop practice battle's NPC binding. The observed "Potions, Phoenix Downs..." conversation belongs
+  to Mitra's talk block 6, not the different woman's block 39 targeted in the first package. Match the original
+  conversation event in both parent and combined tables; preserve the other woman and all existing testing options.
+  Battle entry and return still require in-game confirmation after updating and rebuilding/installing the mod.
+- Use the native level 7–8 encounter with one Evil Plant (300 HP) and two Wild Rats (320 HP each), preserving their
+  normal stats and all other encounters. Retain guaranteed escape and the optional one-battle MR reward.
 
 ## Published Mitra shop practice battle — 2026-10-02
 

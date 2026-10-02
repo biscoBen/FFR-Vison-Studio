@@ -14,7 +14,9 @@ COMMON = 'Event/BattleEvent/DT_BtlCmnEventDataBundle'
 NAME = 'Studio_TestNativeVisions'
 CONFIG = 'mods/EstherTsukiko/testing.json'
 SHOP_EVENT = 'Event/TalkEvent/FreeTalk/01Gra/DT_TalkEventData_Town_01Gra_20'
-SHOP_WOMAN = 'DT_Town_010Gra_20_1170_1'
+# The shop's "Potions, Phoenix Downs..." conversation resolves to talk block
+# 6 / Town_01Gra_20_120. NPC display names and sprite IDs do not identify it.
+SHOP_WOMAN = 'DT_Town_010Gra_20_0920_8'
 MAP = 'Map/MapData/DT_MapData_01Gra'
 MAP_COMPOSITE = 'Map/CDT_MapData_Demo'
 PRACTICE = 'Studio_PracticeBattle'
@@ -116,7 +118,7 @@ def prepare_practice(table, rows, ap):
     """Keep the woman's dialogue and party; launch a private, story-free encounter."""
     parent = rows(SHOP_EVENT); combined = rows(COMPOSITE)
     woman = parent.get(SHOP_WOMAN)
-    if (not woman or combined.get(SHOP_WOMAN) != woman or woman.get('ArgList') != {'id': '39'}
+    if (not woman or combined.get(SHOP_WOMAN) != woman or woman.get('ArgList') != {'id': '6'}
             or woman.get('encountGroupId') != -1 or woman.get('OverwriteBattleParty')
             or any(woman.get(k) for k in ('OnFlagList', 'OffFlagList', 'FlagList', 'ProgressList',
                                         'ContinuousEventList', 'ChoicesBranchEventList', 'ObtainItemList',
@@ -132,17 +134,19 @@ def prepare_practice(table, rows, ap):
                        for v in rows('Asset/Battle/Stage/CDT_BtlStageAsset_Demo').values())):
         raise ValueError('The Mitra map or native plains battle stage is unavailable.')
     groups = rows(GROUP)
-    donor = next(((k, v) for k, v in groups.items() if v.get('ID') == 3), None)
+    donor = next(((k, v) for k, v in groups.items() if v.get('ID') == 1026), None)
     if (PRACTICE in groups or any(v.get('ID') == PRACTICE_ID for v in groups.values()) or not donor
-            or donor[1].get('UnitIdList') != [2, 2, 2] or len(donor[1].get('locationIdList', [])) != 3
+            or donor[1].get('UnitIdList') != [20, 22, 22] or len(donor[1].get('locationIdList', [])) != 3
             or donor[1].get('battleEventId') != -1 or donor[1].get('battleFinishEventId')
             or donor[1].get('battleFinishEscapeEventId') or donor[1].get('battleFinishLoseEventId')
             or donor[1]['battleFinishTransition']['mapId'] != -1
             or donor[1]['battleFinishTransition'].get('bDoAutoSave')):
         raise ValueError('The native three-enemy encounter template changed.')
-    enemies = [v for v in rows('Unit/DT_UnitParameter').values() if v.get('ID') == 2]
-    if len(enemies) != 1 or enemies[0].get('Category') != 'Enemy' or enemies[0].get('Level') != 1:
-        raise ValueError('The native level-1 Steel Bat is unavailable.')
+    units = rows('Unit/DT_UnitParameter')
+    for uid, level in ((20, 7), (22, 8)):
+        enemies = [v for v in units.values() if v.get('ID') == uid]
+        if len(enemies) != 1 or enemies[0].get('Category') != 'Enemy' or enemies[0].get('Level') != level:
+            raise ValueError('The native level 7–8 practice enemies are unavailable.')
     for rel in (SHOP_EVENT, COMPOSITE):
         table(rel)['set'].append({'row': SHOP_WOMAN, 'set': {'encountGroupId': PRACTICE_ID}})
     # Mitra normally has no battle backdrop. Supply the demo's existing plains

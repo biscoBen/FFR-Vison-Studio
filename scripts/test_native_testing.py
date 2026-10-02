@@ -38,23 +38,28 @@ def game():
 def practice_game():
     tables, _, unit = game()
     woman = copy.deepcopy(tables[testing.COMPOSITE]['C01_ArijigokuEncount'])
-    woman.update(ArgList={'id': '39'}, encountGroupId=-1, OverwriteBattleParty=[],
+    woman.update(ArgList={'id': '6'}, encountGroupId=-1, OverwriteBattleParty=[],
                  TransitionLocation={'mapId': -1}, ChoicesBranchEventList=[],
                  ConsumeItemList=[], ChangeUnitJoinStatusList=[], IsForceUpdateProgress=False,
                  IsSetForceAutoSave=False, EventSequence='native free-talk timeline')
-    tables[testing.SHOP_EVENT] = {testing.SHOP_WOMAN: woman, 'shopkeeper': {'shop': 1}}
+    # Explicit identities from the observed conversation: do not derive the
+    # fixture key from the implementation's selected NPC constant.
+    other_woman = copy.deepcopy(woman); other_woman['ArgList'] = {'id': '39'}
+    tables[testing.SHOP_EVENT] = {'DT_Town_010Gra_20_0920_8': woman,
+                                'DT_Town_010Gra_20_1170_1': other_woman, 'shopkeeper': {'shop': 1}}
     tables[testing.COMPOSITE].update(copy.deepcopy(tables[testing.SHOP_EVENT]))
     town = {'ID': 2000, 'battleStage': -1, 'doMovementEncount': False, 'startupEventList': ['story']}
     tables[testing.MAP] = {'01Gra_20': town, 'other town': {'ID': 2001, 'battleStage': -1}}
     tables[testing.MAP_COMPOSITE] = copy.deepcopy(tables[testing.MAP])
     tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'] = {'plains': {'ID': 5, 'battleLevelList': ['native plains']}}
-    tables[testing.GROUP]['three bats'] = {
-        'ID': 3, 'UnitIdList': [2, 2, 2], 'locationIdList': [20, 6, 15], 'ap': 20,
+    tables[testing.GROUP]['plant and rats'] = {
+        'ID': 1026, 'UnitIdList': [20, 22, 22], 'locationIdList': [20, 6, 15], 'ap': 20,
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 50.0,
         'isResultSkipOnWin': False, 'isResultSkipOnLose': False,
         'battleEventId': -1, 'battleFinishEventId': '', 'battleFinishEscapeEventId': '',
         'battleFinishLoseEventId': '', 'battleFinishTransition': {'mapId': -1, 'bDoAutoSave': False}}
-    tables[native.UNIT]['Steel Bat'] = {'ID': 2, 'Level': 1, 'Category': 'Enemy', 'MaxHitPoint': 68}
+    tables[native.UNIT]['Evil Plant'] = {'ID': 20, 'Level': 7, 'Category': 'Enemy', 'MaxHitPoint': 300}
+    tables[native.UNIT]['Wild Rat'] = {'ID': 22, 'Level': 8, 'Category': 'Enemy', 'MaxHitPoint': 320}
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
@@ -168,7 +173,10 @@ class NativeTestingTests(unittest.TestCase):
             for edit in op['add']: built[edit['row']] = testing.apply_fields(original[rel][edit['cloneFrom']], edit['set'])
             testing.check_rows(original[rel], built, op)
             if rel in (testing.SHOP_EVENT, testing.COMPOSITE):
+                self.assertEqual([e['row'] for e in op['set']], ['DT_Town_010Gra_20_0920_8'])
                 self.assertEqual(built[testing.SHOP_WOMAN]['encountGroupId'], testing.PRACTICE_ID)
+                self.assertEqual(built[testing.SHOP_WOMAN]['ArgList'], {'id': '6'})
+                self.assertEqual(built['DT_Town_010Gra_20_1170_1'], original[rel]['DT_Town_010Gra_20_1170_1'])
                 self.assertEqual(built['shopkeeper'], original[rel]['shopkeeper'])
                 self.assertEqual(built[testing.SHOP_WOMAN]['EventSequence'], 'native free-talk timeline')
                 self.assertEqual(built[testing.SHOP_WOMAN]['OverwriteBattleParty'], [])
@@ -177,7 +185,7 @@ class NativeTestingTests(unittest.TestCase):
                 self.assertEqual(built['01Gra_20']['startupEventList'], ['story'])
             else:
                 encounter = built[testing.PRACTICE]
-                self.assertEqual(encounter['UnitIdList'], [2, 2, 2])
+                self.assertEqual(encounter['UnitIdList'], [20, 22, 22])
                 self.assertEqual(encounter['locationIdList'], [20, 6, 15])
                 self.assertEqual(encounter['probabilityOfSuccessfulEscape'], 100.0)
                 self.assertEqual(encounter['battleFinishTransition'], {'mapId': -1, 'bDoAutoSave': False})
@@ -205,8 +213,8 @@ class NativeTestingTests(unittest.TestCase):
                 elif change == 'map': tables[testing.MAP]['01Gra_20']['ID'] = 2001
                 elif change == 'stage': tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'].clear()
                 elif change == 'collision': tables[testing.GROUP]['normal']['ID'] = testing.PRACTICE_ID
-                elif change == 'monster': tables[native.UNIT]['Steel Bat']['Level'] = 99
-                else: tables[testing.GROUP]['three bats']['battleFinishTransition']['mapId'] = 2001
+                elif change == 'monster': tables[native.UNIT]['Wild Rat']['Level'] = 99
+                else: tables[testing.GROUP]['plant and rats']['battleFinishTransition']['mapId'] = 2001
                 path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
                 path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))
                 with self.assertRaises(ValueError): testing.prepare({}, [], root, rows)

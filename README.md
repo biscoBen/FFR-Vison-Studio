@@ -139,9 +139,10 @@ use an overflow-sized reward. Equip the visions first. Scripted battles that sup
 awakening ranks and their materials are unchanged. Both controls default off and persist across Studio restarts.
 
 Enable **Shop practice battle**, then install and restart the game. Talk to **Young Woman** in Mitra's item shop
-to fight three level-1 Steel Bats after her normal dialogue, using your current party and a native plains backdrop.
+to fight one level-7 Evil Plant and two level-8 Wild Rats after her normal dialogue, using your current party and a native plains backdrop.
 Escape is guaranteed. The fight uses the one-battle MR reward when that setting is enabled. This switch defaults off;
 disable and reinstall to restore her original interaction. Battle entry, return and repeat use need in-game confirmation.
+NPC event bindings are matched by the actual dialogue text key and talk block; display names and sprite IDs are insufficient.
 
 Use a clean save, do not save with testing active, then disable the testing controls, reinstall and reload the clean save.
 Disabling does not remove items or MR already acquired in the running session or a saved game. Table serialization

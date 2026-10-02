@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),
-                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle with three level-1 Steel Bats after her dialogue. Install after switching.', style: Guide.small()),
+                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle with three level 7–8 enemies after her dialogue. Install after switching.', style: Guide.small()),
                   value: app.testingPracticeBattle,
                   onChanged: app.building || app.api == null ? null : (value) async {
                     try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }
