@@ -50,6 +50,50 @@ void main() {
     },
   };
 
+  test(
+    'animation trials identify touched skills without changing sources or hiding rules',
+    () {
+      final cat = fixture();
+      final rows = [
+        {
+          'id': 400260,
+          'name': 'Steal',
+          'attr': 'Ability',
+          'hasUnit': 'All',
+          'seq': [],
+        },
+        {
+          'id': 400300,
+          'name': 'Barrage',
+          'attr': 'Ability',
+          'hasUnit': 'All',
+          'seq': [],
+        },
+      ];
+      cat['skills'].addAll(rows);
+      final before = catalogLibrary(
+        cat,
+        'skills',
+        [],
+      ).map((r) => r['id']).toList();
+      cat['animationPolicy']['trials'] = {
+        '400260': {'source': 'FFR'},
+        '400300': {'source': 'FFBE'},
+      };
+      expect(
+        catalogEntryTitle(cat, 'skills', rows[0]),
+        'Steal (Verified; FFR test) — Source: Zidane',
+      );
+      expect(
+        catalogEntryTitle(cat, 'skills', rows[1]),
+        'Barrage (Verified; FFBE test) — Source: Noctis',
+      );
+      expect(catalogLibrary(cat, 'skills', []).map((r) => r['id']), before);
+      expect(catalogEntryVerified(rows[0], 'skills'), isFalse);
+      expect(catalogEntryVerified(rows[1], 'skills'), isFalse);
+    },
+  );
+
   test('mapped entries get Verified while untouched labels and sources stay intact', () {
     final cat = fixture();
     final mapped = cat['skills'][0] as Map;

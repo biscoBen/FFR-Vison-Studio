@@ -204,7 +204,15 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
           ? '$name (internal label only)'
           : name);
   final awakening = reference?.awakening;
-  return '$label${hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
+  final animationPolicy = catalog['animationPolicy'];
+  final trials = animationPolicy is Map ? animationPolicy['trials'] : null;
+  final trialMetadata = trials is Map ? trials['${row['id']}'] : null;
+  final trial = kind == 'skills' && row['custom'] != true &&
+          animationPolicy is Map && animationPolicy['schema'] == 1 && trialMetadata is Map
+      ? trialMetadata['source']
+      : null;
+  final trialLabel = ['FFR', 'FFBE'].contains(trial) ? '; $trial test' : '';
+  return '$label${trialLabel.isNotEmpty ? ' (Verified$trialLabel)' : hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
       '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}';
 }

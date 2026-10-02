@@ -260,7 +260,9 @@ def effect_policy(catalog):
             donor = skills.get(family[tier - 1]); rule = 'element_tier'
         if donor and usable(donor):
             result[str(sid)] = {'donor': donor['id'], 'donorName': donor['name'], 'rule': rule, 'tier': tier}
-    return {'schema': 1, 'skills': result}
+    trials = {str(sid): {'source': source} for sid, source in ((400260, 'FFR'), (400300, 'FFBE'))
+              if sid in skills and not skills[sid].get('seq')}
+    return {'schema': 1, 'skills': result, 'trials': trials}
 
 
 class NativeAnimations:
@@ -613,6 +615,107 @@ def motion_seconds(unit, root, magic):
     return 1.0
 
 
+def prepare_barrage_trial(units, root, rows):
+    """Prepare only selected Barrage owners; reuse their own cached FFBE inputs.
+
+    FFBE Barrage repeats normal attacks. Native attack impact frames come from
+    the pinned FFBE data; no FFBE damage values or extra hits enter FFR.
+    """
+    root = Path(root)
+    owners = [u for u in units if any(g[0] == 'ActiveSkill' and int(g[1]) == 400300
+              for tier in [*u.get('awakening', []), *u.get('synchro', [])] for g in tier)]
+    config = {'schema': 1, 'owners': {}}
+    if owners and not sequence_present(400300, rows, {}):
+        skill = next((r for r in rows('Skill/DT_SkillData').values() if r['ID'] == 400300), {})
+        signature = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'TargetType', 'defaultTargetRelation'))
+        if signature != ('Ability', 'Physic', 'Random', 'Enemies') or skill.get('hitCount') != 4:
+            raise ValueError('The FFBE Barrage trial requires the original four-hit FFR Barrage definition.')
+        index = json.loads(Path(__file__).with_name('ffbe_barrage_index.json').read_bytes())
+        if (index.get('schema') != 1 or index.get('repository') != 'aEnigmatic/ffbe'
+                or index.get('commit') != '95727376e82d27acc1290b6dc8ad27ce3c89ea71'
+                or index.get('skill') != {'id': 200310, 'name': 'Barrage', 'repeats': 4, 'moveType': 1, 'motionType': 1}):
+            raise ValueError('Invalid pinned FFBE Barrage source.')
+        for unit in owners:
+            ff = unit.get('ffbe') or {}; chosen = None
+            for directory, form in ((ff.get('dir'), ff.get('id')), (ff.get('baseDir'), ff.get('baseForm'))):
+                if not directory or not form: continue
+                folder = (root / directory).resolve()
+                if not folder.is_relative_to(root.resolve()): raise ValueError('Barrage sprite path escapes the engine.')
+                for motion in ('atk', 'atk1', 'attack', 'atk2', 'atk3'):
+                    path = folder / f'unit_{motion}_cgs_{form}.csv'
+                    if path.is_file():
+                        steps = csv_rows(path.read_bytes())
+                        if steps and all(len(s) >= 4 and int(s[3]) >= 0 for s in steps):
+                            chosen = (str(form), sum(max(1, int(s[3])) for s in steps)); break
+                if chosen: break
+            if not chosen:
+                raise ValueError(f'Barrage FFBE test needs FFBE attack sprites for {unit.get("en", unit.get("id"))}. Choose an FFBE-backed vision.')
+            form, frames = chosen; impact = (index['forms'].get(form) or {}).get('impactFrame')
+            if type(impact) is not int or not 0 < impact < frames:
+                raise ValueError(f'Barrage FFBE attack timing is unavailable or incompatible for form {form}; cached sprites were kept.')
+            config['owners'][str(unit['id'])] = {'form': form, 'frames': frames, 'impactFrame': impact}
+        beat = max(p['impactFrame'] for p in config['owners'].values())
+        config.update(cycleFrames=beat + max(p['frames'] - p['impactFrame'] for p in config['owners'].values()),
+                      impactFrame=beat,
+                      source={'repository': index['repository'], 'commit': index['commit'], 'skillId': 200310})
+    path = root / 'build/barrage-trial.json'; path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix='.barrage-trial-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as f: json.dump(config, f)
+        os.replace(temporary, path)
+    finally: Path(temporary).unlink(missing_ok=True)
+    return config
+
+
+def add_barrage_animation(spec, config, vision):
+    """Repeat imported attack poses, fitting their impacts to shared FFR beats.
+
+    Each recipient keeps its own cells and complete motion. Different FFBE
+    attack lengths must not leave a shared skill's hits behind the body motion.
+    """
+    profile = config.get('owners', {}).get(str(vision))
+    if not profile: return
+    attack = next((a for a in spec['animations'] if a['name'] == 'attack_A'), None)
+    if not attack or attack.get('fps') != 60 or attack.get('frameCount') != profile['frames']:
+        raise ValueError('Barrage FFBE sprite conversion did not retain the expected attack motion.')
+    length = profile['frames']; impact = profile['impactFrame']
+    cycle = config['cycleFrames']; beat = config['impactFrame']
+    animation = copy.deepcopy(attack); animation.update(name='FFBE_Barrage', frameCount=4 * cycle)
+    for tracks in animation['parts'].values():
+        for field, keys in tracks.items():
+            repeated = []
+            for repeat in range(4):
+                for key in keys:
+                    tick = key[0]
+                    if type(tick) is not int or not 0 <= tick < length:
+                        raise ValueError('Invalid imported Barrage attack keyframe.')
+                    fitted = (round(tick * beat / impact) if tick <= impact else
+                              beat + round((tick - impact) * (cycle - beat) / (length - impact)))
+                    entry = [repeat * cycle + min(cycle - 1, fitted), *copy.deepcopy(key[1:])]
+                    if repeated and entry[0] == repeated[-1][0]: repeated[-1] = entry
+                    else: repeated.append(entry)
+            tracks[field] = repeated
+    spec['animations'] = [a for a in spec['animations'] if a['name'] != 'FFBE_Barrage'] + [animation]
+
+
+def barrage_trial_plan(root, owners, skill):
+    import ffbe_resonance
+    path = Path(root) / 'build/barrage-trial.json'
+    if not path.is_file(): raise ValueError('Prepare the FFBE Barrage trial before generating sprites.')
+    config = json.loads(path.read_bytes())
+    if config.get('schema') != 1 or any(str(u['id']) not in config.get('owners', {}) for u in owners):
+        raise ValueError('The FFBE Barrage trial does not match the selected visions.')
+    frames = config['cycleFrames']; beat = config['impactFrame']
+    plan = ffbe_resonance.schedule(4 * frames / 60, 4, skill['ID'],
+            source={'hitFrames': [i * frames + beat for i in range(4)]},
+            movement={'enabled': True, 'right_shift': 0.0, 'target_offset': [0, 0, 0]})
+    for event in plan['events']:
+        st = event['set']
+        if st.get('Unit_PlayAnimByName_AnimationName') == 'LB1': st['Unit_PlayAnimByName_AnimationName'] = 'FFBE_Barrage'
+        elif st.get('Unit_PlayAnimByName_AnimationName') == 'LB1_before': st['Unit_PlayAnimByName_AnimationName'] = 'command'
+    return plan
+
+
 def add_target_effects(plan, bundle):
     """Fit cosmetic keys to our existing hit/recovery window; add no hits."""
     hits = [e['time'] for e in plan['events'] if e['set']['EventType'] == 'OtherReaction']
@@ -700,6 +803,15 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         if not base:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Skill definition unavailable.'}); continue
         skill = {**base, **((recipe or {}).get('set') or {})}
+        if sid == 400260 and not recipe:
+            signature = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'TargetType', 'defaultTargetRelation'))
+            if signature != ('Ability', 'None', 'Single', 'Enemies') or not any(b.get('effectId') == 1030 for b in skill.get('effectBundleList', [])):
+                raise ValueError('The FFR Steal trial requires the original item-stealing definition.')
+            # Player Steal has no standalone catalog timeline. Leave its original
+            # game routing intact, including on Zidane; never borrow enemy gil
+            # theft or replace it with our generic casting/reaction shell.
+            coverage.append({'id': sid, 'status': 'ffr_native_trial', 'sourceVision': 13118})
+            continue
         profile_reason = None; visual_bundle = None
         if native and str(sid) in native.visual_policy and not recipe:
             try: visual_bundle = native.target_effects(sid)
@@ -713,7 +825,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             if presentation:
                 repaired.append(sid)
                 coverage.append({'id': sid, 'status': 'animation_profile', **presentation}); continue
-        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle else (None, 'Native sequence audit unavailable.')
+        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle and sid != 400300 else (None, 'Native sequence audit unavailable.')
         if donor is not None:
             repaired.append(sid); reused.append((sid, donor))
             coverage.append({'id': sid, 'status': 'native_reuse', 'donor': donor}); continue
@@ -728,7 +840,8 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         source = Path(root) / 'extracted/legacy' / (ffbe_resonance.SHELL + '.uasset')
         if not source.is_file(): extract('Sequencer/Battle/Skill/440110/440111/')
         if not source.is_file(): raise ValueError('The battle timeline template could not be extracted. Prepare the game files again.')
-        plan = ffbe_resonance.schedule(max(motion_seconds(u, root, magic) for u in owners), hits, sid, movement={'enabled': False})
+        plan = (barrage_trial_plan(root, owners, skill) if sid == 400300 and not recipe else
+                ffbe_resonance.schedule(max(motion_seconds(u, root, magic) for u in owners), hits, sid, movement={'enabled': False}))
         plan['events'] = [e for e in plan['events'] if e['set']['EventType'] not in
                           ('PostSetDefaultColorGrading', 'PostSetColorGradingGlobalParameter', 'CameraSetDefault', 'OtherSetGameSpeed')]
         for event in plan['events']:
@@ -769,11 +882,17 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             native.bind_reaction_visuals(sid, visual_bundle, tables)
             coverage.append({'id': sid, 'status': 'effect_reuse', **{k: visual_bundle[k] for k in ('donor', 'donorName', 'rule', 'tier')},
                              'particleEvents': sum(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in visual_bundle['events'])})
+        elif sid == 400300 and not recipe:
+            coverage.append({'id': sid, 'status': 'ffbe_barrage_trial', 'sourceSkill': 200310})
         else:
             coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
                              **({'profileReason': profile_reason} if profile_reason else {})})
     for entry in coverage:
-        if entry['status'] == 'effect_reuse':
+        if entry['status'] == 'ffr_native_trial':
+            print('  Steal FFR test: preserving original player Steal routing; no generated casting timeline. Appearance needs an in-game comparison with Zidane.')
+        elif entry['status'] == 'ffbe_barrage_trial':
+            print('  Barrage FFBE test: four imported attack cycles with FFBE impact timing; original FFR damage, random targets and four hits retained.')
+        elif entry['status'] == 'effect_reuse':
             print(f'  {entry["id"]}: target effects from {entry["donorName"]} ({entry["donor"]}); {entry["rule"]}, tier {entry["tier"]}; original mechanics retained.')
         elif entry['status'] == 'animation_profile':
             print(f'  {entry["profile"]}: audited visual profile from {entry["donor"]}; original mechanics retained.')

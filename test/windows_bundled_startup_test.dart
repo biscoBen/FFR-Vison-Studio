@@ -71,6 +71,7 @@ void main() {
         '_ffr_build_sprites.py',
         '_ffr_library.py',
         'ffbe_animation_index.json',
+        'ffbe_barrage_index.json',
       ]) {
         expect(
           File(p.join(paths.engineDir, 'tools', name)).readAsBytesSync(),

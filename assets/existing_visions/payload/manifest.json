@@ -1,10 +1,11 @@
 {
   "schema": 1,
   "files": {
-    "_ffr_animation_repair.py": "6cf8404743be8d0a6bfed5d690f9410345605c9f51ed45671f6184198e326a94",
-    "_ffr_build_sprites.py": "1ce40474d98e0211ad557d1b9a6b51c08a315e4d0feba69a4bb0cbb4f9305b45",
+    "_ffr_animation_repair.py": "8e9d3c93734c79cbb50406d950bf66f32b0da5fc0c7f86afc9e399edb3d830b9",
+    "_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
     "_ffr_existingvisions.py": "ed79bcee1c165d4bd223c7dd2ed96aac1494e82aa4215b9337a9f985214b9a97",
     "_ffr_library.py": "0e2e45f7ec9bbe7868e0829be57fa10f27f194905eac43b0a049833c5e9eb155",
-    "ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531"
+    "ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
+    "ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013"
   }
 }

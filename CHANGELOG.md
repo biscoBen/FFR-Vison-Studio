@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Add two animation experiments: player Steal keeps FFR's original routing instead of Studio's casting fallback;
+  Barrage on FFBE-backed visions imports four cycles of that vision's own attack poses and FFBE impact timing.
+  Preserve FFR's four hits, random targeting, skill mechanics, reaction colors and movement cleanup. Mark both as
+  Verified FFR/FFBE tests to identify the touched entries. Exact resemblance to Zidane's Steal and battle appearance
+  require in-game testing; the label tracks the implemented experiment, not a completed battle test.
 
 ## Published same-name and elemental target effects — 2026-10-01
 

@@ -1,5 +1,6 @@
 """Run the compatible engine sprite converter with recovered motion aliases."""
 from pathlib import Path
+import json
 import runpy
 import sys
 
@@ -33,3 +34,9 @@ sheets.steps_for = steps_for
 motions = converter['BATTLE_ANIMS']
 motions[:] = [(name, {'attack_B': 'atk2', 'attack_C': 'atk3'}.get(name, motion)) for name, motion in motions]
 converter['main']()
+trial = tools.parent / 'build/barrage-trial.json'
+spec_file = Path(sys.argv[4]) / 'battle/spec.json'
+if trial.is_file() and spec_file.is_file() and '--menu-only' not in sys.argv:
+    spec = json.loads(spec_file.read_bytes())
+    _ffr_animation_repair.add_barrage_animation(spec, json.loads(trial.read_bytes()), sys.argv[3])
+    spec_file.write_text(json.dumps(spec, indent=1), encoding='utf-8')

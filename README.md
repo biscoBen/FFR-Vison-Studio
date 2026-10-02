@@ -85,6 +85,12 @@ and extracts a fresh engine for startup testing. A cache miss uses the existing 
 and corrupt archives are rejected. GitHub can evict unused caches. For repeated local Windows startup tests, set
 `FFR_STUDIO_ENGINE_CACHE` to a persistent directory; a verified archive is retained there under its SHA-256 filename.
 
+For the Steal/Barrage animation comparison, give **Steal (Verified; FFR test)** to Zidane and an FFBE-backed vision
+such as A2, and **Barrage (Verified; FFBE test)** to the FFBE-backed vision. After updating Studio, rebuild/install
+the roster mod. Steal uses the original game route; Barrage uses the recipient's own FFBE attack poses four times,
+with FFR's existing four-hit mechanics. Compare sprite identity, movement, stealing feedback, four Barrage hits and
+return to idle. These are animation trials; Windows checks cannot verify their appearance in a running battle.
+
 If the cloud proxy blocks GitHub's artifact storage, the helper first reuses the exact run's authenticated published
 test ZIP when available, verifying both its release metadata and embedded build identity. No second build is needed.
 For runs without a usable published test ZIP, use `python3 scripts/cloud_windows_build.py --cloud-download`

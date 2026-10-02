@@ -17,7 +17,7 @@ MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json')
+RESOURCES = ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -101,6 +101,7 @@ def hook_builder(raw):
                '        stage("Preparing original sprites: " + u["en"])',
                '        _ffr_existingvisions.ensure_sprite_templates(u, LEGACY,',
                '            lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))',
+               '_ffr_animation_repair.prepare_barrage_trial(native_units + UNITS, ROOT, rows)',
                'def _native_skills(u):',
                '    nonlocal clones, post_objects, post_bytecode, post_frames, post_retime, authored_sequences, effect_jobs, built_effects',
                '    vid = u["id"]', '    d = u["donor"]',
