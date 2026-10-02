@@ -40,7 +40,16 @@ class Api {
   Future<Map<String, dynamic>> nativeModel(String id, String form) async =>
       (await get('/api/native/model/${Uri.encodeComponent(id)}/${Uri.encodeComponent(form)}')) as Map<String, dynamic>;
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
-  Future<void> saveTestingMaxMr(bool value) => put('/api/testing', {'schema': 1, 'maxMr': value});
+  Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
+  Future<void> saveTestingMaxMr(bool value) => _saveTestingFlag('maxMr', value);
+  Future<void> saveTestingPracticeBattle(bool value) => _saveTestingFlag('practiceBattle', value);
+  Future<void> _saveTestingFlag(String name, bool value) async {
+    final current = await get('/api/testing');
+    await put('/api/testing', {
+      'schema': 1, 'maxMr': current['maxMr'] == true,
+      'practiceBattle': current['practiceBattle'] == true, name: value,
+    });
+  }
   Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);
   Future<Map<String, dynamic>> addUnit(String ffbeId, {String? form, String? name}) async =>
       (await post('/api/spec/add', {'ffbeId': ffbeId, 'form': form, 'name': name, 'autoport': false})) as Map<String, dynamic>;

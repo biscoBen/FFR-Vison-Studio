@@ -55,6 +55,7 @@ class AppState extends ChangeNotifier {
   bool gameRunning = false;
   bool modInstalled = false;
   bool testingMaxMr = false;
+  bool testingPracticeBattle = false;
   bool dark = false; // the night edition of the guide
   final Map<String, List<String>> _anims = {};
   int backups = 0;
@@ -296,6 +297,8 @@ class AppState extends ChangeNotifier {
     }).toList();
     try { testingMaxMr = await api!.testingMaxMr(); }
     catch (e) { notice = 'Could not load vision testing settings: $e'; }
+    try { testingPracticeBattle = await api!.testingPracticeBattle(); }
+    catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
     try { partyCharacters = await api!.partyCharacters(); }
@@ -649,6 +652,13 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveTestingMaxMr(value);
     testingMaxMr = value; notifyListeners();
+  });
+
+  Future<void> setTestingPracticeBattle(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveTestingPracticeBattle(value);
+    testingPracticeBattle = value; notifyListeners();
   });
 
   Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance}) => _withRoster(() async {

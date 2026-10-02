@@ -60,10 +60,15 @@ Map<String, dynamic> originalFixture({int id = 13110, String name = 'Cloud'}) {
 class NativeApi extends ConfigApi {
   NativeApi(super.roster);
   bool maxMr = false;
+  bool practiceBattle = false;
   @override
   Future<bool> testingMaxMr() async => maxMr;
   @override
   Future<void> saveTestingMaxMr(bool value) async { maxMr = value; }
+  @override
+  Future<bool> testingPracticeBattle() async => practiceBattle;
+  @override
+  Future<void> saveTestingPracticeBattle(bool value) async { practiceBattle = value; }
   @override
   Future<Map<String, dynamic>> nativeVision(int id) async =>
       originalFixture(id: id, name: id == 13024 ? 'Tronn' : 'Cloud');
@@ -311,6 +316,7 @@ void main() {
     app.buildState = {'running': true};
     await expectLater(app.editNativeVision(13110, testAcquire: false), throwsStateError);
     await expectLater(app.setTestingMaxMr(true), throwsStateError);
+    await expectLater(app.setTestingPracticeBattle(true), throwsStateError);
     expect(api.roster.last['testAcquire'], isTrue);
   });
 
@@ -328,6 +334,25 @@ void main() {
     expect(api.maxMr, isFalse);
     final invalid = profile()..['testAcquire'] = true;
     expect(() => CharacterConfig.validate(invalid), throwsFormatException);
+  });
+
+  testWidgets('shop battle works without a roster and preserves MR testing', (tester) async {
+    api.roster.clear(); app.units.clear();
+    await show(tester);
+    final buildButton = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
+    expect(tester.widget<GuideButton>(buildButton).onPressed, isNull);
+    final control = find.byKey(const Key('testing-practice-battle'));
+    await tester.ensureVisible(control);
+    await tester.tap(control);
+    await wait(tester, () => app.testingPracticeBattle);
+    expect(api.practiceBattle, isTrue);
+    expect(tester.widget<GuideButton>(buildButton).onPressed, isNotNull);
+    expect(api.roster, isEmpty);
+    await app.setTestingMaxMr(true);
+    await tester.tap(control);
+    await wait(tester, () => !app.testingPracticeBattle);
+    expect(api.practiceBattle, isFalse);
+    expect(api.maxMr, isTrue);
   });
 
   testWidgets(

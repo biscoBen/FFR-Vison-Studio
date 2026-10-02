@@ -35,10 +35,33 @@ def game():
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
+def practice_game():
+    tables, _, unit = game()
+    woman = copy.deepcopy(tables[testing.COMPOSITE]['C01_ArijigokuEncount'])
+    woman.update(ArgList={'id': '39'}, encountGroupId=-1, OverwriteBattleParty=[],
+                 TransitionLocation={'mapId': -1}, ChoicesBranchEventList=[],
+                 ConsumeItemList=[], ChangeUnitJoinStatusList=[], IsForceUpdateProgress=False,
+                 IsSetForceAutoSave=False, EventSequence='native free-talk timeline')
+    tables[testing.SHOP_EVENT] = {testing.SHOP_WOMAN: woman, 'shopkeeper': {'shop': 1}}
+    tables[testing.COMPOSITE].update(copy.deepcopy(tables[testing.SHOP_EVENT]))
+    town = {'ID': 2000, 'battleStage': -1, 'doMovementEncount': False, 'startupEventList': ['story']}
+    tables[testing.MAP] = {'01Gra_20': town, 'other town': {'ID': 2001, 'battleStage': -1}}
+    tables[testing.MAP_COMPOSITE] = copy.deepcopy(tables[testing.MAP])
+    tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'] = {'plains': {'ID': 5, 'battleLevelList': ['native plains']}}
+    tables[testing.GROUP]['three bats'] = {
+        'ID': 3, 'UnitIdList': [2, 2, 2], 'locationIdList': [20, 6, 15], 'ap': 20,
+        'CanEscape': True, 'probabilityOfSuccessfulEscape': 50.0,
+        'isResultSkipOnWin': False, 'isResultSkipOnLose': False,
+        'battleEventId': -1, 'battleFinishEventId': '', 'battleFinishEscapeEventId': '',
+        'battleFinishLoseEventId': '', 'battleFinishTransition': {'mapId': -1, 'bDoAutoSave': False}}
+    tables[native.UNIT]['Steel Bat'] = {'ID': 2, 'Level': 1, 'Category': 'Enemy', 'MaxHitPoint': 68}
+    return tables, lambda rel: copy.deepcopy(tables[rel]), unit
+
+
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -127,6 +150,88 @@ class NativeTestingTests(unittest.TestCase):
             self.assertEqual(json.loads(spec.read_bytes()), [{'existing': True}])
             for bad in ({'maxMr': True}, {'schema': True, 'maxMr': True}, {'schema': 1, 'maxMr': 1}):
                 with self.assertRaises(Error): put(bad)
+
+    def test_practice_battle_preserves_dialogue_party_story_other_npcs_and_random_encounters(self):
+        original, rows, _ = practice_game(); before = copy.deepcopy(original)
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))
+            ops = testing.prepare({}, [], root, rows)
+            expected = testing.expected_edits(root, [], rows)
+        self.assertEqual(original, before)
+        self.assertEqual(set(ops), {testing.SHOP_EVENT, testing.COMPOSITE,
+                                   testing.MAP, testing.MAP_COMPOSITE, testing.GROUP})
+        self.assertEqual(len(expected), 4)
+        for rel, op in ops.items():
+            built = copy.deepcopy(original[rel])
+            for edit in op['set']: built[edit['row']] = testing.apply_fields(built[edit['row']], edit['set'])
+            for edit in op['add']: built[edit['row']] = testing.apply_fields(original[rel][edit['cloneFrom']], edit['set'])
+            testing.check_rows(original[rel], built, op)
+            if rel in (testing.SHOP_EVENT, testing.COMPOSITE):
+                self.assertEqual(built[testing.SHOP_WOMAN]['encountGroupId'], testing.PRACTICE_ID)
+                self.assertEqual(built['shopkeeper'], original[rel]['shopkeeper'])
+                self.assertEqual(built[testing.SHOP_WOMAN]['EventSequence'], 'native free-talk timeline')
+                self.assertEqual(built[testing.SHOP_WOMAN]['OverwriteBattleParty'], [])
+            elif rel in (testing.MAP, testing.MAP_COMPOSITE):
+                self.assertFalse(built['01Gra_20']['doMovementEncount'])
+                self.assertEqual(built['01Gra_20']['startupEventList'], ['story'])
+            else:
+                encounter = built[testing.PRACTICE]
+                self.assertEqual(encounter['UnitIdList'], [2, 2, 2])
+                self.assertEqual(encounter['locationIdList'], [20, 6, 15])
+                self.assertEqual(encounter['probabilityOfSuccessfulEscape'], 100.0)
+                self.assertEqual(encounter['battleFinishTransition'], {'mapId': -1, 'bDoAutoSave': False})
+                self.assertEqual(encounter['ap'], 20)
+        with tempfile.TemporaryDirectory() as root:
+            self.assertEqual(testing.prepare({}, [], root, rows), {})
+
+    def test_practice_battle_honors_mr_and_original_vision_acquisition_together(self):
+        original, rows, unit = practice_game(); unit['testAcquire'] = True
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({'schema': 1, 'maxMr': True, 'practiceBattle': True}))
+            ops = testing.prepare({}, [unit], root, rows)
+        self.assertEqual(ops[testing.GROUP]['add'][0]['set']['ap'], 4995)
+        self.assertEqual(len(ops[testing.GROUP]['set']), len(original[testing.GROUP]))
+        self.assertEqual(ops[testing.COMMON]['add'][0]['row'], testing.NAME)
+        self.assertEqual(ops[testing.COMPOSITE]['add'][0]['row'], testing.NAME)
+        self.assertEqual(ops[testing.COMPOSITE]['set'][0]['row'], testing.SHOP_WOMAN)
+
+    def test_practice_battle_rejects_changed_story_identity_and_incompatible_assets(self):
+        for change in ('story', 'map', 'stage', 'collision', 'monster', 'return'):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as root:
+                tables, rows, _ = practice_game()
+                if change == 'story': tables[testing.SHOP_EVENT][testing.SHOP_WOMAN]['OnFlagList'] = [123]
+                elif change == 'map': tables[testing.MAP]['01Gra_20']['ID'] = 2001
+                elif change == 'stage': tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'].clear()
+                elif change == 'collision': tables[testing.GROUP]['normal']['ID'] = testing.PRACTICE_ID
+                elif change == 'monster': tables[native.UNIT]['Steel Bat']['Level'] = 99
+                else: tables[testing.GROUP]['three bats']['battleFinishTransition']['mapId'] = 2001
+                path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
+                path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))
+                with self.assertRaises(ValueError): testing.prepare({}, [], root, rows)
+
+    def test_practice_only_route_creates_empty_roster_and_legacy_mr_updates_preserve_it(self):
+        routes = {}
+        class App:
+            def get(self, path):
+                def route(func): routes['get'] = func; return func
+                return route
+            def put(self, path):
+                def route(func): routes['put'] = func; return func
+                return route
+        class Error(Exception):
+            def __init__(self, code, detail): super().__init__(detail)
+        with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {'fastapi': SimpleNamespace(HTTPException=Error)}):
+            testing.register(App(), {'ROOT': root})
+            routes['put']({'schema': 1, 'maxMr': False, 'practiceBattle': True})
+            self.assertEqual(json.loads((Path(root) / 'mods/EstherTsukiko/units.json').read_bytes()), [])
+            routes['put']({'schema': 1, 'maxMr': True})
+            self.assertTrue(routes['get']()['practiceBattle'])
+            self.assertTrue(routes['get']()['maxMr'])
+            routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': False})
+            self.assertFalse(routes['get']()['practiceBattle'])
+            with self.assertRaises(Error): routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': 'true'})
 
 
 if __name__ == '__main__': unittest.main()

@@ -1,4 +1,4 @@
-"""Opt-in clean-save testing with original vision items and bounded native AP."""
+"""Opt-in original vision grants, bounded MR and a repeatable shop battle."""
 import copy
 import json
 import os
@@ -13,18 +13,27 @@ COMPOSITE = 'Event/TalkEvent/CDT_TalkEventData_Demo'
 COMMON = 'Event/BattleEvent/DT_BtlCmnEventDataBundle'
 NAME = 'Studio_TestNativeVisions'
 CONFIG = 'mods/EstherTsukiko/testing.json'
+SHOP_EVENT = 'Event/TalkEvent/FreeTalk/01Gra/DT_TalkEventData_Town_01Gra_20'
+SHOP_WOMAN = 'DT_Town_010Gra_20_1170_1'
+MAP = 'Map/MapData/DT_MapData_01Gra'
+MAP_COMPOSITE = 'Map/CDT_MapData_Demo'
+PRACTICE = 'Studio_PracticeBattle'
+PRACTICE_ID = 29990
 
 
 def settings(root):
     path = Path(root) / CONFIG
-    return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {'schema': 1, 'maxMr': False}
+    return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
+        'schema': 1, 'maxMr': False, 'practiceBattle': False}
 
 
 def validate_settings(value):
-    if (not isinstance(value, dict) or set(value) != {'schema', 'maxMr'}
-            or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool):
+    if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
+            or set(value) - {'schema', 'maxMr', 'practiceBattle'}
+            or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
+            or type(value.get('practiceBattle', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
-    return value
+    return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False)}
 
 
 def reward(rows):
@@ -91,13 +100,59 @@ def prepare(tables, units, root, rows):
         table(COMMON)['add'].append({'row': NAME, 'cloneFrom': key, 'set': {
             'eventDataList[0].playSetting.Condition': event['playSetting']['Condition'],
             'eventDataList[0].playSetting.EventList[0].EventId': NAME}})
-    if settings(root)['maxMr']:
-        value = reward(rows)
+    controls = settings(root)
+    value = reward(rows) if controls['maxMr'] else None
+    if value is not None:
         for key, original in rows(GROUP).items():
             if type(original.get('ap')) is not int:
                 raise ValueError('A native battle MR reward is missing.')
             table(GROUP)['set'].append({'row': key, 'set': {'ap': value}})
+    if controls['practiceBattle']:
+        prepare_practice(table, rows, value)
     return tables
+
+
+def prepare_practice(table, rows, ap):
+    """Keep the woman's dialogue and party; launch a private, story-free encounter."""
+    parent = rows(SHOP_EVENT); combined = rows(COMPOSITE)
+    woman = parent.get(SHOP_WOMAN)
+    if (not woman or combined.get(SHOP_WOMAN) != woman or woman.get('ArgList') != {'id': '39'}
+            or woman.get('encountGroupId') != -1 or woman.get('OverwriteBattleParty')
+            or any(woman.get(k) for k in ('OnFlagList', 'OffFlagList', 'FlagList', 'ProgressList',
+                                        'ContinuousEventList', 'ChoicesBranchEventList', 'ObtainItemList',
+                                        'ConsumeItemList', 'InitUnitDataList', 'ChangeUnitJoinStatusList'))
+            or woman.get('IsSetAutoSave') or woman.get('IsSetForceAutoSave')
+            or woman.get('IsForceUpdateProgress') or woman['TransitionLocation']['mapId'] != -1):
+        raise ValueError('The Mitra Young Woman interaction changed; no practice battle was built.')
+    maps = rows(MAP); map_combined = rows(MAP_COMPOSITE)
+    town = maps.get('01Gra_20')
+    if (not town or town.get('ID') != 2000 or map_combined.get('01Gra_20') != town
+            or town.get('doMovementEncount') or town.get('battleStage') != -1
+            or not any(v.get('ID') == 5 and v.get('battleLevelList')
+                       for v in rows('Asset/Battle/Stage/CDT_BtlStageAsset_Demo').values())):
+        raise ValueError('The Mitra map or native plains battle stage is unavailable.')
+    groups = rows(GROUP)
+    donor = next(((k, v) for k, v in groups.items() if v.get('ID') == 3), None)
+    if (PRACTICE in groups or any(v.get('ID') == PRACTICE_ID for v in groups.values()) or not donor
+            or donor[1].get('UnitIdList') != [2, 2, 2] or len(donor[1].get('locationIdList', [])) != 3
+            or donor[1].get('battleEventId') != -1 or donor[1].get('battleFinishEventId')
+            or donor[1].get('battleFinishEscapeEventId') or donor[1].get('battleFinishLoseEventId')
+            or donor[1]['battleFinishTransition']['mapId'] != -1
+            or donor[1]['battleFinishTransition'].get('bDoAutoSave')):
+        raise ValueError('The native three-enemy encounter template changed.')
+    enemies = [v for v in rows('Unit/DT_UnitParameter').values() if v.get('ID') == 2]
+    if len(enemies) != 1 or enemies[0].get('Category') != 'Enemy' or enemies[0].get('Level') != 1:
+        raise ValueError('The native level-1 Steel Bat is unavailable.')
+    for rel in (SHOP_EVENT, COMPOSITE):
+        table(rel)['set'].append({'row': SHOP_WOMAN, 'set': {'encountGroupId': PRACTICE_ID}})
+    # Mitra normally has no battle backdrop. Supply the demo's existing plains
+    # stage without enabling random encounters or changing the shop/map actors.
+    for rel in (MAP, MAP_COMPOSITE):
+        table(rel)['set'].append({'row': '01Gra_20', 'set': {'battleStage': 5}})
+    table(GROUP)['add'].append({'row': PRACTICE, 'cloneFrom': donor[0], 'set': {
+        'ID': PRACTICE_ID, 'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
+        'isResultSkipOnWin': False, 'isResultSkipOnLose': False,
+        'ap': donor[1]['ap'] if ap is None else ap}})
 
 
 def expected_edits(root, units, rows):
@@ -131,7 +186,7 @@ def check_rows(original, built, operation):
     for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     for e in operation['add']: expected[e['row']] = apply_fields(original[e['cloneFrom']], e['set'])
     if built != expected:
-        raise ValueError('Native vision testing changed an unrelated row or lost its grant/reward settings.')
+        raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings.')
 
 
 def verify(root, tool, usmap):
@@ -145,7 +200,7 @@ def verify(root, tool, usmap):
         subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
-    if operations: print('OK: original vision acquisition and bounded MR testing tables verified')
+    if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')
 
 
 def register(app, env):
@@ -157,12 +212,14 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
+            if 'practiceBattle' not in value:
+                value = dict(value, practiceBattle=settings(env['ROOT'])['practiceBattle'])
             value = validate_settings(value)
             # Same build-state lock used by the roster API, when available.
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if value['maxMr']:
+            if value['maxMr'] or value['practiceBattle']:
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'

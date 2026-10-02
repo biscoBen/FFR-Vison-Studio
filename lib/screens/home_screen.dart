@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr;
+    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -62,6 +62,15 @@ class HomeScreen extends StatelessWidget {
                     ? 'Close the game to install. You can keep editing meanwhile.'
                     : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity. Party replacements apply during battles.', style: Guide.text()),
                 const SizedBox(height: 14),
+                SwitchListTile(
+                  key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
+                  title: Text('Shop practice battle', style: Guide.text()),
+                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle with three level-1 Steel Bats after her dialogue. Install after switching.', style: Guide.small()),
+                  value: app.testingPracticeBattle,
+                  onChanged: app.building || app.api == null ? null : (value) async {
+                    try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
                 SwitchListTile(
                   key: const Key('testing-max-mr'), contentPadding: EdgeInsets.zero,
                   title: Text('One-battle MR for testing', style: Guide.text()),

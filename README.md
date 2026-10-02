@@ -138,7 +138,12 @@ opponent. This bound covers the largest total of the game's native MR rank costs
 use an overflow-sized reward. Equip the visions first. Scripted battles that suppress rewards keep that behavior;
 awakening ranks and their materials are unchanged. Both controls default off and persist across Studio restarts.
 
-Use a clean save, do not save with testing active, then disable both controls, reinstall and reload the clean save.
+Enable **Shop practice battle**, then install and restart the game. Talk to **Young Woman** in Mitra's item shop
+to fight three level-1 Steel Bats after her normal dialogue, using your current party and a native plains backdrop.
+Escape is guaranteed. The fight uses the one-battle MR reward when that setting is enabled. This switch defaults off;
+disable and reinstall to restore her original interaction. Battle entry, return and repeat use need in-game confirmation.
+
+Use a clean save, do not save with testing active, then disable the testing controls, reinstall and reload the clean save.
 Disabling does not remove items or MR already acquired in the running session or a saved game. Table serialization
 and automated checks are verified; acquisition timing and MR progression still need confirmation in a running game.
 

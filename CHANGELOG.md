@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Optional **Shop practice battle**: Young Woman in Mitra's item shop starts a repeatable fight with three level-1
+  Steel Bats after her dialogue. Uses the current party and a native plains backdrop, with guaranteed escape and
+  the existing one-battle MR setting when enabled. Disable and reinstall to restore her original interaction.
+  Shop inventory, story flags, random encounters and pending ability-hiding decisions are preserved.
+  Actual battle entry, return to the shop and repeat interaction require in-game confirmation.
 
 ## Published original vision and MR testing — 2026-10-02
 
