@@ -6,6 +6,7 @@ import '../design/widgets.dart';
 import '../state/app_state.dart';
 import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
+import 'party_portrait.dart';
 import 'remove_unit_dialog.dart';
 import 'unit_anim_pane.dart';
 
@@ -33,7 +34,7 @@ class PartyCharacterScreen extends StatelessWidget {
                 else
                   Padding(
                     padding: const EdgeInsets.all(30),
-                    child: Icon(Icons.person, size: 96, color: Guide.inkSoft),
+                    child: PartyPortrait(characterId: unit['id'] as int, width: 96, height: 96),
                   ),
                 const SizedBox(height: 16),
                 Text(

@@ -65,6 +65,7 @@ flutter:
     - assets/fonts/OFL.txt
     - assets/brand/
     - assets/native_portraits/
+    - assets/party_portraits/
     - assets/existing_visions/
     - assets/existing_visions/payload/
     - assets/crystal_fina/

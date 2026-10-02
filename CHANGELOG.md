@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Fix party replacements failing at install because the engine's vision loader added an empty abilities field.
+  Keep party identity and appearance-only validation intact, and cover the actual saved-roster loader in regression tests.
+- Show bundled classic FFBE portraits for all eight original party characters on the main page and character page.
+  Replacement models retain their own previews. Portraits require no sprite downloads.
 
 ## Published battle-only party appearances — 2026-10-02
 

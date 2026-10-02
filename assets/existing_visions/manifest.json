@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "62d9e62a5e10ce1c89de4baaabc2a22bbe552c416be53282ebb004809d001b0a",
+    "install_existing_visions.py": "2b6d5b84264db513742c152d0dfb1a7d48440ebb8a95dee9298b34c20b31a1b6",
     "payload/_ffr_animation_repair.py": "6b6a6ddeeb28436f663c01d02cda8e92b9bd034c4f10a51d647f898da5167fa3",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
     "payload/_ffr_existingvisions.py": "bfeb7797cd970106c17b6c2ffa58b2f4005057fba052e49dd070963f82320cfd",

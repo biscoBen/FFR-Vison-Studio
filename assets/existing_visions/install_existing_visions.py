@@ -67,6 +67,11 @@ def transact(changes):
 
 def hook_builder(raw):
     text = raw.decode('utf-8-sig'); tree = ast.parse(text)
+    loader, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'load_units']
+    skill_conversion, = [n for n in ast.walk(loader) if isinstance(n, ast.Assign)
+                         and ast.unparse(n.targets[0]) == "u['skills']"]
+    if skill_conversion.lineno != skill_conversion.end_lineno:
+        raise RuntimeError('Unsupported roster skill conversion layout.')
     main, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main']
     loops = [n for n in main.body if isinstance(n, ast.For) and ast.unparse(n.target) == 'u' and ast.unparse(n.iter) == 'UNITS'
              and any(isinstance(a, ast.Assign) and ast.unparse(a.targets[0]) == 'skill_rows' for a in n.body)]
@@ -119,6 +124,11 @@ def hook_builder(raw):
                    '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
+    # Party specs describe only appearance. The legacy vision loader adds
+    # skills={} even to untouched party entries, violating that sparse contract.
+    index = skill_conversion.lineno - 1
+    line = lines[index]; indent = line[:len(line) - len(line.lstrip())]
+    lines[index] = indent + "if u.get('party') is None:" + nl + '    ' + line
     argument = sprite_call.args[0]
     if argument.lineno != argument.end_lineno: raise RuntimeError('Unsupported sprite converter call layout.')
     lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),

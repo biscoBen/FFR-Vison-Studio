@@ -1,12 +1,14 @@
 """Party-only replacements: identity, exact hard references and output isolation."""
 import copy
+import ast
+import hashlib
 import json
 from pathlib import Path
 import tempfile
 import unittest
 from types import SimpleNamespace
 from unittest import mock
-from test_existing_visions import party, animation
+from test_existing_visions import ROOT, party, animation, installer, fina_installer
 
 
 def original_view():
@@ -56,6 +58,37 @@ def unit(id=1001, form='401001207'):
 
 
 class PartyCharacterTests(unittest.TestCase):
+    def test_saved_roster_loader_keeps_party_specs_sparse_and_converts_vision_skills(self):
+        source = (ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()
+        patched = installer.hook_builder(fina_installer.hook_builder(source))
+        loader = next(n for n in ast.parse(patched).body if isinstance(n, ast.FunctionDef) and n.name == 'load_units')
+        rows = lambda rel: {c[1]: {'Ss6Project': c[3]} for c in party.CHARACTERS}
+        originals = [party.snapshot(c[0], rows) for c in party.CHARACTERS]
+        replacements = [unit(c[0]) for c in party.CHARACTERS]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'units.json'
+            env = {'os': __import__('os'), 'json': json, 'SPEC_JSON': str(path), 'UNITS': []}
+            exec(compile(ast.Module(body=[loader], type_ignores=[]), 'installed_roster_loader', 'exec'), env)
+            for selected in (originals, replacements):
+                vision = {'id': 13501, 'skills': {'446100': {'en': 'Custom'}}}
+                saved = [*selected, vision]; path.write_text(json.dumps(saved))
+                loaded = env['load_units']()
+                self.assertEqual(loaded[:-1], selected)
+                self.assertEqual(loaded[-1]['skills'], {446100: {'en': 'Custom'}})
+                actual, others = party.split(loaded, rows)
+                self.assertEqual(actual, selected); self.assertEqual(others, [loaded[-1]])
+                self.assertEqual(json.loads(path.read_text()), saved)
+
+    def test_original_party_portraits_cover_all_eight_with_verified_png_bytes(self):
+        root = ROOT / 'assets/party_portraits'
+        manifest = json.loads((root / 'manifest.json').read_bytes())
+        self.assertEqual({(p['characterId'], p['characterName']) for p in manifest['portraits']},
+                         {(c[0], c[2]) for c in party.CHARACTERS})
+        for p in manifest['portraits']:
+            data = (root / p['file']).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), p['sha256'])
+            self.assertTrue(data.startswith(b'\x89PNG\r\n\x1a\n'))
+
     def test_all_eight_originals_keep_identity_and_do_not_enter_vision_builder(self):
         rows = lambda rel: {c[1]: {'Ss6Project': c[3]} for c in party.CHARACTERS}
         catalog = [party.snapshot(c[0], rows) for c in party.CHARACTERS]

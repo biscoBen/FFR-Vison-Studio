@@ -1,5 +1,6 @@
 """Validate synthetic party hard references against the checksum-pinned engine."""
 import hashlib
+import ast
 import json
 import os
 from pathlib import Path
@@ -9,11 +10,30 @@ import unittest
 import zipfile
 from test_engine_particle_contract import ENGINE_SHA, bundled_assembly
 from test_party_characters import original_view, unit, party
+from test_existing_visions import installer, fina_installer
 
 
 @unittest.skipUnless(os.name == 'nt' and os.environ.get('GITHUB_ACTIONS') == 'true',
                      'Requires Windows CI and its checksum-verified engine cache.')
 class EnginePartyContractTests(unittest.TestCase):
+    def test_actual_engine_loader_preserves_saved_party_identity(self):
+        archive = Path(os.environ['RUNNER_TEMP']) / 'ffr-studio-engine-cache' / (ENGINE_SHA + '.zip')
+        with archive.open('rb') as stream:
+            self.assertEqual(hashlib.file_digest(stream, 'sha256').hexdigest(), ENGINE_SHA)
+        with zipfile.ZipFile(archive) as bundle: source = bundle.read('tools/make_vision_mod.py')
+        patched = installer.hook_builder(fina_installer.hook_builder(source))
+        loader = next(n for n in ast.parse(patched).body if isinstance(n, ast.FunctionDef) and n.name == 'load_units')
+        rows = lambda rel: {c[1]: {'Ss6Project': c[3]} for c in party.CHARACTERS}
+        with tempfile.TemporaryDirectory() as directory:
+            spec = Path(directory) / 'units.json'
+            selected = [unit(c[0]) for c in party.CHARACTERS]
+            spec.write_text(json.dumps(selected))
+            env = {'os': os, 'json': json, 'SPEC_JSON': str(spec), 'UNITS': []}
+            exec(compile(ast.Module(body=[loader], type_ignores=[]), 'actual_engine_roster_loader', 'exec'), env)
+            loaded = env['load_units']()
+            self.assertEqual(party.split(loaded, rows), (selected, []))
+            self.assertEqual(json.loads(spec.read_text()), selected)
+
     def test_real_serializer_resolves_private_models_and_row_specific_material(self):
         archive = Path(os.environ['RUNNER_TEMP']) / 'ffr-studio-engine-cache' / (ENGINE_SHA + '.zip')
         with archive.open('rb') as stream:

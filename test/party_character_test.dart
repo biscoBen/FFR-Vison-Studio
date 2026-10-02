@@ -6,6 +6,7 @@ import 'package:ffr_vision_studio/services/crystal_fina.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
+import 'package:ffr_vision_studio/screens/party_portrait.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -146,12 +147,16 @@ void main() {
       expect(find.byKey(const Key('party-characters')), findsOneWidget);
       expect(find.text('RAIN'), findsOneWidget);
       expect(find.text('Battle appearance'), findsOneWidget);
+      expect(find.byType(PartyPortrait), findsOneWidget);
+      expect(tester.widget<Image>(find.descendant(of: find.byType(PartyPortrait), matching: find.byType(Image))).image,
+        const AssetImage('assets/party_portraits/100000107.png'));
       app.select('party_1001');
       await tester.pumpWidget(shell(const UnitScreen()));
       await tester.pump();
       expect(find.text('Change battle model'), findsOneWidget);
       expect(find.text('Revert to original'), findsOneWidget);
       expect(find.text('MR'), findsNothing);
+      expect(find.byType(PartyPortrait), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

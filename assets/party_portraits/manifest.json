@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "source": {
+    "description": "Original Studio FFBE icon pack, classic forms selected using its bundled catalog. PNG bytes are unchanged.",
+    "packSha256": "64106794ffe960cb723aab0fa91c67302dc8554a845e40a9ac1500f5f31e6280",
+    "catalogSha256": "a82ddaa16cc8dcede9e85fc0c8f1e12ae994acf5f38f2832b5b9e0142b43a9ea"
+  },
+  "portraits": [
+    {
+      "characterId": 1001,
+      "characterName": "Rain",
+      "ffbeUnitId": "100000102",
+      "ffbeName": "Rain",
+      "form": "100000107",
+      "file": "100000107.png",
+      "sha256": "a3061eab2fbf7622e34d6d0ab1d30d25b8d8a0df41e7cfe7219f64a89d8b0a9f"
+    },
+    {
+      "characterId": 1002,
+      "characterName": "Lasswell",
+      "ffbeUnitId": "100000202",
+      "ffbeName": "Lasswell",
+      "form": "100000207",
+      "file": "100000207.png",
+      "sha256": "284c84f4858b1d74afc29bc44246ab9260ed51b4fdfe2e837de9d83b54bc5a3d"
+    },
+    {
+      "characterId": 1003,
+      "characterName": "Fina",
+      "ffbeUnitId": "100000302",
+      "ffbeName": "Fina",
+      "form": "100000307",
+      "file": "100000307.png",
+      "sha256": "2cfde9ee858f61c1aed896a4d2dd7fe625a33fe5e0ad7445c3b03527e8c2792b"
+    },
+    {
+      "characterId": 1004,
+      "characterName": "Lid",
+      "ffbeUnitId": "100000503",
+      "ffbeName": "Lid",
+      "form": "100000507",
+      "file": "100000507.png",
+      "sha256": "ac69b97afdf9595906925bd8a32441e221de3c686a6891d647036a0a2ed942d0"
+    },
+    {
+      "characterId": 1005,
+      "characterName": "Nichol",
+      "ffbeUnitId": "100000403",
+      "ffbeName": "Nichol",
+      "form": "100000407",
+      "file": "100000407.png",
+      "sha256": "7385b40344dcdb5ff2a0699c76da407c360e0c092a90d1f463ec6e6552f11931"
+    },
+    {
+      "characterId": 1006,
+      "characterName": "Dark Fina",
+      "ffbeUnitId": "100000315",
+      "ffbeName": "Dark Fina",
+      "form": "100000317",
+      "file": "100000317.png",
+      "sha256": "9889e3579984cfeddea4ef97a5bea2af37c0e3a4594c53d0807afbf783e1f035"
+    },
+    {
+      "characterId": 1007,
+      "characterName": "Jake",
+      "ffbeUnitId": "100000703",
+      "ffbeName": "Jake",
+      "form": "100000707",
+      "file": "100000707.png",
+      "sha256": "9decbbe5bfc6a45a57bfb9c53a793e8fb45b5a603ecdbb8f206c97bfa8f2ef2b"
+    },
+    {
+      "characterId": 1008,
+      "characterName": "Sakura",
+      "ffbeUnitId": "100000603",
+      "ffbeName": "Sakura",
+      "form": "100000607",
+      "file": "100000607.png",
+      "sha256": "9fff65d3936641d99a212258847fb4ca885c95e12eebc45b8a655e59795ad665"
+    }
+  ]
+}

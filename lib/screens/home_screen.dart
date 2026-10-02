@@ -10,6 +10,7 @@ import 'build_status.dart';
 import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
 import 'native_portrait.dart';
+import 'party_portrait.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -153,7 +154,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Frame(padding: 2, child: party && u['ffbe'] == null
-                ? SizedBox(width: 72, height: 72, child: Icon(Icons.person, size: 48, color: Guide.inkSoft))
+                ? PartyPortrait(characterId: u['id'] as int, width: 72, height: 72)
                 : native && u['ffbe'] == null
                 ? NativePortrait(visionId: u['id'] as int, fallbackUrl: app.api!.nativeIcon(u['id'] as int), width: 72, height: 72)
                 : PixelImage(app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
