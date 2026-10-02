@@ -751,6 +751,14 @@ def effect_imports(asset, references):
         include(reference['index'])
 
 
+def patch_constants(value):
+    """Remove seqdump's type annotations from bytecode field replacements."""
+    if isinstance(value, dict):
+        return {key: patch_constants(child) for key, child in value.items() if key != '$struct'}
+    if isinstance(value, list): return [patch_constants(child) for child in value]
+    return copy.deepcopy(value)
+
+
 def build_effect_sequence(job, out, work, command, usmap, run):
     """Author normal motions/hits with imported native target effect references."""
     import ffbe_resonance
@@ -759,7 +767,10 @@ def build_effect_sequence(job, out, work, command, usmap, run):
     run([*command, 'tojson', str(path), str(dump), '--usmap', usmap])
     asset = json.loads(dump.read_text(encoding='utf-8-sig'))
     effect_imports(asset, job['effectImports'])
-    edits = ffbe_resonance.author(asset, job['plan'])
+    # $struct belongs to seqdump's description, not the cooked struct's
+    # fields. Keep actual constants and the tojson asset metadata intact.
+    edits = [{**edit, 'set': patch_constants(edit['set'])}
+             for edit in ffbe_resonance.author(asset, job['plan'])]
     dump.write_text(json.dumps(asset, ensure_ascii=False), encoding='utf-8')
     patch = dump.with_name(path.stem + '-effects-events.json')
     patch.write_text(json.dumps({'legacyRoot': str(out), 'outRoot': str(out),

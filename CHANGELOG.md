@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Fix roster builds failing while writing borrowed skill effects (including Banishga) because `seqdump`'s `$struct`
+  annotations were passed to the engine as real Niagara fields. Remove only those annotations from bytecode patches,
+  including nested structs/arrays; preserve effect settings/imports, skill mechanics, reaction colors and saved rosters.
+  Add a regression reproducing the rejected patch. Full installation and battle appearance need an in-game retry.
 
 ## Published Steal and Barrage animation trials — 2026-10-01
 

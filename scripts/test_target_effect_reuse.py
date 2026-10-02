@@ -134,6 +134,43 @@ class TargetEffectReuseTests(unittest.TestCase):
         self.assertEqual(cooked['Imports'][1]['ClassName'], 'NiagaraSystem')
         self.assertTrue(any(e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for e in patch['bytecode']))
 
+    def test_seqdump_struct_annotations_do_not_reach_the_engine_patch(self):
+        # seqdump describes struct types; the patcher's struct replacement
+        # accepts only real fields, including fields inside nested arrays.
+        data = next(e['Effect_NiagaraData'] for _, _, e in self.events if 'Effect_NiagaraData' in e)
+        data.update({'$struct': 'BTL_SEQUENCER_NIAGARA_DATA',
+                     'Scale': {'$struct': 'Vector', 'X': 1.5, 'Y': 2.0, 'Z': 0.5},
+                     'userParameterDatas': [{'$struct': 'BTL_NIAGARA_USER_PARAMETER_DATA',
+                                              'ParameterName': 'Power', 'Value': 3.0}]})
+        before = copy.deepcopy(self.events)
+        self.repair(); job, = self.jobs; patched = []
+        def check_fields(value):
+            if isinstance(value, dict):
+                self.assertNotIn('$struct', value, "ffr-dt rejects '$struct' as a field")
+                for child in value.values(): check_fields(child)
+            elif isinstance(value, list):
+                for child in value: check_fields(child)
+        def run(args):
+            if 'tojson' in args:
+                Path(args[3]).write_text(json.dumps({'Imports': [], 'NameMap': []}))
+            elif 'patch' in args:
+                patch = json.loads(Path(args[2]).read_bytes())
+                check_fields(patch['bytecode'])
+                patched.extend(e['set'] for e in patch['bytecode'])
+            elif 'seqdump' in args:
+                particle = next(e for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
+                Path(args[3]).write_text(json.dumps({'10:particle': particle}))
+        with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}), mock.patch.object(resonance, 'author',
+                side_effect=lambda asset, plan: [{'export': '10', 'set': e['set']} for e in plan['events']]):
+            motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
+        particle = next(e['Effect_NiagaraData'] for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        self.assertEqual(particle, {'niagaraAsset': 'import:NS_EF_SKL220020_PosAll',
+                         'scale': {'x': 1, 'y': 1, 'z': 1},
+                         'Scale': {'X': 1.5, 'Y': 2.0, 'Z': 0.5},
+                         'userParameterDatas': [{'ParameterName': 'Power', 'Value': 3.0}]})
+        self.assertEqual(self.events, before)
+        self.assertEqual(len([e for e in patched if e['EventType'] == 'OtherReaction']), 4)
+
     def test_written_timeline_missing_the_particle_reference_stops_mod_packing(self):
         self.repair(); job, = self.jobs
         def run(args):
