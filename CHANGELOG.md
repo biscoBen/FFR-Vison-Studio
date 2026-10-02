@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published visible Steal and monster Needle trials — 2026-10-01
+
+Changes in [`0c47de3`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0c47de34d93b1551f1f9845949627bc3087a1c8f),
+[test package 36966862412](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36966862412).
+
 - Make the Steal trial visible: the receiving vision approaches, uses its ready pose, resolves one original item theft,
   then returns to position/idle. Borrow ordinary monster Needle's shared Stab/Needle target effects for 1,000 and 10,000
   Needles, preserving their original one-hit fixed damage. Mark the two monster experiments as Verified FFR mob tests.
@@ -20,6 +27,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Battle appearance, successful theft and monster-particle placement need in-game testing after rebuilding/installing
   the roster mod. Steal uses an explicit presentation rather than a recovered Zidane-specific timeline; Needles use
   the available ordinary monster Needle effects, not absent dedicated 1,000/10,000 sequences.
+- Windows passed analysis, 142 Flutter tests, separate real engine startup, 148 Python tests including the actual
+  particle patcher, both bundles, 12 launcher/updater checks, 10 vision-import checks and compilation. Reused the single
+  push run and verified the published ZIP checksum, exact commit/provenance and all packaged extension files. CI took
+  4m40s with 7m28s of summed job execution; compilation took 2m13s and Flutter setup 1m40s on the compile runner.
 
 ## Published particle-reference installation fix — 2026-10-01
 
