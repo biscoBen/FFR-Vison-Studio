@@ -183,6 +183,45 @@ class TargetEffectReuseTests(unittest.TestCase):
             self.repair()
         self.assertEqual(self.jobs, [])
 
+    def test_valid_common_particle_omitted_from_ui_index_is_retained(self):
+        common = '/Game/Effect/01_Common/SharedImpact'
+        self.imports[0]['ObjectName'] = common
+        self.imports[1]['ObjectName'] = 'SharedImpact'
+        next(e for _, _, e in self.events if 'Effect_NiagaraData' in e)['Effect_NiagaraData']['niagaraAsset'] = 'import:SharedImpact'
+        self.assertEqual(self.repair(), [250020])
+        particle = next(e['set']['Effect_NiagaraData']['niagaraAsset'] for e in self.jobs[0]['plan']['events']
+                        if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        self.assertEqual(particle, {'path': common + '.SharedImpact', 'class': 'NiagaraSystem'})
+
+    def test_all_failed_effects_are_reported_before_any_repair_is_staged(self):
+        self.game['Skill/DT_SkillData']['second'] = {**copy.deepcopy(self.skill), 'ID': 250030}
+        self.catalog['skills'].append({**copy.deepcopy(self.catalog['skills'][0]), 'id': 250030})
+        (self.root / 'data/ffr_catalog.json').write_text(json.dumps(self.catalog))
+        self.imports[0]['ObjectName'] = '/Game/Chara/summon/OwnerBody'
+        with self.assertRaisesRegex(ValueError, r'2 selected skills') as error: self.repair([250020, 250030])
+        self.assertIn('250020', str(error.exception)); self.assertIn('250030', str(error.exception))
+        self.assertIn('/Game/Chara/summon/OwnerBody', str(error.exception))
+        self.assertEqual((self.tables, self.clones, self.jobs), ({}, [], []))
+        report = json.loads((self.root / 'build/animation-repair-report.json').read_bytes())
+        self.assertEqual({e['id'] for e in report['skills']}, {250020, 250030})
+
+    def test_original_vision_reaction_rows_are_protected_even_when_off_roster(self):
+        self.game['Item/Vision/DT_VisionAwakeningMasteryData'] = {'original': {
+            'ID': 13080, 'detailData': [{'parameterType': 'eVisionMasteryParameterType::ActiveSkill', 'params': [250020, -1]}]}}
+        self.repair()
+        self.assertNotIn('Battle/Sequencer/DT_BtlHitEffectData', self.tables)
+        self.assertEqual(self.game['Battle/Sequencer/DT_BtlHitEffectData']['recipient']['NormalEffectID'], -1)
+        record = json.loads((self.root / 'build/animation-repair-report.json').read_bytes())['skills'][0]
+        self.assertTrue(record['originalReactionRetained']); self.assertEqual(record['status'], 'effect_reuse')
+
+    def test_donor_dump_is_reused_within_one_batch_but_not_across_builds(self):
+        self.game['Skill/DT_SkillData']['second'] = {**copy.deepcopy(self.skill), 'ID': 250030}
+        self.catalog['skills'].append({**copy.deepcopy(self.catalog['skills'][0]), 'id': 250030})
+        (self.root / 'data/ffr_catalog.json').write_text(json.dumps(self.catalog))
+        self.support['dumps'] = mock.Mock(wraps=self.support['dumps'])
+        self.repair([250020, 250030]); self.assertEqual(self.support['dumps'].call_count, 1)
+
+
     def test_missing_or_character_imports_fail_without_changing_installed_data(self):
         for change in ('missing', 'character'):
             with self.subTest(change=change):

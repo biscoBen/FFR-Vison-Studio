@@ -110,5 +110,12 @@ class ReactionVerificationTests(unittest.TestCase):
                 self.save(self.root / 'mods/EstherTsukiko/units.json', units); self.save(self.report_path, report)
                 self.assertEqual(self.verify()[0], 1)
 
+    def test_report_cannot_authorize_shared_original_vision_reaction_edits(self):
+        self.save(self.root / 'extracted/rows/Item/Vision/DT_VisionAwakeningMasteryData.json', {'rows': {
+            'Original vision': {'ID': 13118, 'detailData': [
+                {'parameterType': 'ActiveSkill', 'params': [sid, -1]} for sid in self.targets]}}})
+        code, output = self.verify()
+        self.assertEqual(code, 1); self.assertIn('UNEXPECTED', output)
+
 
 if __name__ == '__main__': unittest.main()

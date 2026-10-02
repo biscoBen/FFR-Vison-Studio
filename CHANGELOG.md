@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Keep inherited abilities out of custom-animation repair when opening original visions, including unchanged Aileen.
+  Explicit additions and replaced FFBE models still receive repair. Preserve original visions' shared impact rows.
+- Validate donor Niagara imports against their actual class/package instead of the filtered UI effects index, avoiding
+  false rejection of valid common particles. Audit all selected mapped effects before staging repairs; report every
+  failure together with its skill, donor and exact bad package. Decode each shared donor once per build.
+- Add regressions for all 26 original vision IDs, new grants, model replacement, off-roster shared reactions, common
+  particles and batch failures. Actual Crust Driver/Needles appearance still needs the user's extracted game references;
+  keep the current tested Steal/Barrage/Needles presentations while collecting those references.
 
 ## Published borrowed-effect table verification fix — 2026-10-01
 

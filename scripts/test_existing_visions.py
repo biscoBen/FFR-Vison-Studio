@@ -74,6 +74,33 @@ def sprite_fixture(legacy, folder, vid):
 
 
 class NativeVisionTests(unittest.TestCase):
+    def test_all_original_vision_kits_bypass_custom_animation_repair(self):
+        # Opening any of the 26 originals, changing stats/passives, or moving an
+        # inherited skill between ranks must not require its donor particles.
+        for vid in CATALOG_IDS:
+            with self.subTest(vid=vid), tempfile.TemporaryDirectory() as temp:
+                _, rows, unit = fixture(vid)
+                unit['stats']['Attack'] += 1
+                unit['synchro'][1].append(['PassiveSkill', 999, -1])
+                tables = {}; objects = []; clones = []; jobs = []
+                native.prepare(tables, objects, [unit], temp, rows)
+                before = copy.deepcopy(tables)
+                with mock.patch.object(animation, 'NativeAnimations', side_effect=AssertionError('Inherited kit entered repair')):
+                    self.assertEqual(animation.prepare_sequences(tables, clones, jobs, [unit], temp, rows,
+                                     mock.Mock(side_effect=AssertionError('Unnecessary extraction')), {'dumps': mock.Mock()}), [])
+                self.assertEqual(tables, before); self.assertEqual(clones, []); self.assertEqual(jobs, [])
+                report = json.loads((Path(temp) / 'build/animation-repair-report.json').read_bytes())
+                self.assertIn({'id': 446000, 'vision': vid, 'status': 'preserved_native'}, report['preservedNative'])
+
+    def test_native_additions_and_replaced_models_still_receive_repairs(self):
+        _, _, unit = fixture(13080)
+        unit['awakening'][1].append(['ActiveSkill', 414800])
+        selected, preserved = animation.repair_selection([unit])
+        self.assertEqual(set(selected), {414800}); self.assertEqual(preserved[0]['id'], 446000)
+        unit['ffbe'] = {'id': '401001207'}
+        self.assertEqual(set(animation.repair_selection([unit])[0]), {446000, 414800})
+        self.assertEqual(animation.repair_selection([unit])[1], [])
+
     def test_all_26_missing_sprite_donors_are_extracted_once_and_cached_files_preserved(self):
         for vid in CATALOG_IDS:
             with self.subTest(vid=vid), tempfile.TemporaryDirectory() as temp:

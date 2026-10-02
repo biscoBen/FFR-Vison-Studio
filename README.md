@@ -142,7 +142,12 @@ uses the original combat verification rules. Source and awakening labels remain 
 also show **MR=N**, such as Steal's **Source: Zidane; MR=1**, identifying its MR tab assignment. Unmapped entries retain
 **(Unverified)** and the existing motion fallback. A mapped effect that cannot be extracted/imported stops the build
 with its skill/donor error instead of silently producing a motion-only mod. Each build records selected skills and donors
-in `engine/build/animation-repair-report.json`.
+in `engine/build/animation-repair-report.json`. All selected donor failures are reported together before staging repairs,
+with the exact invalid particle package when available; repeated uses of the same donor are decoded once per build.
+
+Opening an original vision or editing its stats/passive rewards preserves its inherited ability presentation. Animation
+repair covers added visions, explicitly added abilities and original visions with replaced FFBE models. Shared impact
+rows used by original visions remain unchanged even when another vision borrows that ability's target effects.
 
 Rebuild/install the roster mod after updating Studio. Installing the app alone does not replace a previously built mod.
 Effect appearance and battle completion still require in-game testing.

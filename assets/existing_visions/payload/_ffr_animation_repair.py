@@ -236,6 +236,39 @@ def reaction_visuals(row):
     return {k: copy.deepcopy(v) for k, v in row.items() if k in REACTION_VISUAL_FIELDS}
 
 
+def repair_selection(units):
+    """Repair custom models and explicit additions, not inherited native kits."""
+    selected = {}; preserved = []
+    for unit in units:
+        baseline = (unit.get('native') or {}).get('baseline')
+        inherited = {int(g[1]) for tier in [*baseline.get('awakening', []), *baseline.get('synchro', [])]
+                     for g in tier if g[0] == 'ActiveSkill'} if baseline and not unit.get('ffbe') else set()
+        recipes = unit.get('skills') or {}
+        for tier in [*unit.get('awakening', []), *unit.get('synchro', [])]:
+            for grant in tier:
+                if grant[0] != 'ActiveSkill': continue
+                sid = int(grant[1])
+                if sid in inherited and not recipes.get(str(sid), recipes.get(sid)):
+                    entry = {'id': sid, 'vision': unit.get('id'), 'status': 'preserved_native'}
+                    if entry not in preserved: preserved.append(entry)
+                elif unit not in selected.setdefault(sid, []): selected[sid].append(unit)
+    return selected, preserved
+
+
+def original_vision_skills(rows):
+    """Existing mastery rewards own shared reaction rows even off the roster."""
+    result = set()
+    for rel in ('Item/Vision/DT_VisionAwakeningMasteryData', 'Item/Vision/DT_VisionSynchroMasteryData'):
+        try: values = rows(rel).values()
+        except (KeyError, FileNotFoundError): continue
+        for row in values:
+            for grant in row.get('detailData', []):
+                params = grant.get('params') or []
+                if enum(grant.get('parameterType')) == 'ActiveSkill' and params and params[0] not in (-1, None):
+                    result.add(int(params[0]))
+    return result
+
+
 def expected_reaction_edits(root, units, rows):
     """Reconstruct audited cosmetic edits for the existing exact-field verifier.
 
@@ -248,15 +281,15 @@ def expected_reaction_edits(root, units, rows):
                     if (root / name).is_file()), None)
     if catalog is None: return {}
     policy = effect_policy(json.loads(catalog.read_bytes()))['skills']
-    selected = {int(g[1]) for u in units for tier in [*u.get('awakening', []), *u.get('synchro', [])]
-                for g in tier if g[0] == 'ActiveSkill'}
+    selected, _ = repair_selection(units)
+    protected = original_vision_skills(rows)
     custom = {int(sid) for u in units for sid, recipe in (u.get('skills') or {}).items() if recipe}
     rel = 'Battle/Sequencer/DT_BtlHitEffectData'; originals = rows(rel); expected = {}
     record = json.loads(report.read_bytes())
     if record.get('schema') != 1: return {}
     for entry in record.get('skills', []):
         sid = entry.get('id'); mapping = policy.get(str(sid))
-        if (entry.get('status') != 'effect_reuse' or sid not in selected or sid in custom or not mapping
+        if (entry.get('status') != 'effect_reuse' or sid not in selected or sid in protected or sid in custom or not mapping
                 or any(entry.get(k) != mapping[k] for k in ('donor', 'rule', 'tier'))
                 or sequence_present(sid, rows, {})):
             continue
@@ -280,11 +313,17 @@ def particle_import(raw, imports, known_particles=()):
         matches = [i for i, item in enumerate(imports) if item.get('ObjectName') == name]
     if len(matches) != 1: raise ValueError(f'Unresolved or ambiguous particle import: {raw}.')
     ref = matches[0]; obj = imports[ref]
-    if obj.get('ClassName') != 'NiagaraSystem': raise ValueError('The effect is not a portable Niagara system.')
+    if obj.get('ClassName') != 'NiagaraSystem' or obj.get('ClassPackage', '/Script/Niagara') != '/Script/Niagara':
+        raise ValueError(f'The effect import {raw} is not a portable Niagara system: {obj.get("ClassPackage")}.{obj.get("ClassName")}.')
     outer = obj.get('OuterIndex', 0)
     package = imports[-outer - 1].get('ObjectName', '') if type(outer) is int and -len(imports) <= outer < 0 else ''
-    if not package.startswith('/Game/Effect/') or (known_particles and package not in known_particles):
-        raise ValueError('The donor particle is outside the game effect catalog.')
+    # ffr_catalog.niagara is a filtered UI index (03_SKL/04_BTL and /NS_).
+    # Valid cooked imports also use common effects and other Niagara names.
+    # Validate the real import's class and package, not membership in that index.
+    if (not package.startswith('/Game/Effect/') or any(p in ('', '.', '..') for p in package[1:].split('/'))
+            or '\\' in package or ':' in package
+            or imports[-outer - 1].get('ClassName') != 'Package'):
+        raise ValueError(f'The donor particle has an invalid game effect package: {package or raw}.')
     return ref, {'path': package + '.' + obj['ObjectName'], 'class': 'NiagaraSystem'}
 
 
@@ -373,6 +412,7 @@ class NativeAnimations:
         self.assets = {rel: rows(rel) for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')}
         self.reactions = rows('Battle/Sequencer/DT_BtlHitEffectData')
         self.effects = {r['ID']: r for r in rows('Skill/DT_SkillEffectData').values()}
+        self.protected_reactions = original_vision_skills(rows)
         self.names = {}; self.catalog = {}
         # The prepared catalog takes priority. Bundled names are just a fallback;
         # all mechanics and sequence bindings always come from this game install.
@@ -393,6 +433,7 @@ class NativeAnimations:
                 if translated: self.names[sid] = translated
         self.signatures = {sid: self.signature(s) for sid, s in self.skills.items()}
         self.audits = {}
+        self.target_audits = {}
         self.visual_policy = effect_policy(self.catalog)['skills']
 
     def signature(self, skill):
@@ -416,6 +457,17 @@ class NativeAnimations:
                       key=lambda sid: (abs(skill['ID'] - sid), sid))
 
     def target_effects(self, sid):
+        mapping = self.visual_policy[str(sid)]
+        key = (mapping['donor'], enum(self.skills[sid].get('TargetType')) in ('Group', 'All'))
+        if key not in self.target_audits:
+            try: self.target_audits[key] = self._target_effects(sid)
+            except (OSError, ValueError, KeyError, TypeError, IndexError, RuntimeError, subprocess.SubprocessError) as error:
+                self.target_audits[key] = str(error)
+        result = self.target_audits[key]
+        if isinstance(result, str): raise ValueError(result)
+        return {**copy.deepcopy(result), **mapping}
+
+    def _target_effects(self, sid):
         """Read just the donor's particle events and their actual import trees.
 
         Caster motions, camera/voice tracks and OtherReaction events never enter
@@ -477,6 +529,10 @@ class NativeAnimations:
         rel = 'Battle/Sequencer/DT_BtlHitEffectData'
         visual = reaction_visuals(self.reactions[key])
         existing = next((k for k, r in self.reactions.items() if r['ID'] == sid), None)
+        if existing and sid in self.protected_reactions:
+            # Imported target particles still supply the borrowed effect. Keep
+            # original visions' shared impact/reaction presentation intact.
+            return
         spec = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
         added = next((r for r in spec['add'] if r.get('set', {}).get('ID') == sid), None)
         if added: added['set'].update(visual)
@@ -704,8 +760,7 @@ def prepare_barrage_trial(units, root, rows):
     the pinned FFBE data; no FFBE damage values or extra hits enter FFR.
     """
     root = Path(root)
-    owners = [u for u in units if any(g[0] == 'ActiveSkill' and int(g[1]) == 400300
-              for tier in [*u.get('awakening', []), *u.get('synchro', [])] for g in tier)]
+    owners = repair_selection(units)[0].get(400300, [])
     config = {'schema': 1, 'owners': {}}
     if owners and not sequence_present(400300, rows, {}):
         skill = next((r for r in rows('Skill/DT_SkillData').values() if r['ID'] == 400300), {})
@@ -897,16 +952,31 @@ def build_effect_sequence(job, out, work, command, usmap, run):
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
     """Add selected missing skill timelines; leave existing game rows untouched."""
     skill_rows = rows('Skill/DT_SkillData'); by_id = {r['ID']: r for r in skill_rows.values()}
-    selected = {}
-    for unit in units:
-        for tier in [*unit.get('awakening', []), *unit.get('synchro', [])]:
-            for grant in tier:
-                if grant[0] == 'ActiveSkill': selected.setdefault(int(grant[1]), []).append(unit)
+    selected, preserved = repair_selection(units)
     native = None
-    if native_support:
+    if native_support and selected:
         try: native = NativeAnimations(rows, root, extract, native_support)
         except (OSError, ValueError, KeyError, TypeError) as error:
             print(f'  Native animation matching unavailable: {error}. Keeping attack/casting repair.')
+    report = Path(root) / 'build/animation-repair-report.json'
+    report.parent.mkdir(parents=True, exist_ok=True)
+    # Audit every selected mapped donor before staging any repairs. A failed
+    # build reports all unsupported effects together and cannot pack partial work.
+    bundles = {}; failures = []
+    for sid, owners in sorted(selected.items()):
+        recipes = [(u.get('skills') or {}).get(str(sid), (u.get('skills') or {}).get(sid)) for u in owners]
+        if sequence_present(sid, rows, tables) or any(recipes) or not native or str(sid) not in native.visual_policy:
+            continue
+        try: bundles[sid] = native.target_effects(sid)
+        except (OSError, ValueError, KeyError, TypeError, IndexError, RuntimeError, subprocess.SubprocessError) as error:
+            failures.append({'id': sid, 'name': native.names.get(sid, str(sid)), 'status': 'effect_error',
+                             **native.visual_policy[str(sid)], 'reason': str(error)})
+    if failures:
+        report.write_text(json.dumps({'schema': 1, 'inGameValidated': False, 'skills': failures,
+                                      'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
+        details = '\n'.join(f'  {e["name"]} ({e["id"]}), donor {e["donorName"]} ({e["donor"]}): {e["reason"]}' for e in failures)
+        raise ValueError(f'Could not prepare effects for {len(failures)} selected skills:\n{details}\n'
+                         f'Full audit: {report}. Mod packing stopped; the installed mod is unchanged.')
     repaired = []; reused = []; coverage = []
     for sid, owners in sorted(selected.items()):
         if sequence_present(sid, rows, tables):
@@ -925,14 +995,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                 raise ValueError('The monster Needle trial requires the original single-hit fixed-damage definition.')
             if not native or str(sid) not in native.visual_policy:
                 raise ValueError('The monster Needle trial needs the prepared game catalog and native Needle effects.')
-        profile_reason = None; visual_bundle = None
-        if native and str(sid) in native.visual_policy and not recipe:
-            try: visual_bundle = native.target_effects(sid)
-            except (OSError, ValueError, KeyError, TypeError, IndexError, RuntimeError, subprocess.SubprocessError) as error:
-                # A mapped/labelled effect must not quietly become another
-                # motion-only "success". Preserve the installed mod and report
-                # exactly which donor could not be prepared.
-                raise ValueError(f'Could not prepare effects for {native.names.get(sid, sid)} ({sid}): {error}') from error
+        profile_reason = None; visual_bundle = bundles.get(sid)
         if not visual_bundle and sid in ANIMATION_PROFILES and not recipe:
             presentation, profile_reason = native.profile(sid, skill, owners, tables, clones) if native else (None, 'Native sequence audit unavailable.')
             if presentation:
@@ -995,6 +1058,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             native.bind_reaction_visuals(sid, visual_bundle, tables)
             coverage.append({'id': sid, 'status': 'effect_reuse', **{k: visual_bundle[k] for k in ('donor', 'donorName', 'rule', 'tier')},
                              'reactionRow': visual_bundle.get('reactionRow'),
+                             'originalReactionRetained': sid in native.protected_reactions,
                              'particleEvents': sum(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in visual_bundle['events'])})
         elif sid == 400300 and not recipe:
             coverage.append({'id': sid, 'status': 'ffbe_barrage_trial', 'sourceSkill': 200310})
@@ -1028,7 +1092,6 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             if not any(e['id'] == sid for e in coverage):
                 coverage.append({'id': sid, 'status': 'existing_sequence' if sequence_present(sid, rows, tables) else 'unresolved',
                                  'role': 'resonance'})
-    report = Path(root) / 'build/animation-repair-report.json'
-    report.parent.mkdir(parents=True, exist_ok=True)
-    report.write_text(json.dumps({'schema': 1, 'inGameValidated': False, 'skills': coverage}, indent=2) + '\n', encoding='utf-8')
+    report.write_text(json.dumps({'schema': 1, 'inGameValidated': False, 'skills': coverage,
+                                 'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
     return repaired
