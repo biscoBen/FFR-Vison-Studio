@@ -33,9 +33,18 @@ def original_view():
         names.append(jp)
         rows.append({'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
                      'Name': jp, 'StructType': 'BTL_PLAYABLE_UNIT_ASSET', 'Value': props})
+    # The real serializer resolves export ancestry through the DataTable class.
+    class_start = len(imports)
+    imports.extend([{'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': '/Script/Engine',
+                     'OuterIndex': 0, 'ClassName': 'Package', 'ClassPackage': '/Script/CoreUObject',
+                     'PackageName': None, 'bImportOptional': False},
+                    {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': 'DataTable',
+                     'OuterIndex': -class_start-1, 'ClassName': 'Class', 'ClassPackage': '/Script/CoreUObject',
+                     'PackageName': None, 'bImportOptional': False}])
+    names.extend(['DT_BtlPlayableUnitAsset', 'DataTable', 'Class'])
     return {'NameMap': list(dict.fromkeys(names)), 'Imports': imports,
             'Exports': [{'$type': 'UAssetAPI.ExportTypes.DataTableExport, UAssetAPI',
-                         'ObjectName': 'DT_BtlPlayableUnitAsset',
+                         'ObjectName': 'DT_BtlPlayableUnitAsset', 'ClassIndex': -class_start-2, 'Data': [],
                          'Table': {'$type': 'UAssetAPI.ExportTypes.UDataTable, UAssetAPI', 'Data': rows},
                          'SerializationBeforeSerializationDependencies': []}]}
 

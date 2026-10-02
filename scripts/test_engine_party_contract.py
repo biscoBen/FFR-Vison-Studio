@@ -20,7 +20,6 @@ class EnginePartyContractTests(unittest.TestCase):
             self.assertEqual(hashlib.file_digest(stream, 'sha256').hexdigest(), ENGINE_SHA)
         with zipfile.ZipFile(archive) as bundle: executable = bundle.read('bin/ffr-dt.exe')
         original = original_view()
-        original['NameMap'].append('DT_BtlPlayableUnitAsset')
         chosen = unit(form=party.FINA)
         edited = party.table_view(original, [chosen])
         with tempfile.TemporaryDirectory() as directory:
