@@ -11,11 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published Steal and Barrage animation trials — 2026-10-01
+
+Changes in [`62ede23`](https://github.com/biscoBen/FFR-Vison-Studio/commit/62ede23dae82a78d9d1d5066644c6b03c0847805),
+[test package 36960649168](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36960649168).
+
 - Add two animation experiments: player Steal keeps FFR's original routing instead of Studio's casting fallback;
   Barrage on FFBE-backed visions imports four cycles of that vision's own attack poses and FFBE impact timing.
   Preserve FFR's four hits, random targeting, skill mechanics, reaction colors and movement cleanup. Mark both as
   Verified FFR/FFBE tests to identify the touched entries. Exact resemblance to Zidane's Steal and battle appearance
   require in-game testing; the label tracks the implemented experiment, not a completed battle test.
+- Windows passed analysis, 140 Flutter tests, the separate real engine-startup test, 141 Python tests, extension
+  verification, 12 launcher/updater and 10 vision-import checks, and compilation. The helper reused the push run and
+  verified the published ZIP checksum and exact commit/build provenance. One code push produced one Windows build.
+  The workflow took 4m45s with 8m04s of summed job execution; Flutter setup took 86–87s per runner. A checksum-verified
+  conversion of real A2 FFBE sprites also passed. Update Studio and rebuild/install the roster mod before testing.
 
 ## Published same-name and elemental target effects — 2026-10-01
 
