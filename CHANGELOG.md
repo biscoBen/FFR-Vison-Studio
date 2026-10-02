@@ -11,10 +11,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published borrowed-effect table verification fix — 2026-10-01
+
+Changes in [`aaf1d97`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aaf1d97a5441ba790c530e709d97b28679747aff),
+[test package 36967960917](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36967960917).
+
 - Fix roster builds rejected after packing when borrowed skill effects intentionally update existing reaction rows,
   including Zidane's Free Energy and Meal Twister. Record the audited donor row and reconstruct exact expected cosmetic
   fields from original game data. Keep checks for wrong effect values, changed IDs, unrelated fields, missing rows,
   incompatible reports and explicit custom animations. Full game installation still needs a local retry.
+- Windows passed analysis, 142 Flutter tests, separate genuine engine startup, 151 Python tests including the real
+  particle patcher and normal post-build verifier regression, both bundles, 12 launcher/updater checks, 10 vision-import
+  checks and compilation. Reused the single push build and verified the published ZIP checksum, exact commit/provenance
+  and all bundled extension files. CI took 4m57s with 8m35s of summed job execution; Flutter setup took 2m07s on validation
+  and 1m40s on compilation, while compilation took 1m49s. Publication notes use the documentation-only path.
 
 ## Published visible Steal and monster Needle trials — 2026-10-01
 
