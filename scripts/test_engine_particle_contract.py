@@ -79,7 +79,7 @@ foreach ($constant in $inputData.constants) {
     if ($actual -cne $constant.path -or $reference.ClassName.ToString() -cne 'NiagaraSystem') {
         throw "The real engine resolved the wrong particle: $actual"
     }
-    $label = $dump.Invoke($null, [object[]]@($asset, $null, $result.Item1, $null)).ToString()
+    $label = $dump.Invoke($null, [object[]]@($asset, $null, $result.Item1, $null, $false)).ToString()
     if ($label -cne ('import:' + $reference.ObjectName.ToString())) { throw 'Unexpected engine dump label.' }
 }
 if ($asset.Imports.Count -ne $inputData.imports.Count) { throw 'The engine created an unexpected particle import.' }
