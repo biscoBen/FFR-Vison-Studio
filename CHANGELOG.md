@@ -11,12 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published battle-only party appearances — 2026-10-02
+
+Changes in [`51184ab`](https://github.com/biscoBen/FFR-Vison-Studio/commit/51184ab8aa67aecdc347a195738d77c60a583ae2),
+[test package 36979683126](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36979683126).
+
 - Add a third home section for the eight original party characters. Choose and preview FFBE battle models, including
   Crystal Fina, save/load replacements with character configs, and revert each character independently. Keep original
   party abilities, equipment, progression, walking and cutscene assets. Generate private battle packages and verify
   every original battle-table row/reference; retain native animation-pack names and Nichol's mixture phases.
 - Validate the party table with the real engine serializer. Battle appearance and special cinematics still need an
   in-game check on the user's Windows installation.
+- Windows passed analysis, 146 Flutter tests, separate real engine startup, 166 Python tests including both actual engine
+  contracts, both bundles, 12 launcher/updater checks, 10 vision-import checks and compilation. Verified the published
+  ZIP checksum, exact commit/provenance and all nine packaged extension files. Final CI took 4m41s; earlier corrections
+  to the material class, setup whitelist and real-engine test fixture required extra runs. Publication notes use the
+  documentation-only path.
 
 ## Published native-kit and batch effect repair — 2026-10-01
 
