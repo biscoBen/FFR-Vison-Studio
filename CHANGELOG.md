@@ -34,8 +34,8 @@ Changes in [`a718556`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a7185
   and an accidental duplicate manual run caused by querying Actions immediately after the first push. Reused the corrected
   push run; no further build was dispatched. Final CI took 5m15s, with 8m46s summed job execution; cancelled runs added
   13m39s of runner execution. The download helper's transient HTTP 401 recovered by rejoining the same successful run.
-- First complete candidate: 10:57:54 PDT. ZIP verified at 11:10:31 PDT; packaged-file checks completed at 11:10:55 PDT
-  (13m01s from candidate, 33m26s from request, including checks, correction, superseded CI and waiting).
+- First complete candidate: 10:57:54 PDT. ZIP verified at 11:10:31 PDT (12m37s from candidate, 33m02s from request,
+  including checks, correction, superseded CI and waiting). Packaged-file checks followed the verified download.
   Documentation-only publication notes followed; the binary keeps its original tested commit.
 
 ## Published party battle paths and retired comparison skills — 2026-10-02
