@@ -11,11 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published particle-reference installation fix — 2026-10-01
+
+Changes through [`a7862de`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a7862de2d84fb733beb39da8c1b782fe57078000),
+[test package 36963738087](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-36963738087).
+
 - Correct borrowed skill effects after the `$struct` fix: convert the engine's `import:name` dump labels into full
   particle asset paths with explicit Niagara classes, including secondary and friend/enemy particle references.
   Verify every reference against the written package and keep failed builds from reaching mod installation.
   Preserve skill mechanics, target selection, reaction colors and roster settings. Add reference-format regressions
   and a Windows check against the actual checksum-pinned engine patcher; full game installation needs a local retry.
+- Windows passed analysis, 140 Flutter tests, genuine engine startup, 145 Python tests (including direct calls to the
+  real engine's particle patcher/dump functions), both bundles, 12 launcher/updater and 10 vision-import checks, and
+  compilation. Verified the published ZIP checksum, exact commit/provenance and packaged fix. Final CI took 5m43s
+  with 9m04s of summed job execution; Flutter setup on the compile runner took 3m32s versus 1m12s compiling. A test-call
+  correction superseded the first automatic run during setup; it published nothing. Reused the final push run.
+  Close Studio, reopen the test shortcut to update, then retry the existing roster's build/install.
 
 ## Published skill-effect installation fix — 2026-10-01
 
