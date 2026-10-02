@@ -207,14 +207,19 @@ def copy_materials(units, root, out):
 
 
 def expected_edits(root):
-    """Recompute intentional native field edits for the normal post-build verifier."""
+    """Recompute intentional native and audited visual field edits for verification."""
     root = Path(root); spec = root / 'mods/EstherTsukiko/units.json'
     units = json.loads(spec.read_bytes()) if spec.is_file() else []
-    units = [u for u in units if u.get('native') is not None]
-    if not units: return {}
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
-    split(units, rows); tables = {}; prepare(tables, [], units, root, rows)
-    return {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
+    native_units = [u for u in units if u.get('native') is not None]
+    tables = {}
+    if native_units:
+        split(native_units, rows); prepare(tables, [], native_units, root, rows)
+    expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
+    if (root / 'build/animation-repair-report.json').is_file():
+        import _ffr_animation_repair
+        expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
+    return expected
 
 
 def expected_row_change(rel, key, original, built, expected, equivalent):

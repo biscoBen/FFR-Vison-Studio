@@ -228,6 +228,47 @@ MONSTER_NEEDLES = {500270: ('1,000 Needles', 1000), 505110: ('10,000 Needles', 1
 EFFECT_EVENTS = {'EffectSpawnNiagaraAtTarget', 'EffectSpawnNiagaraAtRandom', 'EffectMoveNiagaraAtTargetToNiagaraID',
                  'EffectMoveNiagaraAddVectorToNiagaraID', 'EffectDiactivateNiagaraToNiagaraID',
                  'EffectDestroyNiagaraToNiagaraID', 'EffectSetUserParameterToNiagaraID'}
+REACTION_VISUAL_FIELDS = {'NormalEffectID', 'CriticalEffectID', 'WeaknessEffectID', 'MissEffectID',
+                          'AdditionalEffectID', 'DeathEffectID', 'IsAdditionalEffect', 'PlayShakeID'}
+
+
+def reaction_visuals(row):
+    return {k: copy.deepcopy(v) for k, v in row.items() if k in REACTION_VISUAL_FIELDS}
+
+
+def expected_reaction_edits(root, units, rows):
+    """Reconstruct audited cosmetic edits for the existing exact-field verifier.
+
+    The report identifies the audited source row; expected values come from
+    original extracted game data, never the built row or an unrestricted patch.
+    """
+    root = Path(root); report = root / 'build/animation-repair-report.json'
+    if not report.is_file(): return {}
+    catalog = next((root / name for name in ('build/devui/ffr_catalog.json', 'data/ffr_catalog.json')
+                    if (root / name).is_file()), None)
+    if catalog is None: return {}
+    policy = effect_policy(json.loads(catalog.read_bytes()))['skills']
+    selected = {int(g[1]) for u in units for tier in [*u.get('awakening', []), *u.get('synchro', [])]
+                for g in tier if g[0] == 'ActiveSkill'}
+    custom = {int(sid) for u in units for sid, recipe in (u.get('skills') or {}).items() if recipe}
+    rel = 'Battle/Sequencer/DT_BtlHitEffectData'; originals = rows(rel); expected = {}
+    record = json.loads(report.read_bytes())
+    if record.get('schema') != 1: return {}
+    for entry in record.get('skills', []):
+        sid = entry.get('id'); mapping = policy.get(str(sid))
+        if (entry.get('status') != 'effect_reuse' or sid not in selected or sid in custom or not mapping
+                or any(entry.get(k) != mapping[k] for k in ('donor', 'rule', 'tier'))
+                or sequence_present(sid, rows, {})):
+            continue
+        source_key = entry.get('reactionRow'); source = originals.get(source_key)
+        if not source: continue
+        # Prefer the donor's own row just as the author does. Shared timelines
+        # may have an audited alternate reaction when that direct row is absent.
+        direct = next((k for k, r in originals.items() if r['ID'] == mapping['donor']), None)
+        if direct is not None and source_key != direct: continue
+        target = next((k for k, r in originals.items() if r['ID'] == sid), None)
+        if target is not None: expected[(rel, target)] = reaction_visuals(source)
+    return expected
 
 
 def particle_import(raw, imports, known_particles=()):
@@ -434,8 +475,7 @@ class NativeAnimations:
         key = bundle.get('reactionRow')
         if key is None: return
         rel = 'Battle/Sequencer/DT_BtlHitEffectData'
-        visual = {k: copy.deepcopy(v) for k, v in self.reactions[key].items()
-                  if k.endswith('EffectID') or k in ('IsAdditionalEffect', 'PlayShakeID')}
+        visual = reaction_visuals(self.reactions[key])
         existing = next((k for k, r in self.reactions.items() if r['ID'] == sid), None)
         spec = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
         added = next((r for r in spec['add'] if r.get('set', {}).get('ID') == sid), None)
@@ -954,6 +994,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         if visual_bundle:
             native.bind_reaction_visuals(sid, visual_bundle, tables)
             coverage.append({'id': sid, 'status': 'effect_reuse', **{k: visual_bundle[k] for k in ('donor', 'donorName', 'rule', 'tier')},
+                             'reactionRow': visual_bundle.get('reactionRow'),
                              'particleEvents': sum(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in visual_bundle['events'])})
         elif sid == 400300 and not recipe:
             coverage.append({'id': sid, 'status': 'ffbe_barrage_trial', 'sourceSkill': 200310})

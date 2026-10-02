@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Fix roster builds rejected after packing when borrowed skill effects intentionally update existing reaction rows,
+  including Zidane's Free Energy and Meal Twister. Record the audited donor row and reconstruct exact expected cosmetic
+  fields from original game data. Keep checks for wrong effect values, changed IDs, unrelated fields, missing rows,
+  incompatible reports and explicit custom animations. Full game installation still needs a local retry.
 
 ## Published visible Steal and monster Needle trials — 2026-10-01
 

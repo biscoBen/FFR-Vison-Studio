@@ -174,6 +174,7 @@ class TargetEffectReuseTests(unittest.TestCase):
         self.assertEqual(change, {'row': 'recipient', 'set': {'NormalEffectID': 123, 'CriticalEffectID': 124}})
         record = json.loads((self.root / 'build/animation-repair-report.json').read_bytes())['skills'][0]
         self.assertEqual((record['status'], record['donor'], record['particleEvents']), ('effect_reuse', 220020, 1))
+        self.assertEqual(record['reactionRow'], 'donor')
         self.assertEqual(self.repair(), []); self.assertEqual(len(self.jobs), 1)
 
     def test_missing_particles_fail_instead_of_reporting_a_motion_only_success(self):
