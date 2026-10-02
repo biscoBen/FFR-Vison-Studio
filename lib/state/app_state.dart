@@ -288,6 +288,11 @@ class AppState extends ChangeNotifier {
   Future<void> loadAll() async {
     catalog = await api!.catalog();
     units = await api!.spec();
+    units = units.map((u) {
+      final migrated = CharacterConfig.retireComparisonAbilities(u as JsonMap);
+      if (!identical(migrated, u)) dirty = true;
+      return migrated;
+    }).toList();
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
     try { partyCharacters = await api!.partyCharacters(); }
@@ -298,8 +303,8 @@ class AppState extends ChangeNotifier {
         if (!identical(upgraded, u)) dirty = true;
         return upgraded;
       }).toList();
-      if (dirty) _saveSoon();
     }
+    if (dirty) _saveSoon();
     await refreshStatus();
     notifyListeners();
   }

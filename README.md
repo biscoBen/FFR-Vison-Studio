@@ -125,12 +125,8 @@ A failed preparation reports its error and keeps the roster unchanged; retry loa
 
 ## Automatic animation repair
 
-For same-battle visual comparisons, search the Abilities list for **Chakra (Copy)**, **Cheer (Copy)**,
-**Purify (Copy)** (Ayaka awakening 2), or **Seal of Conviction (Copy)** (ordinary Dark variant).
-Equip a Copy and its regular Verified entry together. Copies have separate IDs and the original game mechanics,
-descriptions and visual bindings; missing timelines use the safe casting/attack fallback without Studio's borrowed
-target effects. They do not consume custom-move slots. Seal's Dark mapping predates the latest bulk pass; its Copy
-compares against the original game baseline, rather than that earlier Studio mapping.
+The four temporary comparison Copies are retired. Loading an older roster or config replaces their grants with
+the regular skills, collapsing only duplicates within the same tier. Saved config files stay intact.
 
 Fresh roster builds give missing ordinary skills native target effects from a regular same-name skill, even when damage,
 targets or hit counts differ. Remaining elemental attacks use three power tiers: physical Earth/Thunder skills use the
@@ -253,7 +249,8 @@ The third home section, **Party characters**, lists Rain, Lasswell, Fina, Lid, N
 Use **Change battle model** to select and preview an FFBE appearance, or **Edit battle appearance** for its saved setup.
 **Revert to original** removes that character's replacement on the next install. Single/bulk character configs include
 these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
-changes only the party battle-model table. Walking and cutscene assets keep their original paths. Original skill effects
+redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
+The party resource-name table, walking and cutscene assets keep their original paths. Original skill effects
 remain in use; special cinematics and replacement motions need an in-game check.
 
 The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another

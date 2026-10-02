@@ -11,44 +11,52 @@ from unittest import mock
 from test_existing_visions import ROOT, party, animation, installer, fina_installer
 
 
-def original_view():
-    imports = []; rows = []; names = ['/Script/CoreUObject', '/Script/Engine', '/Script/SpriteStudio6',
-                                       'Package', 'Texture2D', 'Ss6Project', 'Material', 'Ss6Project',
-                                       'textureBaseColor', 'textureNormal', 'textureMetallicRoughness', 'BTL_PLAYABLE_UNIT_ASSET']
-    def reference(path, kind):
-        start = len(imports); leaf = path.rsplit('/', 1)[1]
-        imports.extend([{'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': path,
-                         'ClassPackage': '/Script/CoreUObject', 'ClassName': 'Package', 'OuterIndex': 0,
-                         'PackageName': None, 'bImportOptional': False},
-                        {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': leaf,
-                         'ClassPackage': '/Script/Engine' if kind != 'Ss6Project' else '/Script/SpriteStudio6',
-                         'ClassName': kind, 'OuterIndex': -start-1, 'PackageName': None, 'bImportOptional': False}])
-        names.extend([path, leaf]); return -start-2
-    common = reference('/Game/Material/Battle', 'Material')
+def battle_rows():
+    result = {}
     for id, jp, en, pack in party.CHARACTERS:
+        path = f'/Game/Chara/unit/{pack}/{pack}'
+        result[jp] = {'ID': id, 'animationAssetList': [{'isVisionCharacter': False, 'Ss6Project': path,
+            'Material': '/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBRBattle',
+            'textureBaseColor': path + '_tex', 'textureNormal': path + '_normal', 'textureMetallicRoughness': path + '_mreo'}],
+            'shadowScale': 1.0, 'Footstep': 'Common'}
+    return result
+
+
+def original_view(selected=()):
+    """Synthetic runtime soft-reference layout, matching DT_BtlUnitAsset."""
+    values = battle_rows(); names = ['None', '0', 'ID', 'animationAssetList', 'isVisionCharacter', 'Ss6Project',
+        'textureBaseColor', 'textureNormal', 'textureMetallicRoughness', 'Material', 'UNIT_ASSET_DATA',
+        'UNIT_ANIMATION_ASSET_DATA', '/Script/Engine', '/Script/CoreUObject', 'Package', 'Class', 'DataTable', 'DT_BtlUnitAsset']
+    for u in selected:
+        for path, value in party.asset_updates(u).items(): values[u['jp']]['animationAssetList'][0][path.split('.')[-1]] = value
+    table = []
+    for jp, row in values.items():
         props = []
-        for field, suffix, kind in [('Ss6Project', '', 'Ss6Project'), ('textureBaseColor', '_tex', 'Texture2D'),
-                                    ('textureNormal', '_normal', 'Texture2D'), ('textureMetallicRoughness', '_mreo', 'Texture2D')]:
-            props.append({'$type': 'UAssetAPI.PropertyTypes.Objects.ObjectPropertyData, UAssetAPI',
-                          'Name': field, 'Value': reference(f'/Game/Chara/unit/{pack}/{pack}{suffix}', kind)})
-        props.append({'$type': 'UAssetAPI.PropertyTypes.Objects.ObjectPropertyData, UAssetAPI', 'Name': 'Material', 'Value': common})
+        for field, value in row['animationAssetList'][0].items():
+            if isinstance(value, bool):
+                props.append({'$type': 'UAssetAPI.PropertyTypes.Objects.BoolPropertyData, UAssetAPI', 'Name': field, 'Value': value})
+                continue
+            leaf = value.rsplit('/', 1)[-1]; names.extend([value, leaf])
+            props.append({'$type': 'UAssetAPI.PropertyTypes.Objects.SoftObjectPropertyData, UAssetAPI', 'Name': field,
+                'Value': {'$type': 'UAssetAPI.PropertyTypes.Objects.FSoftObjectPath, UAssetAPI',
+                    'AssetPath': {'$type': 'UAssetAPI.PropertyTypes.Objects.FTopLevelAssetPath, UAssetAPI',
+                        'PackageName': value, 'AssetName': leaf}, 'SubPathString': None}})
         names.append(jp)
-        rows.append({'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
-                     'Name': jp, 'StructType': 'BTL_PLAYABLE_UNIT_ASSET', 'Value': props})
-    # The real serializer resolves export ancestry through the DataTable class.
-    class_start = len(imports)
-    imports.extend([{'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': '/Script/Engine',
-                     'OuterIndex': 0, 'ClassName': 'Package', 'ClassPackage': '/Script/CoreUObject',
-                     'PackageName': None, 'bImportOptional': False},
-                    {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': 'DataTable',
-                     'OuterIndex': -class_start-1, 'ClassName': 'Class', 'ClassPackage': '/Script/CoreUObject',
-                     'PackageName': None, 'bImportOptional': False}])
-    names.extend(['DT_BtlPlayableUnitAsset', 'DataTable', 'Class'])
+        table.append({'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
+            'Name': jp, 'StructType': 'UNIT_ASSET_DATA', 'Value': [
+                {'$type': 'UAssetAPI.PropertyTypes.Objects.IntPropertyData, UAssetAPI', 'Name': 'ID', 'Value': row['ID']},
+                {'$type': 'UAssetAPI.PropertyTypes.Objects.ArrayPropertyData, UAssetAPI', 'Name': 'animationAssetList',
+                    'ArrayType': 'StructProperty', 'Value': [
+                        {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
+                            'Name': '0', 'StructType': 'UNIT_ANIMATION_ASSET_DATA', 'Value': props}]}]})
+    imports = [
+        {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': '/Script/Engine', 'OuterIndex': 0,
+         'ClassName': 'Package', 'ClassPackage': '/Script/CoreUObject', 'PackageName': None, 'bImportOptional': False},
+        {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': 'DataTable', 'OuterIndex': -1,
+         'ClassName': 'Class', 'ClassPackage': '/Script/CoreUObject', 'PackageName': None, 'bImportOptional': False}]
     return {'NameMap': list(dict.fromkeys(names)), 'Imports': imports,
-            'Exports': [{'$type': 'UAssetAPI.ExportTypes.DataTableExport, UAssetAPI',
-                         'ObjectName': 'DT_BtlPlayableUnitAsset', 'ClassIndex': -class_start-2, 'Data': [],
-                         'Table': {'$type': 'UAssetAPI.ExportTypes.UDataTable, UAssetAPI', 'Data': rows},
-                         'SerializationBeforeSerializationDependencies': []}]}
+        'Exports': [{'$type': 'UAssetAPI.ExportTypes.DataTableExport, UAssetAPI', 'ObjectName': 'DT_BtlUnitAsset',
+            'ClassIndex': -2, 'Data': [], 'Table': {'$type': 'UAssetAPI.ExportTypes.UDataTable, UAssetAPI', 'Data': table}}]}
 
 
 def unit(id=1001, form='401001207'):
@@ -107,33 +115,48 @@ class PartyCharacterTests(unittest.TestCase):
             u = unit(); u['ffbe']['dir'] = path
             with self.subTest(path=path), self.assertRaises(ValueError): party.validate(u)
 
-    def test_private_references_preserve_native_pack_names_and_all_other_rows(self):
-        original = original_view(); before = copy.deepcopy(original)
+    def test_runtime_paths_preserve_all_existing_vision_operations_and_native_pack_names(self):
+        original = battle_rows(); before = copy.deepcopy(original)
         for c in party.CHARACTERS:
-            chosen = unit(c[0]); edited = party.table_view(original, [chosen]); party.check_table(original, edited, [chosen])
-            self.assertEqual(edited['Exports'], original['Exports'])
-            expected = f'/Game/Chara/StudioParty/party{c[0]}/{c[3]}'
-            self.assertTrue(any(i['ObjectName'] == expected for i in edited['Imports']))
-            self.assertEqual(sum(a != b for a, b in zip(edited['Imports'], original['Imports'])), 4)
-        all_units = [unit(c[0]) for c in party.CHARACTERS]
-        party.check_table(original, party.table_view(original, all_units), all_units)
+            chosen = unit(c[0]); tables = {party.TABLE: {'asset': party.ASSET,
+                'add': [{'row': 'A2', 'set': {'ID': 13501}}], 'set': [{'row': 'Cloud', 'set': {'shadowScale': 2.0}}]}}
+            party.prepare(tables, [chosen], lambda rel: copy.deepcopy(original))
+            self.assertEqual(tables[party.TABLE]['add'], [{'row': 'A2', 'set': {'ID': 13501}}])
+            self.assertEqual(tables[party.TABLE]['set'][0], {'row': 'Cloud', 'set': {'shadowScale': 2.0}})
+            self.assertEqual(len(tables[party.TABLE]['set']), 2)
+            op = tables[party.TABLE]['set'][1]
+            self.assertEqual(op['row'], c[1]); self.assertEqual(len(op['set']), 4)
+            path = f'/Game/Chara/StudioParty/party{c[0]}/{c[3]}'
+            self.assertEqual(op['set']['animationAssetList[0].Ss6Project'], path)
+            built = copy.deepcopy(original)
+            for field, value in op['set'].items(): built[c[1]]['animationAssetList'][0][field.split('.')[-1]] = value
+            party.check_rows(original, built, [chosen])
+            for key in original:
+                if key != c[1]: self.assertEqual(built[key], original[key])
+            self.assertNotIn(party.PLAYABLE_TABLE, tables)
         self.assertEqual(original, before)
 
-    def test_crystal_fina_material_is_assigned_only_to_selected_row(self):
-        original = original_view(); chosen = unit(form=party.FINA)
-        edited = party.table_view(original, [chosen]); party.check_table(original, edited, [chosen])
-        a, b = original['Exports'][0]['Table']['Data'], edited['Exports'][0]['Table']['Data']
-        self.assertEqual(a[1:], b[1:]); self.assertNotEqual(a[0], b[0])
-        material = next(p for p in b[0]['Value'] if p['Name'] == 'Material')['Value']
-        self.assertEqual(edited['Imports'][-material-1]['ObjectName'], 'M_StudioParty1001')
-        self.assertEqual(edited['Imports'][-material-1]['ClassName'], 'Material')
+    def test_crystal_fina_material_changes_only_selected_runtime_row(self):
+        original = battle_rows(); chosen = unit(form=party.FINA); tables = {}
+        party.prepare(tables, [chosen], lambda rel: copy.deepcopy(original))
+        fields = tables[party.TABLE]['set'][0]['set']
+        self.assertEqual(fields['animationAssetList[0].Material'], '/Game/BP/Map/Unit/Material/M_StudioParty1001')
+        built = copy.deepcopy(original)
+        for field, value in fields.items(): built[chosen['jp']]['animationAssetList'][0][field.split('.')[-1]] = value
+        party.check_rows(original, built, [chosen])
+        self.assertEqual(built['ラスウェル'], original['ラスウェル'])
 
-    def test_verifier_rejects_other_rows_and_wrong_hard_reference_paths(self):
-        original = original_view(); chosen = unit(); edited = party.table_view(original, [chosen])
-        wrong = copy.deepcopy(edited); wrong['Imports'][0]['ObjectName'] = '/Wrong'
-        with self.assertRaises(ValueError): party.check_table(original, wrong, [chosen])
-        wrong = copy.deepcopy(edited); wrong['Exports'][0]['Table']['Data'][1]['Value'][0]['Value'] = 0
-        with self.assertRaises(ValueError): party.check_table(original, wrong, [chosen])
+    def test_verifier_rejects_wrong_paths_and_unrelated_party_properties(self):
+        original = battle_rows(); chosen = unit(); fields = party.asset_updates(chosen); built = copy.deepcopy(original)
+        for field, value in fields.items(): built[chosen['jp']]['animationAssetList'][0][field.split('.')[-1]] = value
+        party.check_rows(original, built, [chosen])
+        for field, value in [('ID', 999), ('shadowScale', 3.0)]:
+            wrong = copy.deepcopy(built); wrong[chosen['jp']][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError): party.check_rows(original, wrong, [chosen])
+        wrong = copy.deepcopy(built); wrong[chosen['jp']]['animationAssetList'][0]['textureBaseColor'] = '/Wrong'
+        with self.assertRaises(ValueError): party.check_rows(original, wrong, [chosen])
+        wrong = copy.deepcopy(original); wrong[chosen['jp']]['ID'] = 13110
+        with self.assertRaises(ValueError): party.prepare({}, [chosen], lambda rel: wrong)
 
     def test_mixture_has_separate_hold_and_return_without_extra_hits(self):
         spec = {'animations': [{'name': 'attack_B', 'frameCount': 6,

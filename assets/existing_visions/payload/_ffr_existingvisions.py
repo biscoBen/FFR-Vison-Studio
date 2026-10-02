@@ -210,6 +210,8 @@ def expected_edits(root):
     """Recompute intentional native and audited visual field edits for verification."""
     root = Path(root); spec = root / 'mods/EstherTsukiko/units.json'
     units = json.loads(spec.read_bytes()) if spec.is_file() else []
+    import _ffr_animation_repair
+    units = [_ffr_animation_repair.retire_comparison_skills(u) for u in units]
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
     native_units = [u for u in units if u.get('native') is not None]
     tables = {}
@@ -217,12 +219,11 @@ def expected_edits(root):
         split(native_units, rows); prepare(tables, [], native_units, root, rows)
     expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
     if (root / 'build/animation-repair-report.json').is_file():
-        import _ffr_animation_repair
         expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
     import _ffr_party
     for u in units:
-        if u.get('party') and str((u.get('ffbe') or {}).get('id')) == _ffr_party.FINA:
-            expected[(_ffr_party.TABLE, u['jp'])] = {'Material': _ffr_party.material(u).rsplit('/', 1)[1]}
+        if u.get('party') and u.get('ffbe'):
+            expected[(_ffr_party.TABLE, u['jp'])] = _ffr_party.asset_updates(u)
     return expected
 
 

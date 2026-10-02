@@ -41,7 +41,7 @@ class EnginePartyContractTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as bundle: executable = bundle.read('bin/ffr-dt.exe')
         original = original_view()
         chosen = unit(form=party.FINA)
-        edited = party.table_view(original, [chosen])
+        edited = original_view([chosen])
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             for name in ('Newtonsoft.Json.dll', 'UAssetAPI.dll'):
@@ -64,20 +64,26 @@ foreach ($import in $asset.Imports) {
 }
 $rows = $asset.Exports[0].Table.Data
 foreach ($row in $rows) {
-    $project = $row.Value | Where-Object { $_.Name.ToString() -ceq 'Ss6Project' }
-    $reference = $project.Value.ToImport($asset)
-    $path = $reference.OuterIndex.ToImport($asset).ObjectName.ToString()
+    $animations = $row.Value | Where-Object { $_.Name.ToString() -ceq 'animationAssetList' }
+    $fields = $animations.Value[0].Value
+    $project = $fields | Where-Object { $_.Name.ToString() -ceq 'Ss6Project' }
+    $path = $project.Value.AssetPath.PackageName.ToString()
+    foreach ($property in ($fields | Where-Object { $_ -is [UAssetAPI.PropertyTypes.Objects.SoftObjectPropertyData] })) {
+        foreach ($name in @($property.Value.AssetPath.PackageName, $property.Value.AssetPath.AssetName)) {
+            if ([int]$indexProperty.GetValue($name) -lt 0) { throw 'Unserializable runtime party soft path.' }
+        }
+    }
+    $mat = $fields | Where-Object { $_.Name.ToString() -ceq 'Material' }
     if ($row.Name.ToString() -ceq 'レイン') {
         if ($path -cne '/Game/Chara/StudioParty/party1001/unit0010') { throw 'Rain did not use the private battle model.' }
-        $mat = $row.Value | Where-Object { $_.Name.ToString() -ceq 'Material' }
-        $resolved = $mat.Value.ToImport($asset)
-        if ($resolved.ClassName.ToString() -cne 'Material') { throw 'Wrong party material class.' }
-        if ($resolved.ObjectName.ToString() -cne 'M_StudioParty1001') { throw 'Wrong party material.' }
+        if ($mat.Value.AssetPath.PackageName.ToString() -cne '/Game/BP/Map/Unit/Material/M_StudioParty1001') { throw 'Wrong party material package.' }
+        if ($mat.Value.AssetPath.AssetName.ToString() -cne 'M_StudioParty1001') { throw 'Wrong party material object.' }
     } else {
         if (-not $path.StartsWith('/Game/Chara/unit/')) { throw 'An unselected character changed model.' }
-        $mat = $row.Value | Where-Object { $_.Name.ToString() -ceq 'Material' }
-        if ($mat.Value.ToImport($asset).ObjectName.ToString() -cne 'Battle') { throw 'A shared material was changed.' }
+        if ($mat.Value.AssetPath.AssetName.ToString() -cne 'M_Ss_Component_PBRBattle') { throw 'A shared material was changed.' }
     }
+    $vision = $fields | Where-Object { $_.Name.ToString() -ceq 'isVisionCharacter' }
+    if ($vision.Value) { throw 'An original party character became a vision.' }
 }
 if ($rows.Count -ne 8) { throw 'A party row was added or lost.' }
 Write-Output 'Real engine party model, material and FName contracts passed.'

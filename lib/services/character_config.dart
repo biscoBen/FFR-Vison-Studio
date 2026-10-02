@@ -10,6 +10,38 @@ class CharacterConfig {
   static Map<String, dynamic> copy(Map<String, dynamic> unit) =>
       json.decode(json.encode(unit)) as Map<String, dynamic>;
 
+  /// Remove retired comparison abilities while retaining their original skills.
+  /// Saved files stay intact; only the restored/in-memory roster is upgraded.
+  static Map<String, dynamic> retireComparisonAbilities(Map<String, dynamic> unit) {
+    const retired = {9400440: 400440, 9403110: 403110, 9414500: 414500, 9505580: 505580};
+    var changed = false;
+    final fields = <String, dynamic>{};
+    for (final field in ['awakening', 'synchro']) {
+      final tiers = <dynamic>[];
+      for (final tier in unit[field] as List? ?? []) {
+        final affected = <int>{
+          for (final g in tier as List)
+            if (g is List && g.length >= 2 && g[0] == 'ActiveSkill' && retired.containsKey(g[1])) retired[g[1]]!,
+        };
+        if (affected.isEmpty) { tiers.add(tier); continue; }
+        changed = true;
+        final grants = <dynamic>[];
+        final seen = <int>{};
+        for (final grant in tier) {
+          final replacement = grant is List && grant.length >= 2 && grant[0] == 'ActiveSkill' ? retired[grant[1]] : null;
+          final entry = replacement == null ? grant : [grant[0], replacement, ...grant.skip(2)];
+          if (entry is List && entry.length >= 2 && entry[0] == 'ActiveSkill' && affected.contains(entry[1])) {
+            if (!seen.add(entry[1] as int)) continue;
+          }
+          grants.add(entry);
+        }
+        tiers.add(grants);
+      }
+      if (unit.containsKey(field)) fields[field] = tiers;
+    }
+    return changed ? {...unit, ...fields} : unit;
+  }
+
   static String encode(Map<String, dynamic> unit) {
     validate(unit);
     return '${const JsonEncoder.withIndent('  ').convert({'format': format, 'version': 1, 'unit': unit})}\n';
@@ -27,7 +59,7 @@ class CharacterConfig {
     }
     final unit = document['unit'] as Map<String, dynamic>;
     validate(unit);
-    return copy(unit);
+    return retireComparisonAbilities(copy(unit));
   }
 
   static String encodeAll(List<dynamic> units) {
@@ -47,7 +79,7 @@ class CharacterConfig {
     }
     final units = document['units'] as List;
     validateAll(units);
-    return units.cast<Map<String, dynamic>>().map(copy).toList();
+    return units.cast<Map<String, dynamic>>().map(copy).map(retireComparisonAbilities).toList();
   }
 
   static void validateAll(List<dynamic> units) {
@@ -469,7 +501,7 @@ class CharacterConfig {
         .cast<Map<String, dynamic>>()
         .where((u) => u['key'] != replacing?['key'])
         .toList();
-    final result = copy(saved);
+    final result = retireComparisonAbilities(copy(saved));
     final oldId = saved['id'] as int;
     if (saved['native'] != null || saved['party'] != null) {
       if (other.any((u) => u['id'] == oldId || u['key'] == saved['key'])) {

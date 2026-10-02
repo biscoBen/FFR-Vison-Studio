@@ -328,7 +328,7 @@ def install(catalog_module, root):
             metadata = _cached[1]
         except (OSError, ValueError, KeyError):
             metadata = {'schema': 1, 'available': False, 'groups': {}, 'protected': {}}
-        from _ffr_animation_repair import comparison_catalog, effect_policy
+        from _ffr_animation_repair import effect_policy
         enriched = {**catalog, 'duplicatePolicy': metadata}
-        return comparison_catalog({**enriched, 'animationPolicy': effect_policy(enriched)})
+        return {**enriched, 'animationPolicy': effect_policy(enriched)}
     catalog_module.load = load

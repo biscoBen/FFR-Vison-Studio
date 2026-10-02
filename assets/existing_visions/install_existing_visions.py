@@ -99,6 +99,7 @@ def hook_builder(raw):
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
     prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party',
+               'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
                'for u in native_units + UNITS:', '    if u.get("ffbe"):',
@@ -114,6 +115,7 @@ def hook_builder(raw):
                *['    ' + s for s in skill_body.splitlines()]]
     before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
+                    '_ffr_party.prepare(tables, party_units, rows)',
                     '_ffr_animation_repair.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',

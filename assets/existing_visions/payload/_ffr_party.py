@@ -3,7 +3,8 @@ import copy
 import json
 from pathlib import Path
 
-TABLE = 'Asset/Battle/Unit/DT_BtlPlayableUnitAsset'
+TABLE = 'Asset/Battle/Unit/DT_BtlUnitAsset'
+PLAYABLE_TABLE = 'Asset/Battle/Unit/DT_BtlPlayableUnitAsset'
 ASSET = 'FFRS/Content/Datatable/' + TABLE
 CHARACTERS = (
     (1001, 'レイン', 'Rain', 'unit0010'),
@@ -24,7 +25,7 @@ def identity(id):
 
 def snapshot(id, rows):
     c = identity(id)
-    if not c or rows(TABLE).get(c[1], {}).get('Ss6Project') != c[3]:
+    if not c or rows(PLAYABLE_TABLE).get(c[1], {}).get('Ss6Project') != c[3]:
         raise ValueError('The original party battle model is unavailable. Prepare the game files again.')
     return {'key': f'party_{id}', 'id': id, 'jp': c[1], 'en': c[2],
             'party': {'version': 1, 'id': id}}
@@ -73,70 +74,41 @@ def material(u):
     return f'/Game/BP/Map/Unit/Material/M_StudioParty{u["id"]}'
 
 
-def replacements(units):
-    return {f'/Game/Chara/unit/{identity(u["id"])[3]}': package(u).rsplit('/', 1)[0]
-            for u in units if u.get('ffbe')}
+def asset_updates(u):
+    path = package(u)
+    fields = {'Ss6Project': path, 'textureBaseColor': path + '_tex', 'textureNormal': path + '_normal',
+              'textureMetallicRoughness': path + '_mreo'}
+    if str(u['ffbe']['id']) == FINA: fields['Material'] = material(u)
+    return {'animationAssetList[0].' + key: value for key, value in fields.items()}
 
 
-def rename(value, changes):
-    if isinstance(value, str):
-        for old, new in changes.items():
-            if value == old or value.startswith(old + '/'):
-                return new + value[len(old):]
-        return value
-    if isinstance(value, list): return [rename(v, changes) for v in value]
-    if isinstance(value, dict): return {k: rename(v, changes) for k, v in value.items()}
-    return value
+def prepare(tables, units, rows):
+    """Patch the runtime soft paths alongside existing vision table operations.
 
-
-def table_view(original, units):
-    edited = rename(copy.deepcopy(original), replacements(units))
+    DT_BtlPlayableUnitAsset supplies resource names, not the loaded battle
+    packages. Preserve those names and redirect only selected DT_BtlUnitAsset
+    rows. Never rewrite the table after the vision builder has added its rows.
+    """
     for u in units:
-        if str((u.get('ffbe') or {}).get('id')) != FINA: continue
-        imports = edited['Imports']; path = material(u); leaf = path.rsplit('/', 1)[1]
-        start = len(imports)
-        template = {'$type': 'UAssetAPI.Import, UAssetAPI', 'PackageName': None, 'bImportOptional': False}
-        imports.append(dict(template, ObjectName=path, OuterIndex=0,
-                            ClassName='Package', ClassPackage='/Script/CoreUObject'))
-        imports.append(dict(template, ObjectName=leaf, OuterIndex=-start-1,
-                            ClassName='Material', ClassPackage='/Script/Engine'))
-        for name in (path, leaf):
-            if name not in edited['NameMap']: edited['NameMap'].append(name)
-        export = next(e for e in edited['Exports'] if 'Table' in e)
-        row = next(r for r in export['Table']['Data'] if r['Name'] == u['jp'])
-        prop = next(p for p in row['Value'] if p['Name'] == 'Material')
-        prop['Value'] = -start-2
-        dep = export.get('SerializationBeforeSerializationDependencies')
-        if isinstance(dep, list) and -start-2 not in dep: dep.append(-start-2)
-    return edited
+        if not u.get('ffbe'): continue
+        validate(u)
+        row = rows(TABLE).get(u['jp'], {})
+        animations = row.get('animationAssetList', [])
+        original = f'/Game/Chara/unit/{identity(u["id"])[3]}/{identity(u["id"])[3]}'
+        if row.get('ID') != u['id'] or not animations or animations[0].get('Ss6Project') != original:
+            raise ValueError('The original party runtime battle assets are unavailable. Prepare the game files again.')
+        table = tables.setdefault(TABLE, {'asset': ASSET, 'add': [], 'set': []})
+        table['set'].append({'row': u['jp'], 'set': asset_updates(u)})
 
 
-def check_table(original, built, units):
-    expected = table_view(original, units)
-    # Layout offsets and counts can change during serialization. Check the
-    # actual object imports and every table property, including untouched rows.
-    for field in ('Imports',):
-        if built.get(field) != expected.get(field):
-            raise ValueError('Party battle table imports did not match the selected private models.')
-    original_tables = [e['Table'] for e in expected['Exports'] if 'Table' in e]
-    written_tables = [e['Table'] for e in built['Exports'] if 'Table' in e]
-    if written_tables != original_tables:
-        raise ValueError('Party battle table changed an unrelated row or property.')
-
-
-def write_table(units, root, legacy, out, tool, usmap, run):
-    selected = [u for u in units if u.get('ffbe')]
-    if not selected: return
-    work = Path(root) / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)
-    source = Path(legacy) / (ASSET + '.uasset')
-    destination = Path(out) / (ASSET + '.uasset'); destination.parent.mkdir(parents=True, exist_ok=True)
-    original_path = work / 'original.json'; edited_path = work / 'edited.json'; written_path = work / 'written.json'
-    run(tool + ['tojson', str(source), str(original_path), '--usmap', usmap])
-    original = json.loads(original_path.read_text(encoding='utf-8-sig'))
-    edited_path.write_text(json.dumps(table_view(original, selected), ensure_ascii=False), encoding='utf-8')
-    run(tool + ['fromjson', str(edited_path), str(destination), '--usmap', usmap])
-    run(tool + ['tojson', str(destination), str(written_path), '--usmap', usmap])
-    check_table(original, json.loads(written_path.read_text(encoding='utf-8-sig')), selected)
+def check_rows(original, built, units):
+    for u in units:
+        if not u.get('ffbe'): continue
+        desired = copy.deepcopy(original[u['jp']])
+        for path, value in asset_updates(u).items():
+            desired['animationAssetList'][0][path.split('.')[-1]] = value
+        if built.get(u['jp']) != desired:
+            raise ValueError('Party runtime battle assets did not match the selected model, or an unrelated field changed.')
 
 
 def party_motions(spec):
@@ -231,7 +203,6 @@ def build(units, env):
     for u in selected:
         env['stage']('Replacing party battle model: ' + u['en'])
         generate(u, env)
-    write_table(selected, env['ROOT'], env['LEGACY'], env['OUT'], env['FFRDT'], env['USMAP'], env['run'])
 
 
 def verify(root, tool, usmap):
@@ -242,9 +213,10 @@ def verify(root, tool, usmap):
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)
     def run(args): subprocess.run(args, check=True, capture_output=True)
     original = work / 'verify-original.json'; built = work / 'verify-built.json'
-    run(tool + ['tojson', str(root / 'extracted/legacy' / (ASSET + '.uasset')), str(original), '--usmap', usmap])
-    run(tool + ['tojson', str(root / 'build/visions_mod/assets' / (ASSET + '.uasset')), str(built), '--usmap', usmap])
-    check_table(json.loads(original.read_text(encoding='utf-8-sig')), json.loads(built.read_text(encoding='utf-8-sig')), selected)
+    run(tool + ['rows', str(root / 'extracted/legacy' / (ASSET + '.uasset')), str(original), '--usmap', usmap])
+    run(tool + ['rows', str(root / 'build/visions_mod/assets' / (ASSET + '.uasset')), str(built), '--usmap', usmap])
+    check_rows(json.loads(original.read_text(encoding='utf-8-sig'))['rows'],
+               json.loads(built.read_text(encoding='utf-8-sig'))['rows'], selected)
     for u in selected:
         path = root / 'build/visions_mod/assets/FFRS/Content' / package(u).removeprefix('/Game/')
         for suffix in ('', '_tex', '_normal', '_mreo'):

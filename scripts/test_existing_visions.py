@@ -301,7 +301,7 @@ class NativeVisionTests(unittest.TestCase):
             env = {'ROOT': str(root), 'BASE': str(base), 'TMP': str(root / 'verify'), 'os': os, 'json': json, 'sys': sys,
                    'glob': glob, 'subprocess': SimpleNamespace(run=convert), 'UNUSED_ICON_TAGS': [13104, 13106],
                    'ffrenv': SimpleNamespace(FFRDT=['fixture serializer'])}
-            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native}):
+            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_animation_repair': animation}):
                 exec(compile(ast.Module(body=functions, type_ignores=[]), 'native_verifier_fixture', 'exec'), env)
                 self.assertEqual(env['icon_rows']('UI/Skill/DT_CommandSkillIcon'), {'first'})
                 for code, built in ((0, changed), (1, {**changed, 'Cloud': {**changed['Cloud'], 'SaveId': 999}}), (1, {})):

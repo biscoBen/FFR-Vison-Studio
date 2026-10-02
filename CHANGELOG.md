@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Remove the four temporary comparison Copies. Migrate old roster/config grants to the regular skills, collapse only
+  same-tier alias duplicates, and preserve other edits and saved config files. Keep the working Verified effects.
+- Fix party replacements installing but retaining normal battle sprites: redirect the selected party rows' actual
+  runtime soft paths in `DT_BtlUnitAsset`. Preserve existing/new vision operations in that same table, party identity,
+  original resource names and field/cutscene assets. Verify sprite, all texture paths and Crystal Fina's material.
+- Record user observations for future comparison-skill work: literal names display as **Name** in battle despite
+  correct menu labels, and MP is consumed but insufficient MP does not block casting. Investigation is deferred;
+  these temporary copies are removed rather than extended.
 
 ## Published party texture fix and comparison abilities — 2026-10-02
 

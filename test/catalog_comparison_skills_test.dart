@@ -1,34 +1,38 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ffr_vision_studio/state/catalog_helpers.dart';
+import 'package:ffr_vision_studio/services/character_config.dart';
+import 'character_config_test.dart' show profile;
 
 void main() {
-  test('original and Copy remain selectable together with matching descriptions and source labels', () {
-    final originals = [
-      {'id': 400440, 'name': 'Chakra', 'desc': 'Restore own HP.', 'attr': 'Ability', 'seq': [], 'hasUnit': 'All'},
-      {'id': 403110, 'name': 'Cheer', 'desc': 'Increase defense and speed.', 'attr': 'Ability', 'seq': [], 'hasUnit': 'Fina'},
-      {'id': 414500, 'name': 'Purify', 'desc': 'Restore allies’ HP and remove debuffs.', 'attr': 'Ability', 'seq': [], 'hasUnit': 'All'},
-      {'id': 505580, 'name': 'Seal of Conviction', 'desc': 'Deal dark physical damage.', 'attr': 'Ability', 'seq': [], 'hasUnit': 'All'},
-    ];
-    final copies = [for (final r in originals) {...r, 'id': (r['id'] as int) + 9000000,
-      'name': '${r['name']} (Copy)', 'comparisonOf': r['id']}];
-    final catalog = <String, dynamic>{
-      'skills': [...originals, ...copies],
-      'visions': <Map<String, dynamic>>[],
-      'animationPolicy': {'schema': 1, 'skills': {for (final r in originals) '${r['id']}': {'donor': 210010}}},
-      'duplicatePolicy': {'schema': 2, 'available': true, 'ownersComplete': true,
-        'groups': {'skills': <List<int>>[]}, 'verifiedMatches': {'skills': <String, dynamic>{}}},
-    };
-    final selected = catalogSelectableLibrary(catalog, 'skills', []);
-    expect(selected.map((r) => r['id']).toSet(), [...originals, ...copies].map((r) => r['id']).toSet());
-    for (var i = 0; i < originals.length; i++) {
-      final title = catalogEntryTitle(catalog, 'skills', copies[i]);
-      expect(title, contains('(Copy)'));
-      expect(title, isNot(contains('(Verified)')));
-      expect(title.split(' — Source: ').last,
-          catalogEntryTitle(catalog, 'skills', originals[i]).split(' — Source: ').last);
-      expect(copies[i]['desc'], originals[i]['desc']);
+  test('retired copies migrate on load and restore while preserving stats and saved files', () {
+    final saved = profile();
+    const retired = {9400440: 400440, 9403110: 403110, 9414500: 414500, 9505580: 505580};
+    saved['awakening'] = [for (final entry in retired.entries)
+      [['ActiveSkill', entry.key], ['ActiveSkill', entry.value], ['BaseParameter', 1, 50]]];
+    saved['synchro'] = [for (final id in retired.keys) [['ActiveSkill', id]]];
+    final before = CharacterConfig.copy(saved);
+    final text = CharacterConfig.encode(saved);
+    final migrated = CharacterConfig.retireComparisonAbilities(saved);
+    expect(saved, before);
+    expect(migrated['stats'], saved['stats']);
+    expect(migrated['skills'], saved['skills']);
+    for (var i = 0; i < retired.length; i++) {
+      expect(migrated['awakening'][i], [['ActiveSkill', retired.values.elementAt(i)], ['BaseParameter', 1, 50]]);
+      expect(migrated['synchro'][i], [['ActiveSkill', retired.values.elementAt(i)]]);
     }
-    expect(catalogEntryTitle(catalog, 'skills', copies[0]), contains('MR=3'));
-    expect(catalogEntryTitle(catalog, 'skills', copies[2]), contains('awakening=2'));
+    expect(CharacterConfig.decode(text), migrated);
+    expect(CharacterConfig.decodeAll(CharacterConfig.encodeAll([saved])), [migrated]);
+    expect(CharacterConfig.restore(saved, [], replacing: saved), migrated);
+    expect(CharacterConfig.retireComparisonAbilities(migrated), same(migrated));
+    expect(CharacterConfig.encode(saved), text);
+  });
+
+  test('unrelated duplicate grants and untouched party specs are preserved', () {
+    final unit = <String, dynamic>{'awakening': [[['ActiveSkill', 9400440], ['ActiveSkill', 777], ['ActiveSkill', 777]],
+      [['ActiveSkill', 400440]]], 'synchro': []};
+    final result = CharacterConfig.retireComparisonAbilities(unit);
+    expect(result['awakening'][0], [['ActiveSkill', 400440], ['ActiveSkill', 777], ['ActiveSkill', 777]]);
+    expect(result['awakening'][1], unit['awakening'][1]);
+    final party = <String, dynamic>{'id': 1001, 'party': {'version': 1, 'id': 1001}};
+    expect(CharacterConfig.retireComparisonAbilities(party), same(party));
   });
 }
