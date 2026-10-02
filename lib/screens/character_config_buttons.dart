@@ -142,6 +142,8 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
           content: Text(
             all
                 ? 'Loads ${_count(saved.length, 'saved character setup')}: ${saved.map((u) => u['en']).join(', ')}.\n\nRestores ${_count(saved.length - replaced, 'missing unit')} and replaces ${_count(replaced, 'matching setup')}. Keeps ${_count(app.units.length - replaced, 'other unit')}. A backup of your current roster is kept automatically.'
+                : saved.single['party'] != null
+                ? 'Restores ${saved.single['en']}\'s saved battle model. A backup of your current roster is kept automatically.'
                 : target == null
                 ? 'Adds ${saved.single['en']} back to your visions with the saved abilities, passives, stats and Resonance.'
                 : 'Replaces ${target['en']}\'s current setup with the saved abilities, passives, stats and Resonance. A backup of your current roster is kept automatically.',

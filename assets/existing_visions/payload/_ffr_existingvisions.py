@@ -219,6 +219,10 @@ def expected_edits(root):
     if (root / 'build/animation-repair-report.json').is_file():
         import _ffr_animation_repair
         expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
+    import _ffr_party
+    for u in units:
+        if u.get('party') and str((u.get('ffbe') or {}).get('id')) == _ffr_party.FINA:
+            expected[(_ffr_party.TABLE, u['jp'])] = {'Material': _ffr_party.material(u).rsplit('/', 1)[1]}
     return expected
 
 
@@ -236,6 +240,8 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 
 
 def register(app, env):
+    import _ffr_party
+    _ffr_party.register(app, env)
     from fastapi import HTTPException
     from fastapi.responses import FileResponse
     if env.get('unit_downloads') is not None:

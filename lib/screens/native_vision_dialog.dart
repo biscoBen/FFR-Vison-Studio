@@ -59,3 +59,32 @@ Future<void> showChangeModel(BuildContext context, int id) => showDialog<void>(
   context: context,
   builder: (_) => AddUnitDialog(replaceVisionId: id),
 );
+
+Future<void> showPartyModel(BuildContext context, int id) => showDialog<void>(
+  context: context, builder: (_) => AddUnitDialog(replacePartyId: id),
+);
+
+Future<void> choosePartyCharacter(BuildContext context, Map<String, dynamic> character) async {
+  final app = context.read<AppState>();
+  final edited = app.units.any((u) => u['key'] == character['key']);
+  final choice = await showDialog<String>(
+    context: context,
+    builder: (c) => AlertDialog(
+      backgroundColor: Guide.paper,
+      shape: Border.fromBorderSide(Guide.frame),
+      title: Text(character['en'].toString(), style: Guide.h2()),
+      content: Text('Choose a vision model for this party character during battles. Their abilities, equipment, progression and story appearance stay original.', style: Guide.text()),
+      actions: [
+        GuideButton('Cancel', onPressed: () => Navigator.pop(c)),
+        GuideButton('Edit battle appearance', onPressed: app.building ? null : () => Navigator.pop(c, 'edit')),
+        GuideButton('Change battle model', onPressed: app.building ? null : () => Navigator.pop(c, 'model')),
+        GuideButton('Revert to original', danger: true, onPressed: app.building || !edited ? null : () => Navigator.pop(c, 'revert')),
+      ],
+    ),
+  );
+  if (!context.mounted || choice == null) { return; }
+  if (choice == 'model') { await showPartyModel(context, character['id'] as int); return; }
+  if (choice == 'revert') { await confirmRemove(context, app, character); return; }
+  try { await app.editPartyCharacter(character['id'] as int); }
+  catch (e) { app.showNotice('Could not open this party character: $e'); }
+}

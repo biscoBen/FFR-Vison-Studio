@@ -18,7 +18,7 @@ class CrystalFina {
       (unit['ffbe'] is Map && [unit['ffbe']['id']?.toString(), unit['ffbe']['base']?.toString()].contains(spriteId));
 
   static UnitMap instantiate(UnitMap profile, List<dynamic> roster) {
-    if (roster.any((u) => matches(u as Map))) { throw StateError('Crystal Fina is already in your roster.'); }
+    if (roster.any((u) => u['native'] == null && u['party'] == null && matches(u as Map))) { throw StateError('Crystal Fina is already in your roster.'); }
     final visions = <int>{}, commands = <int>{}, masters = <int>{}, skills = <int>{};
     for (final unit in roster.cast<Map>()) {
       if (unit['id'] is num) {

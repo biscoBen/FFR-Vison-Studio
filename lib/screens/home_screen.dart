@@ -19,8 +19,10 @@ class HomeScreen extends StatelessWidget {
     final app = context.watch<AppState>();
     final canBuild = app.units.isNotEmpty || app.modInstalled;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
-    final added = app.units.where((u) => u['native'] == null).cast<Map<String, dynamic>>().toList();
+    final added = app.units.where((u) => u['native'] == null && u['party'] == null).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
+    final editedPartyIds = app.units.where((u) => u['party'] != null).map((u) => u['id']).toSet();
+    final party = [...app.units.where((u) => u['party'] != null), ...app.partyCharacters.where((u) => !editedPartyIds.contains(u['id']))].cast<Map<String, dynamic>>();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
         flex: 7,
@@ -32,6 +34,8 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: _visionBox(context, app, defaults, title: 'Default visions', key: const Key('default-visions')),
           ),
+          const SizedBox(height: 12),
+          Expanded(child: _visionBox(context, app, party, title: 'Party characters', key: const Key('party-characters'), isParty: true)),
           const CharacterConfigButtons(includeAll: true),
         ]),
       ),
@@ -55,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 14),
                 Text(app.gameRunning
                     ? 'Close the game to install. You can keep editing meanwhile.'
-                    : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity.', style: Guide.text()),
+                    : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity. Party replacements apply during battles.', style: Guide.text()),
                 const SizedBox(height: 14),
                 Row(children: [
                   GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
@@ -92,14 +96,14 @@ class HomeScreen extends StatelessWidget {
     ]);
   }
 
-  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false}) => Container(
+  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false}) => Container(
         key: key,
         decoration: BoxDecoration(border: Border.all(color: Guide.ink, width: 1.5)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Band(title, trailing: Text('${entries.length} vision${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
+          Band(title, trailing: Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
           Expanded(
             child: entries.isEmpty
-                ? allowAdd ? SingleChildScrollView(child: _empty(context)) : Center(child: Text('No default visions loaded.', style: Guide.small()))
+                ? allowAdd ? SingleChildScrollView(child: _empty(context)) : Center(child: Text(isParty ? 'Prepare game files to load party characters.' : 'No default visions loaded.', style: Guide.small()))
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
@@ -133,6 +137,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _entry(BuildContext context, AppState app, Map<String, dynamic> u) {
     final native = u['native'] != null;
+    final party = u['party'] != null;
     final edited = app.units.any((x) => x['key'] == u['key']);
     final aw = (u['awakening'] as List? ?? []).cast<List>();
     final abilities = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] == 'ActiveSkill').length);
@@ -142,12 +147,14 @@ class HomeScreen extends StatelessWidget {
       color: Guide.paper,
       shape: Border.fromBorderSide(BorderSide(color: Guide.ink, width: 1.5)),
       child: InkWell(
-        onTap: () => native ? chooseNativeVision(context, u) : app.select(u['key'] as String),
+        onTap: () => party ? choosePartyCharacter(context, u) : native ? chooseNativeVision(context, u) : app.select(u['key'] as String),
         hoverColor: Guide.paper2,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Frame(padding: 2, child: native && u['ffbe'] == null
+            Frame(padding: 2, child: party && u['ffbe'] == null
+                ? SizedBox(width: 72, height: 72, child: Icon(Icons.person, size: 48, color: Guide.inkSoft))
+                : native && u['ffbe'] == null
                 ? NativePortrait(visionId: u['id'] as int, fallbackUrl: app.api!.nativeIcon(u['id'] as int), width: 72, height: 72)
                 : PixelImage(app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
             const SizedBox(width: 10),
@@ -155,10 +162,10 @@ class HomeScreen extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text((u['en'] as String? ?? '').toUpperCase(), style: Guide.h2().copyWith(fontSize: 20), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
-                Text('${u['attackType'] == 'Magic' ? 'Magic' : 'Physical'} · ${((u['roles'] as List?) ?? []).map((r) => r.toString().replaceAll('eUnitRole::', '')).join(', ')}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(party ? 'Battle appearance' : '${u['attackType'] == 'Magic' ? 'Magic' : 'Physical'} · ${((u['roles'] as List?) ?? []).map((r) => r.toString().replaceAll('eUnitRole::', '')).join(', ')}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 6),
-                Text('$abilities abilities · $bonuses bonuses', style: Guide.small(Guide.ink)),
-                Text(native ? (edited ? 'Game vision · your edits' : 'Game vision · defaults') : 'Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(party ? (u['ffbe'] == null ? 'Original model' : 'Replacement model') : '$abilities abilities · $bonuses bonuses', style: Guide.small(Guide.ink)),
+                Text(party ? (edited ? 'Party character · your edits' : 'Party character · defaults') : native ? (edited ? 'Game vision · your edits' : 'Game vision · defaults') : 'Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
               ]),
             ),
           ]),

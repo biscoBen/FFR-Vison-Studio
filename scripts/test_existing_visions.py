@@ -20,6 +20,8 @@ def module(name, path):
     spec = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 
 
+party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
+sys.modules['_ffr_party'] = party
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
 animation = module('animation', ROOT / 'assets/existing_visions/payload/_ffr_animation_repair.py')
 installer = module('native_installer', ROOT / 'assets/existing_visions/install_existing_visions.py')

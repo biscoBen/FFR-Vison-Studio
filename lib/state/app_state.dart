@@ -81,6 +81,7 @@ class AppState extends ChangeNotifier {
 
   JsonMap? get selected => units.cast<JsonMap?>().firstWhere((u) => u?['key'] == selectedKey, orElse: () => null);
   List<dynamic> nativeVisions = [];
+  List<dynamic> partyCharacters = [];
   String get logsDir => p.join(paths.root, 'logs');
   String get downloadPage => hostBase.endsWith('/') ? hostBase : '$hostBase/';
 
@@ -289,6 +290,8 @@ class AppState extends ChangeNotifier {
     units = await api!.spec();
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
+    try { partyCharacters = await api!.partyCharacters(); }
+    catch (e) { notice = 'Could not load the party characters: $e'; }
     if (catalog?['ffbeResonance'] != null) {
       units = units.map((u) {
         final upgraded = migrateCgResonance(u as JsonMap);
@@ -440,7 +443,7 @@ class AppState extends ChangeNotifier {
     return u;
   });
 
-  bool get hasCrystalFina => units.any((u) => u['native'] == null && CrystalFina.matches(u as Map));
+  bool get hasCrystalFina => units.any((u) => u['native'] == null && u['party'] == null && CrystalFina.matches(u as Map));
 
   Future<JsonMap> snapshotCharacter(String key) => _withRoster(() async {
     if (api != null && !engineDown) { await _savePending(); }
@@ -455,6 +458,11 @@ class AppState extends ChangeNotifier {
   });
 
   Future<void> _checkCharacterArtwork(JsonMap saved) async {
+    if (saved['party'] != null) {
+      final original = await api!.partyCharacter(saved['id'] as int);
+      if (original['party']?['id'] != saved['party']['id']) { throw StateError('This party character is not available in the prepared game.'); }
+      if (saved['ffbe'] == null) { return; }
+    }
     if (saved['native'] != null) {
       final original = await api!.nativeVision(saved['id'] as int);
       if (original['native']?['id'] != saved['native']['id']) { throw StateError('This original vision is not available in the prepared game.'); }
@@ -616,6 +624,31 @@ class AppState extends ChangeNotifier {
       await _checkCharacterArtwork(unit);
     }
     final next = [for (final u in current) u['native']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
+    final revision = _rosterRevision;
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    units = _mergePending(next);
+    if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending(); selectedKey = unit['key'] as String; _anims.clear(); notifyListeners();
+    return unit;
+  });
+
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance}) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel(); await _savePending();
+    final current = _mergePending(await api!.spec());
+    final matches = current.where((u) => u['party']?['id'] == id).toList();
+    if (matches.length > 1) { throw StateError('This party character has duplicate overrides.'); }
+    final unit = CharacterConfig.copy(matches.isEmpty ? await api!.partyCharacter(id) : matches.single as JsonMap);
+    if (current.any((u) => u['id'] == id && u['party'] == null)) {
+      throw StateError('This party character conflicts with a roster entry.');
+    }
+    if (appearance != null) {
+      unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
+      await _checkCharacterArtwork(unit);
+    }
+    CharacterConfig.validate(unit);
+    final next = [for (final u in current) u['party']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
     final revision = _rosterRevision;
     await api!.saveSpec(json.decode(json.encode(next)) as List);
     units = _mergePending(next);

@@ -233,6 +233,13 @@ The character page has **Change model** and **Use original model**. Restoring th
 If no overrides or added units remain, use **Restore original game** to remove the installed mod.
 Single and bulk config saves include original-vision edits and replacement-model selections.
 
+The third home section, **Party characters**, lists Rain, Lasswell, Fina, Lid, Nichol, Dark Fina, Jake and Sakura.
+Use **Change battle model** to select and preview an FFBE appearance, or **Edit battle appearance** for its saved setup.
+**Revert to original** removes that character's replacement on the next install. Single/bulk character configs include
+these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
+changes only the party battle-model table. Walking and cutscene assets keep their original paths. Original skill effects
+remain in use; special cinematics and replacement motions need an in-game check.
+
 The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another
 existing game Resonance; creating a custom Resonance remains available for separately added units. Unsupported original
 sprite layouts and incomplete placeholders are excluded. Engine integration runs automatically at startup and after

@@ -17,7 +17,7 @@ MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -93,7 +93,8 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party',
+               'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
                'for u in native_units + UNITS:', '    if u.get("ffbe"):',
                '        _ffr_animation_repair.repair_unit(u, ROOT)',
@@ -114,7 +115,8 @@ def hook_builder(raw):
                     '                    "objects": post_objects, "bytecode": post_bytecode})']
     before_pack = [MARKER, 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
-                   '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)']
+                   '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)',
+                   '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
     argument = sprite_call.args[0]
@@ -158,7 +160,9 @@ def hook_verifier(raw):
     if ast.unparse(expected.value) != 'expected_rows()' or count.lineno != count.end_lineno or unexpected.lineno != unexpected.end_lineno:
         raise RuntimeError('Unsupported native vision verifier layout.')
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
-    lines[count.lineno - 1] = '    n = len([u for u in json.load(open(spec, encoding="utf-8")) if u.get("native") is None]) if os.path.exists(spec) else 5' + nl
+    lines[count.lineno - 1] = '    n = len([u for u in json.load(open(spec, encoding="utf-8")) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
+    finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
+    lines[finish.lineno - 1] = '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
     additions = {
         expected.end_lineno: [MARKER, 'import _ffr_existingvisions', 'native_expected = _ffr_existingvisions.expected_edits(ROOT)'],
         unexpected.end_lineno: [MARKER, 'unexpected = [k for k in unexpected if k not in changed or not _ffr_existingvisions.expected_row_change(rel, k, orig[k], built[k], native_expected, equivalent)]'],

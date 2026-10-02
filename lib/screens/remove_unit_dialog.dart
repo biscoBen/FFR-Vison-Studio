@@ -10,7 +10,8 @@ Future<void> confirmRemove(
   AppState app,
   Map<String, dynamic> unit,
 ) async {
-  final native = unit['native'] != null;
+  final party = unit['party'] != null;
+  final native = unit['native'] != null || party;
   final ok = await showDialog<bool>(
     context: context,
     builder: (c) => AlertDialog(
@@ -23,7 +24,7 @@ Future<void> confirmRemove(
         style: Guide.h2(),
       ),
       content: Text(
-        native
+        party ? 'This restores the original battle model on the next build/install. Save its character config first to keep the replacement.' : native
             ? 'This restores the original model, abilities, bonuses, stats, Resonance and MR rewards by removing this vision\'s overrides. Save its character config first to keep your edits. The next build/install applies the original vision to the game.'
             : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.',
         style: Guide.text(),

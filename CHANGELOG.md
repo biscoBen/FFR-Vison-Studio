@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Add a third home section for the eight original party characters. Choose and preview FFBE battle models, including
+  Crystal Fina, save/load replacements with character configs, and revert each character independently. Keep original
+  party abilities, equipment, progression, walking and cutscene assets. Generate private battle packages and verify
+  every original battle-table row/reference; retain native animation-pack names and Nichol's mixture phases.
+- Validate the party table with the real engine serializer. Battle appearance and special cinematics still need an
+  in-game check on the user's Windows installation.
 
 ## Published native-kit and batch effect repair — 2026-10-01
 

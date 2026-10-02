@@ -32,6 +32,8 @@ class Api {
   Future<Map<String, dynamic>> status() async => (await get('/api/status')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> catalog() async => (await get('/api/ffr/catalog')) as Map<String, dynamic>;
   Future<List<dynamic>> spec() async => (await get('/api/spec')) as List<dynamic>;
+  Future<List<dynamic>> partyCharacters() async => (await get('/api/party/catalog')) as List<dynamic>;
+  Future<Map<String, dynamic>> partyCharacter(int id) async => (await get('/api/party/character/$id')) as Map<String, dynamic>;
   Future<List<dynamic>> nativeVisions() async => (await get('/api/native/catalog')) as List<dynamic>;
   Future<Map<String, dynamic>> nativeVision(int id) async => (await get('/api/native/vision/$id')) as Map<String, dynamic>;
   String nativeIcon(int id) => '$base/api/native/icon/$id';

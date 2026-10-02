@@ -66,6 +66,12 @@ class CharacterConfig {
         );
       }
       validate(unit);
+      if (unit['party'] != null) {
+        if (!keys.add(unit['key'] as String) || !ids.add(unit['id'] as int)) {
+          throw const FormatException('Duplicate party character override.');
+        }
+        continue;
+      }
       if (!keys.add(unit['key'] as String) ||
           !ids.add(unit['id'] as int) ||
           !commands.add(unit['command']['id'] as int) ||
@@ -163,6 +169,7 @@ class CharacterConfig {
     }
     final activeIds = <int, int>{}, masterIds = <int, int>{};
     for (var i = 0; i < saved.length; i++) {
+      if (saved[i]['party'] != null) { continue; }
       final oldId = saved[i]['id'] as int, newId = loaded[i]['id'] as int;
       masterIds[saved[i]['master']['id'] as int] =
           loaded[i]['master']['id'] as int;
@@ -177,6 +184,7 @@ class CharacterConfig {
     // Use the original references once, rather than remapping an already
     // remapped value that happens to equal another character's previous ID.
     for (var i = 0; i < saved.length; i++) {
+      if (saved[i]['party'] != null) { continue; }
       final original = copy(saved[i]);
       for (final field in ['awakening', 'synchro']) {
         for (final tier in original[field] as List) {
@@ -213,6 +221,28 @@ class CharacterConfig {
     Never invalid() => throw const FormatException(
       'This character config is incomplete or invalid. Your roster has not been changed.',
     );
+    if (unit['party'] != null) {
+      const names = ['Rain', 'Lasswell', 'Fina', 'Lid', 'Nichol', 'Dark Fina', 'Jake', 'Sakura'];
+      const jp = ['レイン', 'ラスウェル', 'フィーナ', 'リド', 'ニコル', '魔人フィーナ', 'ジェイク', 'サクラ'];
+      final id = unit['id'];
+      if (id is! int || id < 1001 || id > 1008 || unit['key'] != 'party_$id' ||
+          unit['en'] != names[id - 1001] || unit['jp'] != jp[id - 1001] ||
+          unit['party'] is! Map || unit['party']['version'] != 1 || unit['party']['id'] != id ||
+          (unit['party'] as Map).length != 2 ||
+          unit.keys.any((k) => !['key', 'id', 'jp', 'en', 'party', 'ffbe', 'menuScale', 'icon'].contains(k))) { invalid(); }
+      final ffbe = unit['ffbe'];
+      if (ffbe != null) {
+        if (ffbe is! Map || ffbe['id'] is! String || !RegExp(r'^\d+$').hasMatch(ffbe['id'].toString())) { invalid(); }
+        for (final field in ['dir', 'baseDir']) {
+          final path = ffbe[field];
+          if (field == 'dir' && path == null) { invalid(); }
+          if (path != null && (path is! String || !path.startsWith('units/') ||
+              path.contains('\\') || path.contains(':') || path.split('/').contains('..'))) { invalid(); }
+        }
+      }
+      if (ffbe is Map && ffbe['baseDir'] != null && !RegExp(r'^\d+$').hasMatch(ffbe['baseForm'].toString())) { invalid(); }
+      return;
+    }
     bool integer(dynamic value) => value is int && value > 0;
     for (final field in ['key', 'jp', 'en', 'desc', 'attackType']) {
       if (unit[field] is! String) {
@@ -373,6 +403,9 @@ class CharacterConfig {
   static int resonanceId(int id) => 440000 + (id - 13099) * 10;
 
   static bool sameCharacter(Map saved, Map current) {
+    if (saved['party'] != null || current['party'] != null) {
+      return saved['party'] != null && current['party'] != null && saved['party']['id'] == current['party']['id'];
+    }
     if (saved['native'] != null || current['native'] != null) {
       return saved['native'] != null &&
           current['native'] != null &&
@@ -409,7 +442,7 @@ class CharacterConfig {
     final sameForm = candidates
         .where(
           (u) =>
-              saved['native'] != null || u['ffbe']['id'] == saved['ffbe']['id'],
+              saved['party'] != null || saved['native'] != null || u['ffbe']['id'] == saved['ffbe']['id'],
         )
         .toList();
     if (sameForm.length == 1) {
@@ -438,7 +471,7 @@ class CharacterConfig {
         .toList();
     final result = copy(saved);
     final oldId = saved['id'] as int;
-    if (saved['native'] != null) {
+    if (saved['native'] != null || saved['party'] != null) {
       if (other.any((u) => u['id'] == oldId || u['key'] == saved['key'])) {
         throw StateError(
           'This original vision has a conflicting roster entry. Its game ID cannot be reassigned.',
@@ -458,6 +491,7 @@ class CharacterConfig {
         skillIds = <int>{};
     for (final unit in other) {
       visionIds.add(unit['id'] as int);
+      if (unit['party'] != null) { continue; }
       commandIds.add(unit['command']['id'] as int);
       masterIds.add(unit['master']['id'] as int);
       skillIds.addAll(
@@ -547,7 +581,7 @@ class CharacterConfig {
     );
     final usedSkills = <String>{
       for (final u in other) ...[
-        for (final s in (u['skills'] as Map).values) s['jp'] as String,
+        for (final s in ((u['skills'] as Map?) ?? {}).values) s['jp'] as String,
         if (u['lb_custom'] != null) u['lb_custom']['jp'] as String,
       ],
     };

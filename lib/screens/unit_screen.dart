@@ -15,6 +15,7 @@ import 'native_vision_dialog.dart';
 import 'unit_anim_pane.dart';
 import 'character_config_buttons.dart';
 import 'native_portrait.dart';
+import 'party_character_screen.dart';
 
 /// A unit's page: the character entry and its editable configuration.
 class UnitScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class _UnitScreenState extends State<UnitScreen> {
     final app = context.watch<AppState>();
     final u = app.selected;
     if (u == null) return const SizedBox.shrink();
+    if (u['party'] != null) { return PartyCharacterScreen(unit: u); }
     final api = app.api!;
     final stats = (u['stats'] as Map?) ?? {};
     final form = (u['ffbe'] as Map?)?['id']?.toString();
