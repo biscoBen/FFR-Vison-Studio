@@ -11,16 +11,32 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Drag default visions into Added visions for opt-in original-item acquisition at the next battle start. The native
-  ownership condition prevents repeated grants; original vision IDs, kits and MR rewards stay intact. Dragging back
-  stops acquisition after reinstalling and preserves existing edits.
-- Add a reversible one-battle MR toggle using 11,430 native AP, bounded from original rank costs. Preserve scripted
-  reward suppression and awakening requirements. Defaults are off; test on a clean save without saving.
-- Verify generated grant/common-event tables and every battle reward against original rows. The real engine serializer
-  preserves 100 parent-event rows, 828 combined-event rows, seven common events and 678 encounter groups.
-  Patch both parent and combined event tables so runtime recomposition retains acquisition. In-game acquisition/MR still need testing.
-- Passed local analysis, focused drag/config/party tests and 184 Python tests (three Windows-only checks run in CI).
-  Keep pending ability-hiding decisions out of this update.
+No pending changes.
+
+## Published original vision and MR testing — 2026-10-02
+
+Changes in [`a718556`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a718556823725f3d2f404663b6308215f5536aa8),
+[test package 37045019928](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37045019928).
+
+- Drag default visions into Added visions to acquire their original items at the next battle start, using the native
+  ownership condition. Original vision IDs, kits and MR rewards remain intact. Dragging back stops acquisition after
+  reinstalling and preserves edits. Both controls default off; use a clean save without saving.
+- Enable one-battle MR testing for 11,430 AP per reward-bearing victory, bounded from native rank costs. Preserve
+  scripted reward suppression and awakening requirements. Disable, reinstall and reload the clean save afterward.
+- Real engine serialization verified all 26 original grants, preserving 100 parent-event rows, 828 combined-event rows,
+  seven common events and 678 encounter groups. Patch both parent and combined tables so runtime recomposition
+  retains acquisition. In-game acquisition and MR progression still need confirmation.
+- Passed local analysis, 55 focused Flutter tests and 184 Python tests; Windows passed the full Flutter suite, all
+  Python checks including real engine contracts, fresh engine startup, launcher/updater/import checks and compilation.
+  Verified the authenticated ZIP checksum, exact commit, all extension files and eight retained party portraits.
+  Pending ability-hiding decisions are excluded; master is unchanged.
+- A runtime composite-table correction required a second code push. Cancelled the first automatic run before publication
+  and an accidental duplicate manual run caused by querying Actions immediately after the first push. Reused the corrected
+  push run; no further build was dispatched. Final CI took 5m15s, with 8m46s summed job execution; cancelled runs added
+  13m39s of runner execution. The download helper's transient HTTP 401 recovered by rejoining the same successful run.
+- First complete candidate: 10:57:54 PDT. ZIP verified at 11:10:31 PDT; packaged-file checks completed at 11:10:55 PDT
+  (13m01s from candidate, 33m26s from request, including checks, correction, superseded CI and waiting).
+  Documentation-only publication notes followed; the binary keeps its original tested commit.
 
 ## Published party battle paths and retired comparison skills — 2026-10-02
 

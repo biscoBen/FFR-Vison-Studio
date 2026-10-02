@@ -63,6 +63,9 @@ python3 scripts/cloud_windows_build.py
 
 Enable repository Actions from its Actions page first. The helper can also do this with `--enable-actions` if its credential
 has Administration permission.
+After pushing, confirm its push run is visible in Actions before calling the helper; an immediate query can race
+run discovery and dispatch a duplicate.
+
 The helper defaults to `Sephira's-Update` and build 15. It checks the remote commit and searches for a successful or
 running build with that exact commit, workflow and build/download inputs. It reuses a verified build or waits for the
 matching running build; otherwise it dispatches one run. `--force-rebuild` deliberately requests a new run.
