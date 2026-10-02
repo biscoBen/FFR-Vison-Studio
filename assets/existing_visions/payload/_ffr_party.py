@@ -174,6 +174,13 @@ def generate(u, env):
     if ff.get('baseDir'): args += ['--base', str(root / ff['baseDir']), str(ff['baseForm'])]
     run(args)
     spec_path = battle / 'spec.json'; spec = json.loads(spec_path.read_bytes())
+    # The sprite converter writes pixelSize as floats. make-texture parses
+    # integer command-line arguments, so preserve whole dimensions as integers.
+    dimensions = spec['pixelSize']
+    if len(dimensions) != 2 or any(type(n) not in (int, float) or not 0 < n <= 32768 or n != int(n)
+                                   for n in dimensions):
+        raise ValueError('The party battle atlas must have two positive whole pixel dimensions.')
+    w, h = (str(int(n)) for n in dimensions)
     party_motions(spec)
     spec.update(cellmapName=name, animePackName=name, imagePath=name + '_tex.png')
     spec_path.write_text(json.dumps(spec), encoding='utf-8')
@@ -184,7 +191,6 @@ def generate(u, env):
     run(tool + ['make-ss6', str(templates / f'summon{donor}.uasset'), str(spec_path),
                 str(destination / (name + '.uasset')), old, target,
                 f'summon{donor}={name}', '--usmap', usmap])
-    w, h = map(str, spec['pixelSize'])
     for suffix, payload in (('_tex', 'tex.bgra'), ('_normal', 'normal.bc5'), ('_mreo', 'mreo.bgra')):
         run(tool + ['make-texture', str(templates / f'summon{donor}{suffix}.uasset'),
                     str(battle / payload), w, h, str(destination / (name + suffix + '.uasset')),

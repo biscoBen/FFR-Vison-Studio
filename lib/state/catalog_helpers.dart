@@ -143,10 +143,11 @@ List<String> catalogDefaultOwners(
   String kind,
   Map row,
 ) {
+  final sourceId = row['comparisonOf'] ?? row['id'];
   final owners = <String>{
     for (final name
         in (((catalog['duplicatePolicy'] as Map?)?['owners'] as Map?)?[kind]
-                    as Map?)?['${row['id']}']
+                as Map?)?['$sourceId']
                 as List? ??
             [])
       if (name is String && name.isNotEmpty) name,
@@ -155,7 +156,7 @@ List<String> catalogDefaultOwners(
     final name = (vision['name'] ?? '').toString();
     if (name.isEmpty) continue;
     if (kind == 'skills' &&
-        (vision['finishBlow'] == row['id'] || row['hasUnit'] == name)) {
+        (vision['finishBlow'] == sourceId || row['hasUnit'] == name)) {
       owners.add(name);
     }
     for (final field in ['awakening', 'synchro']) {
@@ -164,7 +165,7 @@ List<String> catalogDefaultOwners(
           if (grant is List &&
               grant.length >= 2 &&
               grant[0] == (kind == 'skills' ? 'ActiveSkill' : 'PassiveSkill') &&
-              grant[1] == row['id']) {
+              grant[1] == sourceId) {
             owners.add(name);
           }
         }
@@ -187,10 +188,10 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       effectMapping is Map && effectMapping['donor'] is num;
   final reference = row['custom'] == true
       ? null
-      : catalogSourceReferences[kind]?[row['id']];
+      : catalogSourceReferences[kind]?[row['comparisonOf'] ?? row['id']];
   final confirmedSources = {
     if (unverified) ...owners,
-    for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['id']}'] as List? ?? []))
+    for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['comparisonOf'] ?? row['id']}'] as List? ?? []))
       if (catalogNameIsEnglish(name)) name.toString(),
     if (reference != null && !reference.internalLabelOnly) reference.owner,
   };

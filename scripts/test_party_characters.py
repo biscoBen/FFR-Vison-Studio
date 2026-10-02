@@ -156,7 +156,7 @@ class PartyCharacterTests(unittest.TestCase):
                 calls.append(args)
                 if '_ffr_build_sprites.py' in args[0]:
                     battle = root / 'build/sprites/party_1001/battle'; battle.mkdir(parents=True)
-                    (battle / 'spec.json').write_text(json.dumps({'pixelSize': [32, 32], 'animations': []}))
+                    (battle / 'spec.json').write_text(json.dumps({'pixelSize': [2048.0, 2048.0], 'animations': []}))
             env = {'ROOT': str(root), 'LEGACY': str(root / 'legacy'), 'OUT': str(root / 'out'),
                    'FFRDT': ['real-tool'], 'USMAP': 'fixture.usmap', 'run': run,
                    'ffrenv': SimpleNamespace(py=lambda *args: list(args))}
@@ -167,6 +167,9 @@ class PartyCharacterTests(unittest.TestCase):
             self.assertEqual(spec['animePackName'], 'unit0010')
             self.assertTrue(all('StudioParty/party1001' in str(args) for args in calls[1:]))
             self.assertTrue(all('/Chara/menu/' not in str(args) and '/Chara/unit/' not in str(args) for args in calls))
+            textures = [args for args in calls if 'make-texture' in args]
+            self.assertEqual(len(textures), 3)
+            self.assertTrue(all(args[4:6] == ['2048', '2048'] for args in textures))
 
 
 if __name__ == '__main__': unittest.main()

@@ -225,6 +225,61 @@ PHYSICAL_DONORS = {'Thunder': (420070, 420080, 420090), 'Earth': (420160, 420170
 # Borrow ordinary monster Needle's shared Stab/Needle particles, not its body,
 # physical-damage formula or hit count.
 MONSTER_NEEDLES = {500270: ('1,000 Needles', 1000), 505110: ('10,000 Needles', 10000)}
+# Independent comparison abilities. Their original mechanics/visual bindings
+# come from this installation, never from the effect donor or another vision.
+COMPARISON_SKILLS = {
+    9400440: (400440, 'Chakra'),
+    9403110: (403110, 'Cheer'),
+    9414500: (414500, 'Purify'),
+    9505580: (505580, 'Seal of Conviction'),
+}
+
+
+def comparison_catalog(catalog):
+    skills = list(catalog.get('skills', [])); by_id = {s['id']: s for s in skills}
+    for sid, (original, name) in COMPARISON_SKILLS.items():
+        if sid in by_id: raise ValueError(f'The comparison ability ID {sid} is already in use.')
+        if original in by_id:
+            skills.append({**copy.deepcopy(by_id[original]), 'id': sid, 'name': name + ' (Copy)',
+                           'comparisonOf': original})
+    return {**catalog, 'skills': skills}
+
+
+def prepare_comparison_skills(tables, rows, selected, units):
+    """Stage selected copies once; leave original rows and saved grants intact."""
+    originals = rows('Skill/DT_SkillData'); by_id = {r['ID']: r for r in originals.values()}
+    wanted = sorted(set(selected) & COMPARISON_SKILLS.keys())
+    if not wanted: return by_id
+    custom = {int(sid) for u in units for sid in (u.get('skills') or {})}
+    occupied = set(by_id) | custom
+    for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo',
+                'Battle/Sequencer/DT_BtlHitEffectData'):
+        occupied.update(r['ID'] for r in rows(rel).values())
+        occupied.update(op['set']['ID'] for op in tables.get(rel, {}).get('add', []) if 'ID' in op.get('set', {}))
+    additions = []
+    for sid in wanted:
+        original, name = COMPARISON_SKILLS[sid]; key = f'Studio_Comparison_{original}'
+        if any(sid + off in occupied for off in (0, 1, 2)) or key in originals:
+            raise ValueError(f'The comparison ability ID {sid} is already in use. No original skill will be overwritten.')
+        source = next((k for k, r in originals.items() if r['ID'] == original), None)
+        if source is None: raise ValueError(f'The original {name} skill ({original}) is unavailable.')
+        fields = {'ID': sid, 'SortId': sid, 'Name': name + ' (Copy)'}
+        # A mode switch must not route the comparison back to the updated skill.
+        twin = by_id[original].get('skillIdAfterModeChange')
+        if twin and twin > 0: raise ValueError(f'{name} has an unsupported alternate target mode.')
+        by_id[sid] = {**copy.deepcopy(by_id[original]), **fields}
+        additions.append({'row': key, 'cloneFrom': source, 'set': fields})
+        for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo',
+                    'Battle/Sequencer/DT_BtlHitEffectData'):
+            for row_key, row in rows(rel).items():
+                offsets = (0,) if rel.startswith('Battle/') else (0, 1, 2)
+                if row['ID'] - original not in offsets: continue
+                tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append({
+                    'row': key + '_' + str(row['ID'] - original), 'cloneFrom': row_key,
+                    'set': {'ID': sid + row['ID'] - original}})
+    rel = 'Skill/DT_SkillData'
+    tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].extend(additions)
+    return by_id
 EFFECT_EVENTS = {'EffectSpawnNiagaraAtTarget', 'EffectSpawnNiagaraAtRandom', 'EffectMoveNiagaraAtTargetToNiagaraID',
                  'EffectMoveNiagaraAddVectorToNiagaraID', 'EffectDiactivateNiagaraToNiagaraID',
                  'EffectDestroyNiagaraToNiagaraID', 'EffectSetUserParameterToNiagaraID'}
@@ -443,7 +498,7 @@ def effect_policy(catalog, definitions=None, effects=None):
     for sid, skill in skills.items():
         if skill.get('seq') or skill.get('attr') not in NORMAL_SKILLS or not 0 < int(skill.get('hits') or 0) <= 30:
             continue
-        if sid in (400260, 400300): continue  # Keep the working Steal/Barrage presentations.
+        if sid in (400260, 400300) or sid in COMPARISON_SKILLS: continue
         name = str(skill.get('name') or '').strip().casefold()
         if name == 'attack': continue  # Hidden normal attacks keep their unit routing.
         same = [s for s in native if name and str(s.get('name') or '').strip().casefold() == name]
@@ -1052,8 +1107,8 @@ def build_effect_sequence(job, out, work, command, usmap, run):
 
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
     """Add selected missing skill timelines; leave existing game rows untouched."""
-    skill_rows = rows('Skill/DT_SkillData'); by_id = {r['ID']: r for r in skill_rows.values()}
     selected, preserved = repair_selection(units)
+    by_id = prepare_comparison_skills(tables, rows, selected, units)
     native = None
     if native_support and selected:
         try: native = NativeAnimations(rows, root, extract, native_support)
@@ -1102,7 +1157,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             if presentation:
                 repaired.append(sid)
                 coverage.append({'id': sid, 'status': 'animation_profile', **presentation}); continue
-        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle and sid not in (400260, 400300) else (None, 'Native sequence audit unavailable.')
+        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle and sid not in (400260, 400300) and sid not in COMPARISON_SKILLS else (None, 'Native sequence audit unavailable.')
         if donor is not None:
             repaired.append(sid); reused.append((sid, donor))
             coverage.append({'id': sid, 'status': 'native_reuse', 'donor': donor}); continue

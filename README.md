@@ -125,6 +125,13 @@ A failed preparation reports its error and keeps the roster unchanged; retry loa
 
 ## Automatic animation repair
 
+For same-battle visual comparisons, search the Abilities list for **Chakra (Copy)**, **Cheer (Copy)**,
+**Purify (Copy)** (Ayaka awakening 2), or **Seal of Conviction (Copy)** (ordinary Dark variant).
+Equip a Copy and its regular Verified entry together. Copies have separate IDs and the original game mechanics,
+descriptions and visual bindings; missing timelines use the safe casting/attack fallback without Studio's borrowed
+target effects. They do not consume custom-move slots. Seal's Dark mapping predates the latest bulk pass; its Copy
+compares against the original game baseline, rather than that earlier Studio mapping.
+
 Fresh roster builds give missing ordinary skills native target effects from a regular same-name skill, even when damage,
 targets or hit counts differ. Remaining elemental attacks use three power tiers: physical Earth/Thunder skills use the
 corresponding Blade effects; other families use matching elemental spell effects with the vision's physical or magic

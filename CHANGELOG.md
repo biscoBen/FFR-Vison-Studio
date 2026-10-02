@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Fix party battle replacement textures failing because the sprite converter writes whole pixel sizes as floats and
+  the engine requires integer arguments. Preserve the exact atlas dimensions for all three texture layers.
+- Add independently selectable **Chakra (Copy)**, **Cheer (Copy)**, **Purify (Copy)** (Ayaka awakening 2), and
+  **Seal of Conviction (Copy)** (ordinary Dark variant) for same-battle comparisons. Copies retain the original game
+  mechanics/visual bindings and use the safe motion fallback when missing; they do not receive Studio's donor effects
+  or use custom-move slots. Keep source labels and the working reaction-color cleanup. In-game appearance needs testing.
 
 ## Published bulk ability effect profiles — 2026-10-02
 
