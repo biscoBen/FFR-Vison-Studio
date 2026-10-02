@@ -54,6 +54,7 @@ class AppState extends ChangeNotifier {
   String? gameRoot;
   bool gameRunning = false;
   bool modInstalled = false;
+  bool testingMaxMr = false;
   bool dark = false; // the night edition of the guide
   final Map<String, List<String>> _anims = {};
   int backups = 0;
@@ -293,6 +294,8 @@ class AppState extends ChangeNotifier {
       if (!identical(migrated, u)) dirty = true;
       return migrated;
     }).toList();
+    try { testingMaxMr = await api!.testingMaxMr(); }
+    catch (e) { notice = 'Could not load vision testing settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
     try { partyCharacters = await api!.partyCharacters(); }
@@ -611,7 +614,7 @@ class AppState extends ChangeNotifier {
 
   /// Original visions keep their game identity. Merely opening the editor
   /// creates an unchanged snapshot; the builder only applies later differences.
-  Future<JsonMap> editNativeVision(int id, {JsonMap? appearance}) => _withRoster(() async {
+  Future<JsonMap> editNativeVision(int id, {JsonMap? appearance, bool? testAcquire, bool selectEditor = true}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel(); await _savePending();
@@ -628,13 +631,24 @@ class AppState extends ChangeNotifier {
       if (appearance['icon'] != null) { unit['icon'] = CharacterConfig.copy(appearance['icon'] as JsonMap); }
       await _checkCharacterArtwork(unit);
     }
+    if (testAcquire != null) {
+      if (testAcquire) { unit['testAcquire'] = true; } else { unit.remove('testAcquire'); }
+    }
+    CharacterConfig.validate(unit);
     final next = [for (final u in current) u['native']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
     final revision = _rosterRevision;
     await api!.saveSpec(json.decode(json.encode(next)) as List);
     units = _mergePending(next);
     if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
-    await _savePending(); selectedKey = unit['key'] as String; _anims.clear(); notifyListeners();
+    await _savePending(); if (selectEditor) { selectedKey = unit['key'] as String; } _anims.clear(); notifyListeners();
     return unit;
+  });
+
+  Future<void> setTestingMaxMr(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveTestingMaxMr(value);
+    testingMaxMr = value; notifyListeners();
   });
 
   Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance}) => _withRoster(() async {

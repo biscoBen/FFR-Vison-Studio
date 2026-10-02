@@ -11,7 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Drag default visions into Added visions for opt-in original-item acquisition at the next battle start. The native
+  ownership condition prevents repeated grants; original vision IDs, kits and MR rewards stay intact. Dragging back
+  stops acquisition after reinstalling and preserves existing edits.
+- Add a reversible one-battle MR toggle using 11,430 native AP, bounded from original rank costs. Preserve scripted
+  reward suppression and awakening requirements. Defaults are off; test on a clean save without saving.
+- Verify generated grant/common-event tables and every battle reward against original rows. The real engine serializer
+  preserves 828 event rows, seven common events and 678 encounter groups. In-game acquisition/MR still need testing.
+- Passed local analysis, focused drag/config/party tests and 184 Python tests (three Windows-only checks run in CI).
+  Keep pending ability-hiding decisions out of this update.
 
 ## Published party battle paths and retired comparison skills — 2026-10-02
 

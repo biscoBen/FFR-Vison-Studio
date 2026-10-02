@@ -22,6 +22,7 @@ def module(name, path):
 
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
 sys.modules['_ffr_party'] = party
+sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
 animation = module('animation', ROOT / 'assets/existing_visions/payload/_ffr_animation_repair.py')
 installer = module('native_installer', ROOT / 'assets/existing_visions/install_existing_visions.py')
@@ -153,6 +154,7 @@ class NativeVisionTests(unittest.TestCase):
             def get(self, route):
                 def add(func): routes[route] = func; return func
                 return add
+            put = get
         class HTTPException(Exception):
             def __init__(self, status_code, detail): super().__init__(detail); self.status_code = status_code
         with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {

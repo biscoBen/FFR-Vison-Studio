@@ -18,10 +18,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    final canBuild = app.units.isNotEmpty || app.modInstalled;
+    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
-    final added = app.units.where((u) => u['native'] == null && u['party'] == null).cast<Map<String, dynamic>>().toList();
-    final defaults = [...app.units.where((u) => u['native'] != null), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
+    final added = app.units.where((u) => u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
+    final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
     final editedPartyIds = app.units.where((u) => u['party'] != null).map((u) => u['id']).toSet();
     final party = [...app.units.where((u) => u['party'] != null), ...app.partyCharacters.where((u) => !editedPartyIds.contains(u['id']))].cast<Map<String, dynamic>>();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -62,6 +62,17 @@ class HomeScreen extends StatelessWidget {
                     ? 'Close the game to install. You can keep editing meanwhile.'
                     : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity. Party replacements apply during battles.', style: Guide.text()),
                 const SizedBox(height: 14),
+                SwitchListTile(
+                  key: const Key('testing-max-mr'), contentPadding: EdgeInsets.zero,
+                  title: Text('One-battle MR for testing', style: Guide.text()),
+                  subtitle: Text('Equipped visions earn the bounded native MR completion reward per reward-bearing victory. Does not change awakening ranks.', style: Guide.small()),
+                  value: app.testingMaxMr,
+                  onChanged: app.building || app.api == null ? null : (value) async {
+                    try { await app.setTestingMaxMr(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                Text('Drag default visions into Added visions to acquire the originals at the next battle start. Drag them back to stop. Install after changes; test on a clean save without saving, then disable and reinstall before reloading.', style: Guide.small()),
+                const SizedBox(height: 14),
                 Row(children: [
                   GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
                 ]),
@@ -97,9 +108,17 @@ class HomeScreen extends StatelessWidget {
     ]);
   }
 
-  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false}) => Container(
+  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false}) => DragTarget<int>(
+        onWillAcceptWithDetails: (details) => !app.building && !isParty &&
+            entries.every((u) => u['id'] != details.data),
+        onAcceptWithDetails: (details) async {
+          try {
+            await app.editNativeVision(details.data, testAcquire: allowAdd, selectEditor: false);
+          } catch (e) { app.showNotice('$e'); }
+        },
+        builder: (_, candidates, _) => Container(
         key: key,
-        decoration: BoxDecoration(border: Border.all(color: Guide.ink, width: 1.5)),
+        decoration: BoxDecoration(border: Border.all(color: candidates.isEmpty ? Guide.ink : Guide.blue, width: 1.5)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Band(title, trailing: Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
           Expanded(
@@ -113,6 +132,7 @@ class HomeScreen extends StatelessWidget {
                   ),
           ),
         ]),
+      ),
       );
 
   Widget _empty(BuildContext context) => Padding(
@@ -144,7 +164,7 @@ class HomeScreen extends StatelessWidget {
     final abilities = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] == 'ActiveSkill').length);
     final bonuses = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] != 'ActiveSkill').length);
     final lb = u['lb_custom'] as Map?;
-    return Material(
+    final card = Material(
       color: Guide.paper,
       shape: Border.fromBorderSide(BorderSide(color: Guide.ink, width: 1.5)),
       child: InkWell(
@@ -166,12 +186,20 @@ class HomeScreen extends StatelessWidget {
                 Text(party ? 'Battle appearance' : '${u['attackType'] == 'Magic' ? 'Magic' : 'Physical'} · ${((u['roles'] as List?) ?? []).map((r) => r.toString().replaceAll('eUnitRole::', '')).join(', ')}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 6),
                 Text(party ? (u['ffbe'] == null ? 'Original model' : 'Replacement model') : '$abilities abilities · $bonuses bonuses', style: Guide.small(Guide.ink)),
-                Text(party ? (edited ? 'Party character · your edits' : 'Party character · defaults') : native ? (edited ? 'Game vision · your edits' : 'Game vision · defaults') : 'Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(party ? (edited ? 'Party character · your edits' : 'Party character · defaults') : native ? (u['testAcquire'] == true ? 'Original vision · test acquisition' : edited ? 'Game vision · your edits' : 'Game vision · defaults') : 'Resonance: ${lb != null ? lb['en'] : 'borrowed'}', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis),
               ]),
             ),
           ]),
         ),
       ),
+    );
+    if (!native) { return card; }
+    return Draggable<int>(
+      key: ValueKey('drag-native-${u['id']}'), data: u['id'] as int,
+      maxSimultaneousDrags: app.building ? 0 : 1,
+      feedback: Material(child: SizedBox(width: 280, height: 128, child: card)),
+      childWhenDragging: Opacity(opacity: 0.4, child: card),
+      child: card,
     );
   }
 }

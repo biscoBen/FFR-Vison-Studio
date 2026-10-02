@@ -224,6 +224,8 @@ def expected_edits(root):
     for u in units:
         if u.get('party') and u.get('ffbe'):
             expected[(_ffr_party.TABLE, u['jp'])] = _ffr_party.asset_updates(u)
+    import _ffr_testing
+    expected.update(_ffr_testing.expected_edits(root, units, rows))
     return expected
 
 
@@ -242,6 +244,8 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 
 def register(app, env):
     import _ffr_party
+    import _ffr_testing
+    _ffr_testing.register(app, env)
     _ffr_party.register(app, env)
     from fastapi import HTTPException
     from fastapi.responses import FileResponse

@@ -241,13 +241,14 @@ class BundledFeatures {
           'payload/manifest.json',
           'payload/_ffr_existingvisions.py',
           'payload/_ffr_party.py',
+          'payload/_ffr_testing.py',
           'payload/_ffr_animation_repair.py',
           'payload/_ffr_build_sprites.py',
           'payload/_ffr_library.py',
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 9) {
+        (manifest['files'] as Map).length != 10) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

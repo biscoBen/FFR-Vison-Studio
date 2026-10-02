@@ -17,7 +17,7 @@ MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_testing.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -98,7 +98,7 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
@@ -116,6 +116,7 @@ def hook_builder(raw):
     before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
                     '_ffr_party.prepare(tables, party_units, rows)',
+                    '_ffr_testing.prepare(tables, native_units + UNITS, ROOT, rows)',
                     '_ffr_animation_repair.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
@@ -174,7 +175,7 @@ def hook_verifier(raw):
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
     lines[count.lineno - 1] = '    n = len([u for u in json.load(open(spec, encoding="utf-8")) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
     finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
-    lines[finish.lineno - 1] = '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
+    lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
     additions = {
         expected.end_lineno: [MARKER, 'import _ffr_existingvisions', 'native_expected = _ffr_existingvisions.expected_edits(ROOT)'],
         unexpected.end_lineno: [MARKER, 'unexpected = [k for k in unexpected if k not in changed or not _ffr_existingvisions.expected_row_change(rel, k, orig[k], built[k], native_expected, equivalent)]'],

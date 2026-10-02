@@ -59,6 +59,11 @@ Map<String, dynamic> originalFixture({int id = 13110, String name = 'Cloud'}) {
 
 class NativeApi extends ConfigApi {
   NativeApi(super.roster);
+  bool maxMr = false;
+  @override
+  Future<bool> testingMaxMr() async => maxMr;
+  @override
+  Future<void> saveTestingMaxMr(bool value) async { maxMr = value; }
   @override
   Future<Map<String, dynamic>> nativeVision(int id) async =>
       originalFixture(id: id, name: id == 13024 ? 'Tronn' : 'Cloud');
@@ -269,6 +274,61 @@ void main() {
     expect(ready(), isTrue);
     await tester.pumpAndSettle();
   }
+
+  testWidgets('dragging original visions enables acquisition and dragging back keeps edits', (tester) async {
+    await show(tester);
+    final before = clone(api.roster.first);
+    final source = find.byKey(const ValueKey('drag-native-13110'));
+    final top = find.byKey(const Key('added-visions'));
+    await tester.dragFrom(tester.getCenter(source), tester.getCenter(top) - tester.getCenter(source));
+    await wait(tester, () => app.units.any((u) => u['testAcquire'] == true));
+    expect(app.selectedKey, isNull);
+    expect(api.roster.first, before);
+    final original = api.roster.last;
+    expect(original['id'], 13110);
+    expect(original['donor'], 13110);
+    expect(original['native']['baseline'], originalFixture()['native']['baseline']);
+    expect(find.descendant(of: top, matching: find.text('CLOUD')), findsOneWidget);
+    final saved = CharacterConfig.decode(CharacterConfig.encode(original as JsonMap));
+    expect(saved['testAcquire'], isTrue);
+    final edited = CharacterConfig.copy(original)..['stats']['Attack'] = 999;
+    app.update(edited);
+    final defaults = find.byKey(const Key('default-visions'));
+    await tester.dragFrom(tester.getCenter(source), tester.getCenter(defaults) - tester.getCenter(source));
+    await wait(tester, () => app.units.last['testAcquire'] == null);
+    expect(api.roster, hasLength(2));
+    expect(api.roster.last['stats']['Attack'], 999);
+    expect(find.descendant(of: defaults, matching: find.text('CLOUD')), findsOneWidget);
+  });
+
+  test('acquisition is idempotent, preserves pending edits and is blocked during builds', () async {
+    final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 222;
+    app.update(edited);
+    await app.editNativeVision(13110, testAcquire: true, selectEditor: false);
+    await app.editNativeVision(13110, testAcquire: true, selectEditor: false);
+    expect(api.roster, hasLength(2));
+    expect(api.roster.first['stats']['Attack'], 222);
+    app.buildState = {'running': true};
+    await expectLater(app.editNativeVision(13110, testAcquire: false), throwsStateError);
+    await expectLater(app.setTestingMaxMr(true), throwsStateError);
+    expect(api.roster.last['testAcquire'], isTrue);
+  });
+
+  testWidgets('MR testing persists both toggle states without changing the roster', (tester) async {
+    final before = clone(api.roster);
+    await show(tester);
+    final control = find.byKey(const Key('testing-max-mr'));
+    await tester.ensureVisible(control);
+    await tester.tap(control);
+    await wait(tester, () => app.testingMaxMr);
+    expect(api.maxMr, isTrue);
+    expect(api.roster, before);
+    await tester.tap(control);
+    await wait(tester, () => !app.testingMaxMr);
+    expect(api.maxMr, isFalse);
+    final invalid = profile()..['testAcquire'] = true;
+    expect(() => CharacterConfig.validate(invalid), throwsFormatException);
+  });
 
   testWidgets(
     'reverting from the home popup restores the original and preserves other roster edits',

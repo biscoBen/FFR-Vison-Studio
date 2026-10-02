@@ -1,14 +1,15 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "a35f7358186e4ffef580b8ce2633e4d8716c028061253a3b605f1de4ffa261b7",
+    "install_existing_visions.py": "789bf6c540928737a218ae38205f30901904a19483567c931b493a42bfb08703",
     "payload/_ffr_animation_repair.py": "90adf0c3626a4261c2ced800bb1de972122cf6511811576c322edfaeb6773abc",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_existingvisions.py": "97eb703458d1323ae941f5abac5570e3758ff7ca5265b9b82d0252a0527a2316",
+    "payload/_ffr_existingvisions.py": "e66caf2dd74e79b0d16a47cc6f3871af91bd1deffcc8f0a05d3e955c4b23d933",
     "payload/_ffr_library.py": "021d47a5081789b99ddb1cf15dc49332cf2f5b708be8fa65f12d3e525f8eb2bc",
     "payload/_ffr_party.py": "577607ba1e2a237948ba18004f6b676d7f57c7904476f9952cead79b149624ff",
+    "payload/_ffr_testing.py": "81b9f5723106982bf0fe1ef440223edfb6adfad3e84240870578ccb561c6e2e5",
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
-    "payload/manifest.json": "ab2cd93e489a3f1e7619e0095b9778158c466950d5daf16f4fc0809f3c017a00"
+    "payload/manifest.json": "071e06ffc1e67036a5f96f00c859464cb9e75942eb792c5da2beeddb0aff8afe"
   }
 }

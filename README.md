@@ -123,6 +123,22 @@ Config loading restores only the selected appearance and its required base form,
 cached files. Single-character and **Load all character configs** saves retain their appearances when reopened.
 A failed preparation reports its error and keeps the roster unchanged; retry loading the config after the host recovers.
 
+## Original vision testing
+
+Drag a **Default vision** into **Added visions**, then install the mod. At the next battle start, a native game event
+acquires one original vision item if it is not already owned. It uses the real vision ID, kit, portraits and MR rewards;
+no replacement vision or custom skill slots are created. Equip it from the menu afterward. Drag it back into
+**Default visions** and reinstall to stop acquisition, preserving other edits.
+
+Enable **One-battle MR for testing** before installing to award 11,430 AP per reward-bearing victory, regardless of
+opponent. This bound covers the largest total of the game's native MR rank costs and stays within 32,767; it does not
+use an overflow-sized reward. Equip the visions first. Scripted battles that suppress rewards keep that behavior;
+awakening ranks and their materials are unchanged. Both controls default off and persist across Studio restarts.
+
+Use a clean save, do not save with testing active, then disable both controls, reinstall and reload the clean save.
+Disabling does not remove items or MR already acquired in the running session or a saved game. Table serialization
+and automated checks are verified; acquisition timing and MR progression still need confirmation in a running game.
+
 ## Automatic animation repair
 
 The four temporary comparison Copies are retired. Loading an older roster or config replaces their grants with

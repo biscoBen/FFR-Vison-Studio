@@ -298,6 +298,9 @@ class CharacterConfig {
     }
     final ffbe = unit['ffbe'];
     final native = unit['native'];
+    if (unit.containsKey('testAcquire') && (unit['testAcquire'] is! bool || native == null)) {
+      throw const FormatException('Test acquisition requires an original vision.');
+    }
     if (native != null &&
         (native is! Map ||
             native['version'] != 1 ||
