@@ -174,7 +174,7 @@ void main() {
         (unit, set) => BonusesStep(unit: unit, set: set),
         unit,
       );
-      expect(find.text('English passive — Source: Terra'), findsOneWidget);
+      expect(find.text('English passive — Source: Terra; MR=5'), findsOneWidget);
       expect(find.text('攻撃力アップ (Unverified)'), findsOneWidget);
       expect(
         find.ancestor(

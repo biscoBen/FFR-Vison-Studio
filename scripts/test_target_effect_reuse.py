@@ -59,11 +59,70 @@ class TargetEffectReuseTests(unittest.TestCase):
 
     def tearDown(self): self.temp.cleanup()
 
-    def repair(self):
+    def repair(self, ids=None):
         with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}):
             return motion.prepare_sequences(self.tables, self.clones, self.jobs,
-                [{'awakening': [[['ActiveSkill', 250020]]]}], self.root,
+                [{'awakening': [[['ActiveSkill', sid] for sid in (ids or [250020])]]}], self.root,
                 lambda rel: copy.deepcopy(self.game[rel]), mock.Mock(), self.support)
+
+    def monster_needles_fixture(self):
+        """Needle really binds only offset 2 to the shared enemy Stab folder."""
+        self.catalog['skills'] = [
+            {'id': sid, 'name': name, 'attr': 'Ability', 'seq': [], 'hits': 1,
+             'dmgType': 'Physic', 'calcType': 'Fixed', 'mag': power, 'target': 'Single'}
+            for sid, (name, power) in motion.MONSTER_NEEDLES.items()]
+        self.catalog['skills'].append({'id': 500260, 'name': 'Needle', 'attr': 'Ability', 'seq': [2], 'hits': 1})
+        self.particle = '/Game/Effect/03_SKL/skl500090/NS_EF_SKL500090_Hit_001'
+        self.catalog['niagara'] = [self.particle]
+        (self.root / 'data/ffr_catalog.json').write_text(json.dumps(self.catalog))
+        self.game['Skill/DT_SkillData'] = {str(sid): {**copy.deepcopy(self.skill), 'ID': sid,
+            'Name': name, 'skillAttrType': 'Ability', 'DamageType': 'Physic', 'damageCalcType': 'Fixed',
+            'TargetType': 'Single', 'defaultTargetRelation': 'Enemies', 'defaultTargetState': 'Alive',
+            'hitCount': 1, 'hitDamageRatioList': [1.0], 'magnification': power, 'effectBundleList': []}
+            for sid, (name, power) in motion.MONSTER_NEEDLES.items()}
+        self.game['Skill/DT_SkillData']['donor'] = {**copy.deepcopy(self.game['Skill/DT_SkillData']['500270']),
+            'ID': 500260, 'Name': 'Needle', 'damageCalcType': 'Physic', 'magnification': 18}
+        master = 'Sequencer/Battle/EnemySkill/500090/500092/SEQ_Battle_500092_Master'
+        path = self.root / 'extracted/legacy/FFRS/Content' / (master + '.uasset')
+        path.parent.mkdir(parents=True); path.write_bytes(b'Synthetic shared monster sequence')
+        for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo'):
+            self.game[rel] = {'donor': {'ID': 500262, 'LevelSequence': '/Game/' + master}, 'shell': {'ID': 440111}}
+        self.imports[0]['ObjectName'] = self.particle
+        self.imports[1]['ObjectName'] = 'NS_EF_SKL500090_Hit_001'
+        self.events[1][2]['Effect_NiagaraData']['niagaraAsset'] = 'import:NS_EF_SKL500090_Hit_001'
+        self.game['Battle/Sequencer/DT_BtlHitEffectData'] = {'donor': {'ID': 500090, 'NormalEffectID': 321}, 'generic': {'ID': 449999}}
+        self.events[2][2]['Other_Reaction_Id'] = 500090
+
+    def test_both_monster_needle_trials_keep_fixed_damage_one_hit_and_recipient_motion(self):
+        self.monster_needles_fixture(); before = copy.deepcopy(self.game)
+        self.assertEqual(self.repair([500270, 505110]), [500270, 505110])
+        self.assertEqual(self.game, before)
+        self.assertNotIn('Skill/DT_SkillData', self.tables)
+        self.assertNotIn('Skill/DT_SkillEffectData', self.tables)
+        for sid, job in zip((500270, 505110), self.jobs):
+            reactions = [e for e in job['plan']['events'] if e['set']['EventType'] == 'OtherReaction']
+            self.assertEqual(len(reactions), 1)
+            self.assertEqual(reactions[0]['set']['Other_Reaction_Id'], sid)
+            self.assertTrue(reactions[0]['set']['Otber_Reaction_bChangeColor'])
+            names = {e['set'].get('Unit_PlayAnimByName_AnimationName') for e in job['plan']['events']}
+            self.assertTrue({'command', 'attack_A', 'idle'} <= names)
+            particles = [e for e in job['plan']['events'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget']
+            self.assertEqual(len(particles), 1)
+            self.assertEqual(particles[0]['set']['Effect_NiagaraData']['niagaraAsset'],
+                {'path': self.particle + '.NS_EF_SKL500090_Hit_001', 'class': 'NiagaraSystem'})
+            self.assertFalse(particles[0]['set']['Effect_SpawnNiagaraAtTarget_IsAllSide'])
+        record = json.loads((self.root / 'build/animation-repair-report.json').read_bytes())
+        self.assertTrue(all(s['donor'] == 500260 and s['rule'] == 'monster_needle' for s in record['skills']))
+        self.assertFalse(record['inGameValidated'])
+
+    def test_needles_reject_changed_mechanics_or_unavailable_monster_particles(self):
+        self.monster_needles_fixture()
+        self.game['Skill/DT_SkillData']['500270']['hitCount'] = 2
+        with self.assertRaisesRegex(ValueError, 'original single-hit fixed-damage'): self.repair([500270])
+        self.game['Skill/DT_SkillData']['500270']['hitCount'] = 1
+        self.events[:] = [e for e in self.events if e[2]['EventType'] != 'EffectSpawnNiagaraAtTarget']
+        with self.assertRaisesRegex(ValueError, 'Needle has no reusable target particle'): self.repair([500270])
+        self.assertEqual(self.jobs, [])
 
     def engine_runner(self, calls):
         """Model 1.0.0.15's path/class input and import:name dump contract."""

@@ -50,49 +50,86 @@ void main() {
     },
   };
 
-  test(
-    'animation trials identify touched skills without changing sources or hiding rules',
-    () {
-      final cat = fixture();
-      final rows = [
-        {
-          'id': 400260,
-          'name': 'Steal',
-          'attr': 'Ability',
-          'hasUnit': 'All',
-          'seq': [],
-        },
-        {
-          'id': 400300,
-          'name': 'Barrage',
-          'attr': 'Ability',
-          'hasUnit': 'All',
-          'seq': [],
-        },
-      ];
-      cat['skills'].addAll(rows);
-      final before = catalogLibrary(
-        cat,
-        'skills',
-        [],
-      ).map((r) => r['id']).toList();
-      cat['animationPolicy']['trials'] = {
-        '400260': {'source': 'FFR'},
-        '400300': {'source': 'FFBE'},
-      };
-      expect(
-        catalogEntryTitle(cat, 'skills', rows[0]),
-        'Steal (Verified; FFR test) — Source: Zidane',
-      );
-      expect(
-        catalogEntryTitle(cat, 'skills', rows[1]),
-        'Barrage (Verified; FFBE test) — Source: Noctis',
-      );
-      expect(catalogLibrary(cat, 'skills', []).map((r) => r['id']), before);
-      expect(catalogEntryVerified(rows[0], 'skills'), isFalse);
-      expect(catalogEntryVerified(rows[1], 'skills'), isFalse);
-    },
-  );
+  test('animation trials identify touched skills without changing sources or hiding rules', () {
+    final cat = fixture();
+    final rows = [
+      {
+        'id': 400260,
+        'name': 'Steal',
+        'attr': 'Ability',
+        'hasUnit': 'All',
+        'seq': [],
+      },
+      {
+        'id': 400300,
+        'name': 'Barrage',
+        'attr': 'Ability',
+        'hasUnit': 'All',
+        'seq': [],
+      },
+    ];
+    cat['skills'].addAll(rows);
+    final before = catalogLibrary(
+      cat,
+      'skills',
+      [],
+    ).map((r) => r['id']).toList();
+    cat['animationPolicy']['trials'] = {
+      '400260': {'source': 'FFR'},
+      '400300': {'source': 'FFBE'},
+    };
+    expect(
+      catalogEntryTitle(cat, 'skills', rows[0]),
+      'Steal (Verified; FFR test) — Source: Zidane; MR=1',
+    );
+    expect(
+      catalogEntryTitle(cat, 'skills', rows[1]),
+      'Barrage (Verified; FFBE test) — Source: Noctis; MR=9',
+    );
+    expect(catalogLibrary(cat, 'skills', []).map((r) => r['id']), before);
+    expect(catalogEntryVerified(rows[0], 'skills'), isFalse);
+    expect(catalogEntryVerified(rows[1], 'skills'), isFalse);
+  });
+
+  test('monster trials identify borrowed effects without changing selection or sources', () {
+    final cat = fixture();
+    final rows = [
+      {
+        'id': 500270,
+        'name': '1,000 Needles',
+        'attr': 'Ability',
+        'hasUnit': 'All',
+        'seq': [],
+      },
+      {
+        'id': 505110,
+        'name': '10,000 Needles',
+        'attr': 'Ability',
+        'hasUnit': 'All',
+        'seq': [],
+      },
+    ];
+    cat['skills'].addAll(rows);
+    final before = catalogLibrary(
+      cat,
+      'skills',
+      [],
+    ).map((r) => r['id']).toList();
+    cat['animationPolicy']['trials'] = {
+      '500270': {'source': 'FFR mob'},
+      '505110': {'source': 'FFR mob'},
+    };
+    expect(
+      catalogEntryTitle(cat, 'skills', rows[0]),
+      '1,000 Needles (Verified; FFR mob test) — Source: Cactuar',
+    );
+    expect(
+      catalogEntryTitle(cat, 'skills', rows[1]),
+      '10,000 Needles (Verified; FFR mob test) — Source: Gigantuar',
+    );
+    expect(catalogLibrary(cat, 'skills', []).map((r) => r['id']), before);
+    expect(rows.every((r) => !catalogEntryVerified(r, 'skills')), isTrue);
+  });
 
   test('mapped entries get Verified while untouched labels and sources stay intact', () {
     final cat = fixture();

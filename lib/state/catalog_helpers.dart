@@ -211,10 +211,11 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
           animationPolicy is Map && animationPolicy['schema'] == 1 && trialMetadata is Map
       ? trialMetadata['source']
       : null;
-  final trialLabel = ['FFR', 'FFBE'].contains(trial) ? '; $trial test' : '';
+  final trialLabel = ['FFR', 'FFBE', 'FFR mob'].contains(trial) ? '; $trial test' : '';
   return '$label${trialLabel.isNotEmpty ? ' (Verified$trialLabel)' : hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
-      '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}';
+      '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}'
+      '${reference?.mr != null ? '; MR=${reference!.mr}${sources.length > 1 ? ' (${reference.owner})' : ''}' : ''}';
 }
 
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {

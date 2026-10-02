@@ -16,6 +16,13 @@ void main() {
     expect(catalogSourceReferences['passives']!.length, 343);
     expect(references.where((r) => r.internalLabelOnly).length, 6);
     expect(references.where((r) => r.awakening != null).length, 322);
+    expect(references.where((r) => r.mr != null).length, 128);
+    expect(
+      references
+          .where((r) => r.mr != null)
+          .every((r) => r.awakening == null && r.mr! >= 1 && r.mr! <= 10),
+      isTrue,
+    );
     expect(
       references.every(
         (r) => r.awakening == null || (r.awakening! >= 1 && r.awakening! <= 4),
@@ -132,7 +139,32 @@ void main() {
     );
     expect(title(225190), 'Move (Unverified) — Source: Siren');
     expect(title(440280), 'Move (Unverified) — Source: Y’shtola');
-    expect(title(400450), 'Move (Unverified) — Source: Amelia'); // Bond reward.
+    expect(title(400450), 'Move (Unverified) — Source: Amelia; MR=3');
+  });
+
+  test('bond levels identify the source reward without implying awakening or changing ownership', () {
+    expect(
+      title(400260, name: 'Steal'),
+      'Steal (Unverified) — Source: Zidane; MR=1',
+    );
+    expect(
+      title(400300, name: 'Barrage'),
+      'Barrage (Unverified) — Source: Noctis; MR=9',
+    );
+    expect(title(1281, kind: 'passives'), 'Move — Source: Tronn; MR=1');
+    final cat = {
+      'duplicatePolicy': {
+        'sources': {
+          'skills': {
+            '400260': ['A2'],
+          },
+        },
+      },
+    };
+    expect(
+      catalogEntryTitle(cat, 'skills', {'id': 400260, 'name': 'Steal'}),
+      'Steal (Unverified) — Source: A2, Zidane; MR=1 (Zidane)',
+    );
   });
 
   test(

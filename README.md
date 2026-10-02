@@ -87,9 +87,12 @@ and corrupt archives are rejected. GitHub can evict unused caches. For repeated 
 
 For the Steal/Barrage animation comparison, give **Steal (Verified; FFR test)** to Zidane and an FFBE-backed vision
 such as A2, and **Barrage (Verified; FFBE test)** to the FFBE-backed vision. After updating Studio, rebuild/install
-the roster mod. Steal uses the original game route; Barrage uses the recipient's own FFBE attack poses four times,
-with FFR's existing four-hit mechanics. Compare sprite identity, movement, stealing feedback, four Barrage hits and
-return to idle. These are animation trials; Windows checks cannot verify their appearance in a running battle.
+the roster mod. Steal now approaches the target in the recipient's ready pose, resolves one original item theft,
+then returns to idle and position. This is an explicit presentation, not a recovered Zidane-specific sequence.
+Barrage retains the recipient's four FFBE attack cycles and FFR's four-hit mechanics. **1,000 Needles** and
+**10,000 Needles (Verified; FFR mob test)** borrow ordinary monster Needle's shared Stab/Needle target particles;
+they retain one hit for their original fixed damage, without importing a monster body or extra hits. Compare theft,
+movement, target effects and battle completion. Windows checks cannot verify appearance in a running battle.
 
 If the cloud proxy blocks GitHub's artifact storage, the helper first reuses the exact run's authenticated published
 test ZIP when available, verifying both its release metadata and embedded build identity. No second build is needed.
@@ -135,7 +138,8 @@ donors. Existing sequences and custom animations take precedence. The working or
 is retained, and original Resonance scheduling is preserved.
 
 **(Verified)** identifies entries covered by the new visual mapping. It tracks visual coverage; duplicate hiding still
-uses the original combat verification rules. Source and awakening labels remain intact. Unmapped entries retain
+uses the original combat verification rules. Source and awakening labels remain intact. Documented Bond rewards
+also show **MR=N**, such as Steal's **Source: Zidane; MR=1**, identifying its MR tab assignment. Unmapped entries retain
 **(Unverified)** and the existing motion fallback. A mapped effect that cannot be extracted/imported stops the build
 with its skill/donor error instead of silently producing a motion-only mod. Each build records selected skills and donors
 in `engine/build/animation-repair-report.json`.

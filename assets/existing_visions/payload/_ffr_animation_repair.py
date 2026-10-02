@@ -221,6 +221,10 @@ ELEMENT_DONORS = {
     'Light': (210250, 210260, 210260), 'Dark': (408050, 408050, 408050),
 }
 PHYSICAL_DONORS = {'Thunder': (420070, 420080, 420090), 'Earth': (420160, 420170, 420180)}
+# These fixed-damage skills have no dedicated sequence in the game catalog.
+# Borrow ordinary monster Needle's shared Stab/Needle particles, not its body,
+# physical-damage formula or hit count.
+MONSTER_NEEDLES = {500270: ('1,000 Needles', 1000), 505110: ('10,000 Needles', 10000)}
 EFFECT_EVENTS = {'EffectSpawnNiagaraAtTarget', 'EffectSpawnNiagaraAtRandom', 'EffectMoveNiagaraAtTargetToNiagaraID',
                  'EffectMoveNiagaraAddVectorToNiagaraID', 'EffectDiactivateNiagaraToNiagaraID',
                  'EffectDestroyNiagaraToNiagaraID', 'EffectSetUserParameterToNiagaraID'}
@@ -296,7 +300,9 @@ def effect_policy(catalog):
         name = str(skill.get('name') or '').strip().casefold()
         same = [s for s in native if name and str(s.get('name') or '').strip().casefold() == name]
         donor = None; rule = None; tier = effect_tier(skill)
-        if same:
+        if sid in MONSTER_NEEDLES and skill.get('name') == MONSTER_NEEDLES[sid][0] and skill.get('calcType') == 'Fixed':
+            donor = skills.get(500260); rule = 'monster_needle'
+        elif same:
             donor = min(same, key=lambda s: (s.get('target') != skill.get('target'),
                         s.get('dmgType') != skill.get('dmgType'), s['id']))
             rule = 'same_name'
@@ -307,7 +313,8 @@ def effect_policy(catalog):
             donor = skills.get(family[tier - 1]); rule = 'element_tier'
         if donor and usable(donor):
             result[str(sid)] = {'donor': donor['id'], 'donorName': donor['name'], 'rule': rule, 'tier': tier}
-    trials = {str(sid): {'source': source} for sid, source in ((400260, 'FFR'), (400300, 'FFBE'))
+    trials = {str(sid): {'source': source} for sid, source in
+              ((400260, 'FFR'), (400300, 'FFBE'), (500270, 'FFR mob'), (505110, 'FFR mob'))
               if sid in skills and not skills[sid].get('seq')}
     return {'schema': 1, 'skills': result, 'trials': trials}
 
@@ -751,6 +758,24 @@ def barrage_trial_plan(root, owners, skill):
     return plan
 
 
+def steal_trial_plan(skill):
+    """Make theft visible using the recipient, with one original resolution."""
+    signature = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'TargetType', 'defaultTargetRelation'))
+    if (signature != ('Ability', 'None', 'Single', 'Enemies') or skill.get('hitCount') != 1
+            or not any(b.get('effectId') == 1030 for b in skill.get('effectBundleList', []))):
+        raise ValueError('The FFR Steal trial requires the original item-stealing definition.')
+    import ffbe_resonance
+    plan = ffbe_resonance.schedule(1.0, 1, skill['ID'], source={'hitFrames': [24]},
+            movement={'enabled': True, 'right_shift': 0.0, 'target_offset': [0, 0, 0]})
+    # A ready/reach pose avoids turning theft into the recipient's sword attack
+    # or adding a damaging hit. Movement and return are explicit timeline events.
+    for event in plan['events']:
+        st = event['set']
+        if st.get('Unit_PlayAnimByName_AnimationName') in ('LB1', 'LB1_before'):
+            st['Unit_PlayAnimByName_AnimationName'] = 'command'
+    return plan
+
+
 def add_target_effects(plan, bundle):
     """Fit cosmetic keys to our existing hit/recovery window; add no hits."""
     hits = [e['time'] for e in plan['events'] if e['set']['EventType'] == 'OtherReaction']
@@ -852,15 +877,14 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         if not base:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Skill definition unavailable.'}); continue
         skill = {**base, **((recipe or {}).get('set') or {})}
-        if sid == 400260 and not recipe:
-            signature = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'TargetType', 'defaultTargetRelation'))
-            if signature != ('Ability', 'None', 'Single', 'Enemies') or not any(b.get('effectId') == 1030 for b in skill.get('effectBundleList', [])):
-                raise ValueError('The FFR Steal trial requires the original item-stealing definition.')
-            # Player Steal has no standalone catalog timeline. Leave its original
-            # game routing intact, including on Zidane; never borrow enemy gil
-            # theft or replace it with our generic casting/reaction shell.
-            coverage.append({'id': sid, 'status': 'ffr_native_trial', 'sourceVision': 13118})
-            continue
+        steal_plan = steal_trial_plan(skill) if sid == 400260 and not recipe else None
+        if sid in MONSTER_NEEDLES and not recipe:
+            expected = ('Ability', 'Physic', 'Fixed', 'Single', 'Enemies')
+            signature = tuple(enum(skill.get(k)) for k in ('skillAttrType', 'DamageType', 'damageCalcType', 'TargetType', 'defaultTargetRelation'))
+            if signature != expected or skill.get('hitCount') != 1 or skill.get('magnification') != MONSTER_NEEDLES[sid][1]:
+                raise ValueError('The monster Needle trial requires the original single-hit fixed-damage definition.')
+            if not native or str(sid) not in native.visual_policy:
+                raise ValueError('The monster Needle trial needs the prepared game catalog and native Needle effects.')
         profile_reason = None; visual_bundle = None
         if native and str(sid) in native.visual_policy and not recipe:
             try: visual_bundle = native.target_effects(sid)
@@ -874,7 +898,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             if presentation:
                 repaired.append(sid)
                 coverage.append({'id': sid, 'status': 'animation_profile', **presentation}); continue
-        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle and sid != 400300 else (None, 'Native sequence audit unavailable.')
+        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle and sid not in (400260, 400300) else (None, 'Native sequence audit unavailable.')
         if donor is not None:
             repaired.append(sid); reused.append((sid, donor))
             coverage.append({'id': sid, 'status': 'native_reuse', 'donor': donor}); continue
@@ -889,7 +913,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         source = Path(root) / 'extracted/legacy' / (ffbe_resonance.SHELL + '.uasset')
         if not source.is_file(): extract('Sequencer/Battle/Skill/440110/440111/')
         if not source.is_file(): raise ValueError('The battle timeline template could not be extracted. Prepare the game files again.')
-        plan = (barrage_trial_plan(root, owners, skill) if sid == 400300 and not recipe else
+        plan = (steal_plan if steal_plan else barrage_trial_plan(root, owners, skill) if sid == 400300 and not recipe else
                 ffbe_resonance.schedule(max(motion_seconds(u, root, magic) for u in owners), hits, sid, movement={'enabled': False}))
         plan['events'] = [e for e in plan['events'] if e['set']['EventType'] not in
                           ('PostSetDefaultColorGrading', 'PostSetColorGradingGlobalParameter', 'CameraSetDefault', 'OtherSetGameSpeed')]
@@ -933,12 +957,14 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                              'particleEvents': sum(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in visual_bundle['events'])})
         elif sid == 400300 and not recipe:
             coverage.append({'id': sid, 'status': 'ffbe_barrage_trial', 'sourceSkill': 200310})
+        elif steal_plan:
+            coverage.append({'id': sid, 'status': 'ffr_steal_motion_trial', 'sourceVision': 13118})
         else:
             coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
                              **({'profileReason': profile_reason} if profile_reason else {})})
     for entry in coverage:
-        if entry['status'] == 'ffr_native_trial':
-            print('  Steal FFR test: preserving original player Steal routing; no generated casting timeline. Appearance needs an in-game comparison with Zidane.')
+        if entry['status'] == 'ffr_steal_motion_trial':
+            print('  Steal FFR test: recipient approaches, uses its ready pose, resolves one original item theft, then returns to idle/position. Not a recovered Zidane-specific sequence.')
         elif entry['status'] == 'ffbe_barrage_trial':
             print('  Barrage FFBE test: four imported attack cycles with FFBE impact timing; original FFR damage, random targets and four hits retained.')
         elif entry['status'] == 'effect_reuse':

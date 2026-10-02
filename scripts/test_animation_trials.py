@@ -1,4 +1,4 @@
-"""Native Steal routing and FFBE Barrage sprite/timeline integration."""
+"""Visible Steal routing and FFBE Barrage sprite/timeline integration."""
 import copy
 import json
 from pathlib import Path
@@ -36,13 +36,31 @@ class AnimationTrialTests(unittest.TestCase):
         self.unit['awakening'] = [[['ActiveSkill', 400300]]]
         return motion.prepare_barrage_trial(owners or [self.unit], self.root, self.rows)
 
-    def test_steal_uses_original_routing_without_casting_or_enemy_effects(self):
+    def test_steal_approaches_resolves_once_and_returns_without_changing_mechanics(self):
         before = copy.deepcopy(self.case.game)
-        self.assertEqual(self.case.repair([400260]), [])
-        self.assertEqual((self.case.tables, self.case.clones, self.case.jobs), ({}, [], []))
+        self.assertEqual(self.case.repair([400260]), [400260])
+        plan = self.case.jobs[0]['plan']
+        reactions = [e for e in plan['events'] if e['set']['EventType'] == 'OtherReaction']
+        self.assertEqual(len(reactions), 1)
+        self.assertEqual(reactions[0]['set']['Other_Reaction_Id'], 400260)
+        self.assertTrue(reactions[0]['set']['Otber_Reaction_bChangeColor'])
+        approach, = [e for e in plan['events'] if e['set']['EventType'] == 'UnitMoveToTarget']
+        returning, = [e for e in plan['events'] if e['set']['EventType'] == 'UnitMoveToDefaultLocation']
+        self.assertLess(approach['time'] + 12 * 400, reactions[0]['time'])
+        self.assertGreater(returning['time'], reactions[0]['time'])
+        self.assertGreater(plan['duration'], returning['time'] + 12 * 400)
+        names = {e['set'].get('Unit_PlayAnimByName_AnimationName') for e in plan['events']}
+        self.assertTrue({'command', 'idle'} <= names)
+        self.assertFalse({'LB1', 'magic_attack', 'attack_A'} & names)
         self.assertEqual(self.case.game, before)
-        self.assertEqual(self.case.report()['skills'][0]['status'], 'ffr_native_trial')
+        self.assertNotIn('Skill/DT_SkillData', self.case.tables)
+        self.assertNotIn('Skill/DT_SkillEffectData', self.case.tables)
+        self.assertEqual(self.case.report()['skills'][0]['status'], 'ffr_steal_motion_trial')
         self.assertFalse(self.case.report()['inGameValidated'])
+
+    def test_steal_rejects_multiple_resolution_hits(self):
+        self.steal['hitCount'] = 2
+        with self.assertRaisesRegex(ValueError, 'original item-stealing'): self.case.repair([400260])
 
     def test_changed_steal_definition_is_not_silently_treated_as_original(self):
         self.steal['effectBundleList'] = [{'effectId': 1072}]

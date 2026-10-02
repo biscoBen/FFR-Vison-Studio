@@ -188,7 +188,7 @@ void main() {
         await tester.enterText(search, choice.$1);
         await tester.pumpAndSettle();
         if (choice.$1 == 'English') {
-          expect(find.text('English passive — Source: Terra'), findsOneWidget);
+          expect(find.text('English passive — Source: Terra; MR=5'), findsOneWidget);
         }
         if (choice.$1 == 'No sequence') {
           expect(

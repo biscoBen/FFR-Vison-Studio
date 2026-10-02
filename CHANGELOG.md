@@ -11,7 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Make the Steal trial visible: the receiving vision approaches, uses its ready pose, resolves one original item theft,
+  then returns to position/idle. Borrow ordinary monster Needle's shared Stab/Needle target effects for 1,000 and 10,000
+  Needles, preserving their original one-hit fixed damage. Mark the two monster experiments as Verified FFR mob tests.
+  Keep Barrage, skill mechanics, reaction colors, saved IDs and every selection/hiding rule intact.
+- Add **MR=N** to all 128 exact-ID Bond reward assignments documented in the ability-source PDF, including Steal's
+  **Source: Zidane; MR=1**. These labels describe reward sources, not animation donors or awakening tiers.
+- Battle appearance, successful theft and monster-particle placement need in-game testing after rebuilding/installing
+  the roster mod. Steal uses an explicit presentation rather than a recovered Zidane-specific timeline; Needles use
+  the available ordinary monster Needle effects, not absent dedicated 1,000/10,000 sequences.
 
 ## Published particle-reference installation fix — 2026-10-01
 
