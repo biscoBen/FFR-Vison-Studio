@@ -11,7 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Extend missing-sequence visual profiles with native FFR physical impact styles, healing strength tiers, and effects
+  selected from actual buff/status mechanics. Keep existing sequences, skill mechanics, hiding/source rules and the
+  working Steal/Barrage presentations. The batch report distinguishes mapped effects from remaining motion-only or
+  specialized entries; mapping checks do not prove every skill's appearance in-game.
+- Read the actual target-particle field, skip native empty/caster spawn events, retarget selected combatants, and keep
+  cleanup only for borrowed target particles. Add a whole-catalog audit command that reports all failures together
+  and caches decoded references by source, mapping and decoder checksums.
 
 ## Published party install fix and portraits — 2026-10-02
 

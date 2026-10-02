@@ -195,6 +195,15 @@ remain available from the home screen.
 Default portraits use bundled FFBE icons matched to all 26 original visions, with the original portrait as a fallback.
 These portraits appear in Studio's list and character page; selecting a replacement model shows that model's portrait.
 
+Missing-sequence abilities borrow native FFR target effects by name, element/power, physical impact style, or extracted
+healing/status mechanics. Visions retain their own motions and the original skill mechanics. Existing timelines and
+Steal/Barrage presentations are preserved. A `Verified` mapping identifies an applied visual profile; it does not mean
+every skill has been observed in-game. Specialized actions and unmapped skills keep their existing behavior/fallback.
+For a batch preflight against prepared game tables and timelines, run
+`python scripts/audit_ability_animations.py --engine <engine-folder> --report <report-prefix>`.
+The JSON/CSV inventory includes hidden/internal rows, lists every unsupported effect together, and changes no mod or
+roster. Missing reference folders must be extracted first. Never infer animation ownership from learning sources alone.
+
 The character page's **MR** tab edits the rewards at each of the ten ranks. Select a rank, then add stat bonuses,
 abilities, passives, or the vision's master reward. Rewards can be moved to another rank or removed, and stat amounts
 can be edited directly. The engine supports five rewards per rank. Existing rewards and unlock-point requirements

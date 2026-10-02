@@ -280,7 +280,9 @@ def expected_reaction_edits(root, units, rows):
     catalog = next((root / name for name in ('build/devui/ffr_catalog.json', 'data/ffr_catalog.json')
                     if (root / name).is_file()), None)
     if catalog is None: return {}
-    policy = effect_policy(json.loads(catalog.read_bytes()))['skills']
+    policy = effect_policy(json.loads(catalog.read_bytes()),
+                           {r['ID']: r for r in rows('Skill/DT_SkillData').values()},
+                           {r['ID']: r for r in rows('Skill/DT_SkillEffectData').values()})['skills']
     selected, _ = repair_selection(units)
     protected = original_vision_skills(rows)
     custom = {int(sid) for u in units for sid, recipe in (u.get('skills') or {}).items() if recipe}
@@ -367,23 +369,90 @@ def effect_tier(skill):
     return 1 if power <= 25 else 2 if power <= 45 else 3
 
 
-def effect_policy(catalog):
+PHYSICAL_THEMES = (
+    (r'\b(shot|shoot|snipe|bullet|gun|missile|projectile)\w*\b', (500110, 500150, 500740)),
+    (r'\b(stab|needle|lance|spear|pierce|beak|horn|thrust|impale)\w*\b', (500090, 500260, 501260)),
+    (r'\b(bite|fang|claw|rake|scratch|rend|talon|pincer)\w*\b', (500140, 500130, 500510)),
+    (r'\b(blade|slash|sword|cleave|sever|slice|cut|sunder|hew)\w*\b', (500040, 500050, 501310)),
+)
+STATUS_DONORS = {
+    'DeffenceUp': 230040, 'MindUp': 230060, 'AttackUp': 230100,
+    'IntelligenceUp': 230110, 'Haste': 230130, 'Regene': 210050,
+    'Sleep': 230010, 'Poison': 220250, 'Blind': 230020, 'Silence': 230030,
+    'Slow': 230150, 'DeffenceDown': 230080, 'MindDown': 230090,
+}
+SPECIAL_EFFECTS = {'SummonUnit', 'PlayDeathAnim', 'SwapMember', 'Mimic', 'Mechabo',
+                   'Escape', 'Cointoss', 'DemonForm', 'CancelDemonForm'}
+# These cinematics contain owner effects or fixed target bindings. Their
+# missing-sequence variants need an ordinary profile or remain unresolved.
+UNPORTABLE_EFFECT_DONORS = {505010, 300110}
+EFFECT_LIFECYCLE_IDS = {
+    'EffectMoveNiagaraAtTargetToNiagaraID': 'Effect_SpawnTargetNiagaraID_ID',
+    'EffectMoveNiagaraAddVectorToNiagaraID': 'Effect_MoveAddVectorNiagaraID_ID',
+    'EffectDiactivateNiagaraToNiagaraID': 'Effect_DiactivateNiagaraID_ID',
+    'EffectDestroyNiagaraToNiagaraID': 'Effect_DestroyNiagaraID_ID',
+    'EffectSetUserParameterToNiagaraID': 'Effect_SetUserParameterNiagaraID_ID',
+}
+
+
+def presentation_semantics(skill, definitions, effects, details):
+    """Use extracted mechanics for themes; descriptions never change gameplay."""
+    raw = definitions.get(skill['id']) or details.get(str(skill['id'])) or {}
+    bundles = []
+    for bundle in raw.get('effectBundleList', []):
+        value = bundle.get('effectId')
+        effect = value.get('mechanics', {}) if isinstance(value, dict) else effects.get(value, {})
+        if effect: bundles.append(effect)
+    return raw, bundles
+
+
+def semantic_donor(skill, raw, bundles):
+    kinds = {enum(e.get('EffectType')) for e in bundles}
+    if kinds & SPECIAL_EFFECTS: return None
+    if (enum(raw.get('defaultTargetRelation')) == 'Friendlies'
+            and enum(raw.get('parameterType')) == 'HitPoint'
+            and enum(raw.get('parameterVariationType')) == 'Increase'
+            and enum(raw.get('skillEffectType')) == 'DamageAndRecovery'):
+        power = float(raw.get('magnification') or 0)
+        return ((210010 if power <= 200 else 210020 if power <= 500 else 210030), 'healing_tier')
+    if (enum(raw.get('defaultTargetState')) == 'Dead' and 'Revival' in kinds):
+        return 210140, 'revival'
+    if enum(raw.get('skillEffectType')) == 'DamageAndRecovery': return None
+    for effect in bundles:
+        donor = STATUS_DONORS.get(enum(effect.get('statusCondition')))
+        if donor: return donor, 'status_theme'
+    if enum(raw.get('defaultTargetRelation')) != 'Friendlies': return None
+    for effect in bundles:
+        kind = enum(effect.get('EffectType')); params = effect.get('ParamList') or []
+        if kind == 'CureStatusCondition' and params and params[0] == 1: return 210120, 'cleanse'
+        if kind == 'Deffence': return 230040, 'defense_theme'
+        if kind == 'DamageMultiplier' and len(params) > 1 and params[0] > 0:
+            if params[1] in (0, 1): return (230100 if params[1] == 0 else 230110), 'support_theme'
+    return None
+
+
+def effect_policy(catalog, definitions=None, effects=None):
     """Visual mapping only: never change duplicate/hiding verification."""
     skills = {s['id']: s for s in catalog.get('skills', [])}
     def usable(s):
-        return bool(s.get('seq')) and s.get('attr') in NORMAL_SKILLS
-    native = [s for s in skills.values() if usable(s) and s.get('hasUnit') == 'All' and s['id'] < 460000]
+        return bool(s.get('seq')) and s.get('attr') in NORMAL_SKILLS and s['id'] not in UNPORTABLE_EFFECT_DONORS
+    native = [s for s in skills.values() if usable(s)]
+    definitions = definitions or {}; effects = effects or {}
+    details = ((catalog.get('duplicatePolicy') or {}).get('details') or {}).get('skills') or {}
     result = {}
     for sid, skill in skills.items():
         if skill.get('seq') or skill.get('attr') not in NORMAL_SKILLS or not 0 < int(skill.get('hits') or 0) <= 30:
             continue
+        if sid in (400260, 400300): continue  # Keep the working Steal/Barrage presentations.
         name = str(skill.get('name') or '').strip().casefold()
+        if name == 'attack': continue  # Hidden normal attacks keep their unit routing.
         same = [s for s in native if name and str(s.get('name') or '').strip().casefold() == name]
         donor = None; rule = None; tier = effect_tier(skill)
         if sid in MONSTER_NEEDLES and skill.get('name') == MONSTER_NEEDLES[sid][0] and skill.get('calcType') == 'Fixed':
             donor = skills.get(500260); rule = 'monster_needle'
         elif same:
-            donor = min(same, key=lambda s: (s.get('target') != skill.get('target'),
+            donor = min(same, key=lambda s: (not (s.get('hasUnit') == 'All' and s['id'] < 460000),
+                        s.get('target') != skill.get('target'),
                         s.get('dmgType') != skill.get('dmgType'), s['id']))
             rule = 'same_name'
         elif sid in ANIMATION_PROFILES and skill.get('name') == ANIMATION_PROFILES[sid]['name']:
@@ -391,6 +460,17 @@ def effect_policy(catalog):
         elif skill.get('element') in ELEMENT_DONORS and skill.get('dmgType') in ('Physic', 'Magic') and float(skill.get('mag') or 0) > 0:
             family = (PHYSICAL_DONORS.get(skill['element']) if skill['dmgType'] == 'Physic' else None) or ELEMENT_DONORS[skill['element']]
             donor = skills.get(family[tier - 1]); rule = 'element_tier'
+        else:
+            raw, bundles = presentation_semantics(skill, definitions, effects, details)
+            themed = semantic_donor(skill, raw, bundles)
+            if themed:
+                donor = skills.get(themed[0]); rule = themed[1]
+            elif (skill.get('dmgType') == 'Physic' and skill.get('element') == 'None'
+                    and float(skill.get('mag') or 0) > 0
+                    and not {enum(e.get('EffectType')) for e in bundles} & SPECIAL_EFFECTS):
+                family = next((ids for pattern, ids in PHYSICAL_THEMES if re.search(pattern, name)),
+                              (500010, 500020, 500950))
+                donor = skills.get(family[tier - 1]); rule = 'physical_theme'
         if donor and usable(donor):
             result[str(sid)] = {'donor': donor['id'], 'donorName': donor['name'], 'rule': rule, 'tier': tier}
     trials = {str(sid): {'source': source} for sid, source in
@@ -434,7 +514,7 @@ class NativeAnimations:
         self.signatures = {sid: self.signature(s) for sid, s in self.skills.items()}
         self.audits = {}
         self.target_audits = {}
-        self.visual_policy = effect_policy(self.catalog)['skills']
+        self.visual_policy = effect_policy(self.catalog, self.skills, self.effects)['skills']
 
     def signature(self, skill):
         data = {k: copy.deepcopy(v) for k, v in skill.items() if k not in VISUAL_METADATA}
@@ -488,7 +568,7 @@ class NativeAnimations:
         if not (folder / (relative.name + '.uasset')).is_file():
             self.extract(str(relative.parent).replace('\\', '/') + '/')
         if not (folder / (relative.name + '.uasset')).is_file(): raise ValueError('The donor sequence was not extracted.')
-        packets = []; imports = []; reactions = set()
+        packets = []; imports = []; reactions = set(); particle_ids = set()
         known_particles = set(self.catalog.get('niagara', []))
         for path in sorted(folder.rglob('*.uasset')):
             tj, dump = self.support['dumps'](str(path))
@@ -498,14 +578,31 @@ class NativeAnimations:
                 event = functions.get(name, {}); kind = enum(kind)
                 if kind == 'OtherReaction': reactions.add(event.get('Other_Reaction_Id'))
                 if kind not in EFFECT_EVENTS: continue
-                if kind == 'EffectSpawnNiagaraAtRandom': kind = 'EffectSpawnNiagaraAtTarget'
+                if kind == 'EffectSpawnNiagaraAtRandom':
+                    # This event can attach to the caster or create a projectile
+                    # at world coordinates. It is not a selected-target spawn.
+                    continue
+                fields = {k: v for k, v in event.items() if k.startswith('Effect_')}
+                fields.pop('Effect_NiagaraData', None)
+                if kind == 'EffectSpawnNiagaraAtTarget':
+                    # Cooked events contain inactive defaults for other event
+                    # types (sometimes even a different spell's particle).
+                    # Read the field the native event actually executes.
+                    data = fields.get('Effect_SpawnTarget_NiagaraData')
+                    if not isinstance(data, dict): raise ValueError('Missing native particle parameters.')
+                    if data.get('niagaraAsset') in (None, 'None', 0):
+                        continue  # Native empty spawn placeholders are no-ops.
+                    fields['Effect_SpawnTarget_ID'] = -1
+                    fields['Effect_SpawnTarget_bAllTarget'] = target in ('Group', 'All')
+                    if data.get('NiagaraID') is not None: particle_ids.add(str(data['NiagaraID']))
+                else:
+                    fields.pop('Effect_SpawnTarget_NiagaraData', None)
                 if isinstance(tick, bool) or not isinstance(tick, (int, float)) or not math.isfinite(tick) or tick < 0:
                     raise ValueError('Invalid donor effect time.')
-                st = particle_constants({k: v for k, v in event.items() if k.startswith('Effect_')},
-                                        tj.get('Imports', []), known_particles, imports)
+                st = particle_constants(fields, tj.get('Imports', []), known_particles, imports)
                 st['EventType'] = kind
                 if kind == 'EffectSpawnNiagaraAtTarget':
-                    data = st.get('Effect_NiagaraData')
+                    data = st.get('Effect_SpawnTarget_NiagaraData')
                     if not isinstance(data, dict): raise ValueError('Missing native particle parameters.')
                     if not isinstance(data.get('niagaraAsset'), dict): raise ValueError('Missing native particle import.')
                 if any('/Chara/' in str(v) or 'VO_' in str(v) for v in st.values()):
@@ -515,6 +612,10 @@ class NativeAnimations:
                 for key in st:
                     if 'AllSide' in key: st[key] = False
                 packets.append({'time': tick, 'set': st})
+        # Caster glows/projectiles own separate IDs. Their move/destroy keys
+        # must not enter a target-only timeline or address unrelated particles.
+        packets = [p for p in packets if p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget'
+                   or str(p['set'].get(EFFECT_LIFECYCLE_IDS[p['set']['EventType']])) in particle_ids]
         if not any(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in packets):
             raise ValueError(f'{mapping["donorName"]} has no reusable target particle events.')
         # The original reaction row is cosmetic; it can differ from the catalog

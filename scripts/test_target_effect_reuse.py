@@ -10,6 +10,27 @@ from test_animation_and_library import motion, resonance
 
 
 class TargetEffectReuseTests(unittest.TestCase):
+    def test_native_target_field_ignores_wrong_spell_defaults_and_empty_caster_spawns(self):
+        spawn = next(e for _, _, e in self.events if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        spawn['Effect_NiagaraData'] = {'niagaraAsset': 'import:WrongSpellNotInImports'}
+        spawn['Effect_SpawnTarget_ID'] = 2
+        self.events.extend([(100, 'empty', {'EventType': 'EffectSpawnNiagaraAtTarget',
+            'Effect_SpawnTarget_NiagaraData': {'Scale': {'x': 1}}}),
+            (200, 'caster', {'EventType': 'EffectSpawnNiagaraAtRandom',
+             'Effect_NiagaraData': {'niagaraAsset': 'import:CasterWeapon'}}),
+            (30000, 'caster_cleanup', {'EventType': 'EffectDestroyNiagaraToNiagaraID',
+             'Effect_DestroyNiagaraID_ID': 'caster'})])
+        before = copy.deepcopy(self.events); self.repair()
+        events = self.jobs[0]['plan']['events']
+        particles = [e['set'] for e in events if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget']
+        self.assertEqual(len(particles), 1)
+        self.assertNotIn('Effect_NiagaraData', particles[0])
+        self.assertEqual(particles[0]['Effect_SpawnTarget_ID'], -1)
+        self.assertTrue(particles[0]['Effect_SpawnTarget_bAllTarget'])
+        cleanup = [e['set']['Effect_DestroyNiagaraID_ID'] for e in events
+                   if e['set']['EventType'] == 'EffectDestroyNiagaraToNiagaraID']
+        self.assertEqual(cleanup, ['1']); self.assertEqual(self.events, before)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)
         self.skill = {'ID': 250020, 'Name': 'Fira', 'skillAttrType': 'Magic', 'hasUnit': 'All',
@@ -44,11 +65,11 @@ class TargetEffectReuseTests(unittest.TestCase):
         # Incompatible owner choreography is intentionally not copied.
         self.events = [(0, 'cast', {'EventType': 'UnitPlayAnimByName', 'Unit_PlayAnimByName_AnimationName': 'LB1'}),
                        (12000, 'spawn', {'EventType': 'EffectSpawnNiagaraAtTarget',
-                         'Effect_NiagaraData': {'niagaraAsset': 'import:NS_EF_SKL220020_PosAll', 'scale': {'x': 1, 'y': 1, 'z': 1}},
+                         'Effect_SpawnTarget_NiagaraData': {'NiagaraID': '1', 'niagaraAsset': 'import:NS_EF_SKL220020_PosAll', 'scale': {'x': 1, 'y': 1, 'z': 1}},
                          'Effect_SpawnNiagaraAtTarget_IsAllSide': True}),
                        (18000, 'hit1', {'EventType': 'OtherReaction', 'Other_Reaction_Id': 220020}),
                        (22000, 'hit2', {'EventType': 'OtherReaction', 'Other_Reaction_Id': 220020}),
-                       (30000, 'cleanup', {'EventType': 'EffectDestroyNiagaraToNiagaraID', 'Effect_DestroyNiagaraToNiagaraID_Id': 1}),
+                       (30000, 'cleanup', {'EventType': 'EffectDestroyNiagaraToNiagaraID', 'Effect_DestroyNiagaraID_ID': '1'}),
                        (35000, 'speed', {'EventType': 'OtherSetGameSpeed', 'Other_SetGameSpeed_TimeDilation': .1})]
         self.support = {'dumps': lambda path: ({'Imports': copy.deepcopy(self.imports)},
                           {f'{i+1}:{name}': copy.deepcopy(e) for i, (_, name, e) in enumerate(self.events)}),
@@ -89,7 +110,7 @@ class TargetEffectReuseTests(unittest.TestCase):
             self.game[rel] = {'donor': {'ID': 500262, 'LevelSequence': '/Game/' + master}, 'shell': {'ID': 440111}}
         self.imports[0]['ObjectName'] = self.particle
         self.imports[1]['ObjectName'] = 'NS_EF_SKL500090_Hit_001'
-        self.events[1][2]['Effect_NiagaraData']['niagaraAsset'] = 'import:NS_EF_SKL500090_Hit_001'
+        self.events[1][2]['Effect_SpawnTarget_NiagaraData']['niagaraAsset'] = 'import:NS_EF_SKL500090_Hit_001'
         self.game['Battle/Sequencer/DT_BtlHitEffectData'] = {'donor': {'ID': 500090, 'NormalEffectID': 321}, 'generic': {'ID': 449999}}
         self.events[2][2]['Other_Reaction_Id'] = 500090
 
@@ -108,7 +129,7 @@ class TargetEffectReuseTests(unittest.TestCase):
             self.assertTrue({'command', 'attack_A', 'idle'} <= names)
             particles = [e for e in job['plan']['events'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget']
             self.assertEqual(len(particles), 1)
-            self.assertEqual(particles[0]['set']['Effect_NiagaraData']['niagaraAsset'],
+            self.assertEqual(particles[0]['set']['Effect_SpawnTarget_NiagaraData']['niagaraAsset'],
                 {'path': self.particle + '.NS_EF_SKL500090_Hit_001', 'class': 'NiagaraSystem'})
             self.assertFalse(particles[0]['set']['Effect_SpawnNiagaraAtTarget_IsAllSide'])
         record = json.loads((self.root / 'build/animation-repair-report.json').read_bytes())
@@ -187,9 +208,9 @@ class TargetEffectReuseTests(unittest.TestCase):
         common = '/Game/Effect/01_Common/SharedImpact'
         self.imports[0]['ObjectName'] = common
         self.imports[1]['ObjectName'] = 'SharedImpact'
-        next(e for _, _, e in self.events if 'Effect_NiagaraData' in e)['Effect_NiagaraData']['niagaraAsset'] = 'import:SharedImpact'
+        next(e for _, _, e in self.events if 'Effect_SpawnTarget_NiagaraData' in e)['Effect_SpawnTarget_NiagaraData']['niagaraAsset'] = 'import:SharedImpact'
         self.assertEqual(self.repair(), [250020])
-        particle = next(e['set']['Effect_NiagaraData']['niagaraAsset'] for e in self.jobs[0]['plan']['events']
+        particle = next(e['set']['Effect_SpawnTarget_NiagaraData']['niagaraAsset'] for e in self.jobs[0]['plan']['events']
                         if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget')
         self.assertEqual(particle, {'path': common + '.SharedImpact', 'class': 'NiagaraSystem'})
 
@@ -262,7 +283,7 @@ class TargetEffectReuseTests(unittest.TestCase):
     def test_seqdump_struct_annotations_do_not_reach_the_engine_patch(self):
         # seqdump describes struct types; the patcher's struct replacement
         # accepts only real fields, including fields inside nested arrays.
-        data = next(e['Effect_NiagaraData'] for _, _, e in self.events if 'Effect_NiagaraData' in e)
+        data = next(e['Effect_SpawnTarget_NiagaraData'] for _, _, e in self.events if 'Effect_SpawnTarget_NiagaraData' in e)
         data.update({'$struct': 'BTL_SEQUENCER_NIAGARA_DATA',
                      'Scale': {'$struct': 'Vector', 'X': 1.5, 'Y': 2.0, 'Z': 0.5},
                      'userParameterDatas': [{'$struct': 'BTL_NIAGARA_USER_PARAMETER_DATA',
@@ -274,8 +295,8 @@ class TargetEffectReuseTests(unittest.TestCase):
                 side_effect=self.author):
             motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
         patched = [e['set'] for e in state['patch']['bytecode']]
-        particle = next(e['Effect_NiagaraData'] for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
-        self.assertEqual(particle, {'niagaraAsset': {'path': self.particle + '.NS_EF_SKL220020_PosAll', 'class': 'NiagaraSystem'},
+        particle = next(e['Effect_SpawnTarget_NiagaraData'] for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        self.assertEqual(particle, {'NiagaraID': '1', 'niagaraAsset': {'path': self.particle + '.NS_EF_SKL220020_PosAll', 'class': 'NiagaraSystem'},
                          'scale': {'x': 1, 'y': 1, 'z': 1},
                          'Scale': {'X': 1.5, 'Y': 2.0, 'Z': 0.5},
                          'userParameterDatas': [{'ParameterName': 'Power', 'Value': 3.0}]})
@@ -299,7 +320,7 @@ class TargetEffectReuseTests(unittest.TestCase):
             motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
         effect = next(e['set'] for e in state['patch']['bytecode'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget')
         self.assertEqual(effect['Effect_SpawnTarget_NiagaraData']['niagaraAsset']['path'], secondary + '.' + secondary.rsplit('/', 1)[-1])
-        self.assertEqual(effect['Effect_SpawnTarget_NiagaraData']['friendNiagaraAsset'], effect['Effect_NiagaraData']['niagaraAsset'])
+        self.assertEqual(effect['Effect_SpawnTarget_NiagaraData']['friendNiagaraAsset']['path'], self.particle + '.NS_EF_SKL220020_PosAll')
         self.assertIsNone(effect['Effect_SpawnTarget_NiagaraData']['enemyNiagaraAsset'])
         self.assertEqual(len(state['asset']['Imports']), 4)
         self.assertEqual(self.events, before)
