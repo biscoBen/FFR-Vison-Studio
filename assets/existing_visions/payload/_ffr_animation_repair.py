@@ -1,7 +1,7 @@
-"""Recover FFBE motions, reuse compatible native sequences, and fill motion gaps.
+"""Recover FFBE motions and reuse native visual effects without donor mechanics.
 
-Original skill mechanics and existing sequences are never replaced. The asset
-dump provides unit motions, not the missing spell/ability particle effects.
+Original skill mechanics and existing sequences are never replaced. Native
+particles retain their import references in separately authored motion timelines.
 """
 import csv
 import copy
@@ -212,6 +212,57 @@ def enum(value):
     return str(value or '').split('::')[-1]
 
 
+ELEMENT_DONORS = {
+    'Fire': (220010, 220020, 220030), 'Ice': (220050, 220060, 220070),
+    'Thunder': (220090, 220100, 220110), 'Water': (220130, 220140, 220150),
+    'Wind': (220170, 220180, 220190), 'Earth': (220210, 220220, 220230),
+    # Banishga/Dark's ordinary timelines are absent. Reuse portable target
+    # effects from the strongest available light spell / Dystopia instead.
+    'Light': (210250, 210260, 210260), 'Dark': (408050, 408050, 408050),
+}
+PHYSICAL_DONORS = {'Thunder': (420070, 420080, 420090), 'Earth': (420160, 420170, 420180)}
+EFFECT_EVENTS = {'EffectSpawnNiagaraAtTarget', 'EffectSpawnNiagaraAtRandom', 'EffectMoveNiagaraAtTargetToNiagaraID',
+                 'EffectMoveNiagaraAddVectorToNiagaraID', 'EffectDiactivateNiagaraToNiagaraID',
+                 'EffectDestroyNiagaraToNiagaraID', 'EffectSetUserParameterToNiagaraID'}
+
+
+def effect_tier(skill):
+    name = str(skill.get('name') or '').casefold()
+    if re.search(r'\biii\b', name) or name.startswith(('firaga', 'blizzaga', 'thundaga', 'waterga', 'aeroga', 'stonega', 'banishga', 'darkga')):
+        return 3
+    if re.search(r'\bii\b', name) or name.startswith(('fira', 'blizzara', 'thundara', 'watera', 'aerora', 'stonera', 'banishra', 'darkra')):
+        return 2
+    power = float(skill.get('mag') or 0)
+    return 1 if power <= 25 else 2 if power <= 45 else 3
+
+
+def effect_policy(catalog):
+    """Visual mapping only: never change duplicate/hiding verification."""
+    skills = {s['id']: s for s in catalog.get('skills', [])}
+    def usable(s):
+        return bool(s.get('seq')) and s.get('attr') in NORMAL_SKILLS
+    native = [s for s in skills.values() if usable(s) and s.get('hasUnit') == 'All' and s['id'] < 460000]
+    result = {}
+    for sid, skill in skills.items():
+        if skill.get('seq') or skill.get('attr') not in NORMAL_SKILLS or not 0 < int(skill.get('hits') or 0) <= 30:
+            continue
+        name = str(skill.get('name') or '').strip().casefold()
+        same = [s for s in native if name and str(s.get('name') or '').strip().casefold() == name]
+        donor = None; rule = None; tier = effect_tier(skill)
+        if same:
+            donor = min(same, key=lambda s: (s.get('target') != skill.get('target'),
+                        s.get('dmgType') != skill.get('dmgType'), s['id']))
+            rule = 'same_name'
+        elif sid in ANIMATION_PROFILES and skill.get('name') == ANIMATION_PROFILES[sid]['name']:
+            donor = skills.get(ANIMATION_PROFILES[sid]['donor']); rule = 'explicit_profile'
+        elif skill.get('element') in ELEMENT_DONORS and skill.get('dmgType') in ('Physic', 'Magic') and float(skill.get('mag') or 0) > 0:
+            family = (PHYSICAL_DONORS.get(skill['element']) if skill['dmgType'] == 'Physic' else None) or ELEMENT_DONORS[skill['element']]
+            donor = skills.get(family[tier - 1]); rule = 'element_tier'
+        if donor and usable(donor):
+            result[str(sid)] = {'donor': donor['id'], 'donorName': donor['name'], 'rule': rule, 'tier': tier}
+    return {'schema': 1, 'skills': result}
+
+
 class NativeAnimations:
     """Consider same-name variants only; audit actual packages before reusing them.
 
@@ -225,13 +276,14 @@ class NativeAnimations:
         self.assets = {rel: rows(rel) for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')}
         self.reactions = rows('Battle/Sequencer/DT_BtlHitEffectData')
         self.effects = {r['ID']: r for r in rows('Skill/DT_SkillEffectData').values()}
-        self.names = {}
+        self.names = {}; self.catalog = {}
         # The prepared catalog takes priority. Bundled names are just a fallback;
         # all mechanics and sequence bindings always come from this game install.
         for file in ('build/devui/ffr_catalog.json', 'data/ffr_catalog.json'):
             path = self.root / file
             if path.is_file():
-                self.names = {s['id']: s.get('name', '') for s in json.loads(path.read_bytes())['skills']}
+                self.catalog = json.loads(path.read_bytes())
+                self.names = {s['id']: s.get('name', '') for s in self.catalog['skills']}
                 break
         locale = self.root / 'extracted/locres_en.json'
         strings = json.loads(locale.read_bytes()) if locale.is_file() else {}
@@ -244,6 +296,7 @@ class NativeAnimations:
                 if translated: self.names[sid] = translated
         self.signatures = {sid: self.signature(s) for sid, s in self.skills.items()}
         self.audits = {}
+        self.visual_policy = effect_policy(self.catalog)['skills']
 
     def signature(self, skill):
         data = {k: copy.deepcopy(v) for k, v in skill.items() if k not in VISUAL_METADATA}
@@ -264,6 +317,87 @@ class NativeAnimations:
                        and self.signatures[sid] == signature
                        and any(r['ID'] in (sid, sid+1, sid+2) for r in self.assets['Asset/Skill/DT_SkillAsset'].values())),
                       key=lambda sid: (abs(skill['ID'] - sid), sid))
+
+    def target_effects(self, sid):
+        """Read just the donor's particle events and their actual import trees.
+
+        Caster motions, camera/voice tracks and OtherReaction events never enter
+        the receiving timeline. Its own schedule supplies every damaging hit.
+        """
+        mapping = self.visual_policy[str(sid)]; donor = mapping['donor']
+        primary = self.assets['Asset/Skill/DT_SkillAsset']
+        target = enum(self.skills[sid].get('TargetType'))
+        preferred = 2 if target in ('Group', 'All') else 1
+        binding = next((r for off in (preferred, 0, 1, 2) for r in primary.values() if r['ID'] == donor + off), None)
+        if not binding: raise ValueError(f'{mapping["donorName"]} has no native sequence binding.')
+        master = binding.get('LevelSequence', '').split('.')[0]
+        if not master.startswith('/Game/Sequencer/Battle/'): raise ValueError('Invalid donor sequence path.')
+        relative = Path(master.removeprefix('/Game/'))
+        folder = self.root / 'extracted/legacy/FFRS/Content' / relative.parent
+        if not folder.resolve().is_relative_to((self.root / 'extracted/legacy').resolve()):
+            raise ValueError('Donor sequence escapes the extracted game folder.')
+        if not (folder / (relative.name + '.uasset')).is_file():
+            self.extract(str(relative.parent).replace('\\', '/') + '/')
+        if not (folder / (relative.name + '.uasset')).is_file(): raise ValueError('The donor sequence was not extracted.')
+        packets = []; imports = []; reactions = set()
+        known_particles = set(self.catalog.get('niagara', []))
+        for path in sorted(folder.rglob('*.uasset')):
+            tj, dump = self.support['dumps'](str(path))
+            if not tj or dump is None: raise ValueError(f'Could not decode {path.name}.')
+            functions = {k.split(':', 1)[-1]: value for k, value in dump.items()}
+            for tick, kind, name in self.support['keys'](str(path)):
+                event = functions.get(name, {}); kind = enum(kind)
+                if kind == 'OtherReaction': reactions.add(event.get('Other_Reaction_Id'))
+                if kind not in EFFECT_EVENTS: continue
+                if kind == 'EffectSpawnNiagaraAtRandom': kind = 'EffectSpawnNiagaraAtTarget'
+                if isinstance(tick, bool) or not isinstance(tick, (int, float)) or not math.isfinite(tick) or tick < 0:
+                    raise ValueError('Invalid donor effect time.')
+                st = {k: copy.deepcopy(v) for k, v in event.items() if k.startswith('Effect_')}
+                st['EventType'] = kind
+                if kind == 'EffectSpawnNiagaraAtTarget':
+                    data = st.get('Effect_NiagaraData')
+                    if not isinstance(data, dict): raise ValueError('Missing native particle parameters.')
+                    raw = data.get('niagaraAsset'); original = tj.get('Imports', [])
+                    ref = next((i for i, v in enumerate(original) if str(v.get('ObjectName')) == str(raw).removeprefix('import:')), None)
+                    if isinstance(raw, int) and raw < 0: ref = -raw - 1
+                    if ref is None or not 0 <= ref < len(original): raise ValueError(f'Unresolved particle import: {raw}.')
+                    obj = original[ref]
+                    if obj.get('ClassName') != 'NiagaraSystem': raise ValueError('The effect is not a portable Niagara system.')
+                    package = obj.get('OuterIndex', 0)
+                    package_name = original[-package - 1].get('ObjectName', '') if type(package) is int and package < 0 else ''
+                    if not package_name.startswith('/Game/Effect/') or (known_particles and package_name not in known_particles):
+                        raise ValueError('The donor particle is outside the game effect catalog.')
+                    data['niagaraAsset'] = 'import:' + obj['ObjectName']
+                    # Use actual game imports, including PackageName/optional
+                    # metadata. Import indices are remapped into the new shell.
+                    imports.append({'imports': original, 'index': ref})
+                if any('/Chara/' in str(v) or 'VO_' in str(v) for v in st.values()):
+                    raise ValueError('Effect parameters reference a character or voice.')
+                # Target the receiving skill's selected combatants. A donor's
+                # scene-wide flag must not expose unrelated allies/enemies.
+                for key in st:
+                    if 'AllSide' in key: st[key] = False
+                packets.append({'time': tick, 'set': st})
+        if not any(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in packets):
+            raise ValueError(f'{mapping["donorName"]} has no reusable target particle events.')
+        # The original reaction row is cosmetic; it can differ from the catalog
+        # ID when single/group spell variants share a timeline.
+        reaction = next((k for k, r in self.reactions.items() if r['ID'] == donor), None)
+        reaction = reaction or next((k for k, r in self.reactions.items() if r['ID'] in reactions), None)
+        return {**mapping, 'events': packets, 'imports': imports, 'reactionRow': reaction}
+
+    def bind_reaction_visuals(self, sid, bundle, tables):
+        key = bundle.get('reactionRow')
+        if key is None: return
+        rel = 'Battle/Sequencer/DT_BtlHitEffectData'
+        visual = {k: copy.deepcopy(v) for k, v in self.reactions[key].items()
+                  if k.endswith('EffectID') or k in ('IsAdditionalEffect', 'PlayShakeID')}
+        existing = next((k for k, r in self.reactions.items() if r['ID'] == sid), None)
+        spec = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+        added = next((r for r in spec['add'] if r.get('set', {}).get('ID') == sid), None)
+        if added: added['set'].update(visual)
+        elif existing: spec['set'].append({'row': existing, 'set': visual})
+        else: spec['add'].append({'row': f'Studio_Effects_{sid}', 'cloneFrom': key, 'set': {'ID': sid, **visual}})
 
     def audit(self, asset, donor, hits):
         key = (asset.get('LevelSequence'), donor, hits)
@@ -479,6 +613,70 @@ def motion_seconds(unit, root, magic):
     return 1.0
 
 
+def add_target_effects(plan, bundle):
+    """Fit cosmetic keys to our existing hit/recovery window; add no hits."""
+    hits = [e['time'] for e in plan['events'] if e['set']['EventType'] == 'OtherReaction']
+    idle = next(e['time'] for e in plan['events'] if e['set'].get('Unit_PlayAnimByName_AnimationName') == 'idle')
+    packets = bundle['events']; start = min(p['time'] for p in packets); end = max(p['time'] for p in packets)
+    first = hits[0] - 1
+    for packet in packets:
+        tick = first if end == start else first + round((packet['time'] - start) * (idle - first - 1) / (end - start))
+        plan['events'].append({'time': tick, 'set': copy.deepcopy(packet['set'])})
+    plan['events'].sort(key=lambda e: e['time'])
+
+
+def effect_imports(asset, references):
+    """Copy only referenced Niagara imports and ancestors into a cooked shell."""
+    target = asset['Imports']; names = asset.get('NameMap', [])
+    for reference in references:
+        source = reference['imports']; visited = set(); mapped = {}
+        def include(index):
+            if index in mapped: return mapped[index]
+            if index in visited or not 0 <= index < len(source): raise ValueError('Invalid particle import ancestry.')
+            visited.add(index); item = copy.deepcopy(source[index]); outer = item.get('OuterIndex', 0)
+            if type(outer) is not int or outer > 0: raise ValueError('Particle imports cannot depend on donor exports.')
+            if outer < 0: item['OuterIndex'] = -include(-outer - 1) - 1
+            keys = ('ObjectName', 'ClassName', 'ClassPackage', 'OuterIndex', 'PackageName')
+            found = next((i for i, v in enumerate(target) if all(v.get(k) == item.get(k) for k in keys)), None)
+            if found is None:
+                if item.get('ClassName') == 'NiagaraSystem' and any(v.get('ObjectName') == item.get('ObjectName') for v in target):
+                    raise ValueError('Ambiguous Niagara object name in the timeline shell.')
+                found = len(target); target.append(item)
+                for k in ('ObjectName', 'ClassName', 'ClassPackage', 'PackageName'):
+                    if isinstance(item.get(k), str) and item[k] not in names: names.append(item[k])
+            mapped[index] = found; visited.remove(index); return found
+        include(reference['index'])
+
+
+def build_effect_sequence(job, out, work, command, usmap, run):
+    """Author normal motions/hits with imported native target effect references."""
+    import ffbe_resonance
+    path = Path(out) / (job['asset'] + '.uasset')
+    dump = Path(work) / (path.stem + '-effects-authored.json')
+    run([*command, 'tojson', str(path), str(dump), '--usmap', usmap])
+    asset = json.loads(dump.read_text(encoding='utf-8-sig'))
+    effect_imports(asset, job['effectImports'])
+    edits = ffbe_resonance.author(asset, job['plan'])
+    dump.write_text(json.dumps(asset, ensure_ascii=False), encoding='utf-8')
+    patch = dump.with_name(path.stem + '-effects-events.json')
+    patch.write_text(json.dumps({'legacyRoot': str(out), 'outRoot': str(out),
+        'sequenceData': [{'asset': job['asset'], 'json': str(dump)}],
+        'bytecode': [{'asset': job['asset'], **e} for e in edits]}), encoding='utf-8')
+    run([*command, 'patch', str(patch), '--usmap', usmap])
+    verified = dump.with_name(path.stem + '-effects-verified.json')
+    run([*command, 'seqdump', str(path), str(verified), '--usmap', usmap])
+    actual = json.loads(verified.read_text(encoding='utf-8-sig'))
+    functions = {k.split(':', 1)[0]: v for k, v in actual.items()}
+    for edit in edits:
+        if edit['set'].get('EventType') != 'EffectSpawnNiagaraAtTarget': continue
+        event = functions.get(str(edit['export']), {})
+        raw = (event.get('Effect_NiagaraData') or {}).get('niagaraAsset', '')
+        name = str(raw).removeprefix('import:').split('.')[-1].split('/')[-1]
+        expected = edit['set']['Effect_NiagaraData']['niagaraAsset'].removeprefix('import:')
+        if enum(event.get('EventType')) != 'EffectSpawnNiagaraAtTarget' or name != expected:
+            raise ValueError(f'The written skill timeline did not retain particle {expected}. Mod packing stopped.')
+
+
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
     """Add selected missing skill timelines; leave existing game rows untouched."""
     skill_rows = rows('Skill/DT_SkillData'); by_id = {r['ID']: r for r in skill_rows.values()}
@@ -502,19 +700,27 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         if not base:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Skill definition unavailable.'}); continue
         skill = {**base, **((recipe or {}).get('set') or {})}
-        profile_reason = None
-        if sid in ANIMATION_PROFILES and not recipe:
+        profile_reason = None; visual_bundle = None
+        if native and str(sid) in native.visual_policy and not recipe:
+            try: visual_bundle = native.target_effects(sid)
+            except (OSError, ValueError, KeyError, TypeError, IndexError, RuntimeError, subprocess.SubprocessError) as error:
+                # A mapped/labelled effect must not quietly become another
+                # motion-only "success". Preserve the installed mod and report
+                # exactly which donor could not be prepared.
+                raise ValueError(f'Could not prepare effects for {native.names.get(sid, sid)} ({sid}): {error}') from error
+        if not visual_bundle and sid in ANIMATION_PROFILES and not recipe:
             presentation, profile_reason = native.profile(sid, skill, owners, tables, clones) if native else (None, 'Native sequence audit unavailable.')
             if presentation:
                 repaired.append(sid)
                 coverage.append({'id': sid, 'status': 'animation_profile', **presentation}); continue
-        donor, reason = native.reuse(sid, skill, tables, clones) if native else (None, 'Native sequence audit unavailable.')
+        donor, reason = native.reuse(sid, skill, tables, clones) if native and not visual_bundle else (None, 'Native sequence audit unavailable.')
         if donor is not None:
             repaired.append(sid); reused.append((sid, donor))
             coverage.append({'id': sid, 'status': 'native_reuse', 'donor': donor}); continue
         if enum(skill.get('skillAttrType')) not in NORMAL_SKILLS:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Specialized skill type.'}); continue
         magic = skill.get('skillAttrType', '').split('::')[-1] in ('Magic', 'MagicSword') or skill.get('DamageType', '').split('::')[-1] != 'Physic'
+        if visual_bundle: magic = enum(skill.get('DamageType')) != 'Physic'
         hits = int(skill.get('hitCount') or 1)
         if not 0 < hits <= 30:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Unsupported hit count.'}); continue
@@ -534,11 +740,13 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                 # Keep the same reaction/hit rather than adding a cleanup hit.
                 st['Otber_Reaction_bChangeColor'] = True
             if st.get('Unit_PlayAnimByName_AnimationName') == 'LB1': st['Unit_PlayAnimByName_AnimationName'] = 'magic_attack' if magic else 'attack_A'
-            elif st.get('Unit_PlayAnimByName_AnimationName') == 'LB1_before': st['Unit_PlayAnimByName_AnimationName'] = 'magic_idle' if magic else 'command'
+            elif st.get('Unit_PlayAnimByName_AnimationName') == 'LB1_before': st['Unit_PlayAnimByName_AnimationName'] = 'magic_idle' if magic or enum(skill.get('skillAttrType')) == 'MagicSword' else 'command'
+        if visual_bundle: add_target_effects(plan, visual_bundle)
         asset = f'FFRS/Content/Sequencer/Battle/Skill/{sid}/{sid+1}/SEQ_Battle_{sid+1}_Master'
         clones.append({'from': ffbe_resonance.SHELL, 'to': asset,
                        'rename': [['SEQ_Battle_440111_Cut_000', f'SEQ_Battle_{sid+1}_Master']]})
-        jobs.append({'asset': asset, 'plan': plan, 'audio': None, 'kind': 'skill_motion'})
+        jobs.append({'asset': asset, 'plan': plan, 'audio': None, 'kind': 'skill_effect' if visual_bundle else 'skill_motion',
+                     **({'effectImports': visual_bundle['imports']} if visual_bundle else {})})
         for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo'):
             original = rows(rel); donor = next((k for k, v in original.items() if v['ID'] == 440111), None)
             if donor is None: raise ValueError('The game has no compatible battle timeline row.')
@@ -557,10 +765,17 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
                 'row': f'Studio_Motion_{sid}', 'cloneFrom': donor,
                 'set': ffbe_resonance.reaction_settings(sid) if supportive else {'ID': sid}})
         repaired.append(sid)
-        coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
-                         **({'profileReason': profile_reason} if profile_reason else {})})
+        if visual_bundle:
+            native.bind_reaction_visuals(sid, visual_bundle, tables)
+            coverage.append({'id': sid, 'status': 'effect_reuse', **{k: visual_bundle[k] for k in ('donor', 'donorName', 'rule', 'tier')},
+                             'particleEvents': sum(p['set']['EventType'] == 'EffectSpawnNiagaraAtTarget' for p in visual_bundle['events'])})
+        else:
+            coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
+                             **({'profileReason': profile_reason} if profile_reason else {})})
     for entry in coverage:
-        if entry['status'] == 'animation_profile':
+        if entry['status'] == 'effect_reuse':
+            print(f'  {entry["id"]}: target effects from {entry["donorName"]} ({entry["donor"]}); {entry["rule"]}, tier {entry["tier"]}; original mechanics retained.')
+        elif entry['status'] == 'animation_profile':
             print(f'  {entry["profile"]}: audited visual profile from {entry["donor"]}; original mechanics retained.')
         elif entry.get('profileReason'):
             print(f'  {ANIMATION_PROFILES[entry["id"]]["name"]}: keeping motion fallback: {entry["profileReason"]}')

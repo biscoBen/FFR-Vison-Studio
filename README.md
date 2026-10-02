@@ -116,29 +116,26 @@ A failed preparation reports its error and keeps the roster unchanged; retry loa
 
 ## Automatic animation repair
 
-Fresh roster builds first try to reuse a native animation for a missing ordinary ability or spell. A donor must be
-a general-use version of the same named skill with matching complete mechanics, targets, hit counts, hit ratios and
-effect bundles. Strength, MP cost, accuracy and stagger power may differ; the recipient retains its own values.
-Studio extracts and inspects the actual donor timeline before cloning it. Specialized events, incompatible hit timing,
-owner-specific actors, voices and cinematic tracks are excluded. Copied hit/reaction references point to the recipient.
-Existing sequences and explicitly configured custom animations take precedence, and saved roster settings are preserved.
+Fresh roster builds give missing ordinary skills native target effects from a regular same-name skill, even when damage,
+targets or hit counts differ. Remaining elemental attacks use three power tiers: physical Earth/Thunder skills use the
+corresponding Blade effects; other families use matching elemental spell effects with the vision's physical or magic
+motion. Named II/III and ra/ga variants select their tier before the power fallback. Light's third tier uses Banishra;
+Dark uses Dystopia's portable effects because ordinary Dark/Banishga timelines are absent.
 
-Skills without a verified donor continue to use the available unit attack/casting fallback. This fallback does not restore
-their original spell particles or sound. Special actions and unsupported Resonances can still lack animations. Each build
-writes `engine/build/animation-repair-report.json` with the selected skills' existing, reused, fallback or unresolved status.
-Native reuse is validated against the local game files; actual rendering still requires an in-game test.
+The builder imports only particle events and their game asset references into its own attack/casting schedule. Original
+damage, targets, hit counts/ratios, costs and gameplay effects remain intact. Donor caster motions, voices and gameplay
+hit events are excluded. Bladeblitz, Aero Blade, Aquatic Synergy and Arise retain explicit Grand Slash/Aero/Waterga/Raise
+donors. Existing sequences and custom animations take precedence. The working ordinary-skill reaction-color correction
+is retained, and original Resonance scheduling is preserved.
 
-Bladeblitz, Aero Blade, Aquatic Synergy and Arise also have explicit visual profiles using Grand Slash, Aero, Waterga
-and Raise respectively. The builder audits their actual timelines, adapts preparation/release motions to the receiving
-vision, and fits longer motions into the existing timing. Only visual sequence and hit-effect bindings are borrowed;
-the receiving ability keeps its own mechanics. Aquatic Synergy remains a three-hit Water attack with its consecutive-use
-bonus; Arise still restores full HP. Existing/custom sequences take precedence. Unusable donors retain the basic fallback
-and record `profileReason` in the animation report. Rebuild/install the roster mod to apply these profiles; installing
-the Studio update alone does not replace a previously built mod. Visual appearance and battle completion need in-game testing.
+**(Verified)** identifies entries covered by the new visual mapping. It tracks visual coverage; duplicate hiding still
+uses the original combat verification rules. Source and awakening labels remain intact. Unmapped entries retain
+**(Unverified)** and the existing motion fallback. A mapped effect that cannot be extracted/imported stops the build
+with its skill/donor error instead of silently producing a motion-only mod. Each build records selected skills and donors
+in `engine/build/animation-repair-report.json`.
 
-Generated ordinary-skill fallbacks now retain reaction color handling instead of inheriting the limit-burst scheduler's
-disabled flag. This correction addresses friendly targets remaining white after an unverified skill; confirm recovery
-after the skill and on the next turn in-game. Existing native sequences and Resonance scheduling are preserved.
+Rebuild/install the roster mod after updating Studio. Installing the app alone does not replace a previously built mod.
+Effect appearance and battle completion still require in-game testing.
 
 ## Ability and passive libraries
 

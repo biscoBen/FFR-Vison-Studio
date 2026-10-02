@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Reuse native target particle effects for missing same-name skills even when their mechanics differ, then select
+  elemental/power-tier effects for remaining physical and magic attacks. Stone Slam/Surge's three tiers use Stone,
+  Stonera and Stonega Blade. Preserve receiving skills' damage, targets, hit counts/ratios, costs and gameplay effects,
+  with the vision's own attack/casting motion. Import actual Niagara references into the generated timeline; report an
+  error if a mapped effect cannot be prepared instead of silently delivering a motion-only mod.
+- Mark covered entries **(Verified)** while retaining source/awakening descriptions and every existing hiding rule.
+  This label tracks the new visual mappings; in-game effect appearance still needs testing. Keep the white-state
+  correction, which the user confirmed works, and existing/custom sequences and Resonance behavior.
 
 ## Published ability visual profiles and reaction-color correction — 2026-10-01
 

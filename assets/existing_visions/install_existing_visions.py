@@ -121,7 +121,10 @@ def hook_builder(raw):
     lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),
                                                                                 'os.path.join(ROOT, "tools", "_ffr_build_sprites.py")')
     stage_indent = ' ' * timeline_stage.col_offset
-    lines[timeline_stage.lineno - 1] = stage_indent + 'stage("Writing attack and casting animations" if job.get("kind") == "skill_motion" else "Writing the FFBE limit-burst timeline")' + nl
+    lines[timeline_stage.lineno - 1] = stage_indent + 'stage("Writing skill motions and effects" if job.get("kind") in ("skill_motion", "skill_effect") else "Writing the FFBE limit-burst timeline")' + nl
+    timeline_build, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
+                      and ast.unparse(n.value.func) == 'ffbe_resonance.build']
+    lines[timeline_build.lineno - 1] = stage_indent + '(_ffr_animation_repair.build_effect_sequence if job.get("kind") == "skill_effect" else ffbe_resonance.build)(job, OUT, BUILD, FFRDT, USMAP, run)' + nl
     indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
     lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
     for i in range(icon_loop.lineno - 1, icon_loop.end_lineno): lines[i] = '    ' + lines[i]

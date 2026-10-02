@@ -181,6 +181,10 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       : name;
   final owners = catalogDefaultOwners(catalog, kind, row);
   final unverified = !(verified ?? catalogEntryVerified(row, kind));
+  final effectMapping = ((catalog['animationPolicy'] as Map?)?['skills'] as Map?)?['${row['id']}'];
+  final hasMappedEffects = kind == 'skills' && row['custom'] != true &&
+      (catalog['animationPolicy'] as Map?)?['schema'] == 1 &&
+      effectMapping is Map && effectMapping['donor'] is num;
   final reference = row['custom'] == true
       ? null
       : catalogSourceReferences[kind]?[row['id']];
@@ -200,7 +204,7 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
           ? '$name (internal label only)'
           : name);
   final awakening = reference?.awakening;
-  return '$label${unverified ? ' (Unverified)' : ''}'
+  return '$label${hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
       '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}';
 }
