@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published party battle paths and retired comparison skills — 2026-10-02
+
+Changes in [`4348308`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4348308fd3b13c4e79ee37cec1ff2980a56d1d14),
+[test package 37030912870](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37030912870).
+
 - Remove the four temporary comparison Copies. Migrate old roster/config grants to the regular skills, collapse only
   same-tier alias duplicates, and preserve other edits and saved config files. Keep the working Verified effects.
 - Fix party replacements installing but retaining normal battle sprites: redirect the selected party rows' actual
@@ -19,6 +26,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Record user observations for future comparison-skill work: literal names display as **Name** in battle despite
   correct menu labels, and MP is consumed but insufficient MP does not block casting. Investigation is deferred;
   these temporary copies are removed rather than extended.
+- Passed local analysis, 41 focused Flutter tests, 178 Python tests and bundle checks. The actual engine serialized
+  all eight party redirects with correct soft paths, preserving 718 original rows, a modified vision and an added vision.
+  Windows passed the full Flutter suite, real engine startup, all Python tests, 12 launcher/updater checks,
+  10 import checks and compilation. Verified the authenticated ZIP checksum, exact commit and bundled files/portraits.
+  In-game replacement appearance still needs testing on the user's installation after rebuilding/installing and restarting.
+- One code push and one build: the helper found no automatic push run and dispatched the exact commit once.
+  CI took 4m22s; summed job execution was 7m45s. First complete candidate: 08:53:16 PDT; ZIP verified at 09:04:42 PDT
+  and packaged-file checks completed at 09:05:08 PDT (11m52s from candidate, 21m18s from request).
+  Local corrections, checks and trigger waiting are included. The requested remaining-Unverified list was prepared
+  during CI; documentation-only publication notes followed.
 
 ## Published party texture fix and comparison abilities — 2026-10-02
 
