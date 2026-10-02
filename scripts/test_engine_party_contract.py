@@ -33,9 +33,13 @@ $ErrorActionPreference = 'Stop'
 [void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'Newtonsoft.Json.dll'))
 [void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'UAssetAPI.dll'))
 $asset = [UAssetAPI.UAsset]::DeserializeJson([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root 'input.json')))
+$indexProperty = [UAssetAPI.UnrealTypes.FName].GetProperty('Index', [Reflection.BindingFlags]'Instance,Public,NonPublic')
+if ($null -eq $indexProperty) { throw 'The engine FName index getter is unavailable.' }
 foreach ($import in $asset.Imports) {
-    if ($import.ObjectName.Index -lt 0 -or $import.ClassName.Index -lt 0 -or $import.ClassPackage.Index -lt 0) {
-        throw 'Unserializable party import name.'
+    foreach ($name in @($import.ObjectName, $import.ClassName, $import.ClassPackage)) {
+        if ($null -eq $name -or [int]$indexProperty.GetValue($name) -lt 0) {
+            throw ('Unserializable party import: ' + $import.ObjectName.ToString())
+        }
     }
 }
 $rows = $asset.Exports[0].Table.Data
