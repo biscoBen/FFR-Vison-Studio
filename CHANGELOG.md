@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published bulk ability effect profiles — 2026-10-02
+
+Changes in [`34726e4`](https://github.com/biscoBen/FFR-Vison-Studio/commit/34726e4c86062411f3f53f309640178ef9c89746),
+[test package 37022585529](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37022585529).
+
 - Extend missing-sequence visual profiles with native FFR physical impact styles, healing strength tiers, and effects
   selected from actual buff/status mechanics. Keep existing sequences, skill mechanics, hiding/source rules and the
   working Steal/Barrage presentations. The batch report distinguishes mapped effects from remaining motion-only or
@@ -18,6 +25,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Read the actual target-particle field, skip native empty/caster spawn events, retarget selected combatants, and keep
   cleanup only for borrowed target particles. Add a whole-catalog audit command that reports all failures together
   and caches decoded references by source, mapping and decoder checksums.
+- Decode all 1,400 supplied reference packages and audit 482 active mappings without errors. The real engine authored
+  a batch of timelines and verified 108 distinct donor/target contracts; original definitions and hit counts stayed
+  intact. Windows passed analysis, the full Flutter suite, real engine startup, 175 Python tests, both bundles,
+  12 launcher/updater checks, 10 import checks and compilation. Verified the authenticated published ZIP checksum,
+  exact commit/provenance and all packaged extension/portrait files. One code push/build; CI took 4m04s.
+- First complete animation candidate: 14:46:18 UTC; verified package: 14:56:20 UTC (10m02s including final local checks,
+  report generation, push, CI and verification). The party package was delivered first in about 12½ minutes; the
+  animation investigation also required 7m45s of reference decoding and 7m35s of actual engine authored-output checks,
+  overlapping other work. In-game appearance still requires representative testing on the user’s installation.
 
 ## Published party install fix and portraits — 2026-10-02
 
