@@ -11,12 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No unpublished user-facing changes.
+
+## Published party texture fix and comparison abilities — 2026-10-02
+
+Changes in [`6c5161b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/6c5161bd7a5baff1c5ed7401780ed9f46e0ca258),
+[test package 37026312897](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37026312897).
+
 - Fix party battle replacement textures failing because the sprite converter writes whole pixel sizes as floats and
   the engine requires integer arguments. Preserve the exact atlas dimensions for all three texture layers.
 - Add independently selectable **Chakra (Copy)**, **Cheer (Copy)**, **Purify (Copy)** (Ayaka awakening 2), and
   **Seal of Conviction (Copy)** (ordinary Dark variant) for same-battle comparisons. Copies retain the original game
   mechanics/visual bindings and use the safe motion fallback when missing; they do not receive Studio's donor effects
   or use custom-move slots. Keep source labels and the working reaction-color cleanup. In-game appearance needs testing.
+- The actual engine wrote all three 2048×2048 texture layers, preserved all 1,167 original skill rows, and wrote/decoded
+  both versions of all four timelines. Passed local analysis, 28 focused Flutter tests, 179 Python tests and bundle checks.
+  Windows passed the full Flutter suite, real engine startup, all Python tests, 12 launcher/updater checks,
+  10 import checks and compilation. Verified the authenticated release ZIP checksum, exact commit, all bundled fixes
+  and eight party portraits. One code push/build; CI took 4m38s, with 7m56s of summed job execution.
+- First complete candidate: 08:17:47 PDT; authenticated ZIP verified at 08:26:08 PDT, then packaged-file checks passed
+  at 08:26:32 PDT (8m45s from candidate through checks, push, CI and verification). The usable release was ready about
+  17 minutes after the request; documentation-only publication notes followed. In-game visual comparisons remain
+  on the user's installation.
 
 ## Published bulk ability effect profiles — 2026-10-02
 
