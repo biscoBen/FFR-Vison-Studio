@@ -30,8 +30,9 @@ Changes in [`34726e4`](https://github.com/biscoBen/FFR-Vison-Studio/commit/34726
   intact. Windows passed analysis, the full Flutter suite, real engine startup, 175 Python tests, both bundles,
   12 launcher/updater checks, 10 import checks and compilation. Verified the authenticated published ZIP checksum,
   exact commit/provenance and all packaged extension/portrait files. One code push/build; CI took 4m04s.
-- First complete animation candidate: 14:46:18 UTC; verified package: 14:56:20 UTC (10m02s including final local checks,
-  report generation, push, CI and verification). The party package was delivered first in about 12½ minutes; the
+- First complete animation candidate: 14:46:18 UTC; authenticated ZIP checksum/provenance verified at 14:55:27 UTC
+  (9m09s including final local checks, report generation, push, CI and download verification). Packaged-file checks
+  followed before delivery. The party package was delivered first in about 12½ minutes; the
   animation investigation also required 7m45s of reference decoding and 7m35s of actual engine authored-output checks,
   overlapping other work. In-game appearance still requires representative testing on the user’s installation.
 
