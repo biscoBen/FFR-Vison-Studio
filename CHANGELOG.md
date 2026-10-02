@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No unpublished user-facing changes.
+- Correct borrowed skill effects after the `$struct` fix: convert the engine's `import:name` dump labels into full
+  particle asset paths with explicit Niagara classes, including secondary and friend/enemy particle references.
+  Verify every reference against the written package and keep failed builds from reaching mod installation.
+  Preserve skill mechanics, target selection, reaction colors and roster settings. Add reference-format regressions
+  and a Windows check against the actual checksum-pinned engine patcher; full game installation needs a local retry.
 
 ## Published skill-effect installation fix — 2026-10-01
 

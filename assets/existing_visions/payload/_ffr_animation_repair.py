@@ -226,6 +226,53 @@ EFFECT_EVENTS = {'EffectSpawnNiagaraAtTarget', 'EffectSpawnNiagaraAtRandom', 'Ef
                  'EffectDestroyNiagaraToNiagaraID', 'EffectSetUserParameterToNiagaraID'}
 
 
+def particle_import(raw, imports, known_particles=()):
+    """Resolve seqdump's object label to the actual cooked particle import."""
+    if type(raw) is int and raw < 0:
+        matches = [-raw - 1] if -raw <= len(imports) else []
+    else:
+        name = str(raw).removeprefix('import:')
+        matches = [i for i, item in enumerate(imports) if item.get('ObjectName') == name]
+    if len(matches) != 1: raise ValueError(f'Unresolved or ambiguous particle import: {raw}.')
+    ref = matches[0]; obj = imports[ref]
+    if obj.get('ClassName') != 'NiagaraSystem': raise ValueError('The effect is not a portable Niagara system.')
+    outer = obj.get('OuterIndex', 0)
+    package = imports[-outer - 1].get('ObjectName', '') if type(outer) is int and -len(imports) <= outer < 0 else ''
+    if not package.startswith('/Game/Effect/') or (known_particles and package not in known_particles):
+        raise ValueError('The donor particle is outside the game effect catalog.')
+    return ref, {'path': package + '.' + obj['ObjectName'], 'class': 'NiagaraSystem'}
+
+
+def particle_constants(value, imports, known_particles, references):
+    """Translate every particle object constant, including secondary spawns."""
+    if isinstance(value, dict):
+        result = {}
+        for key, child in value.items():
+            if key in ('niagaraAsset', 'friendNiagaraAsset', 'enemyNiagaraAsset') or (isinstance(child, str) and child.startswith('import:')):
+                if child is None or child == 'None' or child == 0:
+                    result[key] = None
+                else:
+                    ref, result[key] = particle_import(child, imports, known_particles)
+                    references.append({'imports': imports, 'index': ref})
+            else: result[key] = particle_constants(child, imports, known_particles, references)
+        return result
+    if isinstance(value, list): return [particle_constants(child, imports, known_particles, references) for child in value]
+    return copy.deepcopy(value)
+
+
+def verify_particle_constants(expected, actual, imports):
+    if isinstance(expected, dict):
+        if expected.get('class') == 'NiagaraSystem' and 'path' in expected:
+            _, retained = particle_import(actual, imports)
+            if retained != expected: raise ValueError(f'The written particle reference differs from {expected["path"]}.')
+        else:
+            for key, child in expected.items():
+                verify_particle_constants(child, actual.get(key) if isinstance(actual, dict) else None, imports)
+    elif isinstance(expected, list):
+        for i, child in enumerate(expected):
+            verify_particle_constants(child, actual[i] if isinstance(actual, list) and i < len(actual) else None, imports)
+
+
 def effect_tier(skill):
     name = str(skill.get('name') or '').casefold()
     if re.search(r'\biii\b', name) or name.startswith(('firaga', 'blizzaga', 'thundaga', 'waterga', 'aeroga', 'stonega', 'banishga', 'darkga')):
@@ -354,25 +401,13 @@ class NativeAnimations:
                 if kind == 'EffectSpawnNiagaraAtRandom': kind = 'EffectSpawnNiagaraAtTarget'
                 if isinstance(tick, bool) or not isinstance(tick, (int, float)) or not math.isfinite(tick) or tick < 0:
                     raise ValueError('Invalid donor effect time.')
-                st = {k: copy.deepcopy(v) for k, v in event.items() if k.startswith('Effect_')}
+                st = particle_constants({k: v for k, v in event.items() if k.startswith('Effect_')},
+                                        tj.get('Imports', []), known_particles, imports)
                 st['EventType'] = kind
                 if kind == 'EffectSpawnNiagaraAtTarget':
                     data = st.get('Effect_NiagaraData')
                     if not isinstance(data, dict): raise ValueError('Missing native particle parameters.')
-                    raw = data.get('niagaraAsset'); original = tj.get('Imports', [])
-                    ref = next((i for i, v in enumerate(original) if str(v.get('ObjectName')) == str(raw).removeprefix('import:')), None)
-                    if isinstance(raw, int) and raw < 0: ref = -raw - 1
-                    if ref is None or not 0 <= ref < len(original): raise ValueError(f'Unresolved particle import: {raw}.')
-                    obj = original[ref]
-                    if obj.get('ClassName') != 'NiagaraSystem': raise ValueError('The effect is not a portable Niagara system.')
-                    package = obj.get('OuterIndex', 0)
-                    package_name = original[-package - 1].get('ObjectName', '') if type(package) is int and package < 0 else ''
-                    if not package_name.startswith('/Game/Effect/') or (known_particles and package_name not in known_particles):
-                        raise ValueError('The donor particle is outside the game effect catalog.')
-                    data['niagaraAsset'] = 'import:' + obj['ObjectName']
-                    # Use actual game imports, including PackageName/optional
-                    # metadata. Import indices are remapped into the new shell.
-                    imports.append({'imports': original, 'index': ref})
+                    if not isinstance(data.get('niagaraAsset'), dict): raise ValueError('Missing native particle import.')
                 if any('/Chara/' in str(v) or 'VO_' in str(v) for v in st.values()):
                     raise ValueError('Effect parameters reference a character or voice.')
                 # Target the receiving skill's selected combatants. A donor's
@@ -780,15 +815,18 @@ def build_effect_sequence(job, out, work, command, usmap, run):
     verified = dump.with_name(path.stem + '-effects-verified.json')
     run([*command, 'seqdump', str(path), str(verified), '--usmap', usmap])
     actual = json.loads(verified.read_text(encoding='utf-8-sig'))
+    written = dump.with_name(path.stem + '-effects-written.json')
+    run([*command, 'tojson', str(path), str(written), '--usmap', usmap])
+    written_imports = json.loads(written.read_text(encoding='utf-8-sig'))['Imports']
     functions = {k.split(':', 1)[0]: v for k, v in actual.items()}
     for edit in edits:
-        if edit['set'].get('EventType') != 'EffectSpawnNiagaraAtTarget': continue
+        if edit['set'].get('EventType') not in EFFECT_EVENTS: continue
         event = functions.get(str(edit['export']), {})
-        raw = (event.get('Effect_NiagaraData') or {}).get('niagaraAsset', '')
-        name = str(raw).removeprefix('import:').split('.')[-1].split('/')[-1]
-        expected = edit['set']['Effect_NiagaraData']['niagaraAsset'].removeprefix('import:')
-        if enum(event.get('EventType')) != 'EffectSpawnNiagaraAtTarget' or name != expected:
-            raise ValueError(f'The written skill timeline did not retain particle {expected}. Mod packing stopped.')
+        try:
+            if enum(event.get('EventType')) != edit['set']['EventType']: raise ValueError('The effect event type differs.')
+            verify_particle_constants(edit['set'], event, written_imports)
+        except ValueError as error:
+            raise ValueError(f'The written skill timeline did not retain particle references: {error} Mod packing stopped.') from error
 
 
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):

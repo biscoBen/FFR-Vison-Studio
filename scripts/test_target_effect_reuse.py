@@ -65,6 +65,38 @@ class TargetEffectReuseTests(unittest.TestCase):
                 [{'awakening': [[['ActiveSkill', 250020]]]}], self.root,
                 lambda rel: copy.deepcopy(self.game[rel]), mock.Mock(), self.support)
 
+    def engine_runner(self, calls):
+        """Model 1.0.0.15's path/class input and import:name dump contract."""
+        state = {}
+        def decode(value):
+            if isinstance(value, dict):
+                if value.get('class') == 'NiagaraSystem':
+                    package, name = value['path'].rsplit('.', 1)
+                    ref = next(i for i, item in enumerate(state['asset']['Imports'])
+                               if item['ObjectName'] == name and item['ClassName'] == 'NiagaraSystem')
+                    outer = state['asset']['Imports'][ref]['OuterIndex']
+                    self.assertEqual(state['asset']['Imports'][-outer - 1]['ObjectName'], package)
+                    return 'import:' + name
+                self.assertNotIn('$struct', value)
+                return {k: decode(v) for k, v in value.items()}
+            if isinstance(value, list): return [decode(v) for v in value]
+            self.assertFalse(isinstance(value, str) and value.startswith('import:'),
+                             'The real patcher treats this dump label as a literal asset path.')
+            return value
+        def run(args):
+            calls.append(args)
+            if 'patch' in args:
+                state['patch'] = json.loads(Path(args[2]).read_bytes())
+                state['asset'] = json.loads(Path(state['patch']['sequenceData'][0]['json']).read_bytes())
+                state['dump'] = {str(e['export']) + ':event': decode(e['set']) for e in state['patch']['bytecode']}
+            elif 'tojson' in args:
+                Path(args[3]).write_text(json.dumps(state.get('asset', {'Imports': [], 'NameMap': []})))
+            elif 'seqdump' in args: Path(args[3]).write_text(json.dumps(state['dump']))
+        return run, state
+
+    def author(self, asset, plan):
+        return [{'export': str(i + 10), 'set': e['set']} for i, e in enumerate(plan['events'])]
+
     def test_effects_reuse_preserves_recipient_mechanics_routing_hits_and_white_fix(self):
         before = copy.deepcopy(self.game)
         self.assertEqual(self.repair(), [250020])
@@ -119,15 +151,9 @@ class TargetEffectReuseTests(unittest.TestCase):
 
     def test_authored_output_contains_particle_imports_and_effect_constants(self):
         self.repair(); job, = self.jobs; calls = []
-        def run(args):
-            calls.append(args)
-            if 'tojson' in args:
-                Path(args[3]).write_text(json.dumps({'Imports': [], 'NameMap': []}))
-            elif 'seqdump' in args:
-                particle = next(e['set'] for e in job['plan']['events'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget')
-                Path(args[3]).write_text(json.dumps({'10:particle': particle}))
+        run, _ = self.engine_runner(calls)
         with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}), mock.patch.object(resonance, 'author',
-                side_effect=lambda asset, plan: [{'export': '10', 'set': e['set']} for e in plan['events']]):
+                side_effect=self.author):
             motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
         patch = json.loads(Path(next(c[2] for c in calls if 'patch' in c)).read_bytes())
         cooked = json.loads(Path(patch['sequenceData'][0]['json']).read_bytes())
@@ -143,33 +169,51 @@ class TargetEffectReuseTests(unittest.TestCase):
                      'userParameterDatas': [{'$struct': 'BTL_NIAGARA_USER_PARAMETER_DATA',
                                               'ParameterName': 'Power', 'Value': 3.0}]})
         before = copy.deepcopy(self.events)
-        self.repair(); job, = self.jobs; patched = []
-        def check_fields(value):
-            if isinstance(value, dict):
-                self.assertNotIn('$struct', value, "ffr-dt rejects '$struct' as a field")
-                for child in value.values(): check_fields(child)
-            elif isinstance(value, list):
-                for child in value: check_fields(child)
-        def run(args):
-            if 'tojson' in args:
-                Path(args[3]).write_text(json.dumps({'Imports': [], 'NameMap': []}))
-            elif 'patch' in args:
-                patch = json.loads(Path(args[2]).read_bytes())
-                check_fields(patch['bytecode'])
-                patched.extend(e['set'] for e in patch['bytecode'])
-            elif 'seqdump' in args:
-                particle = next(e for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
-                Path(args[3]).write_text(json.dumps({'10:particle': particle}))
+        self.repair(); job, = self.jobs; calls = []
+        run, state = self.engine_runner(calls)
         with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}), mock.patch.object(resonance, 'author',
-                side_effect=lambda asset, plan: [{'export': '10', 'set': e['set']} for e in plan['events']]):
+                side_effect=self.author):
             motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
+        patched = [e['set'] for e in state['patch']['bytecode']]
         particle = next(e['Effect_NiagaraData'] for e in patched if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
-        self.assertEqual(particle, {'niagaraAsset': 'import:NS_EF_SKL220020_PosAll',
+        self.assertEqual(particle, {'niagaraAsset': {'path': self.particle + '.NS_EF_SKL220020_PosAll', 'class': 'NiagaraSystem'},
                          'scale': {'x': 1, 'y': 1, 'z': 1},
                          'Scale': {'X': 1.5, 'Y': 2.0, 'Z': 0.5},
                          'userParameterDatas': [{'ParameterName': 'Power', 'Value': 3.0}]})
         self.assertEqual(self.events, before)
         self.assertEqual(len([e for e in patched if e['EventType'] == 'OtherReaction']), 4)
+
+    def test_secondary_particles_and_friend_enemy_imports_keep_their_real_packages(self):
+        secondary = '/Game/Effect/03_SKL/skl210260/NS_EF_SKL210260_Vanishla_001_Center'
+        self.catalog['niagara'].append(secondary)
+        (self.root / 'data/ffr_catalog.json').write_text(json.dumps(self.catalog))
+        self.imports.extend([{'ObjectName': secondary, 'ClassName': 'Package', 'ClassPackage': '/Script/CoreUObject', 'OuterIndex': 0},
+                             {'ObjectName': secondary.rsplit('/', 1)[-1], 'ClassName': 'NiagaraSystem', 'ClassPackage': '/Script/Niagara', 'OuterIndex': -3}])
+        spawn = next(e for _, _, e in self.events if e['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        spawn['Effect_SpawnTarget_NiagaraData'] = {'$struct': 'BTL_SEQUENCER_NIAGARA_DATA',
+                     'niagaraAsset': 'import:' + secondary.rsplit('/', 1)[-1],
+                     'friendNiagaraAsset': -2, 'enemyNiagaraAsset': None}
+        before = copy.deepcopy(self.events)
+        self.repair(); job, = self.jobs; calls = []
+        run, state = self.engine_runner(calls)
+        with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}), mock.patch.object(resonance, 'author', side_effect=self.author):
+            motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', run)
+        effect = next(e['set'] for e in state['patch']['bytecode'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtTarget')
+        self.assertEqual(effect['Effect_SpawnTarget_NiagaraData']['niagaraAsset']['path'], secondary + '.' + secondary.rsplit('/', 1)[-1])
+        self.assertEqual(effect['Effect_SpawnTarget_NiagaraData']['friendNiagaraAsset'], effect['Effect_NiagaraData']['niagaraAsset'])
+        self.assertIsNone(effect['Effect_SpawnTarget_NiagaraData']['enemyNiagaraAsset'])
+        self.assertEqual(len(state['asset']['Imports']), 4)
+        self.assertEqual(self.events, before)
+
+    def test_same_object_name_in_the_wrong_package_still_stops_mod_packing(self):
+        self.repair(); job, = self.jobs; run, state = self.engine_runner([])
+        def wrong_package(args):
+            run(args)
+            if 'seqdump' in args:
+                state['asset']['Imports'][0]['ObjectName'] = '/Game/Effect/WrongPackage'
+        with mock.patch.dict('sys.modules', {'ffbe_resonance': resonance}), mock.patch.object(resonance, 'author', side_effect=self.author):
+            with self.assertRaisesRegex(ValueError, 'reference differs.*Mod packing stopped'):
+                motion.build_effect_sequence(job, self.root, self.root, ['ffr-dt'], 'mapping', wrong_package)
 
     def test_written_timeline_missing_the_particle_reference_stops_mod_packing(self):
         self.repair(); job, = self.jobs
