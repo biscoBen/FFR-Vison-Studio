@@ -17,8 +17,11 @@ class PreviewApi extends Api {
   final requested = <String>[];
   final polls = <String, int>{};
   final blocked = <String, Completer<Map<String, dynamic>>>{};
+  List<dynamic> listedUnits = [];
   bool legacy = false;
   bool fail = false;
+  @override
+  Future<List<dynamic>> ffbeUnits() async => listedUnits;
   @override
   Future<Map<String, dynamic>> prepareAssets(String ffbeId, String form) async {
     if (legacy) { throw ApiException('old engine', statusCode: 404); }
@@ -76,14 +79,53 @@ void main() {
   });
   tearDown(() { app.dispose(); temporary.deleteSync(recursive: true); });
 
-  Future<void> picker(WidgetTester tester) async {
+  Future<void> picker(WidgetTester tester, {AddUnitDialog dialog = const AddUnitDialog()}) async {
     tester.view.physicalSize = const Size(1300, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(value: app,
-      child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: AddUnitDialog()))));
+      child: MaterialApp(theme: Guide.theme(), home: Scaffold(body: dialog))));
     await tester.pumpAndSettle();
+  }
+
+  for (final scenario in [
+    (name: 'add', dialog: const AddUnitDialog(), hosted: true),
+    (name: 'vision replacement', dialog: const AddUnitDialog(replaceVisionId: 13024), hosted: true),
+    (name: 'party replacement', dialog: const AddUnitDialog(replacePartyId: 1001), hosted: true),
+    (name: 'engine catalog fallback', dialog: const AddUnitDialog(), hosted: false),
+  ]) {
+    testWidgets('${scenario.name} browses the full roster and uncapped search results', (tester) async {
+      final roster = <Map<String, dynamic>>[
+        for (var i = 0; i < 240; i++)
+          {'id': '${1000 + i}', 'name': 'Catalog unit ${i.toString().padLeft(3, '0')}',
+            'packs': ['${1000 + i}'], 'hasSprites': true},
+        {'id': '20', 'name': 'Zidane', 'packs': ['201'], 'hasSprites': true},
+      ];
+      if (scenario.hosted) {
+        app.hostIndex = {'units': roster};
+      } else {
+        app.hostIndex = null;
+        api.listedUnits = roster;
+      }
+      await picker(tester, dialog: scenario.dialog);
+      final scrollable = find.descendant(of: find.byType(ListView), matching: find.byType(Scrollable));
+      // Browsing must reach a name beyond the former first-200/C cutoff.
+      await tester.scrollUntilVisible(find.text('Zidane'), 500, scrollable: scrollable, maxScrolls: 50);
+      expect(find.text('Zidane'), findsOneWidget);
+      expect(api.requested, isEmpty);
+      await tester.tap(find.text('Zidane'));
+      await tester.pumpAndSettle();
+      expect(find.text('OTHER UNIT'), findsOneWidget);
+      expect(api.requested, ['201']);
+      expect(app.units, isEmpty);
+      // A broad search must also let us reach its final match after row 200.
+      await tester.enterText(find.byType(TextField).first, 'Catalog unit');
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('Catalog unit 239'), 500, scrollable: scrollable, maxScrolls: 50);
+      expect(find.text('Catalog unit 239'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('a never-added unit gets its complete pack and animations on the first selection', (tester) async {

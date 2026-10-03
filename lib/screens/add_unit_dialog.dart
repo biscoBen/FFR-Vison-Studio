@@ -114,7 +114,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final s = q.trim().toLowerCase();
-    final shown = (s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s))).take(200).toList();
+    final shown = s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s)).toList();
     final inMod = app.units.map((u) => (u as Map)['ffbe']?['base']?.toString()).toSet();
     final packs = sel == null ? <String>{} : ((sel!['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
     final hasPack = packs.contains(form);

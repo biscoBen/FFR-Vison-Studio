@@ -11,7 +11,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Remove the unit picker's first-200-results cutoff so browsing reaches the full character roster when adding a unit
+  or replacing a default vision/party model. Keep search uncapped and rows built as they scroll into view; browsing
+  still leaves character sprite downloads on demand.
 
 ## Published private shop battle stage — 2026-10-02
 
