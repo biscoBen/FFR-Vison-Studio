@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' show PointerDeviceKind;
 
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/design/widgets.dart';
@@ -9,6 +10,7 @@ import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart' show kSecondaryMouseButton;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -282,6 +284,75 @@ void main() {
     expect(ready(), isTrue);
     await tester.pumpAndSettle();
   }
+
+  Future<void> rightClickVision(WidgetTester tester, String name) async {
+    final card = find.descendant(of: find.byKey(const Key('added-visions')), matching: find.text(name.toUpperCase()));
+    await tester.tap(card, kind: PointerDeviceKind.mouse, buttons: kSecondaryMouseButton);
+    if (app.building) { await tester.pump(const Duration(milliseconds: 300)); }
+    else { await tester.pumpAndSettle(); }
+    expect(find.text('Remove vision'), findsOneWidget);
+    expect(app.selectedKey, isNull);
+  }
+
+  testWidgets('added vision context menu confirms removal and supports cancelling', (tester) async {
+    await show(tester);
+    final before = clone(api.roster);
+    final name = api.roster.first['en'] as String;
+    await rightClickVision(tester, name);
+    await tester.tap(find.text('Remove vision'));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove $name from the mod?'), findsOneWidget);
+    await tester.tap(find.text('Keep'));
+    await tester.pumpAndSettle();
+    expect(api.roster, before);
+    await rightClickVision(tester, name);
+    await tester.tap(find.text('Remove vision'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove'));
+    await wait(tester, () => app.units.isEmpty);
+    expect(api.roster, isEmpty);
+    expect(app.nativeVisions, [originalFixture()]);
+  });
+
+  testWidgets('removing an acquired original returns it to Defaults', (tester) async {
+    api.roster.add(originalFixture()..['testAcquire'] = true);
+    app.units = clone(api.roster) as List;
+    await show(tester);
+    await rightClickVision(tester, 'Cloud');
+    await tester.tap(find.text('Remove vision'));
+    await tester.pumpAndSettle();
+    expect(find.text('Revert Cloud to original?'), findsOneWidget);
+    await tester.tap(find.text('Revert to original'));
+    await wait(tester, () => !app.units.any((u) => u['native'] != null));
+    expect(api.roster, hasLength(1));
+    expect(find.descendant(of: find.byKey(const Key('default-visions')), matching: find.text('CLOUD')), findsOneWidget);
+  });
+
+  testWidgets('context removal is disabled during builds and preserves cave-required Fina', (tester) async {
+    await show(tester);
+    app.buildState = {'running': true};
+    app.notifyListeners();
+    await tester.pump();
+    await rightClickVision(tester, api.roster.first['en'] as String);
+    expect(tester.widget<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).enabled, isFalse);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pump(const Duration(milliseconds: 300));
+    app.buildState = null;
+    app.crystalCave = true;
+    String? removalNotice;
+    app.addListener(() { removalNotice ??= app.notice; });
+    app.notifyListeners();
+    await tester.pumpAndSettle();
+    await rightClickVision(tester, api.roster.first['en'] as String);
+    await tester.tap(find.text('Remove vision'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove'));
+    await wait(tester, () => removalNotice != null);
+    expect(app.units, hasLength(1));
+    expect(api.roster, hasLength(1));
+    expect(removalNotice, contains('Turn off Crystal Fina cave'));
+    await tester.pump(const Duration(seconds: 6));
+  });
 
   testWidgets('dragging original visions enables acquisition and dragging back keeps edits', (tester) async {
     await show(tester);

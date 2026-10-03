@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Fix the Crystal Fina cave world-map crash by retaining added overlap/delegate names when packing its maps into
+  IoStore. Validate the packed-name header as well as authored values; check the supplied maps through actual
+  container conversion. In-game cave travel still requires testing in Resonance.
+- Right-click an Added vision to remove it directly from the main screen, using the existing confirmation and
+  removal safeguards. Original visions return to Defaults when their overrides are removed.
 
 ## Published Crystal Fina cave — 2026-10-03
 

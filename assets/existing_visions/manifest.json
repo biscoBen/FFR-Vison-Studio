@@ -5,7 +5,7 @@
     "payload/_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "payload/_ffr_animation_repair.py": "90adf0c3626a4261c2ced800bb1de972122cf6511811576c322edfaeb6773abc",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_crystal_cave.py": "4d7bcac0357aba5b0ebda5cca6481f3dda9819beb8787deff4afb31668f26fa4",
+    "payload/_ffr_crystal_cave.py": "e17a80c4274d29069ae3e5753d66b2be4b36ba6c41403ddcdb776cfa112c4788",
     "payload/_ffr_existingvisions.py": "c64945a7feb8f75f13592b300109c06be6d1522554910269cfc5394f04df5e9d",
     "payload/_ffr_library.py": "d5991b67f4968470d6dad2481e00290e92e3611ed986c90713c98eb4b4f3f0f4",
     "payload/_ffr_party.py": "577607ba1e2a237948ba18004f6b676d7f57c7904476f9952cead79b149624ff",
@@ -13,6 +13,6 @@
     "payload/ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
-    "payload/manifest.json": "591719e406ff07d3c159aea21c237c71583fa1960de2b9bc5e7778d9c1990df2"
+    "payload/manifest.json": "29fbcc137accd392995843f116b4612b1338bfa785dbf725f44875c1f28a8af3"
   }
 }

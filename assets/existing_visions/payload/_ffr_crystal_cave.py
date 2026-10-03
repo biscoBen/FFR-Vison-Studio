@@ -166,6 +166,10 @@ def names(view, value):
                 if key not in ('$type', 'Extras', 'Data') or not isinstance(child, str):
                     visit(child)
     visit(value)
+    # IoStore keeps only this prefix of the legacy name map. Retained opaque
+    # exports still use their original indices; new delegate/animation names
+    # must also survive packing, so keep the complete map without reordering.
+    view['NamesReferencedFromExportDataCount'] = len(view['NameMap'])
 
 
 def clone_graph(dst, src, indices, roots):
@@ -519,6 +523,10 @@ def semantic(value):
 
 
 def check_level(expected, built):
+    if (built['NameMap'] != expected['NameMap']
+            or built['NamesReferencedFromExportDataCount'] != expected['NamesReferencedFromExportDataCount']
+            or built['NamesReferencedFromExportDataCount'] < len(built['NameMap'])):
+        raise ValueError('A generated cave level would lose names during IoStore packing.')
     if expected['Imports'] != built['Imports'] or len(expected['Exports']) != len(built['Exports']):
         raise ValueError('A generated cave level lost its imports or exports.')
     for a, b in zip(expected['Exports'], built['Exports']):
@@ -547,6 +555,7 @@ def build(units, env):
     expected = make_levels(source, unit)
     mapping = blueprint_mappings(expected, env, work)
     for rel, view in expected.items():
+        names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
         destination = Path(env['OUT']) / ('FFRS/Content/' + rel + '.umap')
         destination.parent.mkdir(parents=True, exist_ok=True)

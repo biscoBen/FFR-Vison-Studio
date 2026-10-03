@@ -121,14 +121,32 @@ class CrystalCaveTests(unittest.TestCase):
         invalid = copy.deepcopy(cl); invalid['LoadedProperties'][0]['SerializedType'] = 'Unsupported'
         with self.assertRaises(ValueError): cave.map_mappings(source, {'BP_Child_C': (view, invalid)})
 
-    def test_level_readback_rejects_lost_actor_reference_and_opaque_bytes(self):
-        expected = {'Imports': [], 'Exports': [{'ObjectName': 'actor', 'OuterIndex': 2,
+    def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
+        view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}
+        original_names = view['NameMap'][:]
+        delegate = {'$type': 'UAssetAPI.PropertyTypes.Objects.FDelegate, UAssetAPI',
+                    'Object': 139, 'Delegate': 'OnBeginOverlap'}
+        cave.names(view, delegate)
+        # retoc copies exactly this prefix into the cooked container, leaving
+        # property payload indices unchanged. The old header lost this name.
+        packed_names = view['NameMap'][:view['NamesReferencedFromExportDataCount']]
+        self.assertEqual(packed_names[view['NameMap'].index(delegate['Delegate'])], 'OnBeginOverlap')
+        self.assertEqual(view['NameMap'][:len(original_names)], original_names)
+        cave.names(view, delegate)
+        self.assertEqual(view['NameMap'], packed_names)
+
+    def test_level_readback_rejects_lost_actor_reference_opaque_bytes_and_names(self):
+        expected = {'NameMap': ['actor'], 'NamesReferencedFromExportDataCount': 1,
+                    'Imports': [], 'Exports': [{'ObjectName': 'actor', 'OuterIndex': 2,
             'Extras': 'opaque', 'Data': [{'Name': 'm_MapId', 'Value': 29991}]}]}
         cave.check_level(expected, copy.deepcopy(expected))
         for field, value in [('OuterIndex', 0), ('Extras', 'corrupted'),
                              ('Data', [{'Name': 'm_MapId', 'Value': 1000}])]:
             broken = copy.deepcopy(expected); broken['Exports'][0][field] = value
             with self.assertRaises(ValueError): cave.check_level(expected, broken)
+        for field, value in [('NameMap', ['renamed']), ('NamesReferencedFromExportDataCount', 0)]:
+            broken = copy.deepcopy(expected); broken[field] = value
+            with self.assertRaisesRegex(ValueError, 'lose names'): cave.check_level(expected, broken)
 
 
 if __name__ == '__main__': unittest.main()

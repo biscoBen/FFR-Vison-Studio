@@ -244,6 +244,7 @@ numbers. Duplicate matching requires the prepared game's full extracted tables.
 The home screen separates **Added visions** from **Default visions**. Edited original visions remain in the default box
 and appear once with their current edits. Each box scrolls independently; adding units and saving/loading all configs
 remain available from the home screen.
+Right-click a card in **Added visions** and choose **Remove vision** to remove it with the usual confirmation.
 Default portraits use bundled FFBE icons matched to all 26 original visions, with the original portrait as a fallback.
 These portraits appear in Studio's list and character page; selecting a replacement model shows that model's portrait.
 

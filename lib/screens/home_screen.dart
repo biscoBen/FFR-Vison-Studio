@@ -11,6 +11,7 @@ import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
 import 'native_portrait.dart';
 import 'party_portrait.dart';
+import 'remove_unit_dialog.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -171,7 +172,7 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
                     itemCount: entries.length + (allowAdd ? 1 : 0),
-                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i]),
+                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i], allowRemove: allowAdd),
                   ),
           ),
         ]),
@@ -199,7 +200,26 @@ class HomeScreen extends StatelessWidget {
         ),
       );
 
-  Widget _entry(BuildContext context, AppState app, Map<String, dynamic> u) {
+  Future<void> _visionMenu(BuildContext context, AppState app, Map<String, dynamic> unit, Offset position) async {
+    final overlay = Overlay.of(context).context.findRenderObject()! as RenderBox;
+    final local = overlay.globalToLocal(position);
+    final action = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(Rect.fromLTWH(local.dx, local.dy, 0, 0), Offset.zero & overlay.size),
+      color: Guide.paper,
+      shape: Border.fromBorderSide(Guide.frame),
+      items: [PopupMenuItem(
+        value: 'remove',
+        enabled: !app.building && app.api != null,
+        child: Text('Remove vision', style: Guide.text()),
+      )],
+    );
+    if (action == 'remove' && context.mounted) {
+      await confirmRemove(context, app, unit);
+    }
+  }
+
+  Widget _entry(BuildContext context, AppState app, Map<String, dynamic> u, {bool allowRemove = false}) {
     final native = u['native'] != null;
     final party = u['party'] != null;
     final edited = app.units.any((x) => x['key'] == u['key']);
@@ -212,6 +232,7 @@ class HomeScreen extends StatelessWidget {
       shape: Border.fromBorderSide(BorderSide(color: Guide.ink, width: 1.5)),
       child: InkWell(
         onTap: () => party ? choosePartyCharacter(context, u) : native ? chooseNativeVision(context, u) : app.select(u['key'] as String),
+        onSecondaryTapUp: allowRemove ? (details) => _visionMenu(context, app, u, details.globalPosition) : null,
         hoverColor: Guide.paper2,
         child: Padding(
           padding: const EdgeInsets.all(10),
