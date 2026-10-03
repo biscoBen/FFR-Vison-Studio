@@ -29,6 +29,8 @@ PACKAGE = 'Map/StudioCrystalCave/' + NAME
 ENTRANCE = (17600.0, 21400.0, 160.0)
 ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
+FINA_SCALE = 2.5
+FINA_FLOAT = 40.0
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
 PORTAL = (4000.0, 31.0, 100.0)
@@ -260,12 +262,35 @@ def clear_crystals(view):
     return crystals
 
 
-def transition(actor, conditional_template, map_id, point):
+def fina_ground(view, crystal):
+    """Anchor to the clear crystal's ground light, not its floating geometry."""
+    anchor = property_data(crystal, 'RelativeLocation')['Value'][0]['Value']
+    floors = []; lights = []
+    for e in view['Exports']:
+        if not isinstance(e.get('Data'), list): continue
+        props = {p['Name']: p for p in e['Data']}
+        mesh = props.get('StaticMesh', {}).get('Value', 0)
+        if mesh < 0 and view['Imports'][-mesh-1]['ObjectName'] == 'SM_Env_Com_00Com_44_ground001':
+            floors.append(e)
+        if e['ClassIndex'] < 0 and view['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'PointLightComponent':
+            if 'RelativeLocation' not in props: continue
+            loc = props['RelativeLocation']['Value'][0]['Value']
+            distance = (float(loc['X']) - float(anchor['X'])) ** 2 + (float(loc['Y']) - float(anchor['Y'])) ** 2
+            if distance < 200.0 ** 2: lights.append((distance, loc))
+    if len(floors) != 1 or not lights:
+        raise ValueError('The crystal room ground or clear-crystal light changed.')
+    glow = min(lights, key=lambda value: value[0])[1]
+    ground = property_data(floors[0], 'RelativeLocation')['Value'][0]['Value']
+    return float(glow['X']), float(glow['Y']), float(ground['Z'])
+
+
+def transition(actor, conditional_template, map_id, point, auto=True):
     set_value(actor, 'm_MapId', map_id); set_value(actor, 'm_PointID', point)
     # The native conditional-transition struct exposes autosave and follow-up
     # events explicitly; clear the Earth Shrine's tutorial and story conditions.
     for name in ('m_IsUseCondion', 'mTransitionDataList', 'm_IsAutoTransition'):
         prop = copy.deepcopy(property_data(conditional_template, name))
+        if name == 'm_IsAutoTransition': prop['Value'] = auto; prop['IsZero'] = False
         if name == 'mTransitionDataList':
             prop['Value'] = prop['Value'][:1]
             for p in named_properties(prop):
@@ -299,11 +324,8 @@ def make_levels(source, unit):
 
     bg_room = private_level(source[ROOM_BG], '/Game/' + ROOM_BG, '/Game/' + PACKAGE + '_BG')
     crystals = clear_crystals(bg_room)
-    # The large room's floor is elevated. Use the native clear crystal's
-    # location, spawning above its pedestal so the NPC's capsule can settle on
-    # collision rather than starting underneath it at overworld ground height.
     clear_mesh = bg_room['Exports'][crystals['SM_Env_Com_magicstone001'][1]-1]
-    anchor = property_data(clear_mesh, 'RelativeLocation')['Value'][0]['Value']
+    ground = fina_ground(bg_room, clear_mesh)
 
     npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + PACKAGE + '_NPC')
     actors(npc, [70, 0, 31])
@@ -325,22 +347,25 @@ def make_levels(source, unit):
     prop = copy.deepcopy(property_data(npc['Exports'][56], 'm_IsAnimationUseDirection'))
     operation['Data'].append(prop)
     prop = copy.deepcopy(property_data(npc['Exports'][63], 'UUPerPixel'))
-    prop['Name'] = 'm_SsPlayerScale'; prop['Value'] = 1.0; prop['IsZero'] = False
+    prop['Name'] = 'm_SsPlayerScale'; prop['Value'] = FINA_SCALE; prop['IsZero'] = False
     owner['Data'].append(prop)
     ss = npc['Exports'][63]
     set_value(ss, 'AutoPlayAnimPackName', f'summon{unit["id"]}')
     set_value(ss, 'AutoPlayAnimationName', 'idle'); set_value(ss, 'AutoPlayAnimationIndex', 0)
-    set_value(ss, 'UUPerPixel', 1.0)
+    set_value(ss, 'UUPerPixel', FINA_SCALE)
     for imp in npc['Imports']:
         if imp['ObjectName'] == '/Game/Chara/Field_Unit/npc9020/npc9020':
             imp['ObjectName'] = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
         elif imp['ObjectName'] == 'npc9020' and imp['ClassName'] == 'Ss6Project':
             imp['ObjectName'] = f'summon{unit["id"]}'
-    vector(npc['Exports'][36], 'RelativeLocation', (anchor['X'], anchor['Y'], anchor['Z'] + 200.0))
+    # This stationary NPC does not fall automatically. Place its foot directly
+    # on the floor, keeping the interaction volume reachable by the player.
+    foot = property_data(npc['Exports'][109], 'RelativeLocation')['Value'][0]['Value']
+    vector(npc['Exports'][36], 'RelativeLocation', (ground[0], ground[1], ground[2] - float(foot['Z'])))
     # Keep interaction and the capsule at the floor; only the sprite floats.
     billboard = npc['Exports'][48]
     template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
-    billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, 116.0))
+    billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, FINA_FLOAT))
     names(npc, [owner, ss, npc['Imports']])
 
     room = private_level(source[ROOM], '/Game/' + ROOM, '/Game/' + PACKAGE + '_PL')
@@ -371,7 +396,9 @@ def make_levels(source, unit):
     m = clone_graph(stone_gd, source[DONOR_GD], [2, 5, 4, 12], {8: level_id, 14: world_id})
     portal = stone_gd['Exports'][m[5]-1]; point = stone_gd['Exports'][m[4]-1]
     portal['ObjectName'] = NAME + '_Portal'; point['ObjectName'] = NAME + '_PortalReturn'
-    transition(portal, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], MAP_ID, 0)
+    transition(portal, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], MAP_ID, 0, auto=False)
+    # Keep the donor's native Transition interaction type, requiring input
+    # instead of entering the room on overlap.
     set_value(portal, 'm_UniqueId', MAP_ID); set_value(point, 'm_PointID', 1)
     vector(stone_gd['Exports'][m[2]-1], 'RelativeLocation', PORTAL)
     vector(stone_gd['Exports'][m[2]-1], 'BoxExtent', (160.0, 200.0, 200.0))

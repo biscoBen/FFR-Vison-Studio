@@ -145,6 +145,47 @@ class CrystalCaveTests(unittest.TestCase):
         invalid = copy.deepcopy(cl); invalid['LoadedProperties'][0]['SerializedType'] = 'Unsupported'
         with self.assertRaises(ValueError): cave.map_mappings(source, {'BP_Child_C': (view, invalid)})
 
+    def test_fina_ground_uses_nearest_crystal_light_without_inheriting_float_height(self):
+        def location(x, y, z):
+            return {'Name': 'RelativeLocation', 'Value': [{'Value': {'X': x, 'Y': y, 'Z': z}}]}
+        crystal = {'Data': [location(100, 200, 532)]}
+        view = {'Imports': [{'ObjectName': 'SM_Env_Com_00Com_44_ground001'},
+                            {'ObjectName': 'PointLightComponent'}], 'Exports': [
+            {'ClassIndex': 0, 'Data': [{'Name': 'StaticMesh', 'Value': -1}, location(0, 0, '+0')]},
+            {'ClassIndex': -2, 'Data': [location(110, 210, 342)]},
+            {'ClassIndex': -2, 'Data': [location(160, 220, 500)]},
+            {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]}]}
+        original = copy.deepcopy(view)
+        self.assertEqual(cave.fina_ground(view, crystal), (110, 210, 0))
+        cave.vector(crystal, 'RelativeLocation', (100, 200, 900))
+        self.assertEqual(cave.fina_ground(view, crystal), (110, 210, 0))
+        self.assertEqual(view, original)
+        for exports in (view['Exports'][1:], view['Exports'][:1]):
+            with self.assertRaises(ValueError): cave.fina_ground(dict(view, Exports=exports), crystal)
+
+    def test_manual_portal_preserves_destination_and_transition_safeguards(self):
+        actor = {'Data': [{'Name': 'm_MapId', 'Value': 1000}, {'Name': 'm_PointID', 'Value': 0}]}
+        fields = [('FlagCondition', 'story flag'), ('mapId', 3000), ('pointId', 4),
+                  ('isEnableAutoSave', True), ('EventList', ['story event']),
+                  ('eventList2', ['another event']), ('afterTransitionEventList', ['tutorial'])]
+        template = {'Data': [{'Name': 'm_IsAutoTransition', 'Value': True, 'IsZero': False},
+                            {'Name': 'm_IsUseCondion', 'Value': True},
+                            {'Name': 'mTransitionDataList', 'Value': [{'Name': 'entry', 'Value': [
+                                {'Name': k, 'Value': v} for k, v in fields]}]}]}
+        auto = copy.deepcopy(actor)
+        cave.transition(auto, template, 29990, 1)
+        cave.transition(actor, template, 29991, 0, auto=False)
+        self.assertTrue(cave.property_data(auto, 'm_IsAutoTransition')['Value'])
+        manual = cave.property_data(actor, 'm_IsAutoTransition')
+        self.assertFalse(manual['Value']); self.assertFalse(manual['IsZero'])
+        values = {p['Name']: p['Value'] for p in cave.named_properties(cave.property_data(actor, 'mTransitionDataList'))}
+        self.assertEqual((values['mapId'], values['pointId']), (29991, 0))
+        self.assertEqual(values['FlagCondition'], '')
+        self.assertFalse(values['isEnableAutoSave'])
+        for name in ('EventList', 'eventList2', 'afterTransitionEventList'):
+            self.assertEqual(values[name], [])
+        self.assertTrue(cave.property_data(template, 'm_IsAutoTransition')['Value'])
+
     def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
         view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}
         original_names = view['NameMap'][:]

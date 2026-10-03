@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Enlarge cave Crystal Fina to 2.5 times the previous sprite scale and center her above the clear crystal's ground
+  glow. Put her foot and interaction volume directly on the native floor, with a 40-unit sprite-only float offset;
+  the stationary NPC did not settle from the previous raised spawn. Require interaction with the stone cave's
+  crystal to enter the glowing room, using the native manual-transition setting. In-game size, reach and interaction
+  still need a retest; the workspace has no Resonance runtime.
 
 ## Published Crystal Fina cave placement and glow cleanup — 2026-10-03
 
