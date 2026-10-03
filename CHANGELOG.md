@@ -11,12 +11,30 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published shop dialogue correction and level 7–8 battle — 2026-10-02
+
+Changes in [`d614dda`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d614dda918b517987d6d43eedfe31a0cf91c4d73),
+[test package 37079690571](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37079690571).
+
 - Correct the shop practice battle's NPC binding. The observed "Potions, Phoenix Downs..." conversation belongs
   to Mitra's talk block 6, not the different woman's block 39 targeted in the first package. Match the original
   conversation event in both parent and combined tables; preserve the other woman and all existing testing options.
   Battle entry and return still require in-game confirmation after updating and rebuilding/installing the mod.
 - Use the native level 7–8 encounter with one Evil Plant (300 HP) and two Wild Rats (320 HP each), preserving their
   normal stats and all other encounters. Retain guaranteed escape and the optional one-battle MR reward.
+- Passed local analysis, 19 focused Flutter tests, 188 Python tests and both bundle checks. Windows passed the full
+  Flutter/Python suites, real frozen-engine startup, launcher/updater/import checks and compilation before publication.
+  Actual engine serialization preserved every original row across all seven affected tables with all 26 original
+  vision grants and both testing options enabled. Verified the published ZIP checksum, exact code commit and all
+  packaged extension files. Pending ability-hiding decisions are excluded; master is unchanged.
+- One correction push and one reused push build: CI took 4m36s; summed job execution was 8m11s. Final corrected
+  candidate: 16:52:53 PDT; ZIP verified at 16:58:27 PDT (5m34s including final local checks, push, CI and download).
+  From the first feature candidate at 16:15:23 PDT, verification took 43m04s; from the recorded original request at
+  16:09:05 PDT, 49m22s. These totals include the initial release, the roughly 25-minute user-testing gap, correction
+  and second build. Packaged-file checks finished at 16:58:54 PDT; requested ability lists and documentation followed.
+  Publication notes use the documentation-only path and retain the binary's tested code commit.
 
 ## Published Mitra shop practice battle — 2026-10-02
 
