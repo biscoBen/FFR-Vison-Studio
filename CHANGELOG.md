@@ -11,10 +11,25 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Give Crystal Fina's acquisition button one regular transition to the stone cave beside its crystal, with the grant
-  as a pre-event. Remove the competing NPC talk binding and event-row map change. Preserve her confirmed grant,
-  white flash, appearance and collision. The previous explicit event-only return still reached the overworld after
-  reinstall; this revised route needs a live-game retest.
+No pending code changes.
+
+## Published cave transition ownership — 2026-10-03
+
+Code: [`0dd312a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0dd312a809a1c8fe93b5ce6209233592262e800a).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37157852608),
+[Windows run 37157852608](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37157852608).
+
+- Give Crystal Fina's button one regular transition to stone cave 29990, portal point 1, with acquisition as its
+  pre-event. Clear the NPC's competing talk binding and the grant event's separate map change. Preserve her confirmed
+  grant, white flash, size and collision. Run 37156080907 still returned to the overworld after reinstall; this revised
+  event flow needs a live-game retest. Correct the earlier fallback hypothesis in `SCENE_PLACEMENT.md`.
+- Verification: 216 local Python tests (3 reference/platform-dependent skips), Flutter analysis, bundle checks,
+  native table/scene readback, all 11 scene assets through IoStore, and all 31 packaged files. All required Windows
+  Flutter, Python, frozen-engine startup, launcher/updater and publication gates passed for the exact code commit.
+- Measured to verified package: **16m59s from investigation start** — **9m54s investigation/implementation**,
+  **1m28s local checks and push**, **5m10s CI**, **27s release verification**. First complete candidate to verified
+  package: **7m05s**. CI used **9m02s runner time**. One code push/build, reused through authenticated release download;
+  publication notes use the documentation-only path.
 
 ## Published cave acquisition return — 2026-10-03
 
