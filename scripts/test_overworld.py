@@ -127,7 +127,13 @@ class OverworldTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(data).hexdigest(), field.SHEET_SHA256)
         self.assertEqual(hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest(),
                          'ec345dbeb6a3f68d53aa24a107b8b53e78abfb51')
-        with Image.open(sheet) as image: self.assertEqual(image.size, (448, 1536))
+        with Image.open(sheet) as image:
+            self.assertEqual(image.size, (448, 1536))
+            # This is an actual rest cell, rather than an additional step.
+            for row in range(8):
+                idle = image.crop((0, row*64, 64, (row+1)*64)).tobytes()
+                for offset in (8, 16):
+                    self.assertEqual(idle, image.crop((0, (row+offset)*64, 64, (row+offset+1)*64)).tobytes())
         spec = field.spec('pc0010'); cells = {c['name'] for c in spec['cells']}
         animations = {a['name']:a for a in spec['animations']}
         self.assertEqual(len(animations),len(spec['animations']))
@@ -136,14 +142,16 @@ class OverworldTests(unittest.TestCase):
         self.assertEqual(animations['idle2']['parts']['part_0']['Cell'], [[0,'field_0_0']])
         # Visual review of the bundled sheet: row 3 faces east, row 5 southeast.
         for motion, offset in (('idle', 0), ('move', 16), ('dash', 8)):
-            self.assertEqual(animations[f'{motion}6']['parts']['part_0']['Cell'][0], [0, f'field_{3+offset}_0'])
-            self.assertEqual(animations[f'{motion}3']['parts']['part_0']['Cell'][0], [0, f'field_{5+offset}_0'])
+            first = 0 if motion == 'idle' else 1
+            self.assertEqual(animations[f'{motion}6']['parts']['part_0']['Cell'][0], [0, f'field_{3+offset}_{first}'])
+            self.assertEqual(animations[f'{motion}3']['parts']['part_0']['Cell'][0], [0, f'field_{5+offset}_{first}'])
         for d,row in field.DIRECTIONS:
             for motion,offset,delay in (('idle',0,1),('move',16,8),('dash',8,5)):
                 animation = animations[f'{motion}{d}']; keys = animation['parts']['part_0']['Cell']
-                self.assertEqual(keys[0], [0,f'field_{row+offset}_0'])
+                columns = (0,) if motion == 'idle' else range(1, 7)
+                self.assertEqual(keys, [[i*delay, f'field_{row+offset}_{col}'] for i, col in enumerate(columns)])
                 self.assertTrue(all(c in cells for _,c in keys))
-                self.assertEqual(animation['frameCount'], (1 if motion=='idle' else 7)*delay)
+                self.assertEqual(animation['frameCount'], len(columns)*delay)
                 self.assertEqual(animation['parts']['part_0']['Posx'], [[0,0.0]])
 
     def test_generator_writes_private_field_assets_and_correct_texture_payload_sizes(self):

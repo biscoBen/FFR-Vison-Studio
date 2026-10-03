@@ -64,9 +64,12 @@ def spec(name):
     animations = []
     for direction, row in DIRECTIONS:
         for motion, offset, delay in (('idle', 0, 1), ('move', 16, 8), ('dash', 8, 5)):
-            count = 1 if motion == 'idle' else 7
+            # Column zero is the standing pose, including in the movement rows.
+            # The six moving poses loop without inserting a stop on every lap.
+            columns = (0,) if motion == 'idle' else range(1, 7)
+            count = len(columns)
             parts = {'root': {'Hide': [[0, 0.0]]},
-                     'part_0': {'Cell': [[i*delay, f'field_{row+offset}_{i}'] for i in range(count)],
+                     'part_0': {'Cell': [[i*delay, f'field_{row+offset}_{col}'] for i, col in enumerate(columns)],
                                 'Posx': [[0, 0.0]], 'Posy': [[0, 0.0]], 'Posz': [[0, 1.0]],
                                 'Sclx': [[0, 1.0]], 'Scly': [[0, 1.0]], 'Hide': [[0, 0.0]]},
                      'NULL_Head': {'Posx': [[0, 0.0]], 'Posy': [[0, 46.0]]},

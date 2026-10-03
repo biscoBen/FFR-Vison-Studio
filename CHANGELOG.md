@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Smooth Vagrant Knight Rain's directional walk/run loops by using the six moving cells, excluding the identical
+  standing pose in column zero. Match the Studio walking preview to the same cycle. Keep Resonance's normal
+  movement modes: full-stick movement and B-held running share its dash animation at different playback rates.
+  Field-leader cycling is still under investigation; the native animation projects and input bindings need verification.
 
 ## Published cave navigation and controller repair — 2026-10-03
 

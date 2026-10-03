@@ -34,7 +34,7 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
     super.initState();
     clock = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 933),
+      duration: const Duration(milliseconds: 800),
     )..repeat();
     _load();
   }
@@ -90,7 +90,7 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
                     painter: _FieldPainter(
                       image!,
                       direction + 16,
-                      (clock.value * 7).floor().clamp(0, 6),
+                      1 + (clock.value * 6).floor().clamp(0, 5),
                     ),
                   ),
                 ),
