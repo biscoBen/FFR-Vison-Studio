@@ -28,16 +28,18 @@ STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False}
 
 
 def validate_settings(value):
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
-            or type(value.get('practiceBattle', False)) is not bool):
+            or type(value.get('practiceBattle', False)) is not bool
+            or type(value.get('crystalCave', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
-    return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False)}
+    return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
+            'crystalCave': value.get('crystalCave', False)}
 
 
 def reward(rows):
@@ -113,6 +115,9 @@ def prepare(tables, units, root, rows):
             table(GROUP)['set'].append({'row': key, 'set': {'ap': value}})
     if controls['practiceBattle']:
         prepare_practice(table, rows, value)
+    if controls['crystalCave']:
+        import _ffr_crystal_cave
+        _ffr_crystal_cave.prepare(tables, units, root, rows)
     return tables
 
 
@@ -232,14 +237,15 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            if 'practiceBattle' not in value:
-                value = dict(value, practiceBattle=settings(env['ROOT'])['practiceBattle'])
+            for flag in ('practiceBattle', 'crystalCave'):
+                if flag not in value:
+                    value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)
             # Same build-state lock used by the roster API, when available.
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if value['maxMr'] or value['practiceBattle']:
+            if value['maxMr'] or value['practiceBattle'] or value['crystalCave']:
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'

@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle;
+    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -87,6 +87,15 @@ class HomeScreen extends StatelessWidget {
                         : 'Unverified skills are visible with original game animations. Our skill repairs and reviewed hides are off.', style: Guide.small()),
                 Text('Rebuild/install after changing modes to replace the previous mod. Equipped skills and saved configs are retained.', style: Guide.small()),
                 const SizedBox(height: 14),
+                SwitchListTile(
+                  key: const Key('crystal-fina-cave'), contentPadding: EdgeInsets.zero,
+                  title: Text('Crystal Fina cave', style: Guide.text()),
+                  subtitle: Text('Adds a cave north of the road between Earth Shrine and Mitra. A crystal portal leads to the glowing room. Crystal Fina grants her vision through the native acquisition screen, then disappears; you return to the stone cave. Adds her bundled profile if needed. Install after switching.', style: Guide.small()),
+                  value: app.crystalCave,
+                  onChanged: app.building || app.api == null ? null : (value) async {
+                    try { await app.setCrystalCave(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),

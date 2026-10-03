@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
-  test('changing either testing switch preserves the other persisted setting', () async {
-    var settings = <String, dynamic>{'schema': 1, 'maxMr': true, 'practiceBattle': false};
+  test('changing a testing switch preserves the other persisted settings', () async {
+    var settings = <String, dynamic>{'schema': 1, 'maxMr': true, 'practiceBattle': false, 'crystalCave': false};
     final client = MockClient((request) async {
       expect(request.url.path, '/api/testing');
       if (request.method == 'PUT') {
@@ -17,11 +17,13 @@ void main() {
     });
     await http.runWithClient(() async {
       final api = Api('http://studio');
+      await api.saveCrystalCave(true);
       await api.saveTestingPracticeBattle(true);
-      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true});
+      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true, 'crystalCave': true});
       await api.saveTestingMaxMr(false);
-      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true});
+      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'crystalCave': true});
       expect(await api.testingPracticeBattle(), isTrue);
+      expect(await api.crystalCave(), isTrue);
     }, () => client);
   });
 
@@ -29,6 +31,7 @@ void main() {
     final client = MockClient((_) async => http.Response('{"schema":1,"maxMr":true}', 200));
     await http.runWithClient(() async {
       expect(await Api('http://studio').testingPracticeBattle(), isFalse);
+      expect(await Api('http://studio').crystalCave(), isFalse);
     }, () => client);
   });
 }

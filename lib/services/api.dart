@@ -41,8 +41,10 @@ class Api {
       (await get('/api/native/model/${Uri.encodeComponent(id)}/${Uri.encodeComponent(form)}')) as Map<String, dynamic>;
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
+  Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
   Future<void> saveTestingMaxMr(bool value) => _saveTestingFlag('maxMr', value);
   Future<void> saveTestingPracticeBattle(bool value) => _saveTestingFlag('practiceBattle', value);
+  Future<void> saveCrystalCave(bool value) => _saveTestingFlag('crystalCave', value);
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
       (await put('/api/abilities/settings', {
         'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges,
@@ -51,7 +53,8 @@ class Api {
     final current = await get('/api/testing');
     await put('/api/testing', {
       'schema': 1, 'maxMr': current['maxMr'] == true,
-      'practiceBattle': current['practiceBattle'] == true, name: value,
+      'practiceBattle': current['practiceBattle'] == true,
+      'crystalCave': current['crystalCave'] == true, name: value,
     });
   }
   Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);

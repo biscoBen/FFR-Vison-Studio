@@ -56,6 +56,7 @@ class AppState extends ChangeNotifier {
   bool modInstalled = false;
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
+  bool crystalCave = false;
   bool dark = false; // the night edition of the guide
   final Map<String, List<String>> _anims = {};
   int backups = 0;
@@ -299,6 +300,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load vision testing settings: $e'; }
     try { testingPracticeBattle = await api!.testingPracticeBattle(); }
     catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
+    try { crystalCave = await api!.crystalCave(); }
+    catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
     try { partyCharacters = await api!.partyCharacters(); }
@@ -360,6 +363,9 @@ class AppState extends ChangeNotifier {
   Future<bool> removeUnit(String key) => _withRoster(() async {
     try {
       if (building) { throw StateError('Wait for the current build to finish.'); }
+      if (crystalCave && units.any((u) => u['key'] == key && CrystalFina.matches(u as Map))) {
+        throw StateError('Turn off Crystal Fina cave before removing her profile.');
+      }
       await _savePending();
       await api!.deleteUnit(key);
       _pendingEdits.remove(key);
@@ -674,6 +680,18 @@ class AppState extends ChangeNotifier {
     await api!.saveTestingPracticeBattle(value);
     testingPracticeBattle = value; notifyListeners();
   });
+
+  Future<void> setCrystalCave(bool value) async {
+    // The acquired item must refer to the real, currently allocated profile.
+    // Use the existing roster allocator and preserve every current edit.
+    if (value && !hasCrystalFina) { await addBundledUnit(); }
+    await _withRoster(() async {
+      if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+      if (building) { throw StateError('Wait for the current build to finish.'); }
+      await api!.saveCrystalCave(value);
+      crystalCave = value; notifyListeners();
+    });
+  }
 
   Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }

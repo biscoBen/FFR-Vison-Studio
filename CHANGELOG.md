@@ -11,7 +11,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Add an opt-in Crystal Fina cave north of the Earth Shrine–Mitra road, with private copies of the native stone cave and glowing Leah/Tronn room. A crystal portal leads to the floating bundled Crystal Fina; acquiring her uses the native vision-obtain dialog and returns to the stone cave. Her inventory condition prevents repeat grants and hides her afterward. Keep the original story maps/events unchanged.
+- Validate the generated native tables and cooked maps by writing and reading them with the engine SDK. Map placement, white transition, acquisition-screen presentation and walking/return behavior still need an in-game check on Windows; no game runtime is available in this workspace.
 
 ## Published repeated-model portrait refresh — 2026-10-02
 

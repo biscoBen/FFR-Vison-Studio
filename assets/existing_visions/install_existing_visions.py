@@ -12,12 +12,12 @@ from pathlib import Path
 import sys
 import tempfile
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -98,7 +98,7 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_ability_modes',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
@@ -124,7 +124,8 @@ def hook_builder(raw):
     before_pack = [MARKER, 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)',
-                   '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))']
+                   '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))',
+                   '_ffr_crystal_cave.build(native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY))']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
     # Party specs describe only appearance. The legacy vision loader adds

@@ -1,0 +1,557 @@
+"""Build an opt-in Crystal Fina shrine using the installed game's own levels."""
+import base64
+import copy
+import json
+from pathlib import Path
+import struct
+
+NAME = 'Studio_CrystalCave'
+MAP_ID = 29991
+STONE_ID = 29990
+STONE_NAME = NAME + '_Stone'
+EVENT = NAME + '_Acquire'
+SPRITE = '99887755552703'
+MAP = 'Map/MapData/DT_MapData_01Gra'
+COMPOSITE = 'Map/CDT_MapData_Demo'
+MAP_UNIT = 'Asset/Map/DT_MapUnitAsset'
+PLACEMENT = 'Asset/Map/DT_MapUnitPlacementAsset'
+WORLD = 'Map/Wld/EV/Wld_01Gra_EV'
+ROOM = 'Map/Com/00Com/00Com_217/Com_00Com_217_PL'
+ROOM_BG = 'Map/Com/00Com/00Com_217/BG/Com_00Com_217_01_BG'
+STONE = 'Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL'
+DONOR_GD = 'Map/Dng/01Gra/01Gra_44/GD/Dng_01Gra_44_01_GD'
+WORLD_BG = 'Map/Wld/01Gra/BG/Wld_01Gra_BG'
+TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
+PACKAGE = 'Map/StudioCrystalCave/' + NAME
+# Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
+# The entrance sits north of their connecting road. Returning lands outside
+# its trigger, so leaving cannot immediately send the player back inside.
+ENTRANCE = (17600.0, 21400.0, 160.0)
+RETURN = (17250.0, 21400.0, 200.0)
+SPAWN = (750.0, 0.0, 100.0)
+FINA = (5500.0, -500.0, 150.0)
+PORTAL = (4000.0, 31.0, 100.0)
+PORTAL_RETURN = (3500.0, 31.0, 100.0)
+
+
+def target(units):
+    choices = [u for u in units if not u.get('native') and not u.get('party')
+               and str((u.get('ffbe') or {}).get('id')) == SPRITE]
+    if len(choices) != 1 or type(choices[0].get('id')) is not int:
+        raise ValueError('Crystal Fina cave needs exactly one bundled Crystal Fina in Added visions.')
+    return choices[0]
+
+
+def prepare(tables, units, root, rows):
+    import _ffr_testing as testing
+    if not testing.settings(root)['crystalCave']:
+        return
+    unit = target(units)
+    def table(rel):
+        return tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+    for rel in (MAP, COMPOSITE, MAP_UNIT):
+        originals = rows(rel)
+        if NAME in originals or STONE_NAME in originals or any(v.get('ID') in (MAP_ID, STONE_ID) for v in originals.values()):
+            raise ValueError('The Crystal Fina cave identity conflicts with a native game entry.')
+    room = rows(MAP).get('00Com_217')
+    if (not room or room.get('ID') != 10020 or room.get('Level') != '/Game/' + ROOM
+            or rows(COMPOSITE).get('00Com_217') != room):
+        raise ValueError('The Leah/Tronn crystal room changed; no cave was built.')
+    stone = rows(MAP).get('01Gra_44')
+    if (not stone or stone.get('ID') != 10001 or stone.get('Level') != '/Game/' + STONE
+            or rows(COMPOSITE).get('01Gra_44') != stone):
+        raise ValueError('The stone cave template changed; no cave was built.')
+    if room.get('startupEventList') or stone.get('startupEventList'):
+        raise ValueError('The cave templates gained startup events; no story events were copied.')
+    for rel in (MAP, COMPOSITE):
+        table(rel)['add'].append({'row': NAME, 'cloneFrom': '00Com_217', 'set': {
+            'ID': MAP_ID, 'Name': 'Crystal Fina Cave', 'developmentName': NAME,
+            'Level': '/Game/' + PACKAGE + '_PL', 'bOverride_MapType': True, 'MapType': 'Dungeon'}})
+        table(rel)['add'].append({'row': STONE_NAME, 'cloneFrom': '01Gra_44', 'set': {
+            'ID': STONE_ID, 'Name': 'Crystal Fina Cave', 'developmentName': STONE_NAME,
+            'Level': '/Game/' + PACKAGE + '_Stone_PL', 'bOverride_MapType': True}})
+    key, source = next((k, v) for k, v in rows(MAP_UNIT).items() if v.get('ID') == 9020)
+    if len(source.get('animationAssetList', [])) != 1:
+        raise ValueError('The stationary NPC sprite template changed.')
+    sprite = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
+    material = f'/Game/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_{unit["id"]}'
+    table(MAP_UNIT)['add'].append({'row': NAME, 'cloneFrom': key, 'set': {
+        'ID': MAP_ID, 'animationAssetList[0].Ss6Project': sprite,
+        'animationAssetList[0].Material': material, 'animationAssetList[0].isVisionCharacter': False,
+        'animationAssetList[0].textureBaseColor': sprite + '_tex',
+        'animationAssetList[0].textureNormal': sprite + '_normal',
+        'animationAssetList[0].textureMetallicRoughness': sprite + '_mreo'}})
+    placements = rows(PLACEMENT)
+    if NAME in placements or STONE_NAME in placements or any(v.get('mapId') in (MAP_ID, STONE_ID) for v in placements.values()):
+        raise ValueError('The Crystal Fina cave placement identity conflicts with the game.')
+    key = next(k for k, v in placements.items() if v.get('mapId') == 10020)
+    table(PLACEMENT)['add'].append({'row': NAME, 'cloneFrom': key, 'set': {'mapId': MAP_ID}})
+    table(PLACEMENT)['add'].append({'row': STONE_NAME, 'cloneFrom': key, 'set': {'mapId': STONE_ID}})
+    events = rows(testing.COMPOSITE)
+    donor = events['C01_ArijigokuEncount']
+    if (any(donor[k] != 'None' for k in ('TalkEventDataTable', 'EventSequence', 'EventBlueprint'))
+            or any(donor[k] for k in ('OnFlagList', 'OffFlagList', 'FlagList', 'ProgressList',
+                                      'ContinuousEventList', 'ObtainItemList', 'InitUnitDataList'))):
+        raise ValueError('The story-free vision grant template changed.')
+    desired = testing.apply_fields(donor, {
+        'Description': 'Crystal Fina cave acquisition', 'encountGroupId': -1,
+        'IsGetOffVehicle': False, 'IsHiddenFieldUI': True, 'LoadingScreenSetting': 'White',
+        'MapStartupSettings.ChangeBGM': 'NotChange',
+        'RestoreSoundVolumeSettings.IsRevertValume': False,
+        'FooterSettings.IsApplyProgressis': True,
+        'IsOpenDialogByFinishEvent': True,
+        'TransitionLocation.mapId': STONE_ID, 'TransitionLocation.pointId': 1,
+        'TransitionLocation.bDoAutoSave': False,
+        'ObtainItemList': [{'Condition': f'{{item:{unit["id"]}}}==0', 'ID': unit['id'],
+                            'Num': 1, 'Text': ''}]})
+    grant = events['C01_014_03']
+    for rel in (testing.EVENT, testing.COMPOSITE):
+        if EVENT in rows(rel):
+            raise ValueError('The Crystal Fina acquisition event already exists.')
+        table(rel)['add'].append({'row': EVENT, 'cloneFrom': 'C01_014_03',
+                                  'set': testing.field_delta(grant, desired)})
+
+
+def export(view, name):
+    matches = [(i, e) for i, e in enumerate(view['Exports'], 1) if e['ObjectName'] == name]
+    if len(matches) != 1:
+        raise ValueError('Cave level object missing or ambiguous: ' + name)
+    return matches[0]
+
+
+def property_data(owner, name):
+    matches = [v for v in owner['Data'] if v['Name'] == name]
+    if len(matches) != 1:
+        raise ValueError('Cave level property missing or ambiguous: ' + name)
+    return matches[0]
+
+
+def set_value(owner, name, value):
+    p = property_data(owner, name)
+    p['Value'] = copy.deepcopy(value)
+    p['IsZero'] = False
+
+
+def vector(owner, name, values):
+    p = property_data(owner, name)
+    child, = p['Value']
+    for axis, value in zip(('X', 'Y', 'Z'), values):
+        child['Value'][axis] = value
+    p['IsZero'] = child['IsZero'] = False
+
+
+def named_properties(value):
+    """Only visit decoded properties; retain every opaque cooked export byte."""
+    if isinstance(value, dict):
+        if 'Name' in value and 'Value' in value:
+            yield value
+        for child in value.values():
+            yield from named_properties(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from named_properties(child)
+
+
+def names(view, value):
+    # Append names, never reorder/remove names used by retained opaque exports.
+    found = set(view['NameMap'])
+    def visit(v):
+        if isinstance(v, str):
+            if v and v not in found:
+                view['NameMap'].append(v); found.add(v)
+        elif isinstance(v, list):
+            for child in v: visit(child)
+        elif isinstance(v, dict):
+            for key, child in v.items():
+                if key not in ('$type', 'Extras', 'Data') or not isinstance(child, str):
+                    visit(child)
+    visit(value)
+
+
+def clone_graph(dst, src, indices, roots):
+    """Import a fully decoded actor/component graph with typed reference remapping."""
+    mapping = dict(roots)
+    mapping.update({old: len(dst['Exports']) + i for i, old in enumerate(indices, 1)})
+    imported = {0: 0}
+    def ref(index):
+        if index == 0: return 0
+        if index >= 0:
+            if index not in mapping:
+                raise ValueError('Cave actor graph has an unresolved export reference: ' + str(index))
+            return mapping[index]
+        if index not in imported:
+            imp = copy.deepcopy(src['Imports'][-index - 1]); imp['OuterIndex'] = ref(imp['OuterIndex'])
+            try: new = -(dst['Imports'].index(imp) + 1)
+            except ValueError:
+                dst['Imports'].append(imp); new = -len(dst['Imports'])
+            imported[index] = new
+        return imported[index]
+    def remap(value):
+        if isinstance(value, list): return [remap(v) for v in value]
+        if not isinstance(value, dict): return value
+        result = {k: remap(v) for k, v in value.items()}
+        if 'ObjectPropertyData' in value.get('$type', ''):
+            result['Value'] = ref(value['Value'])
+        if 'Delegate' in value and 'Object' in value:
+            result['Object'] = ref(value['Object'])
+        return result
+    for old in indices:
+        item = src['Exports'][old - 1]
+        if 'NormalExport' not in item['$type'] or not isinstance(item.get('Data'), list):
+            raise ValueError('Cave actor graph contains an opaque export; refusing to remap it.')
+        copied = remap(item)
+        for key in ('OuterIndex', 'ClassIndex', 'SuperIndex', 'TemplateIndex'):
+            copied[key] = ref(item[key])
+        for key in ('SerializationBeforeSerializationDependencies', 'CreateBeforeSerializationDependencies',
+                    'SerializationBeforeCreateDependencies', 'CreateBeforeCreateDependencies'):
+            copied[key] = [ref(i) for i in item[key]]
+        dst['Exports'].append(copied)
+        dst['DependsMap'].append([ref(i) for i in (src['DependsMap'][old - 1] or [])])
+    names(dst, [dst['Imports'], dst['Exports'][-len(indices):]])
+    return mapping
+
+
+def private_level(original, old, new):
+    result = copy.deepcopy(original)
+    old_leaf, new_leaf = old.rsplit('/', 1)[1], new.rsplit('/', 1)[1]
+    def replace(value):
+        if isinstance(value, str): return {old: new, old_leaf: new_leaf}.get(value, value)
+        if isinstance(value, list): return [replace(v) for v in value]
+        if isinstance(value, dict): return {k: replace(v) for k, v in value.items()}
+        return value
+    return replace(result)
+
+
+def actors(view, selected):
+    _, level = export(view, 'PersistentLevel')
+    level['Actors'] = list(selected)
+    # The cooked level also retains explicit preload dependencies on its actors.
+    old_actors = set(i for i, e in enumerate(view['Exports'], 1) if e['OuterIndex'] == export(view, 'PersistentLevel')[0])
+    level['CreateBeforeSerializationDependencies'] = [i for i in level['CreateBeforeSerializationDependencies']
+                                                       if i not in old_actors or i in selected]
+    for i in selected:
+        if i and i not in level['CreateBeforeSerializationDependencies']:
+            level['CreateBeforeSerializationDependencies'].append(i)
+
+
+def transition(actor, conditional_template, map_id, point):
+    set_value(actor, 'm_MapId', map_id); set_value(actor, 'm_PointID', point)
+    # The native conditional-transition struct exposes autosave and follow-up
+    # events explicitly; clear the Earth Shrine's tutorial and story conditions.
+    for name in ('m_IsUseCondion', 'mTransitionDataList', 'm_IsAutoTransition'):
+        prop = copy.deepcopy(property_data(conditional_template, name))
+        if name == 'mTransitionDataList':
+            prop['Value'] = prop['Value'][:1]
+            for p in named_properties(prop):
+                if p['Name'] == 'FlagCondition': p['Value'] = ''
+                if p['Name'] == 'mapId': p['Value'] = map_id
+                if p['Name'] == 'pointId': p['Value'] = point
+                if p['Name'] == 'isEnableAutoSave': p['Value'] = False
+                if p['Name'] in ('EventList', 'eventList2', 'afterTransitionEventList'): p['Value'] = []
+                p['IsZero'] = False
+        actor['Data'] = [p for p in actor['Data'] if p['Name'] != name] + [prop]
+
+
+def make_levels(source, unit):
+    """Return generated map views without altering any source view."""
+    # Reject reordered native graphs rather than editing a different actor.
+    expected = {12: 'EventTriggerBox', 31: 'BP_MapUnit_NPC_Field_C_2',
+                37: 'CollisionCylinder', 49: 'BillboardComponent',
+                55: 'CPP_MapUnitCommonOperation_0', 64: 'SsPlayerComponent',
+                95: 'PersistentLevel', 110: 'FootComponent', 137: 'Wld_01Gra_EV'}
+    if any(source[WORLD]['Exports'][i-1]['ObjectName'] != n for i, n in expected.items()):
+        raise ValueError('The native overworld NPC graph changed; no cave was built.')
+    gd = private_level(source[DONOR_GD], '/Game/' + DONOR_GD, '/Game/' + PACKAGE + '_GD')
+    transition(export(gd, 'BP_MapTransitionTrigger_C_1')[1],
+               export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], STONE_ID, 1)
+    actors(gd, [7, 0, 5, 4])
+    vector(gd['Exports'][11], 'RelativeLocation', SPAWN)
+    # Room collision/lighting are the native shrine's. Only this private trigger
+    # and spawn level comes from the cave; no original cave quest is loaded.
+    vector(gd['Exports'][1], 'RelativeLocation', (-100.0, 0.0, 100.0))
+    vector(gd['Exports'][1], 'BoxExtent', (300.0, 500.0, 250.0))
+
+    npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + PACKAGE + '_NPC')
+    actors(npc, [70, 0, 31])
+    owner = npc['Exports'][30]
+    set_value(owner, 'm_MapUnitId', MAP_ID)
+    set_value(owner, 'm_VisiblFlagCondition', f'{{item:{unit["id"]}}}==0')
+    set_value(owner, 'm_Direction', 'South')
+    for p in named_properties(property_data(owner, 'm_EventSettings')):
+        if p['Name'] == 'Condition': p['Value'] = f'{{item:{unit["id"]}}}==0'; p['IsZero'] = False
+        if p['Name'] == 'EventId': p['Value'] = EVENT; p['IsZero'] = False
+    # Keep the complete original NPC/component graph and its opaque head-widget
+    # export at the same indices. Do not copy/remap unknown widget bytes.
+    for name, template_name, value in [('m_IsAnimationUseDirection', 'm_IsAnimationUseDirection', False),
+                                       ('m_AnimationName', 'm_AnimationName', 'idle')]:
+        donor = npc['Exports'][32] if value is False else npc['Exports'][31]
+        prop = copy.deepcopy(property_data(donor, template_name)); prop['Value'] = value; prop['IsZero'] = False
+        owner['Data'] = [p for p in owner['Data'] if p['Name'] != name] + [prop]
+    operation = npc['Exports'][54]
+    prop = copy.deepcopy(property_data(npc['Exports'][56], 'm_IsAnimationUseDirection'))
+    operation['Data'].append(prop)
+    prop = copy.deepcopy(property_data(npc['Exports'][63], 'UUPerPixel'))
+    prop['Name'] = 'm_SsPlayerScale'; prop['Value'] = 1.0; prop['IsZero'] = False
+    owner['Data'].append(prop)
+    ss = npc['Exports'][63]
+    set_value(ss, 'AutoPlayAnimPackName', f'summon{unit["id"]}')
+    set_value(ss, 'AutoPlayAnimationName', 'idle'); set_value(ss, 'AutoPlayAnimationIndex', 0)
+    set_value(ss, 'UUPerPixel', 1.0)
+    for imp in npc['Imports']:
+        if imp['ObjectName'] == '/Game/Chara/Field_Unit/npc9020/npc9020':
+            imp['ObjectName'] = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
+        elif imp['ObjectName'] == 'npc9020' and imp['ClassName'] == 'Ss6Project':
+            imp['ObjectName'] = f'summon{unit["id"]}'
+    # Lower the foot/capsule to the walkable floor; only the sprite floats.
+    vector(npc['Exports'][36], 'RelativeLocation', (FINA[0], FINA[1], 34.0))
+    billboard = npc['Exports'][48]
+    template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
+    billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, 116.0))
+    names(npc, [owner, ss, npc['Imports']])
+
+    bg_room = private_level(source[ROOM_BG], '/Game/' + ROOM_BG, '/Game/' + PACKAGE + '_BG')
+    _, bg_level = export(bg_room, 'PersistentLevel')
+    crystals = []
+    for i, e in enumerate(bg_room['Exports'], 1):
+        if not isinstance(e.get('Data'), list): continue
+        for p in e['Data']:
+            if (p['Name'] == 'StaticMesh' and p['Value'] < 0
+                    and bg_room['Imports'][-p['Value']-1]['ObjectName'] in ('SM_Env_Com_magicstone001', 'SM_Env_Com_magicstone002')):
+                crystals.append((e['OuterIndex'], i))
+    if len(crystals) != 2: raise ValueError('The original Leah/Tronn crystal geometry changed.')
+    actors(bg_room, [i for i in bg_level['Actors'] if i not in {a for a, _ in crystals}])
+    room = private_level(source[ROOM], '/Game/' + ROOM, '/Game/' + PACKAGE + '_PL')
+    bg_path = property_data(room['Exports'][2], 'WorldAsset')['Value']['AssetPath']
+    bg_path.update(PackageName='/Game/' + PACKAGE + '_BG', AssetName=NAME + '_BG')
+    world_idx, world = export(room, NAME + '_PL')
+    extra = base64.b64decode(world['Extras'])
+    if extra != struct.pack('<5i', 2, 0, 2, 3, 4):
+        raise ValueError('The native shrine streaming-level layout changed.')
+    streams = []
+    for suffix in ('GD', 'NPC'):
+        stream = copy.deepcopy(room['Exports'][2]); idx = len(room['Exports']) + 1
+        stream['ObjectName'] = 'LevelStreamingDynamic_Studio_' + suffix
+        prop = property_data(stream, 'WorldAsset')
+        prop['Value']['AssetPath']['PackageName'] = '/Game/' + PACKAGE + '_' + suffix
+        prop['Value']['AssetPath']['AssetName'] = NAME + '_' + suffix
+        room['Exports'].append(stream); room['DependsMap'].append(copy.deepcopy(room['DependsMap'][2]))
+        world['CreateBeforeSerializationDependencies'].append(idx); streams.append(idx)
+    world['Extras'] = base64.b64encode(struct.pack('<7i', 2, 0, 4, 3, 4, *streams)).decode()
+    names(room, room['Exports'])
+
+    stone_gd = private_level(source[DONOR_GD], '/Game/' + DONOR_GD, '/Game/' + PACKAGE + '_Stone_GD')
+    transition(export(stone_gd, 'BP_MapTransitionTrigger_C_1')[1],
+               export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], 1000, MAP_ID)
+    actors(stone_gd, [7, 0, 5, 4])
+    level_id, stone_level = export(stone_gd, 'PersistentLevel')
+    world_id = export(stone_gd, NAME + '_Stone_GD')[0]
+    m = clone_graph(stone_gd, source[DONOR_GD], [2, 5, 4, 12], {8: level_id, 14: world_id})
+    portal = stone_gd['Exports'][m[5]-1]; point = stone_gd['Exports'][m[4]-1]
+    portal['ObjectName'] = NAME + '_Portal'; point['ObjectName'] = NAME + '_PortalReturn'
+    transition(portal, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], MAP_ID, 0)
+    set_value(portal, 'm_UniqueId', MAP_ID); set_value(point, 'm_PointID', 1)
+    vector(stone_gd['Exports'][m[2]-1], 'RelativeLocation', PORTAL)
+    vector(stone_gd['Exports'][m[2]-1], 'BoxExtent', (160.0, 200.0, 200.0))
+    vector(stone_gd['Exports'][m[12]-1], 'RelativeLocation', PORTAL_RETURN)
+    # The native crystal mesh marks the portal. Its materials remain game assets.
+    actor_idx, mesh_idx = crystals[0]
+    b = clone_graph(stone_gd, source[ROOM_BG], [actor_idx, mesh_idx], {
+        export(source[ROOM_BG], 'PersistentLevel')[0]: level_id,
+        export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
+    stone_gd['Exports'][b[actor_idx]-1]['ObjectName'] = NAME + '_PortalCrystal'
+    vector(stone_gd['Exports'][b[mesh_idx]-1], 'RelativeLocation', (PORTAL[0], PORTAL[1], 250.0))
+    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx]])
+    names(stone_gd, stone_gd['Exports'])
+
+    stone_pl = private_level(source[STONE], '/Game/' + STONE, '/Game/' + PACKAGE + '_Stone_PL')
+    _, stone_world = export(stone_pl, NAME + '_Stone_PL')
+    old = base64.b64decode(stone_world['Extras'])
+    if old != struct.pack('<12i', 2, 0, 9, 7, 4, 5, 6, 9, 10, 3, 8, 11):
+        raise ValueError('The stone cave streaming layout changed.')
+    # Retain native navigation, geometry and lighting; omit quest/event/battle levels.
+    stone_world['Extras'] = base64.b64encode(struct.pack('<7i', 2, 0, 4, 3, 4, 9, 10)).decode()
+    old_streams = set(range(3, 12)); keep = {3, 4, 9, 10}
+    stone_world['CreateBeforeSerializationDependencies'] = [i for i in stone_world['CreateBeforeSerializationDependencies']
+        if i not in old_streams or i in keep]
+    gd_path = property_data(stone_pl['Exports'][3], 'WorldAsset')['Value']['AssetPath']
+    gd_path.update(PackageName='/Game/' + PACKAGE + '_Stone_GD', AssetName=NAME + '_Stone_GD')
+    names(stone_pl, stone_pl['Exports'])
+
+    wld = copy.deepcopy(source[WORLD]); level_id, level = export(wld, 'PersistentLevel')
+    m = clone_graph(wld, source[DONOR_GD], [2, 5, 4, 12], {8: level_id, 14: len(source[WORLD]['Exports'])})
+    entry = wld['Exports'][m[5] - 1]; point = wld['Exports'][m[4] - 1]
+    entry['ObjectName'] = NAME + '_Entrance'; point['ObjectName'] = NAME + '_Return'
+    transition(entry, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], STONE_ID, 0)
+    set_value(entry, 'm_UniqueId', MAP_ID); set_value(point, 'm_PointID', MAP_ID)
+    set_value(point, 'm_Direction', 'South')
+    vector(wld['Exports'][m[2] - 1], 'RelativeLocation', ENTRANCE)
+    vector(wld['Exports'][m[2] - 1], 'BoxExtent', (160.0, 250.0, 350.0))
+    vector(wld['Exports'][m[12] - 1], 'RelativeLocation', RETURN)
+    bg = source[WORLD_BG]
+    mesh_index = next(i for i, e in enumerate(bg['Exports'], 1) if isinstance(e.get('Data'), list)
+                      and any(p['Name'] == 'StaticMesh' and p['Value'] < 0
+                              and bg['Imports'][-p['Value']-1]['ObjectName'] == 'SM_Env_Wld_00Com_dungeon001'
+                              for p in e['Data']))
+    mesh = bg['Exports'][mesh_index - 1]; actor_idx = mesh['OuterIndex']
+    bg_level = export(bg, 'PersistentLevel')[0]
+    bg_world = export(bg, Path(WORLD_BG).name)[0]
+    world_id = export(wld, Path(WORLD).name)[0]
+    b = clone_graph(wld, bg, [actor_idx, mesh_index], {bg_level: level_id, bg_world: world_id})
+    cave = wld['Exports'][b[actor_idx] - 1]; cave['ObjectName'] = NAME + '_Model'
+    vector(wld['Exports'][b[mesh_index] - 1], 'RelativeLocation', ENTRANCE)
+    actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx]])
+    for v in (gd, wld): names(v, v['Exports'])
+    return {WORLD: wld, PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,
+            PACKAGE + '_BG': bg_room, PACKAGE + '_Stone_PL': stone_pl, PACKAGE + '_Stone_GD': stone_gd}
+
+
+def map_mappings(original, blueprints):
+    """Append actual Blueprint declarations to a private copy of v4 mappings.
+
+    UAssetAPI discovers these schemas on binary reads, but loses that context
+    on JSON deserialization. Keep all native names, schemas and extensions;
+    never modify the engine's installed Mappings.usmap or alias a BP to its CPP
+    parent (which would lose the BP's own fields and shift property indices).
+    """
+    if (len(original) < 20 or original[:3] != b'\xc4\x30\x04' or struct.unpack_from('<i', original, 3)[0] != 0
+            or original[7] != 0 or original[8:12] != original[12:16]
+            or len(original) != 16 + struct.unpack_from('<I', original, 8)[0]):
+        raise ValueError('Crystal cave needs uncompressed v4 game mappings; the original file was preserved.')
+    payload = original[16:]; pos = 0
+    def take(fmt):
+        nonlocal pos
+        value = struct.unpack_from('<' + fmt, payload, pos); pos += struct.calcsize('<' + fmt)
+        return value[0] if len(value) == 1 else value
+    count = take('i'); strings = []
+    for _ in range(count):
+        size = take('h')
+        if size < 0 or pos + size > len(payload): raise ValueError('Invalid game mapping name.')
+        strings.append(payload[pos:pos+size].decode('utf-8')); pos += size
+    names_end = pos
+    for _ in range(take('i')):
+        take('i'); size = take('h'); pos += size * 12
+    schemas_offset = pos; count = take('i'); schemas_start = pos; known = set()
+    def skip_property():
+        kind = take('B')
+        if kind == 26: skip_property(); take('i')
+        elif kind == 9: take('i')
+        elif kind in (8, 25, 28): skip_property()
+        elif kind == 24: skip_property(); skip_property()
+        elif not 0 <= kind <= 30: raise ValueError('Unsupported game mapping property type.')
+    for _ in range(count):
+        name, parent, total, size = take('iiHH'); known.add(strings[name])
+        for _ in range(size): take('HBi'); skip_property()
+    schemas_end = pos
+    # Current mappings use count-delimited CEXT extensions. A legacy MODL
+    # extension implicitly iterates every schema and cannot be retained safely.
+    if payload[schemas_end:] and payload[schemas_end:schemas_end+4] != b'CEXT':
+        raise ValueError('Unsupported mapping extensions; original game mappings were preserved.')
+    index = {s: i for i, s in enumerate(strings)}
+    def name(value):
+        if value not in index: index[value] = len(strings); strings.append(value)
+        return index[value]
+    def property_bytes(view, p):
+        types = {'BoolProperty': 1, 'IntProperty': 2, 'FloatProperty': 3, 'ObjectProperty': 4,
+                 'NameProperty': 5, 'DelegateProperty': 6, 'StrProperty': 10,
+                 'TextProperty': 11, 'MulticastDelegateProperty': 13}
+        kind = p['SerializedType']
+        if kind == 'StructProperty':
+            imp = view['Imports'][-p['Struct']-1]
+            return bytes([9]) + struct.pack('<i', name(imp['ObjectName']))
+        if kind not in types:
+            raise ValueError('Unsupported cave Blueprint declaration: ' + kind)
+        return bytes([types[kind]])
+    added = []
+    for key, (view, cl) in blueprints.items():
+        if key in known: continue
+        parent = view['Imports'][-cl['SuperStruct']-1]['ObjectName']; props = cl['LoadedProperties']
+        schema = struct.pack('<iiHH', name(key), name(parent), len(props), len(props))
+        for i, prop in enumerate(props):
+            schema += struct.pack('<HBi', i, 1, name(prop['Name'])) + property_bytes(view, prop)
+        added.append(schema)
+    encoded = [s.encode('utf-8') for s in strings]
+    if any(len(s) > 32767 for s in encoded): raise ValueError('Invalid Blueprint mapping name length.')
+    name_bytes = struct.pack('<i', len(strings)) + b''.join(struct.pack('<h', len(s)) + s for s in encoded)
+    result = (name_bytes + payload[names_end:schemas_offset] + struct.pack('<i', count + len(added))
+              + payload[schemas_start:schemas_end] + b''.join(added) + payload[schemas_end:])
+    return original[:8] + struct.pack('<II', len(result), len(result)) + result
+
+
+def blueprint_mappings(views, env, work):
+    root = Path(env['ROOT']); legacy = Path(env['LEGACY']); found = {}
+    def collect(package, name):
+        if name in found: return
+        path = legacy / ('FFRS/Content/' + package.removeprefix('/Game/') + '.uasset')
+        if not path.is_file():
+            env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', package.removeprefix('/Game/')))
+        dump = work / (Path(package).name + '-schema.json')
+        env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
+        view = json.loads(dump.read_text(encoding='utf-8-sig')); _, cl = export(view, name)
+        if 'ClassExport' not in cl['$type'] or cl['SuperStruct'] >= 0:
+            raise ValueError('The cave Blueprint inheritance layout changed.')
+        found[name] = (view, cl)
+        parent = view['Imports'][-cl['SuperStruct']-1]
+        if parent['ClassName'] == 'BlueprintGeneratedClass':
+            collect(view['Imports'][-parent['OuterIndex']-1]['ObjectName'], parent['ObjectName'])
+    for view in views.values():
+        for e in view['Exports']:
+            if 'NormalExport' not in e['$type'] or e['ClassIndex'] >= 0: continue
+            cl = view['Imports'][-e['ClassIndex']-1]
+            if cl['ClassName'] == 'BlueprintGeneratedClass':
+                collect(view['Imports'][-cl['OuterIndex']-1]['ObjectName'], cl['ObjectName'])
+    path = work / 'cave-mappings.usmap'
+    path.write_bytes(map_mappings(Path(env['USMAP']).read_bytes(), found))
+    return str(path)
+
+
+def semantic(value):
+    """Compare authored values, ignoring serialization order/default metadata."""
+    if isinstance(value, dict):
+        if 'Name' in value and 'Value' in value:
+            return (value['Name'], value.get('ArrayIndex', 0), semantic(value['Value']))
+        return {k: semantic(v) for k, v in value.items() if k != '$type'}
+    if isinstance(value, list):
+        result = [semantic(v) for v in value]
+        if value and all(isinstance(v, dict) and 'Name' in v and 'Value' in v for v in value):
+            return sorted(result, key=lambda p: (p[0], p[1]))
+        return result
+    return 0.0 if value in ('+0', '-0') else value
+
+
+def check_level(expected, built):
+    if expected['Imports'] != built['Imports'] or len(expected['Exports']) != len(built['Exports']):
+        raise ValueError('A generated cave level lost its imports or exports.')
+    for a, b in zip(expected['Exports'], built['Exports']):
+        for key in ('ObjectName', 'OuterIndex', 'ClassIndex', 'SuperIndex', 'TemplateIndex', 'Extras', 'Actors'):
+            if a.get(key) != b.get(key): raise ValueError('Cave level reference changed: ' + key)
+        if semantic(a.get('Data')) != semantic(b.get('Data')):
+            raise ValueError('Cave level properties changed: ' + a['ObjectName'])
+
+
+def build(units, env):
+    import _ffr_testing as testing
+    if not testing.settings(env['ROOT'])['crystalCave']: return
+    unit = target(units); root = Path(env['ROOT']); legacy = Path(env['LEGACY'])
+    work = root / 'build/crystal-cave'; work.mkdir(parents=True, exist_ok=True)
+    # Binary decoding needs the native Blueprint parents as well as the levels.
+    if not (legacy / 'FFRS/Content/BP/Map/Unit/BP_MapUnit_NPC_Field.uasset').is_file():
+        env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'BP/Map/'))
+    source = {}
+    for rel in (WORLD, ROOM, ROOM_BG, STONE, DONOR_GD, WORLD_BG, TRANSITION_GD):
+        path = legacy / ('FFRS/Content/' + rel + '.umap')
+        if not path.is_file():
+            env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', rel))
+        dump = work / (Path(rel).name + '-original.json')
+        env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
+        source[rel] = json.loads(dump.read_text(encoding='utf-8-sig'))
+    expected = make_levels(source, unit)
+    mapping = blueprint_mappings(expected, env, work)
+    for rel, view in expected.items():
+        dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
+        destination = Path(env['OUT']) / ('FFRS/Content/' + rel + '.umap')
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])
+        decoded = work / (Path(rel).name + '-verified.json')
+        env['run'](env['FFRDT'] + ['tojson', str(destination), str(decoded), '--usmap', mapping])
+        check_level(view, json.loads(decoded.read_text(encoding='utf-8-sig')))
+    print('  Crystal Fina cave: native crystal room, floating model, once-only grant and overworld return built.')
