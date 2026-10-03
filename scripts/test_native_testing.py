@@ -51,7 +51,11 @@ def practice_game():
     town = {'ID': 2000, 'battleStage': -1, 'doMovementEncount': False, 'startupEventList': ['story']}
     tables[testing.MAP] = {'01Gra_20': town, 'other town': {'ID': 2001, 'battleStage': -1}}
     tables[testing.MAP_COMPOSITE] = copy.deepcopy(tables[testing.MAP])
-    tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'] = {'plains': {'ID': 5, 'battleLevelList': ['native plains']}}
+    tables[testing.STAGE] = {'plains': {'ID': 5, 'battleLevelList': [
+        '/Game/Map/Btl/00Com/00Com_60/LT/Btl_00Com_60_01_LT',
+        '/Game/Map/Btl/00Com/00Com_60/BG/Btl_00Com_60_BG0'],
+        'isLoadLevelInstance': False, 'unitLightIntensity': 2.0, 'unitShadowDensity': 0.8}}
+    tables[testing.STAGE_COMPOSITE] = copy.deepcopy(tables[testing.STAGE])
     tables[testing.GROUP]['plant and rats'] = {
         'ID': 1026, 'UnitIdList': [20, 22, 22], 'locationIdList': [20, 6, 15], 'ap': 20,
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 50.0,
@@ -165,7 +169,8 @@ class NativeTestingTests(unittest.TestCase):
             expected = testing.expected_edits(root, [], rows)
         self.assertEqual(original, before)
         self.assertEqual(set(ops), {testing.SHOP_EVENT, testing.COMPOSITE,
-                                   testing.MAP, testing.MAP_COMPOSITE, testing.GROUP})
+                                   testing.MAP, testing.MAP_COMPOSITE, testing.GROUP,
+                                   testing.STAGE, testing.STAGE_COMPOSITE})
         self.assertEqual(len(expected), 4)
         for rel, op in ops.items():
             built = copy.deepcopy(original[rel])
@@ -183,6 +188,15 @@ class NativeTestingTests(unittest.TestCase):
             elif rel in (testing.MAP, testing.MAP_COMPOSITE):
                 self.assertFalse(built['01Gra_20']['doMovementEncount'])
                 self.assertEqual(built['01Gra_20']['startupEventList'], ['story'])
+                self.assertEqual(built['01Gra_20']['battleStage'], 29990)
+            elif rel in (testing.STAGE, testing.STAGE_COMPOSITE):
+                self.assertEqual(built['plains'], original[rel]['plains'])
+                stage = built[testing.PRACTICE]
+                self.assertTrue(stage['isLoadLevelInstance'])
+                self.assertEqual(stage['ID'], 29990)
+                self.assertEqual(stage['battleLevelList'], original[rel]['plains']['battleLevelList'])
+                self.assertEqual(stage['unitLightIntensity'], 2.0)
+                self.assertEqual(stage['unitShadowDensity'], 0.8)
             else:
                 encounter = built[testing.PRACTICE]
                 self.assertEqual(encounter['UnitIdList'], [20, 22, 22])
@@ -206,12 +220,19 @@ class NativeTestingTests(unittest.TestCase):
         self.assertEqual(ops[testing.COMPOSITE]['set'][0]['row'], testing.SHOP_WOMAN)
 
     def test_practice_battle_rejects_changed_story_identity_and_incompatible_assets(self):
-        for change in ('story', 'map', 'stage', 'collision', 'monster', 'return'):
+        for change in ('story', 'map', 'stage', 'stage-parent', 'stage-levels',
+                       'stage-collision', 'collision', 'monster', 'return'):
             with self.subTest(change=change), tempfile.TemporaryDirectory() as root:
                 tables, rows, _ = practice_game()
                 if change == 'story': tables[testing.SHOP_EVENT][testing.SHOP_WOMAN]['OnFlagList'] = [123]
                 elif change == 'map': tables[testing.MAP]['01Gra_20']['ID'] = 2001
-                elif change == 'stage': tables['Asset/Battle/Stage/CDT_BtlStageAsset_Demo'].clear()
+                elif change == 'stage': tables[testing.STAGE_COMPOSITE].clear()
+                elif change == 'stage-parent': tables[testing.STAGE]['plains']['isLoadLevelInstance'] = True
+                elif change == 'stage-levels':
+                    for rel in (testing.STAGE, testing.STAGE_COMPOSITE):
+                        tables[rel]['plains']['battleLevelList'] = ['different level']
+                elif change == 'stage-collision':
+                    tables[testing.STAGE_COMPOSITE]['existing'] = {'ID': 29990}
                 elif change == 'collision': tables[testing.GROUP]['normal']['ID'] = testing.PRACTICE_ID
                 elif change == 'monster': tables[native.UNIT]['Wild Rat']['Level'] = 99
                 else: tables[testing.GROUP]['plant and rats']['battleFinishTransition']['mapId'] = 2001

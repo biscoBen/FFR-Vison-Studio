@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Give the shop practice battle a private, instance-loaded plains stage instead of selecting a preloaded stage that
+  Mitra does not contain. Retain the native background/lighting, level 7–8 enemies, dialogue, escape and normal return
+  settings without altering shared stages or other encounters. This targets the black backdrop and possible stage-loading
+  stall after combat; backdrop rendering and return still require confirmation in the actual game.
 
 ## Published optional ability visibility and repairs — 2026-10-02
 

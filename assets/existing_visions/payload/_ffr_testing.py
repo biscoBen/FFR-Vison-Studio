@@ -21,6 +21,8 @@ MAP = 'Map/MapData/DT_MapData_01Gra'
 MAP_COMPOSITE = 'Map/CDT_MapData_Demo'
 PRACTICE = 'Studio_PracticeBattle'
 PRACTICE_ID = 29990
+STAGE = 'Asset/Battle/Stage/DT_BtlStageAsset'
+STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 
 
 def settings(root):
@@ -129,10 +131,18 @@ def prepare_practice(table, rows, ap):
     maps = rows(MAP); map_combined = rows(MAP_COMPOSITE)
     town = maps.get('01Gra_20')
     if (not town or town.get('ID') != 2000 or map_combined.get('01Gra_20') != town
-            or town.get('doMovementEncount') or town.get('battleStage') != -1
-            or not any(v.get('ID') == 5 and v.get('battleLevelList')
-                       for v in rows('Asset/Battle/Stage/CDT_BtlStageAsset_Demo').values())):
-        raise ValueError('The Mitra map or native plains battle stage is unavailable.')
+            or town.get('doMovementEncount') or town.get('battleStage') != -1):
+        raise ValueError('The Mitra map is unavailable.')
+    stages = rows(STAGE); stage_combined = rows(STAGE_COMPOSITE)
+    plains = [(k, v) for k, v in stages.items() if v.get('ID') == 5]
+    if (len(plains) != 1 or stage_combined.get(plains[0][0]) != plains[0][1]
+            or plains[0][1].get('battleLevelList') != [
+                '/Game/Map/Btl/00Com/00Com_60/LT/Btl_00Com_60_01_LT',
+                '/Game/Map/Btl/00Com/00Com_60/BG/Btl_00Com_60_BG0']
+            or type(plains[0][1].get('isLoadLevelInstance')) is not bool
+            or any(PRACTICE in t or any(v.get('ID') == PRACTICE_ID for v in t.values())
+                   for t in (stages, stage_combined))):
+        raise ValueError('The native plains battle stage is unavailable or its practice identity conflicts.')
     groups = rows(GROUP)
     donor = next(((k, v) for k, v in groups.items() if v.get('ID') == 1026), None)
     if (PRACTICE in groups or any(v.get('ID') == PRACTICE_ID for v in groups.values()) or not donor
@@ -149,10 +159,16 @@ def prepare_practice(table, rows, ap):
             raise ValueError('The native level 7–8 practice enemies are unavailable.')
     for rel in (SHOP_EVENT, COMPOSITE):
         table(rel)['set'].append({'row': SHOP_WOMAN, 'set': {'encountGroupId': PRACTICE_ID}})
-    # Mitra normally has no battle backdrop. Supply the demo's existing plains
-    # stage without enabling random encounters or changing the shop/map actors.
+    # The ordinary plains stage uses preloaded streaming levels. Mitra has no
+    # battle sublevels, so choosing that ID alone cannot supply a backdrop.
+    # Instance-load a private clone of its existing lighting/background levels;
+    # keep the shared plains row and every normal encounter unchanged. Patch
+    # both tables so runtime composite reconstruction retains the private stage.
+    for rel in (STAGE, STAGE_COMPOSITE):
+        table(rel)['add'].append({'row': PRACTICE, 'cloneFrom': plains[0][0], 'set': {
+            'ID': PRACTICE_ID, 'isLoadLevelInstance': True}})
     for rel in (MAP, MAP_COMPOSITE):
-        table(rel)['set'].append({'row': '01Gra_20', 'set': {'battleStage': 5}})
+        table(rel)['set'].append({'row': '01Gra_20', 'set': {'battleStage': PRACTICE_ID}})
     table(GROUP)['add'].append({'row': PRACTICE, 'cloneFrom': donor[0], 'set': {
         'ID': PRACTICE_ID, 'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
         'isResultSkipOnWin': False, 'isResultSkipOnLose': False,
