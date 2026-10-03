@@ -145,7 +145,7 @@ class CrystalCaveTests(unittest.TestCase):
         invalid = copy.deepcopy(cl); invalid['LoadedProperties'][0]['SerializedType'] = 'Unsupported'
         with self.assertRaises(ValueError): cave.map_mappings(source, {'BP_Child_C': (view, invalid)})
 
-    def test_fina_ground_uses_nearest_crystal_light_without_inheriting_float_height(self):
+    def test_fina_spawn_uses_light_height_instead_of_ground_mesh_origin(self):
         def location(x, y, z):
             return {'Name': 'RelativeLocation', 'Value': [{'Value': {'X': x, 'Y': y, 'Z': z}}]}
         crystal = {'Data': [location(100, 200, 532)]}
@@ -156,12 +156,47 @@ class CrystalCaveTests(unittest.TestCase):
             {'ClassIndex': -2, 'Data': [location(160, 220, 500)]},
             {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]}]}
         original = copy.deepcopy(view)
-        self.assertEqual(cave.fina_ground(view, crystal), (110, 210, 0))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
         cave.vector(crystal, 'RelativeLocation', (100, 200, 900))
-        self.assertEqual(cave.fina_ground(view, crystal), (110, 210, 0))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
         self.assertEqual(view, original)
+        cave.vector(view['Exports'][0], 'RelativeLocation', (0, 0, -800))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
         for exports in (view['Exports'][1:], view['Exports'][:1]):
-            with self.assertRaises(ValueError): cave.fina_ground(dict(view, Exports=exports), crystal)
+            with self.assertRaises(ValueError): cave.fina_spawn(dict(view, Exports=exports), crystal)
+
+    def test_stationary_fina_settles_with_attached_interaction_and_preserves_other_movement_settings(self):
+        def prop(name, value, kind, **extra):
+            return dict(Name=name, Value=value, IsZero=False,
+                        **{'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI'}, **extra)
+        def location(z):
+            return prop('RelativeLocation', [{'Value': {'X': 0, 'Y': 0, 'Z': z}, 'IsZero': False}], 'StructPropertyData')
+        view = {'NameMap': ['native'], 'Exports': [{'Data': []} for _ in range(119)]}
+        view['Exports'][30]['Data'] = [prop('m_IsAnimationUseDirection', False, 'BoolPropertyData'),
+            prop('m_Direction', 'South', 'EnumPropertyData', EnumType='eMapDirectionType', InnerType='ByteProperty')]
+        view['Exports'][36]['Data'] = [location(33)]
+        view['Exports'][42]['Data'] = [prop('bAlwaysCheckFloor', False, 'BoolPropertyData'),
+            prop('WalkableFloorZ', 0.71, 'FloatPropertyData')]
+        view['Exports'][63]['Data'] = [prop('UUPerPixel', 2.5, 'FloatPropertyData')]
+        view['Exports'][109]['Data'] = [location(-33)]
+        view['Exports'][11]['Data'] = [prop('AttachParent', 37, 'ObjectPropertyData')]
+        before = copy.deepcopy(view)
+        cave.settle_fina(view, (110, 210, 342))
+        root = cave.property_data(view['Exports'][36], 'RelativeLocation')['Value'][0]['Value']
+        self.assertEqual(root, {'X': 110, 'Y': 210, 'Z': 375})
+        movement = view['Exports'][42]
+        for name in ('bRunPhysicsWithNoController', 'bAlwaysCheckFloor'):
+            self.assertIs(cave.property_data(movement, name)['Value'], True)
+        self.assertEqual(cave.property_data(movement, 'GravityScale')['Value'], 1.0)
+        for name, value in [('MovementMode', 'MOVE_Falling'), ('DefaultLandMovementMode', 'MOVE_Walking')]:
+            p = cave.property_data(movement, name)
+            self.assertEqual((p['EnumType'], p['InnerType'], p['Value']), ('EMovementMode', 'ByteProperty', value))
+        self.assertEqual(cave.property_data(movement, 'WalkableFloorZ')['Value'], 0.71)
+        for i in (11, 30, 63, 109): self.assertEqual(view['Exports'][i], before['Exports'][i])
+        self.assertTrue({'MOVE_Falling', 'MOVE_Walking', 'bRunPhysicsWithNoController'} <= set(view['NameMap']))
+        settled = copy.deepcopy(view)
+        cave.settle_fina(view, (110, 210, 342))
+        self.assertEqual(view, settled)
 
     def test_manual_portal_preserves_destination_and_transition_safeguards(self):
         actor = {'Data': [{'Name': 'm_MapId', 'Value': 1000}, {'Name': 'm_PointID', 'Value': 0}]}

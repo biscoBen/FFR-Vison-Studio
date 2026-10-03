@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Fix cave Crystal Fina spawning below the visible platform: use the clear crystal's light as an above-ground spawn
+  anchor and enable native gravity/floor collision for her stationary NPC, including physics without a controller.
+  Her capsule and interaction volumes settle together; retain the enlarged floating sprite, manual portal and
+  once-only acquisition. The previous ground-mesh origin was not the floor surface. In-game settling needs a retest.
 
 ## Published reachable Crystal Fina and crystal interaction — 2026-10-03
 

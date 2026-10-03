@@ -262,8 +262,13 @@ def clear_crystals(view):
     return crystals
 
 
-def fina_ground(view, crystal):
-    """Anchor to the clear crystal's ground light, not its floating geometry."""
+def fina_spawn(view, crystal):
+    """Spawn above the platform at the clear crystal's light, then use collision.
+
+    The ground mesh's origin is not its surface: native character timelines
+    place their feet hundreds of units above that origin. The light gives a
+    safe starting height, not a floor height.
+    """
     anchor = property_data(crystal, 'RelativeLocation')['Value'][0]['Value']
     floors = []; lights = []
     for e in view['Exports']:
@@ -280,8 +285,28 @@ def fina_ground(view, crystal):
     if len(floors) != 1 or not lights:
         raise ValueError('The crystal room ground or clear-crystal light changed.')
     glow = min(lights, key=lambda value: value[0])[1]
-    ground = property_data(floors[0], 'RelativeLocation')['Value'][0]['Value']
-    return float(glow['X']), float(glow['Y']), float(ground['Z'])
+    return tuple(float(glow[axis]) for axis in ('X', 'Y', 'Z'))
+
+
+def settle_fina(npc, spawn):
+    """Let the NPC capsule land on native collision without needing a controller."""
+    movement = npc['Exports'][42]
+    boolean = property_data(npc['Exports'][30], 'm_IsAnimationUseDirection')
+    scalar = property_data(npc['Exports'][63], 'UUPerPixel')
+    enum = property_data(npc['Exports'][30], 'm_Direction')
+    for name, value, template in (
+            ('bRunPhysicsWithNoController', True, boolean),
+            ('bAlwaysCheckFloor', True, boolean),
+            ('GravityScale', 1.0, scalar),
+            ('DefaultLandMovementMode', 'MOVE_Walking', enum),
+            ('MovementMode', 'MOVE_Falling', enum)):
+        prop = copy.deepcopy(template)
+        prop.update(Name=name, Value=value, IsZero=False)
+        if template is enum: prop['EnumType'] = 'EMovementMode'
+        movement['Data'] = [p for p in movement['Data'] if p['Name'] != name] + [prop]
+    foot = property_data(npc['Exports'][109], 'RelativeLocation')['Value'][0]['Value']
+    vector(npc['Exports'][36], 'RelativeLocation', (spawn[0], spawn[1], spawn[2] - float(foot['Z'])))
+    names(npc, movement)
 
 
 def transition(actor, conditional_template, map_id, point, auto=True):
@@ -307,7 +332,7 @@ def make_levels(source, unit):
     """Return generated map views without altering any source view."""
     # Reject reordered native graphs rather than editing a different actor.
     expected = {12: 'EventTriggerBox', 31: 'BP_MapUnit_NPC_Field_C_2',
-                37: 'CollisionCylinder', 49: 'BillboardComponent',
+                37: 'CollisionCylinder', 43: 'CharMoveComp', 49: 'BillboardComponent',
                 55: 'CPP_MapUnitCommonOperation_0', 64: 'SsPlayerComponent',
                 95: 'PersistentLevel', 110: 'FootComponent', 137: 'Wld_01Gra_EV'}
     if any(source[WORLD]['Exports'][i-1]['ObjectName'] != n for i, n in expected.items()):
@@ -325,7 +350,7 @@ def make_levels(source, unit):
     bg_room = private_level(source[ROOM_BG], '/Game/' + ROOM_BG, '/Game/' + PACKAGE + '_BG')
     crystals = clear_crystals(bg_room)
     clear_mesh = bg_room['Exports'][crystals['SM_Env_Com_magicstone001'][1]-1]
-    ground = fina_ground(bg_room, clear_mesh)
+    spawn = fina_spawn(bg_room, clear_mesh)
 
     npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + PACKAGE + '_NPC')
     actors(npc, [70, 0, 31])
@@ -358,11 +383,11 @@ def make_levels(source, unit):
             imp['ObjectName'] = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
         elif imp['ObjectName'] == 'npc9020' and imp['ClassName'] == 'Ss6Project':
             imp['ObjectName'] = f'summon{unit["id"]}'
-    # This stationary NPC does not fall automatically. Place its foot directly
-    # on the floor, keeping the interaction volume reachable by the player.
-    foot = property_data(npc['Exports'][109], 'RelativeLocation')['Value'][0]['Value']
-    vector(npc['Exports'][36], 'RelativeLocation', (ground[0], ground[1], ground[2] - float(foot['Z'])))
-    # Keep interaction and the capsule at the floor; only the sprite floats.
+    # Idle NPCs normally skip movement physics without a controller. Enable
+    # gravity/floor checks so the capsule and its attached interaction volumes
+    # settle together on the actual platform instead of an assumed height.
+    settle_fina(npc, spawn)
+    # Only the sprite floats above the capsule's grounded foot.
     billboard = npc['Exports'][48]
     template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
     billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, FINA_FLOAT))
