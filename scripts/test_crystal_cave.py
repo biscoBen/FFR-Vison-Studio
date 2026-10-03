@@ -78,7 +78,7 @@ class CrystalCaveTests(unittest.TestCase):
                 self.assertFalse(event['FooterSettings']['IsApplyProgressis'])
                 self.assertTrue(event['IsOpenDialogByFinishEvent'])
                 self.assertEqual(event['LoadingScreenSetting'], 'White')
-                self.assertEqual(event['TransitionLocation'], {'mapId': -1, 'pointId': -1, 'bDoAutoSave': False})
+                self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
             elif rel == cave.MAP_UNIT:
                 sprite = built[cave.NAME]['animationAssetList'][0]
                 self.assertIn('summon13507', sprite['Ss6Project'])
@@ -350,7 +350,7 @@ class CrystalCaveTests(unittest.TestCase):
         source['Imports'][2]['ObjectName'] = 'not ExecuteFooter'
         with self.assertRaises(ValueError): cave.grant_sequence(source)
 
-    def test_grant_precedes_regular_manual_return_and_follows_grounded_capsule(self):
+    def test_event_only_grant_uses_manual_input_and_follows_grounded_capsule(self):
         from unittest.mock import patch
         def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
         event = {'StructType': 'TalkEventPlayData', 'Name': '0', 'Value': [
@@ -388,8 +388,8 @@ class CrystalCaveTests(unittest.TestCase):
             added, = operations[rel]['add']
             grant = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
             destination = grant['TransitionLocation']
-            self.assertEqual((destination['mapId'], destination['pointId']), (-1, -1))
-        self.assertFalse(cave.property_data(actual, 'isEventOnly')['Value'])
+            self.assertEqual((destination['mapId'], destination['pointId']), (cave.STONE_ID, 1))
+        self.assertTrue(cave.property_data(actual, 'isEventOnly')['Value'])
         self.assertEqual(cave.property_data(actual, 'FlagCondition')['Value'], '{item:13507}==0')
         scheduled, = cave.property_data(actual, 'EventList')['Value']
         self.assertEqual(scheduled['StructType'], 'TalkEventPlayData')
@@ -403,23 +403,71 @@ class CrystalCaveTests(unittest.TestCase):
         self.assertEqual(npc['Exports'][0]['Actors'], [0, 3])
         self.assertEqual(template, before)
 
-    def test_npc_cannot_bypass_the_transition_button_via_its_old_talk_binding(self):
+    def test_native_talk_binding_uses_actual_vision_ownership_without_a_transition_pre_event(self):
         def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
-        owner = {'Data': [prop('m_EventSettings', [prop('EventList', ['old NPC talk'])]),
-                          prop('m_EventList', ['other NPC event']), prop('m_MapInteractType', 'Talk'),
+        event = prop('0', [prop('Condition', 'old story condition'), prop('EventId', 'OldTalk')])
+        owner = {'Data': [prop('m_EventSettings', [prop('EventList', [event])]), prop('m_MapInteractType', 'Talk'),
                           prop('m_VisiblFlagCondition', '{item:13507}==0'),
                           prop('RootComponent', 37), prop('m_SsPlayerScale', 4.25)]}
-        transition = {'Data': [dict(prop('m_MapInteractType', 'Transition'), EnumType='eMapInteractType')]}
-        before = copy.deepcopy(transition)
-        cave.disable_npc_talk(owner, transition)
-        self.assertEqual(cave.property_data(cave.property_data(owner, 'm_EventSettings'), 'EventList')['Value'], [])
-        self.assertEqual(cave.property_data(owner, 'm_EventList')['Value'], [])
-        interaction = cave.property_data(owner, 'm_MapInteractType')
-        self.assertEqual((interaction['Value'], interaction['EnumType']), ('None', 'eMapInteractType'))
+        cave.npc_grant(owner, {'id': 13507})
+        self.assertEqual(cave.property_data(event, 'Condition')['Value'], '{item:13507}==0')
+        self.assertEqual(cave.property_data(event, 'EventId')['Value'], cave.EVENT)
+        self.assertEqual(cave.property_data(owner, 'm_MapInteractType')['Value'], 'Talk')
         self.assertEqual(cave.property_data(owner, 'RootComponent')['Value'], 37)
         self.assertEqual(cave.property_data(owner, 'm_SsPlayerScale')['Value'], 4.25)
         self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
-        self.assertEqual(transition, before)
+
+    def navigation_source(self):
+        trigger = cave.data_property('Trigger', {'AssetPath': {'PackageName': '/Game/' + cave.DONOR_GD,
+            'AssetName': Path(cave.DONOR_GD).name}, 'SubPathString': 'PersistentLevel.BP_MapTransitionTrigger_C_1'},
+            'SoftObjectPropertyData')
+        return {'NameMap': ['native'], 'Exports': [
+            {'ObjectName': Path(cave.STONE_NAV).name, 'Data': [], 'Extras': 'original world'},
+            {'ObjectName': 'CPP_Map_NavMeshBoundsVolume_1', 'Data': [cave.data_property(
+                'm_TransitionTriggerList', [dict(Name='0', Value=[trigger])], 'ArrayPropertyData')],
+                'Extras': 'cooked bounds'},
+            {'ObjectName': 'RecastNavMeshDataChunk_2', 'Data': [], 'Extras': 'cooked navigation'}]}
+
+    def test_private_navigation_connects_both_private_exits_and_preserves_cooked_data(self):
+        source = self.navigation_source(); before = copy.deepcopy(source)
+        built = cave.stone_navigation(source)
+        area = cave.export(built, 'CPP_Map_NavMeshBoundsVolume_1')[1]
+        links = cave.property_data(area, 'm_TransitionTriggerList')['Value']
+        self.assertEqual([p['Name'] for p in links], ['0', '1'])
+        for link, actor in zip(links, ('BP_MapTransitionTrigger_C_1', cave.NAME + '_Portal')):
+            path = cave.property_data(link, 'Trigger')['Value']
+            self.assertEqual(path['AssetPath'], {'PackageName': '/Game/' + cave.PACKAGE + '_Stone_GD',
+                                                 'AssetName': cave.NAME + '_Stone_GD'})
+            self.assertEqual(path['SubPathString'], 'PersistentLevel.' + actor)
+        self.assertEqual([e['Extras'] for e in built['Exports']], [e['Extras'] for e in source['Exports']])
+        self.assertEqual(source, before)
+        cave.property_data(source['Exports'][1], 'm_TransitionTriggerList')['Value'][0]['Value'][0]['Value']['SubPathString'] = 'UnexpectedActor'
+        with self.assertRaises(ValueError): cave.stone_navigation(source)
+
+    def test_return_point_is_in_persistent_actor_list_and_bound_to_private_navigation(self):
+        from unittest.mock import patch
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        level = {'ObjectName': 'PersistentLevel', 'OuterIndex': 2, 'Actors': [0],
+                 'CreateBeforeSerializationDependencies': []}
+        point = {'ObjectName': 'old point', 'OuterIndex': 1,
+                 'Data': [prop('m_PointID', 0), prop('m_pRootComponent', 4), prop('RootComponent', 4)]}
+        root = {'ObjectName': 'DefaultRootComponent', 'OuterIndex': 3, 'Data': [prop(
+            'RelativeLocation', [{'Value': {'X': 0, 'Y': 0, 'Z': 0}, 'IsZero': False}])]}
+        view = {'NameMap': [], 'Exports': [level, {'ObjectName': cave.NAME + '_Stone_PL', 'OuterIndex': 0}, point, root]}
+        nav = cave.stone_navigation(self.navigation_source())
+        with patch.object(cave, 'clone_graph', return_value={4: 3, 12: 4}) as clone:
+            cave.persistent_return_point(view, {}, nav)
+        clone.assert_called_once_with(view, {}, [4, 12], {8: 1, 14: 2})
+        self.assertEqual(level['Actors'], [0, 3])
+        self.assertIn(3, level['CreateBeforeSerializationDependencies'])
+        self.assertEqual(cave.property_data(point, 'm_PointID')['Value'], 1)
+        self.assertEqual(cave.property_data(point, 'RootComponent')['Value'], 4)
+        self.assertEqual(tuple(cave.property_data(root, 'RelativeLocation')['Value'][0]['Value'][a]
+                               for a in ('X', 'Y', 'Z')), cave.PORTAL_RETURN)
+        ref, = cave.property_data(point, 'm_AreaBoxList')['Value']
+        self.assertEqual(ref['Value']['AssetPath'], {'PackageName': '/Game/' + cave.PACKAGE + '_Stone_NAV',
+                                                     'AssetName': cave.NAME + '_Stone_NAV'})
+        self.assertEqual(ref['Value']['SubPathString'], 'PersistentLevel.CPP_Map_NavMeshBoundsVolume_1')
 
     def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
         view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}

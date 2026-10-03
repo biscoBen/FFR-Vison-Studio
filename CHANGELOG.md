@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Repair the shared cave return setup: private navigation links for its exit and crystal portal, with return point 1
+  registered in the persistent level and bound to that navigation area. Require a button to leave the stone cave,
+  preventing automatic re-exit on arrival. Restore the earlier event-only acquisition/talk flow after the transition
+  pre-event regressed controller confirmation. Preserve Fina's confirmed grant, size and collision; cave return and
+  controller confirmation require a live-game retest.
 
 ## Published cave transition ownership — 2026-10-03
 

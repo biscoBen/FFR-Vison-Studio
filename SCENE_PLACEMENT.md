@@ -42,25 +42,36 @@ crystal's elevated pivot is not used as the collision center.
 A `CPP_MapTransitionTrigger` root intentionally overlaps Pawn; it detects proximity for automatic/manual transitions.
 `m_IsAutoTransition=False` requires the interaction button. A marker mesh and an overlap trigger do not form a wall.
 
-Fina's dedicated manual trigger uses a regular native `MAP_TRANSITION_TRIGGER_DATA` transition (`isEventOnly=False`),
-an unowned-item condition and a grant pre-event in `EventList` of type `TalkEventPlayData`. Its default and conditional
-destinations are stone cave 29990, point 1. The trigger follows her capsule, so its button area is independent of sprite
-lift/size. Clear the NPC's `m_EventSettings.EventList` and `m_EventList`, and set its `m_MapInteractType=None`;
-the NPC supplies the visible model/capsule, while the transition trigger owns the button and return.
-The user's live test confirmed the capsule blocks and manual input opens the dialog, but the old event row's
-`ObtainItemList` plus obtain popup **did not add the vision**. The original Leah/Tronn acquisition timeline explicitly
-calls the native director's parameterless `ExecuteHeader` and `ExecuteFooter`. The private 0.2-second grant timeline
-now uses that lifecycle with the current event row and actual allocated vision ID. It has no original actor bindings,
-scene/camera tracks or story changes; compiled evaluation data is invalidated. The obtain screen and white loading
-setting remain on that row, but its `TransitionLocation` stays at the native neutral `mapId=-1, pointId=-1`:
-the enclosing regular transition owns the map change. The previous event-only trigger and NPC talk binding returned
-to the overworld in live tests, even after the event row and trigger both explicitly targeted 29990/1 (run 37156080907,
-confirmed after reinstall). Explicit destination fields alone therefore did not resolve that event-only path;
-do not record that earlier fallback hypothesis as an established native behavior.
-Point 1 is (3500,31,100), 500 units from the portal and well clear of its blocker and the cave exit trigger.
-Visibility, interaction and grant share the same unowned-item condition. The user has confirmed acquisition, hiding
-and collision; this revised return path still requires a live-game smoke test. The SDK verifies authored assets and
-references, but cannot execute the native transition task or prove its runtime event ordering.
+Fina's dedicated manual trigger uses native `MAP_TRANSITION_TRIGGER_DATA.isEventOnly=True`, an unowned-item
+condition and `EventList` entries of type `TalkEventPlayData`. Restore the earlier native NPC talk binding too;
+both use the same conditioned event and allocated vision ID. Keep this event-only lifecycle: running the grant as a
+regular transition pre-event in run 37157852608 regressed controller confirmation of the obtain dialog (mouse still
+worked). The trigger follows the grounded capsule, independently of sprite lift/size.
+
+The obtain popup alone did not grant the vision. The original Leah/Tronn timeline explicitly calls the native director's
+parameterless `ExecuteHeader` and `ExecuteFooter`; the private 0.2-second timeline uses those with the current event row.
+It has no original actor bindings, dialogue, camera tracks or story changes; compiled evaluation data is invalidated.
+Keep the obtain screen, white loading setting and `TransitionLocation` stone cave 29990 / point 1 on that row.
+
+The live test found **both** ordinary room exit and acquisition returned outside the new cave. Both targeted point 1;
+overworld entry via point 0 worked. Therefore the acquisition-only explanation was insufficient. The copied native NAV
+level still referenced `Dng_01Gra_44_01_GD.PersistentLevel.BP_MapTransitionTrigger_C_1` and lacked our portal connection.
+This was an observed stale reference, not proof of the native C++ warp's cause.
+
+Use a private `_Stone_NAV`, retaining its cooked Recast chunks, bounds, export indices and opaque physics. Its
+`m_TransitionTriggerList` must point to the private `_Stone_GD` exit and portal actors. Retarget the persistent level's
+AlwaysLoaded NAV stream. Place point 1 in `_Stone_PL`'s actor/dependency lists, with its native root component and an
+explicit `m_AreaBoxList` soft reference to the private `CPP_Map_NavMeshBoundsVolume_1`. Do not depend on the dynamically
+streamed GD level for the return point. Keep native point 0 in GD for entry.
+
+Point 1 is (3500,31,100), 500 units from the portal and clear of its blocker and the cave-mouth exit trigger. The cave
+mouth exit now requires a button too (`m_IsAutoTransition=False`); arrival cannot automatically walk-trigger another
+map change. The ordinary room exit and acquisition row both target the same persistent point. The build console prints
+this route and the manual-exit setting so an installed rebuild can be identified.
+
+The user confirmed grant, hiding, size and collision. Revised return placement and restored controller confirmation
+still need live-game testing. SDK/IoStore checks verify authored actors, links and cooked data; they cannot execute the
+native map task or establish its runtime event ordering.
 
 The generic Actor/instance BoxComponent approach passed serialization checks but **did not block in the game**.
 Use the native `BlockingVolume_1` from `Dng_01Gra_43_GD` instead. Its constructor supplies the BrushComponent;

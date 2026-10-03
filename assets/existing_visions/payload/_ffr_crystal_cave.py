@@ -21,6 +21,7 @@ WORLD_PL = 'Map/Wld/Wld_PL'
 ROOM = 'Map/Com/00Com/00Com_217/Com_00Com_217_PL'
 ROOM_BG = 'Map/Com/00Com/00Com_217/BG/Com_00Com_217_01_BG'
 STONE = 'Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL'
+STONE_NAV = 'Map/Dng/01Gra/01Gra_44/NAV/Dng_01Gra_44_01_NAV'
 DONOR_GD = 'Map/Dng/01Gra/01Gra_44/GD/Dng_01Gra_44_01_GD'
 WORLD_BG = 'Map/Wld/01Gra/BG/Wld_01Gra_BG'
 TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
@@ -110,9 +111,9 @@ def prepare(tables, units, root, rows):
         # The timeline executes the footer, as in the native acquisition event.
         'FooterSettings.IsApplyProgressis': False,
         'IsOpenDialogByFinishEvent': True,
-        # The button's regular transition owns the return. The grant event
-        # must not enqueue a second, competing map transition when it finishes.
-        'TransitionLocation.mapId': -1, 'TransitionLocation.pointId': -1,
+        # Keep the controller-compatible event lifecycle. The same cave return
+        # point also serves the room's ordinary exit, independently of grants.
+        'TransitionLocation.mapId': STONE_ID, 'TransitionLocation.pointId': 1,
         'TransitionLocation.bDoAutoSave': False,
         'ObtainItemList': [{'Condition': f'{{item:{unit["id"]}}}==0', 'ID': unit['id'],
                             'Num': 1, 'Text': ''}]})
@@ -427,20 +428,20 @@ def grant_sequence(source):
 
 
 def acquisition_interaction(npc, donor, conditional_template, unit):
-    """Grant before a regular manual transition, attached to the grounded NPC."""
+    """Use the controller-compatible manual event-only acquisition route."""
     level_id, level = export(npc, 'PersistentLevel')
     world_id = export(npc, NAME + '_NPC')[0]
     m = clone_graph(npc, donor, [2, 5], {8: level_id, 14: world_id})
     actor = npc['Exports'][m[5]-1]; box = npc['Exports'][m[2]-1]
     actor['ObjectName'] = NAME + '_AcquireInteraction'
-    # Event-only requests do not perform this trigger's map transition. Use
-    # the same regular route as the cave/portal, with the grant as a pre-event.
+    # A regular transition pre-event regressed controller confirmation of the
+    # obtain dialog. The native event-only route leaves UI input with the event.
     transition(actor, conditional_template, STONE_ID, 1, auto=False)
     set_value(actor, 'm_UniqueId', MAP_ID + 1)
     # Preserve the same native Transition button route as the working portal.
     entry, = property_data(actor, 'mTransitionDataList')['Value']
     condition = f'{{item:{unit["id"]}}}==0'
-    set_value(entry, 'FlagCondition', condition); set_value(entry, 'isEventOnly', False)
+    set_value(entry, 'FlagCondition', condition); set_value(entry, 'isEventOnly', True)
     original, = property_data(conditional_template, 'mTransitionDataList')['Value'][:1]
     event, = property_data(original, 'afterTransitionEventList')['Value']
     event = copy.deepcopy(event)
@@ -460,14 +461,54 @@ def acquisition_interaction(npc, donor, conditional_template, unit):
     names(npc, [actor, box])
 
 
-def disable_npc_talk(owner, transition_template):
-    """Keep one button owner; the NPC supplies only the model and collision."""
-    set_value(property_data(owner, 'm_EventSettings'), 'EventList', [])
-    if any(p['Name'] == 'm_EventList' for p in owner['Data']):
-        set_value(owner, 'm_EventList', [])
-    prop = copy.deepcopy(property_data(transition_template, 'm_MapInteractType'))
-    prop.update(Value='None', IsZero=False)
-    owner['Data'] = [p for p in owner['Data'] if p['Name'] != 'm_MapInteractType'] + [prop]
+def npc_grant(owner, unit):
+    """Restore the native talk binding from the previously working dialog flow."""
+    for p in named_properties(property_data(owner, 'm_EventSettings')):
+        if p['Name'] == 'Condition': p['Value'] = f'{{item:{unit["id"]}}}==0'; p['IsZero'] = False
+        if p['Name'] == 'EventId': p['Value'] = EVENT; p['IsZero'] = False
+
+
+def stone_navigation(source):
+    """Retain cooked navigation while binding both connections to private actors."""
+    view = private_level(source, '/Game/' + STONE_NAV, '/Game/' + PACKAGE + '_Stone_NAV')
+    area = export(view, 'CPP_Map_NavMeshBoundsVolume_1')[1]
+    entry, = property_data(area, 'm_TransitionTriggerList')['Value']
+    trigger = property_data(entry, 'Trigger')
+    original = trigger['Value']
+    if (original['AssetPath']['PackageName'] != '/Game/' + DONOR_GD
+            or original['SubPathString'] != 'PersistentLevel.BP_MapTransitionTrigger_C_1'):
+        raise ValueError('The stone cave navigation connection changed.')
+    links = []
+    for index, actor in enumerate(('BP_MapTransitionTrigger_C_1', NAME + '_Portal')):
+        link = copy.deepcopy(entry); link['Name'] = str(index)
+        path = property_data(link, 'Trigger')['Value']
+        path['AssetPath'].update(PackageName='/Game/' + PACKAGE + '_Stone_GD', AssetName=NAME + '_Stone_GD')
+        path['SubPathString'] = 'PersistentLevel.' + actor
+        links.append(link)
+    set_value(area, 'm_TransitionTriggerList', links)
+    names(view, view['Exports'])
+    return view
+
+
+def persistent_return_point(stone_pl, donor, nav):
+    """Register the destination in the persistent level, bound to its own area."""
+    level_id, level = export(stone_pl, 'PersistentLevel')
+    world_id = export(stone_pl, NAME + '_Stone_PL')[0]
+    m = clone_graph(stone_pl, donor, [4, 12], {8: level_id, 14: world_id})
+    point = stone_pl['Exports'][m[4]-1]
+    point['ObjectName'] = NAME + '_PortalReturn'
+    set_value(point, 'm_PointID', 1)
+    vector(stone_pl['Exports'][m[12]-1], 'RelativeLocation', PORTAL_RETURN)
+    area = export(nav, 'CPP_Map_NavMeshBoundsVolume_1')[1]
+    entry, _ = property_data(area, 'm_TransitionTriggerList')['Value']
+    ref = copy.deepcopy(property_data(entry, 'Trigger')); ref['Name'] = '0'
+    ref['Value']['AssetPath'].update(PackageName='/Game/' + PACKAGE + '_Stone_NAV', AssetName=NAME + '_Stone_NAV')
+    ref['Value']['SubPathString'] = 'PersistentLevel.CPP_Map_NavMeshBoundsVolume_1'
+    prop = data_property('m_AreaBoxList', [ref], 'ArrayPropertyData')
+    prop['ArrayType'] = 'SoftObjectProperty'
+    point['Data'] = [p for p in point['Data'] if p['Name'] != 'm_AreaBoxList'] + [prop]
+    actors(stone_pl, level['Actors'] + [m[4]])
+    names(stone_pl, [point, stone_pl['Exports'][m[12]-1]])
 
 
 def settle_fina(npc, spawn):
@@ -540,7 +581,7 @@ def make_levels(source, unit):
     set_value(owner, 'm_MapUnitId', MAP_ID)
     set_value(owner, 'm_VisiblFlagCondition', f'{{item:{unit["id"]}}}==0')
     set_value(owner, 'm_Direction', 'South')
-    disable_npc_talk(owner, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1])
+    npc_grant(owner, unit)
     # Keep the complete original NPC/component graph and its opaque head-widget
     # export at the same indices. Do not copy/remap unknown widget bytes.
     for name, template_name, value in [('m_IsAnimationUseDirection', 'm_IsAnimationUseDirection', False),
@@ -596,20 +637,19 @@ def make_levels(source, unit):
 
     stone_gd = private_level(source[DONOR_GD], '/Game/' + DONOR_GD, '/Game/' + PACKAGE + '_Stone_GD')
     transition(export(stone_gd, 'BP_MapTransitionTrigger_C_1')[1],
-               export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], 1000, MAP_ID)
+               export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], 1000, MAP_ID, auto=False)
     actors(stone_gd, [7, 0, 5, 4])
     level_id, stone_level = export(stone_gd, 'PersistentLevel')
     world_id = export(stone_gd, NAME + '_Stone_GD')[0]
-    m = clone_graph(stone_gd, source[DONOR_GD], [2, 5, 4, 12], {8: level_id, 14: world_id})
-    portal = stone_gd['Exports'][m[5]-1]; point = stone_gd['Exports'][m[4]-1]
-    portal['ObjectName'] = NAME + '_Portal'; point['ObjectName'] = NAME + '_PortalReturn'
+    m = clone_graph(stone_gd, source[DONOR_GD], [2, 5], {8: level_id, 14: world_id})
+    portal = stone_gd['Exports'][m[5]-1]
+    portal['ObjectName'] = NAME + '_Portal'
     transition(portal, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], MAP_ID, 0, auto=False)
     # Keep the donor's native Transition interaction type, requiring input
     # instead of entering the room on overlap.
-    set_value(portal, 'm_UniqueId', MAP_ID); set_value(point, 'm_PointID', 1)
+    set_value(portal, 'm_UniqueId', MAP_ID)
     vector(stone_gd['Exports'][m[2]-1], 'RelativeLocation', PORTAL)
     vector(stone_gd['Exports'][m[2]-1], 'BoxExtent', (160.0, 200.0, 200.0))
-    vector(stone_gd['Exports'][m[12]-1], 'RelativeLocation', PORTAL_RETURN)
     # The native crystal mesh marks the portal. Its materials remain game assets.
     actor_idx, mesh_idx = crystals['SM_Env_Com_magicstone001']
     b = clone_graph(stone_gd, source[ROOM_BG], [actor_idx, mesh_idx], {
@@ -617,7 +657,7 @@ def make_levels(source, unit):
         export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
     stone_gd['Exports'][b[actor_idx]-1]['ObjectName'] = NAME + '_PortalCrystal'
     vector(stone_gd['Exports'][b[mesh_idx]-1], 'RelativeLocation', (PORTAL[0], PORTAL[1], 250.0))
-    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx]])
+    actors(stone_gd, stone_level['Actors'] + [m[5], b[actor_idx]])
     names(stone_gd, stone_gd['Exports'])
 
     stone_pl = private_level(source[STONE], '/Game/' + STONE, '/Game/' + PACKAGE + '_Stone_PL')
@@ -632,6 +672,10 @@ def make_levels(source, unit):
         if i not in old_streams or i in keep]
     gd_path = property_data(stone_pl['Exports'][3], 'WorldAsset')['Value']['AssetPath']
     gd_path.update(PackageName='/Game/' + PACKAGE + '_Stone_GD', AssetName=NAME + '_Stone_GD')
+    stone_nav = stone_navigation(source[STONE_NAV])
+    nav_path = property_data(stone_pl['Exports'][2], 'WorldAsset')['Value']['AssetPath']
+    nav_path.update(PackageName='/Game/' + PACKAGE + '_Stone_NAV', AssetName=NAME + '_Stone_NAV')
+    persistent_return_point(stone_pl, source[DONOR_GD], stone_nav)
     names(stone_pl, stone_pl['Exports'])
 
     wld = copy.deepcopy(source[WORLD]); level_id, level = export(wld, 'PersistentLevel')
@@ -670,7 +714,8 @@ def make_levels(source, unit):
     return {WORLD: wld, WORLD_PL: world_pl,
             PACKAGE + '_EntranceCollision': entrance_collision, PACKAGE + '_PortalCollision': portal_collision,
             PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,
-            PACKAGE + '_BG': bg_room, PACKAGE + '_Stone_PL': stone_pl, PACKAGE + '_Stone_GD': stone_gd}
+            PACKAGE + '_BG': bg_room, PACKAGE + '_Stone_PL': stone_pl, PACKAGE + '_Stone_GD': stone_gd,
+            PACKAGE + '_Stone_NAV': stone_nav}
 
 
 def map_mappings(original, blueprints):
@@ -813,7 +858,7 @@ def build(units, env):
     if not (legacy / 'FFRS/Content/BP/Map/Unit/BP_MapUnit_NPC_Field.uasset').is_file():
         env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'BP/Map/'))
     source = {}
-    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR):
+    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR):
         suffix = '.uasset' if rel == GRANT_DONOR else '.umap'
         path = legacy / ('FFRS/Content/' + rel + suffix)
         if not path.is_file():
@@ -834,4 +879,4 @@ def build(units, env):
         decoded = work / (Path(rel).name + '-verified.json')
         env['run'](env['FFRDT'] + ['tojson', str(destination), str(decoded), '--usmap', mapping])
         check_level(view, json.loads(decoded.read_text(encoding='utf-8-sig')))
-    print('  Crystal Fina cave: native crystal room, floating model, once-only grant and overworld return built.')
+    print('  Crystal Fina cave: event-only grant; cave return point 1 in persistent level; private navigation links; button-confirmed cave exit.')
