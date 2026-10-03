@@ -11,11 +11,33 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending code changes.
+
+## Published combined cave/overworld installation and direction fixes — 2026-10-03
+
+Changes in [`a98414f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a98414ffebd4236be926bec3b0e3c27655545a0a),
+with the Windows test correction in [`2a3c53b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/2a3c53b8dad94883ceceee0db3f46f93e5a2eeab),
+[test package 37147289426](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37147289426).
+
 - Fix installation with both Crystal Fina's cave and a party overworld replacement enabled: verify their combined
   shared map-unit table, retaining exact checks for unrelated edits, missing rows and incorrect acquisition data.
   Include the failing table in future testing-verification errors.
 - Correct Vagrant Knight Rain's swapped east/southeast sheet rows in both the walking viewer and generated
   idle/walk/run animations. Rebuild/install the mod to regenerate the field assets.
+- Passed analysis, the affected viewer test, 211 local Python tests (three engine contracts deferred to Windows),
+  bundle checks and both actual install-verification entrypoints against the SDK-built combined native table.
+  The corrected directional project also generated/read back through the real SDK. Windows passed full suites,
+  fresh frozen-engine startup, launcher/updater checks and compilation before publication. Verified the authenticated
+  ZIP checksum, exact commit/run and all 31 bundled extension/preset files. Update Studio, rebuild/install the mod and
+  restart Resonance. Full in-game walking and installation still require a user retest; no game runtime is available here.
+- The first CI run blocked publication on a Windows-only path assumption in the new regression test. Corrected the
+  fixture, added an explicit backslash-path check and reused the second push's build. Cancelled the helper's redundant
+  retry of the failed commit. Master is unchanged; publication notes use the documentation-only path.
+- Published at 12:21:20 PDT; final CI took 5m01s (9m06s summed job execution). Across the failed run, cancelled retry and
+  successful run, runner execution totaled 21m43s. First complete candidate: 12:09:20 PDT; verification finished at
+  12:22:25 PDT (13m05s including local checks, failed CI, correction, new CI and package verification).
+  From task start at 12:06:01 PDT, the verified package took 16m24s: implementation 3m19s, initial local checks/push
+  1m10s, CI including the Windows test correction 10m52s and release verification 1m03s.
 
 ## Published party overworld appearances and cave interactions — 2026-10-03
 
