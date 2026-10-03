@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Give Crystal Fina's acquisition button one regular transition to the stone cave beside its crystal, with the grant
+  as a pre-event. Remove the competing NPC talk binding and event-row map change. Preserve her confirmed grant,
+  white flash, appearance and collision. The previous explicit event-only return still reached the overworld after
+  reinstall; this revised route needs a live-game retest.
 
 ## Published cave acquisition return — 2026-10-03
 

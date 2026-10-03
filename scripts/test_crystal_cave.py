@@ -78,7 +78,7 @@ class CrystalCaveTests(unittest.TestCase):
                 self.assertFalse(event['FooterSettings']['IsApplyProgressis'])
                 self.assertTrue(event['IsOpenDialogByFinishEvent'])
                 self.assertEqual(event['LoadingScreenSetting'], 'White')
-                self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
+                self.assertEqual(event['TransitionLocation'], {'mapId': -1, 'pointId': -1, 'bDoAutoSave': False})
             elif rel == cave.MAP_UNIT:
                 sprite = built[cave.NAME]['animationAssetList'][0]
                 self.assertIn('summon13507', sprite['Ss6Project'])
@@ -350,7 +350,7 @@ class CrystalCaveTests(unittest.TestCase):
         source['Imports'][2]['ObjectName'] = 'not ExecuteFooter'
         with self.assertRaises(ValueError): cave.grant_sequence(source)
 
-    def test_event_only_acquisition_uses_manual_input_and_follows_grounded_capsule(self):
+    def test_grant_precedes_regular_manual_return_and_follows_grounded_capsule(self):
         from unittest.mock import patch
         def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
         event = {'StructType': 'TalkEventPlayData', 'Name': '0', 'Value': [
@@ -388,10 +388,8 @@ class CrystalCaveTests(unittest.TestCase):
             added, = operations[rel]['add']
             grant = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
             destination = grant['TransitionLocation']
-            self.assertEqual((destination['mapId'], destination['pointId']),
-                             (cave.property_data(actor, 'm_MapId')['Value'],
-                              cave.property_data(actor, 'm_PointID')['Value']))
-        self.assertTrue(cave.property_data(actual, 'isEventOnly')['Value'])
+            self.assertEqual((destination['mapId'], destination['pointId']), (-1, -1))
+        self.assertFalse(cave.property_data(actual, 'isEventOnly')['Value'])
         self.assertEqual(cave.property_data(actual, 'FlagCondition')['Value'], '{item:13507}==0')
         scheduled, = cave.property_data(actual, 'EventList')['Value']
         self.assertEqual(scheduled['StructType'], 'TalkEventPlayData')
@@ -404,6 +402,24 @@ class CrystalCaveTests(unittest.TestCase):
         self.assertIn(37, box['CreateBeforeSerializationDependencies'])
         self.assertEqual(npc['Exports'][0]['Actors'], [0, 3])
         self.assertEqual(template, before)
+
+    def test_npc_cannot_bypass_the_transition_button_via_its_old_talk_binding(self):
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        owner = {'Data': [prop('m_EventSettings', [prop('EventList', ['old NPC talk'])]),
+                          prop('m_EventList', ['other NPC event']), prop('m_MapInteractType', 'Talk'),
+                          prop('m_VisiblFlagCondition', '{item:13507}==0'),
+                          prop('RootComponent', 37), prop('m_SsPlayerScale', 4.25)]}
+        transition = {'Data': [dict(prop('m_MapInteractType', 'Transition'), EnumType='eMapInteractType')]}
+        before = copy.deepcopy(transition)
+        cave.disable_npc_talk(owner, transition)
+        self.assertEqual(cave.property_data(cave.property_data(owner, 'm_EventSettings'), 'EventList')['Value'], [])
+        self.assertEqual(cave.property_data(owner, 'm_EventList')['Value'], [])
+        interaction = cave.property_data(owner, 'm_MapInteractType')
+        self.assertEqual((interaction['Value'], interaction['EnumType']), ('None', 'eMapInteractType'))
+        self.assertEqual(cave.property_data(owner, 'RootComponent')['Value'], 37)
+        self.assertEqual(cave.property_data(owner, 'm_SsPlayerScale')['Value'], 4.25)
+        self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
+        self.assertEqual(transition, before)
 
     def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
         view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}

@@ -42,20 +42,25 @@ crystal's elevated pivot is not used as the collision center.
 A `CPP_MapTransitionTrigger` root intentionally overlaps Pawn; it detects proximity for automatic/manual transitions.
 `m_IsAutoTransition=False` requires the interaction button. A marker mesh and an overlap trigger do not form a wall.
 
-Fina's dedicated manual trigger uses native `MAP_TRANSITION_TRIGGER_DATA.isEventOnly=True`, an unowned-item
-condition and `EventList` entries of type `TalkEventPlayData`. It runs the existing once-only acquisition event;
-the trigger follows her capsule, so its button area is independent of sprite lift/size.
+Fina's dedicated manual trigger uses a regular native `MAP_TRANSITION_TRIGGER_DATA` transition (`isEventOnly=False`),
+an unowned-item condition and a grant pre-event in `EventList` of type `TalkEventPlayData`. Its default and conditional
+destinations are stone cave 29990, point 1. The trigger follows her capsule, so its button area is independent of sprite
+lift/size. Clear the NPC's `m_EventSettings.EventList` and `m_EventList`, and set its `m_MapInteractType=None`;
+the NPC supplies the visible model/capsule, while the transition trigger owns the button and return.
 The user's live test confirmed the capsule blocks and manual input opens the dialog, but the old event row's
 `ObtainItemList` plus obtain popup **did not add the vision**. The original Leah/Tronn acquisition timeline explicitly
 calls the native director's parameterless `ExecuteHeader` and `ExecuteFooter`. The private 0.2-second grant timeline
 now uses that lifecycle with the current event row and actual allocated vision ID. It has no original actor bindings,
-scene/camera tracks or story changes; compiled evaluation data is invalidated. The obtain screen and return-to-cave
-settings remain on that row. The invoking Transition trigger also needs an explicit return route: both its
-`m_MapId`/`m_PointID` and conditional entry `mapId`/`pointId` target stone cave 29990, point 1. Keeping these at -1
-left a fallback route despite the event row's correct destination; the live test returned to the overworld.
+scene/camera tracks or story changes; compiled evaluation data is invalidated. The obtain screen and white loading
+setting remain on that row, but its `TransitionLocation` stays at the native neutral `mapId=-1, pointId=-1`:
+the enclosing regular transition owns the map change. The previous event-only trigger and NPC talk binding returned
+to the overworld in live tests, even after the event row and trigger both explicitly targeted 29990/1 (run 37156080907,
+confirmed after reinstall). Explicit destination fields alone therefore did not resolve that event-only path;
+do not record that earlier fallback hypothesis as an established native behavior.
 Point 1 is (3500,31,100), 500 units from the portal and well clear of its blocker and the cave exit trigger.
-Visibility, interaction and grant share the same unowned-item condition. Actual
-inventory acquisition and hiding on return require a live-game smoke test; the SDK cannot execute native event code.
+Visibility, interaction and grant share the same unowned-item condition. The user has confirmed acquisition, hiding
+and collision; this revised return path still requires a live-game smoke test. The SDK verifies authored assets and
+references, but cannot execute the native transition task or prove its runtime event ordering.
 
 The generic Actor/instance BoxComponent approach passed serialization checks but **did not block in the game**.
 Use the native `BlockingVolume_1` from `Dng_01Gra_43_GD` instead. Its constructor supplies the BrushComponent;

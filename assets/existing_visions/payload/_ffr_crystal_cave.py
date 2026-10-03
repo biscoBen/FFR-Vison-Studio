@@ -110,7 +110,9 @@ def prepare(tables, units, root, rows):
         # The timeline executes the footer, as in the native acquisition event.
         'FooterSettings.IsApplyProgressis': False,
         'IsOpenDialogByFinishEvent': True,
-        'TransitionLocation.mapId': STONE_ID, 'TransitionLocation.pointId': 1,
+        # The button's regular transition owns the return. The grant event
+        # must not enqueue a second, competing map transition when it finishes.
+        'TransitionLocation.mapId': -1, 'TransitionLocation.pointId': -1,
         'TransitionLocation.bDoAutoSave': False,
         'ObtainItemList': [{'Condition': f'{{item:{unit["id"]}}}==0', 'ID': unit['id'],
                             'Num': 1, 'Text': ''}]})
@@ -425,21 +427,20 @@ def grant_sequence(source):
 
 
 def acquisition_interaction(npc, donor, conditional_template, unit):
-    """Use native manual event-only interaction, attached to the grounded NPC."""
+    """Grant before a regular manual transition, attached to the grounded NPC."""
     level_id, level = export(npc, 'PersistentLevel')
     world_id = export(npc, NAME + '_NPC')[0]
     m = clone_graph(npc, donor, [2, 5], {8: level_id, 14: world_id})
     actor = npc['Exports'][m[5]-1]; box = npc['Exports'][m[2]-1]
     actor['ObjectName'] = NAME + '_AcquireInteraction'
-    # The event row and its invoking Transition trigger must agree. Leaving
-    # the trigger's destination at -1 allows its post-event route to fall back
-    # to the previous field map instead of the private cave's portal point.
+    # Event-only requests do not perform this trigger's map transition. Use
+    # the same regular route as the cave/portal, with the grant as a pre-event.
     transition(actor, conditional_template, STONE_ID, 1, auto=False)
     set_value(actor, 'm_UniqueId', MAP_ID + 1)
     # Preserve the same native Transition button route as the working portal.
     entry, = property_data(actor, 'mTransitionDataList')['Value']
     condition = f'{{item:{unit["id"]}}}==0'
-    set_value(entry, 'FlagCondition', condition); set_value(entry, 'isEventOnly', True)
+    set_value(entry, 'FlagCondition', condition); set_value(entry, 'isEventOnly', False)
     original, = property_data(conditional_template, 'mTransitionDataList')['Value'][:1]
     event, = property_data(original, 'afterTransitionEventList')['Value']
     event = copy.deepcopy(event)
@@ -457,6 +458,16 @@ def acquisition_interaction(npc, donor, conditional_template, unit):
     vector(box, 'BoxExtent', (100.0, 100.0, 100.0))
     actors(npc, level['Actors'] + [m[5]])
     names(npc, [actor, box])
+
+
+def disable_npc_talk(owner, transition_template):
+    """Keep one button owner; the NPC supplies only the model and collision."""
+    set_value(property_data(owner, 'm_EventSettings'), 'EventList', [])
+    if any(p['Name'] == 'm_EventList' for p in owner['Data']):
+        set_value(owner, 'm_EventList', [])
+    prop = copy.deepcopy(property_data(transition_template, 'm_MapInteractType'))
+    prop.update(Value='None', IsZero=False)
+    owner['Data'] = [p for p in owner['Data'] if p['Name'] != 'm_MapInteractType'] + [prop]
 
 
 def settle_fina(npc, spawn):
@@ -529,9 +540,7 @@ def make_levels(source, unit):
     set_value(owner, 'm_MapUnitId', MAP_ID)
     set_value(owner, 'm_VisiblFlagCondition', f'{{item:{unit["id"]}}}==0')
     set_value(owner, 'm_Direction', 'South')
-    for p in named_properties(property_data(owner, 'm_EventSettings')):
-        if p['Name'] == 'Condition': p['Value'] = f'{{item:{unit["id"]}}}==0'; p['IsZero'] = False
-        if p['Name'] == 'EventId': p['Value'] = EVENT; p['IsZero'] = False
+    disable_npc_talk(owner, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1])
     # Keep the complete original NPC/component graph and its opaque head-widget
     # export at the same indices. Do not copy/remap unknown widget bytes.
     for name, template_name, value in [('m_IsAnimationUseDirection', 'm_IsAnimationUseDirection', False),
