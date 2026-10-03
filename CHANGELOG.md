@@ -19,6 +19,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   outside enhanced mode and clear stale Barrage/coverage records. Existing native timelines take precedence, including
   future game versions; full-game behavior remains untested until the game is available. Rebuild/install after switching.
 - Preserve a complete pre-change source/history snapshot and the original hiding/animation reports separately.
+- Match the engine readiness check to the updated extension version; retain rejection of outdated installer responses.
 
 ## Published shop dialogue correction and level 7–8 battle — 2026-10-02
 

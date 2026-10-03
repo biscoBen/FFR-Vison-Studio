@@ -149,7 +149,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.1.0' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.0' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -161,6 +161,13 @@ void main() {
   test('installer failure is visible and does not report engine readiness', () async {
     final features = BundledFeatures(readAsset: diskAsset, runProcess: (exe, args, directory) async => ProcessResult(1, 1, '', 'unsupported upstream layout'));
     await expectLater(features.prepareEngine(paths, engineRunning: false), throwsA(predicate((e) => e.toString().contains('unsupported upstream layout'))));
+  });
+
+  test('an outdated existing vision installer response cannot report readiness', () async {
+    final features = BundledFeatures(readAsset: diskAsset, runProcess: (exe, args, directory) async =>
+        ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': '1.1.0'}), ''));
+    await expectLater(features.prepareEngine(paths, engineRunning: false),
+        throwsA(predicate((e) => e.toString().contains('did not confirm existing vision support'))));
   });
 
   test('fresh portable setup keeps verified installer payloads below Windows MAX_PATH', () async {
@@ -178,7 +185,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.1.0' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.0' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
