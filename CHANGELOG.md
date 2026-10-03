@@ -11,11 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published reachable Crystal Fina and crystal interaction — 2026-10-03
+
+Changes in [`37f71d0`](https://github.com/biscoBen/FFR-Vison-Studio/commit/37f71d025309d17fcf4772bbcabda5da78fa59fd),
+[test package 37141486449](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37141486449).
+
 - Enlarge cave Crystal Fina to 2.5 times the previous sprite scale and center her above the clear crystal's ground
   glow. Put her foot and interaction volume directly on the native floor, with a 40-unit sprite-only float offset;
   the stationary NPC did not settle from the previous raised spawn. Require interaction with the stone cave's
   crystal to enter the glowing room, using the native manual-transition setting. In-game size, reach and interaction
   still need a retest; the workspace has no Resonance runtime.
+- Passed 204 local Python checks with three engine contracts deferred to Windows, bundle verification and all seven
+  generated maps' SDK and actual IoStore pack/extract readbacks. Confirmed the floor-level foot, enlarged sprite,
+  manual inner portal and automatic cave exits survive packing. Windows passed the full Flutter/Python suites,
+  frozen-engine startup, launcher/updater tests and compilation before publication. Verified the authenticated ZIP
+  checksum, exact commit/run and all 29 bundled extension/preset files. One code push and one reused automatic build;
+  master is unchanged. Update Studio, rebuild/install the mod and restart Resonance to test the change.
+- Published at 10:48:08 PDT. CI took 5m56s, with 9m35s summed job execution. Flutter setup on the validation runner
+  took 2m57s. First complete candidate: 10:39:26 PDT; package verification finished at 10:48:53 PDT (9m27s, including
+  local corrections/checks, push, CI and verification). From task start at 10:34:24 PDT, verification took 14m29s:
+  implementation 5m02s, local corrections/checks/push 2m48s, CI 5m56s and release verification 43s.
+  Publication notes use the documentation-only path without another app build.
 
 ## Published Crystal Fina cave placement and glow cleanup — 2026-10-03
 
