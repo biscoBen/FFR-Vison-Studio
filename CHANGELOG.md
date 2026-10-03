@@ -11,8 +11,31 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Add an opt-in Crystal Fina cave north of the Earth Shrine–Mitra road, with private copies of the native stone cave and glowing Leah/Tronn room. A crystal portal leads to the floating bundled Crystal Fina; acquiring her uses the native vision-obtain dialog and returns to the stone cave. Her inventory condition prevents repeat grants and hides her afterward. Keep the original story maps/events unchanged.
-- Validate the generated native tables and cooked maps by writing and reading them with the engine SDK. Map placement, white transition, acquisition-screen presentation and walking/return behavior still need an in-game check on Windows; no game runtime is available in this workspace.
+- No pending code changes.
+
+## Published Crystal Fina cave — 2026-10-03
+
+Changes in [`3c4f415`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3c4f415c951f5aa32d5feb177536a11627074a1b),
+[test package 37135304953](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37135304953).
+
+- Add an opt-in Crystal Fina cave north of the Earth Shrine–Mitra road, using private copies of the native stone cave
+  and glowing Leah/Tronn room. A crystal portal leads to the floating bundled Crystal Fina. Request the native
+  vision-obtain dialog and a white transition back to the stone cave. Ownership prevents repeat grants and hides
+  her on subsequent visits. Enabling adds her bundled profile if needed, using its allocated ID and preserving edits.
+- Verified the native tables and all seven cooked maps through engine SDK writes/readbacks, preserving original
+  world actors and story rows. Passed analysis, 200 Python and 41 focused Flutter tests; Windows passed the full
+  suites, real frozen-engine startup, bundle and launcher/updater/import checks and compilation before publication.
+  Verified the authenticated ZIP checksum, exact commit, compiled cave switch and all packaged extension files.
+  Cave placement, movement, white flash and acquisition-screen presentation still require an in-game check;
+  there is no game runtime in this workspace. Master and engine hosting are unchanged.
+- Two code pushes/builds: the first correctly blocked publication on a stale Windows startup assertion expecting
+  extension 1.2.0 instead of 1.2.1. Corrected it and checked the installed cave module. Reused both push runs;
+  successful CI took 4m48s, with 8m48s total CI elapsed and 15m21s summed job execution across both attempts.
+  First complete candidate: 08:51:55 PDT; package verification finished at 09:08:12 PDT (16m17s, including corrections,
+  local checks, both builds and download verification). From the original cave request at 22:32:15 PDT the previous
+  evening, verification took 10h35m57s, including the 9h36m55s interval awaiting split reference uploads. Active work
+  totaled 59m02s: implementation/investigation and development checks 42m45s, final local checks/revision/push 5m12s,
+  CI 8m48s, package verification 2m17s. Publication notes follow through the documentation-only path.
 
 ## Published repeated-model portrait refresh — 2026-10-02
 

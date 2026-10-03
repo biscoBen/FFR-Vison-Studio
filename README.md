@@ -3,6 +3,11 @@
 This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), separately from the original project's
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 
+For the Crystal Fina cave trial, enable **Crystal Fina cave** on the main screen, build/install the mod, and restart
+Resonance. Look north of the road between Earth Shrine and Mitra. The stone cave's crystal portal leads to her glowing
+room; acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
+hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
+
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
 This repository is the app on its own: it needs nothing else on disk to build, and at runtime it talks only to the
