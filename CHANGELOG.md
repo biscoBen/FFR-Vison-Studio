@@ -11,9 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published complete unit-picker browsing — 2026-10-02
+
+Changes in [`3069a46`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3069a467e1fc6649d4caa606fd62f59479b27977),
+[test package 37095455577](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37095455577).
+
 - Remove the unit picker's first-200-results cutoff so browsing reaches the full character roster when adding a unit
   or replacing a default vision/party model. Keep search uncapped and rows built as they scroll into view; browsing
   still leaves character sprite downloads on demand.
+- Passed local analysis and 11 focused tests, covering late-alphabet browsing, more than 200 search matches, both
+  replacement pickers, engine-catalog fallback and existing sprite preparation. Windows passed the full Flutter/Python
+  suites, genuine engine startup, bundle, launcher/updater/import checks and compilation before publication. Verified the
+  authenticated ZIP's checksum, exact commit and all bundled extension files. Master is unchanged.
+- One code push and one reused build. CI took 4m39s, with 8m00s summed job execution. First complete candidate:
+  21:05:45 PDT; ZIP verified at 21:12:22 PDT and packaged-file checks finished at 21:12:32 PDT (6m47s from candidate,
+  7m42s from the recorded request). Implementation took about one minute, local checks/push about one minute, and
+  waiting/download/package verification about one minute beyond CI. Publication notes use the documentation-only path.
 
 ## Published private shop battle stage — 2026-10-02
 
