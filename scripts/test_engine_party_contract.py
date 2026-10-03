@@ -27,6 +27,9 @@ class EnginePartyContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             spec = Path(directory) / 'units.json'
             selected = [unit(c[0]) for c in party.CHARACTERS]
+            selected[0]['overworld'] = {'version': 1, 'model': 'vagrant_knight_rain'}
+            selected[1].pop('ffbe')
+            selected[1]['overworld'] = {'version': 1, 'model': 'vagrant_knight_rain'}
             spec.write_text(json.dumps(selected))
             env = {'os': os, 'json': json, 'SPEC_JSON': str(spec), 'UNITS': []}
             exec(compile(ast.Module(body=[loader], type_ignores=[]), 'actual_engine_roster_loader', 'exec'), env)

@@ -67,6 +67,9 @@ void main() {
       expect(state['version'], '1.2.1');
       for (final name in [
         '_ffr_existingvisions.py',
+        '_ffr_party.py',
+        '_ffr_overworld.py',
+        'vagrant_knight_rain_field.png',
         '_ffr_testing.py',
         '_ffr_crystal_cave.py',
         '_ffr_ability_modes.py',
@@ -82,6 +85,23 @@ void main() {
           File('assets/existing_visions/payload/$name').readAsBytesSync(),
         );
       }
+      final fieldCheck = File(p.join(paths.engineDir, 'check_overworld_startup.py'));
+      fieldCheck.writeAsStringSync('''
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent / 'tools'))
+import _ffr_party, _ffr_overworld
+from PIL import Image
+_ffr_party.validate({'key':'party_1001', 'id':1001, 'jp':'レイン', 'en':'Rain',
+    'party':{'version':1, 'id':1001}, 'overworld':{'version':1, 'model':'vagrant_knight_rain'}})
+assert 'idle9' in [a['name'] for a in _ffr_overworld.spec('pc0010')['animations']]
+with Image.open(Path(_ffr_overworld.__file__).with_name(_ffr_overworld.SHEET)) as image:
+    assert image.size == (448,1536)
+print('Overworld module and field sheet ready')
+''');
+      final fieldResult = await Process.run(paths.engineExe, ['--run', fieldCheck.path], workingDirectory: paths.engineDir);
+      expect(fieldResult.exitCode, 0, reason: '${fieldResult.stdout}\n${fieldResult.stderr}');
+      expect(fieldResult.stdout.toString(), contains('Overworld module and field sheet ready'));
     },
     skip: !Platform.isWindows || fixture == null,
     timeout: const Timeout(Duration(minutes: 3)),

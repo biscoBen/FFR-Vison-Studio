@@ -24,7 +24,7 @@ Future<void> confirmRemove(
         style: Guide.h2(),
       ),
       content: Text(
-        party ? 'This restores the original battle model on the next build/install. Save its character config first to keep the replacement.' : native
+        party ? 'This restores the original battle and overworld models on the next build/install. Save its character config first to keep your choices.' : native
             ? 'This restores the original model, abilities, bonuses, stats, Resonance and MR rewards by removing this vision\'s overrides. Save its character config first to keep your edits. The next build/install applies the original vision to the game.'
             : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.',
         style: Guide.text(),

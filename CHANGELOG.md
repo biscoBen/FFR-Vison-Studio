@@ -11,7 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Double cave Crystal Fina's sprite scale and shift her right toward the floor glow, keeping collision-based settling
+  and once-only acquisition. Require input at the overworld entrance and add an invisible blocking box at the crystal
+  portal while preserving its larger interaction area.
+- Add independent **Edit overworld appearance** choices for party characters, initially limited to Vagrant Knight
+  Rain. Bundle its eight-direction idle/walk/run sheet, preview the walking frames, and preserve battle choices and
+  both appearances in saved configs. Redirect primary field assets only; ordinary scenes using them also show the
+  new look. Placement, walking direction and scene compatibility still require an in-game check.
 
 ## Published Crystal Fina floor collision fix — 2026-10-03
 

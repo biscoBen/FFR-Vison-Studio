@@ -7,15 +7,19 @@ import '../design/widgets.dart';
 import '../state/app_state.dart';
 import '../state/catalog_helpers.dart';
 import '../services/crystal_fina.dart';
+import '../services/overworld_appearance.dart';
+import 'overworld_anim_pane.dart';
 
 Future<void> showAddUnit(BuildContext context) => showDialog<void>(context: context, builder: (_) => const AddUnitDialog());
 
 /// Pick a Brave Exvius unit. Picking one fetches its sprites (a small download) so the look can be previewed here.
 class AddUnitDialog extends StatefulWidget {
-  const AddUnitDialog({super.key, this.replaceVisionId, this.replacePartyId});
+  const AddUnitDialog({super.key, this.replaceVisionId, this.replacePartyId, this.replaceOverworldId});
   final int? replaceVisionId;
   final int? replacePartyId;
-  bool get replacing => replaceVisionId != null || replacePartyId != null;
+  final int? replaceOverworldId;
+  bool get overworld => replaceOverworldId != null;
+  bool get replacing => replaceVisionId != null || replacePartyId != null || overworld;
   @override
   State<AddUnitDialog> createState() => _AddUnitDialogState();
 }
@@ -36,6 +40,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
   @override
   void initState() {
     super.initState();
+    if (widget.overworld) { list = [Map<String, dynamic>.from(OverworldAppearance.entry)]; return; }
     final app = context.read<AppState>();
     final hosted = (app.hostIndex?['units'] as List?)?.cast<Map<String, dynamic>>();
     if (hosted != null) {
@@ -54,6 +59,10 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     setState(() { sel = u; detail = null; err = null; loadingAssets = true; });
     final app = context.read<AppState>();
     try {
+      if (widget.overworld) {
+        setState(() { detail = Map<String, dynamic>.from(OverworldAppearance.detail); form = '100015006'; name.text = 'Vagrant Knight Rain'; });
+        return;
+      }
       if (u['bundledPreset'] == CrystalFina.presetId) {
         await app.features.ensureUnitAssets(app.paths);
         final d = await app.features.detail();
@@ -88,6 +97,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
 
   /// Switching the look fetches that look's sprites too.
   Future<void> setForm(String f) async {
+    if (widget.overworld) { return; }
     final app = context.read<AppState>();
     final picked = sel!;
     if (picked['bundledPreset'] == CrystalFina.presetId) return;
@@ -125,7 +135,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
       child: Paper(
         width: 940,
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Band(!widget.replacing ? 'Add a unit' : 'Choose a replacement model'),
+          Band(widget.overworld ? 'Choose an overworld appearance' : !widget.replacing ? 'Add a unit' : 'Choose a replacement model'),
           Padding(
             padding: const EdgeInsets.all(16),
             child: SizedBox(
@@ -152,7 +162,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                                   child: Row(children: [
-                                    Frame(padding: 1, width: 1, child: SizedBox(width: 44, height: 30, child: u['iconForm'] != null ? _icon(app, u['iconForm'].toString()) : const SizedBox.shrink())),
+                                    Frame(padding: 1, width: 1, child: SizedBox(width: 44, height: 30, child: widget.overworld ? Icon(Icons.directions_walk, color: Guide.ink) : u['iconForm'] != null ? _icon(app, u['iconForm'].toString()) : const SizedBox.shrink())),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -201,6 +211,11 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                 try {
                   if (widget.replacing) {
                     Map<String, dynamic> appearance;
+                    if (widget.overworld) {
+                      await app.editPartyCharacter(widget.replaceOverworldId!, overworld: OverworldAppearance.profile);
+                      if (context.mounted) Navigator.of(context).pop();
+                      return;
+                    }
                     if (bundled) { appearance = await app.features.profile(); }
                     else { await app.prepareUnitPreview(sel!['id'] as String, form); appearance = await app.api!.nativeModel(sel!['id'] as String, form); }
                     if (widget.replacePartyId != null) {
@@ -256,7 +271,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Row(children: [
-        Frame(padding: 2, child: SizedBox(width: 56, height: 38, child: _icon(app, form))),
+        Frame(padding: 2, child: SizedBox(width: 56, height: 38, child: widget.overworld ? Icon(Icons.directions_walk, color: Guide.ink) : _icon(app, form))),
         const SizedBox(width: 10),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text((d['name'] ?? '').toString().toUpperCase(), style: Guide.h2(), maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -282,7 +297,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ])),
       ]),
       const SizedBox(height: 10),
-      AnimViewer(
+      if (widget.overworld) const OverworldAnimPane() else AnimViewer(
         key: ValueKey('viewer$form'),
         anims: hasPack ? ordered : const [],
         url: (a) => app.api!.animUrl(form, a),
@@ -292,7 +307,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         emptyText: hasPack ? 'No animations for this look.' : 'No sprite pack for this look is on the host yet.',
       ),
       const SizedBox(height: 10),
-      Box(
+      if (!widget.overworld) Box(
         padding: EdgeInsets.zero,
         child: Column(children: [
           row([stat('HP', st['MaxHitPoint']), stat('Attack', st['Attack'])]),
@@ -301,7 +316,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ]),
       ),
       const SizedBox(height: 6),
-      Text(widget.replacePartyId != null ? 'This model replaces the character only during battles. Their name, abilities, equipment and story appearance stay original.' : widget.replacing ? 'Only this look is applied. The game vision keeps its current name, abilities, stats, MR and Resonance.' : sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
+      Text(widget.overworld ? 'Replaces normal walking sprites in the world and towns. Scenes using that model also show this appearance. Your battle model is chosen separately.' : widget.replacePartyId != null ? 'This model replaces the character only during battles. Their name, abilities, equipment and story appearance stay original.' : widget.replacing ? 'Only this look is applied. The game vision keeps its current name, abilities, stats, MR and Resonance.' : sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
       if (!hasPack) ...[const SizedBox(height: 8), Box(fill: Guide.warn, child: Text('No sprite pack for this look is on the host yet, so it cannot be added. Pick another look, or ask for it to be added.', style: Guide.small(Guide.ink)))],
     ]);
   }

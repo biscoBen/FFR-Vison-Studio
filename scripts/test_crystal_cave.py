@@ -156,12 +156,12 @@ class CrystalCaveTests(unittest.TestCase):
             {'ClassIndex': -2, 'Data': [location(160, 220, 500)]},
             {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]}]}
         original = copy.deepcopy(view)
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
         cave.vector(crystal, 'RelativeLocation', (100, 200, 900))
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
         self.assertEqual(view, original)
         cave.vector(view['Exports'][0], 'RelativeLocation', (0, 0, -800))
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 210, 342))
+        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
         for exports in (view['Exports'][1:], view['Exports'][:1]):
             with self.assertRaises(ValueError): cave.fina_spawn(dict(view, Exports=exports), crystal)
 
@@ -220,6 +220,40 @@ class CrystalCaveTests(unittest.TestCase):
         for name in ('EventList', 'eventList2', 'afterTransitionEventList'):
             self.assertEqual(values[name], [])
         self.assertTrue(cave.property_data(template, 'm_IsAutoTransition')['Value'])
+
+    def test_portal_blocker_is_inside_interaction_area_without_transition_callbacks(self):
+        def location(name, xyz):
+            return {'Name': name, 'Value': [{'Value': dict(zip(('X','Y','Z'), xyz)), 'IsZero': False}],
+                    'StructType': 'Vector', 'SerializeNone': True, 'IsZero': False}
+        def obj(name, value):
+            return {'Name': name, 'Value': value, '$type': 'UAssetAPI.PropertyTypes.Objects.ObjectPropertyData, UAssetAPI'}
+        donor = {'Imports': [{'ObjectName': '/Script/Engine', 'OuterIndex': 0},
+                            {'ObjectName': 'BoxComponent', 'OuterIndex': -1},
+                            {'ObjectName': 'CPP_MapTransitionTrigger', 'OuterIndex': -1}],
+                 'Exports': [], 'DependsMap': [[] for _ in range(14)]}
+        for i in range(14):
+            donor['Exports'].append({'$type': 'UAssetAPI.ExportTypes.NormalExport, UAssetAPI',
+                'ObjectName': str(i), 'ClassIndex': 0, 'OuterIndex': 8, 'SuperIndex': 0, 'TemplateIndex': 0,
+                'SerializationBeforeSerializationDependencies': [], 'CreateBeforeSerializationDependencies': [],
+                'SerializationBeforeCreateDependencies': [], 'CreateBeforeCreateDependencies': [], 'Data': []})
+        donor['Exports'][4].update(ClassIndex=-3, Data=[obj('RootComponent',2), {'Name':'m_MapId','Value':1000}])
+        donor['Exports'][1].update(ClassIndex=-2, OuterIndex=5, Data=[
+            location('RelativeLocation',(0,0,0)),location('BoxExtent',(160,200,200)),
+            {'Name':'OnComponentBeginOverlap','Value':[{'Object':5,'Delegate':'OnBeginOverlap'}]}])
+        view = {'Imports': [], 'Exports': [], 'DependsMap': [], 'NameMap': []}
+        before = copy.deepcopy(donor)
+        actor_id = cave.portal_collision(view, donor, 0, 0)
+        owner = view['Exports'][actor_id-1]; root = cave.property_data(owner,'RootComponent')['Value']
+        box = view['Exports'][root-1]
+        self.assertEqual(view['Imports'][-owner['ClassIndex']-1]['ObjectName'], 'Actor')
+        self.assertEqual([p['Name'] for p in owner['Data']], ['RootComponent'])
+        self.assertFalse(any(p['Name'].startswith('OnComponent') for p in box['Data']))
+        body = {p['Name']:p['Value'] for p in cave.property_data(box,'BodyInstance')['Value']}
+        self.assertEqual(body, {'CollisionProfileName':'BlockAll','CollisionEnabled':'QueryAndPhysics'})
+        self.assertFalse(cave.property_data(box,'bGenerateOverlapEvents')['Value'])
+        extent = cave.property_data(box,'BoxExtent')['Value'][0]['Value']
+        self.assertLess(extent['X'] + 20, 160); self.assertLess(extent['Y'] + 20, 200)
+        self.assertEqual(donor, before)
 
     def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
         view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}

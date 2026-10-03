@@ -29,8 +29,9 @@ PACKAGE = 'Map/StudioCrystalCave/' + NAME
 ENTRANCE = (17600.0, 21400.0, 160.0)
 ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
-FINA_SCALE = 2.5
+FINA_SCALE = 5.0
 FINA_FLOAT = 40.0
+FINA_OFFSET = (0.0, 750.0, 0.0)
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
 PORTAL = (4000.0, 31.0, 100.0)
@@ -285,7 +286,37 @@ def fina_spawn(view, crystal):
     if len(floors) != 1 or not lights:
         raise ValueError('The crystal room ground or clear-crystal light changed.')
     glow = min(lights, key=lambda value: value[0])[1]
-    return tuple(float(glow[axis]) for axis in ('X', 'Y', 'Z'))
+    return tuple(float(glow[axis]) + offset for axis, offset in zip(('X', 'Y', 'Z'), FINA_OFFSET))
+
+
+def portal_collision(view, donor, level_id, world_id):
+    """Put a blocking box inside the larger interaction trigger."""
+    m = clone_graph(view, donor, [5, 2], {8: level_id, 14: world_id})
+    owner = view['Exports'][m[5]-1]; box = view['Exports'][m[2]-1]
+    engine = next(-(i+1) for i, imp in enumerate(view['Imports']) if imp['ObjectName'] == '/Script/Engine')
+    imp = copy.deepcopy(view['Imports'][-box['ClassIndex']-1])
+    imp.update(ObjectName='Actor', OuterIndex=engine)
+    view['Imports'].append(imp)
+    owner.update(ObjectName=NAME + '_PortalCollision', ClassIndex=-len(view['Imports']), TemplateIndex=0)
+    owner['Data'] = [p for p in owner['Data'] if p['Name'] == 'RootComponent']
+    owner['SerializationBeforeSerializationDependencies'] = []
+    owner['CreateBeforeCreateDependencies'] = [owner['ClassIndex']]
+    box['ObjectName'] = 'PortalBlockingBox'
+    box['Data'] = [p for p in box['Data'] if not p['Name'].startswith('OnComponent')]
+    vector(box, 'RelativeLocation', (PORTAL[0], PORTAL[1], 160.0))
+    vector(box, 'BoxExtent', (70.0, 100.0, 160.0))
+    def prop(name, value, kind, **extra):
+        return dict(Name=name, Value=value, ArrayIndex=0, IsZero=False, PropertyGuid=None,
+                    PropertyTagFlags='None', PropertyTypeName=None, PropertyTagExtensions='NoExtension',
+                    **{'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI'}, **extra)
+    body = copy.deepcopy(property_data(box, 'BoxExtent'))
+    body.update(Name='BodyInstance', StructType='BodyInstance', SerializeNone=True)
+    body['Value'] = [prop('CollisionProfileName', 'BlockAll', 'NamePropertyData'),
+        prop('CollisionEnabled', 'QueryAndPhysics', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty')]
+    body['IsZero'] = False
+    box['Data'] += [body, prop('bGenerateOverlapEvents', False, 'BoolPropertyData')]
+    names(view, [owner, box, view['Imports']])
+    return m[5]
 
 
 def settle_fina(npc, spawn):
@@ -435,7 +466,8 @@ def make_levels(source, unit):
         export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
     stone_gd['Exports'][b[actor_idx]-1]['ObjectName'] = NAME + '_PortalCrystal'
     vector(stone_gd['Exports'][b[mesh_idx]-1], 'RelativeLocation', (PORTAL[0], PORTAL[1], 250.0))
-    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx]])
+    blocking = portal_collision(stone_gd, source[DONOR_GD], level_id, world_id)
+    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx], blocking])
     names(stone_gd, stone_gd['Exports'])
 
     stone_pl = private_level(source[STONE], '/Game/' + STONE, '/Game/' + PACKAGE + '_Stone_PL')
@@ -456,7 +488,7 @@ def make_levels(source, unit):
     m = clone_graph(wld, source[DONOR_GD], [2, 5, 4, 12], {8: level_id, 14: len(source[WORLD]['Exports'])})
     entry = wld['Exports'][m[5] - 1]; point = wld['Exports'][m[4] - 1]
     entry['ObjectName'] = NAME + '_Entrance'; point['ObjectName'] = NAME + '_Return'
-    transition(entry, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], STONE_ID, 0)
+    transition(entry, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], STONE_ID, 0, auto=False)
     set_value(entry, 'm_UniqueId', MAP_ID); set_value(point, 'm_PointID', MAP_ID)
     set_value(point, 'm_Direction', 'South')
     vector(wld['Exports'][m[2] - 1], 'RelativeLocation', ENTRANCE)

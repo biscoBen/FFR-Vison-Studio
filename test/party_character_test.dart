@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/services/crystal_fina.dart';
+import 'package:ffr_vision_studio/services/overworld_appearance.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
@@ -86,6 +87,44 @@ void main() {
     );
   });
 
+  test('portable configs keep battle and overworld choices independent', () {
+    final saved = party(replacement: true)..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile);
+    expect(CharacterConfig.decode(CharacterConfig.encode(saved)), saved);
+    final all = [profile(), saved];
+    expect(CharacterConfig.restoreAll(CharacterConfig.decodeAll(CharacterConfig.encodeAll(all)), [], [null, null])[1], saved);
+    for (final value in [null, {'version': 1, 'model': 'a2'}, {'version': 2, 'model': OverworldAppearance.model},
+      {...OverworldAppearance.profile, 'path': '../sheet.png'}]) {
+      expect(() => CharacterConfig.validate({...saved, 'overworld': value}), throwsFormatException);
+    }
+    final fieldOnly = CharacterConfig.copy(saved)..remove('ffbe');
+    CharacterConfig.validate(fieldOnly);
+    expect(CharacterConfig.decode(CharacterConfig.encode(fieldOnly)), fieldOnly);
+  });
+
+  test('changing and reverting overworld preserves battle and unrelated pending edits', () async {
+    final directory = Directory.systemTemp.createTempSync('party-field-');
+    final api = PartyApi([profile(), party(replacement: true)]);
+    final paths = AppPaths.at(directory.path);
+    final app = AppState(hostBase: 'http://unused', appPaths: paths)..api = api..units = clone(api.roster);
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 123;
+    app.update(edited);
+    await app.editPartyCharacter(1001, overworld: OverworldAppearance.profile);
+    expect(api.roster.first['stats']['Attack'], 123);
+    expect(api.roster.last['ffbe'], party(replacement: true)['ffbe']);
+    expect(api.roster.last['overworld'], OverworldAppearance.profile);
+    final relative = 'units/custom/rain_test';
+    final artwork = Directory('${paths.engineDir}/$relative')..createSync(recursive: true);
+    for (final name in ['unit_anime_304000107.png', 'unit_cgg_304000107.csv']) {
+      File('${artwork.path}/$name').writeAsStringSync('cached artwork');
+    }
+    await app.editPartyCharacter(1001, appearance: {'ffbe': {'id': '304000107', 'dir': relative, 'source': 'CUSTOM'}});
+    expect(api.roster.last['overworld'], OverworldAppearance.profile);
+    await app.editPartyCharacter(1001, clearOverworld: true);
+    expect(api.roster.last.containsKey('overworld'), isFalse);
+    expect(api.roster.last['ffbe']['id'], '304000107');
+  });
+
   test(
     'opening and reverting a party character preserve unrelated pending edits',
     () async {
@@ -155,6 +194,7 @@ void main() {
       await tester.pumpWidget(shell(const UnitScreen()));
       await tester.pump();
       expect(find.text('Change battle model'), findsOneWidget);
+      expect(find.text('Edit overworld appearance'), findsOneWidget);
       expect(find.text('Revert to original'), findsOneWidget);
       expect(find.text('MR'), findsNothing);
       expect(find.byType(PartyPortrait), findsOneWidget);

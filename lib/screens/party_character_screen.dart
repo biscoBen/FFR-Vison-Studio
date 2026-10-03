@@ -9,6 +9,7 @@ import 'native_vision_dialog.dart';
 import 'party_portrait.dart';
 import 'remove_unit_dialog.dart';
 import 'unit_anim_pane.dart';
+import 'overworld_anim_pane.dart';
 
 class PartyCharacterScreen extends StatelessWidget {
   const PartyCharacterScreen({super.key, required this.unit});
@@ -19,7 +20,7 @@ class PartyCharacterScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Band('${unit['en']} · battle appearance', color: Guide.blue),
+        Band('${unit['en']} · appearance', color: Guide.blue),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -45,7 +46,7 @@ class PartyCharacterScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Choose a vision appearance for ${unit['en']} during battles. Walking, cutscenes, abilities, equipment and progression keep the original character configuration.',
+                  'Choose battle and walking appearances independently. Abilities, equipment and progression keep ${unit['en']}’s original configuration.',
                   style: Guide.text(),
                 ),
                 const SizedBox(height: 16),
@@ -68,6 +69,23 @@ class PartyCharacterScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
+                Text('Overworld appearance', style: Guide.h2()),
+                const SizedBox(height: 12),
+                if (unit['overworld'] != null) ...[
+                  const SizedBox(width: 360, child: OverworldAnimPane()),
+                  const SizedBox(height: 12),
+                  Text('Vagrant Knight Rain', style: Guide.text()),
+                ] else Text('Original walking model', style: Guide.text()),
+                const SizedBox(height: 12),
+                Wrap(spacing: 12, runSpacing: 12, children: [
+                  GuideButton('Edit overworld appearance', onPressed: app.building ? null : () => showOverworldModel(context, unit['id'] as int)),
+                  if (unit['overworld'] != null) GuideButton('Revert overworld appearance', danger: true,
+                    onPressed: app.building ? null : () async {
+                      try { await app.editPartyCharacter(unit['id'] as int, clearOverworld: true); }
+                      catch (e) { app.showNotice('Could not revert overworld appearance: $e'); }
+                    }),
+                ]),
                 const SizedBox(height: 20),
                 Text(
                   'Install from the main page to apply your choice to the game.',

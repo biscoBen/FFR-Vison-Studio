@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'overworld_appearance.dart';
 
 /// A portable snapshot of the complete engine spec, including advanced fields.
 /// Artwork stays in the Studio cache when a vision is removed.
@@ -261,7 +262,8 @@ class CharacterConfig {
           unit['en'] != names[id - 1001] || unit['jp'] != jp[id - 1001] ||
           unit['party'] is! Map || unit['party']['version'] != 1 || unit['party']['id'] != id ||
           (unit['party'] as Map).length != 2 ||
-          unit.keys.any((k) => !['key', 'id', 'jp', 'en', 'party', 'ffbe', 'menuScale', 'icon'].contains(k))) { invalid(); }
+          unit.keys.any((k) => !['key', 'id', 'jp', 'en', 'party', 'ffbe', 'overworld', 'menuScale', 'icon'].contains(k))) { invalid(); }
+      if (unit.containsKey('overworld') && !OverworldAppearance.valid(unit['overworld'])) { invalid(); }
       final ffbe = unit['ffbe'];
       if (ffbe != null) {
         if (ffbe is! Map || ffbe['id'] is! String || !RegExp(r'^\d+$').hasMatch(ffbe['id'].toString())) { invalid(); }

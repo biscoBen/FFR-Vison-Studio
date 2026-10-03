@@ -222,9 +222,12 @@ def expected_edits(root):
     if _ffr_ability_modes.enabled(root) and (root / 'build/animation-repair-report.json').is_file():
         expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
     import _ffr_party
+    import _ffr_overworld
     for u in units:
         if u.get('party') and u.get('ffbe'):
             expected[(_ffr_party.TABLE, u['jp'])] = _ffr_party.asset_updates(u)
+        if u.get('party') and u.get('overworld'):
+            expected[(_ffr_overworld.TABLE, u['jp'])] = _ffr_overworld.updates(u)
     import _ffr_testing
     expected.update(_ffr_testing.expected_edits(root, units, rows))
     return expected

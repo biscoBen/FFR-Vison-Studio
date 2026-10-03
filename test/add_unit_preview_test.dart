@@ -6,6 +6,8 @@ import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/screens/add_unit_dialog.dart';
 import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
+import 'package:ffr_vision_studio/services/overworld_appearance.dart';
+import 'package:ffr_vision_studio/screens/overworld_anim_pane.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,6 +60,14 @@ class PreviewApi extends Api {
 class PreviewState extends AppState {
   PreviewState(AppPaths paths) : super(hostBase: 'http://unused', appPaths: paths);
   final legacyDownloads = <String>[];
+  Map<String, dynamic>? fieldChoice;
+  int? fieldPartyId;
+  @override
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearOverworld = false}) async {
+    if (appearance != null || clearOverworld) { throw StateError('This test only changes overworld appearance.'); }
+    fieldPartyId = id; fieldChoice = overworld;
+    return {'id': id, 'overworld': overworld};
+  }
   @override
   Future<void> ensureSprites(String form, {void Function(String)? onStep}) async {
     legacyDownloads.add(form);
@@ -88,6 +98,28 @@ void main() {
       child: MaterialApp(theme: Guide.theme(), home: Scaffold(body: dialog))));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('overworld picker only offers bundled Vagrant Rain and applies without downloading battle sprites', (tester) async {
+    await picker(tester, dialog: const AddUnitDialog(replaceOverworldId: 1001));
+    expect(find.text('Vagrant Knight Rain'), findsOneWidget);
+    expect(find.text('Preview Unit'), findsNothing);
+    expect(find.text('Other Unit'), findsNothing);
+    expect(find.text('Crystal Fina'), findsNothing);
+    await tester.tap(find.text('Vagrant Knight Rain'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byType(OverworldAnimPane), findsOneWidget);
+    expect(find.text('South'), findsOneWidget);
+    await tester.tap(find.text('USE THIS MODEL'));
+    await tester.pump();
+    expect(app.fieldPartyId, 1001);
+    expect(app.fieldChoice, OverworldAppearance.profile);
+    expect(api.requested, isEmpty);
+    expect(app.legacyDownloads, isEmpty);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 
   for (final scenario in [
     (name: 'add', dialog: const AddUnitDialog(), hosted: true),

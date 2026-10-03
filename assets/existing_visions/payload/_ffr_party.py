@@ -1,4 +1,4 @@
-"""Battle-only party model overrides. Original field/cutscene packages stay intact."""
+"""Independent party battle and field appearances, preserving character identity."""
 import copy
 import json
 from pathlib import Path
@@ -36,8 +36,11 @@ def validate(u):
     if (not c or type(u['id']) is not int or u.get('key') != f'party_{c[0]}'
             or u.get('jp') != c[1] or u.get('en') != c[2]
             or u.get('party') != {'version': 1, 'id': c[0]}
-            or set(u) - {'key', 'id', 'jp', 'en', 'party', 'ffbe', 'menuScale', 'icon'}):
+            or set(u) - {'key', 'id', 'jp', 'en', 'party', 'ffbe', 'overworld', 'menuScale', 'icon'}):
         raise ValueError('Invalid party replacement; its original character identity must be preserved.')
+    if 'overworld' in u:
+        import _ffr_overworld
+        _ffr_overworld.validate(u['overworld'])
     ff = u.get('ffbe')
     if ff is not None:
         if not isinstance(ff, dict) or not isinstance(ff.get('id'), str) or not ff['id'].isdigit():
@@ -89,6 +92,8 @@ def prepare(tables, units, rows):
     packages. Preserve those names and redirect only selected DT_BtlUnitAsset
     rows. Never rewrite the table after the vision builder has added its rows.
     """
+    import _ffr_overworld
+    _ffr_overworld.prepare(tables, units, rows)
     for u in units:
         if not u.get('ffbe'): continue
         validate(u)
@@ -198,6 +203,11 @@ def generate(u, env):
 
 
 def build(units, env):
+    import _ffr_overworld
+    for u in units:
+        if u.get('overworld'):
+            env['stage']('Replacing party overworld model: ' + u['en'])
+            _ffr_overworld.generate(u, env)
     selected = [u for u in units if u.get('ffbe')]
     if not selected: return
     for u in selected:
@@ -208,7 +218,10 @@ def build(units, env):
 def verify(root, tool, usmap):
     import subprocess
     root = Path(root); units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
-    selected = [validate(u) for u in units if u.get('party') and u.get('ffbe')]
+    party = [validate(u) for u in units if u.get('party')]
+    import _ffr_overworld
+    _ffr_overworld.verify(root, tool, usmap, party)
+    selected = [u for u in party if u.get('ffbe')]
     if not selected: return
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)
     def run(args): subprocess.run(args, check=True, capture_output=True)

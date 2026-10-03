@@ -17,7 +17,7 @@ MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_overworld.py', 'vagrant_knight_rain_field.png', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -241,7 +241,11 @@ def run(root, action):
     compile(module, HELPER, 'exec')
     for name, raw in resource_data.items():
         if name.endswith('.py'): compile(raw, name, 'exec')
-        else: json.loads(raw)
+        elif name.endswith('.json'): json.loads(raw)
+        elif name.endswith('.png'):
+            if not raw.startswith(b'\x89PNG\r\n\x1a\n'):
+                raise RuntimeError('Existing vision field sheet is not a PNG.')
+        else: raise RuntimeError('Unsupported existing vision resource: ' + name)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}
     changes = {helper: module, **{resources[name]: raw for name, raw in resource_data.items()}}; records = {}
     for rel in SOURCES:

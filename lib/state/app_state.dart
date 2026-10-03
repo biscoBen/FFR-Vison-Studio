@@ -693,7 +693,7 @@ class AppState extends ChangeNotifier {
     });
   }
 
-  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance}) => _withRoster(() async {
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearOverworld = false}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel(); await _savePending();
@@ -708,6 +708,8 @@ class AppState extends ChangeNotifier {
       unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
       await _checkCharacterArtwork(unit);
     }
+    if (clearOverworld) { unit.remove('overworld'); }
+    else if (overworld != null) { unit['overworld'] = CharacterConfig.copy(overworld); }
     CharacterConfig.validate(unit);
     final next = [for (final u in current) u['party']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
     final revision = _rosterRevision;

@@ -5,7 +5,8 @@ release history. Use the `Sephira's-Update` test packages to try these changes; 
 
 For the Crystal Fina cave trial, enable **Crystal Fina cave** on the main screen, build/install the mod, and restart
 Resonance. Look north of the road between Earth Shrine and Mitra. The stone cave's crystal portal leads to her glowing
-room; acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
+room. Both the overworld entrance and crystal portal require the interaction button; a blocking box prevents walking
+through the portal crystal. Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
 hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
@@ -300,7 +301,11 @@ Use **Change battle model** to select and preview an FFBE appearance, or **Edit 
 **Revert to original** removes that character's replacement on the next install. Single/bulk character configs include
 these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
 redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
-The party resource-name table, walking and cutscene assets keep their original paths. Original skill effects
+Use **Edit overworld appearance** for an independent walking model, currently limited to the bundled Vagrant Knight
+Rain sheet. The same picker previews its eight directions; no sprite download is required. **Revert overworld
+appearance** restores walking without removing your battle choice. Single/bulk configs preserve both selections.
+Only the primary field animation and textures are redirected; special scene assets retain their paths. Scenes using
+the ordinary walking model also show the replacement. Original skill effects
 remain in use; special cinematics and replacement motions need an in-game check.
 
 The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another
