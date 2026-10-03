@@ -11,8 +11,8 @@ SHEET = 'vagrant_knight_rain_field.png'
 SHEET_SHA256 = 'c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba'
 TABLE = 'Asset/Map/DT_MapUnitAsset'
 # FFBE's rows: south, north, west, east, southwest, southeast,
-# northeast, northwest. Resonance uses keypad directions, including 9.
-DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (9, 6), (7, 7))
+# northwest, northeast. Resonance uses keypad directions, including 9.
+DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (7, 6), (9, 7))
 
 
 def validate(choice):

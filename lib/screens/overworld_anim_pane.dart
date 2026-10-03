@@ -26,8 +26,8 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
     'East',
     'Southwest',
     'Southeast',
-    'Northeast',
     'Northwest',
+    'Northeast',
   ];
   @override
   void initState() {

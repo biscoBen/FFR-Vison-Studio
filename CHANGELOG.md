@@ -12,7 +12,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 ## Unreleased
 
 - Smooth Vagrant Knight Rain's directional walk/run loops by using the six moving cells, excluding the identical
-  standing pose in column zero. Match the Studio walking preview to the same cycle. Keep Resonance's normal
+  standing pose in column zero. Correct the swapped northwest/northeast rows in both the Studio preview and generated
+  idle/walk/run clips. Match the preview to the same six-frame cycle. Keep Resonance's normal
   movement modes: full-stick movement and B-held running share its dash animation at different playback rates.
   Field-leader cycling is still under investigation; the native animation projects and input bindings need verification.
 

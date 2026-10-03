@@ -145,6 +145,8 @@ class OverworldTests(unittest.TestCase):
             first = 0 if motion == 'idle' else 1
             self.assertEqual(animations[f'{motion}6']['parts']['part_0']['Cell'][0], [0, f'field_{3+offset}_{first}'])
             self.assertEqual(animations[f'{motion}3']['parts']['part_0']['Cell'][0], [0, f'field_{5+offset}_{first}'])
+            self.assertEqual(animations[f'{motion}7']['parts']['part_0']['Cell'][0], [0, f'field_{6+offset}_{first}'])
+            self.assertEqual(animations[f'{motion}9']['parts']['part_0']['Cell'][0], [0, f'field_{7+offset}_{first}'])
         for d,row in field.DIRECTIONS:
             for motion,offset,delay in (('idle',0,1),('move',16,8),('dash',8,5)):
                 animation = animations[f'{motion}{d}']; keys = animation['parts']['part_0']['Cell']
