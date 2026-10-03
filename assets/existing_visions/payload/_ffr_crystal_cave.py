@@ -27,9 +27,10 @@ PACKAGE = 'Map/StudioCrystalCave/' + NAME
 # The entrance sits north of their connecting road. Returning lands outside
 # its trigger, so leaving cannot immediately send the player back inside.
 ENTRANCE = (17600.0, 21400.0, 160.0)
+ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
+ENTRANCE_SCALE = (0.8, 0.8, 0.8)
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
-FINA = (5500.0, -500.0, 150.0)
 PORTAL = (4000.0, 31.0, 100.0)
 PORTAL_RETURN = (3500.0, 31.0, 100.0)
 
@@ -238,6 +239,27 @@ def actors(view, selected):
             level['CreateBeforeSerializationDependencies'].append(i)
 
 
+def clear_crystals(view):
+    """Remove the two native crystals and their glow, retaining ambient effects."""
+    crystals = {}; glows = []
+    for i, e in enumerate(view['Exports'], 1):
+        if not isinstance(e.get('Data'), list): continue
+        for p in e['Data']:
+            if p['Name'] not in ('StaticMesh', 'Asset') or p['Value'] >= 0: continue
+            name = view['Imports'][-p['Value']-1]['ObjectName']
+            if p['Name'] == 'StaticMesh' and name in ('SM_Env_Com_magicstone001', 'SM_Env_Com_magicstone002'):
+                if name in crystals: raise ValueError('The original Leah/Tronn crystal geometry changed.')
+                crystals[name] = (e['OuterIndex'], i)
+            if p['Name'] == 'Asset' and name == 'NS_EF_BG_00Common_Glow_001':
+                glows.append(e['OuterIndex'])
+    if len(crystals) != 2 or len(glows) != 2:
+        raise ValueError('The original Leah/Tronn crystals or glow effects changed.')
+    removed = {a for a, _ in crystals.values()} | set(glows)
+    level = export(view, 'PersistentLevel')[1]
+    actors(view, [i for i in level['Actors'] if i not in removed])
+    return crystals
+
+
 def transition(actor, conditional_template, map_id, point):
     set_value(actor, 'm_MapId', map_id); set_value(actor, 'm_PointID', point)
     # The native conditional-transition struct exposes autosave and follow-up
@@ -275,6 +297,14 @@ def make_levels(source, unit):
     vector(gd['Exports'][1], 'RelativeLocation', (-100.0, 0.0, 100.0))
     vector(gd['Exports'][1], 'BoxExtent', (300.0, 500.0, 250.0))
 
+    bg_room = private_level(source[ROOM_BG], '/Game/' + ROOM_BG, '/Game/' + PACKAGE + '_BG')
+    crystals = clear_crystals(bg_room)
+    # The large room's floor is elevated. Use the native clear crystal's
+    # location, spawning above its pedestal so the NPC's capsule can settle on
+    # collision rather than starting underneath it at overworld ground height.
+    clear_mesh = bg_room['Exports'][crystals['SM_Env_Com_magicstone001'][1]-1]
+    anchor = property_data(clear_mesh, 'RelativeLocation')['Value'][0]['Value']
+
     npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + PACKAGE + '_NPC')
     actors(npc, [70, 0, 31])
     owner = npc['Exports'][30]
@@ -306,24 +336,13 @@ def make_levels(source, unit):
             imp['ObjectName'] = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
         elif imp['ObjectName'] == 'npc9020' and imp['ClassName'] == 'Ss6Project':
             imp['ObjectName'] = f'summon{unit["id"]}'
-    # Lower the foot/capsule to the walkable floor; only the sprite floats.
-    vector(npc['Exports'][36], 'RelativeLocation', (FINA[0], FINA[1], 34.0))
+    vector(npc['Exports'][36], 'RelativeLocation', (anchor['X'], anchor['Y'], anchor['Z'] + 200.0))
+    # Keep interaction and the capsule at the floor; only the sprite floats.
     billboard = npc['Exports'][48]
     template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
     billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, 116.0))
     names(npc, [owner, ss, npc['Imports']])
 
-    bg_room = private_level(source[ROOM_BG], '/Game/' + ROOM_BG, '/Game/' + PACKAGE + '_BG')
-    _, bg_level = export(bg_room, 'PersistentLevel')
-    crystals = []
-    for i, e in enumerate(bg_room['Exports'], 1):
-        if not isinstance(e.get('Data'), list): continue
-        for p in e['Data']:
-            if (p['Name'] == 'StaticMesh' and p['Value'] < 0
-                    and bg_room['Imports'][-p['Value']-1]['ObjectName'] in ('SM_Env_Com_magicstone001', 'SM_Env_Com_magicstone002')):
-                crystals.append((e['OuterIndex'], i))
-    if len(crystals) != 2: raise ValueError('The original Leah/Tronn crystal geometry changed.')
-    actors(bg_room, [i for i in bg_level['Actors'] if i not in {a for a, _ in crystals}])
     room = private_level(source[ROOM], '/Game/' + ROOM, '/Game/' + PACKAGE + '_PL')
     bg_path = property_data(room['Exports'][2], 'WorldAsset')['Value']['AssetPath']
     bg_path.update(PackageName='/Game/' + PACKAGE + '_BG', AssetName=NAME + '_BG')
@@ -358,7 +377,7 @@ def make_levels(source, unit):
     vector(stone_gd['Exports'][m[2]-1], 'BoxExtent', (160.0, 200.0, 200.0))
     vector(stone_gd['Exports'][m[12]-1], 'RelativeLocation', PORTAL_RETURN)
     # The native crystal mesh marks the portal. Its materials remain game assets.
-    actor_idx, mesh_idx = crystals[0]
+    actor_idx, mesh_idx = crystals['SM_Env_Com_magicstone001']
     b = clone_graph(stone_gd, source[ROOM_BG], [actor_idx, mesh_idx], {
         export(source[ROOM_BG], 'PersistentLevel')[0]: level_id,
         export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
@@ -402,7 +421,11 @@ def make_levels(source, unit):
     world_id = export(wld, Path(WORLD).name)[0]
     b = clone_graph(wld, bg, [actor_idx, mesh_index], {bg_level: level_id, bg_world: world_id})
     cave = wld['Exports'][b[actor_idx] - 1]; cave['ObjectName'] = NAME + '_Model'
-    vector(wld['Exports'][b[mesh_index] - 1], 'RelativeLocation', ENTRANCE)
+    cave_mesh = wld['Exports'][b[mesh_index] - 1]
+    vector(cave_mesh, 'RelativeLocation', ENTRANCE_MODEL)
+    scale = copy.deepcopy(property_data(clear_mesh, 'RelativeScale3D'))
+    cave_mesh['Data'] = [p for p in cave_mesh['Data'] if p['Name'] != 'RelativeScale3D'] + [scale]
+    vector(cave_mesh, 'RelativeScale3D', ENTRANCE_SCALE)
     actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx]])
     for v in (gd, wld): names(v, v['Exports'])
     return {WORLD: wld, PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,

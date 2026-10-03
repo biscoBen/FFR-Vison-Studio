@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Lower the world-map Crystal Fina cave entrance by 80 units and reduce its model to 80% scale. Keep the existing
+  stone cave and crystal portal marker. Place Fina above the native clear crystal's elevated pedestal instead of
+  below the room floor, retaining her floating sprite, once-only acquisition and return to the stone cave.
+  Remove the two leftover green crystal glows while preserving the room's fog and lighting. Visual placement and
+  acquisition still require an in-game retest; this workspace has no Resonance runtime.
 
 ## Published cave packing fix and roster removal menu — 2026-10-03
 

@@ -99,6 +99,30 @@ class CrystalCaveTests(unittest.TestCase):
         for units in ([], [unit, unit], [dict(unit, native={'id': 13507})], [dict(unit, party={'id': 13507})]):
             with self.assertRaises(ValueError): cave.target(units)
 
+    def test_room_cleanup_removes_crystal_glows_but_keeps_fog_and_lighting(self):
+        assets = ['SM_Env_Com_magicstone001', 'SM_Env_Com_magicstone002',
+                  'NS_EF_BG_00Common_Glow_001', 'NS_EF_BG_00Common_Glow_001',
+                  'NS_EF_BG_00Common_FogGroundBTL002_001', 'NS_EF_BG_GodRay001_001']
+        view = {'Imports': [{'ObjectName': name} for name in assets],
+                'Exports': [{'ObjectName': 'PersistentLevel', 'OuterIndex': 20,
+                    'Actors': [0, 2, 3, 4, 5, 6, 7],
+                    'CreateBeforeSerializationDependencies': [2, 3, 4, 5, 6, 7, 0]}]}
+        view['Exports'] += [{'ObjectName': 'actor' + str(i), 'OuterIndex': 1, 'Data': []}
+                            for i in range(2, 8)]
+        view['Exports'] += [{'ObjectName': 'component' + str(i), 'OuterIndex': i + 2,
+            'Data': [{'Name': 'StaticMesh' if i < 2 else 'Asset', 'Value': -(i + 1)}],
+            'Extras': 'retained opaque component data'} for i in range(6)]
+        before = copy.deepcopy(view)
+        crystals = cave.clear_crystals(view)
+        self.assertEqual(crystals['SM_Env_Com_magicstone001'], (2, 8))
+        self.assertEqual(view['Exports'][0]['Actors'], [0, 6, 7])
+        self.assertEqual(view['Exports'][0]['CreateBeforeSerializationDependencies'], [6, 7, 0])
+        self.assertEqual(view['Exports'][1:], before['Exports'][1:])
+        self.assertEqual(view['Imports'], before['Imports'])
+        changed = copy.deepcopy(before); changed['Imports'][2]['ObjectName'] = 'new glow effect'
+        with self.assertRaises(ValueError): cave.clear_crystals(changed)
+        self.assertEqual(changed['Exports'], before['Exports'])
+
     def test_private_blueprint_mapping_retains_native_schema_and_property_indices(self):
         names = ['CPP_Parent']
         name_bytes = struct.pack('<i', 1) + struct.pack('<h', len(names[0])) + names[0].encode()
