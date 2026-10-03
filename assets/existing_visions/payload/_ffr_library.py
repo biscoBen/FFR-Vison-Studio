@@ -329,6 +329,7 @@ def install(catalog_module, root):
         except (OSError, ValueError, KeyError):
             metadata = {'schema': 1, 'available': False, 'groups': {}, 'protected': {}}
         from _ffr_animation_repair import effect_policy
+        from _ffr_ability_modes import catalog_controls
         enriched = {**catalog, 'duplicatePolicy': metadata}
-        return {**enriched, 'animationPolicy': effect_policy(enriched)}
+        return {**enriched, 'animationPolicy': effect_policy(enriched), **catalog_controls(enriched, root)}
     catalog_module.load = load

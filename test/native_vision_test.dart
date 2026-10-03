@@ -62,6 +62,9 @@ class NativeApi extends ConfigApi {
   bool maxMr = false;
   bool practiceBattle = false;
   @override
+  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
+      {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges};
+  @override
   Future<bool> testingMaxMr() async => maxMr;
   @override
   Future<void> saveTestingMaxMr(bool value) async { maxMr = value; }
@@ -334,6 +337,30 @@ void main() {
     expect(api.maxMr, isFalse);
     final invalid = profile()..['testAcquire'] = true;
     expect(() => CharacterConfig.validate(invalid), throwsFormatException);
+  });
+
+  testWidgets('ability controls preserve roster and remembered repairs while disabled', (tester) async {
+    final before = clone(api.roster);
+    await show(tester);
+    final toggle = find.byKey(const Key('show-unverified-skills'));
+    final checkbox = find.byKey(const Key('use-ability-changes'));
+    await tester.ensureVisible(toggle);
+    expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
+    await tester.tap(toggle);
+    await wait(tester, () => app.showUnverifiedSkills);
+    expect(app.useAbilityChanges, isFalse);
+    await tester.tap(checkbox);
+    await wait(tester, () => app.useAbilityChanges);
+    await tester.tap(toggle);
+    await wait(tester, () => !app.showUnverifiedSkills);
+    expect(app.useAbilityChanges, isTrue);
+    expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
+    expect(app.catalog!['abilityModes'], {'schema': 1, 'showUnverified': false, 'useChanges': true});
+    expect(api.roster, before);
+    app.buildState = {'running': true};
+    app.notifyListeners();
+    await tester.pump();
+    expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
   });
 
   testWidgets('shop battle works without a roster and preserves MR testing', (tester) async {

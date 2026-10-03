@@ -21,6 +21,7 @@ class CatalogState extends ChangeNotifier implements AppState {
   List<dynamic> units = [];
   @override
   JsonMap? catalog = {
+    'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
     'skills': [
       {
         'id': 400030,
@@ -199,6 +200,7 @@ void main() {
     (tester) async {
       final app = CatalogState();
       app.catalog = {
+        'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
         'skills': [
           for (final (id, target, power, damage, side, sequence) in [
             (210030, 'Single', 1500, 'Magic', 'Friendlies', [1, 2]),
@@ -276,7 +278,8 @@ void main() {
     'compact ability rows wrap every stat and retain full click details at minimum width',
     (tester) async {
       final app = CatalogState()
-        ..catalog = {...compactExamples(), 'icons': [], 'passives': []};
+        ..catalog = {...compactExamples(), 'icons': [], 'passives': [],
+          'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true}};
       await showStep(
         tester,
         (unit, set) => AbilitiesStep(unit: unit, set: set),

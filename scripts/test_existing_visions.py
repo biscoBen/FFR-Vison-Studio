@@ -23,6 +23,7 @@ def module(name, path):
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
 sys.modules['_ffr_party'] = party
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
+sys.modules['_ffr_ability_modes'] = module('_ffr_ability_modes', ROOT / 'assets/existing_visions/payload/_ffr_ability_modes.py')
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
 animation = module('animation', ROOT / 'assets/existing_visions/payload/_ffr_animation_repair.py')
 installer = module('native_installer', ROOT / 'assets/existing_visions/install_existing_visions.py')

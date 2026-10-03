@@ -58,6 +58,7 @@ void main() {
 
   test('additional source metadata never unhides a duplicate, Attack, untranslated or Resonance row', () {
     final cat = <String, dynamic>{
+      'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
       'skills': [
         {'id': 500270, 'name': '1,000 Needles', 'seq': [], 'attr': 'Ability'},
         {'id': 505110, 'name': '10,000 Needles', 'seq': [], 'attr': 'Ability'},
@@ -245,6 +246,7 @@ void main() {
 
   test('reference labels leave every selection rule and saved ID intact', () {
     final cat = <String, dynamic>{
+      'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
       'skills': [
         {
           'id': 220170,

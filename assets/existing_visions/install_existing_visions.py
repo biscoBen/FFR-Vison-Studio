@@ -12,12 +12,12 @@ from pathlib import Path
 import sys
 import tempfile
 
-VERSION = '1.1.0'
+VERSION = '1.2.0'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_testing.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_party.py', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -98,7 +98,7 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_ability_modes',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
@@ -108,7 +108,7 @@ def hook_builder(raw):
                '        stage("Preparing original sprites: " + u["en"])',
                '        _ffr_existingvisions.ensure_sprite_templates(u, LEGACY,',
                '            lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))',
-               '_ffr_animation_repair.prepare_barrage_trial(native_units + UNITS, ROOT, rows)',
+               '_ffr_ability_modes.prepare_barrage_trial(native_units + UNITS, ROOT, rows)',
                'def _native_skills(u):',
                '    nonlocal clones, post_objects, post_bytecode, post_frames, post_retime, authored_sequences, effect_jobs, built_effects',
                '    vid = u["id"]', '    d = u["donor"]',
@@ -117,7 +117,7 @@ def hook_builder(raw):
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
                     '_ffr_party.prepare(tables, party_units, rows)',
                     '_ffr_testing.prepare(tables, native_units + UNITS, ROOT, rows)',
-                    '_ffr_animation_repair.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
+                    '_ffr_ability_modes.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
                     '                    "objects": post_objects, "bytecode": post_bytecode})']

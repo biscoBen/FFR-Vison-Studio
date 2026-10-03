@@ -654,6 +654,20 @@ class AppState extends ChangeNotifier {
     testingMaxMr = value; notifyListeners();
   });
 
+  bool get showUnverifiedSkills => catalogShowsUnverified(catalog ?? {});
+  bool get useAbilityChanges => (catalog?['abilityModes'] as Map?)?['useChanges'] == true;
+
+  Future<void> setAbilityModes({bool? showUnverified, bool? useChanges}) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    final value = await api!.saveAbilityModes(
+      showUnverified: showUnverified ?? showUnverifiedSkills,
+      useChanges: useChanges ?? useAbilityChanges,
+    );
+    catalog = {...?catalog, 'abilityModes': value};
+    notifyListeners();
+  });
+
   Future<void> setTestingPracticeBattle(bool value) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }

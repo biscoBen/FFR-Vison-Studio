@@ -11,7 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Add main-page **Show unverified skills** and adjacent **Use our skill changes** controls, both defaulting off.
+  Off uses master's original sequence/compatibility selection filter; showing skills without repairs retains original
+  game ability bindings; enabling both restores Studio's animation work and applies all 304 reviewed picker hides.
+  Keep ordinary summon commands, equipped IDs, configs, concise descriptions/stats, full click details and source labels.
+- Persist the settings without changing other testing controls or roster data. Disable automatic skill timelines/effects
+  outside enhanced mode and clear stale Barrage/coverage records. Existing native timelines take precedence, including
+  future game versions; full-game behavior remains untested until the game is available. Rebuild/install after switching.
+- Preserve a complete pre-change source/history snapshot and the original hiding/animation reports separately.
 
 ## Published shop dialogue correction and level 7–8 battle — 2026-10-02
 

@@ -1,0 +1,2439 @@
+{
+  "schema": 1,
+  "scope": "Ability picker hiding only when showUnverified and useChanges are both enabled. Equipped IDs and game rows are preserved.",
+  "reviewedFromCommit": "4348308fd3b13c4e79ee37cec1ff2980a56d1d14",
+  "skills": [
+    {
+      "id": 100010,
+      "name": "Potion",
+      "source": "Potion",
+      "description": "Restores 200 HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100020,
+      "name": "Hi-Potion",
+      "source": "Hi-Potion",
+      "description": "Restores 800 HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100030,
+      "name": "Ether",
+      "source": "Ether",
+      "description": "Restores 50 MP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100040,
+      "name": "Turbo Ether",
+      "source": "Turbo Ether",
+      "description": "Restores 150 MP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100050,
+      "name": "Phoenix Down",
+      "source": "Phoenix Down",
+      "description": "Revives a KO’d ally with 25% HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100060,
+      "name": "Elixir",
+      "source": "Elixir",
+      "description": "Fully restores HP and MP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100070,
+      "name": "Antidote Herb",
+      "source": "Antidote Herb",
+      "description": "Cures Poison.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100080,
+      "name": "Eye Drops",
+      "source": "Eye Drops",
+      "description": "Cures Blind.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100090,
+      "name": "Smelling Salts",
+      "source": "Smelling Salts",
+      "description": "Cures Confuse.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100100,
+      "name": "Echo Herb",
+      "source": "Echo Herb",
+      "description": "Cures Silence.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100110,
+      "name": "Unicorn Horn",
+      "source": "Unicorn Horn",
+      "description": "Cures Paralysis.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100130,
+      "name": "Gold Needle",
+      "source": "Gold Needle",
+      "description": "Cures Petrify.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100140,
+      "name": "Remedy",
+      "source": "Remedy",
+      "description": "Cures all status ailments other than KO.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100150,
+      "name": "Herb of Awakening",
+      "source": "Herb of Awakening",
+      "description": "Cures Sleep.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100160,
+      "name": "X-Potion",
+      "source": "X-Potion",
+      "description": "Restores 2000 HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100170,
+      "name": "X-Ether",
+      "source": "X-Ether",
+      "description": "Restores 300 MP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100180,
+      "name": "Megalixir",
+      "source": "Megalixir",
+      "description": "Fully restores HP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100190,
+      "name": "Healing Spring",
+      "source": "Healing Spring",
+      "description": "Gradually restores HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100200,
+      "name": "Knife of Poison",
+      "source": "Thug",
+      "description": "Deal physical damage. Apply parameter variation.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100210,
+      "name": "Smoke Bomb",
+      "source": "Smoke Bomb",
+      "description": "Allows the party to flee from escapable battles.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100220,
+      "name": "Flame Scroll II",
+      "source": "Flame Scroll II",
+      "description": "Deal Fire magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100230,
+      "name": "Ice Scroll II",
+      "source": "Ice Scroll II",
+      "description": "Deal Ice magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100240,
+      "name": "Wind Scroll II",
+      "source": "Wind Scroll II",
+      "description": "Deal Wind magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100250,
+      "name": "Earth Scroll II",
+      "source": "Earth Scroll II",
+      "description": "Deal earth-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100260,
+      "name": "Lightning Scroll II",
+      "source": "Lightning Scroll II",
+      "description": "Deal thunder-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100270,
+      "name": "Water Scroll II",
+      "source": "Water Scroll II",
+      "description": "Deal water-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100290,
+      "name": "Mist Potion",
+      "source": "Mist Potion",
+      "description": "Restores 200 HP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100300,
+      "name": "Mist Hi-Potion",
+      "source": "Mist Hi-Potion",
+      "description": "Restores 800 HP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100310,
+      "name": "Mist X-Potion",
+      "source": "Mist X-Potion",
+      "description": "Restores 2000 HP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100320,
+      "name": "Mist Ether",
+      "source": "Mist Ether",
+      "description": "Restores 50 MP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100330,
+      "name": "Mist Turbo Ether",
+      "source": "Mist Turbo Ether",
+      "description": "Restores 150 MP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100340,
+      "name": "Mist X-Ether",
+      "source": "Mist X-Ether",
+      "description": "Restores 300 MP for all allies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100350,
+      "name": "Flame Scroll I",
+      "source": "Flame Scroll I",
+      "description": "Deal Fire magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100360,
+      "name": "Ice Scroll I",
+      "source": "Ice Scroll I",
+      "description": "Deal Ice magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100370,
+      "name": "Wind Scroll I",
+      "source": "Wind Scroll I",
+      "description": "Deal Wind magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100380,
+      "name": "Earth Scroll I",
+      "source": "Earth Scroll I",
+      "description": "Deal earth-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100390,
+      "name": "Lightning Scroll I",
+      "source": "Lightning Scroll I",
+      "description": "Deal thunder-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100400,
+      "name": "Water Scroll I",
+      "source": "Water Scroll I",
+      "description": "Deal water-type magic damage.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100410,
+      "name": "Knife of Blind",
+      "source": "Imposter Soldier",
+      "description": "Deal physical damage. Apply accuracy variation.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100420,
+      "name": "Knife of Silence",
+      "source": "Knife of Silence",
+      "description": "Deal physical damage. Apply skill unavailable.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100430,
+      "name": "Knife of Confuse",
+      "source": "Knife of Confuse",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100440,
+      "name": "Knife of Paralysis",
+      "source": "Imposter Soldier",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 100450,
+      "name": "Knife of Sleep",
+      "source": "Thug",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140020,
+      "name": "Shuriken",
+      "source": "Shuriken",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140030,
+      "name": "Fuma Shuriken",
+      "source": "Fuma Shuriken",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140040,
+      "name": "Chef’s Knife",
+      "source": "Chef’s Knife",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140050,
+      "name": "Katon II",
+      "source": "Flame Scroll II",
+      "description": "Deal Fire magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140060,
+      "name": "Hyoton II",
+      "source": "Ice Scroll II",
+      "description": "Deal Ice magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140070,
+      "name": "Huton II",
+      "source": "Wind Scroll II",
+      "description": "Deal Wind magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140080,
+      "name": "Doton II",
+      "source": "Earth Scroll II",
+      "description": "Deal Earth magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140090,
+      "name": "Raiton II",
+      "source": "Lightning Scroll II",
+      "description": "Deal Lightning magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140100,
+      "name": "Suiton II",
+      "source": "Water Scroll II",
+      "description": "Deal Water magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140110,
+      "name": "Katon I",
+      "source": "Flame Scroll I",
+      "description": "Deal Fire magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140120,
+      "name": "Hyoton I",
+      "source": "Ice Scroll I",
+      "description": "Deal Ice magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140130,
+      "name": "Huton I",
+      "source": "Wind Scroll I",
+      "description": "Deal Wind magic damage to an enemy.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140140,
+      "name": "Doton I",
+      "source": "Earth Scroll I",
+      "description": "Deal Earth magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140150,
+      "name": "Raiton I",
+      "source": "Lightning Scroll I",
+      "description": "Deal Lightning magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140160,
+      "name": "Suiton I",
+      "source": "Water Scroll I",
+      "description": "Deal Water magic damage to all enemies.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140170,
+      "name": "Throwing Knife of Poison",
+      "source": "Brachium",
+      "description": "Deal physical damage. Apply parameter variation.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140180,
+      "name": "Throwing Knife of Blind",
+      "source": "Knife of Blind",
+      "description": "Deal physical damage. Apply accuracy variation.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140190,
+      "name": "Throwing Knife of Silence",
+      "source": "Knife of Silence",
+      "description": "Deal physical damage. Apply skill unavailable.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140200,
+      "name": "Throwing Knife of Confuse",
+      "source": "Brachium",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140210,
+      "name": "Throwing Knife of Paralysis",
+      "source": "Brachium",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140220,
+      "name": "Throwing Knife of Sleep",
+      "source": "Knife of Sleep",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 140230,
+      "name": "Phoenix Pinion",
+      "source": "Phoenix Pinion",
+      "description": "Revives a KO’d ally with 50% HP.",
+      "reviewRound": 5,
+      "reason": "Confirmed item-use or thrown-item effect. Hide from the Abilities selector only; preserve native item/Throw behavior and game definitions."
+    },
+    {
+      "id": 210210,
+      "name": "Dispelga",
+      "source": "Nichol",
+      "description": "Remove buffs from all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 220360,
+      "name": "Thunderspark",
+      "source": "Ramuh",
+      "description": "Deal Lightning magic damage to an enemy and inflict Paralysis.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 225010,
+      "name": "Fira",
+      "source": "Ifrit, Rain",
+      "description": "Deal fire-type magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 225040,
+      "name": "Blizzara",
+      "source": "Lasswell, Shiva",
+      "description": "Deal ice magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 225070,
+      "name": "Thundara",
+      "source": "Ramuh, Sakura",
+      "description": "Deal lightning magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 225160,
+      "name": "Stonera",
+      "source": "Lid, Titan",
+      "description": "Deal earth magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 225190,
+      "name": "Bio",
+      "source": "Archwitch Fina, Siren",
+      "description": "Deal magic damage and inflict Poison.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 245310,
+      "name": "Banishga",
+      "source": "Bahamut",
+      "description": "Deal light magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 250310,
+      "name": "Syphon",
+      "source": "Adar",
+      "description": "Drain MP.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 250330,
+      "name": "Flare",
+      "source": "Alpherg",
+      "description": "Deal magic damage.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 250340,
+      "name": "Ultima",
+      "source": "Aldhafera",
+      "description": "Deal magic damage to all enemies.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 250350,
+      "name": "Meteor",
+      "source": "Aldhafera",
+      "description": "Deal magic damage to all enemies.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 255270,
+      "name": "Darkga",
+      "source": "Bahamut",
+      "description": "Deal dark magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300010,
+      "name": "Lunatic Voice",
+      "source": "Siren",
+      "description": "Chance to inflict Sleep and Silence on all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300020,
+      "name": "Hellfire",
+      "source": "Ifrit",
+      "description": "Deal Fire magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300040,
+      "name": "Diamond Dust",
+      "source": "Shiva",
+      "description": "Deal Ice magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300050,
+      "name": "Judgment Bolt",
+      "source": "Ramuh",
+      "description": "Deal Lightning magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300070,
+      "name": "Ruby Light",
+      "source": "Carbuncle",
+      "description": "Cast Reflect on all allies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300080,
+      "name": "Zantetsuken",
+      "source": "Odin",
+      "description": "Deal physical damage to all enemies with a chance to inflict Instant Death.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300090,
+      "name": "Gaia’s Wrath",
+      "source": "Titan",
+      "description": "Deal Earth magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300110,
+      "name": "Megaflare",
+      "source": "Bahamut",
+      "description": "Deal non-elemental magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300120,
+      "name": "Tsunami",
+      "source": "Leviathan",
+      "description": "Deal Water magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300200,
+      "name": "Healing Ruby",
+      "source": "Carbuncle",
+      "description": "Restore HP. Apply parameter variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300210,
+      "name": "Shining Ruby",
+      "source": "Carbuncle",
+      "description": "Apply deffence.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300220,
+      "name": "Glittering Ruby",
+      "source": "Carbuncle",
+      "description": "Apply damage multiplier.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300230,
+      "name": "Soothing Ruby",
+      "source": "Carbuncle",
+      "description": "Apply cure status condition.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300240,
+      "name": "Sonic Buffet",
+      "source": "Siren",
+      "description": "Deal wind-type magic damage. Apply cure status condition.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300250,
+      "name": "Tornado",
+      "source": "Siren",
+      "description": "Deal wind-type magic damage. Apply parameter continuous variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300260,
+      "name": "Supercell",
+      "source": "Ramuh",
+      "description": "Deal thunder-type magic damage. Apply automatic skill.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300270,
+      "name": "Bursting Globule",
+      "source": "Leviathan",
+      "description": "Deal water-type magic damage. Apply automatic skill.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300280,
+      "name": "Earthfall",
+      "source": "Titan",
+      "description": "Deal earth-type magic damage. Apply stone.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300290,
+      "name": "Hellblaze",
+      "source": "Ifrit",
+      "description": "Deal fire-type magic damage. Apply damage multiplier.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300300,
+      "name": "Whiteout",
+      "source": "Shiva",
+      "description": "Deal ice-type magic damage. Apply damage multiplier. Apply accuracy variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300310,
+      "name": "Snow Squall",
+      "source": "Shiva",
+      "description": "Deal ice-type magic damage. Apply accuracy variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300320,
+      "name": "Fist of Ferocity",
+      "source": "Titan",
+      "description": "Deal physical damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 300330,
+      "name": "Rend",
+      "source": "Bahamut",
+      "description": "Deal physical damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 400010,
+      "name": "Defend",
+      "source": "Archwitch Fina",
+      "description": "Reduce damage taken.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 400020,
+      "name": "Escape",
+      "source": "Archwitch Fina",
+      "description": "Attempt to escape from battle.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401020,
+      "name": "Follow-Up Attack",
+      "source": "Rain",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 401030,
+      "name": "Crimson Onslaught",
+      "source": "Rain",
+      "description": "Deal Fire physical damage to all enemies. Damage increases as the number of targets decreases.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401040,
+      "name": "Infinity Drive",
+      "source": "Rain",
+      "description": "Deal Fire physical damage to an enemy. Damage increases by 50% if target is staggered.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401050,
+      "name": "Banishing Raid",
+      "source": "Rain",
+      "description": "Deal Fire physical damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401060,
+      "name": "Flame Sword",
+      "source": "Rain",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401070,
+      "name": "Soul of Valiance",
+      "source": "Rain",
+      "description": "Deal physical damage to an enemy. Damage inversely scales with own HP.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401080,
+      "name": "Tackle",
+      "source": "Rain",
+      "description": "Deal physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401090,
+      "name": "Provoke",
+      "source": "Rain",
+      "description": "Apply hate target.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401130,
+      "name": "The Power Within",
+      "source": "Rain",
+      "description": "Apply all param up.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401140,
+      "name": "Call to Action",
+      "source": "Rain",
+      "description": "Add an ally to the bonus phase.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401210,
+      "name": "Unity",
+      "source": "Rain",
+      "description": "Ensure all allies act before enemies on the next turn.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 401300,
+      "name": "Last Resonance",
+      "source": "Rain",
+      "description": "The people’s prayers inspire courage.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402020,
+      "name": "Follow-Up Attack",
+      "source": "Lasswell",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 402030,
+      "name": "Transient Rite",
+      "source": "Lasswell",
+      "description": "Deal Ice physical damage to all enemies. Damage increases by 50% if target is staggered.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402040,
+      "name": "Null Moon",
+      "source": "Lasswell",
+      "description": "Deal non-elemental physical damage to an enemy. Target is more easily staggered for 3 turns.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402050,
+      "name": "Absolving Hailstorm",
+      "source": "Lasswell",
+      "description": "Deal Ice physical damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402060,
+      "name": "Tranquility in Quietus",
+      "source": "Lasswell",
+      "description": "Deal physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402080,
+      "name": "Tranquility",
+      "source": "Lasswell",
+      "description": "Deal physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402130,
+      "name": "Dawn Frost",
+      "source": "Lasswell",
+      "description": "Deal Ice physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402140,
+      "name": "Hone Senses",
+      "source": "Lasswell",
+      "description": "Apply honing sense.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402150,
+      "name": "Ice Splitter",
+      "source": "Lasswell",
+      "description": "Deal Ice physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402160,
+      "name": "Tranquility in Tumult",
+      "source": "Lasswell",
+      "description": "Deal physical damage to random enemies 5 times.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402210,
+      "name": "Placidity",
+      "source": "Lasswell",
+      "description": "Apply parameter continuous variation. Apply break damage variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 402300,
+      "name": "Last Resonance",
+      "source": "Lasswell",
+      "description": "The people’s prayers drive determination.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403020,
+      "name": "Follow-Up Attack",
+      "source": "Fina",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 403030,
+      "name": "Radiant Restoration",
+      "source": "Fina",
+      "description": "Revive all KO’d allies and restore their HP.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403040,
+      "name": "Holy Ray",
+      "source": "Fina",
+      "description": "Deal Light magic damage to all enemies. Power scales with sanctity.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403050,
+      "name": "Luminant Cannon",
+      "source": "Fina",
+      "description": "Deal Light magic damage to all enemies. Power scales with sanctity.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403060,
+      "name": "Light Veil",
+      "source": "Fina",
+      "description": "Activate a barrier on all allies that nullifies a status ailment or debuff once.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403070,
+      "name": "Arcane Guard",
+      "source": "Fina",
+      "description": "Activate a barrier on all allies that reduces damage from magic attacks by 50% once.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403080,
+      "name": "Spicy Pose",
+      "source": "Fina",
+      "description": "Chance to inflict Charm on all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403090,
+      "name": "Pray",
+      "source": "Fina",
+      "description": "Cure an ally’s status ailments and restore their HP.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403110,
+      "name": "Cheer",
+      "source": "Fina",
+      "description": "Increase physical defense, magic defense, and speed of an ally.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403210,
+      "name": "Entrust",
+      "source": "Fina",
+      "description": "Transfer own LB gauge to an ally.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403300,
+      "name": "Last Resonance",
+      "source": "Fina",
+      "description": "The people’s prayers infuse benevolence.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 403530,
+      "name": "Shining Arrow",
+      "source": "Fina",
+      "description": "Deal Light magic damage to an enemy. Power scales with sanctity.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404020,
+      "name": "Follow-Up Attack",
+      "source": "Lid",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 404030,
+      "name": "Enterprise Airstrike",
+      "source": "Lid",
+      "description": "Deal physical damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404040,
+      "name": "March of the Machines",
+      "source": "Lid",
+      "description": "Deal physical damage to all enemies with a chance to inflict Confuse.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404060,
+      "name": "Mecha Behemoth",
+      "source": "Lid",
+      "description": "Deal physical damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404070,
+      "name": "Mecha Fat Chocobo",
+      "source": "Lid",
+      "description": "Deal Earth physical damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404080,
+      "name": "Mechabo Kick",
+      "source": "Lid",
+      "description": "Deal Earth physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404090,
+      "name": "Mechabo Escape",
+      "source": "Lid",
+      "description": "Escape from battle guaranteed.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404110,
+      "name": "Mechabo Tackle",
+      "source": "Lid",
+      "description": "Deal Earth physical damage to an enemy. Damage scales with total number of successful escapes from battle.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404120,
+      "name": "Mechamog Scan",
+      "source": "Lid",
+      "description": "Inflict a random elemental weakness on an enemy. Further scans overwrite previously inflicted weaknesses.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404130,
+      "name": "Overclock",
+      "source": "Lid",
+      "description": "Increase the damage and stagger power of Mechabo skills by 150%.\nMechabo needs to cooldown for 2 turns after attacking with 3 Mechabo skills.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404140,
+      "name": "Overclock Zero",
+      "source": "Lid",
+      "description": "Increase the damage and stagger power of Mechabo skills by 300%. Can be used during Overclock. Has same cooldown limitation as Overclock.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 404300,
+      "name": "Last Resonance",
+      "source": "Lid",
+      "description": "The people’s prayers provide hope.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405020,
+      "name": "Follow-Up Attack",
+      "source": "Nichol",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 405030,
+      "name": "Formation: Steeled Advance",
+      "source": "Nichol",
+      "description": "Apply parameter variation. Apply mul base skill by level.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405040,
+      "name": "Mirroring Prism",
+      "source": "Nichol",
+      "description": "Grant each party member the ability to perform their selected action twice. Effect only triggers once.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405050,
+      "name": "Aqua Blast",
+      "source": "Nichol",
+      "description": "Deal Water magic damage to an enemy and decrease their speed.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405060,
+      "name": "Formation: Assail",
+      "source": "Nichol",
+      "description": "Apply break damage variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405070,
+      "name": "Formation: Charge",
+      "source": "Nichol",
+      "description": "Apply critical rate variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405080,
+      "name": "Formation: Bulwark",
+      "source": "Nichol",
+      "description": "Apply deffence.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405090,
+      "name": "Stratagem",
+      "source": "Nichol",
+      "description": "Apply break defence.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405110,
+      "name": "Formation: Regroup",
+      "source": "Nichol",
+      "description": "Apply damage multiplier.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405120,
+      "name": "Tactic: Fluid Warfare",
+      "source": "Nichol",
+      "description": "Apply add act on skill.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405130,
+      "name": "Aquatic Pulse",
+      "source": "Nichol",
+      "description": "Deal Water magic damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405140,
+      "name": "God of Water’s Blessing",
+      "source": "Nichol",
+      "description": "Apply extend effect turn by id.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 405300,
+      "name": "Last Resonance",
+      "source": "Nichol",
+      "description": "The people’s prayers enhance intellect.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406020,
+      "name": "Follow-Up Attack",
+      "source": "Jake",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 406030,
+      "name": "T.R.N.D.",
+      "source": "Jake",
+      "description": "Deal Wind physical damage to an enemy. Has a high critical hit rate.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406040,
+      "name": "Glücksschmied",
+      "source": "Jake",
+      "description": "Deal physical damage to an enemy. Damage scales with luck level. Luck level resets after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406050,
+      "name": "Demolisher Rush",
+      "source": "Jake",
+      "description": "Can only be used when luck level is 8 or higher. Deal Wind physical damage to all enemies.\nLuck level reduced by 5 after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406060,
+      "name": "Gamble Shot",
+      "source": "Jake",
+      "description": "Deal physical damage with a guaranteed critical hit. Hit chance scales with luck level.\nLuck level raised by 5 on hit.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406070,
+      "name": "Blitzstrahl",
+      "source": "Jake",
+      "description": "Deal Lightning physical damage to an enemy. Stagger power scales with luck level.\nLuck level reduced by 3 after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406080,
+      "name": "Gale Strike",
+      "source": "Jake",
+      "description": "Deal Wind physical damage to an enemy. Damage increased upon dealing a critical hit.\nLuck level raised by 1 after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406110,
+      "name": "Camouflage",
+      "source": "Jake",
+      "description": "Can only be used when luck level is 4 or higher. Stop an ally from being targeted for 3 turns.\nLuck level reduced by 4 after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406120,
+      "name": "Hide",
+      "source": "Jake",
+      "description": "Apply automatic skill. Apply impossible select.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406130,
+      "name": "Gentleman’s Gambit",
+      "source": "Jake",
+      "description": "Can only be used when luck level is 5 or higher. Place self after all female party members, but damage dealt increases the more female party members there are.\nLuck level reduced by 5 after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406140,
+      "name": "Energized Assault",
+      "source": "Jake",
+      "description": "Can only be used when luck level is 9 or higher. Increase physical attack damage by 50%.\nDoes not count as an action.\nLuck level resets after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406160,
+      "name": "Reappear",
+      "source": "Jake",
+      "description": "Reappear from Hide.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406200,
+      "name": "Coin Toss",
+      "source": "Jake",
+      "description": "Toss a coin. Luck level raised by 5 when heads and 2 when tails.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 406300,
+      "name": "Last Resonance",
+      "source": "Jake",
+      "description": "The people’s prayers awaken miracles.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407020,
+      "name": "Follow-Up Attack",
+      "source": "Sakura",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 407030,
+      "name": "Sakura’s Ultima",
+      "source": "Sakura",
+      "description": "Deal non-elemental magic damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407040,
+      "name": "Eternal Veil",
+      "source": "Sakura",
+      "description": "Activate a barrier on all allies that nullifies damage taken once.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407050,
+      "name": "Blighted Gloom",
+      "source": "Sakura",
+      "description": "Deal Dark magic damage to all enemies and decrease their magic defense.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407060,
+      "name": "Luminant Glim",
+      "source": "Sakura",
+      "description": "Deal Light magic damage to all enemies. Power scales with sanctity.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407070,
+      "name": "Stygian Scythe",
+      "source": "Sakura",
+      "description": "Deal Dark magic damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407080,
+      "name": "Sage’s Eye",
+      "source": "Sakura",
+      "description": "Apply break damage variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407090,
+      "name": "Rampant Elements",
+      "source": "Sakura",
+      "description": "Deal random elemental magic damage (excluding Light and Dark) to random enemies 3 times.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407110,
+      "name": "Magicide",
+      "source": "Sakura",
+      "description": "Remove buffs from an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407120,
+      "name": "Eminent Casting",
+      "source": "Sakura",
+      "description": "Apply damage multiplier. Apply break damage variation. Apply cost variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407130,
+      "name": "Tonitus",
+      "source": "Sakura",
+      "description": "Deal Lightning magic damage to all enemies with a chance to inflict Paralysis.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407140,
+      "name": "Concentrate",
+      "source": "Sakura",
+      "description": "Apply parameter continuous variation. Apply damage multiplier.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 407300,
+      "name": "Last Resonance",
+      "source": "Sakura",
+      "description": "The people’s prayers grant wisdom.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408020,
+      "name": "Follow-Up Attack",
+      "source": "Archwitch Fina",
+      "description": "Deal physical damage.",
+      "reviewRound": 4,
+      "reason": "Hide all Follow-Up Attack entries as requested."
+    },
+    {
+      "id": 408030,
+      "name": "Chaotic Convergence",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark magic damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408040,
+      "name": "Abyss Graviton",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark magic damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408050,
+      "name": "Dystopia",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark magic damage to all enemies. Damage increases by 10% for each consecutive use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408060,
+      "name": "Dark Pain",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark magic damage to an enemy. Restore HP and MP upon KO.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408070,
+      "name": "Shadow Unending",
+      "source": "Archwitch Fina",
+      "description": "Consume 10% of max HP to deal Dark magic damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408080,
+      "name": "Allure",
+      "source": "Archwitch Fina",
+      "description": "Chance to inflict Charm on all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408090,
+      "name": "Witching Hour",
+      "source": "Archwitch Fina",
+      "description": "Increase all attributes by 50%, but nullify all healing received from white magic spells. Effect can be deactivated.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408110,
+      "name": "Queenly Whip",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark physical damage to an enemy with a chance to decrease their attack and magic.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408120,
+      "name": "Distress",
+      "source": "Archwitch Fina",
+      "description": "Inflict a random status ailment or debuff on each enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408130,
+      "name": "Confluence",
+      "source": "Archwitch Fina",
+      "description": "Transfer LB gauges of all party members to self.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408140,
+      "name": "Paradise Lost",
+      "source": "Archwitch Fina",
+      "description": "Apply paradise lost.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408150,
+      "name": "End Witching Hour",
+      "source": "Archwitch Fina",
+      "description": "Deactivate Witching Hour.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408160,
+      "name": "Fel Meteor",
+      "source": "Archwitch Fina",
+      "description": "Deal Dark magic damage to all enemies.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 408300,
+      "name": "Last Resonance",
+      "source": "Dark Fina",
+      "description": "The people’s prayers bestow love.\nDeliver a devastating blow.\nRetreat from battle after use.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420010,
+      "name": "Fire Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420020,
+      "name": "Fira Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420030,
+      "name": "Firaga Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Fire physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420040,
+      "name": "Blizzard Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Ice physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420050,
+      "name": "Blizzara Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Ice physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 420060,
+      "name": "Blizzaga Blade",
+      "source": "Lasswell (internal label only)",
+      "description": "Deal Ice physical damage to an enemy.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 431080,
+      "name": "Dismiss Esper",
+      "source": "Not documented",
+      "description": "Dismiss summoned espers.",
+      "reviewRound": 7,
+      "reason": "Hide Dismiss Vision and Dismiss Esper commands as requested."
+    },
+    {
+      "id": 431100,
+      "name": "Dismiss Vision (Self)",
+      "source": "Not documented",
+      "description": "Dismiss summoned visions.",
+      "reviewRound": 7,
+      "reason": "Hide Dismiss Vision and Dismiss Esper commands as requested."
+    },
+    {
+      "id": 500010,
+      "name": "Bash",
+      "source": "Alluvion",
+      "description": "Deal physical damage.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 500080,
+      "name": "Hew",
+      "source": "Ignis",
+      "description": "Deal physical damage.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 500100,
+      "name": "Ruin",
+      "source": "Alluvion",
+      "description": "Deal magic damage.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 500530,
+      "name": "Steal",
+      "source": "Cutpurse",
+      "description": "Steal an item.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 500610,
+      "name": "Allure",
+      "source": "Archwitch Fina",
+      "description": "Apply automatic skill.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 500680,
+      "name": "Escape",
+      "source": "Azure Pot",
+      "description": "Apply escape.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 500950,
+      "name": "Body Slam",
+      "source": "Ignis",
+      "description": "Deal physical damage. Apply automatic skill.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 500960,
+      "name": "Multiply",
+      "source": "Blood Worm",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501100,
+      "name": "Raise Alarm",
+      "source": "Security Eye",
+      "description": "Call in Epimetheus.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501110,
+      "name": "Raise Alarm",
+      "source": "Security Eye",
+      "description": "Call in Centipede.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501150,
+      "name": "Call in Group",
+      "source": "Mom Bomb",
+      "description": "Call in a group of enemies.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501200,
+      "name": "Raise Alarm",
+      "source": "Searcher",
+      "description": "Call in Tarvos.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501210,
+      "name": "Raise Alarm",
+      "source": "Watcher",
+      "description": "Call in Io.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501220,
+      "name": "Raise Alarm",
+      "source": "Lost Searcher",
+      "description": "Call in Europa.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501230,
+      "name": "Raise Alarm",
+      "source": "Lost Searcher",
+      "description": "Call in Ganymede.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501240,
+      "name": "Reinforcement",
+      "source": "Not documented",
+      "description": "Call in Sergeant.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501280,
+      "name": "Call For Help",
+      "source": "The Hunger v2",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501320,
+      "name": "Aether summons a minion!",
+      "source": "Aether",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501330,
+      "name": "Aether summons a guardian!",
+      "source": "Aether",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501350,
+      "name": "Killer Tsunami",
+      "source": "Leviathan",
+      "description": "Deal water-type magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 501360,
+      "name": "Wave Lopros lures in more prey!",
+      "source": "Wave Lopros",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501480,
+      "name": "Prism cores formed!",
+      "source": "Alluvion",
+      "description": "Call 3 water energy entities.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501490,
+      "name": "Prism cores formed!",
+      "source": "Alluvion",
+      "description": "Call 5 water energy entities.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501660,
+      "name": "Blaze",
+      "source": "Bahamut",
+      "description": "Deal ice-type magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 501710,
+      "name": "Flurry",
+      "source": "Ignis",
+      "description": "Deal physical damage.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 501730,
+      "name": "Reinforcement",
+      "source": "Emperor of Zoldaad",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501740,
+      "name": "Reinforcement",
+      "source": "Emperor of Zoldaad",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501750,
+      "name": "Summon Experiment",
+      "source": "Lazarov",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501760,
+      "name": "Summon Experiment",
+      "source": "Lazarov",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501770,
+      "name": "Summon Experiment",
+      "source": "Lazarov",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 501830,
+      "name": "Bonebreaker",
+      "source": "Ignis",
+      "description": "Deal physical damage. Apply parameter continuous variation.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 501870,
+      "name": "Revive",
+      "source": "Arch Gargoyle",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501920,
+      "name": "Revive",
+      "source": "Left Hand",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501940,
+      "name": "Psycho Skewer",
+      "source": "Alluvion",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 501950,
+      "name": "Dawn of Judgment",
+      "source": "Alluvion",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 501960,
+      "name": "Luminant Purifier",
+      "source": "Alluvion",
+      "description": "Inflict instant death. Apply impossible select.",
+      "reviewRound": 6,
+      "reason": "Character-source ability, not a vision ability. Hide from the Abilities selector to keep character moves exclusive; preserve original party kits, equipped grants and game definitions."
+    },
+    {
+      "id": 501970,
+      "name": "Reinforcement",
+      "source": "Aqua Elemental",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501980,
+      "name": "Reinforcement",
+      "source": "Aqua Elemental",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 501990,
+      "name": "Reinforcement",
+      "source": "Aqua Elemental",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 502060,
+      "name": "Fira Barrage",
+      "source": "Ifrit",
+      "description": "Deal fire-type magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502070,
+      "name": "Blizzaga Barrage",
+      "source": "Shiva",
+      "description": "Deal ice-type magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502090,
+      "name": "Explode",
+      "source": "Dad Bomb",
+      "description": "Deal magic damage. Inflict instant death.",
+      "reviewRound": 3,
+      "reason": "Weaker Explode variant; retain the strongest Explode entry."
+    },
+    {
+      "id": 502100,
+      "name": "Explode",
+      "source": "Dad Bomb",
+      "description": "Deal magic damage. Inflict instant death.",
+      "reviewRound": 3,
+      "reason": "Weaker Explode variant; retain the strongest Explode entry."
+    },
+    {
+      "id": 502110,
+      "name": "Explode",
+      "source": "Dad Bomb",
+      "description": "Deal magic damage. Inflict instant death.",
+      "reviewRound": 3,
+      "reason": "Weaker Explode variant; retain the strongest Explode entry."
+    },
+    {
+      "id": 502120,
+      "name": "Aether summons a minion!",
+      "source": "Aether",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 502130,
+      "name": "Aether summons a guardian!",
+      "source": "Aether",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 502150,
+      "name": "Prism cores formed!",
+      "source": "Alluvion",
+      "description": "Call 5 water energy entities.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 502210,
+      "name": "Fury",
+      "source": "Ifrit",
+      "description": "Apply add effect.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502250,
+      "name": "Hellblaze",
+      "source": "Ifrit",
+      "description": "Deal fire-type magic damage. Apply damage multiplier.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502260,
+      "name": "Scorched Earth",
+      "source": "Ifrit",
+      "description": "Deal fire-type magic damage. Apply parameter continuous variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502280,
+      "name": "Summon Elementals",
+      "source": "Shiva",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 502290,
+      "name": "Summon Elementals",
+      "source": "Shiva",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 502300,
+      "name": "Summon Elementals",
+      "source": "Shiva",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 502310,
+      "name": "Whiteout",
+      "source": "Shiva",
+      "description": "Deal ice-type magic damage. Apply damage multiplier. Apply accuracy variation. Apply parameter continuous variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502320,
+      "name": "Snow Squall",
+      "source": "Shiva",
+      "description": "Deal ice-type magic damage. Apply parameter continuous variation. Apply accuracy variation.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502340,
+      "name": "Fortress Stance",
+      "source": "Titan",
+      "description": "Increase physical and magical defense by 20%",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502350,
+      "name": "Bastion Stance",
+      "source": "Titan",
+      "description": "Increase physical and magical defense by 50%",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502360,
+      "name": "Citadel Stance",
+      "source": "Titan",
+      "description": "Increase physical and magical defense by 80%",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502390,
+      "name": "Pulverize",
+      "source": "Titan",
+      "description": "Deal Earth physical damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502460,
+      "name": "Stupefying Wind",
+      "source": "Bahamut",
+      "description": "Apply accuracy variation. Apply skill unavailable. Apply automatic skill.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502480,
+      "name": "Debilitating Wind",
+      "source": "Bahamut",
+      "description": "Apply damage multiplier.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502490,
+      "name": "Modus Infernus",
+      "source": "Ultima Weapon",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502500,
+      "name": "Modus Keraunos",
+      "source": "Ultima Weapon",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502510,
+      "name": "Modus Cocytus",
+      "source": "Ultima Weapon",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502520,
+      "name": "Modus Nemea",
+      "source": "Ultima Weapon",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502530,
+      "name": "Blizzaga Barrage",
+      "source": "Ultima Weapon",
+      "description": "Deal ice-type magic damage.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502540,
+      "name": "Syphon Barrage",
+      "source": "Ultima Weapon",
+      "description": "Apply damage absorb.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502560,
+      "name": "Full power!",
+      "source": "Ultima Weapon",
+      "description": "Deal physical damage.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502580,
+      "name": "Colossal Energy Draw",
+      "source": "Ultima Weapon",
+      "description": "Apply all param up.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 502670,
+      "name": "Perhaps I shall practice prudence...",
+      "source": "Shiva",
+      "description": "Apply add effect.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 502860,
+      "name": "Magic-Eluding Blade",
+      "source": "Brachium",
+      "description": "Apply summon unit. Apply play death anim.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 502870,
+      "name": "Blade-Eluding Magic",
+      "source": "Brachium",
+      "description": "Apply summon unit. Apply play death anim.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 503100,
+      "name": "Fel Blaze",
+      "source": "Bahamut",
+      "description": "Deal ice-type magic damage.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 503400,
+      "name": "Magic-Eluding Blade",
+      "source": "Brachium",
+      "description": "Apply summon unit. Apply play death anim.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 503410,
+      "name": "Blade-Eluding Magic",
+      "source": "Brachium",
+      "description": "Apply summon unit. Apply play death anim.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 503600,
+      "name": "Transfiguration",
+      "source": "Aldhafera",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 503790,
+      "name": "New fruit is ripe!",
+      "source": "Sheratan",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 503860,
+      "name": "New fruit is ripe!",
+      "source": "Sheratan",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 505190,
+      "name": "Ultima Beam",
+      "source": "Ultima Weapon",
+      "description": "Deal magic damage.",
+      "reviewRound": 7,
+      "reason": "Ultima Weapon source: hide all its selectable skills, including already Verified entries."
+    },
+    {
+      "id": 505240,
+      "name": "Explode",
+      "source": "Dad Bomb",
+      "description": "Deal magic damage. Inflict instant death.",
+      "reviewRound": 3,
+      "reason": "Weaker Explode variant; retain the strongest Explode entry."
+    },
+    {
+      "id": 505460,
+      "name": "Summon Dark Bahamut",
+      "source": "Sol",
+      "description": "Apply summon unit.",
+      "reviewRound": 1,
+      "reason": "Short description contains “Apply summon unit”."
+    },
+    {
+      "id": 505820,
+      "name": "Megaflare",
+      "source": "Bahamut",
+      "description": "Deal magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 505830,
+      "name": "Tsunami",
+      "source": "Leviathan",
+      "description": "Deal water magic damage to all enemies.",
+      "reviewRound": 8,
+      "reason": "Reserve esper-owned abilities for the espers, including their same-source boss variants; retain the commands that summon them."
+    },
+    {
+      "id": 505880,
+      "name": "Witching Hour",
+      "source": "Archwitch Fina",
+      "description": "Apply demon form.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 505900,
+      "name": "Paradise Lost",
+      "source": "Archwitch Fina",
+      "description": "Apply paradise lost.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 506090,
+      "name": "Libra",
+      "source": "Gilgamesh",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 570310,
+      "name": "Summon Microchus",
+      "source": "Ochu",
+      "description": "Apply summon group.",
+      "reviewRound": 2,
+      "reason": "Calls monsters into battle using SummonUnit/SummonGroup; ordinary Summon commands are retained."
+    },
+    {
+      "id": 570330,
+      "name": "Call to Action",
+      "source": "Ochu",
+      "description": "Apply add action num.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 580110,
+      "name": "Steal",
+      "source": "Gilgamesh",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    },
+    {
+      "id": 580130,
+      "name": "Gil Toss",
+      "source": "Gilgamesh",
+      "description": "See full details for the recorded effects.",
+      "reviewRound": 3,
+      "reason": "Monster entry shares its name with a vision/party skill; keep the vision/party versions."
+    }
+  ]
+}

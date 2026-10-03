@@ -218,7 +218,8 @@ def expected_edits(root):
     if native_units:
         split(native_units, rows); prepare(tables, [], native_units, root, rows)
     expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
-    if (root / 'build/animation-repair-report.json').is_file():
+    import _ffr_ability_modes
+    if _ffr_ability_modes.enabled(root) and (root / 'build/animation-repair-report.json').is_file():
         expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
     import _ffr_party
     for u in units:
@@ -245,6 +246,8 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 def register(app, env):
     import _ffr_party
     import _ffr_testing
+    import _ffr_ability_modes
+    _ffr_ability_modes.register(app, env)
     _ffr_testing.register(app, env)
     _ffr_party.register(app, env)
     from fastapi import HTTPException

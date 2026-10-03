@@ -64,9 +64,11 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.1.0');
+      expect(state['version'], '1.2.0');
       for (final name in [
         '_ffr_existingvisions.py',
+        '_ffr_ability_modes.py',
+        'ability_hiding_review.json',
         '_ffr_animation_repair.py',
         '_ffr_build_sprites.py',
         '_ffr_library.py',

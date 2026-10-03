@@ -150,6 +150,23 @@ and automated checks are verified; acquisition timing and MR progression still n
 
 ## Automatic animation repair
 
+The main page has **Show unverified skills** and **Use our skill changes** controls. Both default off and are saved
+with the engine's mod settings. The three modes are:
+
+| Show unverified | Use our changes | Ability behavior |
+| --- | --- | --- |
+| Off | Inactive | Use master's original sequence/compatibility selection filter; automatic skill repairs are off. |
+| On | Off | Show the expanded library with original game ability bindings; Studio's automatic timelines/effects and reviewed hides are off. |
+| On | On | Enable Studio's skill repairs and the 304 reviewed picker hides for summons of monsters, duplicate monster skills, weaker Explodes, follow-ups, item effects, party skills, Ultima Weapon, dismiss commands and esper-owned skills. Ordinary summon commands remain available. |
+
+Short descriptions, selected stats, full click descriptions, source/MR/awakening labels and all other Studio features
+remain available in every mode. Existing language/Attack/Resonance and duplicate filters still apply. Equipped skill IDs,
+original game rows and saved character configs are retained when their picker entries are hidden. The checkbox remembers
+its value while the visibility switch is off; both controls must be enabled for repairs and reviewed hides to apply.
+Rebuild/install after switching to replace the previous mod. Automatic repairs keep any existing game timeline first,
+including timelines supplied by a later game version; full-game compatibility still needs validation when available.
+The reviewed IDs, names and reasons are preserved in `assets/existing_visions/payload/ability_hiding_review.json`.
+
 The four temporary comparison Copies are retired. Loading an older roster or config replaces their grants with
 the regular skills, collapsing only duplicates within the same tier. Saved config files stay intact.
 

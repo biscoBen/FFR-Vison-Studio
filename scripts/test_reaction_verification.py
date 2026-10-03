@@ -19,6 +19,8 @@ from test_existing_visions import ROOT, native, animation, installer
 class ReactionVerificationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)
+        self.save(self.root / 'mods/EstherTsukiko/ability-modes.json',
+                  {'schema': 1, 'showUnverified': True, 'useChanges': True})
         self.rel = 'Battle/Sequencer/DT_BtlHitEffectData'
         self.targets = {446800: 'ジタン_フリーエナジー', 446820: 'ジタン_ミールツイスター'}
         self.sources = {446800: (220130, 'Water'), 446820: (220170, 'Aero')}
@@ -116,6 +118,11 @@ class ReactionVerificationTests(unittest.TestCase):
                 {'parameterType': 'ActiveSkill', 'params': [sid, -1]} for sid in self.targets]}}})
         code, output = self.verify()
         self.assertEqual(code, 1); self.assertIn('UNEXPECTED', output)
+
+    def test_disabled_repairs_cannot_authorize_stale_cosmetic_changes(self):
+        self.save(self.root / 'mods/EstherTsukiko/ability-modes.json',
+                  {'schema': 1, 'showUnverified': True, 'useChanges': False})
+        self.assertEqual(self.verify()[0], 1)
 
 
 if __name__ == '__main__': unittest.main()

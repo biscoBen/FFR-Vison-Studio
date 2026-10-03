@@ -3,6 +3,7 @@ import 'package:ffr_vision_studio/state/catalog_helpers.dart';
 
 void main() {
   Map<String, dynamic> fixture() => {
+    'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
     'skills': [
       {
         'id': 250020,

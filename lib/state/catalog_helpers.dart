@@ -11,6 +11,12 @@ bool catalogNameIsEnglish(dynamic value) {
       !RegExp(r'[\u0370-\u052f\u0590-\u06ff\u0900-\u0e7f\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uf900-\ufaff]').hasMatch(name);
 }
 
+bool catalogShowsUnverified(Map catalog) =>
+    (catalog['abilityModes'] as Map?)?['showUnverified'] == true;
+
+bool catalogUsesAbilityChanges(Map catalog) => catalogShowsUnverified(catalog) &&
+    (catalog['abilityModes'] as Map?)?['useChanges'] == true;
+
 /// Selection filters do not remove full catalog rows or existing saved grants.
 List<Map<String, dynamic>> catalogSelectableLibrary(
   Map<String, dynamic> catalog,
@@ -22,6 +28,15 @@ List<Map<String, dynamic>> catalogSelectableLibrary(
       if (vision['finishBlow'] is num) vision['finishBlow'],
   };
   return catalogLibrary(catalog, kind, roster).where((row) {
+    if (kind == 'skills') {
+      if (!catalogShowsUnverified(catalog) && !catalogEntryVerified(row, kind)) {
+        return false;
+      }
+      if (catalogUsesAbilityChanges(catalog) &&
+          (catalog['reviewedHiddenSkills'] as List? ?? []).contains(row['id'])) {
+        return false;
+      }
+    }
     if (!catalogNameIsEnglish(row['name'])) return false;
     if (kind == 'skills' &&
         (row['name'].toString().trim().toLowerCase() == 'attack' ||
@@ -182,7 +197,7 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
   final owners = catalogDefaultOwners(catalog, kind, row);
   final unverified = !(verified ?? catalogEntryVerified(row, kind));
   final effectMapping = ((catalog['animationPolicy'] as Map?)?['skills'] as Map?)?['${row['id']}'];
-  final hasMappedEffects = kind == 'skills' && row['custom'] != true &&
+  final hasMappedEffects = catalogUsesAbilityChanges(catalog) && kind == 'skills' && row['custom'] != true &&
       (catalog['animationPolicy'] as Map?)?['schema'] == 1 &&
       effectMapping is Map && effectMapping['donor'] is num;
   final reference = row['custom'] == true
@@ -207,7 +222,7 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
   final animationPolicy = catalog['animationPolicy'];
   final trials = animationPolicy is Map ? animationPolicy['trials'] : null;
   final trialMetadata = trials is Map ? trials['${row['id']}'] : null;
-  final trial = kind == 'skills' && row['custom'] != true &&
+  final trial = catalogUsesAbilityChanges(catalog) && kind == 'skills' && row['custom'] != true &&
           animationPolicy is Map && animationPolicy['schema'] == 1 && trialMetadata is Map
       ? trialMetadata['source']
       : null;

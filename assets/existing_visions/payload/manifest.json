@@ -1,12 +1,14 @@
 {
   "schema": 1,
   "files": {
+    "_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "_ffr_animation_repair.py": "90adf0c3626a4261c2ced800bb1de972122cf6511811576c322edfaeb6773abc",
     "_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "_ffr_existingvisions.py": "e66caf2dd74e79b0d16a47cc6f3871af91bd1deffcc8f0a05d3e955c4b23d933",
-    "_ffr_library.py": "021d47a5081789b99ddb1cf15dc49332cf2f5b708be8fa65f12d3e525f8eb2bc",
+    "_ffr_existingvisions.py": "c64945a7feb8f75f13592b300109c06be6d1522554910269cfc5394f04df5e9d",
+    "_ffr_library.py": "d5991b67f4968470d6dad2481e00290e92e3611ed986c90713c98eb4b4f3f0f4",
     "_ffr_party.py": "577607ba1e2a237948ba18004f6b676d7f57c7904476f9952cead79b149624ff",
     "_ffr_testing.py": "28b39084bb256e133d9018c87ab28da5512d18b982732525fe9da640360813c9",
+    "ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013"
   }

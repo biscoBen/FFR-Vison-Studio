@@ -158,6 +158,7 @@ void main() {
 
   test('selection rules apply without duplicate proof and never mutate saved references', () {
     final cat = <String, dynamic>{
+      'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
       'skills': [
         {'id': 1, 'name': ' Attack ', 'attr': 'Fight'},
         {'id': 2, 'name': '針万本', 'attr': 'Ability'},

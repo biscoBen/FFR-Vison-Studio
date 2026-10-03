@@ -62,6 +62,31 @@ class HomeScreen extends StatelessWidget {
                     ? 'Close the game to install. You can keep editing meanwhile.'
                     : 'Builds the mod from your edits and copies it into the game. Added visions are sold in the Mitra item shop; original visions keep their game identity. Party replacements apply during battles.', style: Guide.text()),
                 const SizedBox(height: 14),
+                Row(children: [
+                  Expanded(child: SwitchListTile(
+                    key: const Key('show-unverified-skills'), contentPadding: EdgeInsets.zero,
+                    title: Text('Show unverified skills', style: Guide.text()),
+                    value: app.showUnverifiedSkills,
+                    onChanged: app.building || app.api == null ? null : (value) async {
+                      try { await app.setAbilityModes(showUnverified: value); } catch (e) { app.showNotice('$e'); }
+                    },
+                  )),
+                  Expanded(child: CheckboxListTile(
+                    key: const Key('use-ability-changes'), contentPadding: EdgeInsets.zero,
+                    title: Text('Use our skill changes', style: Guide.text()),
+                    value: app.useAbilityChanges,
+                    onChanged: !app.showUnverifiedSkills || app.building || app.api == null ? null : (value) async {
+                      try { await app.setAbilityModes(useChanges: value == true); } catch (e) { app.showNotice('$e'); }
+                    },
+                  )),
+                ]),
+                Text(!app.showUnverifiedSkills
+                    ? 'Original skill selection; our skill animation changes are off.'
+                    : app.useAbilityChanges
+                        ? 'Studio skill repairs and reviewed hiding rules are on. Existing game animations take priority.'
+                        : 'Unverified skills are visible with original game animations. Our skill repairs and reviewed hides are off.', style: Guide.small()),
+                Text('Rebuild/install after changing modes to replace the previous mod. Equipped skills and saved configs are retained.', style: Guide.small()),
+                const SizedBox(height: 14),
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),
