@@ -11,10 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published private shop battle stage — 2026-10-02
+
+Changes in [`67a6fea`](https://github.com/biscoBen/FFR-Vison-Studio/commit/67a6feaa86f68aef3968ac2fbccc866afe14f61e),
+[test package 37083235664](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37083235664).
+
 - Give the shop practice battle a private, instance-loaded plains stage instead of selecting a preloaded stage that
   Mitra does not contain. Retain the native background/lighting, level 7–8 enemies, dialogue, escape and normal return
   settings without altering shared stages or other encounters. This targets the black backdrop and possible stage-loading
   stall after combat; backdrop rendering and return still require confirmation in the actual game.
+- Local checks passed all 195 Python tests (three Windows engine contracts deferred to CI), the managed bundle check
+  and actual engine serialization across all nine affected tables with all 26 original vision grants and max MR enabled.
+  Windows passed full Flutter/Python checks, real frozen-engine startup, launcher/updater/import checks and compilation.
+  Verified the authenticated published ZIP's checksum, exact commit and all 28 bundled extension files. Ability modes,
+  descriptions and other features are retained; master is unchanged.
+- One code push and one reused push build. CI took 4m38s, with 8m06s summed job execution. First complete candidate:
+  17:42:34 PDT; ZIP verified at 17:48:33 PDT and packaged-file checks finished at 17:48:46 PDT (6m12s from candidate).
+  From the queued shop report at 17:19:49 PDT, verification took 28m57s, including 17m05s finishing the requested prior
+  ability-mode build. Investigation/implementation took about five minutes, local checks/push about one minute, and
+  final publication/download verification about one minute. Publication notes use the documentation-only path.
 
 ## Published optional ability visibility and repairs — 2026-10-02
 
