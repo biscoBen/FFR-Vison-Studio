@@ -375,7 +375,22 @@ class CrystalCaveTests(unittest.TestCase):
             cave.acquisition_interaction(npc, {}, template, {'id': 13507})
         actor = npc['Exports'][2]
         self.assertFalse(cave.property_data(actor, 'm_IsAutoTransition')['Value'])
+        self.assertEqual(cave.property_data(actor, 'm_MapId')['Value'], cave.STONE_ID)
+        self.assertEqual(cave.property_data(actor, 'm_PointID')['Value'], 1)
         actual, = cave.property_data(actor, 'mTransitionDataList')['Value']
+        self.assertEqual(cave.property_data(actual, 'mapId')['Value'], cave.STONE_ID)
+        self.assertEqual(cave.property_data(actual, 'pointId')['Value'], 1)
+        original, rows, unit = cave_game()
+        with tempfile.TemporaryDirectory() as root:
+            enabled(root)
+            operations = testing.prepare({}, [unit], root, rows)
+        for rel in (testing.EVENT, testing.COMPOSITE):
+            added, = operations[rel]['add']
+            grant = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
+            destination = grant['TransitionLocation']
+            self.assertEqual((destination['mapId'], destination['pointId']),
+                             (cave.property_data(actor, 'm_MapId')['Value'],
+                              cave.property_data(actor, 'm_PointID')['Value']))
         self.assertTrue(cave.property_data(actual, 'isEventOnly')['Value'])
         self.assertEqual(cave.property_data(actual, 'FlagCondition')['Value'], '{item:13507}==0')
         scheduled, = cave.property_data(actual, 'EventList')['Value']

@@ -11,7 +11,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Keep Crystal Fina's acquisition return inside the stone cave beside its crystal: the event and invoking button now share the explicit cave/return-point route. Preserve the working acquisition, size, input and collision; nudge Fina slightly right toward the floor glow. Live return/alignment still require retesting.
 
 ## Published native cave acquisition and blockers — 2026-10-03
 

@@ -35,7 +35,7 @@ ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
 FINA_SCALE = 4.25
 FINA_FLOAT = 40.0
-FINA_ALIGNMENT_Y = 128.0  # Live test: roughly two field-sprite widths screen-right.
+FINA_ALIGNMENT_Y = 144.0  # Live test: two field-sprite widths, plus a small final nudge right.
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
 PORTAL = (4000.0, 31.0, 100.0)
@@ -431,7 +431,10 @@ def acquisition_interaction(npc, donor, conditional_template, unit):
     m = clone_graph(npc, donor, [2, 5], {8: level_id, 14: world_id})
     actor = npc['Exports'][m[5]-1]; box = npc['Exports'][m[2]-1]
     actor['ObjectName'] = NAME + '_AcquireInteraction'
-    transition(actor, conditional_template, -1, -1, auto=False)
+    # The event row and its invoking Transition trigger must agree. Leaving
+    # the trigger's destination at -1 allows its post-event route to fall back
+    # to the previous field map instead of the private cave's portal point.
+    transition(actor, conditional_template, STONE_ID, 1, auto=False)
     set_value(actor, 'm_UniqueId', MAP_ID + 1)
     # Preserve the same native Transition button route as the working portal.
     entry, = property_data(actor, 'mTransitionDataList')['Value']

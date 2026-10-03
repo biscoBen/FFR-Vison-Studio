@@ -24,8 +24,8 @@ capsule fall onto the native floor with `bRunPhysicsWithNoController`, gravity a
 interaction volumes with the capsule; a detached box at the spawn height stays suspended after the NPC lands.
 
 Fina uses the midpoint of the two original acquisition lights (approximately X=5989.931, Y=-760.228, Z=341.971),
-plus Y=128 for the user's reported two-character-width offset to the right in this room's camera.
-This small alignment correction is an estimate from the live render; sprite scale remains 4.25.
+plus Y=144 for the user's reported two-character-width offset to the right in this room's camera.
+The final 16-unit nudge follows the next live test; sprite scale remains 4.25.
 Z is a safe initial height, not a measured floor surface. The lights, floor and
 ambient god rays are separate effects; their combined brightest rendered pixel is not derivable from light origins
 alone. The lights locate the acquisition area; exact alignment with the rendered white patch still requires a game render.
@@ -50,7 +50,11 @@ The user's live test confirmed the capsule blocks and manual input opens the dia
 calls the native director's parameterless `ExecuteHeader` and `ExecuteFooter`. The private 0.2-second grant timeline
 now uses that lifecycle with the current event row and actual allocated vision ID. It has no original actor bindings,
 scene/camera tracks or story changes; compiled evaluation data is invalidated. The obtain screen and return-to-cave
-settings remain on that row. Visibility, interaction and grant share the same unowned-item condition. Actual
+settings remain on that row. The invoking Transition trigger also needs an explicit return route: both its
+`m_MapId`/`m_PointID` and conditional entry `mapId`/`pointId` target stone cave 29990, point 1. Keeping these at -1
+left a fallback route despite the event row's correct destination; the live test returned to the overworld.
+Point 1 is (3500,31,100), 500 units from the portal and well clear of its blocker and the cave exit trigger.
+Visibility, interaction and grant share the same unowned-item condition. Actual
 inventory acquisition and hiding on return require a live-game smoke test; the SDK cannot execute native event code.
 
 The generic Actor/instance BoxComponent approach passed serialization checks but **did not block in the game**.
@@ -60,7 +64,8 @@ export/name indices and opaque Model/physics bytes. Activate only its world sett
 Scale the BrushComponent from the actual convex half-bounds (375,100,300), then place it at the trigger's ground
 location. Load these private collision levels through native `LevelStreamingAlwaysLoaded` entries in the persistent
 world (`Wld_PL` for the entrance, the private stone-cave PL for the portal), retaining every original stream.
-Do not treat an overlap trigger or a successfully serialized generic component as proof of blocking.
+The user confirmed both repaired volumes block in-game. Do not treat an overlap trigger or a successfully
+serialized generic component as proof of blocking.
 
 Keep a wider interaction volume around each blocker. The player must be within the trigger while standing outside
 the solid box; leave more than the capsule radius between their horizontal bounds. The portal trigger is half-size
