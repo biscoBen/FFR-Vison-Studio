@@ -1,4 +1,5 @@
 """Cave acquisition, original-story preservation and cooked asset safeguards."""
+import base64
 import copy
 import json
 from pathlib import Path
@@ -71,10 +72,10 @@ class CrystalCaveTests(unittest.TestCase):
                 for field in ('OnFlagList', 'OffFlagList', 'FlagList', 'ProgressList',
                               'ContinuousEventList', 'InitUnitDataList'):
                     self.assertEqual(event[field], [])
-                self.assertEqual(event['EventSequence'], 'None')
+                self.assertEqual(event['EventSequence'], '/Game/' + cave.GRANT_SEQUENCE)
                 self.assertEqual(event['encountGroupId'], -1)
                 self.assertFalse(event['IsSetAutoSave']); self.assertFalse(event['IsForceAutoSave'])
-                self.assertTrue(event['FooterSettings']['IsApplyProgressis'])
+                self.assertFalse(event['FooterSettings']['IsApplyProgressis'])
                 self.assertTrue(event['IsOpenDialogByFinishEvent'])
                 self.assertEqual(event['LoadingScreenSetting'], 'White')
                 self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
@@ -85,6 +86,22 @@ class CrystalCaveTests(unittest.TestCase):
             elif rel == cave.MAP:
                 self.assertEqual(built[cave.NAME]['ID'], 29991)
                 self.assertEqual(built[cave.NAME]['Level'], '/Game/' + cave.PACKAGE + '_PL')
+
+    def test_grant_and_sprite_follow_allocated_vision_id(self):
+        original, rows, unit = cave_game(); unit['id'] = 13531
+        with tempfile.TemporaryDirectory() as root:
+            enabled(root)
+            operations = testing.prepare({}, [unit], root, rows)
+        for rel in (testing.EVENT, testing.COMPOSITE):
+            added, = operations[rel]['add']
+            event = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
+            self.assertEqual(event['ObtainItemList'], [{'Condition': '{item:13531}==0',
+                              'ID': 13531, 'Num': 1, 'Text': ''}])
+            self.assertEqual(event['EventSequence'], '/Game/' + cave.GRANT_SEQUENCE)
+            self.assertFalse(event['FooterSettings']['IsApplyProgressis'])
+        added, = operations[cave.MAP_UNIT]['add']
+        sprite = testing.apply_fields(original[cave.MAP_UNIT][added['cloneFrom']], added['set'])
+        self.assertIn('summon13531', sprite['animationAssetList'][0]['Ss6Project'])
 
     def test_conflicting_game_ids_or_wrong_room_are_rejected(self):
         for change in ('map', 'npc', 'placement', 'room'):
@@ -158,12 +175,12 @@ class CrystalCaveTests(unittest.TestCase):
             {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]},
             {'ClassIndex': 0, 'Data': [{'Name': 'StaticMesh', 'Value': -3}, location(100, 500, 532)]}]}
         original = copy.deepcopy(view)
-        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365 + cave.FINA_ALIGNMENT_Y, 341))
         cave.vector(crystal, 'RelativeLocation', (100, 200, 900))
-        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365 + cave.FINA_ALIGNMENT_Y, 341))
         self.assertEqual(view, original)
         cave.vector(view['Exports'][0], 'RelativeLocation', (0, 0, -800))
-        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365 + cave.FINA_ALIGNMENT_Y, 341))
         for exports in (view['Exports'][1:], view['Exports'][:-1], view['Exports'][:1]):
             with self.assertRaises(ValueError): cave.fina_spawn(dict(view, Exports=exports), crystal)
         # Never silently reuse the same light for two crystal anchors.
@@ -226,56 +243,112 @@ class CrystalCaveTests(unittest.TestCase):
             self.assertEqual(values[name], [])
         self.assertTrue(cave.property_data(template, 'm_IsAutoTransition')['Value'])
 
-    def test_portal_blocker_is_inside_interaction_area_without_transition_callbacks(self):
-        def location(name, xyz):
-            return {'Name': name, 'Value': [{'Value': dict(zip(('X','Y','Z'), xyz)), 'IsZero': False}],
-                    'StructType': 'Vector', 'SerializeNone': True, 'IsZero': False}
-        def obj(name, value):
-            return {'Name': name, 'Value': value, '$type': 'UAssetAPI.PropertyTypes.Objects.ObjectPropertyData, UAssetAPI'}
-        donor = {'Imports': [{'ObjectName': '/Script/Engine', 'OuterIndex': 0},
-                            {'ObjectName': 'BoxComponent', 'OuterIndex': -1},
-                            {'ObjectName': 'CPP_MapTransitionTrigger', 'OuterIndex': -1}],
-                 'Exports': [], 'DependsMap': [[] for _ in range(14)]}
-        for i in range(14):
-            donor['Exports'].append({'$type': 'UAssetAPI.ExportTypes.NormalExport, UAssetAPI',
-                'ObjectName': str(i), 'ClassIndex': 0, 'OuterIndex': 8, 'SuperIndex': 0, 'TemplateIndex': 0,
-                'SerializationBeforeSerializationDependencies': [], 'CreateBeforeSerializationDependencies': [],
-                'SerializationBeforeCreateDependencies': [], 'CreateBeforeCreateDependencies': [], 'Data': []})
-        donor['Exports'][4].update(ClassIndex=-3, Data=[obj('RootComponent',2), {'Name':'m_MapId','Value':1000}])
-        donor['Exports'][1].update(ClassIndex=-2, OuterIndex=5, Data=[
-            location('RelativeLocation',(0,0,0)),location('BoxExtent',(160,200,200)),
-            {'Name':'OnComponentBeginOverlap','Value':[{'Object':5,'Delegate':'OnBeginOverlap'}]}])
-        view = {'Imports': [], 'Exports': [], 'DependsMap': [], 'NameMap': []}
+    def test_native_blocker_preserves_cooked_physics_and_selects_only_volume(self):
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        def vector(name, xyz): return prop(name, [{'Value': dict(zip(('X', 'Y', 'Z'), xyz))}])
+        donor = {'NameMap': ['native'], 'Exports': [
+            {'ObjectName': str(i), 'OuterIndex': 66, 'Data': [], 'Extras': 'opaque',
+             'CreateBeforeSerializationDependencies': []} for i in range(70)]}
+        owner, body, root, settings, level, model = [donor['Exports'][i-1] for i in (1, 2, 64, 65, 66, 69)]
+        owner.update(ObjectName='BlockingVolume_1', Data=[prop('RootComponent', 64), prop('Brush', 69)])
+        bounds = prop('ElemBox', [{'Value': {'Min': dict(X=-375, Y=-100, Z=-300),
+                                           'Max': dict(X=375, Y=100, Z=300)}}])
+        body.update(ObjectName='BodySetup_0', Data=[prop('AggGeom', [
+            prop('ConvexElems', [prop('0', [bounds, prop('VertexData', ['native convex'])])])]),
+            prop('CollisionTraceFlag', 'CTF_UseSimpleAsComplex')], Extras='native Chaos')
+        root.update(ObjectName='BrushComponent0', TemplateIndex=-26, Data=[prop('BrushBodySetup', 2),
+            vector('RelativeLocation', (-3825, 1000, 100))])
+        settings['ObjectName'] = 'CPP_MuchaWorldSetting'
+        level.update(ObjectName='PersistentLevel', OuterIndex=70, Actors=[65, 0, 1, 3],
+                     CreateBeforeSerializationDependencies=[65, 1, 3, 69])
+        model.update(ObjectName='Model_1', Extras='native model')
+        donor['Exports'][69].update(ObjectName='Dng_01Gra_43_GD', OuterIndex=0)
         before = copy.deepcopy(donor)
-        # A serialized instance must not inherit its donor's overlap-only archetype.
-        donor['Exports'][1]['TemplateIndex'] = -3
-        donor['Exports'][1]['SerializationBeforeSerializationDependencies'] = [-3]
-        donor['Exports'][1]['SerializationBeforeCreateDependencies'] = [-3]
-        donor['Exports'][1]['ObjectFlags'] = 'RF_Transactional, RF_DefaultSubObject'
-        before = copy.deepcopy(donor)
-        actor_id = cave.blocking_box(view, donor, 0, 0, 'PortalCollision',
-                                     (4000, 31, 0), (85, 85, 300))
-        owner = view['Exports'][actor_id-1]; root = cave.property_data(owner,'RootComponent')['Value']
-        box = view['Exports'][root-1]
-        self.assertEqual(view['Imports'][-owner['ClassIndex']-1]['ObjectName'], 'Actor')
-        self.assertTrue(cave.property_data(owner, 'bActorEnableCollision')['Value'])
-        self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], root)
-        self.assertEqual(box['TemplateIndex'], 0)
-        self.assertEqual(box['SerializationBeforeSerializationDependencies'], [])
-        self.assertEqual(box['SerializationBeforeCreateDependencies'], [box['ClassIndex']])
-        self.assertNotIn('RF_DefaultSubObject', box['ObjectFlags'])
-        self.assertEqual(cave.property_data(box, 'CreationMethod')['Value'], 'Instance')
-        self.assertFalse(any(p['Name'].startswith('OnComponent') for p in box['Data']))
-        body = {p['Name']:p['Value'] for p in cave.property_data(box,'BodyInstance')['Value']}
-        self.assertEqual(body, {'CollisionProfileName':'BlockAll','CollisionEnabled':'QueryAndPhysics',
-                                'ObjectType':'ECC_WorldStatic'})
-        self.assertFalse(cave.property_data(box,'bGenerateOverlapEvents')['Value'])
-        extent = cave.property_data(box,'BoxExtent')['Value'][0]['Value']
-        self.assertLess(extent['X'] + 18.666666, 160); self.assertLess(extent['Y'] + 18.666666, 200)
-        center = cave.property_data(box, 'RelativeLocation')['Value'][0]['Value']
-        self.assertLess(center['Z'] - extent['Z'], 0)
-        self.assertGreater(center['Z'] + extent['Z'], 2 * 33.333332)
+        built = cave.blocking_level(donor, 'PortalCollision', cave.PORTAL, (85, 85, 300))
+        self.assertEqual(built['Exports'][65]['Actors'], [65, 0, 1])
+        self.assertNotIn(3, built['Exports'][65]['CreateBeforeSerializationDependencies'])
+        self.assertEqual(built['Exports'][1], before['Exports'][1])
+        self.assertEqual(built['Exports'][68], before['Exports'][68])
+        root = built['Exports'][63]
+        self.assertEqual(root['TemplateIndex'], -26)
+        self.assertEqual(cave.property_data(root, 'RelativeLocation')['Value'][0]['Value'],
+                         dict(zip(('X', 'Y', 'Z'), cave.PORTAL)))
+        self.assertEqual(cave.property_data(root, 'RelativeScale3D')['Value'][0]['Value'],
+                         dict(X=85/375, Y=.85, Z=1))
         self.assertEqual(donor, before)
+        cave.property_data(body, 'CollisionTraceFlag')['Value'] = 'CTF_UseComplexAsSimple'
+        with self.assertRaises(ValueError): cave.blocking_level(donor, 'PortalCollision', cave.PORTAL, (85, 85, 300))
+
+    def test_collision_stream_preserves_world_streams_and_soft_paths(self):
+        obj = lambda name, value: cave.data_property(name, value, 'ObjectPropertyData')
+        native = {'Imports': [{'ObjectName': 'LevelStreamingAlwaysLoaded', 'OuterIndex': 0}],
+                  'Exports': [], 'DependsMap': [[], []], 'NameMap': ['native']}
+        world = {'ObjectName': 'Wld_PL', 'OuterIndex': 0, 'ClassIndex': 0,
+                 'Extras': base64.b64encode(struct.pack('<4i', 0, 0, 1, 2)).decode(),
+                 'CreateBeforeSerializationDependencies': [2], 'Data': []}
+        stream = {'$type': 'UAssetAPI.ExportTypes.NormalExport, UAssetAPI', 'ObjectName': 'nativeStream',
+            'OuterIndex': 1, 'ClassIndex': -1, 'SuperIndex': 0, 'TemplateIndex': 0,
+            'CreateBeforeSerializationDependencies': [], 'SerializationBeforeSerializationDependencies': [],
+            'SerializationBeforeCreateDependencies': [], 'CreateBeforeCreateDependencies': [],
+            'Data': [cave.data_property('WorldAsset', {'AssetPath': {'PackageName': '/Game/Original',
+                        'AssetName': 'Original'}, 'SubPathString': ''}, 'SoftObjectPropertyData')]}
+        native['Exports'] = [world, stream]
+        built = copy.deepcopy(native); before = copy.deepcopy(native)
+        path = cave.PACKAGE + '_EntranceCollision'
+        cave.add_collision_stream(built, 'Wld_PL', native, path)
+        self.assertEqual(struct.unpack('<5i', base64.b64decode(built['Exports'][0]['Extras'])), (0, 0, 2, 2, 3))
+        self.assertEqual(built['Exports'][0]['CreateBeforeSerializationDependencies'], [2, 3])
+        self.assertEqual(built['Exports'][1], before['Exports'][1])
+        added = built['Exports'][2]
+        self.assertEqual((added['OuterIndex'], added['ClassIndex']), (1, -1))
+        self.assertEqual(cave.property_data(added, 'WorldAsset')['Value']['AssetPath'],
+                         {'PackageName': '/Game/' + path, 'AssetName': Path(path).name})
+        self.assertEqual(native, before)
+        broken = copy.deepcopy(native)
+        broken['Exports'][0]['Extras'] = base64.b64encode(struct.pack('<4i', 0, 0, 99, 2)).decode()
+        with self.assertRaises(ValueError): cave.add_collision_stream(broken, 'Wld_PL', native, path)
+
+    def test_grant_timeline_executes_native_lifecycle_without_original_cutscene(self):
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        def signature(): return prop('Signature', [prop('Signature', '{native signature}')])
+        source = {'NameMap': ['native'], 'Imports': [{'ObjectName': name} for name in (
+            'CPP_TalkEventSequenceDirector', 'ExecuteHeader', 'ExecuteFooter')], 'Exports': [
+            {'ObjectName': 'SEQ_C01_014_03', 'Data': [prop('MovieScene', 2), prop('DirectorClass', 99),
+                prop('CompiledData', 88), prop('BindingReferences', [prop('SortedReferences', ['Rain'])]), signature()]},
+            {'ObjectName': 'MovieScene_0', 'Data': [prop('Possessables', ['Rain']), prop('ObjectBindings', ['Leah']),
+                prop('BindingGroups', ['actors']), prop('CameraCutTrack', 77), prop('Tracks', [prop('0', 3)]),
+                prop('PlaybackRange', [{'Value': {'LowerBound': {'Value': {'Value': 0}},
+                                                 'UpperBound': {'Value': {'Value': 228000}}}}]), signature()]},
+            {'ObjectName': 'MovieSceneEventTrack_0', 'Data': [prop('Sections', [prop('0', 4)]),
+                prop('EvaluationField', ['cached cutscene']), prop('EvaluationFieldGuid', 'old'), signature()]},
+            {'ObjectName': 'section', 'Data': [signature(), prop('EventChannel', [
+                prop('KeyTimes', [prop('0', [{'Value': {'Value': 200}, 'IsZero': False}])]),
+                prop('KeyValues', [prop('0', [prop('Ptrs', [prop('Function', 70),
+                    prop('BoundObjectProperty', {'Path': ['Rain'], 'ResolvedOwner': 7})])])])])]}]}
+        before = copy.deepcopy(source)
+        built = cave.grant_sequence(source)
+        sequence, scene, track, section = built['Exports']
+        self.assertEqual(cave.property_data(sequence, 'DirectorClass')['Value'], -1)
+        self.assertEqual(cave.property_data(sequence, 'CompiledData')['Value'], 0)
+        for name in ('Possessables', 'ObjectBindings', 'BindingGroups'):
+            self.assertEqual(cave.property_data(scene, name)['Value'], [])
+        self.assertEqual(cave.property_data(scene, 'CameraCutTrack')['Value'], 0)
+        channel = cave.property_data(section, 'EventChannel')
+        self.assertEqual([p['Value'][0]['Value']['Value'] for p in cave.property_data(channel, 'KeyTimes')['Value']],
+                         [0, 2400])
+        functions = []
+        for event in cave.property_data(channel, 'KeyValues')['Value']:
+            ptrs = cave.property_data(event, 'Ptrs')
+            functions.append(cave.property_data(ptrs, 'Function')['Value'])
+            self.assertEqual(cave.property_data(ptrs, 'BoundObjectProperty')['Value'], {'Path': [], 'ResolvedOwner': 0})
+        self.assertEqual(functions, [-2, -3])
+        self.assertEqual(cave.property_data(scene, 'PlaybackRange')['Value'][0]['Value']['UpperBound']['Value']['Value'], 4800)
+        self.assertFalse(any(p['Name'] in ('EvaluationField', 'EvaluationFieldGuid') for p in track['Data']))
+        for e in built['Exports']: self.assertNotEqual(cave.property_data(e, 'Signature')['Value'][0]['Value'], '{native signature}')
+        self.assertEqual(source, before)
+        self.assertEqual(cave.grant_sequence(source), built)
+        source['Imports'][2]['ObjectName'] = 'not ExecuteFooter'
+        with self.assertRaises(ValueError): cave.grant_sequence(source)
 
     def test_event_only_acquisition_uses_manual_input_and_follows_grounded_capsule(self):
         from unittest.mock import patch

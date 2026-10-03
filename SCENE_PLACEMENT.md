@@ -24,14 +24,17 @@ capsule fall onto the native floor with `bRunPhysicsWithNoController`, gravity a
 interaction volumes with the capsule; a detached box at the spawn height stays suspended after the NPC lands.
 
 Fina uses the midpoint of the two original acquisition lights (approximately X=5989.931, Y=-760.228, Z=341.971),
-with no arbitrary lateral offset. Z is a safe initial height, not a measured floor surface. The lights, floor and
+plus Y=128 for the user's reported two-character-width offset to the right in this room's camera.
+This small alignment correction is an estimate from the live render; sprite scale remains 4.25.
+Z is a safe initial height, not a measured floor surface. The lights, floor and
 ambient god rays are separate effects; their combined brightest rendered pixel is not derivable from light origins
-alone. The midpoint centers the native acquisition area; exact perceived alignment with the white patch still
-requires a game render. Screen-left/right changes with camera orientation and is not a world axis.
+alone. The lights locate the acquisition area; exact alignment with the rendered white patch still requires a game render.
+Screen-left/right changes with camera orientation and is not a universal world axis.
 
 The native clear crystal's mesh bounds have origin (-0.014322, -0.919101, 48.652589) and half-extents
 (27.772989, 27.477618, 58.152823). At its copied scale of 3, horizontal half-extents are about 83 units. The portal
-blocker uses 85 horizontally and spans Z=-300..300 around the native cave spawn floor reference Z=0. The visual
+blocker uses 85 horizontally and spans Z=-200..400, containing both the native floor reference Z=0 and the
+portal trigger's Z=100. The visual
 crystal's elevated pivot is not used as the collision center.
 
 ## Interaction and blocking are separate
@@ -41,16 +44,23 @@ A `CPP_MapTransitionTrigger` root intentionally overlaps Pawn; it detects proxim
 
 Fina's dedicated manual trigger uses native `MAP_TRANSITION_TRIGGER_DATA.isEventOnly=True`, an unowned-item
 condition and `EventList` entries of type `TalkEventPlayData`. It runs the existing once-only acquisition event;
-that event grants her actual custom vision, requests the obtain-vision screen and returns to the stone cave. The
-trigger follows her capsule, so its button area is independent of sprite lift/size. The original NPC remains the
-visible actor and hides when that save owns her. A conditional event prevents repeat acquisition.
+the trigger follows her capsule, so its button area is independent of sprite lift/size.
+The user's live test confirmed the capsule blocks and manual input opens the dialog, but the old event row's
+`ObtainItemList` plus obtain popup **did not add the vision**. The original Leah/Tronn acquisition timeline explicitly
+calls the native director's parameterless `ExecuteHeader` and `ExecuteFooter`. The private 0.2-second grant timeline
+now uses that lifecycle with the current event row and actual allocated vision ID. It has no original actor bindings,
+scene/camera tracks or story changes; compiled evaluation data is invalidated. The obtain screen and return-to-cave
+settings remain on that row. Visibility, interaction and grant share the same unowned-item condition. Actual
+inventory acquisition and hiding on return require a live-game smoke test; the SDK cannot execute native event code.
 
-Physical blockers are plain Actors with explicitly registered `InstanceComponents`. Their BoxComponents have no
-transition archetype or overlap delegates, `CreationMethod=Instance`, `ObjectType=ECC_WorldStatic`,
-`CollisionProfileName=BlockAll`, `CollisionEnabled=QueryAndPhysics` and no overlap events. Keeping a transition
-component's archetype can inherit Pawn=Overlap even after a profile change; strip both the template and its preload
-references and the inherited `RF_DefaultSubObject` flag when turning a native subobject into an instance.
-Do not rely on profile names alone while retaining conflicting donor defaults.
+The generic Actor/instance BoxComponent approach passed serialization checks but **did not block in the game**.
+Use the native `BlockingVolume_1` from `Dng_01Gra_43_GD` instead. Its constructor supplies the BrushComponent;
+its BodySetup contains a cooked Chaos convex, with `CTF_UseSimpleAsComplex`. Preserve the complete level's
+export/name indices and opaque Model/physics bytes. Activate only its world settings and volume in the actor list.
+Scale the BrushComponent from the actual convex half-bounds (375,100,300), then place it at the trigger's ground
+location. Load these private collision levels through native `LevelStreamingAlwaysLoaded` entries in the persistent
+world (`Wld_PL` for the entrance, the private stone-cave PL for the portal), retaining every original stream.
+Do not treat an overlap trigger or a successfully serialized generic component as proof of blocking.
 
 Keep a wider interaction volume around each blocker. The player must be within the trigger while standing outside
 the solid box; leave more than the capsule radius between their horizontal bounds. The portal trigger is half-size

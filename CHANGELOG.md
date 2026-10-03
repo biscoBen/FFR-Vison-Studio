@@ -11,7 +11,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Repair Crystal Fina's cave acquisition with the native event header/footer timeline; retain the real allocated vision, once-only guard, obtain screen and return to the stone cave.
+- Replace the ineffective generic cave/portal blockers with native cooked BlockingVolumes, and move Fina slightly right while preserving her confirmed size and interaction. Native asset checks complement the required live acquisition/collision retest.
 
 ## Published grounded cave interaction and collision — 2026-10-03
 

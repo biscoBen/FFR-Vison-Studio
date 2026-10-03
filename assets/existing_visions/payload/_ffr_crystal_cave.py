@@ -4,6 +4,7 @@ import copy
 import json
 from pathlib import Path
 import struct
+import uuid
 
 NAME = 'Studio_CrystalCave'
 MAP_ID = 29991
@@ -16,6 +17,7 @@ COMPOSITE = 'Map/CDT_MapData_Demo'
 MAP_UNIT = 'Asset/Map/DT_MapUnitAsset'
 PLACEMENT = 'Asset/Map/DT_MapUnitPlacementAsset'
 WORLD = 'Map/Wld/EV/Wld_01Gra_EV'
+WORLD_PL = 'Map/Wld/Wld_PL'
 ROOM = 'Map/Com/00Com/00Com_217/Com_00Com_217_PL'
 ROOM_BG = 'Map/Com/00Com/00Com_217/BG/Com_00Com_217_01_BG'
 STONE = 'Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL'
@@ -23,6 +25,8 @@ DONOR_GD = 'Map/Dng/01Gra/01Gra_44/GD/Dng_01Gra_44_01_GD'
 WORLD_BG = 'Map/Wld/01Gra/BG/Wld_01Gra_BG'
 TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
 PACKAGE = 'Map/StudioCrystalCave/' + NAME
+GRANT_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_014_03/SEQ_C01_014_03'
+GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
 # its trigger, so leaving cannot immediately send the player back inside.
@@ -31,6 +35,7 @@ ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
 FINA_SCALE = 4.25
 FINA_FLOAT = 40.0
+FINA_ALIGNMENT_Y = 128.0  # Live test: roughly two field-sprite widths screen-right.
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
 PORTAL = (4000.0, 31.0, 100.0)
@@ -98,10 +103,12 @@ def prepare(tables, units, root, rows):
         raise ValueError('The story-free vision grant template changed.')
     desired = testing.apply_fields(donor, {
         'Description': 'Crystal Fina cave acquisition', 'encountGroupId': -1,
+        'EventSequence': '/Game/' + GRANT_SEQUENCE,
         'IsGetOffVehicle': False, 'IsHiddenFieldUI': True, 'LoadingScreenSetting': 'White',
         'MapStartupSettings.ChangeBGM': 'NotChange',
         'RestoreSoundVolumeSettings.IsRevertValume': False,
-        'FooterSettings.IsApplyProgressis': True,
+        # The timeline executes the footer, as in the native acquisition event.
+        'FooterSettings.IsApplyProgressis': False,
         'IsOpenDialogByFinishEvent': True,
         'TransitionLocation.mapId': STONE_ID, 'TransitionLocation.pointId': 1,
         'TransitionLocation.bDoAutoSave': False,
@@ -197,7 +204,7 @@ def clone_graph(dst, src, indices, roots):
         if isinstance(value, list): return [remap(v) for v in value]
         if not isinstance(value, dict): return value
         result = {k: remap(v) for k, v in value.items()}
-        if 'ObjectPropertyData' in value.get('$type', ''):
+        if value.get('$type', '').split('.')[-1] == 'ObjectPropertyData, UAssetAPI':
             result['Value'] = ref(value['Value'])
         if 'Delegate' in value and 'Object' in value:
             result['Object'] = ref(value['Object'])
@@ -263,7 +270,7 @@ def clear_crystals(view):
 
 
 def fina_spawn(view, crystal):
-    """Use the midpoint of the native acquisition lights, not a screen offset.
+    """Use native acquisition lights and the small live-tested lateral offset.
 
     Both lights sit above the platform. Their Z is a safe spawn height; the
     capsule must still settle against native floor collision.
@@ -297,7 +304,8 @@ def fina_spawn(view, crystal):
         if distance(light) >= 200.0 ** 2 or light in selected:
             raise ValueError('The paired acquisition lights changed.')
         selected.append(light)
-    return tuple(sum(float(light[a]) for light in selected) / 2 for a in ('X', 'Y', 'Z'))
+    midpoint = tuple(sum(float(light[a]) for light in selected) / 2 for a in ('X', 'Y', 'Z'))
+    return (midpoint[0], midpoint[1] + FINA_ALIGNMENT_Y, midpoint[2])
 
 
 def data_property(name, value, kind, **extra):
@@ -306,53 +314,114 @@ def data_property(name, value, kind, **extra):
                 **{'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI'}, **extra)
 
 
-def blocking_box(view, donor, level_id, world_id, label, center, extent):
-    """Register an independent world-static box, without trigger archetypes.
+def blocking_level(donor, label, center, extent):
+    """Keep the native cooked BlockingVolume graph and physics bytes intact.
 
-    A transition root inherits Pawn=Overlap. Changing its profile while keeping
-    that archetype does not make a dependable wall. This is an instance component
-    of a plain Actor, with explicit registration, type and collision settings.
+    Generic Actor instance boxes survived serialization but did not block in
+    game. A native volume constructs/registers its BrushComponent and brings a
+    cooked convex BodySetup. Copy the whole level to preserve opaque model and
+    Chaos data at their original export/name indices; activate only the volume.
     """
-    m = clone_graph(view, donor, [5, 2], {8: level_id, 14: world_id})
-    owner = view['Exports'][m[5]-1]; box = view['Exports'][m[2]-1]
-    engine = next(-(i+1) for i, imp in enumerate(view['Imports']) if imp['ObjectName'] == '/Script/Engine')
-    imp = copy.deepcopy(view['Imports'][-box['ClassIndex']-1])
-    imp.update(ObjectName='Actor', OuterIndex=engine)
-    view['Imports'].append(imp)
-    owner.update(ObjectName=NAME + '_' + label, ClassIndex=-len(view['Imports']), TemplateIndex=0)
-    root = property_data(owner, 'RootComponent')
-    component = copy.deepcopy(root); component.update(Name='0')
-    owner['Data'] = [root, data_property('bActorEnableCollision', True, 'BoolPropertyData'),
-        data_property('InstanceComponents', [component], 'ArrayPropertyData', ArrayType='ObjectProperty')]
-    owner['SerializationBeforeSerializationDependencies'] = []
-    owner['SerializationBeforeCreateDependencies'] = [owner['ClassIndex']]
-    view['DependsMap'][m[5]-1] = [owner['ClassIndex'], m[2]]
-    owner['CreateBeforeCreateDependencies'] = [owner['ClassIndex']]
-    box.update(ObjectName=label + 'Box', TemplateIndex=0)
-    if 'ObjectFlags' in box:
-        box['ObjectFlags'] = ', '.join(flag.strip() for flag in box['ObjectFlags'].split(',')
-                                      if flag.strip() != 'RF_DefaultSubObject')
-    box['SerializationBeforeSerializationDependencies'] = []
-    box['SerializationBeforeCreateDependencies'] = [box['ClassIndex']]
-    box['CreateBeforeCreateDependencies'] = [box['ClassIndex'], m[5]]
-    view['DependsMap'][m[2]-1] = [box['ClassIndex'], m[5]]
-    box['Data'] = [p for p in box['Data'] if p['Name'] in ('RelativeLocation', 'BoxExtent')]
-    vector(box, 'RelativeLocation', center); vector(box, 'BoxExtent', extent)
-    body = copy.deepcopy(property_data(box, 'BoxExtent'))
-    body.update(Name='BodyInstance', StructType='BodyInstance', SerializeNone=True)
-    body['Value'] = [data_property('CollisionProfileName', 'BlockAll', 'NamePropertyData'),
-        data_property('ObjectType', 'ECC_WorldStatic', 'EnumPropertyData',
-                      EnumType='ECollisionChannel', InnerType='ByteProperty'),
-        data_property('CollisionEnabled', 'QueryAndPhysics', 'EnumPropertyData',
-                      EnumType='ECollisionEnabled', InnerType='ByteProperty')]
-    body['IsZero'] = False
-    box['Data'] += [body, data_property('bGenerateOverlapEvents', False, 'BoolPropertyData'),
-        data_property('CreationMethod', 'Instance', 'EnumPropertyData',
-                      EnumType='EComponentCreationMethod', InnerType='ByteProperty'),
-        data_property('Mobility', 'Static', 'EnumPropertyData',
-                      EnumType='EComponentMobility', InnerType='ByteProperty')]
-    names(view, [owner, box, view['Imports']])
-    return m[5]
+    view = private_level(donor, '/Game/' + TRANSITION_GD, '/Game/' + PACKAGE + '_' + label)
+    owner_id, owner = export(view, 'BlockingVolume_1')
+    root_id, root = export(view, 'BrushComponent0')
+    body_id, body = export(view, 'BodySetup_0')
+    if (property_data(owner, 'RootComponent')['Value'] != root_id
+            or property_data(root, 'BrushBodySetup')['Value'] != body_id
+            or property_data(body, 'CollisionTraceFlag')['Value'] != 'CTF_UseSimpleAsComplex'):
+        raise ValueError('The native blocking volume physics layout changed.')
+    convex, = property_data(property_data(body, 'AggGeom'), 'ConvexElems')['Value']
+    bounds, = property_data(convex, 'ElemBox')['Value']
+    bounds = bounds['Value']
+    half = tuple((float(bounds['Max'][axis]) - float(bounds['Min'][axis])) / 2 for axis in ('X', 'Y', 'Z'))
+    if half != (375.0, 100.0, 300.0):
+        raise ValueError('The native cooked blocker bounds changed.')
+    owner['ObjectName'] = NAME + '_' + label
+    vector(root, 'RelativeLocation', center)
+    scale = copy.deepcopy(property_data(root, 'RelativeLocation')); scale['Name'] = 'RelativeScale3D'
+    scale['Value'][0]['Name'] = 'RelativeScale3D'
+    root['Data'].append(scale); vector(root, 'RelativeScale3D', tuple(size / old for size, old in zip(extent, half)))
+    actors(view, [export(view, 'CPP_MuchaWorldSetting')[0], 0, owner_id])
+    names(view, view['Exports'])
+    return view
+
+
+def add_collision_stream(view, world_name, template_view, path):
+    """Always load a private collision level without changing original streams."""
+    world_id, world = export(view, world_name)
+    donor_id, donor = next((i, e) for i, e in enumerate(template_view['Exports'], 1)
+                          if e['ClassIndex'] < 0 and template_view['Imports'][-e['ClassIndex']-1]['ObjectName']
+                          == 'LevelStreamingAlwaysLoaded')
+    parent = donor['OuterIndex']
+    m = clone_graph(view, template_view, [donor_id], {parent: world_id})
+    stream_id = m[donor_id]; stream = view['Exports'][stream_id-1]
+    stream['ObjectName'] = 'LevelStreamingAlwaysLoaded_' + Path(path).name
+    property_data(stream, 'WorldAsset')['Value']['AssetPath'].update(
+        PackageName='/Game/' + path, AssetName=Path(path).name)
+    raw = base64.b64decode(world['Extras'])
+    if len(raw) < 12 or len(raw) % 4:
+        raise ValueError('The native world streaming layout changed.')
+    values = list(struct.unpack('<' + 'i' * (len(raw) // 4), raw))
+    if values[2] != len(values) - 3 or any(not 0 < i <= len(view['Exports']) for i in values[3:]):
+        raise ValueError('The native world streaming references changed.')
+    values[2] += 1; values.append(stream_id)
+    world['Extras'] = base64.b64encode(struct.pack('<' + 'i' * len(values), *values)).decode()
+    world['CreateBeforeSerializationDependencies'].append(stream_id)
+    names(view, [stream, view['Imports']])
+
+
+def grant_sequence(source):
+    """Run the native event lifecycle; the obtain popup does not apply grants.
+
+    Use the native director's parameterless ExecuteHeader/ExecuteFooter functions
+    and current event row. No original actor bindings, dialogue or camera tracks
+    participate. Preserve indices/opaque exports, but invalidate compiled tracks.
+    """
+    view = private_level(source, '/Game/' + GRANT_DONOR, '/Game/' + GRANT_SEQUENCE)
+    _, sequence = export(view, Path(GRANT_SEQUENCE).name)
+    scene = view['Exports'][property_data(sequence, 'MovieScene')['Value']-1]
+    def imported(name):
+        candidates = [-(i+1) for i, e in enumerate(view['Imports']) if e['ObjectName'] == name]
+        if len(candidates) != 1: raise ValueError('The native grant function changed: ' + name)
+        return candidates[0]
+    set_value(sequence, 'DirectorClass', imported('CPP_TalkEventSequenceDirector'))
+    set_value(sequence, 'CompiledData', 0)
+    set_value(property_data(sequence, 'BindingReferences'), 'SortedReferences', [])
+    for name in ('Possessables', 'ObjectBindings', 'BindingGroups'): set_value(scene, name, [])
+    set_value(scene, 'CameraCutTrack', 0)
+    track_id, track = export(view, 'MovieSceneEventTrack_0')
+    sections = property_data(track, 'Sections')['Value']
+    if len(sections) != 1: raise ValueError('The native event track changed.')
+    section = view['Exports'][sections[0]['Value']-1]
+    prop = copy.deepcopy(property_data(scene, 'Tracks')['Value'][0]); prop['Value'] = track_id
+    set_value(scene, 'Tracks', [prop])
+    channel = property_data(section, 'EventChannel')
+    times = property_data(channel, 'KeyTimes'); events = property_data(channel, 'KeyValues')
+    first_time = times['Value'][0]; first_event = events['Value'][0]
+    times['Value'] = []; events['Value'] = []
+    for index, (tick, name) in enumerate(((0, 'ExecuteHeader'), (2400, 'ExecuteFooter'))):
+        time = copy.deepcopy(first_time); time['Name'] = str(index)
+        time['Value'][0]['Name'] = str(index)
+        time['Value'][0]['Value']['Value'] = tick
+        time['IsZero'] = time['Value'][0]['IsZero'] = False
+        event = copy.deepcopy(first_event); event['Name'] = str(index)
+        ptrs = property_data(event, 'Ptrs')
+        set_value(ptrs, 'Function', imported(name))
+        set_value(ptrs, 'BoundObjectProperty', dict(property_data(ptrs, 'BoundObjectProperty')['Value'],
+                                                  Path=[], ResolvedOwner=0))
+        times['Value'].append(time); events['Value'].append(event)
+    times['IsZero'] = events['IsZero'] = channel['IsZero'] = False
+    playback = property_data(scene, 'PlaybackRange')['Value'][0]['Value']
+    playback['LowerBound']['Value']['Value'] = 0
+    playback['UpperBound']['Value']['Value'] = 4800
+    # Track-specific cached evaluation ranges/signatures must not reuse the
+    # original cutscene's compiled evaluation field.
+    track['Data'] = [p for p in track['Data'] if p['Name'] not in ('EvaluationField', 'EvaluationFieldGuid')]
+    for e in (sequence, scene, track, section):
+        signature = property_data(e, 'Signature')['Value'][0]
+        signature['Value'] = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL, GRANT_SEQUENCE + ':' + e['ObjectName'])).upper() + '}'
+    names(view, view['Exports'])
+    return view
 
 
 def acquisition_interaction(npc, donor, conditional_template, unit):
@@ -536,13 +605,7 @@ def make_levels(source, unit):
         export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
     stone_gd['Exports'][b[actor_idx]-1]['ObjectName'] = NAME + '_PortalCrystal'
     vector(stone_gd['Exports'][b[mesh_idx]-1], 'RelativeLocation', (PORTAL[0], PORTAL[1], 250.0))
-    # Native cave spawn feet are Z=0. Span below and above that plane,
-    # independently of the elevated cosmetic crystal (Z=250).
-    floor = property_data(source[DONOR_GD]['Exports'][11], 'RelativeLocation')['Value'][0]['Value']
-    blocking = blocking_box(stone_gd, source[DONOR_GD], level_id, world_id,
-                            'PortalCollision', (PORTAL[0], PORTAL[1], float(floor['Z'])),
-                            (85.0, 85.0, 300.0))
-    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx], blocking])
+    actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx]])
     names(stone_gd, stone_gd['Exports'])
 
     stone_pl = private_level(source[STONE], '/Game/' + STONE, '/Game/' + PACKAGE + '_Stone_PL')
@@ -585,11 +648,16 @@ def make_levels(source, unit):
     scale = copy.deepcopy(property_data(clear_mesh, 'RelativeScale3D'))
     cave_mesh['Data'] = [p for p in cave_mesh['Data'] if p['Name'] != 'RelativeScale3D'] + [scale]
     vector(cave_mesh, 'RelativeScale3D', ENTRANCE_SCALE)
-    blocking = blocking_box(wld, source[DONOR_GD], level_id, world_id,
-                            'EntranceCollision', ENTRANCE, (90.0, 150.0, 350.0))
-    actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx], blocking])
+    actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx]])
+    world_pl = copy.deepcopy(source[WORLD_PL])
+    add_collision_stream(world_pl, Path(WORLD_PL).name, source[WORLD_PL], PACKAGE + '_EntranceCollision')
+    add_collision_stream(stone_pl, NAME + '_Stone_PL', source[WORLD_PL], PACKAGE + '_PortalCollision')
+    entrance_collision = blocking_level(source[TRANSITION_GD], 'EntranceCollision', ENTRANCE, (90.0, 150.0, 350.0))
+    portal_collision = blocking_level(source[TRANSITION_GD], 'PortalCollision', PORTAL, (85.0, 85.0, 300.0))
     for v in (gd, wld): names(v, v['Exports'])
-    return {WORLD: wld, PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,
+    return {WORLD: wld, WORLD_PL: world_pl,
+            PACKAGE + '_EntranceCollision': entrance_collision, PACKAGE + '_PortalCollision': portal_collision,
+            PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,
             PACKAGE + '_BG': bg_room, PACKAGE + '_Stone_PL': stone_pl, PACKAGE + '_Stone_GD': stone_gd}
 
 
@@ -641,7 +709,8 @@ def map_mappings(original, blueprints):
     def property_bytes(view, p):
         types = {'BoolProperty': 1, 'IntProperty': 2, 'FloatProperty': 3, 'ObjectProperty': 4,
                  'NameProperty': 5, 'DelegateProperty': 6, 'StrProperty': 10,
-                 'TextProperty': 11, 'MulticastDelegateProperty': 13}
+                 'TextProperty': 11, 'MulticastDelegateProperty': 13,
+                 'MulticastInlineDelegateProperty': 13, 'MulticastSparseDelegateProperty': 13}
         kind = p['SerializedType']
         if kind == 'StructProperty':
             imp = view['Imports'][-p['Struct']-1]
@@ -683,6 +752,8 @@ def blueprint_mappings(views, env, work):
             collect(view['Imports'][-parent['OuterIndex']-1]['ObjectName'], parent['ObjectName'])
     for view in views.values():
         for e in view['Exports']:
+            if 'ClassExport' in e['$type'] and e['SuperStruct'] < 0:
+                found[e['ObjectName']] = (view, e)
             if 'NormalExport' not in e['$type'] or e['ClassIndex'] >= 0: continue
             cl = view['Imports'][-e['ClassIndex']-1]
             if cl['ClassName'] == 'BlueprintGeneratedClass':
@@ -714,7 +785,8 @@ def check_level(expected, built):
     if expected['Imports'] != built['Imports'] or len(expected['Exports']) != len(built['Exports']):
         raise ValueError('A generated cave level lost its imports or exports.')
     for a, b in zip(expected['Exports'], built['Exports']):
-        for key in ('ObjectName', 'OuterIndex', 'ClassIndex', 'SuperIndex', 'TemplateIndex', 'Extras', 'Actors'):
+        for key in ('ObjectName', 'OuterIndex', 'ClassIndex', 'SuperIndex', 'TemplateIndex', 'Extras', 'Actors',
+                    'ScriptBytecodeRaw'):
             if a.get(key) != b.get(key): raise ValueError('Cave level reference changed: ' + key)
         if semantic(a.get('Data')) != semantic(b.get('Data')):
             raise ValueError('Cave level properties changed: ' + a['ObjectName'])
@@ -729,19 +801,22 @@ def build(units, env):
     if not (legacy / 'FFRS/Content/BP/Map/Unit/BP_MapUnit_NPC_Field.uasset').is_file():
         env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'BP/Map/'))
     source = {}
-    for rel in (WORLD, ROOM, ROOM_BG, STONE, DONOR_GD, WORLD_BG, TRANSITION_GD):
-        path = legacy / ('FFRS/Content/' + rel + '.umap')
+    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR):
+        suffix = '.uasset' if rel == GRANT_DONOR else '.umap'
+        path = legacy / ('FFRS/Content/' + rel + suffix)
         if not path.is_file():
             env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', rel))
         dump = work / (Path(rel).name + '-original.json')
         env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
         source[rel] = json.loads(dump.read_text(encoding='utf-8-sig'))
     expected = make_levels(source, unit)
+    expected[GRANT_SEQUENCE] = grant_sequence(source[GRANT_DONOR])
     mapping = blueprint_mappings(expected, env, work)
     for rel, view in expected.items():
         names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        destination = Path(env['OUT']) / ('FFRS/Content/' + rel + '.umap')
+        suffix = '.uasset' if rel == GRANT_SEQUENCE else '.umap'
+        destination = Path(env['OUT']) / ('FFRS/Content/' + rel + suffix)
         destination.parent.mkdir(parents=True, exist_ok=True)
         env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])
         decoded = work / (Path(rel).name + '-verified.json')
