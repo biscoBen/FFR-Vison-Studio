@@ -11,11 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Fix the Crystal Fina cave world-map crash by retaining added overlap/delegate names when packing its maps into
-  IoStore. Validate the packed-name header as well as authored values; check the supplied maps through actual
-  container conversion. In-game cave travel still requires testing in Resonance.
-- Right-click an Added vision to remove it directly from the main screen, using the existing confirmation and
-  removal safeguards. Original visions return to Defaults when their overrides are removed.
+- No pending code changes.
+
+## Published cave packing fix and roster removal menu — 2026-10-03
+
+Changes in [`f52bbb6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/f52bbb656086daed7d467fa8a1fa9ad33e9fd49a),
+[test package 37137462441](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37137462441).
+
+- Fix the cave entrance's reported `Bad name index 127/62` crash: retain added overlap/delegate names in the
+  packed map header without reordering original names. Reproduced the discarded callbacks through actual IoStore
+  conversion, then verified all seven generated maps retain their authored delegate/animation names after packing
+  and extraction. Reject a truncated name header during building. In-game cave travel still needs a Resonance retest.
+- Right-click an Added vision and choose **Remove vision**, with the existing confirmation, cancellation and
+  removal safeguards. Original visions return to Defaults when their overrides are removed. Builds and the
+  cave-required Crystal Fina profile remain protected. Rebuild/install the mod after updating Studio to apply the map fix.
+- Passed local analysis and 201 Python checks with three engine contracts deferred to Windows, and focused mouse
+  removal tests. Windows passed the full Flutter/Python suites, real frozen-engine startup, bundle and launcher/updater
+  checks and compilation before publication. Verified the authenticated ZIP checksum, exact commit, all 29 bundled
+  extension/preset files and compiled removal menu. One code push and one reused automatic build; master is unchanged.
+- CI took 4m38s, with 8m06s summed job execution. First complete candidate: 09:35:42 PDT; package verification finished
+  at 09:41:39 PDT (5m57s, including final local checks/push, CI and verification). From the first recorded investigation
+  time at 09:24:20 PDT, verification took 17m19s, plus the initial branch/instruction reads before that timestamp.
+  Publication notes follow through the documentation-only path without another app build.
 
 ## Published Crystal Fina cave — 2026-10-03
 
