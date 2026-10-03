@@ -64,7 +64,7 @@ class AbilityModeTests(unittest.TestCase):
             self.assertEqual(report['skills'][0]['status'], 'existing_sequence')
 
     def test_review_is_complete_and_cannot_hide_a_repurposed_skill_or_true_summon(self):
-        review = json.loads((ROOT / 'assets/existing_visions/payload/ability_hiding_review.json').read_text())
+        review = json.loads((ROOT / 'assets/existing_visions/payload/ability_hiding_review.json').read_text(encoding='utf-8'))
         ids = [r['id'] for r in review['skills']]
         self.assertEqual(len(ids), 304); self.assertEqual(len(set(ids)), 304)
         self.assertFalse(set(ids) & set(range(430980, 431061, 10)))
