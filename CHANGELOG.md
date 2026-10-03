@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending code changes.
+
+## Published party overworld appearances and cave interactions — 2026-10-03
+
+Changes in [`fe8ed80`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fe8ed800a0e7eb628e8c016e4c4f795aca1361e6),
+[test package 37145810773](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37145810773).
+
 - Double cave Crystal Fina's sprite scale and shift her right toward the floor glow, keeping collision-based settling
   and once-only acquisition. Require input at the overworld entrance and add an invisible blocking box at the crystal
   portal while preserving its larger interaction area.
@@ -18,6 +25,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Rain. Bundle its eight-direction idle/walk/run sheet, preview the walking frames, and preserve battle choices and
   both appearances in saved configs. Redirect primary field assets only; ordinary scenes using them also show the
   new look. Placement, walking direction and scene compatibility still require an in-game check.
+- Passed analysis, affected Flutter checks, 210 Python checks (three engine contracts deferred locally to Windows),
+  bundle verification and native table/map/field asset SDK and actual IoStore pack/extract readbacks. Windows passed
+  the full suites, fresh frozen-engine startup including the new field importer, launcher/updater tests and
+  compilation before publication. Verified the authenticated ZIP checksum, exact commit/run, all 31 bundled
+  extension/preset files and compiled picker controls. One code push and one reused automatic build; master is
+  unchanged. This workspace has no Resonance runtime. Update Studio, rebuild/install the mod and restart the game;
+  choose **Party characters → Edit overworld appearance → Vagrant Knight Rain → Use this model** to test walking.
+- Published at 11:57:20 PDT. CI took 5m16s, with 8m37s summed job execution. First complete candidate: 11:48:25 PDT;
+  verification finished at 11:58:05 PDT (9m40s including local corrections/checks, push, CI and verification).
+  From task start at 11:34:51 PDT, the verified package took 23m14s: implementation 13m34s, local corrections/checks/push
+  3m40s, CI 5m16s and release verification 44s. Publication notes use the documentation-only path without another app build.
 
 ## Published Crystal Fina floor collision fix — 2026-10-03
 
