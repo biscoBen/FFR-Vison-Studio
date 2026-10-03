@@ -11,11 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Repair the shared cave return setup: private navigation links for its exit and crystal portal, with return point 1
-  registered in the persistent level and bound to that navigation area. Require a button to leave the stone cave,
-  preventing automatic re-exit on arrival. Restore the earlier event-only acquisition/talk flow after the transition
-  pre-event regressed controller confirmation. Preserve Fina's confirmed grant, size and collision; cave return and
-  controller confirmation require a live-game retest.
+No pending code changes.
+
+## Published cave navigation and controller repair — 2026-10-03
+
+Code: [`1a53b30`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1a53b301e44b2e143b6c4d6fa0f58bbedeb51aed).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37159561491),
+[Windows run 37159561491](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37159561491).
+
+- Both glowing-room exit routes still returned outside the cave. Replace the stone cave's inherited navigation
+  reference with private exit/portal links; register return point 1 in its persistent level and bind its navigation
+  area. Require a button to leave the stone cave, preventing automatic re-exit on arrival. Restore the earlier
+  event-only acquisition/talk flow after the transition pre-event regressed controller confirmation. Preserve
+  Fina's confirmed grant, size and collision. Cave return and controller confirmation require a live-game retest.
+- Verification: 218 local Python tests (3 reference/platform-dependent skips), Flutter analysis, bundle checks,
+  native table/scene readback, all 12 generated assets through IoStore and all 31 packaged files. All required
+  Windows Flutter, Python, frozen-engine startup, launcher/updater and publication gates passed for the exact commit.
+- Measured to verified package: **12m09s from request** — **4m59s investigation/implementation**, **1m54s local
+  checks and push**, **4m38s CI**, **38s release verification**. First complete candidate to verified package:
+  **7m10s**. CI used **8m07s runner time**. One code push/build, reused through authenticated release download;
+  publication notes use the documentation-only path.
 
 ## Published cave transition ownership — 2026-10-03
 
