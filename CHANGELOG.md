@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Fix installation with both Crystal Fina's cave and a party overworld replacement enabled: verify their combined
+  shared map-unit table, retaining exact checks for unrelated edits, missing rows and incorrect acquisition data.
+  Include the failing table in future testing-verification errors.
+- Correct Vagrant Knight Rain's swapped east/southeast sheet rows in both the walking viewer and generated
+  idle/walk/run animations. Rebuild/install the mod to regenerate the field assets.
 
 ## Published party overworld appearances and cave interactions — 2026-10-03
 

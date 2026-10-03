@@ -23,9 +23,9 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
     'South',
     'North',
     'West',
-    'Southeast',
-    'Southwest',
     'East',
+    'Southwest',
+    'Southeast',
     'Northeast',
     'Northwest',
   ];

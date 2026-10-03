@@ -214,17 +214,30 @@ def check_rows(original, built, operation):
         raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings.')
 
 
+def verification_operations(root, units, rows):
+    operations = prepare({}, units, root, rows)
+    import _ffr_overworld
+    # The cave adds its NPC to the same table as party field replacements.
+    # Verify their complete combined result rather than treating either as unrelated.
+    if _ffr_overworld.TABLE in operations:
+        _ffr_overworld.prepare(operations, [u for u in units if u.get('party')], rows)
+    return operations
+
+
 def verify(root, tool, usmap):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
-    operations = prepare({}, units, root, rows)
+    operations = verification_operations(root, units, rows)
     work = root / 'build/vision-testing'; work.mkdir(parents=True, exist_ok=True)
     for rel, operation in operations.items():
         target = work / (rel.replace('/', '_') + '.json')
         subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
-        check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+        try:
+            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+        except ValueError as error:
+            raise ValueError(f'{rel}: {error}') from error
     if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')
 
 

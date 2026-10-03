@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from types import SimpleNamespace
+from unittest import mock
 
 from test_existing_visions import ROOT, party
 from test_party_characters import unit, battle_rows
@@ -29,6 +30,57 @@ def map_rows():
 
 
 class OverworldTests(unittest.TestCase):
+    def test_install_verifiers_share_cave_and_field_expectations_and_reject_corruption(self):
+        from test_crystal_cave import cave_game, enabled, testing, cave
+        for cave_on, field_on in ((True, True), (False, True), (True, False)):
+            with self.subTest(cave=cave_on, field=field_on), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); originals, _, fina = cave_game()
+                originals[field.TABLE].update(map_rows())
+                rain = unit(); rain.pop('ffbe')
+                if field_on: rain['overworld'] = choice()
+                units = [fina, rain]
+                config = root/'mods/EstherTsukiko'; config.mkdir(parents=True)
+                (config/'units.json').write_text(json.dumps(units))
+                if cave_on: enabled(root)
+                rows = lambda rel: copy.deepcopy(originals[rel])
+                operations = testing.prepare({}, units, root, rows)
+                field.prepare(operations, [rain], rows)
+                built = copy.deepcopy(originals)
+                for rel, operation in operations.items():
+                    for e in operation['set']:
+                        built[rel][e['row']] = testing.apply_fields(built[rel][e['row']], e['set'])
+                    for e in operation['add']:
+                        built[rel][e['row']] = testing.apply_fields(originals[rel][e['cloneFrom']], e['set'])
+                for rel, value in originals.items():
+                    path = root/'extracted/rows'/(rel+'.json'); path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(json.dumps({'rows': value}))
+                if field_on:
+                    base = root/'build/visions_mod/assets/FFRS/Content'/field.package(rain).removeprefix('/Game/')
+                    base.parent.mkdir(parents=True)
+                    for suffix in ('', '_tex', '_normal', '_mreo'):
+                        for extension in ('.uasset', '.uexp'):
+                            base.with_name(base.name+suffix).with_suffix(extension).write_bytes(b'explicit file fixture')
+                def decode(args, **_):
+                    asset, target = args[2:4]
+                    rel = asset.split('FFRS/Content/Datatable/')[1].removesuffix('.uasset')
+                    source = built if '/build/visions_mod/' in asset else originals
+                    Path(target).write_text(json.dumps({'rows': source[rel]}))
+                with mock.patch('subprocess.run', side_effect=decode):
+                    testing.verify(root, ['fixture-tool'], 'fixture.usmap')
+                    party.verify(root, ['fixture-tool'], 'fixture.usmap')
+                    if cave_on and field_on:
+                        correct = copy.deepcopy(built[field.TABLE])
+                        changes = (
+                            lambda value: value[rain['jp']].update(Footstep='Wrong'),
+                            lambda value: value.pop(cave.NAME),
+                            lambda value: value[cave.NAME]['animationAssetList'][0].update(Ss6Project='Wrong'),
+                            lambda value: value.update(Unexpected={'ID': 99999}),
+                        )
+                        for change in changes:
+                            built[field.TABLE] = copy.deepcopy(correct); change(built[field.TABLE])
+                            with self.assertRaises(ValueError): testing.verify(root, ['fixture-tool'], 'fixture.usmap')
+                            with self.assertRaises(ValueError): party.verify(root, ['fixture-tool'], 'fixture.usmap')
+
     def test_field_choice_is_sparse_independent_and_rejects_unsupported_sheets(self):
         u = unit(); u['overworld'] = choice(); before = copy.deepcopy(u)
         self.assertEqual(party.validate(u), before)
@@ -77,6 +129,10 @@ class OverworldTests(unittest.TestCase):
         self.assertEqual({d for d,_ in field.DIRECTIONS}, {1,2,3,4,6,7,8,9})
         self.assertEqual(animations['idle8']['parts']['part_0']['Cell'], [[0,'field_1_0']])
         self.assertEqual(animations['idle2']['parts']['part_0']['Cell'], [[0,'field_0_0']])
+        # Visual review of the bundled sheet: row 3 faces east, row 5 southeast.
+        for motion, offset in (('idle', 0), ('move', 16), ('dash', 8)):
+            self.assertEqual(animations[f'{motion}6']['parts']['part_0']['Cell'][0], [0, f'field_{3+offset}_0'])
+            self.assertEqual(animations[f'{motion}3']['parts']['part_0']['Cell'][0], [0, f'field_{5+offset}_0'])
         for d,row in field.DIRECTIONS:
             for motion,offset,delay in (('idle',0,1),('move',16,8),('dash',8,5)):
                 animation = animations[f'{motion}{d}']; keys = animation['parts']['part_0']['Cell']

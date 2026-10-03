@@ -10,9 +10,9 @@ SHEET = 'vagrant_knight_rain_field.png'
 # ec345dbeb6a3f68d53aa24a107b8b53e78abfb51. Bundled; no build-time download.
 SHEET_SHA256 = 'c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba'
 TABLE = 'Asset/Map/DT_MapUnitAsset'
-# FFBE's rows: south, north, west, southeast, southwest, east,
+# FFBE's rows: south, north, west, east, southwest, southeast,
 # northeast, northwest. Resonance uses keypad directions, including 9.
-DIRECTIONS = ((2, 0), (8, 1), (4, 2), (3, 3), (1, 4), (6, 5), (9, 6), (7, 7))
+DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (9, 6), (7, 7))
 
 
 def validate(choice):
@@ -121,7 +121,8 @@ def generate(u, env):
 
 def verify(root, tool, usmap, units):
     import subprocess
-    selected = [u for u in units if u.get('overworld')]
+    import _ffr_testing
+    selected = [u for u in units if u.get('party') and u.get('overworld')]
     if not selected: return
     root = Path(root); work = root / 'build/overworld'; work.mkdir(parents=True, exist_ok=True)
     views = []
@@ -130,7 +131,10 @@ def verify(root, tool, usmap, units):
         decoded = work / (label + '-rows.json')
         subprocess.run(tool + ['rows', str(path), str(decoded), '--usmap', usmap], check=True, capture_output=True)
         views.append(json.loads(decoded.read_text(encoding='utf-8-sig'))['rows'])
-    check_rows(*views, selected)
+    def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    operations = _ffr_testing.verification_operations(root, units, rows)
+    if TABLE not in operations: prepare(operations, selected, rows)
+    _ffr_testing.check_rows(*views, operations[TABLE])
     for u in selected:
         path = root / 'build/visions_mod/assets/FFRS/Content' / package(u).removeprefix('/Game/')
         for suffix in ('', '_tex', '_normal', '_mreo'):

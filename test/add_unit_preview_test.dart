@@ -110,6 +110,17 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byType(OverworldAnimPane), findsOneWidget);
     expect(find.text('South'), findsOneWidget);
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 30)));
+    await tester.pump();
+    for (final direction in [('East', 19), ('Southeast', 21)]) {
+      await tester.tap(find.byType(DropdownButton<int>));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.text(direction.$1).last);
+      await tester.pump(const Duration(milliseconds: 300));
+      final paint = find.descendant(of: find.byType(OverworldAnimPane), matching: find.byType(CustomPaint));
+      final dynamic painter = tester.widget<CustomPaint>(paint).painter;
+      expect(painter.row, direction.$2);
+    }
     await tester.tap(find.text('USE THIS MODEL'));
     await tester.pump();
     expect(app.fieldPartyId, 1001);

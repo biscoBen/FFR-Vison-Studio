@@ -220,7 +220,7 @@ def verify(root, tool, usmap):
     root = Path(root); units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
     party = [validate(u) for u in units if u.get('party')]
     import _ffr_overworld
-    _ffr_overworld.verify(root, tool, usmap, party)
+    _ffr_overworld.verify(root, tool, usmap, units)
     selected = [u for u in party if u.get('ffbe')]
     if not selected: return
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)
