@@ -11,7 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Keep Crystal Fina's acquisition return inside the stone cave beside its crystal: the event and invoking button now share the explicit cave/return-point route. Preserve the working acquisition, size, input and collision; nudge Fina slightly right toward the floor glow. Live return/alignment still require retesting.
+No pending code changes.
+
+## Published cave acquisition return — 2026-10-03
+
+Code: [`4a5707a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4a5707a088b265288dbb1dc022620f8c3cc12e87).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37156080907),
+[Windows run 37156080907](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37156080907).
+
+- Give Fina's acquisition button the same explicit stone-cave/portal return destination as its event, including both
+  default and conditional routes. Preserve the working grant, white flash, size, input and collision. Nudge Fina
+  another 16 units right toward the floor glow. Live return and final alignment still require retesting.
+- Verification: 215 local Python tests (3 reference/platform-dependent skips), Flutter analysis, bundle checks,
+  native readback and all 11 scene assets through IoStore, including the serialized return routes and portal point.
+  All required Windows checks/publication passed; authenticated download and all 31 packaged files verified.
+- Measured to verified release: **11m18s from task start** — **3m44s investigation/implementation**, **2m01s local
+  checks/corrections and push**, **4m46s CI**, **47s release verification**. First complete candidate to verified
+  release: **7m34s**. CI used **8m31s runner time**. One code push/build; no duplicate dispatch.
 
 ## Published native cave acquisition and blockers — 2026-10-03
 
