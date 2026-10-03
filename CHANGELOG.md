@@ -11,12 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending code changes.
+
+## Published grounded cave interaction and collision — 2026-10-03
+
+Changes in [`5b8197e`](https://github.com/biscoBen/FFR-Vison-Studio/commit/5b8197ed89c562972f826bfe9aa7f93f40185d07),
+[test package 37150366752](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37150366752).
+
 - Reduce cave Crystal Fina's sprite by 15% and center her between the room's native acquisition lights.
   Add a manual acquisition trigger attached to her grounded capsule, independent of sprite size/lift.
 - Register separate world-static blockers for the overworld entrance and cave portal; remove inherited
   transition archetypes and extend portal collision below the native floor plane. Document scene placement rules.
   Serialized assets and Windows packaging are checked; final visual alignment and gameplay input need an in-game test.
-
+- Passed analysis, 212 local Python tests (three frozen-engine contracts deferred to Windows), bundle checks,
+  native SDK generation/readback and actual IoStore packing/extraction for all seven maps. Windows passed its full
+  suites, fresh engine startup, launcher/updater checks and compilation before publication. Authenticated download
+  verified the ZIP checksum, exact commit/run and all 31 bundled files; the packaged generator reproduces the checked maps.
+- One code push and one reused automatic build. Request to verified package: **27m14s**; investigation/implementation
+  **16m56s**, final local validation/corrections **2m32s**, push/CI **7m22s**, release verification **24s**.
+  First completed candidate to verified package: **10m18s**, including later local corrections. CI itself took
+  **7m18s**, with **11m08s** summed job execution; validation (**6m47s**) was the longest job. These are measured
+  intervals; publication-note bookkeeping follows package verification and creates no additional app build.
+  Rebuild/install the mod and restart Resonance. Live collision/input and the brightest rendered glow still need
+  an in-game smoke test; the workspace has native reference assets but no running game or native C++ source.
 
 ## Published combined cave/overworld installation and direction fixes — 2026-10-03
 
