@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending code changes.
+- Reduce cave Crystal Fina's sprite by 15% and center her between the room's native acquisition lights.
+  Add a manual acquisition trigger attached to her grounded capsule, independent of sprite size/lift.
+- Register separate world-static blockers for the overworld entrance and cave portal; remove inherited
+  transition archetypes and extend portal collision below the native floor plane. Document scene placement rules.
+  Serialized assets and Windows packaging are checked; final visual alignment and gameplay input need an in-game test.
+
 
 ## Published combined cave/overworld installation and direction fixes — 2026-10-03
 

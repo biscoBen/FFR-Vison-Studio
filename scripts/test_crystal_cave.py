@@ -145,25 +145,30 @@ class CrystalCaveTests(unittest.TestCase):
         invalid = copy.deepcopy(cl); invalid['LoadedProperties'][0]['SerializedType'] = 'Unsupported'
         with self.assertRaises(ValueError): cave.map_mappings(source, {'BP_Child_C': (view, invalid)})
 
-    def test_fina_spawn_uses_light_height_instead_of_ground_mesh_origin(self):
+    def test_fina_spawn_centers_native_acquisition_lights_not_mesh_origins(self):
         def location(x, y, z):
             return {'Name': 'RelativeLocation', 'Value': [{'Value': {'X': x, 'Y': y, 'Z': z}}]}
         crystal = {'Data': [location(100, 200, 532)]}
         view = {'Imports': [{'ObjectName': 'SM_Env_Com_00Com_44_ground001'},
-                            {'ObjectName': 'PointLightComponent'}], 'Exports': [
+                            {'ObjectName': 'PointLightComponent'},
+                            {'ObjectName': 'SM_Env_Com_magicstone002'}], 'Exports': [
             {'ClassIndex': 0, 'Data': [{'Name': 'StaticMesh', 'Value': -1}, location(0, 0, '+0')]},
             {'ClassIndex': -2, 'Data': [location(110, 210, 342)]},
-            {'ClassIndex': -2, 'Data': [location(160, 220, 500)]},
-            {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]}]}
+            {'ClassIndex': -2, 'Data': [location(120, 520, 340)]},
+            {'ClassIndex': -2, 'Data': [location('+0', '+0', 0)]},
+            {'ClassIndex': 0, 'Data': [{'Name': 'StaticMesh', 'Value': -3}, location(100, 500, 532)]}]}
         original = copy.deepcopy(view)
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
         cave.vector(crystal, 'RelativeLocation', (100, 200, 900))
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
         self.assertEqual(view, original)
         cave.vector(view['Exports'][0], 'RelativeLocation', (0, 0, -800))
-        self.assertEqual(cave.fina_spawn(view, crystal), (110, 960, 342))
-        for exports in (view['Exports'][1:], view['Exports'][:1]):
+        self.assertEqual(cave.fina_spawn(view, crystal), (115, 365, 341))
+        for exports in (view['Exports'][1:], view['Exports'][:-1], view['Exports'][:1]):
             with self.assertRaises(ValueError): cave.fina_spawn(dict(view, Exports=exports), crystal)
+        # Never silently reuse the same light for two crystal anchors.
+        cave.vector(view['Exports'][-1], 'RelativeLocation', (100, 200, 532))
+        with self.assertRaises(ValueError): cave.fina_spawn(view, crystal)
 
     def test_stationary_fina_settles_with_attached_interaction_and_preserves_other_movement_settings(self):
         def prop(name, value, kind, **extra):
@@ -242,18 +247,75 @@ class CrystalCaveTests(unittest.TestCase):
             {'Name':'OnComponentBeginOverlap','Value':[{'Object':5,'Delegate':'OnBeginOverlap'}]}])
         view = {'Imports': [], 'Exports': [], 'DependsMap': [], 'NameMap': []}
         before = copy.deepcopy(donor)
-        actor_id = cave.portal_collision(view, donor, 0, 0)
+        # A serialized instance must not inherit its donor's overlap-only archetype.
+        donor['Exports'][1]['TemplateIndex'] = -3
+        donor['Exports'][1]['SerializationBeforeSerializationDependencies'] = [-3]
+        donor['Exports'][1]['SerializationBeforeCreateDependencies'] = [-3]
+        donor['Exports'][1]['ObjectFlags'] = 'RF_Transactional, RF_DefaultSubObject'
+        before = copy.deepcopy(donor)
+        actor_id = cave.blocking_box(view, donor, 0, 0, 'PortalCollision',
+                                     (4000, 31, 0), (85, 85, 300))
         owner = view['Exports'][actor_id-1]; root = cave.property_data(owner,'RootComponent')['Value']
         box = view['Exports'][root-1]
         self.assertEqual(view['Imports'][-owner['ClassIndex']-1]['ObjectName'], 'Actor')
-        self.assertEqual([p['Name'] for p in owner['Data']], ['RootComponent'])
+        self.assertTrue(cave.property_data(owner, 'bActorEnableCollision')['Value'])
+        self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], root)
+        self.assertEqual(box['TemplateIndex'], 0)
+        self.assertEqual(box['SerializationBeforeSerializationDependencies'], [])
+        self.assertEqual(box['SerializationBeforeCreateDependencies'], [box['ClassIndex']])
+        self.assertNotIn('RF_DefaultSubObject', box['ObjectFlags'])
+        self.assertEqual(cave.property_data(box, 'CreationMethod')['Value'], 'Instance')
         self.assertFalse(any(p['Name'].startswith('OnComponent') for p in box['Data']))
         body = {p['Name']:p['Value'] for p in cave.property_data(box,'BodyInstance')['Value']}
-        self.assertEqual(body, {'CollisionProfileName':'BlockAll','CollisionEnabled':'QueryAndPhysics'})
+        self.assertEqual(body, {'CollisionProfileName':'BlockAll','CollisionEnabled':'QueryAndPhysics',
+                                'ObjectType':'ECC_WorldStatic'})
         self.assertFalse(cave.property_data(box,'bGenerateOverlapEvents')['Value'])
         extent = cave.property_data(box,'BoxExtent')['Value'][0]['Value']
-        self.assertLess(extent['X'] + 20, 160); self.assertLess(extent['Y'] + 20, 200)
+        self.assertLess(extent['X'] + 18.666666, 160); self.assertLess(extent['Y'] + 18.666666, 200)
+        center = cave.property_data(box, 'RelativeLocation')['Value'][0]['Value']
+        self.assertLess(center['Z'] - extent['Z'], 0)
+        self.assertGreater(center['Z'] + extent['Z'], 2 * 33.333332)
         self.assertEqual(donor, before)
+
+    def test_event_only_acquisition_uses_manual_input_and_follows_grounded_capsule(self):
+        from unittest.mock import patch
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        event = {'StructType': 'TalkEventPlayData', 'Name': '0', 'Value': [
+            prop('Condition', '!{flag:1170}'), prop('EventId', 'Tutorial_Party')]}
+        entry = {'Name': '0', 'Value': [prop('FlagCondition', ''), prop('isEventOnly', False),
+            prop('mapId', 3000), prop('pointId', 0), prop('isEnableAutoSave', True),
+            prop('EventList', []), prop('eventList2', []), prop('afterTransitionEventList', [event])]}
+        template = {'Data': [prop('m_IsAutoTransition', True), prop('m_IsUseCondion', True),
+                            prop('mTransitionDataList', [entry])]}
+        actor = {'Data': [prop('RootComponent', 4), prop('m_MapId', 1000), prop('m_PointID', 0),
+                          prop('m_UniqueId', 0), prop('m_MapInteractType', 'Transition')]}
+        def vector(name): return prop(name, [{'Value': {'X': 0, 'Y': 0, 'Z': 300}, 'IsZero': False}])
+        box = {'Data': [vector('RelativeLocation'), vector('BoxExtent')],
+               'CreateBeforeSerializationDependencies': []}
+        npc = {'NameMap': [], 'Exports': [
+            {'ObjectName': 'PersistentLevel', 'Actors': [0], 'OuterIndex': 2,
+             'CreateBeforeSerializationDependencies': []},
+            {'ObjectName': cave.NAME + '_NPC', 'OuterIndex': 0},
+            dict(actor, ObjectName='donor', OuterIndex=1), dict(box, ObjectName='root', OuterIndex=3)]}
+        before = copy.deepcopy(template)
+        with patch.object(cave, 'clone_graph', return_value={5: 3, 2: 4}):
+            cave.acquisition_interaction(npc, {}, template, {'id': 13507})
+        actor = npc['Exports'][2]
+        self.assertFalse(cave.property_data(actor, 'm_IsAutoTransition')['Value'])
+        actual, = cave.property_data(actor, 'mTransitionDataList')['Value']
+        self.assertTrue(cave.property_data(actual, 'isEventOnly')['Value'])
+        self.assertEqual(cave.property_data(actual, 'FlagCondition')['Value'], '{item:13507}==0')
+        scheduled, = cave.property_data(actual, 'EventList')['Value']
+        self.assertEqual(scheduled['StructType'], 'TalkEventPlayData')
+        self.assertEqual(cave.property_data(scheduled, 'EventId')['Value'], cave.EVENT)
+        self.assertEqual(cave.property_data(scheduled, 'Condition')['Value'], '{item:13507}==0')
+        self.assertEqual(cave.property_data(actual, 'afterTransitionEventList')['Value'], [])
+        self.assertFalse(cave.property_data(actual, 'isEnableAutoSave')['Value'])
+        self.assertEqual(cave.property_data(box, 'AttachParent')['Value'], 37)
+        self.assertEqual(cave.property_data(box, 'RelativeLocation')['Value'][0]['Value'], {'X': 0, 'Y': 0, 'Z': 0})
+        self.assertIn(37, box['CreateBeforeSerializationDependencies'])
+        self.assertEqual(npc['Exports'][0]['Actors'], [0, 3])
+        self.assertEqual(template, before)
 
     def test_appended_overlap_delegate_names_survive_iostore_name_map_trimming(self):
         view = {'NameMap': ['original', 'RootBoxComponent'], 'NamesReferencedFromExportDataCount': 2}

@@ -29,9 +29,8 @@ PACKAGE = 'Map/StudioCrystalCave/' + NAME
 ENTRANCE = (17600.0, 21400.0, 160.0)
 ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
-FINA_SCALE = 5.0
+FINA_SCALE = 4.25
 FINA_FLOAT = 40.0
-FINA_OFFSET = (0.0, 750.0, 0.0)
 RETURN = (17250.0, 21400.0, 200.0)
 SPAWN = (750.0, 0.0, 100.0)
 PORTAL = (4000.0, 31.0, 100.0)
@@ -124,7 +123,7 @@ def export(view, name):
 
 
 def property_data(owner, name):
-    matches = [v for v in owner['Data'] if v['Name'] == name]
+    matches = [v for v in owner.get('Data', owner.get('Value', [])) if v['Name'] == name]
     if len(matches) != 1:
         raise ValueError('Cave level property missing or ambiguous: ' + name)
     return matches[0]
@@ -264,59 +263,128 @@ def clear_crystals(view):
 
 
 def fina_spawn(view, crystal):
-    """Spawn above the platform at the clear crystal's light, then use collision.
+    """Use the midpoint of the native acquisition lights, not a screen offset.
 
-    The ground mesh's origin is not its surface: native character timelines
-    place their feet hundreds of units above that origin. The light gives a
-    safe starting height, not a floor height.
+    Both lights sit above the platform. Their Z is a safe spawn height; the
+    capsule must still settle against native floor collision.
     """
-    anchor = property_data(crystal, 'RelativeLocation')['Value'][0]['Value']
-    floors = []; lights = []
+    anchors = [property_data(crystal, 'RelativeLocation')['Value'][0]['Value']]
+    for e in view['Exports']:
+        if not isinstance(e.get('Data'), list): continue
+        for p in e['Data']:
+            if (p['Name'] == 'StaticMesh' and p['Value'] < 0
+                    and view['Imports'][-p['Value']-1]['ObjectName'] == 'SM_Env_Com_magicstone002'):
+                anchors.append(property_data(e, 'RelativeLocation')['Value'][0]['Value'])
+    if len(anchors) != 2:
+        raise ValueError('The paired acquisition crystal anchors changed.')
+    lights = []; floors = []
     for e in view['Exports']:
         if not isinstance(e.get('Data'), list): continue
         props = {p['Name']: p for p in e['Data']}
         mesh = props.get('StaticMesh', {}).get('Value', 0)
         if mesh < 0 and view['Imports'][-mesh-1]['ObjectName'] == 'SM_Env_Com_00Com_44_ground001':
             floors.append(e)
-        if e['ClassIndex'] < 0 and view['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'PointLightComponent':
-            if 'RelativeLocation' not in props: continue
-            loc = props['RelativeLocation']['Value'][0]['Value']
-            distance = (float(loc['X']) - float(anchor['X'])) ** 2 + (float(loc['Y']) - float(anchor['Y'])) ** 2
-            if distance < 200.0 ** 2: lights.append((distance, loc))
+        if (e['ClassIndex'] < 0 and view['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'PointLightComponent'
+                and 'RelativeLocation' in props):
+            lights.append(props['RelativeLocation']['Value'][0]['Value'])
     if len(floors) != 1 or not lights:
-        raise ValueError('The crystal room ground or clear-crystal light changed.')
-    glow = min(lights, key=lambda value: value[0])[1]
-    return tuple(float(glow[axis]) + offset for axis, offset in zip(('X', 'Y', 'Z'), FINA_OFFSET))
+        raise ValueError('The crystal room ground or acquisition lights changed.')
+    selected = []
+    for anchor in anchors:
+        def distance(loc):
+            return sum((float(loc[a]) - float(anchor[a])) ** 2 for a in ('X', 'Y'))
+        light = min(lights, key=distance)
+        if distance(light) >= 200.0 ** 2 or light in selected:
+            raise ValueError('The paired acquisition lights changed.')
+        selected.append(light)
+    return tuple(sum(float(light[a]) for light in selected) / 2 for a in ('X', 'Y', 'Z'))
 
 
-def portal_collision(view, donor, level_id, world_id):
-    """Put a blocking box inside the larger interaction trigger."""
+def data_property(name, value, kind, **extra):
+    return dict(Name=name, Value=value, ArrayIndex=0, IsZero=False, PropertyGuid=None,
+                PropertyTagFlags='None', PropertyTypeName=None, PropertyTagExtensions='NoExtension',
+                **{'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI'}, **extra)
+
+
+def blocking_box(view, donor, level_id, world_id, label, center, extent):
+    """Register an independent world-static box, without trigger archetypes.
+
+    A transition root inherits Pawn=Overlap. Changing its profile while keeping
+    that archetype does not make a dependable wall. This is an instance component
+    of a plain Actor, with explicit registration, type and collision settings.
+    """
     m = clone_graph(view, donor, [5, 2], {8: level_id, 14: world_id})
     owner = view['Exports'][m[5]-1]; box = view['Exports'][m[2]-1]
     engine = next(-(i+1) for i, imp in enumerate(view['Imports']) if imp['ObjectName'] == '/Script/Engine')
     imp = copy.deepcopy(view['Imports'][-box['ClassIndex']-1])
     imp.update(ObjectName='Actor', OuterIndex=engine)
     view['Imports'].append(imp)
-    owner.update(ObjectName=NAME + '_PortalCollision', ClassIndex=-len(view['Imports']), TemplateIndex=0)
-    owner['Data'] = [p for p in owner['Data'] if p['Name'] == 'RootComponent']
+    owner.update(ObjectName=NAME + '_' + label, ClassIndex=-len(view['Imports']), TemplateIndex=0)
+    root = property_data(owner, 'RootComponent')
+    component = copy.deepcopy(root); component.update(Name='0')
+    owner['Data'] = [root, data_property('bActorEnableCollision', True, 'BoolPropertyData'),
+        data_property('InstanceComponents', [component], 'ArrayPropertyData', ArrayType='ObjectProperty')]
     owner['SerializationBeforeSerializationDependencies'] = []
+    owner['SerializationBeforeCreateDependencies'] = [owner['ClassIndex']]
+    view['DependsMap'][m[5]-1] = [owner['ClassIndex'], m[2]]
     owner['CreateBeforeCreateDependencies'] = [owner['ClassIndex']]
-    box['ObjectName'] = 'PortalBlockingBox'
-    box['Data'] = [p for p in box['Data'] if not p['Name'].startswith('OnComponent')]
-    vector(box, 'RelativeLocation', (PORTAL[0], PORTAL[1], 160.0))
-    vector(box, 'BoxExtent', (70.0, 100.0, 160.0))
-    def prop(name, value, kind, **extra):
-        return dict(Name=name, Value=value, ArrayIndex=0, IsZero=False, PropertyGuid=None,
-                    PropertyTagFlags='None', PropertyTypeName=None, PropertyTagExtensions='NoExtension',
-                    **{'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI'}, **extra)
+    box.update(ObjectName=label + 'Box', TemplateIndex=0)
+    if 'ObjectFlags' in box:
+        box['ObjectFlags'] = ', '.join(flag.strip() for flag in box['ObjectFlags'].split(',')
+                                      if flag.strip() != 'RF_DefaultSubObject')
+    box['SerializationBeforeSerializationDependencies'] = []
+    box['SerializationBeforeCreateDependencies'] = [box['ClassIndex']]
+    box['CreateBeforeCreateDependencies'] = [box['ClassIndex'], m[5]]
+    view['DependsMap'][m[2]-1] = [box['ClassIndex'], m[5]]
+    box['Data'] = [p for p in box['Data'] if p['Name'] in ('RelativeLocation', 'BoxExtent')]
+    vector(box, 'RelativeLocation', center); vector(box, 'BoxExtent', extent)
     body = copy.deepcopy(property_data(box, 'BoxExtent'))
     body.update(Name='BodyInstance', StructType='BodyInstance', SerializeNone=True)
-    body['Value'] = [prop('CollisionProfileName', 'BlockAll', 'NamePropertyData'),
-        prop('CollisionEnabled', 'QueryAndPhysics', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty')]
+    body['Value'] = [data_property('CollisionProfileName', 'BlockAll', 'NamePropertyData'),
+        data_property('ObjectType', 'ECC_WorldStatic', 'EnumPropertyData',
+                      EnumType='ECollisionChannel', InnerType='ByteProperty'),
+        data_property('CollisionEnabled', 'QueryAndPhysics', 'EnumPropertyData',
+                      EnumType='ECollisionEnabled', InnerType='ByteProperty')]
     body['IsZero'] = False
-    box['Data'] += [body, prop('bGenerateOverlapEvents', False, 'BoolPropertyData')]
+    box['Data'] += [body, data_property('bGenerateOverlapEvents', False, 'BoolPropertyData'),
+        data_property('CreationMethod', 'Instance', 'EnumPropertyData',
+                      EnumType='EComponentCreationMethod', InnerType='ByteProperty'),
+        data_property('Mobility', 'Static', 'EnumPropertyData',
+                      EnumType='EComponentMobility', InnerType='ByteProperty')]
     names(view, [owner, box, view['Imports']])
     return m[5]
+
+
+def acquisition_interaction(npc, donor, conditional_template, unit):
+    """Use native manual event-only interaction, attached to the grounded NPC."""
+    level_id, level = export(npc, 'PersistentLevel')
+    world_id = export(npc, NAME + '_NPC')[0]
+    m = clone_graph(npc, donor, [2, 5], {8: level_id, 14: world_id})
+    actor = npc['Exports'][m[5]-1]; box = npc['Exports'][m[2]-1]
+    actor['ObjectName'] = NAME + '_AcquireInteraction'
+    transition(actor, conditional_template, -1, -1, auto=False)
+    set_value(actor, 'm_UniqueId', MAP_ID + 1)
+    # Preserve the same native Transition button route as the working portal.
+    entry, = property_data(actor, 'mTransitionDataList')['Value']
+    condition = f'{{item:{unit["id"]}}}==0'
+    set_value(entry, 'FlagCondition', condition); set_value(entry, 'isEventOnly', True)
+    original, = property_data(conditional_template, 'mTransitionDataList')['Value'][:1]
+    event, = property_data(original, 'afterTransitionEventList')['Value']
+    event = copy.deepcopy(event)
+    if event['StructType'] != 'TalkEventPlayData':
+        raise ValueError('The native manual event schema changed.')
+    set_value(event, 'Condition', condition); set_value(event, 'EventId', EVENT)
+    set_value(entry, 'EventList', [event])
+    # The character lands on collision at runtime. Follow its capsule rather
+    # than leaving the interaction volume at the light's floating spawn height.
+    parent = copy.deepcopy(property_data(actor, 'RootComponent'))
+    parent.update(Name='AttachParent', Value=37)
+    box['Data'].append(parent)
+    box['CreateBeforeSerializationDependencies'].append(37)
+    vector(box, 'RelativeLocation', (0.0, 0.0, 0.0))
+    vector(box, 'BoxExtent', (100.0, 100.0, 100.0))
+    actors(npc, level['Actors'] + [m[5]])
+    names(npc, [actor, box])
 
 
 def settle_fina(npc, spawn):
@@ -423,6 +491,8 @@ def make_levels(source, unit):
     template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
     billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, FINA_FLOAT))
     names(npc, [owner, ss, npc['Imports']])
+    acquisition_interaction(npc, source[DONOR_GD],
+                            export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], unit)
 
     room = private_level(source[ROOM], '/Game/' + ROOM, '/Game/' + PACKAGE + '_PL')
     bg_path = property_data(room['Exports'][2], 'WorldAsset')['Value']['AssetPath']
@@ -466,7 +536,12 @@ def make_levels(source, unit):
         export(source[ROOM_BG], Path(ROOM_BG).name)[0]: world_id})
     stone_gd['Exports'][b[actor_idx]-1]['ObjectName'] = NAME + '_PortalCrystal'
     vector(stone_gd['Exports'][b[mesh_idx]-1], 'RelativeLocation', (PORTAL[0], PORTAL[1], 250.0))
-    blocking = portal_collision(stone_gd, source[DONOR_GD], level_id, world_id)
+    # Native cave spawn feet are Z=0. Span below and above that plane,
+    # independently of the elevated cosmetic crystal (Z=250).
+    floor = property_data(source[DONOR_GD]['Exports'][11], 'RelativeLocation')['Value'][0]['Value']
+    blocking = blocking_box(stone_gd, source[DONOR_GD], level_id, world_id,
+                            'PortalCollision', (PORTAL[0], PORTAL[1], float(floor['Z'])),
+                            (85.0, 85.0, 300.0))
     actors(stone_gd, stone_level['Actors'] + [m[5], m[4], b[actor_idx], blocking])
     names(stone_gd, stone_gd['Exports'])
 
@@ -510,7 +585,9 @@ def make_levels(source, unit):
     scale = copy.deepcopy(property_data(clear_mesh, 'RelativeScale3D'))
     cave_mesh['Data'] = [p for p in cave_mesh['Data'] if p['Name'] != 'RelativeScale3D'] + [scale]
     vector(cave_mesh, 'RelativeScale3D', ENTRANCE_SCALE)
-    actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx]])
+    blocking = blocking_box(wld, source[DONOR_GD], level_id, world_id,
+                            'EntranceCollision', ENTRANCE, (90.0, 150.0, 350.0))
+    actors(wld, level['Actors'] + [m[5], m[4], b[actor_idx], blocking])
     for v in (gd, wld): names(v, v['Exports'])
     return {WORLD: wld, PACKAGE + '_PL': room, PACKAGE + '_GD': gd, PACKAGE + '_NPC': npc,
             PACKAGE + '_BG': bg_room, PACKAGE + '_Stone_PL': stone_pl, PACKAGE + '_Stone_GD': stone_gd}

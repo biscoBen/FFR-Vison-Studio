@@ -6,7 +6,8 @@ release history. Use the `Sephira's-Update` test packages to try these changes; 
 For the Crystal Fina cave trial, enable **Crystal Fina cave** on the main screen, build/install the mod, and restart
 Resonance. Look north of the road between Earth Shrine and Mitra. The stone cave's crystal portal leads to her glowing
 room. Both the overworld entrance and crystal portal require the interaction button; a blocking box prevents walking
-through the portal crystal. Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
+through the cave entrance or portal crystal. Scene placement and interaction rules are recorded in
+[SCENE_PLACEMENT.md](SCENE_PLACEMENT.md). Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
 hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
