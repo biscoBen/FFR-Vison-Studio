@@ -11,11 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published Crystal Fina cave placement and glow cleanup — 2026-10-03
+
+Changes in [`1243a6f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1243a6fb29ba84ba876438893118237d09941a53),
+[test package 37139668745](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37139668745).
+
 - Lower the world-map Crystal Fina cave entrance by 80 units and reduce its model to 80% scale. Keep the existing
   stone cave and crystal portal marker. Place Fina above the native clear crystal's elevated pedestal instead of
   below the room floor, retaining her floating sprite, once-only acquisition and return to the stone cave.
   Remove the two leftover green crystal glows while preserving the room's fog and lighting. Visual placement and
   acquisition still require an in-game retest; this workspace has no Resonance runtime.
+- Passed 202 local Python checks with three engine contracts deferred to Windows, bundle verification, native table
+  safeguards and all seven maps' SDK readbacks and actual IoStore packing/extraction. Windows passed full Flutter
+  and Python checks, frozen-engine startup, launcher/updater tests and compilation before publication. Verified the
+  authenticated release ZIP checksum, exact commit/run and all 29 bundled extension/preset files. One code push and
+  one reused automatic build; master is unchanged. Rebuild/install the mod to apply the map changes.
+- Published at 10:16:50 PDT. CI took 4m16s, with 7m26s summed job execution. First complete candidate: 10:10:13 PDT;
+  package verification finished at 10:17:27 PDT (7m14s, including final local checks/push, CI and download verification).
+  From task start at 10:03:47 PDT, verification took 13m40s: implementation 6m26s, local checks/push 2m24s, CI 4m16s
+  and release verification 34s. Publication notes use the documentation-only path without another app build.
 
 ## Published cave packing fix and roster removal menu — 2026-10-03
 
