@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published optional ability visibility and repairs — 2026-10-02
+
+Changes through [`4bad931`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4bad9316818fd0b678df7b20f283a9fa183cee54),
+[test package 37082390772](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37082390772).
+
 - Add main-page **Show unverified skills** and adjacent **Use our skill changes** controls, both defaulting off.
   Off uses master's original sequence/compatibility selection filter; showing skills without repairs retains original
   game ability bindings; enabling both restores Studio's animation work and applies all 304 reviewed picker hides.
@@ -20,6 +27,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   future game versions; full-game behavior remains untested until the game is available. Rebuild/install after switching.
 - Preserve a complete pre-change source/history snapshot and the original hiding/animation reports separately.
 - Match the engine readiness check to the updated extension version; retain rejection of outdated installer responses.
+- Preserve descriptions/stats across all three modes. The prepared catalog has 127 ordinary selectable skills with
+  visibility off, 1,009 with visibility on and repairs off, and 705 with both enabled; the enhanced mode retains 198
+  Unverified entries. Existing native timelines win over repairs, and reviewed hides require matching IDs and names.
+- Windows passed the full Flutter suite, genuine frozen-engine startup, all 195 Python tests including real engine
+  contracts, launcher/updater/import checks, both bundles and compilation. Verified the authenticated published ZIP
+  checksum, exact commit and all 12 native-extension/16 Crystal Fina files. Master remains unchanged.
+- Two Windows failures were corrected before publication: a readiness version mismatch and a regression test reading
+  UTF-8 review metadata with Windows' default encoding. Cancelled the helper's automatic retry of the first failed
+  commit; used three code pushes and reused the final push build. Final CI took 5m18s, with 9m10s summed job execution.
+  All runs together used 31m00s of runner execution, including the cancelled retry; no failed run published a release.
+- First complete candidate: 17:14:27 PDT; authenticated ZIP verified at 17:36:48 PDT, 22m21s from candidate and 29m13s
+  from the recorded request, including local checks, corrections, failed builds, cancellation and waiting. Packaged-file
+  checks finished at 17:36:54 PDT. Publication notes use the documentation-only path. The reported shop backdrop/return
+  issue is a separate follow-up; this package preserves its existing shop behavior.
 
 ## Published shop dialogue correction and level 7–8 battle — 2026-10-02
 
