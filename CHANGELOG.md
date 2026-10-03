@@ -11,8 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- No pending code changes.
+
+## Published repeated-model portrait refresh — 2026-10-02
+
+Changes in [`85b9f0c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/85b9f0ccc8eb73b17a10efaf75003513ef43b543),
+[test package 37095880954](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37095880954).
+
 - Refresh Studio's roster portrait when changing a party character's replacement model again. Include the selected
   FFBE form in its image-cache URL so the same party slot can show successive models without reverting first.
+- Passed analysis and all five party-character tests, including consecutive replacement saves, changed image providers
+  in the retained card, reuse of a previous form's own portrait and restoration of the original portrait. Windows passed
+  the full Flutter/Python suites, real frozen-engine startup, bundle, launcher/updater/import checks and compilation.
+  Verified the authenticated ZIP checksum, exact commit and all bundled extension files. Retain the complete unit-picker
+  fix and previous features; master is unchanged.
+- One portrait code push and one reused build after the separate picker release. CI took 4m22s, with 7m38s summed job
+  execution. First portrait candidate: 21:13:56 PDT; ZIP verified at 21:19:27 PDT and packaged checks finished at
+  21:19:49 PDT (5m53s from candidate; 8m18s from the recorded portrait report). This includes finishing/verifying the
+  earlier picker package while investigating the new report. Across both reports, release verification took 14m59s
+  from 21:04:50 PDT, with two code pushes/two builds, 9m01s total CI time and 15m38s total runner execution. Implementation
+  and local checks took roughly four minutes combined; publication/download verification and waiting account for the
+  remaining time, with portrait investigation overlapping picker verification. Publication notes use the documentation-only path.
 
 ## Published complete unit-picker browsing — 2026-10-02
 
