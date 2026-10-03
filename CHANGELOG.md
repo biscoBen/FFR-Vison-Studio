@@ -11,8 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Repair Crystal Fina's cave acquisition with the native event header/footer timeline; retain the real allocated vision, once-only guard, obtain screen and return to the stone cave.
-- Replace the ineffective generic cave/portal blockers with native cooked BlockingVolumes, and move Fina slightly right while preserving her confirmed size and interaction. Native asset checks complement the required live acquisition/collision retest.
+No pending code changes.
+
+## Published native cave acquisition and blockers — 2026-10-03
+
+Code: [`38b30bf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/38b30bf15b47d0ca14ff4c110e6afb34b1931060).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37154705737),
+[Windows run 37154705737](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37154705737).
+
+- Crystal Fina's acquisition now executes the native event header/footer timeline with her actual allocated vision ID,
+  obtain screen and return to the stone cave. Keep her confirmed size and input; move her slightly right toward the glow.
+- Replace ineffective generic entrance/portal boxes with native cooked BlockingVolumes in private collision levels.
+  Keep button interaction, original world streams and story data. Record the live-test failures and native mechanisms in
+  `SCENE_PLACEMENT.md`.
+- Verification: 215 local Python tests (3 reference/platform-dependent skips), Flutter analysis, bundle checks, native
+  grant-table readback, all 11 scene assets through SDK/IoStore, and all 31 packaged files. Required Windows Flutter,
+  frozen-engine startup, Python, launcher/updater and publication gates passed. Inventory acquisition, hiding on return,
+  blocking and precise glow alignment still require a live-game retest.
+- Measured to verified release: **24m49s from task start**, including **12m52s investigation/implementation**, **5m56s
+  local checks/corrections and push**, **5m09s CI** and **52s release verification**. First complete candidate to verified
+  release: **11m57s**. CI used **8m17s runner time**. One code push/build; exact-commit reuse and authenticated download.
 
 ## Published grounded cave interaction and collision — 2026-10-03
 
