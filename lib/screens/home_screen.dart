@@ -211,7 +211,7 @@ class HomeScreen extends StatelessWidget {
                 ? PartyPortrait(characterId: u['id'] as int, width: 72, height: 72)
                 : native && u['ffbe'] == null
                 ? NativePortrait(visionId: u['id'] as int, fallbackUrl: app.api!.nativeIcon(u['id'] as int), width: 72, height: 72)
-                : PixelImage(app.api!.unitIcon(u['key'] as String, 'face'), width: 72, height: 72)),
+                : PixelImage(app.api!.unitIcon(u['key'] as String, 'face', form: (u['ffbe'] as Map?)?['id']?.toString()), width: 72, height: 72)),
             const SizedBox(width: 10),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

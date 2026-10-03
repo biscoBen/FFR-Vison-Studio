@@ -8,6 +8,7 @@ import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/screens/party_portrait.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
+import 'package:ffr_vision_studio/design/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -160,4 +161,53 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('successive party model changes refresh the portrait without reverting', (tester) async {
+    tester.view.physicalSize = const Size(1320, 860);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final directory = Directory.systemTemp.createTempSync('party-portrait-');
+    final paths = AppPaths.at(directory.path);
+    final api = PartyApi([]);
+    final app = AppState(hostBase: 'http://unused', appPaths: paths)
+      ..api = api
+      ..partyCharacters = [party()];
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    await tester.pumpWidget(ChangeNotifierProvider.value(value: app,
+      child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: HomeScreen()))));
+    await tester.pumpAndSettle();
+    expect(find.byType(PartyPortrait), findsOneWidget);
+
+    Future<NetworkImage> replace(String form) async {
+      final relative = 'units/custom/portrait_$form';
+      final artwork = Directory('${paths.engineDir}/$relative')..createSync(recursive: true);
+      for (final name in ['unit_anime_$form.png', 'unit_cgg_$form.csv']) {
+        File('${artwork.path}/$name').writeAsStringSync('cached artwork');
+      }
+      await tester.runAsync(() => app.editPartyCharacter(1001, appearance: {
+        'ffbe': {'id': form, 'dir': relative, 'source': 'CUSTOM'},
+      }));
+      await tester.pumpAndSettle();
+      final portrait = tester.widget<Image>(find.descendant(
+        of: find.byType(PixelImage), matching: find.byType(Image))).image as NetworkImage;
+      expect(Uri.parse(portrait.url).path, '/api/spec/party_1001/icon/face');
+      expect(api.roster.single['id'], 1001);
+      expect(api.roster.single['ffbe']['id'], form);
+      return portrait;
+    }
+
+    final first = await replace('401001207');
+    final cardImage = tester.element(find.byType(PixelImage));
+    final second = await replace('304000107');
+    expect(tester.element(find.byType(PixelImage)), same(cardImage));
+    expect(second, isNot(first)); // A different provider cannot reuse the old cached portrait.
+    expect(api.saves, 2);
+    expect(find.byType(PartyPortrait), findsNothing);
+    expect(await replace('401001207'), first); // Returning to a form can reuse its own cached image.
+    await tester.runAsync(() => app.removeUnit('party_1001'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PartyPortrait), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -11,7 +11,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- No pending code changes.
+- Refresh Studio's roster portrait when changing a party character's replacement model again. Include the selected
+  FFBE form in its image-cache URL so the same party slot can show successive models without reverting first.
 
 ## Published complete unit-picker browsing — 2026-10-02
 
