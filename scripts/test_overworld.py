@@ -62,9 +62,14 @@ class OverworldTests(unittest.TestCase):
                             base.with_name(base.name+suffix).with_suffix(extension).write_bytes(b'explicit file fixture')
                 def decode(args, **_):
                     asset, target = args[2:4]
+                    asset = asset.replace('\\', '/')
                     rel = asset.split('FFRS/Content/Datatable/')[1].removesuffix('.uasset')
                     source = built if '/build/visions_mod/' in asset else originals
                     Path(target).write_text(json.dumps({'rows': source[rel]}))
+                windows_readback = root/'windows-path-readback.json'
+                asset = root/'build/visions_mod/assets/FFRS/Content/Datatable'/(field.TABLE+'.uasset')
+                decode(['fixture-tool', 'rows', str(asset).replace('/', '\\'), str(windows_readback)])
+                self.assertEqual(json.loads(windows_readback.read_text())['rows'], built[field.TABLE])
                 with mock.patch('subprocess.run', side_effect=decode):
                     testing.verify(root, ['fixture-tool'], 'fixture.usmap')
                     party.verify(root, ['fixture-tool'], 'fixture.usmap')
