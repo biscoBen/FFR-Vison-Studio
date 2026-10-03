@@ -11,10 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Fix cave Crystal Fina spawning below the visible platform: use the clear crystal's light as an above-ground spawn
-  anchor and enable native gravity/floor collision for her stationary NPC, including physics without a controller.
-  Her capsule and interaction volumes settle together; retain the enlarged floating sprite, manual portal and
-  once-only acquisition. The previous ground-mesh origin was not the floor surface. In-game settling needs a retest.
+- No pending code changes.
+
+## Published Crystal Fina floor collision fix — 2026-10-03
+
+Changes in [`b7446b1`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b7446b14ce7462eb0315f24683747f2dfda1411d),
+[test package 37143490113](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37143490113).
+
+- Fix cave Crystal Fina spawning below the visible platform: the ground mesh's origin was not its surface.
+  Spawn her above the platform at the clear crystal's light and enable native gravity/floor collision for the
+  stationary NPC, including physics without a controller. Her capsule and interaction volumes settle together;
+  retain the enlarged floating sprite, manual portal and once-only acquisition. In-game settling still needs a
+  retest because this workspace has no Resonance runtime. Update Studio, rebuild/install the mod and restart the game.
+- Passed 205 local Python checks with three engine contracts deferred to Windows, bundle verification, native table
+  preservation and all seven maps' SDK and actual IoStore pack/extract readbacks. Confirmed the floor-physics settings,
+  capsule, attached interaction, sprite scale and manual portal survive packing. Windows passed the full suites,
+  frozen-engine startup, launcher/updater tests and compilation before publication. Verified the authenticated ZIP
+  checksum, exact commit/run and all 29 bundled extension/preset files. One code push and one reused automatic build;
+  master is unchanged. Vagrant Knight Rain's field-sprite investigation made no app changes.
+- Published at 11:19:13 PDT. CI took 4m05s, with 7m23s summed job execution. First complete candidate: 11:13:41 PDT;
+  package verification finished at 11:19:43 PDT (6m02s, including local checks, push, CI and verification).
+  From task start at 11:08:06 PDT, verification took 11m37s: implementation 5m35s, local checks/push 1m30s,
+  CI 4m05s and release verification 27s. Publication notes use the documentation-only path without another app build.
 
 ## Published reachable Crystal Fina and crystal interaction — 2026-10-03
 
