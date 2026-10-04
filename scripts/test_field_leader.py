@@ -1,7 +1,9 @@
 """Field bank preservation, owned deployment/rollback, and executable Lua guards."""
+import base64
 import copy
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
 from unittest import mock
@@ -14,13 +16,27 @@ import _ffr_testing as testing
 
 
 class FieldLeaderTests(unittest.TestCase):
-    def test_dark_fina_aliases_keep_native_animation_data_and_include_export_names(self):
-        animations = [{'Name': str(i), 'Value': [{'Name': 'AnimationName', 'Value': f'idle{d}'},
-                       {'Name': 'Settings', 'Value': {'fps': 30, 'frames': 24}}]} for i, d in enumerate((2, 4, 6, 8))]
-        view = {'NameMap': ['pc0060', '/Game/Chara/Field_Unit/pc0060/pc0060'],
+    def dark_fina_fixture(self):
+        # Explicit synthetic FSsValue floats/cell hashes, including the native
+        # unversioned nested-value header. No game assets in the fixture.
+        chunks = [struct.pack('<f', d) + struct.pack('<i', 1) + struct.pack('<ii', 0, 0)
+                  + b'\x80\x09\x0e\x01' + struct.pack('<i', 6) + b'cell0\x00'
+                  for d in (2, 4, 6, 8)]
+        def field(name, value): return {'Name': name, 'Value': value}
+        keys = [field(str(i), [field('Value', [field('Type', kind)])])
+                for i, kind in enumerate(('FloatType', 'HashType'))]
+        part = field('0', [field('Attributes', [field('0', [field('Key', keys)])])])
+        animations = [field(str(i), [field('AnimationName', f'idle{d}'),
+                       field('Settings', {'fps': 30, 'frames': 24}), field('PartAnimes', [part])])
+                      for i, d in enumerate((2, 4, 6, 8))]
+        view = {'NameMap': ['name', 'pc0060', '/Game/Chara/Field_Unit/pc0060/pc0060'],
                 'NamesReferencedFromExportDataCount': 1,
-                'Exports': [{'Data': [{'Name': 'AnimeList', 'Value': [
-                    {'Value': [{'Name': 'AnimeList', 'Value': animations}]}]}]}]}
+                'Exports': [{'Extras': base64.b64encode(b''.join(chunks)).decode(),
+                             'Data': [field('AnimeList', [field('0', [field('AnimeList', animations)])])]}]}
+        return view, chunks, animations
+
+    def test_dark_fina_aliases_keep_native_animation_data_and_include_export_names(self):
+        view, chunks, animations = self.dark_fina_fixture()
         built = leader.dark_fina_aliases(view)
         clips = built['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value']
         self.assertEqual(clips[:4], animations)
@@ -29,6 +45,24 @@ class FieldLeaderTests(unittest.TestCase):
         self.assertIn('idle9', built['NameMap']); self.assertIn(leader.DFINA, built['NameMap'])
         self.assertEqual(leader.dark_fina_aliases(built), built)
         self.assertEqual(view['NamesReferencedFromExportDataCount'], 1)
+        expected = b''.join(chunks + [chunks[0], chunks[0], chunks[3], chunks[3]])
+        self.assertEqual(base64.b64decode(built['Exports'][0]['Extras']), expected)
+        self.assertEqual(leader.animation_payloads(clips, built['Exports'][0]['Extras'], built['NameMap']),
+                         chunks + [chunks[0], chunks[0], chunks[3], chunks[3]])
+
+    def test_missing_alias_keyframe_tail_is_rejected_even_when_reflected_data_is_valid(self):
+        view, _, _ = self.dark_fina_fixture(); built = leader.dark_fina_aliases(view)
+        # Reproduce the released regression: append reflected animations but
+        # leave the original opaque keyframe tail untouched.
+        built['Exports'][0]['Extras'] = view['Exports'][0]['Extras']
+        with self.assertRaisesRegex(ValueError, 'animation payload'): leader.dark_fina_aliases(built)
+
+    def test_changed_or_truncated_native_payload_fails_before_building(self):
+        view, chunks, animations = self.dark_fina_fixture()
+        for raw in (b''.join(chunks)[:-1], b''.join(chunks) + b'\0',
+                    b''.join(chunks).replace(b'\x80\x09\x0e', b'\x80\x09\x0f')):
+            with self.subTest(raw=raw[:20]), self.assertRaisesRegex(ValueError, 'animation payload'):
+                leader.animation_payloads(animations, base64.b64encode(raw).decode(), view['NameMap'])
 
     def test_bank_keeps_every_story_slot_identity_and_separate_overworld_choices(self):
         originals = map_rows(); before = copy.deepcopy(originals)

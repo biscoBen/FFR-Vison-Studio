@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-None.
+- Fix the game-launch crash with **Cycle walking character (LB / L1)** enabled: Dark Fina's private field
+  project now includes the native keyframe payload for each added diagonal idle alias. Preserve every original
+  animation and payload; reject incomplete or unsupported payloads before generating the asset. Regression tests
+  cover the formerly accepted missing tail. Native serialization/container checks supplement Windows gates;
+  launching Resonance and controller cycling still require a live-game retest after rebuilding/installing.
 
 ## Published field-leader cycling and window controls — 2026-10-03
 

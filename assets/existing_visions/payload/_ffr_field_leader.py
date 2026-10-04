@@ -1,9 +1,11 @@
 """Cosmetic field leader bank and owned UE4SS mod; never edits save/party identity."""
+import base64
 import copy
 import hashlib
 import json
 import os
 from pathlib import Path
+import struct
 import tempfile
 
 TABLE = 'Asset/Map/DT_MapUnitAsset'
@@ -60,21 +62,76 @@ def prepare(tables, units, root, rows):
     table['set'].extend(changes)
 
 
+def animation_payloads(animations, encoded, names):
+    """Read the native pc0060 keyframe tail, separate from reflected properties.
+
+    USs6Project::Serialize walks packs/animations/parts/attributes/keys and then
+    FSsValue::Serialize. UAssetAPI preserves that stream as opaque Extras.
+    Only the float, string and hash layouts present in this field asset are
+    supported; reject changed layouts instead of shipping an unreadable asset.
+    """
+    data = base64.b64decode(encoded, validate=True); offset = 0
+    def fail(): raise ValueError('Invalid or unsupported Dark Fina animation payload; field cycling cannot be built safely.')
+    def take(count):
+        nonlocal offset
+        if not 0 <= count <= len(data) - offset: fail()
+        result = data[offset:offset + count]; offset += count
+        return result
+    def value(kind):
+        if kind == 'FloatType': take(4)
+        elif kind == 'StringType':
+            length = struct.unpack('<i', take(4))[0]
+            if not 0 < abs(length) <= 65536: fail()
+            text = take(length if length > 0 else -length * 2)
+            if not text.endswith(b'\0' if length > 0 else b'\0\0'): fail()
+        elif kind == 'HashType':
+            count = struct.unpack('<i', take(4))[0]
+            if not 0 <= count <= 1024: fail()
+            for _ in range(count):
+                index, number = struct.unpack('<ii', take(8))
+                if not 0 <= index < len(names) or number < 0: fail()
+                # Native unversioned FSsValue: all 4 properties, only Type
+                # nonzero. The 3 temporary scalar properties are zero-masked.
+                if take(3) != b'\x80\x09\x0e': fail()
+                child = {1: 'StringType', 3: 'FloatType'}.get(take(1)[0])
+                if child is None: fail()
+                value(child)
+        else: fail()
+    def field(properties, name): return next(p['Value'] for p in properties if p['Name'] == name)
+    result = []
+    for animation in animations:
+        start = offset
+        for part in field(animation['Value'], 'PartAnimes'):
+            for attribute in field(part['Value'], 'Attributes'):
+                for key in field(attribute['Value'], 'Key'):
+                    value(field(field(key['Value'], 'Value'), 'Type'))
+        result.append(data[start:offset])
+    if offset != len(data): fail()
+    return result
+
+
 def dark_fina_aliases(view):
     """Private copy: diagonal idle aliases use the game's own cardinal poses."""
     view = copy.deepcopy(view)
     project = view['Exports'][0]
     packs = next(p for p in project['Data'] if p['Name'] == 'AnimeList')['Value']
+    if len(packs) != 1 or any(p['Name'] == 'EffectList' and p['Value'] for p in project['Data']):
+        raise ValueError('Unsupported Dark Fina animation packs; field cycling cannot be built safely.')
     animations = next(p for p in packs[0]['Value'] if p['Name'] == 'AnimeList')['Value']
     def name(a): return next(p for p in a['Value'] if p['Name'] == 'AnimationName')
     by_name = {name(a)['Value']: a for a in animations}
+    payloads = animation_payloads(animations, project['Extras'], view['NameMap'])
+    by_payload = dict(zip(by_name, payloads))
     if not {'idle2', 'idle4', 'idle6', 'idle8'} <= by_name.keys():
         raise ValueError('Dark Fina lacks the expected native idle poses.')
     for destination, source in [('idle1', 'idle2'), ('idle3', 'idle2'), ('idle7', 'idle8'), ('idle9', 'idle8')]:
         if destination in by_name: continue
         alias = copy.deepcopy(by_name[source]); alias['Name'] = str(len(animations))
         name(alias)['Value'] = destination; animations.append(alias)
+        payloads.append(by_payload[source])
         if destination not in view['NameMap']: view['NameMap'].append(destination)
+    project['Extras'] = base64.b64encode(b''.join(payloads)).decode('ascii')
+    animation_payloads(animations, project['Extras'], view['NameMap'])
     old = '/Game/Chara/Field_Unit/pc0060/pc0060'
     def rename(value):
         if isinstance(value, str): return DFINA if value == old else value
