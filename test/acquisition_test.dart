@@ -5,12 +5,15 @@ import 'package:ffr_vision_studio/screens/steps/acquisition_step.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/services/acquisition.dart';
+import 'package:ffr_vision_studio/services/acquisition_locations.dart';
 import 'package:ffr_vision_studio/services/acquisition_map_data.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/gestures.dart';
+import 'package:ffr_vision_studio/screens/acquisition_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +23,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
     await AcquisitionMapData.bundled;
+    await AcquisitionCatalog.bundled;
     await (FontLoader(
       'Barlow',
     )..addFont(rootBundle.load('assets/fonts/Barlow-Regular.ttf'))).load();
@@ -41,7 +45,10 @@ void main() {
         'mitra_shop': Offset(725, 342),
       };
       for (final site in Acquisition.sites) {
-        final projected = AcquisitionMapData.project(site.worldX, site.worldY);
+        final projected = AcquisitionMapData.project(
+          site.worldX!,
+          site.worldY!,
+        );
         final point = map.toViewport(projected, viewport);
         expect(rect.contains(point), isTrue);
         expect(
@@ -111,12 +118,17 @@ void main() {
   Future<List<Map<String, dynamic>>> mount(
     WidgetTester tester, {
     Map<String, dynamic>? unit,
+    AcquisitionLocations? locations,
   }) async {
     final changes = <Map<String, dynamic>>[];
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: AcquisitionStep(unit: unit ?? {'key': 'one'}, set: changes.add),
+          body: AcquisitionStep(
+            unit: unit ?? {'key': 'one'},
+            set: changes.add,
+            locations: locations ?? AcquisitionLocations(),
+          ),
         ),
       ),
     );
@@ -130,50 +142,54 @@ void main() {
   testWidgets(
     'spoilers hide choices and marker; revealing shows checked disabled choice',
     (tester) async {
-      final changes = await mount(tester);
+      final changes = await mount(
+        tester,
+        unit: {
+          'key': 'one',
+          Acquisition.field: const Acquisition(location: 'mitra_shop').toJson(),
+        },
+      );
       expect(changes, hasLength(1));
       final saved = changes.single[Acquisition.field] as Map;
       expect(find.byKey(const ValueKey('acquisition-marker')), findsNothing);
-      for (final site in Acquisition.sites) {
-        expect(
-          find.byKey(ValueKey('acquisition-site-${site.id}')),
-          findsNothing,
-        );
-      }
+      expect(find.byKey(const ValueKey('acquisition-shop-list')), findsNothing);
+      expect(find.byKey(const ValueKey('acquisition-cave-list')), findsNothing);
       await tester.tap(find.byKey(const ValueKey('acquisition-hide')));
       await tester.pump();
       expect(find.byKey(const ValueKey('acquisition-marker')), findsOneWidget);
-      for (final site in Acquisition.sites) {
+      for (final kind in ['shop', 'cave']) {
         final tile = tester.widget<CheckboxListTile>(
-          find.byKey(ValueKey('acquisition-site-${site.id}')),
+          find.byKey(ValueKey('acquisition-kind-$kind')),
         );
         expect(tile.onChanged, isNull);
-        expect(tile.value, site.id == saved['location']);
+        expect(tile.value, (saved['cave'] == null ? 'shop' : 'cave') == kind);
+        expect(
+          tester
+              .widget<DropdownButton<String>>(
+                find.byKey(ValueKey('acquisition-$kind-list')),
+              )
+              .onChanged,
+          isNull,
+        );
       }
       await tester.tap(find.byKey(const ValueKey('acquisition-random')));
       await tester.pump();
       final rerolled = changes.last[Acquisition.field] as Map;
       expect(rerolled['location'], isNot(saved['location']));
       expect(rerolled['random'], isFalse);
-      await tester.tap(
-        find.byKey(const ValueKey('acquisition-site-mitra_shop')),
-      );
+      final vendor = AcquisitionCatalog.cached!.vendors.first;
+      tester
+          .widget<DropdownButton<String>>(
+            find.byKey(const ValueKey('acquisition-shop-list')),
+          )
+          .onChanged!(vendor.id);
       await tester.pump();
-      expect(
-        (changes.last[Acquisition.field] as Map)['location'],
-        'mitra_shop',
-      );
+      expect((changes.last[Acquisition.field] as Map)['location'], vendor.id);
       await tester.tap(find.byKey(const ValueKey('acquisition-hide')));
       await tester.pump();
       expect(find.byKey(const ValueKey('acquisition-marker')), findsNothing);
-      expect(
-        find.byKey(const ValueKey('acquisition-site-mitra_shop')),
-        findsNothing,
-      );
-      expect(
-        (changes.last[Acquisition.field] as Map)['location'],
-        'mitra_shop',
-      );
+      expect(find.byKey(const ValueKey('acquisition-shop-list')), findsNothing);
+      expect((changes.last[Acquisition.field] as Map)['location'], vendor.id);
     },
   );
 
@@ -189,11 +205,15 @@ void main() {
       tester,
       unit: {'key': 'one', Acquisition.field: saved},
     );
-    expect(changes, isEmpty);
+    expect(changes, hasLength(1));
+    expect(
+      (changes.single[Acquisition.field] as Map)['location'],
+      'crystal_cave',
+    );
     expect(
       tester
           .widget<CheckboxListTile>(
-            find.byKey(const ValueKey('acquisition-site-earth_shrine')),
+            find.byKey(const ValueKey('acquisition-kind-cave')),
           )
           .value,
       isTrue,
@@ -205,11 +225,15 @@ void main() {
       tester,
       unit: {'key': 'one', Acquisition.field: saved},
     );
-    expect(changes, isEmpty);
+    expect(changes, hasLength(1));
+    expect(
+      (changes.single[Acquisition.field] as Map)['location'],
+      'crystal_cave',
+    );
     expect(
       tester
           .widget<CheckboxListTile>(
-            find.byKey(const ValueKey('acquisition-site-earth_shrine')),
+            find.byKey(const ValueKey('acquisition-kind-cave')),
           )
           .value,
       isTrue,
@@ -265,6 +289,149 @@ void main() {
         1,
       );
       expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'right-click after zoom and pan saves the clicked coordinates and chosen entrance; cancel preserves the pool',
+    (tester) async {
+      final locations = AcquisitionLocations();
+      addTearDown(locations.dispose);
+      final changes = await mount(
+        tester,
+        locations: locations,
+        unit: {
+          'key': 'one',
+          Acquisition.field: const Acquisition(
+            location: 'mitra_shop',
+            random: false,
+            hideSpoilers: false,
+          ).toJson(),
+        },
+      );
+      tester
+          .widget<Slider>(find.byKey(const ValueKey('acquisition-zoom')))
+          .onChanged!(3);
+      await tester.pumpAndSettle();
+      await tester.drag(
+        find.byKey(const ValueKey('acquisition-map')),
+        const Offset(40, 20),
+      );
+      await tester.pumpAndSettle();
+      final box = tester.getRect(
+        find.byKey(const ValueKey('acquisition-map-context')),
+      );
+      final point = box.center + const Offset(12, 20);
+      final viewer = tester.widget<InteractiveViewer>(
+        find.byKey(const ValueKey('acquisition-map')),
+      );
+      final native = AcquisitionMapData.cached!.fromViewport(
+        viewer.transformationController!.toScene(point - box.topLeft),
+        box.size,
+      );
+      Future<void> open() async {
+        final click = await tester.startGesture(
+          point,
+          kind: PointerDeviceKind.mouse,
+          buttons: kSecondaryMouseButton,
+        );
+        await click.up();
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Add cave here'));
+        await tester.pumpAndSettle();
+      }
+
+      await open();
+      expect(
+        find.byKey(const ValueKey('cave-entrance-desert_sinkhole')),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(locations.caves, hasLength(1));
+      await open();
+      await tester.enterText(
+        find.byKey(const ValueKey('cave-name')),
+        'Chosen test cave',
+      );
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-shrine')));
+      await tester.tap(find.byKey(const ValueKey('cave-add')));
+      await tester.pumpAndSettle();
+      expect(locations.caves, hasLength(2));
+      final added = locations.caves.last;
+      expect(added.name, 'Chosen test cave');
+      expect(added.entrance, 'shrine');
+      expect(added.worldX, closeTo(-native.dy, .0001));
+      expect(added.worldY, closeTo(native.dx, .0001));
+      expect((changes.last[Acquisition.field] as Map)['location'], added.id);
+      final model = tester.widget<AcquisitionMap>(find.byType(AcquisitionMap));
+      expect(model.site!.id, added.id);
+      await tester.tap(find.byKey(const ValueKey('acquisition-hide')));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<AcquisitionMap>(find.byType(AcquisitionMap)).caves,
+        isEmpty,
+      );
+      expect(find.byKey(const ValueKey('acquisition-marker')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'selecting a custom cave centers its pin; vendors without native coordinates do not get a false pin',
+    (tester) async {
+      final locations = AcquisitionLocations();
+      addTearDown(locations.dispose);
+      const cave = CaveLocation(
+        id: 'cave_far',
+        name: 'Far cave',
+        entrance: 'rock_cave',
+        worldX: 1000,
+        worldY: -5000,
+      );
+      await locations.add(cave);
+      await mount(
+        tester,
+        locations: locations,
+        unit: {
+          'key': 'one',
+          Acquisition.field: const Acquisition(
+            location: 'mitra_shop',
+            random: false,
+            hideSpoilers: false,
+          ).toJson(),
+        },
+      );
+      tester
+          .widget<DropdownButton<String>>(
+            find.byKey(const ValueKey('acquisition-cave-list')),
+          )
+          .onChanged!(cave.id);
+      await tester.pumpAndSettle();
+      final box = tester.getSize(
+        find.byKey(const ValueKey('acquisition-map-context')),
+      );
+      final viewer = tester.widget<InteractiveViewer>(
+        find.byKey(const ValueKey('acquisition-map')),
+      );
+      final center = AcquisitionMapData.cached!.fromViewport(
+        viewer.transformationController!.toScene(box.center(Offset.zero)),
+        box,
+      );
+      expect(center.dx, closeTo(cave.worldY, .0001));
+      expect(center.dy, closeTo(-cave.worldX, .0001));
+      tester
+          .widget<DropdownButton<String>>(
+            find.byKey(const ValueKey('acquisition-shop-list')),
+          )
+          .onChanged!('shop_0');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('acquisition-marker')), findsNothing);
+      expect(
+        find.text(
+          'This vendor has no mapped overworld location in the supplied game data.',
+        ),
+        findsOneWidget,
+      );
     },
   );
 

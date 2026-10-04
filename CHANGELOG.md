@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Replace specific acquisition checkboxes with **Shop**/**Cave** and dropdowns. Include all native shop inventory and
+  combined-shop records, preserving IDs/chapter variants; later-game/moving shops without known coordinates have no pin.
+- Right-click the map to save a named cave at the clicked location and choose from four native entrance model previews.
+  Keep a shared persistent pool beginning with our Crystal Fina cave; the user places the remaining caves toward 30.
+  Selecting a cave centers its marker. Preserve spoiler hiding, random rerolls and saved character configs; include a
+  selected custom cave snapshot so configs can restore it. These are Studio placements; game acquisition is still unchanged.
 
 ## Published acquisition planning UI and native map — 2026-10-04
 

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import '../services/api.dart';
+import '../services/acquisition_locations.dart';
 import '../services/bundled_features.dart';
 import '../services/character_config.dart';
 import '../services/crystal_fina.dart';
@@ -36,6 +37,7 @@ class AppState extends ChangeNotifier {
       : paths = appPaths ?? AppPaths.resolve(), features = bundledFeatures ?? BundledFeatures() { _loadSettings(); _afterUpdate(); }
   final String hostBase;
   final AppPaths paths;
+  late final acquisitionLocations = AcquisitionLocations(file: File(p.join(paths.root, 'acquisition-caves.json')));
   final BundledFeatures features;
   late final Downloader dl = Downloader(hostBase);
   late final SpriteCache _sprites = SpriteCache(paths, dl);
@@ -884,6 +886,7 @@ class AppState extends ChangeNotifier {
     _stopping = true;
     _buildTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
     engine?.stop();
+    acquisitionLocations.dispose();
     super.dispose();
   }
 }

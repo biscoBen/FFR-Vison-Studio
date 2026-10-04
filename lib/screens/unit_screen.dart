@@ -101,7 +101,7 @@ class _UnitScreenState extends State<UnitScreen> {
                 1 => BonusesStep(key: const ValueKey('b'), unit: u, set: set),
                 2 => StatsStep(key: const ValueKey('s'), unit: u, set: set),
                 4 => MrStep(key: const ValueKey('mr'), unit: u, set: set),
-                5 => AcquisitionStep(key: ValueKey('acquisition-${u['key']}'), unit: u, set: set),
+                5 => AcquisitionStep(key: ValueKey('acquisition-${u['key']}'), unit: u, set: set, locations: app.acquisitionLocations),
                 3 when u['native'] != null => NativeResonanceStep(key: const ValueKey('native-r'), unit: u, set: set),
                 _ => ResonanceStep(key: const ValueKey('r'), unit: u, set: set),
               },

@@ -1,0 +1,1401 @@
+{
+  "schema": 1,
+  "mitraShop": "shop_1",
+  "vendors": [
+    {
+      "id": "shop_6000",
+      "name": "(chapter 5) Airship Accessories",
+      "nativeId": 6000,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "5章_飛空艇アクセサリー",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4000",
+      "name": "(chapter 5) Airship Armor",
+      "nativeId": 4000,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "5章飛空艇_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10003",
+      "name": "(chapter 5) Airship General store",
+      "nativeId": 10003,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "5章_飛空艇万屋",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2000,
+        "ArmorShopID": 4000,
+        "AccessoryShopID": 6000
+      }
+    },
+    {
+      "id": "shop_0",
+      "name": "(chapter 5) Airship Items",
+      "nativeId": 0,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "5章飛空艇_道具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2000",
+      "name": "(chapter 5) Airship Weapons",
+      "nativeId": 2000,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "5章飛空艇_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6006",
+      "name": "(chapter 6) Airship Accessories",
+      "nativeId": 6006,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "6章飛空艇_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4010",
+      "name": "(chapter 6) Airship Armor",
+      "nativeId": 4010,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "6章飛空艇_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10007",
+      "name": "(chapter 6) Airship General store 0",
+      "nativeId": 10007,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "6章_飛空艇万屋_0",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2015,
+        "ArmorShopID": 4010,
+        "AccessoryShopID": 6006
+      }
+    },
+    {
+      "id": "shop_23",
+      "name": "(chapter 6) Airship Items",
+      "nativeId": 23,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "6章飛空艇_道具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2015",
+      "name": "(chapter 6) Airship Weapons",
+      "nativeId": 2015,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "6章飛空艇_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6007",
+      "name": "(chapter 7) Airship Accessories",
+      "nativeId": 6007,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "7章飛空艇_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4011",
+      "name": "(chapter 7) Airship Armor",
+      "nativeId": 4011,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "7章飛空艇_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10008",
+      "name": "(chapter 7) Airship General store 1",
+      "nativeId": 10008,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "7章_飛空艇万屋_1",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2018,
+        "ArmorShopID": 4011,
+        "AccessoryShopID": 6007
+      }
+    },
+    {
+      "id": "shop_24",
+      "name": "(chapter 7) Airship Items",
+      "nativeId": 24,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "7章飛空艇_道具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2018",
+      "name": "(chapter 7) Airship Weapons",
+      "nativeId": 2018,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "7章飛空艇_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6008",
+      "name": "(chapter 8) Airship Accessories",
+      "nativeId": 6008,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "8章飛空艇_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4012",
+      "name": "(chapter 8) Airship Armor",
+      "nativeId": 4012,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "8章飛空艇_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10009",
+      "name": "(chapter 8) Airship General store 2",
+      "nativeId": 10009,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "8章_飛空艇万屋_2",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2019,
+        "ArmorShopID": 4012,
+        "AccessoryShopID": 6008
+      }
+    },
+    {
+      "id": "shop_25",
+      "name": "(chapter 8) Airship Items",
+      "nativeId": 25,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "8章飛空艇_道具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2019",
+      "name": "(chapter 8) Airship Weapons 1",
+      "nativeId": 2019,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "8章飛空艇_武器1",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8009",
+      "name": "Airship Weapons, armor & accessories",
+      "nativeId": 8009,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "飛空艇_武器防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6012",
+      "name": "Amore Accessories",
+      "nativeId": 6012,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "アムールの町_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4019",
+      "name": "Amore Armor",
+      "nativeId": 4019,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "アムールの町_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8004",
+      "name": "Amore Armor & accessories",
+      "nativeId": 8004,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "アムールの町_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10016",
+      "name": "Amore Armor & accessories",
+      "nativeId": 10016,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "アムールの町防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4019,
+        "AccessoryShopID": 6012
+      }
+    },
+    {
+      "id": "shop_11",
+      "name": "Amore Items (chapter 3)",
+      "nativeId": 11,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "アムールの町_道具　3章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2009",
+      "name": "Amore Weapons",
+      "nativeId": 2009,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "アムールの町_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8001",
+      "name": "Colosseum",
+      "nativeId": 8001,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コロシアムショップ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10012",
+      "name": "Colosseum",
+      "nativeId": 10012,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "コロシアムショップ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ToolShopID": 28,
+        "WeaponShopID": 2022,
+        "ArmorShopID": 4015,
+        "AccessoryShopID": 6009
+      }
+    },
+    {
+      "id": "shop_6009",
+      "name": "Colosseum Accessories",
+      "nativeId": 6009,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コロシアムショップ_アクセサリー",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4015",
+      "name": "Colosseum Armor",
+      "nativeId": 4015,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コロシアムショップ_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_28",
+      "name": "Colosseum Items",
+      "nativeId": 28,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コロシアムショップ_道具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2022",
+      "name": "Colosseum Weapons",
+      "nativeId": 2022,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コロシアムショップ_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4006",
+      "name": "Dilmagia Armor",
+      "nativeId": 4006,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ディルマギア工業都市_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_9000",
+      "name": "Dilmagia Chocobo feed",
+      "nativeId": 9000,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ディルマギア_チョコボ餌店",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_9",
+      "name": "Dilmagia Items (chapter 2)",
+      "nativeId": 9,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ディルマギア工業都市_道具　2章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2005",
+      "name": "Dilmagia Weapons",
+      "nativeId": 2005,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ディルマギア工業都市_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4014",
+      "name": "Duggle Armor",
+      "nativeId": 4014,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ダグル_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10011",
+      "name": "Duggle Equipment vendor",
+      "nativeId": 10011,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ダグル武具屋",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2017,
+        "ArmorShopID": 4014
+      }
+    },
+    {
+      "id": "shop_21",
+      "name": "Duggle Items (chapter 6)",
+      "nativeId": 21,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ダグル_道具　6章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2017",
+      "name": "Duggle Weapons",
+      "nativeId": 2017,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ダグル_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4007",
+      "name": "Dwarven Forge Armor",
+      "nativeId": 4007,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ドワーフの鍛冶場_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10004",
+      "name": "Dwarven Forge Equipment",
+      "nativeId": 10004,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ドワーフの鍛冶場　武具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2006,
+        "ArmorShopID": 4007
+      }
+    },
+    {
+      "id": "shop_27",
+      "name": "Dwarven Forge Items (chapter 2)",
+      "nativeId": 27,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ドワーフ工房_道具　2章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2006",
+      "name": "Dwarven Forge Weapons",
+      "nativeId": 2006,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ドワーフの鍛冶場_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2",
+      "name": "Earth Shrine entrance Items (chapter 1)",
+      "nativeId": 2,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "土の神殿入り口_道具　1章",
+      "worldX": 17955.0,
+      "worldY": 20915.0,
+      "mapId": 3001
+    },
+    {
+      "id": "shop_4013",
+      "name": "Gaberada Armor",
+      "nativeId": 4013,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ガベラダ_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10010",
+      "name": "Gaberada Equipment vendor",
+      "nativeId": 10010,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ガベラダ武具屋",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2016,
+        "ArmorShopID": 4013
+      }
+    },
+    {
+      "id": "shop_20",
+      "name": "Gaberada Items (chapter 6)",
+      "nativeId": 20,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ガベラダ_道具　6章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2016",
+      "name": "Gaberada Weapons",
+      "nativeId": 2016,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ガベラダ_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4003",
+      "name": "Grandshelt (burning) Armor",
+      "nativeId": 4003,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト炎上防具",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_3",
+      "name": "Grandshelt (burning) Items (chapter 1)",
+      "nativeId": 3,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト炎上_道具　1章",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_10002",
+      "name": "Grandshelt (burning) Subordinate",
+      "nativeId": 10002,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "グランシェルト炎上部下",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010,
+      "inventories": {
+        "ToolShopID": 3,
+        "WeaponShopID": 2003,
+        "ArmorShopID": 4003
+      }
+    },
+    {
+      "id": "shop_2003",
+      "name": "Grandshelt (burning) Weapons",
+      "nativeId": 2003,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト炎上武器",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_6003",
+      "name": "Grandshelt Accessories",
+      "nativeId": 6003,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト_アクセ",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_4002",
+      "name": "Grandshelt Armor",
+      "nativeId": 4002,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト防具",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_10001",
+      "name": "Grandshelt Equipment vendor",
+      "nativeId": 10001,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "グランシェルト武具屋",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010,
+      "inventories": {
+        "WeaponShopID": 2002,
+        "ArmorShopID": 4002
+      }
+    },
+    {
+      "id": "shop_4",
+      "name": "Grandshelt Items (chapter 1)",
+      "nativeId": 4,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト_道具　1章",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_2002",
+      "name": "Grandshelt Weapons",
+      "nativeId": 2002,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランシェルト武器",
+      "worldX": 12850.0,
+      "worldY": 20700.0,
+      "mapId": 2010
+    },
+    {
+      "id": "shop_6010",
+      "name": "Granport Accessories",
+      "nativeId": 6010,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_アクセ",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_6004",
+      "name": "Granport Accessories (unused)",
+      "nativeId": 6004,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_アクセ没",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_4017",
+      "name": "Granport Armor",
+      "nativeId": 4017,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_防具",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_8002",
+      "name": "Granport Armor & accessories",
+      "nativeId": 8002,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_防具アクセ",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_10014",
+      "name": "Granport Armor & accessories",
+      "nativeId": 10014,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "グランポート防具アクセ",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030,
+      "inventories": {
+        "ArmorShopID": 4017,
+        "AccessoryShopID": 6010
+      }
+    },
+    {
+      "id": "shop_7",
+      "name": "Granport Items (chapter 1)",
+      "nativeId": 7,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_道具　1章",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_2004",
+      "name": "Granport Weapons",
+      "nativeId": 2004,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "グランポート_武器",
+      "worldX": 10687.0,
+      "worldY": 8935.0,
+      "mapId": 2030
+    },
+    {
+      "id": "shop_26",
+      "name": "Imperial City Station Items (chapter 4)",
+      "nativeId": 26,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "帝都前駅_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_5",
+      "name": "Kol Items (chapter 1)",
+      "nativeId": 5,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "コルの村_道具　1章",
+      "worldX": 12775.0,
+      "worldY": 15000.0,
+      "mapId": 2020
+    },
+    {
+      "id": "shop_6001",
+      "name": "Mitra Accessories",
+      "nativeId": 6001,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミトラの町_アクセ",
+      "worldX": 16605.0,
+      "worldY": 21665.0,
+      "mapId": 2000
+    },
+    {
+      "id": "shop_4001",
+      "name": "Mitra Armor",
+      "nativeId": 4001,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミトラ防具",
+      "worldX": 16605.0,
+      "worldY": 21665.0,
+      "mapId": 2000
+    },
+    {
+      "id": "shop_1",
+      "name": "Mitra Items (chapter 1)",
+      "nativeId": 1,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミトラ_道具　1章",
+      "worldX": 16605.0,
+      "worldY": 21665.0,
+      "mapId": 2000
+    },
+    {
+      "id": "shop_6002",
+      "name": "Mitra Stall",
+      "nativeId": 6002,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミトラ露店",
+      "worldX": 16605.0,
+      "worldY": 21665.0,
+      "mapId": 2000
+    },
+    {
+      "id": "shop_2001",
+      "name": "Mitra Weapons",
+      "nativeId": 2001,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミトラ武器",
+      "worldX": 16605.0,
+      "worldY": 21665.0,
+      "mapId": 2000
+    },
+    {
+      "id": "shop_12",
+      "name": "Mozoor Station Items (chapter 4)",
+      "nativeId": 12,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "モズール駅_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6014",
+      "name": "Mysidia Accessories",
+      "nativeId": 6014,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミシディア_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4021",
+      "name": "Mysidia Armor",
+      "nativeId": 4021,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミシディア_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8010",
+      "name": "Mysidia Armor & accessories",
+      "nativeId": 8010,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミシディア_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10018",
+      "name": "Mysidia Armor & accessories",
+      "nativeId": 10018,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ミシディア防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4021,
+        "AccessoryShopID": 6014
+      }
+    },
+    {
+      "id": "shop_17",
+      "name": "Mysidia Items (chapter 5)",
+      "nativeId": 17,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミシディア_道具　5章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2011",
+      "name": "Mysidia Weapons",
+      "nativeId": 2011,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ミシディア_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4005",
+      "name": "Nashat Armor",
+      "nativeId": 4005,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ナシャトの町_防具",
+      "worldX": 5824.22603,
+      "worldY": 14025.541862,
+      "mapId": 2040
+    },
+    {
+      "id": "shop_8008",
+      "name": "Nashat Armor & accessories",
+      "nativeId": 8008,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ナシャトの町_防具アクセ",
+      "worldX": 5824.22603,
+      "worldY": 14025.541862,
+      "mapId": 2040
+    },
+    {
+      "id": "shop_6",
+      "name": "Nashat Items (chapter 1)",
+      "nativeId": 6,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ナシャトの街_道具　1章",
+      "worldX": 5824.22603,
+      "worldY": 14025.541862,
+      "mapId": 2040
+    },
+    {
+      "id": "shop_8",
+      "name": "Nashat Items (chapter 1)",
+      "nativeId": 8,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ナシャトの町_道具　1章",
+      "worldX": 5824.22603,
+      "worldY": 14025.541862,
+      "mapId": 2040
+    },
+    {
+      "id": "shop_2007",
+      "name": "Nashat Weapons",
+      "nativeId": 2007,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ナシャトの町_武器",
+      "worldX": 5824.22603,
+      "worldY": 14025.541862,
+      "mapId": 2040
+    },
+    {
+      "id": "shop_6011",
+      "name": "Olderion Accessories",
+      "nativeId": 6011,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "オルデリオン_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4018",
+      "name": "Olderion Armor",
+      "nativeId": 4018,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "オルデリオン_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8003",
+      "name": "Olderion Armor & accessories",
+      "nativeId": 8003,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "オルデリオン_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10015",
+      "name": "Olderion Armor & accessories",
+      "nativeId": 10015,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "オルデリオン防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4018,
+        "AccessoryShopID": 6011
+      }
+    },
+    {
+      "id": "shop_10",
+      "name": "Olderion Items (chapter 3)",
+      "nativeId": 10,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "オルデリオン_道具　3章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2008",
+      "name": "Olderion Weapons",
+      "nativeId": 2008,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "オルデリオン_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6005",
+      "name": "Rebel hideout Accessories",
+      "nativeId": 6005,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "反乱軍アジト_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4009",
+      "name": "Rebel hideout Armor",
+      "nativeId": 4009,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "反乱軍アジト_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10006",
+      "name": "Rebel hideout Equipment vendor",
+      "nativeId": 10006,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "反乱軍アジト武具屋",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2021,
+        "ArmorShopID": 4009,
+        "AccessoryShopID": 6005
+      }
+    },
+    {
+      "id": "shop_15",
+      "name": "Rebel hideout Items (chapter 4)",
+      "nativeId": 15,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "反乱軍アジト_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2021",
+      "name": "Rebel hideout Weapons",
+      "nativeId": 2021,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "反乱軍アジト_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4016",
+      "name": "Sacred Temple Armor",
+      "nativeId": 4016,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "至聖殿_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10013",
+      "name": "Sacred Temple Shop",
+      "nativeId": 10013,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "至聖殿ショップ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ToolShopID": 21,
+        "WeaponShopID": 2023,
+        "ArmorShopID": 4016
+      }
+    },
+    {
+      "id": "shop_2023",
+      "name": "Sacred Temple Weapons",
+      "nativeId": 2023,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "至聖殿_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_29",
+      "name": "Sian (chapter 6) before completion",
+      "nativeId": 29,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町　6章クリア前",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6016",
+      "name": "Sian Accessories",
+      "nativeId": 6016,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4023",
+      "name": "Sian Armor",
+      "nativeId": 4023,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8013",
+      "name": "Sian Armor & accessories",
+      "nativeId": 8013,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10020",
+      "name": "Sian Armor & accessories",
+      "nativeId": 10020,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "シアンの町防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4023,
+        "AccessoryShopID": 6016
+      }
+    },
+    {
+      "id": "shop_22",
+      "name": "Sian Items (chapter 7)",
+      "nativeId": 22,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町_道具　7章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2014",
+      "name": "Sian Weapons",
+      "nativeId": 2014,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "シアンの町_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6015",
+      "name": "Sianu Accessories",
+      "nativeId": 6015,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "スニウ村_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4022",
+      "name": "Sianu Armor",
+      "nativeId": 4022,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "スニウ村_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8011",
+      "name": "Sianu Armor & accessories",
+      "nativeId": 8011,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "スニウ村_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10019",
+      "name": "Sianu Armor & accessories",
+      "nativeId": 10019,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "スニウ村防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4022,
+        "AccessoryShopID": 6015
+      }
+    },
+    {
+      "id": "shop_18",
+      "name": "Sianu Items (chapter 5)",
+      "nativeId": 18,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "スニウ村_道具　5章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2012",
+      "name": "Sianu Weapons",
+      "nativeId": 2012,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "スニウ村_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10017",
+      "name": "Zoldaad (after completion) Armor & accessories",
+      "nativeId": 10017,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ゾルダードクリア後防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "ArmorShopID": 4020,
+        "AccessoryShopID": 6013
+      }
+    },
+    {
+      "id": "shop_8012",
+      "name": "Zoldaad (before completion) Armor",
+      "nativeId": 8012,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードクリア前_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_19",
+      "name": "Zoldaad (before completion) Items (chapter 4)",
+      "nativeId": 19,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードクリア前_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2013",
+      "name": "Zoldaad (before completion) Weapons",
+      "nativeId": 2013,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードクリア前_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_6013",
+      "name": "Zoldaad Accessories",
+      "nativeId": 6013,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダード_アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4020",
+      "name": "Zoldaad Armor",
+      "nativeId": 4020,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダード_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_8005",
+      "name": "Zoldaad Armor & accessories",
+      "nativeId": 8005,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダード_防具アクセ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_13",
+      "name": "Zoldaad Items (chapter 4)",
+      "nativeId": 13,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダード_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_2010",
+      "name": "Zoldaad Weapons",
+      "nativeId": 2010,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダード_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_4008",
+      "name": "Zoldaad slums Armor",
+      "nativeId": 4008,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードスラム_防具",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_14",
+      "name": "Zoldaad slums Items (chapter 4)",
+      "nativeId": 14,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードスラム_道具　4章",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    },
+    {
+      "id": "shop_10005",
+      "name": "Zoldaad slums Shop",
+      "nativeId": 10005,
+      "sourceTable": "DT_VariousShopsList",
+      "sourceRow": "ゾルダードスラムショップ",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null,
+      "inventories": {
+        "WeaponShopID": 2020,
+        "ArmorShopID": 4008
+      }
+    },
+    {
+      "id": "shop_2020",
+      "name": "Zoldaad slums Weapons",
+      "nativeId": 2020,
+      "sourceTable": "DT_ShopList",
+      "sourceRow": "ゾルダードスラム_武器",
+      "worldX": null,
+      "worldY": null,
+      "mapId": null
+    }
+  ],
+  "sources": {
+    "DT_ShopList": {
+      "sha256": "1f7c7951feec77ae168d22064123f2bb59caafcc5473de285d458b346241bec5",
+      "rows": 105
+    },
+    "DT_VariousShopsList": {
+      "sha256": "8bacf9f526da30d7d8d9de0139227648763eaf9a9f02ed292f777256f4d0fb12",
+      "rows": 20
+    }
+  },
+  "entrances": [
+    {
+      "id": "rock_cave",
+      "name": "Rocky cave",
+      "image": "entrance_rock_cave.png",
+      "mesh": "/Game/Env/Wld/00Com/StaticMesh/SM_Env_Wld_00Com_dungeon001",
+      "sha256": "39f481558a2466eab3e4b93a475a83915b83dfb439c824b2d033d88ffe6ba260",
+      "sourceSha256": "ad2ddacd8251c97cf198a30e98ff757089e27061f167fc1ae86dce39bce9a8d6",
+      "vertices": 1333,
+      "triangles": 2372,
+      "preview": "Native LOD0 geometry; simplified lighting and diffuse sampling"
+    },
+    {
+      "id": "shrine",
+      "name": "Shrine",
+      "image": "entrance_shrine.png",
+      "mesh": "/Game/Env/Wld/00Com/StaticMesh/SM_Env_Wld_00Com_shrine001",
+      "sha256": "785d3249937bffa0f255029f4ff366dd7f03251ab21190d9816acb781aafe246",
+      "sourceSha256": "fc13d964a19c69b64ff104bf69fd54690fd355abf31fc1a60d39daf78b18ff77",
+      "vertices": 1009,
+      "triangles": 1110,
+      "preview": "Native LOD0 geometry; simplified lighting and diffuse sampling"
+    },
+    {
+      "id": "dwarven_cave",
+      "name": "Dwarven cave",
+      "image": "entrance_dwarven_cave.png",
+      "mesh": "/Game/Env/Wld/04Dir/StaticMesh/SM_Env_Wld_04Dir_dwarvecave001",
+      "sha256": "613fdfb184b0675ddfa485482e3d2d16192de59cbb1b0a6ea41666d6ff052079",
+      "sourceSha256": "59d64e05802e84bae679d8b49f37ea014c36bf0d3870acd3cb67c6b2e30e550b",
+      "vertices": 3660,
+      "triangles": 4915,
+      "preview": "Native LOD0 geometry; simplified lighting and diffuse sampling"
+    },
+    {
+      "id": "desert_sinkhole",
+      "name": "Desert sinkhole",
+      "image": "entrance_desert_sinkhole.png",
+      "mesh": "/Game/Env/Wld/02Lan/StaticMesh/SM_Env_Wld_02Lan_sandhole001",
+      "sha256": "8eaa10020d1448994bdcc634d54b1472f5d5438501f3028945ad0d013e986459",
+      "sourceSha256": "a1e03d58303663ca6e05a5bb0df6c21671db6c17003a82cae4e37ef5dc4ba79c",
+      "vertices": 251,
+      "triangles": 420,
+      "preview": "Native LOD0 geometry; simplified lighting and diffuse sampling"
+    }
+  ]
+}

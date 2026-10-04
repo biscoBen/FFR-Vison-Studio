@@ -266,9 +266,14 @@ are preserved until edited; character config files include these rewards. Build/
 
 The **Acquisition** tab previews future placement. **Random** and **Hide for spoilers** start on.
 Turn off Hide to reveal the selected location and its map marker; choices remain disabled until Random is off.
-Changing Random in either direction picks another location. Initial choices are Mitra shop, Earth Shrine and the
-crystal cave. Zoom and drag the native world-map menu images, or use **Full map**. Selections persist in character
-configs and the roster. This is a UI preview; it does not change how the installed mod grants visions yet.
+Changing Random in either direction picks another location. Choose **Shop** and a vendor, or **Cave** and one of our
+custom caves. The vendor list retains all 105 native inventory and 20 combined-shop records, including chapter variants;
+it uses readable translations of their source labels. Moving/later-game entries without identifiable native map coordinates
+remain selectable with their pin unavailable. Zoom and drag the native world-map menu images, or use **Full map**.
+Right-click the map, choose **Add cave here**, name it and select an entrance model image. The shared cave list starts
+with our Crystal Fina cave; you place the rest toward the 30-cave target. Selecting a cave centers its pin. Entrance
+previews use native geometry with simplified lighting. Cave locations persist across Studio restarts, and the selected
+cave is included in character configs. This remains a UI preview; in-game placement/acquisition will be connected later.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation

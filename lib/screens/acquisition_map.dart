@@ -5,8 +5,15 @@ import '../services/acquisition.dart';
 import '../services/acquisition_map_data.dart';
 
 class AcquisitionMap extends StatefulWidget {
-  const AcquisitionMap({super.key, required this.site});
+  const AcquisitionMap({
+    super.key,
+    required this.site,
+    this.caves = const [],
+    this.onAddCave,
+  });
   final AcquisitionSite? site;
+  final List<AcquisitionSite> caves;
+  final ValueChanged<Offset>? onAddCave;
 
   @override
   State<AcquisitionMap> createState() => _AcquisitionMapState();
@@ -19,6 +26,42 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
   static const _maxZoom = 12.0;
   // Fixed demo-area focus. It never follows a hidden random choice.
   static const _demoFocus = Offset(21287, -17319);
+
+  bool _focusSelection = false;
+  @override
+  void didUpdateWidget(covariant AcquisitionMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.site?.id != widget.site?.id &&
+        widget.site?.hasPosition == true) {
+      _focusSelection = true;
+    }
+  }
+
+  Future<void> _menu(
+    TapDownDetails details,
+    AcquisitionMapData map,
+    Size viewport,
+  ) async {
+    final scene = _transform.toScene(details.localPosition);
+    if (!map.fittedRect(viewport).contains(scene)) return;
+    final projected = map.fromViewport(scene, viewport);
+    final overlay =
+        Overlay.of(context).context.findRenderObject()! as RenderBox;
+    final anchor = overlay.globalToLocal(details.globalPosition);
+    final action = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        anchor.dx,
+        anchor.dy,
+        overlay.size.width - anchor.dx,
+        overlay.size.height - anchor.dy,
+      ),
+      items: const [PopupMenuItem(value: 'add', child: Text('Add cave here'))],
+    );
+    if (mounted && action == 'add') {
+      widget.onAddCave?.call(Offset(-projected.dy, projected.dx));
+    }
+  }
 
   @override
   void dispose() {
@@ -82,7 +125,15 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
                     _transform.value = _matrix(
                       _zoom,
                       viewport,
-                      map.toViewport(_demoFocus, viewport),
+                      map.toViewport(
+                        widget.site?.hasPosition == true
+                            ? AcquisitionMapData.project(
+                                widget.site!.worldX!,
+                                widget.site!.worldY!,
+                              )
+                            : _demoFocus,
+                        viewport,
+                      ),
                     );
                   } else if (previous != viewport) {
                     final focus = map.fromViewport(
@@ -99,73 +150,135 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
                       }
                     });
                   }
+                  if (_focusSelection && widget.site?.hasPosition == true) {
+                    _focusSelection = false;
+                    final target = map.toViewport(
+                      AcquisitionMapData.project(
+                        widget.site!.worldX!,
+                        widget.site!.worldY!,
+                      ),
+                      viewport,
+                    );
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        _transform.value = _matrix(_zoom, viewport, target);
+                      }
+                    });
+                  }
                   final site = widget.site;
-                  final marker = site == null
+                  final marker = site?.hasPosition != true
                       ? null
                       : map.toViewport(
-                          AcquisitionMapData.project(site.worldX, site.worldY),
+                          AcquisitionMapData.project(
+                            site!.worldX!,
+                            site.worldY!,
+                          ),
                           viewport,
                         );
                   return MouseRegion(
                     cursor: SystemMouseCursors.grab,
-                    child: InteractiveViewer(
-                      key: const ValueKey('acquisition-map'),
-                      transformationController: _transform,
-                      minScale: 1,
-                      maxScale: _maxZoom,
-                      onInteractionUpdate: (_) => setState(
-                        () => _zoom = _transform.value
-                            .getMaxScaleOnAxis()
-                            .clamp(1, _maxZoom),
-                      ),
-                      child: SizedBox.expand(
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Image.asset(
-                                '${AcquisitionMapData.assetRoot}/T_Wld_ocean.png',
-                                fit: BoxFit.cover,
-                                excludeFromSemantics: true,
-                              ),
-                            ),
-                            for (final capture in map.captures)
-                              Positioned.fromRect(
-                                rect: map.captureRect(capture, viewport),
+                    child: GestureDetector(
+                      key: const ValueKey('acquisition-map-context'),
+                      onSecondaryTapDown: widget.onAddCave == null
+                          ? null
+                          : (details) => _menu(details, map, viewport),
+                      child: InteractiveViewer(
+                        key: const ValueKey('acquisition-map'),
+                        transformationController: _transform,
+                        minScale: 1,
+                        maxScale: _maxZoom,
+                        onInteractionUpdate: (_) => setState(
+                          () => _zoom = _transform.value
+                              .getMaxScaleOnAxis()
+                              .clamp(1, _maxZoom),
+                        ),
+                        child: SizedBox.expand(
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
                                 child: Image.asset(
-                                  '${AcquisitionMapData.assetRoot}/${capture.image}',
-                                  fit: BoxFit.fill,
+                                  '${AcquisitionMapData.assetRoot}/T_Wld_ocean.png',
+                                  fit: BoxFit.cover,
                                   excludeFromSemantics: true,
                                 ),
                               ),
-                            if (marker != null)
-                              Positioned(
-                                left: marker.dx - 16,
-                                top: marker.dy - 32,
-                                child: Transform.scale(
-                                  scale: 1 / _zoom,
-                                  alignment: Alignment.bottomCenter,
-                                  child: Tooltip(
-                                    message: site!.label,
-                                    child: Semantics(
-                                      label:
-                                          'Acquisition location: ${site.label}',
+                              for (final capture in map.captures)
+                                Positioned.fromRect(
+                                  rect: map.captureRect(capture, viewport),
+                                  child: Image.asset(
+                                    '${AcquisitionMapData.assetRoot}/${capture.image}',
+                                    fit: BoxFit.fill,
+                                    excludeFromSemantics: true,
+                                  ),
+                                ),
+                              for (final cave in widget.caves.where(
+                                (c) => c.id != site?.id,
+                              ))
+                                Positioned(
+                                  left:
+                                      map
+                                          .toViewport(
+                                            AcquisitionMapData.project(
+                                              cave.worldX!,
+                                              cave.worldY!,
+                                            ),
+                                            viewport,
+                                          )
+                                          .dx -
+                                      8,
+                                  top:
+                                      map
+                                          .toViewport(
+                                            AcquisitionMapData.project(
+                                              cave.worldX!,
+                                              cave.worldY!,
+                                            ),
+                                            viewport,
+                                          )
+                                          .dy -
+                                      8,
+                                  child: Transform.scale(
+                                    scale: 1 / _zoom,
+                                    child: Tooltip(
+                                      message: cave.label,
                                       child: const Icon(
-                                        Icons.location_on,
-                                        key: ValueKey('acquisition-marker'),
-                                        color: Color(0xffffcf4a),
-                                        size: 32,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.black,
-                                            blurRadius: 4,
-                                          ),
-                                        ],
+                                        Icons.circle_outlined,
+                                        size: 16,
+                                        color: Color(0xff83d9ff),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                          ],
+                              if (marker != null)
+                                Positioned(
+                                  left: marker.dx - 16,
+                                  top: marker.dy - 32,
+                                  child: Transform.scale(
+                                    scale: 1 / _zoom,
+                                    alignment: Alignment.bottomCenter,
+                                    child: Tooltip(
+                                      message: site!.label,
+                                      child: Semantics(
+                                        label:
+                                            'Acquisition location: ${site.label}',
+                                        child: const Icon(
+                                          Icons.location_on,
+                                          key: ValueKey('acquisition-marker'),
+                                          color: Color(0xffffcf4a),
+                                          size: 32,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.black,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
