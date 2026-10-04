@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+None.
+
+## Published field-leader cycling and window controls — 2026-10-03
+
+Code: [`4c93c15`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4c93c15b9662b2826cbf54c0790b8badbbd94561).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37167054120),
+[Windows run 37167054120](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37167054120).
+
 - Add opt-in **Cycle walking character (LB / L1)**, also available on F6, using the active party's native field
   sprites and independent overworld selections. Preserve original actor identity and story asset indices; suspend
   the cosmetic replacement around events, battle, menus and vehicles. Add private diagonal idle aliases for Dark
@@ -19,6 +27,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   controller behavior and scene transitions require an in-game trial after package verification.
 - Give Studio explicit light/dark title-bar controls so minimize, maximize/restore and close remain visible.
   Preserve window dragging and the existing close-during-build confirmation. Included in the cycling build.
+- Verification: 180 local Flutter tests, analysis, 226 Python tests (3 local reference/platform skips), executable
+  Lua callback/guard tests, native field-bank and Dark Fina project readback through UE5.6 IoStore. All final Windows
+  gates passed, including the genuine frozen-engine startup and launcher/updater checks. Reused the final push run;
+  authenticated release checksum, exact-commit provenance and all 33 bundled files verified. Native gameplay and
+  controller behavior still require the user's live trial; the runtime dump verifies loader startup and signatures.
+- Measured from receiving the usable native reference to verified package: **30m29s** — **15m57s implementation**,
+  **4m44s checks/correction/push**, **8m56s across two CI runs**, **52s release verification**. The first run compiled
+  successfully but an existing settings-map expectation omitted the new cycling flag; its gate prevented publication.
+  Updated that test, ran the full local Flutter suite, then verified the second run. CI used **16m05s runner time**.
+  First complete candidate to verified package: **14m32s**. The original movement/cycling request to this verified
+  package spans **1h32m04s**, including the earlier movement/revert releases and collecting/testing runtime references.
+  These publication notes use the documentation-only path; they do not trigger another app build.
 
 ## Published independent party appearance reversion — 2026-10-03
 
