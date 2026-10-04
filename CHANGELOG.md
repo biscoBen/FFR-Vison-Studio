@@ -11,11 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- None.
+
+## Published complete directional FFBE field selector — 2026-10-03
+
+Code: [`378436a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/378436a084e635d792a177b4419bc76305e29c8b).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37174463870),
+[Windows run 37174463870](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37174463870).
+
 - Expand overworld appearances to all nine reviewed directional FFBE running sheets: five 4-way and four 8-way,
   with normal unit images and direction labels. Preview idle/walk/run; exclude inserted standing frames and
   shadow-only rows. Keep four-way models visible diagonally using their own cardinal poses. Bundle checksum-verified
   assets for offline use and preserve saved Vagrant Rain choices, independent battle appearances and cycling.
-  One cloaked sheet is explicitly unidentified; Sakura lacks a usable run. Native game/controller behavior needs retesting.
+  One cloaked sheet is explicitly unidentified; Sakura lacks a usable run. The complete town-sheet and unit motion-name
+  inventories were inspected at the pinned FFBE dump revision; side-view battle runners are excluded by request.
+- Verification: Flutter analysis and 183 local Flutter tests; 234 Python tests (3 local reference/platform skips).
+  All nine models' 468 clips, frame references, lengths, texture dimensions and pixel payloads survived UE5.6 IoStore
+  readback using the actual generator with a genuine field-class donor. All Windows gates passed, including the
+  real frozen-engine startup, launcher/updater tests and release publication. Authenticated release checksum,
+  exact-commit provenance and all 35 packaged files verified. Live game/controller behavior still needs retesting.
+- Measured from the first clock reading during initial setup to verified package: **28m14s** — **17m12s audit/implementation**,
+  **4m35s local checks, integration correction and push**, **5m48s CI**, **39s release verification**. Earlier setup
+  before that clock reading is unrecorded. First complete candidate to verified package: **11m03s**.
+  CI used **8m47s runner time**. One code push and one reused build; publication notes use the documentation-only path.
 
 ## Published cycled party diagonal visibility repair — 2026-10-03
 
