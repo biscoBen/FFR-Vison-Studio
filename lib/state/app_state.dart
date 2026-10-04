@@ -390,6 +390,43 @@ class AppState extends ChangeNotifier {
     await _savePending();
   });
 
+  Future<void> updateAcquisitionCave(CaveLocation cave) => _withRoster(() async {
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    CaveLocation.fromJson(cave.toJson());
+    final previous = acquisitionLocations.cave(cave.id);
+    if (previous == null) { throw StateError('This cave was removed.'); }
+    await _savePending();
+    final catalog = await AcquisitionCatalog.bundled;
+    await acquisitionLocations.update(cave);
+    // Move the old opt-in Fina assignment to an explicit snapshot before editing.
+    if (cave.id == 'crystal_cave' && crystalCave) {
+      try {
+        await api!.saveCrystalCave(false);
+      } catch (_) {
+        await acquisitionLocations.update(previous);
+        rethrow;
+      }
+      crystalCave = false;
+      for (final unit in units.cast<JsonMap>().where((u) => CrystalFina.matches(u))) {
+        final saved = unit[Acquisition.field];
+        final preferences = Acquisition.valid(saved)
+            ? Acquisition.fromJson(saved as Map)
+            : const Acquisition(location: 'crystal_cave');
+        update({...unit, Acquisition.field: preferences.choose(cave.site, cave: cave.toJson()).toJson()});
+      }
+    }
+    for (final unit in units.cast<JsonMap>().toList()) {
+      final saved = unit[Acquisition.field];
+      if (!Acquisition.valid(saved)) continue;
+      final preferences = acquisitionLocations.migrate(Acquisition.fromJson(saved as Map), catalog);
+      if (preferences.location != cave.id) continue;
+      update({...unit, Acquisition.field: preferences.choose(cave.site, cave: cave.toJson()).toJson()});
+    }
+    _saveTimer?.cancel();
+    await _savePending();
+  });
+
   Future<bool> removeUnit(String key) => _withRoster(() async {
     try {
       if (building) { throw StateError('Wait for the current build to finish.'); }

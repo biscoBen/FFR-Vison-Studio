@@ -249,6 +249,7 @@ class BundledFeatures {
           'payload/overworld_assets.zip',
           'payload/_ffr_testing.py',
           'payload/_ffr_crystal_cave.py',
+          'payload/cave_terrain.json',
           'payload/_ffr_ability_modes.py',
           'payload/ability_hiding_review.json',
           'payload/_ffr_animation_repair.py',
@@ -257,7 +258,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 19) {
+        (manifest['files'] as Map).length != 20) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

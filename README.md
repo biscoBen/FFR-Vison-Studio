@@ -285,8 +285,13 @@ the same stone cave. Multiple visions assigned to one cave have separate interac
 Cave-selected visions are not also sold in Mitra. Saved cave map IDs remain stable across rebuilds. The original
 Crystal Fina cave switch still works; an explicit cave assignment for her takes precedence. Shop/vendor assignments
 remain planning controls and retain the existing shop behavior until vendor routing is implemented. Original visions
-retain their native acquisition. Entrance height uses the tested overworld baseline; terrain/accessibility and the new
-entrance appearances need an in-game placement check. Automated asset checks do not execute gameplay.
+retain their native acquisition. Entrances default to 75% size and use decoded native landscape heights where available. Right-click a cave marker
+for **Edit placement**: drag its entrance in the local 3D terrain preview, use X/Y/Z, ground snapping, rotation and
+size controls, or right-click the map to move it. The pin marks the footprint center; saved edits update all assigned
+visions without changing cave IDs. The 3D preview shows native terrain and entrance geometry with simplified prop
+outlines; game shaders and instanced foliage are omitted. Native height coverage currently includes Grandshelt and
+Dirnado; elsewhere set Z manually. All cave visions use the tested Crystal Fina sprite scale. The cave portal uses a
+white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
 The [verified cave placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37227168310)
 contains assigned-vision caves and marker removal (commit `86600ac`, run `37227168310`).
 
@@ -386,7 +391,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,
   return points, event timelines and ownership conditions. Retest granting the vision, disappearance, white flash,
   return to the stone cave and controller dialogs. Assigned user-placed Resonance Caves now use this flow; recheck
-  their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Vendor routing
+  their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Refresh the
+  checked landscape mip decoder, source height data and placement preview geometry; expand terrain coverage and
+  validate existing saved X/Y/Z, rotation and scale without moving caves silently. Vendor routing
   remains pending.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source

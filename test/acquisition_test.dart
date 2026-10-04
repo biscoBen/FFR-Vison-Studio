@@ -5,6 +5,7 @@ import 'package:ffr_vision_studio/screens/steps/acquisition_step.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/services/acquisition.dart';
+import 'package:ffr_vision_studio/services/cave_terrain.dart';
 import 'package:ffr_vision_studio/services/acquisition_locations.dart';
 import 'package:ffr_vision_studio/services/acquisition_map_data.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
@@ -23,6 +24,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
     await AcquisitionMapData.bundled;
+    await CaveTerrain.bundled;
     await AcquisitionCatalog.bundled;
     await (FontLoader(
       'Barlow',
@@ -36,6 +38,7 @@ void main() {
     'native capture and marker projection agree for the three demo sites',
     () async {
       final map = await AcquisitionMapData.bundled;
+      await CaveTerrain.bundled;
       const viewport = Size(800, 480);
       final tile = map.captures.first;
       final rect = map.captureRect(tile, viewport);

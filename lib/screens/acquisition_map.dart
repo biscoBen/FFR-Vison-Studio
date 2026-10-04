@@ -11,11 +11,15 @@ class AcquisitionMap extends StatefulWidget {
     this.caves = const [],
     this.onAddCave,
     this.onRemoveCave,
+    this.onEditCave,
+    this.addActionLabel = 'Add cave here',
   });
   final AcquisitionSite? site;
   final List<AcquisitionSite> caves;
   final ValueChanged<Offset>? onAddCave;
   final ValueChanged<String>? onRemoveCave;
+  final ValueChanged<String>? onEditCave;
+  final String addActionLabel;
 
   @override
   State<AcquisitionMap> createState() => _AcquisitionMapState();
@@ -61,7 +65,11 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
           : Rect.fromLTWH(point.dx - 8, point.dy - 8, 16, 16);
       return bounds.inflate(4).contains(details.localPosition);
     }).toList();
-    if (!canAdd && (widget.onRemoveCave == null || nearby.isEmpty)) return;
+    if (!canAdd &&
+        ((widget.onRemoveCave == null && widget.onEditCave == null) ||
+            nearby.isEmpty)) {
+      return;
+    }
     final overlay =
         Overlay.of(context).context.findRenderObject()! as RenderBox;
     final anchor = overlay.globalToLocal(details.globalPosition);
@@ -75,7 +83,13 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
       ),
       items: [
         if (canAdd)
-          const PopupMenuItem(value: 'add', child: Text('Add cave here')),
+          PopupMenuItem(value: 'add', child: Text(widget.addActionLabel)),
+        if (widget.onEditCave != null)
+          for (final cave in nearby)
+            PopupMenuItem(
+              value: 'edit:${cave.id}',
+              child: Text('Edit placement: ${cave.label}'),
+            ),
         if (widget.onRemoveCave != null)
           for (final cave in nearby)
             PopupMenuItem(
@@ -88,6 +102,8 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
       widget.onAddCave?.call(Offset(-projected.dy, projected.dx));
     } else if (mounted && action?.startsWith('remove:') == true) {
       widget.onRemoveCave?.call(action!.substring('remove:'.length));
+    } else if (mounted && action?.startsWith('edit:') == true) {
+      widget.onEditCave?.call(action!.substring('edit:'.length));
     }
   }
 
@@ -209,7 +225,8 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
                       key: const ValueKey('acquisition-map-context'),
                       onSecondaryTapDown:
                           widget.onAddCave == null &&
-                              widget.onRemoveCave == null
+                              widget.onRemoveCave == null &&
+                              widget.onEditCave == null
                           ? null
                           : (details) => _menu(details, map, viewport),
                       child: InteractiveViewer(

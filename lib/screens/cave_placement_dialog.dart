@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 
 import '../design/theme.dart';
 import '../services/acquisition_locations.dart';
+import '../services/cave_terrain.dart';
+import 'acquisition_map.dart';
+import 'cave_terrain_preview.dart';
 
 Future<CaveLocation?> showCavePlacement(
   BuildContext context,
   AcquisitionLocations locations,
   AcquisitionCatalog catalog,
-  Offset world,
-) => showDialog<CaveLocation>(
+  Offset world, {
+  CaveLocation? existing,
+  Future<void> Function(CaveLocation)? save,
+}) => showDialog<CaveLocation>(
   context: context,
   builder: (_) => _CavePlacementDialog(
     locations: locations,
     catalog: catalog,
     world: world,
+    existing: existing,
+    save: save,
   ),
 );
 
@@ -22,45 +29,149 @@ class _CavePlacementDialog extends StatefulWidget {
     required this.locations,
     required this.catalog,
     required this.world,
+    this.existing,
+    this.save,
   });
   final AcquisitionLocations locations;
   final AcquisitionCatalog catalog;
   final Offset world;
+  final CaveLocation? existing;
+  final Future<void> Function(CaveLocation)? save;
   @override
   State<_CavePlacementDialog> createState() => _CavePlacementDialogState();
 }
 
 class _CavePlacementDialogState extends State<_CavePlacementDialog> {
   late final _name = TextEditingController(
-    text: 'Cave ${widget.locations.caves.length + 1}',
+    text: widget.existing?.name ?? 'Cave ${widget.locations.caves.length + 1}',
   );
-  late String _entrance = widget.catalog.entrances.first.id;
-  bool _saving = false;
+  late String _entrance =
+      widget.existing?.entrance ?? widget.catalog.entrances.first.id;
+  late Offset _world = widget.world;
+  final _x = TextEditingController(),
+      _y = TextEditingController(),
+      _z = TextEditingController();
+  late double _yaw = widget.existing?.yaw ?? 105;
+  late double _scale = widget.existing?.scale ?? .75;
+  double _height = 0;
+  CaveTerrain? _terrain;
+  bool _saving = false, _threeD = true;
   String? _error;
   @override
+  void initState() {
+    super.initState();
+    _terrain = CaveTerrain.cached;
+    _height =
+        widget.existing?.worldZ ?? _terrain?.height(_world.dx, _world.dy) ?? 0;
+    _sync();
+    CaveTerrain.bundled
+        .then((terrain) {
+          if (!mounted) return;
+          setState(() {
+            _terrain = terrain;
+            _height =
+                widget.existing?.worldZ ??
+                terrain.height(_world.dx, _world.dy) ??
+                0;
+            _sync();
+          });
+        })
+        .catchError((Object error) {
+          if (mounted) {
+            setState(() => _error = 'Could not load terrain: $error');
+          }
+        });
+  }
+
+  void _sync() {
+    _x.text = _world.dx.toStringAsFixed(2);
+    _y.text = _world.dy.toStringAsFixed(2);
+    _z.text = _height.toStringAsFixed(2);
+  }
+
+  void _move(Offset value) {
+    final before = _terrain?.height(_world.dx, _world.dy);
+    final after = _terrain?.height(value.dx, value.dy);
+    setState(() {
+      _world = Offset(
+        value.dx.clamp(-24500, 25300),
+        value.dy.clamp(-23700, 23700),
+      );
+      if (before != null && after != null) {
+        _height = (_height + after - before).clamp(-2000, 10000);
+      }
+      _sync();
+    });
+  }
+
+  bool _readFields() {
+    final x = double.tryParse(_x.text),
+        y = double.tryParse(_y.text),
+        z = double.tryParse(_z.text);
+    if (x == null ||
+        y == null ||
+        z == null ||
+        !x.isFinite ||
+        !y.isFinite ||
+        !z.isFinite ||
+        x < -24500 ||
+        x > 25300 ||
+        y < -23700 ||
+        y > 23700 ||
+        z < -2000 ||
+        z > 10000) {
+      setState(
+        () => _error = 'Enter valid coordinates within the world map, and height −2000 to 10000.',
+      );
+      return false;
+    }
+    setState(() {
+      _world = Offset(
+        _x.text == _world.dx.toStringAsFixed(2) ? _world.dx : x,
+        _y.text == _world.dy.toStringAsFixed(2) ? _world.dy : y,
+      );
+      _height = _z.text == _height.toStringAsFixed(2) ? _height : z;
+      _error = null;
+    });
+    return true;
+  }
+
+  @override
   void dispose() {
-    _name.dispose();
+    for (final c in [_name, _x, _y, _z]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
-  Future<void> _add() async {
+  Future<void> _save() async {
+    if (!_readFields()) return;
     if (_name.text.trim().isEmpty || _name.text.trim().length > 80) {
       setState(() => _error = 'Enter a cave name of 1–80 characters.');
       return;
     }
     final cave = CaveLocation(
-      id: 'cave_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
+      id:
+          widget.existing?.id ??
+          'cave_${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}',
       name: _name.text.trim(),
       entrance: _entrance,
-      worldX: widget.world.dx,
-      worldY: widget.world.dy,
+      worldX: _world.dx,
+      worldY: _world.dy,
+      worldZ: _height,
+      yaw: _yaw,
+      scale: _scale,
     );
     setState(() {
       _saving = true;
       _error = null;
     });
     try {
-      await widget.locations.add(cave);
+      if (widget.save != null) {
+        await widget.save!(cave);
+      } else {
+        await widget.locations.add(cave);
+      }
       if (mounted) Navigator.pop(context, cave);
     } catch (error) {
       if (mounted) {
@@ -74,9 +185,9 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Add cave'),
+    title: Text(widget.existing == null ? 'Add cave' : 'Edit cave placement'),
     content: SizedBox(
-      width: 620,
+      width: 940,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,15 +199,9 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
               maxLength: 80,
               decoration: const InputDecoration(labelText: 'Cave name'),
             ),
-            Text('Choose the entrance appearance.', style: Guide.small()),
-            Text(
-              'Model previews use simplified lighting.',
-              style: Guide.small(),
-            ),
-            const SizedBox(height: 12),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 for (final entrance in widget.catalog.entrances)
                   SizedBox(
@@ -107,7 +212,7 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
                           ? null
                           : () => setState(() => _entrance = entrance.id),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: _entrance == entrance.id
@@ -120,14 +225,13 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
                           children: [
                             Image.asset(
                               'assets/acquisition_map/${entrance.image}',
-                              height: 100,
-                              width: 160,
+                              height: 70,
+                              width: 150,
                               fit: BoxFit.contain,
                             ),
-                            const SizedBox(height: 6),
-                            Text(entrance.name, textAlign: TextAlign.center),
+                            Text(entrance.name),
                             if (_entrance == entrance.id)
-                              const Icon(Icons.check, size: 20),
+                              const Icon(Icons.check, size: 16),
                           ],
                         ),
                       ),
@@ -135,16 +239,145 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
             Text(
-              'Choose this cave in a vision’s Acquisition tab, then build/install to add it in-game.',
+              'Model previews use simplified lighting; the shrine glow appears in-game.',
               style: Guide.small(),
             ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(_error!, style: Guide.small(Guide.red)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                TextButton(
+                  onPressed: _saving
+                      ? null
+                      : () => setState(() => _threeD = !_threeD),
+                  child: Text(_threeD ? 'Show world map' : 'Show 3D terrain'),
+                ),
+                const Spacer(),
+                TextButton(
+                  key: const ValueKey('cave-ground'),
+                  onPressed:
+                      _saving || _terrain?.height(_world.dx, _world.dy) == null
+                      ? null
+                      : () {
+                          setState(() {
+                            _height = _terrain!.height(_world.dx, _world.dy)!;
+                            _sync();
+                          });
+                        },
+                  child: const Text('Snap to ground'),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 340,
+              child: _threeD
+                  ? _terrain == null
+                        ? const Center(child: CircularProgressIndicator())
+                        : CaveTerrainPreview(
+                            terrain: _terrain!,
+                            world: _world,
+                            z: _height,
+                            entrance: _entrance,
+                            yaw: _yaw,
+                            scale: _scale,
+                            onMove: _saving ? (_) {} : _move,
+                          )
+                  : AcquisitionMap(
+                      site: CaveLocation(
+                        id: 'cave_preview',
+                        name: 'Entrance footprint center',
+                        entrance: _entrance,
+                        worldX: _world.dx,
+                        worldY: _world.dy,
+                      ).site,
+                      onAddCave: _saving ? null : _move,
+                      addActionLabel: 'Move cave here',
+                    ),
+            ),
+            if (_terrain != null &&
+                _terrain!.height(_world.dx, _world.dy) == null)
+              Text(
+                'Native terrain is unavailable here. Set height manually and check the installed placement.',
+                style: Guide.small(Guide.red),
               ),
+            Row(
+              children: [
+                for (final entry in [
+                  ('X / north', _x, 'cave-x'),
+                  ('Y / east', _y, 'cave-y'),
+                  ('Z / base height', _z, 'cave-z'),
+                ])
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: TextField(
+                        key: ValueKey(entry.$3),
+                        controller: entry.$2,
+                        enabled: !_saving,
+                        decoration: InputDecoration(labelText: entry.$1),
+                        onSubmitted: (_) => _readFields(),
+                        onEditingComplete: _readFields,
+                      ),
+                    ),
+                  ),
+                TextButton(
+                  onPressed: _saving
+                      ? null
+                      : () {
+                          if (_readFields()) {
+                            setState(() {
+                              _height -= 10;
+                              _sync();
+                            });
+                          }
+                        },
+                  child: const Text('Z −10'),
+                ),
+                TextButton(
+                  onPressed: _saving
+                      ? null
+                      : () {
+                          if (_readFields()) {
+                            setState(() {
+                              _height += 10;
+                              _sync();
+                            });
+                          }
+                        },
+                  child: const Text('Z +10'),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text('Rotation ${_yaw.round()}°'),
+                Expanded(
+                  child: Slider(
+                    min: -180,
+                    max: 180,
+                    value: _yaw,
+                    onChanged: _saving ? null : (v) => setState(() => _yaw = v),
+                  ),
+                ),
+                Text('Size ${(_scale * 100).round()}%'),
+                Expanded(
+                  child: Slider(
+                    key: const ValueKey('cave-scale'),
+                    min: .25,
+                    max: 2,
+                    value: _scale,
+                    onChanged: _saving
+                        ? null
+                        : (v) => setState(() => _scale = v),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'The marker is the entrance’s footprint center. Drag in 3D or right-click on the map to move it.\nMoving preserves your height offset above native terrain. Rebuild/install to apply changes.',
+              style: Guide.small(),
+            ),
+            if (_error != null) Text(_error!, style: Guide.small(Guide.red)),
           ],
         ),
       ),
@@ -156,8 +389,14 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
       ),
       TextButton(
         key: const ValueKey('cave-add'),
-        onPressed: _saving ? null : _add,
-        child: Text(_saving ? 'Saving…' : 'Add cave'),
+        onPressed: _saving || _terrain == null ? null : _save,
+        child: Text(
+          _saving
+              ? 'Saving…'
+              : widget.existing == null
+              ? 'Add cave'
+              : 'Save placement',
+        ),
       ),
     ],
   );

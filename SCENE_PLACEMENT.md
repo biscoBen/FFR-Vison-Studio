@@ -100,3 +100,25 @@ not live input/collision behavior. The supplied assets expose serialized setting
 interaction code, the running game and the complete collision mesh are not available in this workspace. Do not
 claim that screenshots or data inspection alone prove runtime placement. Future scenes need their native donor
 map, geometry/collision bounds and an in-game smoke test before being called gameplay-verified.
+
+## Editable Resonance Cave placements
+
+Version 2 cave snapshots store the footprint center in world X/Y, absolute base Z, yaw (degrees) and size relative
+to the earlier entrance normalization (75% by default). Version 1 snapshots remain readable; generic caves gain
+native grounding and 75% sizing, while the tested original Crystal Fina placement stays unchanged until edited.
+The engine and preview normalize the selected mesh to a horizontal half-bound of `120.52937316894531 * .8`,
+then apply the saved size. Subtract the yaw-rotated native bounds origin from the actor pivot so the transformed
+footprint center equals the saved XY. Clear donor pitch/roll; place the transformed lowest bound at saved Z.
+The blocker is centered at Z + 160 and its horizontal extents follow the saved size; the wider trigger retains reach.
+
+`scripts/build_cave_terrain.py` decodes the supplied single-subsection 128-square UE5.6 mip0: U16 big-endian deltas
+start at 32768 and accumulate across rows. Check every decoded minimum/maximum against CachedLocalBox; world
+height is root Z + (height - 32768)/128 * root Z scale. The shipped data covers Grandshelt and Dirnado, not all regions.
+Both Studio and engine bilinearly sample the same checked data. Moving in the editor preserves the offset above
+terrain; Snap to ground clears it. Older generic placements without Z use native height if covered, otherwise zero;
+set Z manually where references are absent. Full-game source refresh is tracked in README.
+
+The portal uses a separate item-free event row with LoadingScreenSetting=White, the existing header/footer timeline,
+and TransitionLocation targeting this cave's crystal room / point 0. Its manual trigger is event-only, preserving
+controller input ownership. The acquisition event, ownership condition and stone-cave return remain separate.
+Native SDK and IoStore readbacks validate the graphs, transformed bounds and route data; they do not run the game.

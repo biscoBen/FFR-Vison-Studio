@@ -130,6 +130,94 @@ void main() {
     expect(pool.caves, hasLength(1));
   });
 
+  test('placement edits persist precise transforms for every assigned vision without changing identities', () async {
+    final dir = Directory.systemTemp.createTempSync('cave-edit-');
+    final api = CaveRemovalApi([]);
+    final app = AppState(
+      hostBase: 'http://unused',
+      appPaths: AppPaths.at(dir.path),
+    )..api = api;
+    addTearDown(() {
+      app.dispose();
+      dir.deleteSync(recursive: true);
+    });
+    const old = CaveLocation(
+      id: 'cave_edit',
+      name: 'Corner',
+      entrance: 'shrine',
+      worldX: 17600,
+      worldY: 21400,
+    );
+    await app.acquisitionLocations.add(old);
+    final choice = app.acquisitionLocations.choose(
+      const Acquisition(
+        location: 'mitra_shop',
+        random: false,
+        hideSpoilers: false,
+      ),
+      old.site,
+    );
+    app.units = [
+      {...profile(), 'key': 'one', Acquisition.field: choice.toJson()},
+      {
+        ...profile(),
+        'key': 'two',
+        Acquisition.field: choice
+            .copyWith(random: true, hideSpoilers: true)
+            .toJson(),
+      },
+      {
+        ...profile(),
+        'key': 'shop',
+        Acquisition.field: const Acquisition(location: 'mitra_shop').toJson(),
+      },
+    ];
+    api.roster = clone(app.units) as List;
+    app.update({
+      ...app.units.first as Map<String, dynamic>,
+      'en': 'Pending name',
+    });
+    const edited = CaveLocation(
+      id: 'cave_edit',
+      name: 'Tucked by trees',
+      entrance: 'shrine',
+      worldX: 17500.25,
+      worldY: 21300.75,
+      worldZ: 20.5,
+      yaw: -45,
+      scale: .75,
+    );
+    await app.updateAcquisitionCave(edited);
+    expect(app.units.first['en'], 'Pending name');
+    for (var i = 0; i < 2; i++) {
+      final saved = Acquisition.fromJson(
+        api.roster[i][Acquisition.field] as Map,
+      );
+      expect(saved.location, old.id);
+      expect(saved.cave, edited.toJson());
+      expect(saved.random, i == 1);
+      expect(saved.hideSpoilers, i == 1);
+      expect(
+        CharacterConfig.decode(
+          CharacterConfig.encode(api.roster[i] as Map<String, dynamic>),
+        )[Acquisition.field],
+        saved.toJson(),
+      );
+    }
+    expect(
+      api.roster.last[Acquisition.field],
+      const Acquisition(location: 'mitra_shop').toJson(),
+    );
+    final pool = AcquisitionLocations(
+      file: File('${dir.path}/acquisition-caves.json'),
+    );
+    addTearDown(pool.dispose);
+    expect(pool.cave(old.id)!.toJson(), edited.toJson());
+    app.buildState = {'running': true};
+    await expectLater(app.updateAcquisitionCave(old), throwsStateError);
+    expect(pool.cave(old.id)!.toJson(), edited.toJson());
+  });
+
   test('invalid positions, conflicting IDs and failed writes preserve the existing pool', () async {
     final dir = Directory.systemTemp.createTempSync('cave-invalid-');
     addTearDown(() => dir.deleteSync(recursive: true));

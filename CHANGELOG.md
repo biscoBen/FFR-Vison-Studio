@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add/edit cave placements with local 3D terrain dragging, precise X/Y/Z, ground snapping, rotation and size controls.
+  Entrances default to 75% of the previous size. Ground their footprint centers using native terrain instead of a
+  shared fixed height; preserve cave identities and update every assigned vision when editing a shared placement.
+- Give assigned cave visions Crystal Fina's tested sprite scale and make the cave-to-crystal-room transition white.
+  Keep the existing shrine model and its native glow. The preview uses simplified prop outlines and omits game
+  shaders/instanced foliage; terrain references cover Grandshelt and Dirnado, with manual height elsewhere.
+
 ## Published cave-marker removal — 2026-10-04
 
 Code: [`86600ac`](https://github.com/biscoBen/FFR-Vison-Studio/commit/86600ac8c33c324eabbe0268dbcdd8e53ddfcf64).

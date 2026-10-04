@@ -10,6 +10,7 @@ import re
 import struct
 import tempfile
 import uuid
+import zlib
 
 NAME = 'Studio_CrystalCave'
 MAP_ID = 29991
@@ -76,6 +77,9 @@ class CaveSpec:
     sprite_scale: float = FINA_SCALE
     sprite_float: float = FINA_FLOAT
     spawn_offset: tuple = (0.0, 0.0, 0.0)
+    placement_yaw: float | None = None
+    placement_scale: float = 1.0
+    ground_z: float | None = None
 
     @property
     def stone_name(self): return self.name + '_Stone'
@@ -89,6 +93,30 @@ class CaveSpec:
     def event(self): return self.npc_name + '_Acquire'
     @property
     def grant_sequence(self): return self.package + '_Grant' + ('' if self.unit_id is None else '_' + str(self.unit_id) + '_Sequence')
+    @property
+    def portal_event(self): return self.name + '_EnterCrystalRoom'
+
+
+_terrain = None
+
+
+def terrain_height(x, y):
+    """Bilinear native landscape height; None outside the supplied references."""
+    global _terrain
+    if _terrain is None:
+        data = json.loads(Path(__file__).with_name('cave_terrain.json').read_bytes())
+        if data['schema'] != 1 or data['size'] != 128:
+            raise ValueError('Unsupported cave terrain data.')
+        _terrain = [(p, struct.unpack('<16384H', zlib.decompress(base64.b64decode(p['heights']))))
+                    for p in data['patches']]
+    for p, values in _terrain:
+        u, v = (x - p['x']) / p['dx'], (y - p['y']) / p['dy']
+        if not 0 <= u <= 127 or not 0 <= v <= 127: continue
+        a, b = min(126, int(u)), min(126, int(v)); du, dv = u - a, v - b
+        h = ((values[b * 128 + a] * (1 - du) + values[b * 128 + a + 1] * du) * (1 - dv)
+             + (values[(b + 1) * 128 + a] * (1 - du) + values[(b + 1) * 128 + a + 1] * du) * dv)
+        return p['z'] + (h - 32768) / 128 * p['dz']
+    return None
 
 
 def assignment(unit):
@@ -115,14 +143,19 @@ def assignment(unit):
                 and re.fullmatch(r'shop_[0-9]{1,9}', value['location'])): return None
         raise ValueError('Invalid saved shop choice.')
     cave = value['cave']
-    if (not isinstance(cave, dict) or set(cave) != {'version', 'id', 'name', 'entrance', 'worldX', 'worldY'}
-            or cave.get('version') != 1 or not isinstance(cave.get('id'), str)
+    fields = {'version', 'id', 'name', 'entrance', 'worldX', 'worldY'}
+    modern = isinstance(cave, dict) and cave.get('version') == 2
+    if modern: fields.update(('worldZ', 'yaw', 'scale'))
+    limits = [('worldX', -24500, 25300), ('worldY', -23700, 23700)]
+    if modern: limits += [('worldZ', -2000, 10000), ('yaw', -180, 180), ('scale', .25, 2)]
+    if (not isinstance(cave, dict) or set(cave) != fields
+            or type(cave.get('version')) is not int or cave['version'] not in (1, 2) or not isinstance(cave.get('id'), str)
             or not (cave['id'] == 'crystal_cave' or re.fullmatch(r'cave_[a-z0-9_]{1,64}', cave['id']))
             or cave['id'] != value['location'] or not isinstance(cave.get('name'), str)
             or not cave['name'].strip() or len(cave['name']) > 80 or cave.get('entrance') not in ENTRANCE_MESHES
             or any(type(cave.get(k)) not in (int, float) or not math.isfinite(cave[k])
                    or not low <= cave[k] <= high for k, low, high in
-                   (('worldX', -24500, 25300), ('worldY', -23700, 23700)))):
+                   limits)):
         raise ValueError('Invalid saved cave placement.')
     if unit.get('native') or unit.get('party') or type(unit.get('id')) is not int or not 13500 <= unit['id'] < 14000:
         raise ValueError('Resonance caves require an Added vision identity.')
@@ -182,6 +215,17 @@ def cave_plans(units, root, rows=None):
         x, y = saved['worldX'], saved['worldY']
         base = replace(base, entrance=(x, y, ENTRANCE[2]), entrance_model=(x, y, ENTRANCE_MODEL[2]),
                        return_point=(x - 350.0, y, RETURN[2]), mesh=ENTRANCE_MESHES[saved['entrance']])
+        # Preserve the tested original cave until explicitly edited. Generic old
+        # placements gain the same grounding/75% defaults as newly placed caves.
+        if key != 'crystal_cave' or saved['version'] == 2:
+            ground = saved.get('worldZ')
+            if ground is None: ground = terrain_height(x, y)
+            if ground is None: ground = 0.0
+            outside = terrain_height(x - 350.0, y)
+            base = replace(base, entrance=(x, y, ground + 160.0), entrance_model=(x, y, ground),
+                           ground_z=ground, placement_yaw=saved.get('yaw', 105.0),
+                           placement_scale=saved.get('scale', .75),
+                           return_point=(x - 350.0, y, (outside if outside is not None else ground) + 200.0))
         entries = []
         for index, unit in enumerate(sorted(group['units'], key=lambda u: u['id'])):
             fina = str((unit.get('ffbe') or {}).get('id')) == SPRITE
@@ -199,7 +243,7 @@ def cave_plans(units, root, rows=None):
             uid = None if key == 'crystal_cave' and fina and legacy else unit['id']
             offset = (0.0, (index - (len(group['units']) - 1) / 2) * 160.0, 0.0)
             entries.append((unit, replace(base, unit_id=uid, material=material, sprite=sprite,
-                                           sprite_scale=FINA_SCALE if fina else 1.5,
+                                           sprite_scale=FINA_SCALE,
                                            sprite_float=FINA_FLOAT if fina else 0.0, spawn_offset=offset)))
         plans.append(entries)
     return plans, registry
@@ -308,6 +352,19 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
             raise ValueError('The Resonance Cave acquisition event already exists.')
         table(rel)['add'].append({'row': spec.event, 'cloneFrom': 'C01_014_03',
                                   'set': testing.field_delta(grant, desired)})
+        if include_maps:
+            portal = testing.apply_fields(donor, {
+                'Description': spec.display_name + ': enter crystal room', 'encountGroupId': -1,
+                'EventSequence': '/Game/' + spec.grant_sequence,
+                'IsGetOffVehicle': False, 'IsHiddenFieldUI': True, 'LoadingScreenSetting': 'White',
+                'MapStartupSettings.ChangeBGM': 'NotChange',
+                'RestoreSoundVolumeSettings.IsRevertValume': False,
+                'FooterSettings.IsApplyProgressis': False,
+                'TransitionLocation.mapId': spec.map_id, 'TransitionLocation.pointId': 0,
+                'TransitionLocation.bDoAutoSave': False})
+            if spec.portal_event in rows(rel): raise ValueError('The cave portal event already exists.')
+            table(rel)['add'].append({'row': spec.portal_event, 'cloneFrom': 'C01_014_03',
+                                      'set': testing.field_delta(grant, portal)})
 
 
 
@@ -802,7 +859,7 @@ def make_npc(source, unit, spawn, spec):
 
 def entrance_mesh(view, component, spec, source):
     """Append isolated imports; never redirect earlier caves' shared imports."""
-    if spec.mesh == ENTRANCE_MESHES['rock_cave']: return
+    if spec.mesh == ENTRANCE_MESHES['rock_cave'] and spec.ground_z is None: return
     original = view['Imports'][-property_data(component, 'StaticMesh')['Value'] - 1]
     package = copy.deepcopy(view['Imports'][-original['OuterIndex'] - 1])
     package['ObjectName'] = spec.mesh
@@ -818,14 +875,23 @@ def entrance_mesh(view, component, spec, source):
                   if any(p['Name'] == 'ExtendedBounds' for p in e.get('Data', [])))
     origin = property_data(bounds, 'Origin')['Value'][0]['Value']
     half = property_data(bounds, 'BoxExtent')['Value'][0]['Value']
-    scale = 120.52937316894531 * .8 / max(float(half['X']), float(half['Y']))
+    scale = 120.52937316894531 * .8 * spec.placement_scale / max(float(half['X']), float(half['Y']))
     if not math.isfinite(scale) or not .01 <= scale <= 10:
         raise ValueError('The selected entrance bounds are unsupported.')
     vector(component, 'RelativeScale3D', (scale, scale, scale))
     # Match the tested rock's grounded bottom, not the other mesh's pivot.
-    bottom = spec.entrance_model[2] + (44.836238861083984 - 75.87659072875977) * .8
-    vector(component, 'RelativeLocation', (spec.entrance_model[0], spec.entrance_model[1],
-                                           bottom - (float(origin['Z']) - float(half['Z'])) * scale))
+    bottom = spec.ground_z if spec.ground_z is not None else spec.entrance_model[2] + (44.836238861083984 - 75.87659072875977) * .8
+    yaw = spec.placement_yaw
+    x, y = spec.entrance_model[:2]
+    if yaw is not None:
+        angle = math.radians(yaw)
+        # The saved XY/pin is the mesh footprint center, not its donor pivot.
+        x -= (float(origin['X']) * math.cos(angle) - float(origin['Y']) * math.sin(angle)) * scale
+        y -= (float(origin['X']) * math.sin(angle) + float(origin['Y']) * math.cos(angle)) * scale
+        rotation = property_data(component, 'RelativeRotation')
+        rotation['Value'][0]['Value'].update(Pitch=0.0, Yaw=yaw, Roll=0.0)
+        rotation['IsZero'] = False
+    vector(component, 'RelativeLocation', (x, y, bottom - (float(origin['Z']) - float(half['Z'])) * scale))
 
 
 def make_levels(source, unit, spec=None, overworld=None, overworld_pl=None):
@@ -885,6 +951,13 @@ def make_levels(source, unit, spec=None, overworld=None, overworld_pl=None):
     portal = stone_gd['Exports'][m[5]-1]
     portal['ObjectName'] = spec.name + '_Portal'
     transition(portal, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], spec.map_id, 0, auto=False)
+    entry, = property_data(portal, 'mTransitionDataList')['Value']
+    set_value(entry, 'isEventOnly', True)
+    original, = property_data(export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], 'mTransitionDataList')['Value'][:1]
+    event, = property_data(original, 'afterTransitionEventList')['Value']
+    event = copy.deepcopy(event)
+    set_value(event, 'Condition', ''); set_value(event, 'EventId', spec.portal_event)
+    set_value(entry, 'EventList', [event])
     # Keep the donor's native Transition interaction type, requiring input
     # instead of entering the room on overlap.
     set_value(portal, 'm_UniqueId', spec.map_id)
@@ -949,7 +1022,8 @@ def make_levels(source, unit, spec=None, overworld=None, overworld_pl=None):
     world_pl = copy.deepcopy(overworld_pl if overworld_pl is not None else source[WORLD_PL])
     add_collision_stream(world_pl, Path(WORLD_PL).name, source[WORLD_PL], spec.package + '_EntranceCollision')
     add_collision_stream(stone_pl, spec.name + '_Stone_PL', source[WORLD_PL], spec.package + '_PortalCollision')
-    entrance_collision = blocking_level(source[TRANSITION_GD], 'EntranceCollision', spec.entrance, (90.0, 150.0, 350.0), spec)
+    entrance_collision = blocking_level(source[TRANSITION_GD], 'EntranceCollision', spec.entrance,
+                                        (90.0 * spec.placement_scale, 150.0 * spec.placement_scale, 350.0), spec)
     portal_collision = blocking_level(source[TRANSITION_GD], 'PortalCollision', PORTAL, (85.0, 85.0, 300.0), spec)
     for v in (gd, wld): names(v, v['Exports'])
     return {WORLD: wld, WORLD_PL: world_pl,
@@ -1101,7 +1175,7 @@ def build(units, env):
         env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'BP/Map/'))
     source = {}
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
-                     if spec.mesh != ENTRANCE_MESHES['rock_cave']})
+                     if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, *meshes):
         suffix = '.uasset' if rel == GRANT_DONOR or rel in meshes else '.umap'
         relative = rel.removeprefix('/Game/')

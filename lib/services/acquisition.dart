@@ -60,7 +60,12 @@ class Acquisition {
 
   static bool validCave(dynamic value) =>
       value is Map &&
-      value.length == 6 &&
+      (value['version'] == 1 && value.length == 6 ||
+          value['version'] == 2 &&
+              value.length == 9 &&
+              _finiteRange(value['worldZ'], -2000, 10000) &&
+              _finiteRange(value['yaw'], -180, 180) &&
+              _finiteRange(value['scale'], .25, 2)) &&
       value['id'] is String &&
       (value['id'] == 'crystal_cave' ||
           RegExp(r'^cave_[a-z0-9_]{1,64}$').hasMatch(value['id'])) &&
@@ -69,7 +74,6 @@ class Acquisition {
       value['name'].length <= 80 &&
       value['entrance'] is String &&
       RegExp(r'^[a-z0-9_]{1,64}$').hasMatch(value['entrance']) &&
-      value['version'] == 1 &&
       value['worldX'] is num &&
       value['worldX'].isFinite &&
       value['worldX'] >= -24500 &&
@@ -78,6 +82,9 @@ class Acquisition {
       value['worldY'].isFinite &&
       value['worldY'] >= -23700 &&
       value['worldY'] <= 23700;
+
+  static bool _finiteRange(dynamic value, double low, double high) =>
+      value is num && value.isFinite && value >= low && value <= high;
 
   factory Acquisition.fromJson(Map value) => Acquisition(
     location: value['location'] as String,

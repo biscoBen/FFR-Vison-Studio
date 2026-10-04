@@ -65,6 +65,34 @@ class ResonanceCavesTests(unittest.TestCase):
             self.assertEqual((Path(root) / cave.IDENTITIES).read_bytes(), identities)
         self.assertEqual(original, before)
 
+    def test_precise_placement_keeps_ids_and_uses_white_portal_without_granting_items(self):
+        original, rows, _ = reference.cave_game()
+        unit = vision(13520, entrance='shrine')
+        saved = unit['studioAcquisition']['cave']
+        saved.update(version=2, worldZ=12.5, yaw=-90.0, scale=.75)
+        with tempfile.TemporaryDirectory() as root:
+            operations = testing.prepare({}, [unit], root, rows)
+            plans, _ = cave.cave_plans([unit], root)
+            spec = plans[0][0][1]
+            built = applied(original, operations)
+            portal = built[testing.COMPOSITE][spec.portal_event]
+            self.assertEqual(portal['LoadingScreenSetting'], 'White')
+            self.assertEqual(portal['ObtainItemList'], [])
+            self.assertFalse(portal['IsOpenDialogByFinishEvent'])
+            self.assertEqual(portal['TransitionLocation'], {'mapId': spec.map_id, 'pointId': 0, 'bDoAutoSave': False})
+            self.assertEqual((spec.ground_z, spec.placement_yaw, spec.placement_scale), (12.5, -90.0, .75))
+            self.assertEqual(spec.sprite_scale, cave.FINA_SCALE)
+            saved.update(worldX=17400.25, worldY=21700.75)
+            testing.prepare({}, [unit], root, rows)
+            moved, _ = cave.cave_plans([unit], root)
+            self.assertEqual(moved[0][0][1].stone_id, spec.stone_id)
+            self.assertEqual(moved[0][0][1].npc_id, spec.npc_id)
+        for field, bad in [('worldZ', float('nan')), ('yaw', 181), ('scale', 0), ('version', True)]:
+            broken = copy.deepcopy(unit); broken['studioAcquisition']['cave'][field] = bad
+            with self.assertRaises(ValueError): cave.assignment(broken)
+        self.assertAlmostEqual(cave.terrain_height(17600, 21400), 85.103125)
+        self.assertIsNone(cave.terrain_height(0, 0))
+
     def test_shared_cave_has_one_interior_pair_and_separate_vision_grants(self):
         original, rows, _ = reference.cave_game()
         units = [vision(13520), vision(13521)]
@@ -76,7 +104,7 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertEqual(len(operations[cave.MAP]['add']), 2)
         self.assertEqual(len(operations[cave.PLACEMENT]['add']), 2)
         self.assertEqual(len(operations[cave.MAP_UNIT]['add']), 2)
-        self.assertEqual(len(operations[testing.COMPOSITE]['add']), 2)
+        self.assertEqual(len(operations[testing.COMPOSITE]['add']), 3)
         first, second = [s for _, s in plans[0]]
         self.assertEqual(first.package, second.package)
         self.assertNotEqual(first.npc_package, second.npc_package)
@@ -122,12 +150,12 @@ class ResonanceCavesTests(unittest.TestCase):
             reference.enabled(root)
             operations = testing.prepare({}, [fina, vision(13520)], root, rows)
             self.assertEqual(len(operations[cave.MAP]['add']), 4)
-            self.assertEqual(len(operations[testing.COMPOSITE]['add']), 2)
+            self.assertEqual(len(operations[testing.COMPOSITE]['add']), 4)
             assigned = copy.deepcopy(fina)
             assigned['studioAcquisition'] = vision(fina['id'])['studioAcquisition']
             operations = testing.prepare({}, [assigned], root, rows)
             self.assertEqual(len(operations[cave.MAP]['add']), 2)
-            self.assertEqual(len(operations[testing.COMPOSITE]['add']), 1)
+            self.assertEqual(len(operations[testing.COMPOSITE]['add']), 2)
 
     def test_original_vision_planning_preferences_do_not_replace_native_acquisition(self):
         unit = vision(13520)

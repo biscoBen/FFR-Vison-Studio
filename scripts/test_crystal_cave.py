@@ -93,7 +93,7 @@ class CrystalCaveTests(unittest.TestCase):
             enabled(root)
             operations = testing.prepare({}, [unit], root, rows)
         for rel in (testing.EVENT, testing.COMPOSITE):
-            added, = operations[rel]['add']
+            added, = [a for a in operations[rel]['add'] if a['row'] == cave.EVENT]
             event = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
             self.assertEqual(event['ObtainItemList'], [{'Condition': '{item:13531}==0',
                               'ID': 13531, 'Num': 1, 'Text': ''}])
@@ -385,7 +385,7 @@ class CrystalCaveTests(unittest.TestCase):
             enabled(root)
             operations = testing.prepare({}, [unit], root, rows)
         for rel in (testing.EVENT, testing.COMPOSITE):
-            added, = operations[rel]['add']
+            added, = [a for a in operations[rel]['add'] if a['row'] == cave.EVENT]
             grant = testing.apply_fields(original[rel][added['cloneFrom']], added['set'])
             destination = grant['TransitionLocation']
             self.assertEqual((destination['mapId'], destination['pointId']), (cave.STONE_ID, 1))

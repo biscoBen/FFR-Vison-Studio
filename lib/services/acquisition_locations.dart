@@ -19,9 +19,14 @@ class CaveLocation {
     required this.entrance,
     required this.worldX,
     required this.worldY,
+    this.worldZ,
+    this.yaw = 105,
+    this.scale = .75,
   });
   final String id, name, entrance;
   final double worldX, worldY;
+  final double? worldZ;
+  final double yaw, scale;
   static const original = CaveLocation(
     id: 'crystal_cave',
     name: 'Crystal Fina cave',
@@ -32,12 +37,13 @@ class CaveLocation {
   AcquisitionSite get site =>
       AcquisitionSite(id, name, worldX, worldY, kind: 'cave');
   Map<String, dynamic> toJson() => {
-    'version': 1,
+    'version': worldZ == null ? 1 : 2,
     'id': id,
     'name': name,
     'entrance': entrance,
     'worldX': worldX,
     'worldY': worldY,
+    if (worldZ != null) ...{'worldZ': worldZ, 'yaw': yaw, 'scale': scale},
   };
   factory CaveLocation.fromJson(Map value) {
     if (!Acquisition.validCave(value)) {
@@ -49,6 +55,9 @@ class CaveLocation {
       entrance: value['entrance'] as String,
       worldX: (value['worldX'] as num).toDouble(),
       worldY: (value['worldY'] as num).toDouble(),
+      worldZ: (value['worldZ'] as num?)?.toDouble(),
+      yaw: (value['yaw'] as num?)?.toDouble() ?? 105,
+      scale: (value['scale'] as num?)?.toDouble() ?? .75,
     );
   }
 }
@@ -207,6 +216,13 @@ class AcquisitionLocations extends ChangeNotifier {
     _checkWritable();
     if (cave(id) == null) return;
     await _saveCaves(caves.where((c) => c.id != id).toList());
+  }
+
+  Future<void> update(CaveLocation value) async {
+    _checkWritable();
+    CaveLocation.fromJson(value.toJson());
+    if (cave(value.id) == null) throw StateError('This cave was removed.');
+    await _saveCaves(caves.map((c) => c.id == value.id ? value : c).toList());
   }
 
   void _checkWritable() {

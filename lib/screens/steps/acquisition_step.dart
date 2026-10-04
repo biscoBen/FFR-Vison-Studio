@@ -15,11 +15,13 @@ class AcquisitionStep extends StatefulWidget {
     required this.set,
     required this.locations,
     required this.removeCave,
+    this.updateCave,
   });
   final Map<String, dynamic> unit;
   final ValueChanged<Map<String, dynamic>> set;
   final AcquisitionLocations locations;
   final Future<void> Function(String) removeCave;
+  final Future<void> Function(CaveLocation)? updateCave;
 
   @override
   State<AcquisitionStep> createState() => _AcquisitionStepState();
@@ -124,6 +126,21 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
     } catch (error) {
       if (mounted) setState(() => _error = 'Could not remove the cave: $error');
     }
+  }
+
+  Future<void> _editCave(String id) async {
+    final cave = widget.locations.cave(id);
+    if (cave == null) return;
+    final edited = await showCavePlacement(
+      context,
+      widget.locations,
+      _catalog!,
+      Offset(cave.worldX, cave.worldY),
+      existing: cave,
+      save: widget.updateCave ?? widget.locations.update,
+    );
+    if (!mounted || edited == null) return;
+    if (_preferences!.location == id) _choose(edited.site);
   }
 
   Widget _choice(
@@ -291,10 +308,13 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                     onRemoveCave: widget.locations.loadError == null
                         ? _removeCave
                         : null,
+                    onEditCave: widget.locations.loadError == null
+                        ? _editCave
+                        : null,
                   ),
                 ),
                 Text(
-                  '${widget.locations.caves.length} / 30 caves · Right-click to add a cave or remove a visible cave marker.',
+                  '${widget.locations.caves.length} / 30 caves · Right-click to add, edit or remove a visible cave marker.',
                   style: Guide.small(),
                 ),
               ],
