@@ -11,10 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published additional world-map landmarks — 2026-10-04
+
+Code: [`250e7bc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/250e7bce252a8c2a72ce389e60eb687ef347d68a).
+[Verified Windows test release / run 37238843504](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37238843504).
+
 - Restore 164 additional native scenery objects from the new reference files: Lanzelt's large bridges and towns,
   Dirnado settlements and industrial landmarks, and vision shrines. Preserve existing paint, foliage and landmark coverage.
 - Decode textures whose highest source mip was stripped by cooking, retaining payload-size/dimension checks. Large bridges
   now use their available native diffuse colors. Shader effects and unsupported rock geometry remain simplified/omitted.
+- Validation: all four reference archives passed integrity checks (279 native packages with companion exports). All previous
+  scenery model types, terrain paint, foliage and shared native source fingerprints remain intact. Focused Flutter checks
+  and a rendered preview passed; 261 Python tests passed with three existing skips. All required Windows gates passed,
+  including the full Flutter suite, analysis, fresh frozen-engine startup and launcher/updater checks. Authenticated release
+  download verified exact commit/run provenance, checksum, all 54 packaged resources and the 888-instance scenery archive.
+- Measured request start to verified package: **13m27s** — reference inspection/implementation **6m22s**, local checks/push
+  **1m19s**, CI **5m18s**, verification **27s**. First complete candidate to verified package: **7m06s**. The build helper raced
+  push-run registration and dispatched an accidental duplicate; it was cancelled before publication and the push build was
+  reused. Successful CI used **8m08s** runner time; the cancelled duplicate used **2m57s** (total **11m05s**).
+  Publication notes use the documentation-only path. Live game rendering remains a user check.
 
 ## Published grounded cave exits and map details — 2026-10-04
 

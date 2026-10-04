@@ -300,9 +300,10 @@ captures are displayed without stretching them to region bounds, keeping 2D pins
 Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on
 its opening side, at native terrain height with runtime collision snapping; the exact incoming player position is not saved.
 The cave portal uses a white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
-The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37237225179)
-contains grounded cave exits, the 5% vision size adjustment, restored landmarks/bridges and corrected low-ground paint
-(commit `d94d02e`, run `37237225179`). Update Studio, rebuild/install the mod and restart Resonance.
+The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37238843504)
+contains the expanded landmarks/bridges and cooked-mip texture fix, alongside grounded cave exits, the 5% vision size
+adjustment and corrected low-ground paint (commit `250e7bc`, run `37238843504`). Update Studio, rebuild/install the mod
+and restart Resonance to test cave behavior; the placement-preview additions are visible in Studio.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
