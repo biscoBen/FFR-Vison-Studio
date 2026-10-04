@@ -11,11 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- None.
+
+## Published cycled party diagonal visibility repair — 2026-10-03
+
+Code: [`81ca68f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/81ca68fc44d66c73ea2718c619d00a9fd4281a59).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37169692104),
+[Windows run 37169692104](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37169692104).
+
 - Repair disappearing cycled party sprites: Lasswell and several other native projects contain named diagonal
   clips pointing to zero-sized cells. Private field copies replace unusable diagonal idle/walk/run clips with
   visible front/back cardinal clips, keeping genuine diagonal frames, textures and original game assets intact.
   Preserve diagonal movement and LB/L1 controls. Supply Rain's overworld idle aliases for all cycling models and
-  Vagrant Rain. Validate complete native keyframe payloads and usable geometry; live controller behavior needs retesting.
+  Vagrant Rain. Update Studio, rebuild/install the mod and restart Resonance to apply the repaired models.
+- Verification: 230 local Python tests (3 reference/platform skips), actual feature-builder readback of seven native
+  private projects and the field bank, plus all 52 Vagrant Rain clips through UE5.6 IoStore. All 256 required
+  direction/motion combinations have usable geometry. All Windows gates passed, including Flutter, genuine
+  frozen-engine startup and launcher/updater tests. Authenticated release checksum, exact-commit provenance and
+  all 33 packaged files verified. Live controller behavior still needs retesting; missing diagonal art uses cardinal poses.
+- Measured from the first recorded clock reading during initial inspection to verified package: **17m55s** —
+  **9m47s investigation/implementation, including clarification**, **3m01s local checks/push**, **4m34s CI**,
+  **32s package verification**. First complete candidate to verified package: **8m08s**. CI used **7m58s runner time**.
+  One code push and one reused build; publication notes use the documentation-only path.
 
 ## Published field-leader launch serialization repair — 2026-10-03
 
