@@ -137,6 +137,8 @@ class OverworldTests(unittest.TestCase):
         spec = field.spec('pc0010'); cells = {c['name'] for c in spec['cells']}
         animations = {a['name']:a for a in spec['animations']}
         self.assertEqual(len(animations),len(spec['animations']))
+        for direction, _ in field.DIRECTIONS:
+            self.assertEqual(animations[f'fieldidle{direction}']['parts'], animations[f'idle{direction}']['parts'])
         self.assertEqual({d for d,_ in field.DIRECTIONS}, {1,2,3,4,6,7,8,9})
         self.assertEqual(animations['idle8']['parts']['part_0']['Cell'], [[0,'field_1_0']])
         self.assertEqual(animations['idle2']['parts']['part_0']['Cell'], [[0,'field_0_0']])

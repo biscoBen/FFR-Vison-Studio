@@ -14,6 +14,10 @@ REL = 'FFRS/Binaries/Win64/ue4ss/Mods/' + MOD
 STAGE = 'build/field-leader/payload.json'
 STATE = 'field-leader-state.json'
 DFINA = '/Game/Chara/StudioFieldLeader/pc0060'
+DIRECTIONS = (1, 2, 3, 4, 6, 7, 8, 9)
+
+
+def package(mid): return f'/Game/Chara/StudioFieldLeader/pc{mid:04d}'
 
 
 def enabled(root):
@@ -34,7 +38,7 @@ def bank(units, rows):
         if row.get('ID') != mid or not animations or animations[0].get('Ss6Project') != path:
             raise ValueError('The native field leader assets changed; prepare the game files again.')
         models[uid] = copy.deepcopy(animations[0])
-        if uid == 1006: models[uid]['Ss6Project'] = DFINA
+        if uid != 1001: models[uid]['Ss6Project'] = package(mid)
     for u in units:
         if u.get('party') and u.get('overworld'):
             _ffr_party.validate(u)
@@ -62,8 +66,8 @@ def prepare(tables, units, root, rows):
     table['set'].extend(changes)
 
 
-def animation_payloads(animations, encoded, names):
-    """Read the native pc0060 keyframe tail, separate from reflected properties.
+def animation_payloads(animations, encoded, names, cells=None):
+    """Read native field keyframe tails, separate from reflected properties.
 
     USs6Project::Serialize walks packs/animations/parts/attributes/keys and then
     FSsValue::Serialize. UAssetAPI preserves that stream as opaque Extras.
@@ -71,22 +75,24 @@ def animation_payloads(animations, encoded, names):
     supported; reject changed layouts instead of shipping an unreadable asset.
     """
     data = base64.b64decode(encoded, validate=True); offset = 0
-    def fail(): raise ValueError('Invalid or unsupported Dark Fina animation payload; field cycling cannot be built safely.')
+    def fail(): raise ValueError('Invalid or unsupported field animation payload; field cycling cannot be built safely.')
     def take(count):
         nonlocal offset
         if not 0 <= count <= len(data) - offset: fail()
         result = data[offset:offset + count]; offset += count
         return result
     def value(kind):
-        if kind == 'FloatType': take(4)
+        if kind == 'FloatType': return struct.unpack('<f', take(4))[0]
         elif kind == 'StringType':
             length = struct.unpack('<i', take(4))[0]
             if not 0 < abs(length) <= 65536: fail()
             text = take(length if length > 0 else -length * 2)
             if not text.endswith(b'\0' if length > 0 else b'\0\0'): fail()
+            return text[:-1].decode('utf-8') if length > 0 else text[:-2].decode('utf-16-le')
         elif kind == 'HashType':
             count = struct.unpack('<i', take(4))[0]
             if not 0 <= count <= 1024: fail()
+            result = {}
             for _ in range(count):
                 index, number = struct.unpack('<ii', take(8))
                 if not 0 <= index < len(names) or number < 0: fail()
@@ -95,46 +101,81 @@ def animation_payloads(animations, encoded, names):
                 if take(3) != b'\x80\x09\x0e': fail()
                 child = {1: 'StringType', 3: 'FloatType'}.get(take(1)[0])
                 if child is None: fail()
-                value(child)
+                key = names[index] + ('_' + str(number - 1) if number else '')
+                result[key] = value(child)
+            return result
         else: fail()
     def field(properties, name): return next(p['Value'] for p in properties if p['Name'] == name)
     result = []
     for animation in animations:
-        start = offset
+        start = offset; references = []
         for part in field(animation['Value'], 'PartAnimes'):
             for attribute in field(part['Value'], 'Attributes'):
                 for key in field(attribute['Value'], 'Key'):
-                    value(field(field(key['Value'], 'Value'), 'Type'))
+                    decoded = value(field(field(key['Value'], 'Value'), 'Type'))
+                    if cells is not None and field(attribute['Value'], 'Tag') == 'Cell':
+                        if not isinstance(decoded, dict) or set(decoded) != {'mapId', 'name'}: fail()
+                        references.append((decoded['mapId'], decoded['name']))
         result.append(data[start:offset])
+        if cells is not None: cells.append(references)
     if offset != len(data): fail()
     return result
 
 
-def dark_fina_aliases(view):
-    """Private copy: diagonal idle aliases use the game's own cardinal poses."""
+def field_aliases(view, mid):
+    """Private player-compatible clips; keep genuine usable diagonals intact."""
     view = copy.deepcopy(view)
     project = view['Exports'][0]
     packs = next(p for p in project['Data'] if p['Name'] == 'AnimeList')['Value']
     if len(packs) != 1 or any(p['Name'] == 'EffectList' and p['Value'] for p in project['Data']):
-        raise ValueError('Unsupported Dark Fina animation packs; field cycling cannot be built safely.')
+        raise ValueError('Unsupported field animation packs; field cycling cannot be built safely.')
     animations = next(p for p in packs[0]['Value'] if p['Name'] == 'AnimeList')['Value']
     def name(a): return next(p for p in a['Value'] if p['Name'] == 'AnimationName')
     by_name = {name(a)['Value']: a for a in animations}
-    payloads = animation_payloads(animations, project['Extras'], view['NameMap'])
+    if len(by_name) != len(animations): raise ValueError('Duplicate field animation names.')
+    references = []
+    payloads = animation_payloads(animations, project['Extras'], view['NameMap'], references)
     by_payload = dict(zip(by_name, payloads))
-    if not {'idle2', 'idle4', 'idle6', 'idle8'} <= by_name.keys():
-        raise ValueError('Dark Fina lacks the expected native idle poses.')
-    for destination, source in [('idle1', 'idle2'), ('idle3', 'idle2'), ('idle7', 'idle8'), ('idle9', 'idle8')]:
-        if destination in by_name: continue
-        alias = copy.deepcopy(by_name[source]); alias['Name'] = str(len(animations))
-        name(alias)['Value'] = destination; animations.append(alias)
-        payloads.append(by_payload[source])
+    def field(properties, key): return next(p['Value'] for p in properties if p['Name'] == key)
+    maps = field(project['Data'], 'CellmapList')
+    cells = []
+    for cellmap in maps:
+        lookup = {}
+        for cell in field(cellmap['Value'], 'Cells'):
+            size = field(cell['Value'], 'Size')
+            vector = size[0]['Value'] if size else {}
+            lookup[field(cell['Value'], 'CellName')] = float(vector.get('X', 0)) > 0 and float(vector.get('Y', 0)) > 0
+        cells.append(lookup)
+    def drawable(refs):
+        return bool(refs) and all(type(index) in (int, float) and index == int(index)
+            and 0 <= index < len(cells) and cells[int(index)].get(cell, False) for index, cell in refs)
+    usable = {n: drawable(refs) for n, refs in zip(by_name, references)}
+    aliases = []
+    for motion in ('idle', 'move', 'dash'):
+        for direction in (2, 4, 6, 8):
+            if not usable.get(f'{motion}{direction}'):
+                raise ValueError(f'Native field clip {motion}{direction} has no usable sprite cells.')
+        for direction, fallback in ((1, 2), (3, 2), (7, 8), (9, 8)):
+            destination = f'{motion}{direction}'
+            if not usable.get(destination): aliases.append((destination, f'{motion}{fallback}'))
+    # Rain's controller can request this longer overworld idle family when
+    # displaying another party member, which originally has only idleN clips.
+    aliases.extend((f'fieldidle{d}', f'idle{d}') for d in DIRECTIONS if not usable.get(f'fieldidle{d}'))
+    for destination, source in aliases:
+        alias = copy.deepcopy(by_name[source])
+        if destination in by_name:
+            index = animations.index(by_name[destination]); alias['Name'] = animations[index]['Name']
+            animations[index] = alias; payloads[index] = by_payload[source]
+        else:
+            alias['Name'] = str(len(animations)); animations.append(alias); payloads.append(by_payload[source])
+        name(alias)['Value'] = destination
+        by_name[destination] = alias; by_payload[destination] = by_payload[source]
         if destination not in view['NameMap']: view['NameMap'].append(destination)
     project['Extras'] = base64.b64encode(b''.join(payloads)).decode('ascii')
     animation_payloads(animations, project['Extras'], view['NameMap'])
-    old = '/Game/Chara/Field_Unit/pc0060/pc0060'
+    old = f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
     def rename(value):
-        if isinstance(value, str): return DFINA if value == old else value
+        if isinstance(value, str): return package(mid) if value == old else value
         if isinstance(value, list): return [rename(v) for v in value]
         if isinstance(value, dict): return {k: rename(v) for k, v in value.items()}
         return value
@@ -152,16 +193,16 @@ def build(units, env):
         _, config = bank(units, env['rows'])
         payload['files'] = {'enabled.txt': '', 'Scripts/config.lua': 'return ' + lua(config) + '\n',
                             'Scripts/main.lua': Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')}
-        legacy = Path(env['LEGACY']); relative = 'FFRS/Content/Chara/Field_Unit/pc0060/pc0060.uasset'
-        source = legacy / relative
-        if not source.is_file():
-            env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'Chara/Field_Unit/pc0060/'))
-        original = work / 'dark-fina-original.json'; edited = work / 'dark-fina.json'
-        env['run'](env['FFRDT'] + ['tojson', str(source), str(original), '--usmap', env['USMAP']])
-        edited.write_text(json.dumps(dark_fina_aliases(json.loads(original.read_text(encoding='utf-8-sig')))), encoding='utf-8')
-        target = Path(env['OUT']) / ('FFRS/Content/' + DFINA.removeprefix('/Game/') + '.uasset')
-        target.parent.mkdir(parents=True, exist_ok=True)
-        env['run'](env['FFRDT'] + ['fromjson', str(edited), str(target), '--usmap', env['USMAP']])
+        for mid in range(20, 81, 10):
+            source = Path(env['LEGACY']) / f'FFRS/Content/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}.uasset'
+            if not source.is_file():
+                env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', f'Chara/Field_Unit/pc{mid:04d}/'))
+            original = work / f'pc{mid:04d}-original.json'; edited = work / f'pc{mid:04d}.json'
+            env['run'](env['FFRDT'] + ['tojson', str(source), str(original), '--usmap', env['USMAP']])
+            edited.write_text(json.dumps(field_aliases(json.loads(original.read_text(encoding='utf-8-sig')), mid)), encoding='utf-8')
+            target = Path(env['OUT']) / ('FFRS/Content/' + package(mid).removeprefix('/Game/') + '.uasset')
+            target.parent.mkdir(parents=True, exist_ok=True)
+            env['run'](env['FFRDT'] + ['fromjson', str(edited), str(target), '--usmap', env['USMAP']])
     atomic(work / 'payload.json', json.dumps(payload).encode())
 
 

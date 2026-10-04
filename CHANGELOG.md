@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-None.
+- Repair disappearing cycled party sprites: Lasswell and several other native projects contain named diagonal
+  clips pointing to zero-sized cells. Private field copies replace unusable diagonal idle/walk/run clips with
+  visible front/back cardinal clips, keeping genuine diagonal frames, textures and original game assets intact.
+  Preserve diagonal movement and LB/L1 controls. Supply Rain's overworld idle aliases for all cycling models and
+  Vagrant Rain. Validate complete native keyframe payloads and usable geometry; live controller behavior needs retesting.
 
 ## Published field-leader launch serialization repair — 2026-10-03
 

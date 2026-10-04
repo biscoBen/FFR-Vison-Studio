@@ -16,49 +16,89 @@ import _ffr_testing as testing
 
 
 class FieldLeaderTests(unittest.TestCase):
-    def dark_fina_fixture(self):
+    def field_fixture(self, mid=60):
         # Explicit synthetic FSsValue floats/cell hashes, including the native
         # unversioned nested-value header. No game assets in the fixture.
-        chunks = [struct.pack('<f', d) + struct.pack('<i', 1) + struct.pack('<ii', 0, 0)
-                  + b'\x80\x09\x0e\x01' + struct.pack('<i', 6) + b'cell0\x00'
-                  for d in (2, 4, 6, 8)]
         def field(name, value): return {'Name': name, 'Value': value}
-        keys = [field(str(i), [field('Value', [field('Type', kind)])])
-                for i, kind in enumerate(('FloatType', 'HashType'))]
-        part = field('0', [field('Attributes', [field('0', [field('Key', keys)])])])
-        animations = [field(str(i), [field('AnimationName', f'idle{d}'),
-                       field('Settings', {'fps': 30, 'frames': 24}), field('PartAnimes', [part])])
-                      for i, d in enumerate((2, 4, 6, 8))]
-        view = {'NameMap': ['name', 'pc0060', '/Game/Chara/Field_Unit/pc0060/pc0060'],
+        keys = [field('0', [field('Value', [field('Type', kind)])]) for kind in ('FloatType', 'HashType')]
+        attributes = [field(str(i), [field('Tag', tag), field('Key', [keys[i]])])
+                      for i, tag in enumerate(('Posx', 'Cell'))]
+        part = field('0', [field('Attributes', attributes)])
+        animations = []; chunks = []
+        for motion in ('idle', 'move', 'dash'):
+            for direction in (2, 4, 6, 8):
+                animations.append(field(str(len(animations)), [field('AnimationName', f'{motion}{direction}'),
+                                  field('Settings', {'fps': 30, 'frames': 24}), field('PartAnimes', [part])]))
+                chunks.append(struct.pack('<f', direction) + struct.pack('<i', 2) + struct.pack('<ii', 0, 0)
+                              + b'\x80\x09\x0e\x03' + struct.pack('<f', 0) + struct.pack('<ii', 1, 0)
+                              + b'\x80\x09\x0e\x01' + struct.pack('<i', 6) + b'cell0\x00')
+        cell = field('0', [field('CellName', 'cell0'), field('Size', [field('Size', {'X': 64, 'Y': 64})])])
+        view = {'NameMap': ['mapId', 'name', f'pc{mid:04d}', f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'],
                 'NamesReferencedFromExportDataCount': 1,
-                'Exports': [{'Extras': base64.b64encode(b''.join(chunks)).decode(),
-                             'Data': [field('AnimeList', [field('0', [field('AnimeList', animations)])])]}]}
+                'Exports': [{'Extras': base64.b64encode(b''.join(chunks)).decode(), 'Data': [
+                    field('AnimeList', [field('0', [field('AnimeList', animations)])]),
+                    field('CellmapList', [field('0', [field('Cells', [cell])])])]}]}
         return view, chunks, animations
 
-    def test_dark_fina_aliases_keep_native_animation_data_and_include_export_names(self):
-        view, chunks, animations = self.dark_fina_fixture()
-        built = leader.dark_fina_aliases(view)
+    def test_field_aliases_keep_native_animation_data_and_include_complete_keyframe_tails(self):
+        view, chunks, animations = self.field_fixture()
+        built = leader.field_aliases(view, 60)
         clips = built['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value']
-        self.assertEqual(clips[:4], animations)
-        self.assertEqual(clips[4]['Value'][1:], animations[0]['Value'][1:])
+        self.assertEqual(clips[:12], animations)
+        by_name = {c['Value'][0]['Value']: c for c in clips}
+        refs = []
+        payloads = leader.animation_payloads(clips, built['Exports'][0]['Extras'], built['NameMap'], refs)
+        by_payload = dict(zip(by_name, payloads))
+        self.assertEqual(payloads[:12], chunks)
+        for motion in ('idle', 'move', 'dash', 'fieldidle'):
+            for destination, source in ((1, 2), (3, 2), (7, 8), (9, 8)):
+                source_motion = 'idle' if motion == 'fieldidle' else motion
+                dst = f'{motion}{destination}'; src = f'{source_motion}{source}'
+                self.assertEqual(by_name[dst]['Value'][1:], by_name[src]['Value'][1:])
+                self.assertEqual(by_payload[dst], by_payload[src])
+        self.assertEqual(len(clips), 32)
+        self.assertTrue(all(r == [(0.0, 'cell0')] for r in refs))
         self.assertEqual(built['NamesReferencedFromExportDataCount'], len(built['NameMap']))
-        self.assertIn('idle9', built['NameMap']); self.assertIn(leader.DFINA, built['NameMap'])
-        self.assertEqual(leader.dark_fina_aliases(built), built)
+        self.assertIn('fieldidle9', built['NameMap']); self.assertIn(leader.DFINA, built['NameMap'])
+        self.assertEqual(leader.field_aliases(built, 60), built)
         self.assertEqual(view['NamesReferencedFromExportDataCount'], 1)
-        expected = b''.join(chunks + [chunks[0], chunks[0], chunks[3], chunks[3]])
-        self.assertEqual(base64.b64decode(built['Exports'][0]['Extras']), expected)
-        self.assertEqual(leader.animation_payloads(clips, built['Exports'][0]['Extras'], built['NameMap']),
-                         chunks + [chunks[0], chunks[0], chunks[3], chunks[3]])
+
+    def test_existing_empty_diagonal_cells_fall_back_but_real_diagonal_pose_is_preserved(self):
+        view, chunks, animations = self.field_fixture(20)
+        for destination, source in (('idle1', animations[0]), ('move1', animations[4])):
+            clip = copy.deepcopy(source); clip['Name'] = str(len(animations)); clip['Value'][0]['Value'] = destination
+            animations.append(clip)
+        valid = copy.deepcopy(animations[-2])
+        blank = chunks[4].replace(b'cell0', b'blank')
+        cells = view['Exports'][0]['Data'][1]['Value'][0]['Value'][0]['Value']
+        cells.append({'Name': '1', 'Value': [{'Name': 'CellName', 'Value': 'blank'}, {'Name': 'Size', 'Value': []}]})
+        view['Exports'][0]['Extras'] = base64.b64encode(b''.join(chunks + [chunks[0], blank])).decode()
+        built = leader.field_aliases(view, 20)
+        clips = built['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value']
+        by_name = {c['Value'][0]['Value']: c for c in clips}
+        self.assertEqual(by_name['idle1'], valid)
+        self.assertEqual(by_name['move1']['Value'][1:], by_name['move2']['Value'][1:])
+        refs = []; payloads = leader.animation_payloads(clips, built['Exports'][0]['Extras'], built['NameMap'], refs)
+        self.assertTrue(all(r == [(0.0, 'cell0')] for r in refs))
+        self.assertEqual(payloads[13], chunks[4])
+        self.assertIn(leader.package(20), built['NameMap'])
+        self.assertEqual(animations[13]['Value'][0]['Value'], 'move1')
+        self.assertIn(blank, base64.b64decode(view['Exports'][0]['Extras']))
+
+    def test_no_visible_cardinal_donor_fails_before_building(self):
+        view, _, _ = self.field_fixture()
+        view['Exports'][0]['Data'][1]['Value'][0]['Value'][0]['Value'][0]['Value'][1]['Value'] = []
+        with self.assertRaisesRegex(ValueError, 'no usable sprite cells'): leader.field_aliases(view, 60)
 
     def test_missing_alias_keyframe_tail_is_rejected_even_when_reflected_data_is_valid(self):
-        view, _, _ = self.dark_fina_fixture(); built = leader.dark_fina_aliases(view)
+        view, _, _ = self.field_fixture(); built = leader.field_aliases(view, 60)
         # Reproduce the released regression: append reflected animations but
         # leave the original opaque keyframe tail untouched.
         built['Exports'][0]['Extras'] = view['Exports'][0]['Extras']
-        with self.assertRaisesRegex(ValueError, 'animation payload'): leader.dark_fina_aliases(built)
+        with self.assertRaisesRegex(ValueError, 'animation payload'): leader.field_aliases(built, 60)
 
     def test_changed_or_truncated_native_payload_fails_before_building(self):
-        view, chunks, animations = self.dark_fina_fixture()
+        view, chunks, animations = self.field_fixture()
         for raw in (b''.join(chunks)[:-1], b''.join(chunks) + b'\0',
                     b''.join(chunks).replace(b'\x80\x09\x0e', b'\x80\x09\x0f')):
             with self.subTest(raw=raw[:20]), self.assertRaisesRegex(ValueError, 'animation payload'):
@@ -76,7 +116,8 @@ class FieldLeaderTests(unittest.TestCase):
             self.assertEqual(config['actors'][str(originals[name]['ID'])]['1002'], 3)
             self.assertIn('StudioOverworld/party1001', assets[2]['Ss6Project'])
             self.assertEqual(assets[7]['Ss6Project'], leader.DFINA)
-            self.assertEqual(assets[3], originals['ラスウェル']['animationAssetList'][0])
+            expected = dict(originals['ラスウェル']['animationAssetList'][0], Ss6Project=leader.package(20))
+            self.assertEqual(assets[3], expected)
         self.assertEqual(originals, before)
         originals['フィーナ']['ID'] = 999
         with self.assertRaisesRegex(ValueError, 'assets changed'): leader.bank([], rows)

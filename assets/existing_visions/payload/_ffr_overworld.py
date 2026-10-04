@@ -78,6 +78,7 @@ def spec(name):
                                'canvas': [128.0, 128.0], 'pivot': [0.0, 0.0], 'isSetup': False, 'parts': parts})
     # Undirected requests and alternative movement names share the same poses.
     for alias, source in [('idle', 'idle2'), ('move', 'move2'), ('dash', 'dash2'),
+                          *[(f'fieldidle{d}', f'idle{d}') for d, _ in DIRECTIONS],
                           *[(f'walk{d}', f'move{d}') for d, _ in DIRECTIONS],
                           *[(f'run{d}', f'dash{d}') for d, _ in DIRECTIONS]]:
         animation = copy.deepcopy(next(a for a in animations if a['name'] == source))
