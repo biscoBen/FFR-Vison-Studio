@@ -80,7 +80,7 @@ Future<void> choosePartyCharacter(BuildContext context, Map<String, dynamic> cha
       content: Text('Choose battle and overworld appearances independently. Abilities, equipment and progression keep this character’s original configuration.', style: Guide.text()),
       actions: [
         GuideButton('Cancel', onPressed: () => Navigator.pop(c)),
-        GuideButton('Edit battle appearance', onPressed: app.building ? null : () => Navigator.pop(c, 'edit')),
+        GuideButton('Manage appearances', onPressed: app.building ? null : () => Navigator.pop(c, 'edit')),
         GuideButton('Change battle model', onPressed: app.building ? null : () => Navigator.pop(c, 'model')),
         GuideButton('Edit overworld appearance', onPressed: app.building ? null : () => Navigator.pop(c, 'overworld')),
         GuideButton('Revert to original', danger: true, onPressed: app.building || !edited ? null : () => Navigator.pop(c, 'revert')),

@@ -298,8 +298,9 @@ If no overrides or added units remain, use **Restore original game** to remove t
 Single and bulk config saves include original-vision edits and replacement-model selections.
 
 The third home section, **Party characters**, lists Rain, Lasswell, Fina, Lid, Nichol, Dark Fina, Jake and Sakura.
-Use **Change battle model** to select and preview an FFBE appearance, or **Edit battle appearance** for its saved setup.
-**Revert to original** removes that character's replacement on the next install. Single/bulk character configs include
+Use **Change battle model** to select and preview an FFBE appearance, or **Manage appearances** to open previews and
+config save/load. **Revert to original** offers **Revert battle only**, **Revert overworld only**, and **Revert both**.
+Reverting one appearance keeps the other; build/install to apply it. Single/bulk character configs include
 these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
 redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
 Use **Edit overworld appearance** for an independent walking model, currently limited to the bundled Vagrant Knight

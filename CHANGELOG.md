@@ -11,6 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Party characters' **Revert to original** offers separate battle, overworld and both choices. Reverting one keeps the
+  other appearance and unrelated roster edits. Rename **Edit battle appearance** to **Manage appearances** for the
+  preview/config page; **Change battle model** still opens the model picker.
+
 Field-leader cycling awaits runtime integration. All eight native party projects have eight-direction walk/run clips;
 Dark Fina has four-direction idle poses. Right-stick click currently zooms the minimap. The shipped player Blueprints
 contain no scripted switching handler; runtime function access is needed before implementing the hotkey and guards.

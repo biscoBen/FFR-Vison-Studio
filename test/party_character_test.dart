@@ -6,6 +6,8 @@ import 'package:ffr_vision_studio/services/crystal_fina.dart';
 import 'package:ffr_vision_studio/services/overworld_appearance.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
+import 'package:ffr_vision_studio/screens/native_vision_dialog.dart';
+import 'package:ffr_vision_studio/screens/remove_unit_dialog.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/screens/party_portrait.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
@@ -123,6 +125,120 @@ void main() {
     await app.editPartyCharacter(1001, clearOverworld: true);
     expect(api.roster.last.containsKey('overworld'), isFalse);
     expect(api.roster.last['ffbe']['id'], '304000107');
+  });
+
+  test('battle-only revert preserves walking, pending edits and failed saves', () async {
+    final directory = Directory.systemTemp.createTempSync('party-battle-revert-');
+    final replacement = party(replacement: true)
+      ..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile)
+      ..['menuScale'] = 1.2
+      ..['icon'] = 'face';
+    final api = PartyApi([profile(), replacement]);
+    final app = AppState(hostBase: 'http://unused', appPaths: AppPaths.at(directory.path))
+      ..api = api..units = clone(api.roster);
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    app.buildState = {'running': true};
+    await expectLater(app.editPartyCharacter(1001, clearBattle: true), throwsStateError);
+    expect(api.saves, 0);
+    app.buildState = null;
+    api.fail = true;
+    await expectLater(app.editPartyCharacter(1001, clearBattle: true), throwsStateError);
+    expect(app.units.last, replacement);
+    expect(api.roster.last, replacement);
+    api.fail = false;
+    final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 123;
+    app.update(edited);
+    await app.editPartyCharacter(1001, clearBattle: true);
+    expect(api.roster.first['stats']['Attack'], 123);
+    expect(api.roster.last, {...party(), 'overworld': OverworldAppearance.profile});
+    expect(app.selected, api.roster.last);
+  });
+
+  for (final choice in ['Revert battle only', 'Revert overworld only', 'Revert both', 'Keep']) {
+    testWidgets('home party revert: $choice preserves the right choices', (tester) async {
+      final directory = Directory.systemTemp.createTempSync('party-revert-ui-');
+      final replacement = party(replacement: true)
+        ..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile);
+      final api = PartyApi([profile(), replacement]);
+      final app = AppState(hostBase: 'http://unused', appPaths: AppPaths.at(directory.path))
+        ..api = api..units = clone(api.roster);
+      addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+      await tester.pumpWidget(ChangeNotifierProvider.value(value: app,
+        child: MaterialApp(theme: Guide.theme(), home: Scaffold(body: Builder(
+          builder: (context) => GuideButton('Open Rain',
+            onPressed: () => choosePartyCharacter(context, party())),
+        )))));
+      await tester.tap(find.text('Open Rain'));
+      await tester.pumpAndSettle();
+      expect(find.text('Manage appearances'), findsOneWidget);
+      expect(find.text('Edit battle appearance'), findsNothing);
+      await tester.tap(find.text('Revert to original'));
+      await tester.pumpAndSettle();
+      for (final label in ['Revert battle only', 'Revert overworld only', 'Revert both']) {
+        expect(tester.widget<GuideButton>(find.widgetWithText(GuideButton, label)).onPressed, isNotNull);
+      }
+      final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 123;
+      app.update(edited);
+      await tester.tap(find.text(choice));
+      if (choice != 'Keep') {
+        bool done() => !app.dirty && (choice == 'Revert both' ? app.units.length == 1
+          : !app.units.last.containsKey(choice == 'Revert battle only' ? 'ffbe' : 'overworld'));
+        for (var n = 0; n < 30 && !done(); n++) {
+          await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+          await tester.pump();
+        }
+        expect(done(), isTrue);
+      }
+      await tester.pumpAndSettle();
+      expect(app.units.first['stats']['Attack'], 123);
+      if (choice == 'Keep') {
+        expect(app.units.last, replacement);
+        expect(api.saves, 0);
+      } else {
+        expect(app.dirty, isFalse);
+        expect(api.roster.first['stats']['Attack'], 123);
+        if (choice == 'Revert both') {
+          expect(api.roster, hasLength(1));
+        } else if (choice == 'Revert battle only') {
+          expect(api.roster.last, {...party(), 'overworld': OverworldAppearance.profile});
+        } else {
+          expect(api.roster.last, party(replacement: true));
+        }
+        expect(app.units, api.roster);
+      }
+      expect(tester.takeException(), isNull);
+      // Drain the existing autosave timer after checking the dialog's behavior.
+      await tester.pump(const Duration(milliseconds: 700));
+      await tester.runAsync(app.save);
+      await tester.pumpAndSettle();
+    });
+  }
+
+  testWidgets('revert disables original appearances and blocks builds', (tester) async {
+    final directory = Directory.systemTemp.createTempSync('party-revert-disabled-');
+    final api = PartyApi([party()..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile)]);
+    final app = AppState(hostBase: 'http://unused', appPaths: AppPaths.at(directory.path))
+      ..api = api..units = clone(api.roster);
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    await tester.pumpWidget(MaterialApp(theme: Guide.theme(), home: Scaffold(body: Builder(
+      builder: (context) => GuideButton('Revert', onPressed: () => confirmRemove(context, app, party())),
+    ))));
+    await tester.tap(find.text('Revert'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<GuideButton>(find.widgetWithText(GuideButton, 'Revert battle only')).onPressed, isNull);
+    expect(tester.widget<GuideButton>(find.widgetWithText(GuideButton, 'Revert overworld only')).onPressed, isNotNull);
+    await tester.tap(find.text('Keep'));
+    await tester.pumpAndSettle();
+    app.buildState = {'running': true};
+    await tester.tap(find.text('Revert'));
+    await tester.pumpAndSettle();
+    for (final label in ['Revert battle only', 'Revert overworld only', 'Revert both']) {
+      expect(tester.widget<GuideButton>(find.widgetWithText(GuideButton, label)).onPressed, isNull);
+    }
+    expect(api.saves, 0);
+    await tester.tap(find.text('Keep'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
   });
 
   test(

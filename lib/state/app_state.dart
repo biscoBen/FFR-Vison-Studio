@@ -693,7 +693,7 @@ class AppState extends ChangeNotifier {
     });
   }
 
-  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearOverworld = false}) => _withRoster(() async {
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearBattle = false, bool clearOverworld = false}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel(); await _savePending();
@@ -704,7 +704,9 @@ class AppState extends ChangeNotifier {
     if (current.any((u) => u['id'] == id && u['party'] == null)) {
       throw StateError('This party character conflicts with a roster entry.');
     }
-    if (appearance != null) {
+    if (clearBattle) {
+      for (final field in ['ffbe', 'menuScale', 'icon']) { unit.remove(field); }
+    } else if (appearance != null) {
       unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
       await _checkCharacterArtwork(unit);
     }

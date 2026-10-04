@@ -4,14 +4,17 @@ import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
 
-/// Removes an added unit or the selected default vision's overrides.
+/// Removes an added unit or reverts a default vision/party character.
 Future<void> confirmRemove(
   BuildContext context,
   AppState app,
   Map<String, dynamic> unit,
 ) async {
-  final party = unit['party'] != null;
-  final native = unit['native'] != null || party;
+  if (unit['party'] != null) {
+    await _confirmRevertParty(context, app, unit);
+    return;
+  }
+  final native = unit['native'] != null;
   final ok = await showDialog<bool>(
     context: context,
     builder: (c) => AlertDialog(
@@ -24,7 +27,7 @@ Future<void> confirmRemove(
         style: Guide.h2(),
       ),
       content: Text(
-        party ? 'This restores the original battle and overworld models on the next build/install. Save its character config first to keep your choices.' : native
+        native
             ? 'This restores the original model, abilities, bonuses, stats, Resonance and MR rewards by removing this vision\'s overrides. Save its character config first to keep your edits. The next build/install applies the original vision to the game.'
             : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.',
         style: Guide.text(),
@@ -41,5 +44,49 @@ Future<void> confirmRemove(
   );
   if (ok == true) {
     await app.removeUnit(unit['key'] as String);
+  }
+}
+
+Future<void> _confirmRevertParty(
+  BuildContext context,
+  AppState app,
+  Map<String, dynamic> unit,
+) async {
+  // Home can supply the original character rather than its saved override.
+  final overrides = app.units.where((u) => u['key'] == unit['key']);
+  final current = overrides.isEmpty ? unit : overrides.single;
+  final battle = ['ffbe', 'menuScale', 'icon'].any(current.containsKey);
+  final overworld = current['overworld'] != null;
+  final choice = await showDialog<String>(
+    context: context,
+    builder: (c) => AlertDialog(
+      backgroundColor: Guide.paper,
+      shape: Border.fromBorderSide(Guide.frame),
+      title: Text('Revert ${unit['en']} to original?', style: Guide.h2()),
+      content: Text(
+        'Choose which appearance to restore. Reverting only one keeps your other choice. Build/install afterward to apply it to the game. Save the character config first to keep your choices.',
+        style: Guide.text(),
+      ),
+      actions: [
+        GuideButton('Keep', onPressed: () => Navigator.pop(c)),
+        GuideButton('Revert battle only', danger: true,
+          onPressed: app.building || !battle ? null : () => Navigator.pop(c, 'battle')),
+        GuideButton('Revert overworld only', danger: true,
+          onPressed: app.building || !overworld ? null : () => Navigator.pop(c, 'overworld')),
+        GuideButton('Revert both', danger: true,
+          onPressed: app.building || overrides.isEmpty ? null : () => Navigator.pop(c, 'both')),
+      ],
+    ),
+  );
+  if (choice == null) { return; }
+  try {
+    if (choice == 'both') {
+      await app.removeUnit(unit['key'] as String);
+    } else {
+      await app.editPartyCharacter(unit['id'] as int,
+        clearBattle: choice == 'battle', clearOverworld: choice == 'overworld');
+    }
+  } catch (e) {
+    app.showNotice('Could not revert this appearance: $e');
   }
 }
