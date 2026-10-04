@@ -111,7 +111,7 @@ class AcquisitionCatalog {
       entrances.where((v) => v.id == id).firstOrNull;
 }
 
-/// Shared Studio placements. No game assets or acquisition tables are modified.
+/// Shared placements; assigned cave snapshots travel with each vision's spec.
 class AcquisitionLocations extends ChangeNotifier {
   AcquisitionLocations({this.file}) {
     try {

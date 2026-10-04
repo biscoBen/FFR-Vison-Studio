@@ -116,9 +116,8 @@ def prepare(tables, units, root, rows):
             table(GROUP)['set'].append({'row': key, 'set': {'ap': value}})
     if controls['practiceBattle']:
         prepare_practice(table, rows, value)
-    if controls['crystalCave']:
-        import _ffr_crystal_cave
-        _ffr_crystal_cave.prepare(tables, units, root, rows)
+    import _ffr_crystal_cave
+    _ffr_crystal_cave.prepare(tables, units, root, rows)
     import _ffr_field_leader
     _ffr_field_leader.prepare(tables, units, root, rows)
     return tables

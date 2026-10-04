@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Build saved cave assignments as **Resonance Caves**, with each selected vision's sprite, native item grant and
+  once-owned disappearance. Reuse the Crystal Fina stone cave, button-operated portal, blockers, crystal room,
+  controller-compatible obtain flow and return point. Group shared cave assignments with independent vision grants.
+  Preserve stable map identities across rebuilds, append entrances/collision to the same world without replacing
+  previous caves, and use the chosen native entrance mesh. Remove cave-selected visions from Mitra's shop; original
+  vision acquisition and the legacy Crystal Fina switch remain compatible. Vendor routing is still a planning feature.
+  Native tables and all four entrance types pass asset serialization with independent shared-cave grants. Live terrain,
+  appearance and acquisition checks remain necessary; automated asset checks do not execute gameplay.
+
 ## Published native vendors and user-placed caves — 2026-10-04
 
 Code: [`37f42ba`](https://github.com/biscoBen/FFR-Vison-Studio/commit/37f42ba2ebf41dc4b8fbe3f9da66c26b7f3085b5).

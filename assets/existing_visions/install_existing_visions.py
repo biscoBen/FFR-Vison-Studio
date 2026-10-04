@@ -109,6 +109,8 @@ def hook_builder(raw):
     icon_tag, = [n for n in loop.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'icon_tag']
     icon_loop, = [n for n in loop.body if isinstance(n, ast.For) and ast.unparse(n.target) == 'rel'
                  and 'UI/Skill/DT_CommandSkillIcon' in ast.unparse(n.iter)]
+    shop_slot, = [n for n in loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
+                  and ast.unparse(n.value.func) == 'shop_slots.append']
     if 'UNUSED_ICON_TAGS' not in ast.unparse(icon_tag.value):
         raise RuntimeError('Unsupported command icon allocation.')
     generator, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'generate_sprites']
@@ -156,6 +158,10 @@ def hook_builder(raw):
     index = skill_conversion.lineno - 1
     line = lines[index]; indent = line[:len(line) - len(line.lstrip())]
     lines[index] = indent + "if u.get('party') is None:" + nl + '    ' + line
+    # A cave-selected vision is acquired inside its cave, not also sold in Mitra.
+    index = shop_slot.lineno - 1
+    indent = lines[index][:len(lines[index]) - len(lines[index].lstrip())]
+    lines[index] = indent + 'if _ffr_crystal_cave.assignment(u) is None:' + nl + '    ' + lines[index]
     argument = sprite_call.args[0]
     if argument.lineno != argument.end_lineno: raise RuntimeError('Unsupported sprite converter call layout.')
     lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-/// Studio planning preferences only; the mod builder does not consume these.
+/// Saved acquisition choice; cave snapshots are consumed by the mod builder.
 class AcquisitionSite {
   const AcquisitionSite(
     this.id,

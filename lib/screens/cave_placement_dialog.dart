@@ -137,7 +137,7 @@ class _CavePlacementDialogState extends State<_CavePlacementDialog> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Saved map placement. The cave interior and in-game acquisition will be connected later.',
+              'Choose this cave in a vision’s Acquisition tab, then build/install to add it in-game.',
               style: Guide.small(),
             ),
             if (_error != null)

@@ -265,7 +265,7 @@ abilities, passives, or the vision's master reward. Rewards can be moved to anot
 can be edited directly. The engine supports five rewards per rank. Existing rewards and unlock-point requirements
 are preserved until edited; character config files include these rewards. Build/install afterward to apply them in-game.
 
-The **Acquisition** tab previews future placement. **Random** and **Hide for spoilers** start on.
+The **Acquisition** tab assigns Added visions to saved locations. **Random** and **Hide for spoilers** start on.
 Turn off Hide to reveal the selected location and its map marker; choices remain disabled until Random is off.
 Changing Random in either direction picks another location. Choose **Shop** and a vendor, or **Cave** and one of our
 custom caves. The vendor list retains all 105 native inventory and 20 combined-shop records, including chapter variants;
@@ -274,9 +274,16 @@ remain selectable with their pin unavailable. Zoom and drag the native world-map
 Right-click the map, choose **Add cave here**, name it and select an entrance model image. The shared cave list starts
 with our Crystal Fina cave; you place the rest toward the 30-cave target. Selecting a cave centers its pin. Entrance
 previews use native geometry with simplified lighting. Cave locations persist across Studio restarts, and the selected
-cave is included in character configs. This remains a UI preview; in-game placement/acquisition will be connected later.
-The [verified acquisition placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37222696350)
-contains these controls and the native vendor/entrance catalog.
+cave is included in character configs. Build/install the mod and restart Resonance to create **assigned** caves;
+unassigned pool entries remain saved for later. Each is named **Resonance Cave** in-game and uses the existing stone
+cave, button-operated crystal portal and glowing crystal room. It contains the assigned vision's idle sprite, grants
+that vision's actual item through the native obtain screen, hides it once owned, and returns outside the portal in
+the same stone cave. Multiple visions assigned to one cave have separate interactions and ownership conditions.
+Cave-selected visions are not also sold in Mitra. Saved cave map IDs remain stable across rebuilds. The original
+Crystal Fina cave switch still works; an explicit cave assignment for her takes precedence. Shop/vendor assignments
+remain planning controls and retain the existing shop behavior until vendor routing is implemented. Original visions
+retain their native acquisition. Entrance height uses the tested overworld baseline; terrain/accessibility and the new
+entrance appearances need an in-game placement check. Automated asset checks do not execute gameplay.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
@@ -373,8 +380,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   from ordinary summon commands; check whether assets absent from the demo are now available.
 - [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,
   return points, event timelines and ownership conditions. Retest granting the vision, disappearance, white flash,
-  return to the stone cave and controller dialogs. Additional user-placed caves are currently saved Studio plans;
-  connecting their interiors and acquisitions to the game remains pending.
+  return to the stone cave and controller dialogs. Assigned user-placed Resonance Caves now use this flow; recheck
+  their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Vendor routing
+  remains pending.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.

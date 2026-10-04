@@ -249,7 +249,7 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                     style: Guide.small(),
                   ),
                 Text(
-                  'Acquisition preview — locations are saved in Studio; in-game placement will be connected later.',
+                  'Build/install to create assigned caves and acquire their visions. Vendor placement is still a preview.',
                   style: Guide.small(),
                 ),
                 if (_error != null || widget.locations.loadError != null)
@@ -271,7 +271,7 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                   ),
                 ),
                 Text(
-                  '${widget.locations.caves.length} / 30 planned caves · Right-click the map to add a cave.',
+                  '${widget.locations.caves.length} / 30 caves · Right-click the map to add a cave.',
                   style: Guide.small(),
                 ),
               ],
