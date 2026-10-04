@@ -11,10 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published cave-marker removal — 2026-10-04
+
+Code: [`86600ac`](https://github.com/biscoBen/FFR-Vison-Studio/commit/86600ac8c33c324eabbe0268dbcdd8e53ddfcf64).
+[Verified Windows test release](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37227168310).
+
 - Right-click a visible Acquisition cave marker to remove that saved placement. Clear every current vision assigned
   to it back to Mitra's shop while preserving other edits and Random/Hide settings; disable the legacy Crystal Fina
   switch when removing its cave. Hidden markers cannot be removed, overlapping markers list their cave names, and
   removal is blocked during a mod build. Rebuild/install and restart Resonance to apply the removal in-game.
+- Validation: Flutter analysis, full Flutter/Python suites, Windows frozen-engine startup and launcher/updater checks
+  passed. Focused tests cover zoom/pan, overlapping and hidden markers, cancellation, shared assignments, persistence
+  and blocked/failed writes. Verified the downloaded package's commit, checksum and 50 bundled resources.
 
 ## Published assigned Resonance Caves — 2026-10-04
 
