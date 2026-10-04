@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 
 import '../services/api.dart';
 import '../services/acquisition_locations.dart';
+import '../services/acquisition.dart';
 import '../services/bundled_features.dart';
 import '../services/character_config.dart';
 import '../services/crystal_fina.dart';
@@ -364,6 +365,30 @@ class AppState extends ChangeNotifier {
     try { await _withRoster(_savePending); notice = null; } catch (e) { notice = 'Could not save: $e'; }
     notifyListeners();
   }
+
+  Future<void> removeAcquisitionCave(String id) => _withRoster(() async {
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (acquisitionLocations.cave(id) == null) return;
+    final catalog = await AcquisitionCatalog.bundled;
+    await _savePending();
+    if (id == 'crystal_cave' && crystalCave) {
+      await api!.saveCrystalCave(false);
+      crystalCave = false;
+      notifyListeners();
+    }
+    await acquisitionLocations.remove(id);
+    for (final unit in units.cast<JsonMap>().toList()) {
+      final saved = unit[Acquisition.field];
+      if (!Acquisition.valid(saved)) continue;
+      final preferences = Acquisition.fromJson(saved as Map);
+      if (preferences.location != id &&
+          !(id == 'crystal_cave' && preferences.location == 'earth_shrine')) { continue; }
+      update({...unit, Acquisition.field: preferences.choose(catalog.vendor(catalog.mitraShop)!).toJson()});
+    }
+    _saveTimer?.cancel();
+    await _savePending();
+  });
 
   Future<bool> removeUnit(String key) => _withRoster(() async {
     try {

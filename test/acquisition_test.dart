@@ -121,13 +121,15 @@ void main() {
     AcquisitionLocations? locations,
   }) async {
     final changes = <Map<String, dynamic>>[];
+    final pool = locations ?? AcquisitionLocations();
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
           body: AcquisitionStep(
             unit: unit ?? {'key': 'one'},
             set: changes.add,
-            locations: locations ?? AcquisitionLocations(),
+            locations: pool,
+            removeCave: pool.remove,
           ),
         ),
       ),
@@ -373,6 +375,105 @@ void main() {
         isEmpty,
       );
       expect(find.byKey(const ValueKey('acquisition-marker')), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'right-click removes a visible selected cave after zoom/pan; cancel and hidden markers preserve it',
+    (tester) async {
+      final locations = AcquisitionLocations();
+      addTearDown(locations.dispose);
+      const cave = CaveLocation(
+        id: 'cave_remove',
+        name: 'Remove test',
+        entrance: 'shrine',
+        worldX: 17000,
+        worldY: 21000,
+      );
+      await locations.add(cave);
+      const neighbor = CaveLocation(
+        id: 'cave_neighbor',
+        name: 'Other overlapping cave',
+        entrance: 'rock_cave',
+        worldX: 17000,
+        worldY: 21000,
+      );
+      await locations.add(neighbor);
+      await mount(
+        tester,
+        locations: locations,
+        unit: {
+          'key': 'one',
+          Acquisition.field: Acquisition(
+            location: cave.id,
+            random: false,
+            hideSpoilers: false,
+            cave: cave.toJson(),
+          ).toJson(),
+        },
+      );
+      tester
+          .widget<Slider>(find.byKey(const ValueKey('acquisition-zoom')))
+          .onChanged!(4);
+      await tester.pumpAndSettle();
+      await tester.drag(
+        find.byKey(const ValueKey('acquisition-map')),
+        const Offset(20, 15),
+      );
+      await tester.pumpAndSettle();
+      Future<void> menu(Offset point) async {
+        final click = await tester.startGesture(
+          point,
+          kind: PointerDeviceKind.mouse,
+          buttons: kSecondaryMouseButton,
+        );
+        await click.up();
+        await tester.pumpAndSettle();
+      }
+
+      await menu(
+        tester.getCenter(find.byKey(const ValueKey('acquisition-marker'))),
+      );
+      expect(find.text('Remove cave: Remove test'), findsOneWidget);
+      await tester.tapAt(const Offset(3, 3));
+      await tester.pumpAndSettle();
+      expect(locations.cave(cave.id), isNotNull);
+      await menu(
+        tester.getCenter(
+          find.byKey(const ValueKey('acquisition-cave-cave_neighbor')),
+        ),
+      );
+      expect(find.text('Remove cave: Other overlapping cave'), findsOneWidget);
+      expect(find.text('Remove cave: Remove test'), findsOneWidget);
+      await tester.tap(find.text('Remove cave: Other overlapping cave'));
+      await tester.pumpAndSettle();
+      expect(locations.cave(neighbor.id), isNull);
+      expect(locations.cave(cave.id), isNotNull);
+      await tester.tap(find.byKey(const ValueKey('acquisition-hide')));
+      await tester.pumpAndSettle();
+      await menu(
+        tester.getCenter(find.byKey(const ValueKey('acquisition-map-context'))),
+      );
+      expect(find.textContaining('Remove cave:'), findsNothing);
+      await tester.tapAt(const Offset(3, 3));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('acquisition-hide')));
+      await tester.pumpAndSettle();
+      await menu(
+        tester.getCenter(find.byKey(const ValueKey('acquisition-marker'))),
+      );
+      await tester.tap(find.text('Remove cave: Remove test'));
+      await tester.pumpAndSettle();
+      expect(locations.cave(cave.id), isNull);
+      expect(
+        tester
+            .widget<DropdownButton<String>>(
+              find.byKey(const ValueKey('acquisition-shop-list')),
+            )
+            .value,
+        AcquisitionCatalog.cached!.mitraShop,
+      );
+      expect(tester.takeException(), isNull);
     },
   );
 

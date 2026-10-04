@@ -14,10 +14,12 @@ class AcquisitionStep extends StatefulWidget {
     required this.unit,
     required this.set,
     required this.locations,
+    required this.removeCave,
   });
   final Map<String, dynamic> unit;
   final ValueChanged<Map<String, dynamic>> set;
   final AcquisitionLocations locations;
+  final Future<void> Function(String) removeCave;
 
   @override
   State<AcquisitionStep> createState() => _AcquisitionStepState();
@@ -104,6 +106,24 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
     );
     if (!mounted || added == null) return;
     if (!_preferences!.random) _choose(added.site);
+  }
+
+  Future<void> _removeCave(String id) async {
+    try {
+      await widget.removeCave(id);
+      if (!mounted) return;
+      setState(() {
+        _error = null;
+        if (_preferences!.location == id ||
+            id == 'crystal_cave' && _preferences!.location == 'earth_shrine') {
+          _preferences = _preferences!.choose(
+            _catalog!.vendor(_catalog!.mitraShop)!,
+          );
+        }
+      });
+    } catch (error) {
+      if (mounted) setState(() => _error = 'Could not remove the cave: $error');
+    }
   }
 
   Widget _choice(
@@ -268,10 +288,13 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                     onAddCave: widget.locations.loadError == null
                         ? _addCave
                         : null,
+                    onRemoveCave: widget.locations.loadError == null
+                        ? _removeCave
+                        : null,
                   ),
                 ),
                 Text(
-                  '${widget.locations.caves.length} / 30 caves · Right-click the map to add a cave.',
+                  '${widget.locations.caves.length} / 30 caves · Right-click to add a cave or remove a visible cave marker.',
                   style: Guide.small(),
                 ),
               ],

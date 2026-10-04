@@ -4,9 +4,18 @@ import 'dart:math';
 import 'package:ffr_vision_studio/services/acquisition.dart';
 import 'package:ffr_vision_studio/services/acquisition_locations.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
+import 'package:ffr_vision_studio/services/paths.dart';
+import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'character_config_test.dart' show profile;
+import 'character_config_test.dart' show profile, ConfigApi, clone;
+
+class CaveRemovalApi extends ConfigApi {
+  CaveRemovalApi(super.roster);
+  final crystalSettings = <bool>[];
+  @override
+  Future<void> saveCrystalCave(bool value) async => crystalSettings.add(value);
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -177,5 +186,151 @@ void main() {
     expect(corrupt.loadError, isNotNull);
     await expectLater(corrupt.add(cave), throwsStateError);
     expect(file.readAsStringSync(), '{broken');
+  });
+
+  test('removal persists, clears every assigned vision and preserves other edits and placements', () async {
+    final dir = Directory.systemTemp.createTempSync('cave-remove-');
+    final poolFile = File('${dir.path}/acquisition-caves.json');
+    final catalog = AcquisitionCatalog.cached!;
+    final api = CaveRemovalApi([]);
+    final app = AppState(
+      hostBase: 'http://unused',
+      appPaths: AppPaths.at(dir.path),
+    )..api = api;
+    addTearDown(() {
+      app.dispose();
+      dir.deleteSync(recursive: true);
+    });
+    const cave = CaveLocation(
+      id: 'cave_remove',
+      name: 'Remove me',
+      entrance: 'shrine',
+      worldX: 17000,
+      worldY: 21000,
+    );
+    await app.acquisitionLocations.add(cave);
+    final choice = app.acquisitionLocations.choose(
+      const Acquisition(
+        location: 'mitra_shop',
+        random: false,
+        hideSpoilers: false,
+      ),
+      cave.site,
+    );
+    final first = {
+      ...profile(),
+      'key': 'first',
+      Acquisition.field: choice.toJson(),
+    };
+    final second = {
+      ...profile(),
+      'key': 'second',
+      Acquisition.field: choice
+          .copyWith(random: true, hideSpoilers: true)
+          .toJson(),
+    };
+    final other = {
+      ...profile(),
+      'key': 'other',
+      Acquisition.field: app.acquisitionLocations
+          .choose(choice, CaveLocation.original.site)
+          .toJson(),
+    };
+    app.units = [first, second, other];
+    api.roster = clone(app.units) as List;
+    app.update({...first, 'en': 'An unsaved name edit'});
+    await app.removeAcquisitionCave(cave.id);
+    expect(app.dirty, isFalse);
+    expect(app.units.first['en'], 'An unsaved name edit');
+    for (var i = 0; i < 2; i++) {
+      final saved = Acquisition.fromJson(
+        api.roster[i][Acquisition.field] as Map,
+      );
+      expect(saved.location, catalog.mitraShop);
+      expect(saved.cave, isNull);
+      expect(saved.random, i == 1);
+      expect(saved.hideSpoilers, i == 1);
+      expect(api.roster[i]['stats'], first['stats']);
+    }
+    expect(api.roster.last, other);
+    expect(api.crystalSettings, isEmpty);
+    final restored = AcquisitionLocations(file: poolFile);
+    addTearDown(restored.dispose);
+    expect(restored.cave(cave.id), isNull);
+    expect(restored.caves.single.id, 'crystal_cave');
+    expect(restored.sites(catalog).any((s) => s.id == cave.id), isFalse);
+  });
+
+  test('removing the original cave disables its legacy switch and old choices safely migrate to the shop', () async {
+    final dir = Directory.systemTemp.createTempSync('original-cave-remove-');
+    final unit = {
+      ...profile(),
+      Acquisition.field: const Acquisition(location: 'earth_shrine').toJson(),
+    };
+    final api = CaveRemovalApi([unit]);
+    final app =
+        AppState(hostBase: 'http://unused', appPaths: AppPaths.at(dir.path))
+          ..api = api
+          ..units = [unit]
+          ..crystalCave = true;
+    addTearDown(() {
+      app.dispose();
+      dir.deleteSync(recursive: true);
+    });
+    await app.removeAcquisitionCave('crystal_cave');
+    expect(api.crystalSettings, [false]);
+    expect(app.crystalCave, isFalse);
+    expect(app.acquisitionLocations.caves, isEmpty);
+    expect(api.roster.single[Acquisition.field]['cave'], isNull);
+    final catalog = AcquisitionCatalog.cached!;
+    for (final old in ['earth_shrine', 'crystal_cave']) {
+      expect(
+        app.acquisitionLocations
+            .migrate(Acquisition(location: old), catalog)
+            .location,
+        catalog.mitraShop,
+      );
+    }
+    final restored = AcquisitionLocations(file: app.acquisitionLocations.file);
+    addTearDown(restored.dispose);
+    expect(restored.caves, isEmpty);
+  });
+
+  test('a blocked or failed removal preserves the saved pool and vision assignments', () async {
+    final dir = Directory.systemTemp.createTempSync('failed-cave-remove-');
+    final unit = {
+      ...profile(),
+      Acquisition.field: Acquisition(
+        location: 'crystal_cave',
+        cave: CaveLocation.original.toJson(),
+      ).toJson(),
+    };
+    final api = CaveRemovalApi([unit]);
+    final app =
+        AppState(hostBase: 'http://unused', appPaths: AppPaths.at(dir.path))
+          ..api = api
+          ..units = [unit];
+    addTearDown(() {
+      app.dispose();
+      dir.deleteSync(recursive: true);
+    });
+    final before = clone(app.units);
+    app.buildState = {'running': true};
+    await expectLater(
+      app.removeAcquisitionCave('crystal_cave'),
+      throwsStateError,
+    );
+    app.buildState = null;
+    Directory('${app.acquisitionLocations.file!.path}.pending').createSync();
+    await expectLater(
+      app.removeAcquisitionCave('crystal_cave'),
+      throwsA(isA<FileSystemException>()),
+    );
+    expect(app.acquisitionLocations.caves.single.id, 'crystal_cave');
+    expect(app.units, before);
+    expect(api.roster, before);
+    expect(api.saves, 0);
+    await app.removeAcquisitionCave('cave_missing');
+    expect(api.saves, 0);
   });
 }

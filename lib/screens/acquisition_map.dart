@@ -10,10 +10,12 @@ class AcquisitionMap extends StatefulWidget {
     required this.site,
     this.caves = const [],
     this.onAddCave,
+    this.onRemoveCave,
   });
   final AcquisitionSite? site;
   final List<AcquisitionSite> caves;
   final ValueChanged<Offset>? onAddCave;
+  final ValueChanged<String>? onRemoveCave;
 
   @override
   State<AcquisitionMap> createState() => _AcquisitionMapState();
@@ -43,8 +45,23 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
     Size viewport,
   ) async {
     final scene = _transform.toScene(details.localPosition);
-    if (!map.fittedRect(viewport).contains(scene)) return;
+    final canAdd =
+        widget.onAddCave != null && map.fittedRect(viewport).contains(scene);
     final projected = map.fromViewport(scene, viewport);
+    final nearby = widget.caves.where((c) => c.hasPosition).where((c) {
+      final point = MatrixUtils.transformPoint(
+        _transform.value,
+        map.toViewport(
+          AcquisitionMapData.project(c.worldX!, c.worldY!),
+          viewport,
+        ),
+      );
+      final bounds = c.id == widget.site?.id
+          ? Rect.fromLTWH(point.dx - 16, point.dy - 32, 32, 32)
+          : Rect.fromLTWH(point.dx - 8, point.dy - 8, 16, 16);
+      return bounds.inflate(4).contains(details.localPosition);
+    }).toList();
+    if (!canAdd && (widget.onRemoveCave == null || nearby.isEmpty)) return;
     final overlay =
         Overlay.of(context).context.findRenderObject()! as RenderBox;
     final anchor = overlay.globalToLocal(details.globalPosition);
@@ -56,10 +73,21 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
         overlay.size.width - anchor.dx,
         overlay.size.height - anchor.dy,
       ),
-      items: const [PopupMenuItem(value: 'add', child: Text('Add cave here'))],
+      items: [
+        if (canAdd)
+          const PopupMenuItem(value: 'add', child: Text('Add cave here')),
+        if (widget.onRemoveCave != null)
+          for (final cave in nearby)
+            PopupMenuItem(
+              value: 'remove:${cave.id}',
+              child: Text('Remove cave: ${cave.label}'),
+            ),
+      ],
     );
     if (mounted && action == 'add') {
       widget.onAddCave?.call(Offset(-projected.dy, projected.dx));
+    } else if (mounted && action?.startsWith('remove:') == true) {
+      widget.onRemoveCave?.call(action!.substring('remove:'.length));
     }
   }
 
@@ -179,7 +207,9 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
                     cursor: SystemMouseCursors.grab,
                     child: GestureDetector(
                       key: const ValueKey('acquisition-map-context'),
-                      onSecondaryTapDown: widget.onAddCave == null
+                      onSecondaryTapDown:
+                          widget.onAddCave == null &&
+                              widget.onRemoveCave == null
                           ? null
                           : (details) => _menu(details, map, viewport),
                       child: InteractiveViewer(
@@ -241,7 +271,10 @@ class _AcquisitionMapState extends State<AcquisitionMap> {
                                     scale: 1 / _zoom,
                                     child: Tooltip(
                                       message: cave.label,
-                                      child: const Icon(
+                                      child: Icon(
+                                        key: ValueKey(
+                                          'acquisition-cave-${cave.id}',
+                                        ),
                                         Icons.circle_outlined,
                                         size: 16,
                                         color: Color(0xff83d9ff),

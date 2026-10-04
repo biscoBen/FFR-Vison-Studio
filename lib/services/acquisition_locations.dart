@@ -182,18 +182,16 @@ class AcquisitionLocations extends ChangeNotifier {
     }
     if (preferences.location == 'earth_shrine' ||
         preferences.location == 'crystal_cave' && preferences.cave == null) {
-      return choose(preferences, cave('crystal_cave')!.site);
+      return choose(
+        preferences,
+        cave('crystal_cave')?.site ?? catalog.vendor(catalog.mitraShop)!,
+      );
     }
     return preferences;
   }
 
   Future<void> add(CaveLocation value) async {
-    if (loadError != null) {
-      throw StateError(
-        'The saved cave list could not be read. It has been preserved.',
-      );
-    }
-    if (_writing) throw StateError('A cave placement is being saved.');
+    _checkWritable();
     CaveLocation.fromJson(value.toJson());
     final previous = cave(value.id);
     if (previous != null) {
@@ -202,9 +200,27 @@ class AcquisitionLocations extends ChangeNotifier {
         'This cave ID already belongs to a different saved placement.',
       );
     }
+    await _saveCaves([...caves, value]);
+  }
+
+  Future<void> remove(String id) async {
+    _checkWritable();
+    if (cave(id) == null) return;
+    await _saveCaves(caves.where((c) => c.id != id).toList());
+  }
+
+  void _checkWritable() {
+    if (loadError != null) {
+      throw StateError(
+        'The saved cave list could not be read. It has been preserved.',
+      );
+    }
+    if (_writing) throw StateError('A cave placement is being saved.');
+  }
+
+  Future<void> _saveCaves(List<CaveLocation> next) async {
     _writing = true;
     try {
-      final next = [...caves, value];
       if (file != null) {
         final pending = File('${file!.path}.pending');
         await pending.writeAsString(

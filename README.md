@@ -273,8 +273,11 @@ it uses readable translations of their source labels. Moving/later-game entries 
 remain selectable with their pin unavailable. Zoom and drag the native world-map menu images, or use **Full map**.
 Right-click the map, choose **Add cave here**, name it and select an entrance model image. The shared cave list starts
 with our Crystal Fina cave; you place the rest toward the 30-cave target. Selecting a cave centers its pin. Entrance
-previews use native geometry with simplified lighting. Cave locations persist across Studio restarts, and the selected
-cave is included in character configs. Build/install the mod and restart Resonance to create **assigned** caves;
+previews use native geometry with simplified lighting. Cave locations persist across Studio restarts. Right-click any
+visible cave marker for **Remove cave**. Removal clears all current vision assignments
+to that cave back to Mitra's shop, preserving their Random/Hide settings, and disables the legacy switch when removing
+the original Crystal Fina cave. Rebuild/install and restart to remove it from the game. The selected cave is included
+in character configs. Build/install the mod and restart Resonance to create **assigned** caves;
 unassigned pool entries remain saved for later. Each is named **Resonance Cave** in-game and uses the existing stone
 cave, button-operated crystal portal and glowing crystal room. It contains the assigned vision's idle sprite, grants
 that vision's actual item through the native obtain screen, hides it once owned, and returns outside the portal in

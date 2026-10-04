@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Right-click a visible Acquisition cave marker to remove that saved placement. Clear every current vision assigned
+  to it back to Mitra's shop while preserving other edits and Random/Hide settings; disable the legacy Crystal Fina
+  switch when removing its cave. Hidden markers cannot be removed, overlapping markers list their cave names, and
+  removal is blocked during a mod build. Rebuild/install and restart Resonance to apply the removal in-game.
+
 ## Published assigned Resonance Caves — 2026-10-04
 
 Code: [`203f976`](https://github.com/biscoBen/FFR-Vison-Studio/commit/203f976f70e684de6fa77be424a2b2d5f99c3e16).
