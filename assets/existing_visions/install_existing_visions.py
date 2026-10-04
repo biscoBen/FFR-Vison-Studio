@@ -17,7 +17,7 @@ MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_overworld.py', 'vagrant_knight_rain_field.png', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -116,7 +116,7 @@ def hook_builder(raw):
     before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
                     '_ffr_party.prepare(tables, party_units, rows)',
-                    '_ffr_testing.prepare(tables, native_units + UNITS, ROOT, rows)',
+                    '_ffr_testing.prepare(tables, party_units + native_units + UNITS, ROOT, rows)',
                     '_ffr_ability_modes.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
@@ -125,7 +125,9 @@ def hook_builder(raw):
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)',
                    '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))',
-                   '_ffr_crystal_cave.build(native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY))']
+                   '_ffr_crystal_cave.build(native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY))',
+                   'import _ffr_field_leader',
+                   '_ffr_field_leader.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
     # Party specs describe only appearance. The legacy vision loader adds
@@ -159,6 +161,19 @@ def hook_server(raw):
     if not isinstance(app.value, ast.Call) or ast.unparse(app.value.func) != 'FastAPI':
         raise RuntimeError('Unsupported native vision server layout.')
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
+    install, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'install_files']
+    restore, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'restore_game']
+    # Preflight ownership/loader before package copies, then deploy only after
+    # those copies succeed. No changes to another loader or mod's configuration.
+    state, = [n for n in install.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'st']
+    returned, = [n for n in install.body if isinstance(n, ast.Return)]
+    lines[state.lineno - 1] = '    import _ffr_field_leader' + nl + '    leader_plan = _ffr_field_leader.install_plan(ROOT, _game_root(paks))' + nl + lines[state.lineno - 1]
+    lines[returned.lineno - 1] = '    _ffr_field_leader.deploy(leader_plan, bdir)' + nl + lines[returned.lineno - 1]
+    game, = [n for n in restore.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'game']
+    lines[game.lineno - 1] += '    import _ffr_field_leader' + nl + '    leader_plan = _ffr_field_leader.restore_plan(ROOT, game, backup)' + nl
+    for returned in [n for n in ast.walk(restore) if isinstance(n, ast.Return)]:
+        indent = ' ' * returned.col_offset
+        lines[returned.lineno - 1] = indent + '_ffr_field_leader.deploy(leader_plan)' + nl + lines[returned.lineno - 1]
     lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions', '_ffr_existingvisions.register(app, globals())', '']))
     result = ''.join(lines); compile(result, 'server.py', 'exec')
     return (b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'') + result.encode('utf-8')
@@ -241,6 +256,7 @@ def run(root, action):
     compile(module, HELPER, 'exec')
     for name, raw in resource_data.items():
         if name.endswith('.py'): compile(raw, name, 'exec')
+        elif name.endswith('.lua'): raw.decode('utf-8')
         elif name.endswith('.json'): json.loads(raw)
         elif name.endswith('.png'):
             if not raw.startswith(b'\x89PNG\r\n\x1a\n'):

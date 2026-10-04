@@ -310,6 +310,15 @@ Only the primary field animation and textures are redirected; special scene asse
 the ordinary walking model also show the replacement. Original skill effects
 remain in use; special cinematics and replacement motions need an in-game check.
 
+**Cycle walking character (LB / L1)** cycles the current active party's field appearances; F6 is an alternative.
+Enable it and rebuild/install, using the UE4SS loader already prepared by the field-reference helper. Studio installs
+only its owned `FFRStudioFieldLeader` Lua mod, with no further loader download. Right-stick click keeps its native
+minimap function. Cycling changes the walking sprite, preserves party order/save identity and battle choices,
+and restores the story appearance around events. All eight native party characters have movement sprites;
+Dark Fina uses her own cardinal poses for diagonal idle. Independent overworld replacements participate too.
+Turn the option off and rebuild/install, or restore the original game, to remove Studio's cycling scripts.
+Previous-build restoration also restores the corresponding scripts. Live controller/scene behavior needs testing.
+
 The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another
 existing game Resonance; creating a custom Resonance remains available for separately added units. Unsupported original
 sprite layouts and incomplete placeholders are excluded. Engine integration runs automatically at startup and after

@@ -1,0 +1,145 @@
+"""Field bank preservation, owned deployment/rollback, and executable Lua guards."""
+import copy
+import json
+from pathlib import Path
+import tempfile
+import unittest
+from unittest import mock
+
+from test_existing_visions import ROOT
+from test_overworld import map_rows, choice
+from test_party_characters import unit
+import _ffr_field_leader as leader
+import _ffr_testing as testing
+
+
+class FieldLeaderTests(unittest.TestCase):
+    def test_dark_fina_aliases_keep_native_animation_data_and_include_export_names(self):
+        animations = [{'Name': str(i), 'Value': [{'Name': 'AnimationName', 'Value': f'idle{d}'},
+                       {'Name': 'Settings', 'Value': {'fps': 30, 'frames': 24}}]} for i, d in enumerate((2, 4, 6, 8))]
+        view = {'NameMap': ['pc0060', '/Game/Chara/Field_Unit/pc0060/pc0060'],
+                'NamesReferencedFromExportDataCount': 1,
+                'Exports': [{'Data': [{'Name': 'AnimeList', 'Value': [
+                    {'Value': [{'Name': 'AnimeList', 'Value': animations}]}]}]}]}
+        built = leader.dark_fina_aliases(view)
+        clips = built['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value']
+        self.assertEqual(clips[:4], animations)
+        self.assertEqual(clips[4]['Value'][1:], animations[0]['Value'][1:])
+        self.assertEqual(built['NamesReferencedFromExportDataCount'], len(built['NameMap']))
+        self.assertIn('idle9', built['NameMap']); self.assertIn(leader.DFINA, built['NameMap'])
+        self.assertEqual(leader.dark_fina_aliases(built), built)
+        self.assertEqual(view['NamesReferencedFromExportDataCount'], 1)
+
+    def test_bank_keeps_every_story_slot_identity_and_separate_overworld_choices(self):
+        originals = map_rows(); before = copy.deepcopy(originals)
+        rain = unit(); rain['overworld'] = choice()
+        rows = lambda _: copy.deepcopy(originals)
+        changes, config = leader.bank([rain], rows)
+        for edit in changes:
+            name = edit['row']; assets = edit['set']['animationAssetList']
+            self.assertEqual(assets[1:2], originals[name]['animationAssetList'][1:])
+            self.assertEqual(len(assets), 10)
+            self.assertEqual(config['actors'][str(originals[name]['ID'])]['1002'], 3)
+            self.assertIn('StudioOverworld/party1001', assets[2]['Ss6Project'])
+            self.assertEqual(assets[7]['Ss6Project'], leader.DFINA)
+            self.assertEqual(assets[3], originals['ラスウェル']['animationAssetList'][0])
+        self.assertEqual(originals, before)
+        originals['フィーナ']['ID'] = 999
+        with self.assertRaisesRegex(ValueError, 'assets changed'): leader.bank([], rows)
+
+    def test_optional_setting_preserves_cave_and_party_combined_verification(self):
+        from test_crystal_cave import cave_game, enabled
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); originals, _, fina = cave_game(); originals[leader.TABLE].update(map_rows())
+            enabled(root)
+            path = root / testing.CONFIG; value = json.loads(path.read_bytes()); value['fieldLeader'] = True
+            path.write_text(json.dumps(value))
+            rain = unit(); rain['overworld'] = choice()
+            rows = lambda rel: copy.deepcopy(originals[rel])
+            ops = testing.verification_operations(root, [fina, rain], rows)
+            built = copy.deepcopy(originals[leader.TABLE])
+            for edit in ops[leader.TABLE]['set']: built[edit['row']] = testing.apply_fields(built[edit['row']], edit['set'])
+            for edit in ops[leader.TABLE]['add']: built[edit['row']] = testing.apply_fields(originals[leader.TABLE][edit['cloneFrom']], edit['set'])
+            testing.check_rows(originals[leader.TABLE], built, ops[leader.TABLE])
+            expected = testing.expected_edits(root, [fina, rain], rows)
+            self.assertEqual(testing.apply_fields(originals[leader.TABLE]['レイン'], expected[(leader.TABLE, 'レイン')]), built['レイン'])
+            self.assertEqual(len(built['レイン']['animationAssetList']), 10)
+
+    def test_install_uses_built_payload_preserves_loader_and_rolls_back_owned_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / 'engine'; game = Path(directory) / 'game'
+            binary = game / 'FFRS/Binaries/Win64'; (binary / 'ue4ss').mkdir(parents=True)
+            (binary / 'dwmapi.dll').write_bytes(b'loader proxy')
+            (binary / 'ue4ss/UE4SS.dll').write_bytes(b'loader')
+            other = binary / 'ue4ss/Mods/Keybinds/Scripts/main.lua'; other.parent.mkdir(parents=True); other.write_text('existing helper')
+            stage = root / leader.STAGE; stage.parent.mkdir(parents=True)
+            payload = {'schema': 1, 'files': {'enabled.txt': '', 'Scripts/main.lua': 'first', 'Scripts/config.lua': 'config'}}
+            stage.write_text(json.dumps(payload))
+            leader.deploy(leader.install_plan(root, game), root / 'backups/first')
+            main = game / leader.REL / 'Scripts/main.lua'
+            self.assertEqual(main.read_text(), 'first'); self.assertEqual(other.read_text(), 'existing helper')
+            payload['files']['Scripts/main.lua'] = 'second'; stage.write_text(json.dumps(payload))
+            leader.deploy(leader.install_plan(root, game), root / 'backups/second')
+            self.assertFalse((root / 'backups/second/field-leader.json').exists())
+            self.assertTrue((root / 'field-leader-backups/second.json').exists())
+            self.assertEqual(main.read_text(), 'second')
+            leader.deploy(leader.restore_plan(root, game, 'second'))
+            self.assertEqual(main.read_text(), 'first')
+            main.write_text('user edit')
+            with self.assertRaisesRegex(RuntimeError, 'Preserving'): leader.install_plan(root, game)
+            self.assertEqual(main.read_text(), 'user edit')
+            main.write_text('first')
+            leader.deploy(leader.restore_plan(root, game))
+            self.assertFalse(main.exists()); self.assertFalse((game / leader.REL / 'enabled.txt').exists())
+            self.assertEqual(other.read_text(), 'existing helper')
+            self.assertEqual((binary / 'dwmapi.dll').read_bytes(), b'loader proxy')
+
+    def test_missing_loader_fails_before_game_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / 'engine'; game = Path(directory) / 'game'
+            payload = {'schema': 1, 'files': {'enabled.txt': '', 'Scripts/main.lua': 'code', 'Scripts/config.lua': 'config'}}
+            with self.assertRaisesRegex(RuntimeError, 'requires the working UE4SS'): leader.install_plan(root, game, payload)
+            # Disabling on a clean game needs no loader and never installs one.
+            leader.deploy(leader.install_plan(root, game, {'schema': 1, 'files': {}}))
+            self.assertFalse((game / 'FFRS/Binaries/Win64/ue4ss/UE4SS.dll').exists())
+
+    def test_failed_deployment_restores_original_owned_payload(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / 'engine'; game = Path(directory) / 'game'
+            binary = game / 'FFRS/Binaries/Win64/ue4ss'; binary.mkdir(parents=True)
+            (binary / 'UE4SS.dll').write_bytes(b'loader'); (binary.parent / 'dwmapi.dll').write_bytes(b'proxy')
+            payload = {'schema': 1, 'files': {'enabled.txt': '', 'Scripts/main.lua': 'code', 'Scripts/config.lua': 'config'}}
+            leader.deploy(leader.install_plan(root, game, payload))
+            before = (root / leader.STATE).read_bytes()
+            plan = leader.install_plan(root, game, {'schema': 1, 'files': {}})
+            atomic = leader.atomic
+            def failure(path, data):
+                if path == plan['state'] and data != before: raise OSError('disk full fixture')
+                atomic(path, data)
+            with mock.patch.object(leader, 'atomic', side_effect=failure):
+                with self.assertRaisesRegex(OSError, 'disk full'): leader.deploy(plan)
+            self.assertEqual((root / leader.STATE).read_bytes(), before)
+            self.assertEqual((game / leader.REL / 'Scripts/main.lua').read_text(), 'code')
+            self.assertTrue((game / leader.REL / 'enabled.txt').is_file())
+
+    def test_lua_controller_cycles_active_party_and_guards_story_menu_battle_vehicle(self):
+        from lupa.lua54 import LuaRuntime
+        lua = LuaRuntime()
+        fixture = (ROOT / 'scripts/fixtures/field_leader_runtime.lua').read_text()
+        lua.execute(fixture)
+        lua.execute((ROOT / 'assets/existing_visions/payload/field_leader.lua').read_text())
+        lua.execute('run_tests()')
+
+    def test_missing_controller_hook_disables_cycling_without_appearance_writes(self):
+        from lupa.lua54 import LuaRuntime
+        lua = LuaRuntime()
+        lua.execute((ROOT / 'scripts/fixtures/field_leader_runtime.lua').read_text())
+        lua.execute('local original = StaticFindObject; StaticFindObject = function(path) '
+                    'if path:find(":InputL1", 1, true) then return {IsValid = function() return false end} end '
+                    'return original(path) end')
+        lua.execute((ROOT / 'assets/existing_visions/payload/field_leader.lua').read_text())
+        lua.execute('assert(actor.m_AnimationAssetIndex == 0); assert(keys[Key.F6] == nil); '
+                    'assert(tick == nil); assert(messages[1]:find("Cycling disabled", 1, true))')
+
+
+if __name__ == '__main__': unittest.main()

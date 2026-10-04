@@ -70,7 +70,7 @@ def practice_game():
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'fieldLeader': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})

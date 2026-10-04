@@ -28,18 +28,19 @@ STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'fieldLeader': False}
 
 
 def validate_settings(value):
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave', 'fieldLeader'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
-            or type(value.get('crystalCave', False)) is not bool):
+            or type(value.get('crystalCave', False)) is not bool
+            or type(value.get('fieldLeader', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
-            'crystalCave': value.get('crystalCave', False)}
+            'crystalCave': value.get('crystalCave', False), 'fieldLeader': value.get('fieldLeader', False)}
 
 
 def reward(rows):
@@ -118,6 +119,8 @@ def prepare(tables, units, root, rows):
     if controls['crystalCave']:
         import _ffr_crystal_cave
         _ffr_crystal_cave.prepare(tables, units, root, rows)
+    import _ffr_field_leader
+    _ffr_field_leader.prepare(tables, units, root, rows)
     return tables
 
 
@@ -181,8 +184,11 @@ def prepare_practice(table, rows, ap):
 
 
 def expected_edits(root, units, rows):
-    tables = prepare({}, units, root, rows)
-    return {(rel, e['row']): e['set'] for rel, t in tables.items() for e in t['set']}
+    tables = verification_operations(root, units, rows)
+    expected = {}
+    for rel, table in tables.items():
+        for e in table['set']: expected.setdefault((rel, e['row']), {}).update(e['set'])
+    return expected
 
 
 def field_delta(original, desired, prefix=''):
@@ -250,7 +256,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'crystalCave'):
+            for flag in ('practiceBattle', 'crystalCave', 'fieldLeader'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)
@@ -258,7 +264,7 @@ def register(app, env):
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if value['maxMr'] or value['practiceBattle'] or value['crystalCave']:
+            if value['maxMr'] or value['practiceBattle'] or value['crystalCave'] or value['fieldLeader']:
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'

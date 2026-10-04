@@ -22,6 +22,7 @@ import 'design/theme.dart';
 import 'design/theme_toggle.dart';
 import 'design/widgets.dart';
 import 'design/wordmark.dart';
+import 'design/studio_title_bar.dart';
 import 'screens/about_dialog.dart';
 import 'screens/copy_vision_dialog.dart';
 import 'screens/home_screen.dart';
@@ -41,7 +42,7 @@ Future<void> main() async {
   await windowManager.ensureInitialized();
   final alreadyRunning = !_acquireLock();
   await windowManager.waitUntilReadyToShow(
-      WindowOptions(size: alreadyRunning ? const Size(520, 300) : const Size(1320, 860), minimumSize: alreadyRunning ? const Size(520, 300) : const Size(960, 600), title: isTestBuild ? 'Sephira Studio Test' : 'FFR Vision Studio', backgroundColor: Guide.desk), () async {
+      WindowOptions(size: alreadyRunning ? const Size(520, 300) : const Size(1320, 860), minimumSize: alreadyRunning ? const Size(520, 300) : const Size(960, 600), title: isTestBuild ? 'Sephira Studio Test' : 'FFR Vision Studio', backgroundColor: Guide.desk, titleBarStyle: TitleBarStyle.hidden, windowButtonVisibility: false), () async {
     await windowManager.show();
     await windowManager.focus();
   });
@@ -75,6 +76,7 @@ class AlreadyRunningApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: Guide.theme(),
+        builder: (context, child) => StudioWindowFrame(child: child!),
         home: Scaffold(
           body: Center(
             child: Paper(
@@ -140,6 +142,7 @@ class _StudioAppState extends State<StudioApp> with WindowListener {
       navigatorKey: navKey,
       debugShowCheckedModeBanner: false,
       theme: Guide.theme(),
+      builder: (context, child) => StudioWindowFrame(child: child!),
       home: KeyedSubtree(key: ValueKey(app.dark), child: const Shell()),
     );
   }

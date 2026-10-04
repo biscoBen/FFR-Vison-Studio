@@ -11,10 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-Field-leader cycling remains pending. All eight native party projects have eight-direction walk/run clips; Dark Fina
-has four-direction idle poses. The native animation switch selects the current actor's own asset slots, so a party
-asset bank and guarded runtime input handler need a prototype. Party/input call signatures and live behavior are not
-verified. Right-stick click already zooms the minimap; the native LB/L1 action's behavior also needs confirmation.
+- Add opt-in **Cycle walking character (LB / L1)**, also available on F6, using the active party's native field
+  sprites and independent overworld selections. Preserve original actor identity and story asset indices; suspend
+  the cosmetic replacement around events, battle, menus and vehicles. Add private diagonal idle aliases for Dark
+  Fina's four-direction idle poses. Install/remove only Studio's owned Lua mod using the already working UE4SS
+  loader. No loader download, save writes or battle model changes. The uploaded native SDK verifies signatures;
+  controller behavior and scene transitions require an in-game trial after package verification.
+- Give Studio explicit light/dark title-bar controls so minimize, maximize/restore and close remain visible.
+  Preserve window dragging and the existing close-during-build confirmation. Included in the cycling build.
 
 ## Published independent party appearance reversion — 2026-10-03
 

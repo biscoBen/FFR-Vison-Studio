@@ -75,6 +75,11 @@ class NativeApi extends ConfigApi {
   @override
   Future<void> saveTestingPracticeBattle(bool value) async { practiceBattle = value; }
   @override
+  Future<bool> fieldLeader() async => fieldLeaderValue;
+  bool fieldLeaderValue = false;
+  @override
+  Future<void> saveFieldLeader(bool value) async { fieldLeaderValue = value; }
+  @override
   Future<Map<String, dynamic>> nativeVision(int id) async =>
       originalFixture(id: id, name: id == 13024 ? 'Tronn' : 'Cloud');
   @override
@@ -451,6 +456,26 @@ void main() {
     await wait(tester, () => !app.testingPracticeBattle);
     expect(api.practiceBattle, isFalse);
     expect(api.maxMr, isTrue);
+  });
+
+  testWidgets('controller cycling toggle persists with an empty roster and retains other settings', (tester) async {
+    api.roster.clear(); app.units.clear();
+    await show(tester);
+    final control = find.byKey(const Key('field-leader-cycle'));
+    await tester.ensureVisible(control);
+    await tester.tap(control);
+    await wait(tester, () => app.fieldLeader);
+    expect(api.fieldLeaderValue, isTrue);
+    expect(api.roster, isEmpty);
+    final buildButton = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
+    expect(tester.widget<GuideButton>(buildButton).onPressed, isNotNull);
+    await app.setTestingMaxMr(true);
+    await tester.tap(control);
+    await wait(tester, () => !app.fieldLeader);
+    expect(api.fieldLeaderValue, isFalse);
+    expect(api.maxMr, isTrue);
+    app.buildState = {'running': true};
+    await expectLater(app.setFieldLeader(true), throwsStateError);
   });
 
   testWidgets(

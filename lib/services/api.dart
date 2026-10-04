@@ -42,9 +42,11 @@ class Api {
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
+  Future<bool> fieldLeader() async => (await get('/api/testing'))['fieldLeader'] == true;
   Future<void> saveTestingMaxMr(bool value) => _saveTestingFlag('maxMr', value);
   Future<void> saveTestingPracticeBattle(bool value) => _saveTestingFlag('practiceBattle', value);
   Future<void> saveCrystalCave(bool value) => _saveTestingFlag('crystalCave', value);
+  Future<void> saveFieldLeader(bool value) => _saveTestingFlag('fieldLeader', value);
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
       (await put('/api/abilities/settings', {
         'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges,
@@ -55,6 +57,7 @@ class Api {
       'schema': 1, 'maxMr': current['maxMr'] == true,
       'practiceBattle': current['practiceBattle'] == true,
       'crystalCave': current['crystalCave'] == true, name: value,
+      if (name != 'fieldLeader') 'fieldLeader': current['fieldLeader'] == true,
     });
   }
   Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);

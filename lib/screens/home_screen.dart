@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave;
+    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.fieldLeader;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -95,6 +95,15 @@ class HomeScreen extends StatelessWidget {
                   value: app.crystalCave,
                   onChanged: app.building || app.api == null ? null : (value) async {
                     try { await app.setCrystalCave(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('field-leader-cycle'), contentPadding: EdgeInsets.zero,
+                  title: Text('Cycle walking character (LB / L1)', style: Guide.text()),
+                  subtitle: Text('Cycles the active party’s field appearances while freely walking. F6 also works. Battle models stay separate; story appearances return for events. Requires the UE4SS loader prepared by the field-reference helper. Rebuild/install after switching.', style: Guide.small()),
+                  value: app.fieldLeader,
+                  onChanged: app.building || app.api == null ? null : (value) async {
+                    try { await app.setFieldLeader(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

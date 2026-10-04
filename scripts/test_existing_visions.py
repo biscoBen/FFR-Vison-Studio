@@ -23,6 +23,7 @@ def module(name, path):
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
 sys.modules['_ffr_party'] = party
 sys.modules['_ffr_overworld'] = module('_ffr_overworld', ROOT / 'assets/existing_visions/payload/_ffr_overworld.py')
+sys.modules['_ffr_field_leader'] = module('_ffr_field_leader', ROOT / 'assets/existing_visions/payload/_ffr_field_leader.py')
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
 sys.modules['_ffr_crystal_cave'] = module('_ffr_crystal_cave', ROOT / 'assets/existing_visions/payload/_ffr_crystal_cave.py')
 sys.modules['_ffr_ability_modes'] = module('_ffr_ability_modes', ROOT / 'assets/existing_visions/payload/_ffr_ability_modes.py')
@@ -411,7 +412,9 @@ class NativeInstallerTests(unittest.TestCase):
         self.builder = self.root / installer.SOURCES[0]; self.builder.parent.mkdir(parents=True)
         self.builder.write_bytes(fina_installer.hook_builder((ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()))
         self.server = self.root / installer.SOURCES[1]; self.server.parent.mkdir(parents=True)
-        self.server.write_bytes(b'from fastapi import FastAPI\napp = FastAPI()\ndef keep(): return "upstream"\n')
+        self.server.write_bytes(b'from fastapi import FastAPI\napp = FastAPI()\ndef keep(): return "upstream"\n'
+            b'def install_files(log=print):\n    paks = game_paks()\n    st = _game_state(); bdir = "backup"\n    return {"files": 3}\n'
+            b'def restore_game(backup=None):\n    paks = game_paks()\n    game = _game_root(paks)\n    if backup:\n        return {"backup": backup}\n    return {"backup": None}\n')
         self.verifier = self.root / installer.SOURCES[2]
         self.verifier.write_bytes((ROOT / 'scripts/fixtures/existing_visions/verify_mod.py').read_bytes())
         (self.root / 'VERSION').write_text('1.0.0.15')

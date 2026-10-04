@@ -69,6 +69,8 @@ void main() {
         '_ffr_existingvisions.py',
         '_ffr_party.py',
         '_ffr_overworld.py',
+        '_ffr_field_leader.py',
+        'field_leader.lua',
         'vagrant_knight_rain_field.png',
         '_ffr_testing.py',
         '_ffr_crystal_cave.py',

@@ -57,6 +57,7 @@ class AppState extends ChangeNotifier {
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
   bool crystalCave = false;
+  bool fieldLeader = false;
   bool dark = false; // the night edition of the guide
   final Map<String, List<String>> _anims = {};
   int backups = 0;
@@ -302,6 +303,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
     try { crystalCave = await api!.crystalCave(); }
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
+    try { fieldLeader = await api!.fieldLeader(); }
+    catch (e) { notice = 'Could not load field leader settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
     catch (e) { notice = 'Could not load the original game visions: $e'; }
     try { partyCharacters = await api!.partyCharacters(); }
@@ -692,6 +695,13 @@ class AppState extends ChangeNotifier {
       crystalCave = value; notifyListeners();
     });
   }
+
+  Future<void> setFieldLeader(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveFieldLeader(value);
+    fieldLeader = value; notifyListeners();
+  });
 
   Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearBattle = false, bool clearOverworld = false}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
