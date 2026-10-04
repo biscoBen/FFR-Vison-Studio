@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "mapId": 1000,
+  "wholeSize": [
+    47400.0,
+    49800.0
+  ],
+  "worldOffset": [
+    0.0,
+    -400.0
+  ],
+  "projection": [
+    "worldY",
+    "-worldX"
+  ],
+  "tiles": [
+    {
+      "id": 1,
+      "center": [
+        20200.0,
+        -15100.0
+      ],
+      "size": [
+        7000.0,
+        9000.0
+      ],
+      "image": "Wld_1.png"
+    },
+    {
+      "id": 2,
+      "center": [
+        12700.0,
+        -12600.0
+      ],
+      "size": [
+        8000.0,
+        11000.0
+      ],
+      "image": "Wld_2.png"
+    },
+    {
+      "id": 3,
+      "center": [
+        15700.0,
+        -5800.0
+      ],
+      "size": [
+        11658.599609375,
+        8002.64453125
+      ],
+      "image": "Wld_3.png"
+    },
+    {
+      "id": 4,
+      "center": [
+        14073.0,
+        8272.0
+      ],
+      "size": [
+        16500.0,
+        18288.0
+      ],
+      "image": "Wld_4.png"
+    },
+    {
+      "id": 5,
+      "center": [
+        19000.0,
+        21000.0
+      ],
+      "size": [
+        7000.0,
+        7000.0
+      ],
+      "image": "Wld_5.png"
+    },
+    {
+      "id": 6,
+      "center": [
+        -760.0,
+        -17500.0
+      ],
+      "size": [
+        16500.0,
+        12000.0
+      ],
+      "image": "Wld_6.png"
+    },
+    {
+      "id": 7,
+      "center": [
+        2475.0,
+        -2981.908203125
+      ],
+      "size": [
+        16650.0,
+        15063.81640625
+      ],
+      "image": "Wld_7.png"
+    },
+    {
+      "id": 8,
+      "center": [
+        -13200.0,
+        -15800.0
+      ],
+      "size": [
+        21000.0,
+        19000.0
+      ],
+      "image": "Wld_8.png"
+    },
+    {
+      "id": 9,
+      "center": [
+        -10600.0,
+        1600.0
+      ],
+      "size": [
+        23100.0,
+        23100.0
+      ],
+      "image": "Wld_9.png"
+    }
+  ],
+  "files": {
+    "Wld_1.png": {
+      "sha256": "39bdbce1bbfffcaef2ed6a66becb8e5054b4307adfb1f9c51eeef259208c05bd",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_1"
+    },
+    "Wld_2.png": {
+      "sha256": "b348b8b33a7d9b25e94f0969dbf08d0dd1219e516406cb998211417ab9a882d7",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_2"
+    },
+    "Wld_3.png": {
+      "sha256": "beb6ab3202a2a673911174a551dfba2854b417bd1a81046d50fe06f380fd9bb9",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_3"
+    },
+    "Wld_4.png": {
+      "sha256": "4625de35c1fdc6ac027018fe0d490e15301cbbaea39e37fd238ceb56d05c6d8d",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_4"
+    },
+    "Wld_5.png": {
+      "sha256": "9a36e80061cf44b33af9c641e0ce24a2b5a46f9212b0856e0fca282f5c0c9291",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_5"
+    },
+    "Wld_6.png": {
+      "sha256": "9a4cb940fa6dc6f765d46e251968cc02c5fb295de5dad10b1db7ad0d7d1ec6d5",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_6"
+    },
+    "Wld_7.png": {
+      "sha256": "13a5ee8d9d5d1db6b280ff7f1a67573250c3ede03810aa16c9d73e4ddd6982dd",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_7"
+    },
+    "Wld_8.png": {
+      "sha256": "b24d7b508aa3e79e4db5c02c9c29417704a2140007a10355dd2e7f07e1fe4408",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_8"
+    },
+    "Wld_9.png": {
+      "sha256": "cb2c6d8c4637558cf8cf90b0d18ac25dfb2ebe110c326f375ea7f4f5283f9a2e",
+      "size": [
+        1024,
+        1024
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/Wld_9"
+    },
+    "T_Wld_ocean.png": {
+      "sha256": "3d7bfae12cebf6cdc2eba54bd7146dd409f57815865ae4623f1ca4f2596bed6d",
+      "size": [
+        1920,
+        1080
+      ],
+      "source": "/Game/UI/Textures/MapCapture/Wld/T_Wld_ocean"
+    }
+  }
+}

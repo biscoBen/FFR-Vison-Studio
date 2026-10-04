@@ -264,6 +264,12 @@ abilities, passives, or the vision's master reward. Rewards can be moved to anot
 can be edited directly. The engine supports five rewards per rank. Existing rewards and unlock-point requirements
 are preserved until edited; character config files include these rewards. Build/install afterward to apply them in-game.
 
+The **Acquisition** tab previews future placement. **Random** and **Hide for spoilers** start on.
+Turn off Hide to reveal the selected location and its map marker; choices remain disabled until Random is off.
+Changing Random in either direction picks another location. Initial choices are Mitra shop, Earth Shrine and the
+crystal cave. Zoom and drag the native world-map menu images, or use **Full map**. Selections persist in character
+configs and the roster. This is a UI preview; it does not change how the installed mod grants visions yet.
+
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
 settings, and advanced fields. Studio suggests its persistent `Character Configs` folder, or you can choose another folder.

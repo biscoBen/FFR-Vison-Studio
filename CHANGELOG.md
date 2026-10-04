@@ -11,7 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- None.
+- Add an **Acquisition** tab with Random and Hide for spoilers enabled by default. Save each vision's
+  preview selection in its character configuration; either Random transition chooses a different site.
+  Reveal the selected, disabled option while Random is on, or choose manually with it off. Hide both
+  choices and marker for spoilers. Start with Mitra shop, Earth Shrine and the crystal cave.
+- Use the game's own world-map menu captures and native coordinates, with zoom, mouse dragging and
+  a full-map view. Bundle the images for offline use. These preferences only plan future acquisition;
+  installing still uses the existing shop/cave behavior. No game acquisition logic changes in this update.
 
 ## Published complete directional FFBE field selector — 2026-10-03
 

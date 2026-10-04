@@ -10,6 +10,7 @@ import 'steps/bonuses_step.dart';
 import 'steps/resonance_step.dart';
 import 'steps/stats_step.dart';
 import 'steps/mr_step.dart';
+import 'steps/acquisition_step.dart';
 import 'steps/native_resonance_step.dart';
 import 'native_vision_dialog.dart';
 import 'unit_anim_pane.dart';
@@ -87,7 +88,8 @@ class _UnitScreenState extends State<UnitScreen> {
           Container(
             color: Guide.paper2,
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-            child: PageTabs(tabs: const ['Abilities', 'Bonuses', 'Stats', 'Resonance', 'MR'], index: step, onSelect: (i) => setState(() => step = i)),
+            child: SingleChildScrollView(scrollDirection: Axis.horizontal,
+              child: PageTabs(tabs: const ['Abilities', 'Bonuses', 'Stats', 'Resonance', 'MR', 'Acquisition'], index: step, onSelect: (i) => setState(() => step = i))),
           ),
           Container(height: 2, color: Guide.ink),
           Expanded(
@@ -99,6 +101,7 @@ class _UnitScreenState extends State<UnitScreen> {
                 1 => BonusesStep(key: const ValueKey('b'), unit: u, set: set),
                 2 => StatsStep(key: const ValueKey('s'), unit: u, set: set),
                 4 => MrStep(key: const ValueKey('mr'), unit: u, set: set),
+                5 => AcquisitionStep(key: ValueKey('acquisition-${u['key']}'), unit: u, set: set),
                 3 when u['native'] != null => NativeResonanceStep(key: const ValueKey('native-r'), unit: u, set: set),
                 _ => ResonanceStep(key: const ValueKey('r'), unit: u, set: set),
               },

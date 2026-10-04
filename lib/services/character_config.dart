@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'acquisition.dart';
 import 'overworld_appearance.dart';
 
 /// A portable snapshot of the complete engine spec, including advanced fields.
@@ -254,6 +255,9 @@ class CharacterConfig {
     Never invalid() => throw const FormatException(
       'This character config is incomplete or invalid. Your roster has not been changed.',
     );
+    if (unit.containsKey(Acquisition.field) && !Acquisition.valid(unit[Acquisition.field])) {
+      throw const FormatException('This character config has invalid acquisition preferences.');
+    }
     if (unit['party'] != null) {
       const names = ['Rain', 'Lasswell', 'Fina', 'Lid', 'Nichol', 'Dark Fina', 'Jake', 'Sakura'];
       const jp = ['レイン', 'ラスウェル', 'フィーナ', 'リド', 'ニコル', '魔人フィーナ', 'ジェイク', 'サクラ'];
