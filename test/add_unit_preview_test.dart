@@ -99,12 +99,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('overworld picker only offers bundled Vagrant Rain and applies without downloading battle sprites', (tester) async {
+  testWidgets('overworld picker labels genuine models, uses normal images and applies without downloads', (tester) async {
     await picker(tester, dialog: const AddUnitDialog(replaceOverworldId: 1001));
     expect(find.text('Vagrant Knight Rain'), findsOneWidget);
     expect(find.text('Preview Unit'), findsNothing);
     expect(find.text('Other Unit'), findsNothing);
     expect(find.text('Crystal Fina'), findsNothing);
+    expect(find.text('4-way'), findsWidgets);
+    expect(find.text('8-way'), findsWidgets);
+    expect(find.byIcon(Icons.directions_walk), findsNothing);
+    expect(OverworldAppearance.entries.length, 9);
     await tester.tap(find.text('Vagrant Knight Rain'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -125,6 +129,38 @@ void main() {
     await tester.pump();
     expect(app.fieldPartyId, 1001);
     expect(app.fieldChoice, OverworldAppearance.profile);
+    expect(api.requested, isEmpty);
+    expect(app.legacyDownloads, isEmpty);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('four-way field choice previews its own cardinal frames and persists the selected model', (tester) async {
+    await picker(tester, dialog: const AddUnitDialog(replaceOverworldId: 1002));
+    await tester.tap(find.text('Lasswell'));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await OverworldAppearance.assetBytes('lasswell', 'icon');
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    });
+    await tester.pump(const Duration(milliseconds: 100));
+    final dropdown = tester.widget<DropdownButton<int>>(find.byType(DropdownButton<int>));
+    expect(dropdown.items!.map((item) => item.value), [2, 8, 4, 6]);
+    expect(find.byType(Image), findsWidgets);
+    expect(tester.widgetList<Image>(find.byType(Image)).every((image) => image.image is MemoryImage), isTrue);
+    await tester.tap(find.byType(DropdownButton<String>));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Run').last);
+    await tester.pump(const Duration(milliseconds: 300));
+    final paint = find.descendant(of: find.byType(OverworldAnimPane), matching: find.byType(CustomPaint));
+    final dynamic painter = tester.widget<CustomPaint>(paint).painter;
+    expect(painter.row, 8);
+    expect(painter.frame, inInclusiveRange(1, 6));
+    await tester.tap(find.text('USE THIS MODEL'));
+    await tester.pump();
+    expect(app.fieldPartyId, 1002);
+    expect(app.fieldChoice, {'version': 1, 'model': 'lasswell'});
     expect(api.requested, isEmpty);
     expect(app.legacyDownloads, isEmpty);
     await tester.pumpWidget(const SizedBox());

@@ -303,12 +303,23 @@ config save/load. **Revert to original** offers **Revert battle only**, **Revert
 Reverting one appearance keeps the other; build/install to apply it. Single/bulk character configs include
 these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
 redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
-Use **Edit overworld appearance** for an independent walking model, currently limited to the bundled Vagrant Knight
-Rain sheet. The same picker previews its eight directions; no sprite download is required. **Revert overworld
+Use **Edit overworld appearance** for an independent walking model. The picker includes every reviewed FFBE town
+sheet with genuine directional running art: **Rain, Vagrant Knight Rain and Pyro Glacial Lasswell** are 8-way;
+**Lasswell, Fina, Nichol, Lid and Jake** are 4-way. One additional 8-way sheet is listed as **Unidentified cloaked
+character**, with its own standing image rather than an invented unit identity. Normal unit images and a **4-way/8-way**
+label appear in the list. Preview **Idle**, **Walk** and **Run** in each available direction; standing frames are removed
+from movement loops. Four-way models use their own front/back poses for diagonal movement. Separate missing walk
+rows use that model's run art at walking speed. The assets are bundled; no sprite download is required.
+Sakura's field running rows contain only shadows, and side-view battle movement does not qualify as 4-way art.
+**Revert overworld
 appearance** restores walking without removing your battle choice. Single/bulk configs preserve both selections.
 Only the primary field animation and textures are redirected; special scene assets retain their paths. Scenes using
 the ordinary walking model also show the replacement. Original skill effects
 remain in use; special cinematics and replacement motions need an in-game check.
+After selecting a model, rebuild/install the mod and restart Resonance. The catalog is pinned to the FFBE dump
+snapshot recorded in `assets/existing_visions/payload/overworld_catalog.json`. `scripts/build_overworld_catalog.py`
+audits complete source trees and sprite pixels, verifies Git blob hashes, removes rest/shadow frames and generates
+the shared Dart/Python catalog and deterministic asset archive; new or changed sheets require review.
 
 **Cycle walking character (LB / L1)** cycles the current active party's field appearances; F6 is an alternative.
 Enable it and rebuild/install, using the UE4SS loader already prepared by the field-reference helper. Studio installs

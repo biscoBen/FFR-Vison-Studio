@@ -6,22 +6,43 @@ source it owns. Neither operation writes the roster or the game files.
 import argparse
 import ast
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import sys
 import tempfile
+import zipfile
 
 VERSION = '1.2.1'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_party.py', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def validate_field_archive(raw, catalog):
+    if catalog.get('schema') != 1 or catalog.get('archive_sha256') != sha(raw):
+        raise RuntimeError('Directional field archive checksum mismatch.')
+    expected = {entry[kind]: entry[kind + '_sha256'] for entry in catalog['models'].values()
+                for kind in ('sheet', 'icon')}
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            if set(archive.namelist()) != set(expected) or len(archive.namelist()) != len(expected):
+                raise RuntimeError('Directional field archive contents differ from the catalog.')
+            for name, digest in expected.items():
+                if '/' in name or '\\' in name or not name.endswith('.png'):
+                    raise RuntimeError('Unsupported directional field archive member.')
+                data = archive.read(name)
+                if sha(data) != digest or not data.startswith(b'\x89PNG\r\n\x1a\n'):
+                    raise RuntimeError('Directional field sprite checksum mismatch: ' + name)
+    except zipfile.BadZipFile as error:
+        raise RuntimeError('Invalid directional field archive.') from error
 
 
 def checked(root, relative):
@@ -261,6 +282,8 @@ def run(root, action):
         elif name.endswith('.png'):
             if not raw.startswith(b'\x89PNG\r\n\x1a\n'):
                 raise RuntimeError('Existing vision field sheet is not a PNG.')
+        elif name == 'overworld_assets.zip':
+            validate_field_archive(raw, json.loads(resource_data['overworld_catalog.json']))
         else: raise RuntimeError('Unsupported existing vision resource: ' + name)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}
     changes = {helper: module, **{resources[name]: raw for name, raw in resource_data.items()}}; records = {}

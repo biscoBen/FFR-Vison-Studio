@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- None.
+- Expand overworld appearances to all nine reviewed directional FFBE running sheets: five 4-way and four 8-way,
+  with normal unit images and direction labels. Preview idle/walk/run; exclude inserted standing frames and
+  shadow-only rows. Keep four-way models visible diagonally using their own cardinal poses. Bundle checksum-verified
+  assets for offline use and preserve saved Vagrant Rain choices, independent battle appearances and cycling.
+  One cloaked sheet is explicitly unidentified; Sakura lacks a usable run. Native game/controller behavior needs retesting.
 
 ## Published cycled party diagonal visibility repair — 2026-10-03
 

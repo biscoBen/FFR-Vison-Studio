@@ -8,13 +8,15 @@
     "_ffr_existingvisions.py": "331e0bbe4d6368072b03188cff6d81bdef9a945b6f7953bc595cbdff1c348979",
     "_ffr_field_leader.py": "a2b0b8a808b4b4f85030d70689d8cbfaea04469b133c2f10c7eb6fa6f9898fc0",
     "_ffr_library.py": "d5991b67f4968470d6dad2481e00290e92e3611ed986c90713c98eb4b4f3f0f4",
-    "_ffr_overworld.py": "3a2bfbe883a93e5aa078465169fa681c3d9d710e9f5977e8fe0be6d84512d15a",
+    "_ffr_overworld.py": "9e23102f83b2479bb462833045540cce5467ea3a57d82e4b2414be8152166b31",
     "_ffr_party.py": "7352a4c60fc2daa55fae0684753303b20b0b0aa8553582aa3ab3b414f02ad77d",
     "_ffr_testing.py": "637d788e895188b175d262638c15306e1f837ff8995cde06f79f1123deecf8d0",
     "ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
     "field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
+    "overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
+    "overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
   }
 }

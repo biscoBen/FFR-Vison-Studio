@@ -72,6 +72,8 @@ void main() {
         '_ffr_field_leader.py',
         'field_leader.lua',
         'vagrant_knight_rain_field.png',
+        'overworld_catalog.json',
+        'overworld_assets.zip',
         '_ffr_testing.py',
         '_ffr_crystal_cave.py',
         '_ffr_ability_modes.py',
@@ -89,7 +91,7 @@ void main() {
       }
       final fieldCheck = File(p.join(paths.engineDir, 'check_overworld_startup.py'));
       fieldCheck.writeAsStringSync('''
-import sys
+import sys, io
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / 'tools'))
 import _ffr_party, _ffr_overworld
@@ -99,6 +101,15 @@ _ffr_party.validate({'key':'party_1001', 'id':1001, 'jp':'レイン', 'en':'Rain
 assert 'idle9' in [a['name'] for a in _ffr_overworld.spec('pc0010')['animations']]
 with Image.open(Path(_ffr_overworld.__file__).with_name(_ffr_overworld.SHEET)) as image:
     assert image.size == (448,1536)
+assert len(_ffr_overworld.catalog()['models']) == 9
+for model, entry in _ffr_overworld.catalog()['models'].items():
+    choice = {'version':1, 'model':model}
+    _ffr_overworld.validate(choice)
+    assert len(_ffr_overworld.spec('pc0010', choice)['animations']) == 52
+    with Image.open(io.BytesIO(_ffr_overworld.asset_bytes(entry, 'sheet'))) as image:
+        assert list(image.size) == entry['size']
+    with Image.open(io.BytesIO(_ffr_overworld.asset_bytes(entry, 'icon'))) as image:
+        assert image.width > 0
 print('Overworld module and field sheet ready')
 ''');
       final fieldResult = await Process.run(paths.engineExe, ['--run', fieldCheck.path], workingDirectory: paths.engineDir);

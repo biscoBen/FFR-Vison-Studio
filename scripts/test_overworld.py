@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from types import SimpleNamespace
 from unittest import mock
+import io
 
 from test_existing_visions import ROOT, party
 from test_party_characters import unit, battle_rows
@@ -30,6 +31,66 @@ def map_rows():
 
 
 class OverworldTests(unittest.TestCase):
+    def test_every_catalog_loop_has_character_pixels_and_no_inserted_standing_pose(self):
+        from PIL import Image
+        from build_overworld_catalog import audit, cell, has_character
+        models = field.catalog()['models']
+        self.assertEqual(len(models), 9)
+        self.assertEqual(sum(x['directions'] == 8 for x in models.values()), 4)
+        for key, entry in models.items():
+            with self.subTest(model=key):
+                choice = {'version': 1, 'model': key}; field.validate(choice)
+                image = Image.open(io.BytesIO(field.asset_bytes(entry, 'sheet'))).convert('RGBA')
+                self.assertEqual(list(image.size), entry['size'])
+                self.assertIsNotNone(Image.open(io.BytesIO(field.asset_bytes(entry, 'icon'))).getbbox())
+                audited, _ = audit(image)
+                self.assertEqual(audited['directions'], entry['directions'])
+                self.assertEqual(audited['motions'], entry['motions'])
+                animations = {a['name']: a for a in field.spec('pc0020', choice)['animations']}
+                self.assertEqual(len(animations), 52)
+                for direction, _ in field.DIRECTIONS:
+                    for motion in ('idle', 'move', 'dash'):
+                        frames = entry['motions'][f'{motion}{direction}']
+                        self.assertTrue(all(has_character(cell(image, r, c)) for r, c in frames))
+                        self.assertEqual(animations[f'fieldidle{direction}']['parts'], animations[f'idle{direction}']['parts'])
+                        if motion == 'idle': continue
+                        self.assertTrue(all(c > 0 for _, c in frames))
+                        self.assertGreaterEqual(len({cell(image, r, c).tobytes() for r, c in frames}), 2)
+                        for row, col in frames:
+                            idle_row = row % 8
+                            rests = {cell(image, idle_row, c).tobytes() for c in range(7)
+                                     if has_character(cell(image, idle_row, c))}
+                            self.assertNotIn(cell(image, row, col).tobytes(), rests)
+                if entry['directions'] == 4:
+                    self.assertEqual(entry['motions']['dash1'], entry['motions']['dash2'])
+                    self.assertEqual(entry['motions']['dash7'], entry['motions']['dash8'])
+
+    def test_shadow_slots_and_mid_loop_standing_frames_are_not_treated_as_movement(self):
+        from PIL import Image, ImageDraw
+        from build_overworld_catalog import audit, has_character
+        shadow = Image.new('RGBA', (64, 64)); ImageDraw.Draw(shadow).ellipse((14, 50, 50, 57), fill=(20, 20, 20, 190))
+        self.assertIsNotNone(shadow.getbbox()); self.assertFalse(has_character(shadow))
+        sheet = Image.new('RGBA', (448, 1536))
+        for row in range(24):
+            for col in range(7): sheet.paste(shadow, (col * 64, row * 64))
+        for row in range(4):
+            idle = Image.new('RGBA', (64, 64)); ImageDraw.Draw(idle).rectangle((22, 12, 40, 54), fill='red')
+            for offset in (0, 8, 16): sheet.paste(idle, (0, (row + offset) * 64))
+            for offset in (8, 16):
+                for col in range(1, 7):
+                    pose = idle.copy(); ImageDraw.Draw(pose).rectangle((col + 5, 30, col + 12, 40), fill='yellow')
+                    sheet.paste(pose, (col * 64, (row + offset) * 64))
+                sheet.paste(idle, (3 * 64, (row + offset) * 64))
+        value, removed = audit(sheet)
+        self.assertEqual(value['directions'], 4)
+        self.assertEqual(removed['move2'], [0, 3])
+        self.assertEqual(value['motions']['move2'], [[16, c] for c in (1, 2, 4, 5, 6)])
+
+    def test_corrupt_field_archive_is_rejected_before_generation(self):
+        entry = field.model()
+        with mock.patch.object(field.Path, 'read_bytes', return_value=b'corrupt archive'):
+            with self.assertRaisesRegex(ValueError, 'checksum'): field.asset_bytes(entry, 'sheet')
+
     def test_install_verifiers_share_cave_and_field_expectations_and_reject_corruption(self):
         from test_crystal_cave import cave_game, enabled, testing, cave
         for cave_on, field_on in ((True, True), (False, True), (True, False)):

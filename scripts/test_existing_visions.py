@@ -407,6 +407,18 @@ class NativeVisionTests(unittest.TestCase):
 
 
 class NativeInstallerTests(unittest.TestCase):
+    def test_field_archive_checks_catalog_hash_and_each_member_before_installing(self):
+        payload = ROOT / 'assets/existing_visions/payload'
+        raw = (payload / 'overworld_assets.zip').read_bytes()
+        catalog = json.loads((payload / 'overworld_catalog.json').read_bytes())
+        installer.validate_field_archive(raw, catalog)
+        with self.assertRaisesRegex(RuntimeError, 'archive checksum'):
+            installer.validate_field_archive(raw + b'corrupt', catalog)
+        wrong = copy.deepcopy(catalog)
+        wrong['models']['rain']['sheet_sha256'] = '0' * 64
+        with self.assertRaisesRegex(RuntimeError, 'sprite checksum'):
+            installer.validate_field_archive(raw, wrong)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.root = Path(self.temp.name)
         self.builder = self.root / installer.SOURCES[0]; self.builder.parent.mkdir(parents=True)

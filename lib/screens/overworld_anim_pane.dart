@@ -1,14 +1,14 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../design/theme.dart';
 import '../services/overworld_appearance.dart';
 
 /// Preview the actual directional walking sheet used by the field importer.
 class OverworldAnimPane extends StatefulWidget {
-  const OverworldAnimPane({super.key});
+  const OverworldAnimPane({super.key, this.model = OverworldAppearance.model});
+  final String model;
   @override
   State<OverworldAnimPane> createState() => _OverworldAnimPaneState();
 }
@@ -18,17 +18,23 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
   late final AnimationController clock;
   ui.Image? image;
   String? error;
-  int direction = 0;
+  int direction = 2;
+  String motion = 'move';
+  int _loadSequence = 0;
   static const directions = [
-    'South',
-    'North',
-    'West',
-    'East',
-    'Southwest',
-    'Southeast',
-    'Northwest',
-    'Northeast',
+    (2, 'South'),
+    (8, 'North'),
+    (4, 'West'),
+    (6, 'East'),
+    (1, 'Southwest'),
+    (3, 'Southeast'),
+    (7, 'Northwest'),
+    (9, 'Northeast'),
   ];
+  List<(int, String)> get available =>
+      OverworldAppearance.data(widget.model)['directions'] == 8
+      ? directions
+      : directions.take(4).toList();
   @override
   void initState() {
     super.initState();
@@ -37,23 +43,50 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
       duration: const Duration(milliseconds: 800),
     )..repeat();
     _load();
+    _timing();
+  }
+
+  void _timing() {
+    final frames = OverworldAppearance.frames(widget.model, motion, direction);
+    final delay = motion == 'dash'
+        ? 5
+        : motion == 'move'
+        ? 8
+        : 1;
+    clock.duration = Duration(
+      microseconds: (frames.length * delay * 1000000 / 60).round(),
+    );
+    clock.repeat();
+  }
+
+  @override
+  void didUpdateWidget(OverworldAnimPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.model != widget.model) {
+      direction = 2;
+      motion = 'move';
+      error = null;
+      image?.dispose();
+      image = null;
+      _timing();
+      _load();
+    }
   }
 
   Future<void> _load() async {
+    final seq = ++_loadSequence;
     try {
-      final bytes = await rootBundle.load(OverworldAppearance.sheet);
-      final codec = await ui.instantiateImageCodec(
-        bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes),
-      );
+      final bytes = await OverworldAppearance.assetBytes(widget.model, 'sheet');
+      final codec = await ui.instantiateImageCodec(bytes);
       final frame = await codec.getNextFrame();
       codec.dispose();
-      if (!mounted) {
+      if (!mounted || seq != _loadSequence) {
         frame.image.dispose();
         return;
       }
       setState(() => image = frame.image);
     } catch (e) {
-      if (mounted) {
+      if (mounted && seq == _loadSequence) {
         setState(() => error = 'Could not load the walking preview.');
       }
     }
@@ -85,30 +118,64 @@ class _OverworldAnimPaneState extends State<OverworldAnimPane>
                 )
               : AnimatedBuilder(
                   animation: clock,
-                  builder: (_, _) => CustomPaint(
-                    size: const Size(160, 160),
-                    painter: _FieldPainter(
-                      image!,
-                      direction + 16,
-                      1 + (clock.value * 6).floor().clamp(0, 5),
-                    ),
-                  ),
+                  builder: (_, _) {
+                    final frames = OverworldAppearance.frames(
+                      widget.model,
+                      motion,
+                      direction,
+                    );
+                    final frame =
+                        frames[(clock.value * frames.length).floor().clamp(
+                          0,
+                          frames.length - 1,
+                        )];
+                    return CustomPaint(
+                      size: const Size(160, 160),
+                      painter: _FieldPainter(image!, frame[0], frame[1]),
+                    );
+                  },
                 ),
         ),
-        DropdownButton<int>(
-          value: direction,
-          items: [
-            for (var i = 0; i < directions.length; i++)
-              DropdownMenuItem(
-                value: i,
-                child: Text(directions[i], style: Guide.small()),
-              ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            DropdownButton<int>(
+              value: direction,
+              items: [
+                for (final item in available)
+                  DropdownMenuItem(
+                    value: item.$1,
+                    child: Text(item.$2, style: Guide.small()),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => direction = value);
+                  _timing();
+                }
+              },
+            ),
+            DropdownButton<String>(
+              value: motion,
+              items: [
+                for (final item in [
+                  ('idle', 'Idle'),
+                  ('move', 'Walk'),
+                  ('dash', 'Run'),
+                ])
+                  DropdownMenuItem(
+                    value: item.$1,
+                    child: Text(item.$2, style: Guide.small()),
+                  ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => motion = value);
+                  _timing();
+                }
+              },
+            ),
           ],
-          onChanged: (value) {
-            if (value != null) {
-              setState(() => direction = value);
-            }
-          },
         ),
       ],
     ),

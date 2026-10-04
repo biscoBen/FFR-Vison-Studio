@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:typed_data';
 
 import '../design/anim_viewer.dart';
 import '../design/theme.dart';
@@ -40,7 +41,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.overworld) { list = [Map<String, dynamic>.from(OverworldAppearance.entry)]; return; }
+    if (widget.overworld) { list = OverworldAppearance.entries; return; }
     final app = context.read<AppState>();
     final hosted = (app.hostIndex?['units'] as List?)?.cast<Map<String, dynamic>>();
     if (hosted != null) {
@@ -60,7 +61,8 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     final app = context.read<AppState>();
     try {
       if (widget.overworld) {
-        setState(() { detail = Map<String, dynamic>.from(OverworldAppearance.detail); form = '100015006'; name.text = 'Vagrant Knight Rain'; });
+        final d = OverworldAppearance.detailFor(u['id'] as String);
+        setState(() { detail = d; form = d['maxForm'] as String; name.text = d['name'] as String; });
         return;
       }
       if (u['bundledPreset'] == CrystalFina.presetId) {
@@ -124,7 +126,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final s = q.trim().toLowerCase();
-    final shown = s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s)).toList();
+    final shown = s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s) || (u['ffbeId'] ?? '').toString().startsWith(s)).toList();
     final inMod = app.units.map((u) => (u as Map)['ffbe']?['base']?.toString()).toSet();
     final packs = sel == null ? <String>{} : ((sel!['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
     final hasPack = packs.contains(form);
@@ -162,12 +164,12 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                                   child: Row(children: [
-                                    Frame(padding: 1, width: 1, child: SizedBox(width: 44, height: 30, child: widget.overworld ? Icon(Icons.directions_walk, color: Guide.ink) : u['iconForm'] != null ? _icon(app, u['iconForm'].toString()) : const SizedBox.shrink())),
+                                    Frame(padding: 1, width: 1, child: SizedBox(width: 44, height: 30, child: widget.overworld ? _fieldIcon(u['id'] as String) : u['iconForm'] != null ? _icon(app, u['iconForm'].toString()) : const SizedBox.shrink())),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                         Text((u['name'] ?? u['jpname'] ?? u['id']).toString(), style: Guide.strong(has ? Guide.ink : Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                        Text('${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        Text(widget.overworld ? '${u['directions']}-way' : '${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
                                       ]),
                                     ),
                                     if (here) _chip('in mod', Guide.blue) else if (!has) _chip('no sprites yet', Guide.inkFaint),
@@ -212,7 +214,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                   if (widget.replacing) {
                     Map<String, dynamic> appearance;
                     if (widget.overworld) {
-                      await app.editPartyCharacter(widget.replaceOverworldId!, overworld: OverworldAppearance.profile);
+                      await app.editPartyCharacter(widget.replaceOverworldId!, overworld: OverworldAppearance.profileFor(sel!['id'] as String));
                       if (context.mounted) Navigator.of(context).pop();
                       return;
                     }
@@ -257,6 +259,13 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         child: Text(t.toUpperCase(), style: Guide.label(c).copyWith(fontSize: 11)),
       );
 
+  Widget _fieldIcon(String model) => FutureBuilder<Uint8List>(
+    key: ValueKey('field-icon-$model'), future: OverworldAppearance.assetBytes(model, 'icon'),
+    builder: (_, snapshot) => snapshot.hasData
+        ? Image.memory(snapshot.data!, fit: BoxFit.contain, filterQuality: FilterQuality.none, gaplessPlayback: true)
+        : const SizedBox.shrink(),
+  );
+
   Widget _detail(AppState app, bool hasPack, Set<String> packs) {
     final d = detail!;
     final forms = ((d['forms'] as Map?) ?? {}).map((k, v) => MapEntry(k.toString(), v as Map));
@@ -271,7 +280,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Row(children: [
-        Frame(padding: 2, child: SizedBox(width: 56, height: 38, child: widget.overworld ? Icon(Icons.directions_walk, color: Guide.ink) : _icon(app, form))),
+        Frame(padding: 2, child: SizedBox(width: 56, height: 38, child: widget.overworld ? _fieldIcon(sel!['id'] as String) : _icon(app, form))),
         const SizedBox(width: 10),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text((d['name'] ?? '').toString().toUpperCase(), style: Guide.h2(), maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -289,7 +298,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         Expanded(flex: 2, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('LOOK', style: Guide.label()),
           const SizedBox(height: 4),
-          DropdownButtonFormField<String>(
+          if (widget.overworld) Text('${sel!['directions']}-way', style: Guide.text()) else DropdownButtonFormField<String>(
             key: ValueKey('form$form'), initialValue: forms.containsKey(form) ? form : null, isExpanded: true,
             items: [for (final e in forms.entries) DropdownMenuItem(value: e.key, child: Text('${rarityLabel(e.value['rarity'])}${shiftLabel(e.value['shift'])}${packs.contains(e.key) ? '' : ' (no sprites)'}', style: Guide.text(), overflow: TextOverflow.ellipsis))],
             onChanged: (v) { if (v != null) setForm(v); },
@@ -297,7 +306,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ])),
       ]),
       const SizedBox(height: 10),
-      if (widget.overworld) const OverworldAnimPane() else AnimViewer(
+      if (widget.overworld) OverworldAnimPane(key: ValueKey('field-viewer-${sel!['id']}'), model: sel!['id'] as String) else AnimViewer(
         key: ValueKey('viewer$form'),
         anims: hasPack ? ordered : const [],
         url: (a) => app.api!.animUrl(form, a),

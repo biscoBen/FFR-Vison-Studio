@@ -3,6 +3,8 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from functools import lru_cache
+import zipfile
 
 MODEL = 'vagrant_knight_rain'
 SHEET = 'vagrant_knight_rain_field.png'
@@ -15,10 +17,37 @@ TABLE = 'Asset/Map/DT_MapUnitAsset'
 DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (7, 6), (9, 7))
 
 
+@lru_cache(maxsize=1)
+def catalog():
+    value = json.loads(Path(__file__).with_name('overworld_catalog.json').read_bytes())
+    if value.get('schema') != 1 or value.get('archive') != 'overworld_assets.zip':
+        raise ValueError('Unsupported directional field catalog.')
+    return value
+
+
 def validate(choice):
     if (not isinstance(choice, dict) or type(choice.get('version')) is not int
-            or choice != {'version': 1, 'model': MODEL}):
+            or set(choice) != {'version', 'model'} or choice['version'] != 1
+            or not isinstance(choice['model'], str) or choice['model'] not in catalog()['models']):
         raise ValueError('This overworld model has no supported directional sprite sheet.')
+
+
+def model(choice=None):
+    choice = {'version': 1, 'model': MODEL} if choice is None else choice
+    validate(choice)
+    return catalog()['models'][choice['model']]
+
+
+def asset_bytes(entry, kind):
+    archive = Path(__file__).with_name(catalog()['archive'])
+    data = archive.read_bytes()
+    if hashlib.sha256(data).hexdigest() != catalog()['archive_sha256']:
+        raise ValueError('The bundled field archive failed checksum validation.')
+    with zipfile.ZipFile(archive) as zipped:
+        data = zipped.read(entry[kind])
+    if hashlib.sha256(data).hexdigest() != entry[kind + '_sha256']:
+        raise ValueError('The bundled field asset failed checksum validation: ' + entry[kind])
+    return data
 
 
 def package(u):
@@ -57,19 +86,19 @@ def check_rows(original, built, units):
         raise ValueError('Party field assets differ from the selected model or an unrelated field changed.')
 
 
-def spec(name):
+def spec(name, choice=None):
+    entry = model(choice)
+    width, height = entry['size']
     cells = [{'name': f'field_{row}_{col}', 'pos': [col*64, row*64],
               'size': [64, 64], 'pivot': [0.0, -0.3125]}
-             for row in range(24) for col in range(7)]
+             for row in range(height // 64) for col in range(width // 64)]
     animations = []
-    for direction, row in DIRECTIONS:
-        for motion, offset, delay in (('idle', 0, 1), ('move', 16, 8), ('dash', 8, 5)):
-            # Column zero is the standing pose, including in the movement rows.
-            # The six moving poses loop without inserting a stop on every lap.
-            columns = (0,) if motion == 'idle' else range(1, 7)
-            count = len(columns)
+    for direction, _ in DIRECTIONS:
+        for motion, delay in (('idle', 1), ('move', 8), ('dash', 5)):
+            frames = entry['motions'][f'{motion}{direction}']
+            count = len(frames)
             parts = {'root': {'Hide': [[0, 0.0]]},
-                     'part_0': {'Cell': [[i*delay, f'field_{row+offset}_{col}'] for i, col in enumerate(columns)],
+                     'part_0': {'Cell': [[i*delay, f'field_{row}_{col}'] for i, (row, col) in enumerate(frames)],
                                 'Posx': [[0, 0.0]], 'Posy': [[0, 0.0]], 'Posz': [[0, 1.0]],
                                 'Sclx': [[0, 1.0]], 'Scly': [[0, 1.0]], 'Hide': [[0, 0.0]]},
                      'NULL_Head': {'Posx': [[0, 0.0]], 'Posy': [[0, 46.0]]},
@@ -85,18 +114,18 @@ def spec(name):
         animation['name'] = alias; animations.append(animation)
     setup = copy.deepcopy(animations[0]); setup.update(name='Setup', isSetup=True)
     animations.append(setup)
-    return {'pixelSize': [448, 1536], 'cellmapName': name, 'animePackName': name,
+    return {'pixelSize': [width, height], 'cellmapName': name, 'animePackName': name,
             'imagePath': name + '_tex.png', 'cells': cells, 'animations': animations}
 
 
 def generate(u, env):
     from PIL import Image
+    import io
     validate(u['overworld'])
-    sheet = Path(__file__).with_name(SHEET)
-    if hashlib.sha256(sheet.read_bytes()).hexdigest() != SHEET_SHA256:
-        raise ValueError('The bundled Vagrant Knight Rain field sheet failed checksum validation.')
-    image = Image.open(sheet).convert('RGBA')
-    if image.size != (448, 1536): raise ValueError('The bundled field sheet dimensions changed.')
+    entry = model(u['overworld'])
+    image = Image.open(io.BytesIO(asset_bytes(entry, 'sheet'))).convert('RGBA')
+    width, height = entry['size']
+    if image.size != (width, height): raise ValueError('The bundled field sheet dimensions changed.')
     root = Path(env['ROOT']); out = Path(env['OUT']); legacy = Path(env['LEGACY'])
     templates = legacy / 'FFRS/Content/Chara/summon/summon13110'
     if any(not (templates / f'summon13110{s}{e}').is_file()
@@ -104,13 +133,13 @@ def generate(u, env):
         env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'Chara/summon/summon13110/'))
     work = root / 'build/overworld' / u['key']; work.mkdir(parents=True, exist_ok=True)
     target = package(u); name = target.rsplit('/', 1)[1]
-    path = work / 'spec.json'; path.write_text(json.dumps(spec(name)))
+    path = work / 'spec.json'; path.write_text(json.dumps(spec(name, u['overworld'])))
     pixels = image.tobytes(); bgra = bytearray(len(pixels))
     bgra[0::4] = pixels[2::4]; bgra[1::4] = pixels[1::4]
     bgra[2::4] = pixels[0::4]; bgra[3::4] = pixels[3::4]
     (work / 'tex.bgra').write_bytes(bgra)
-    (work / 'normal.bc5').write_bytes(bytes([128,128,0,0,0,0,0,0]*2) * (448//4) * (1536//4))
-    (work / 'mreo.bgra').write_bytes(bytes([0,120,60,0]) * 448 * 1536)
+    (work / 'normal.bc5').write_bytes(bytes([128,128,0,0,0,0,0,0]*2) * (width//4) * (height//4))
+    (work / 'mreo.bgra').write_bytes(bytes([0,120,60,0]) * width * height)
     destination = out / 'FFRS/Content' / target.removeprefix('/Game/').rsplit('/', 1)[0]
     destination.mkdir(parents=True, exist_ok=True)
     old = '/Game/Chara/summon/summon13110/summon13110'
@@ -119,7 +148,7 @@ def generate(u, env):
                 str(destination / (name + '.uasset')), old, target, f'summon13110={name}', '--usmap', usmap])
     for suffix, payload in (('_tex', 'tex.bgra'), ('_normal', 'normal.bc5'), ('_mreo', 'mreo.bgra')):
         run(tool + ['make-texture', str(templates / ('summon13110' + suffix + '.uasset')),
-                    str(work / payload), '448', '1536', str(destination / (name + suffix + '.uasset')),
+                    str(work / payload), str(width), str(height), str(destination / (name + suffix + '.uasset')),
                     old + suffix, target + suffix, f'summon13110={name}', '--usmap', usmap])
 
 

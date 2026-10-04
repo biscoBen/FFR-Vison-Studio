@@ -10,6 +10,7 @@ import 'party_portrait.dart';
 import 'remove_unit_dialog.dart';
 import 'unit_anim_pane.dart';
 import 'overworld_anim_pane.dart';
+import '../services/overworld_appearance.dart';
 
 class PartyCharacterScreen extends StatelessWidget {
   const PartyCharacterScreen({super.key, required this.unit});
@@ -73,9 +74,9 @@ class PartyCharacterScreen extends StatelessWidget {
                 Text('Overworld appearance', style: Guide.h2()),
                 const SizedBox(height: 12),
                 if (unit['overworld'] != null) ...[
-                  const SizedBox(width: 360, child: OverworldAnimPane()),
+                  SizedBox(width: 360, child: OverworldAnimPane(model: unit['overworld']['model'] as String)),
                   const SizedBox(height: 12),
-                  Text('Vagrant Knight Rain', style: Guide.text()),
+                  Text(OverworldAppearance.data(unit['overworld']['model'] as String)['name'] as String, style: Guide.text()),
                 ] else Text('Original walking model', style: Guide.text()),
                 const SizedBox(height: 12),
                 Wrap(spacing: 12, runSpacing: 12, children: [

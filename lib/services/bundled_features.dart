@@ -245,6 +245,8 @@ class BundledFeatures {
           'payload/_ffr_field_leader.py',
           'payload/field_leader.lua',
           'payload/vagrant_knight_rain_field.png',
+          'payload/overworld_catalog.json',
+          'payload/overworld_assets.zip',
           'payload/_ffr_testing.py',
           'payload/_ffr_crystal_cave.py',
           'payload/_ffr_ability_modes.py',
@@ -255,7 +257,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 17) {
+        (manifest['files'] as Map).length != 19) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
