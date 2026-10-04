@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class AcquisitionLocationsTests(unittest.TestCase):
     def test_every_native_shop_record_and_entrance_preview_is_bundled_once(self):
         root = ROOT / 'assets/acquisition_map'
-        data = json.loads((root / 'locations.json').read_text())
+        data = json.loads((root / 'locations.json').read_text(encoding='utf-8'))
         self.assertEqual(data['schema'], 1)
         self.assertEqual(len(data['vendors']), 125)
         self.assertEqual(len({v['id'] for v in data['vendors']}), 125)

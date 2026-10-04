@@ -189,7 +189,7 @@ def preview(vertices, uvs, triangles, image, color, yaw=0):
 def build(decoded, output):
     shops = rows(decoded / 'DT_ShopList.json')
     combined = rows(decoded / 'DT_VariousShopsList.json')
-    native_landmarks = json.loads((decoded / 'DA_MapLandmark.json').read_text())
+    native_landmarks = json.loads((decoded / 'DA_MapLandmark.json').read_text(encoding='utf-8-sig'))
     landmarks = plain(native_landmarks['Exports'][0]['Data'][0])
     positions = {v['mapId']: p['Location'] for p in landmarks for v in p['landmarkDataList']}
     # Supported mappings come from native map rows, rather than assuming future
@@ -220,10 +220,10 @@ def build(decoded, output):
     output.mkdir(parents=True, exist_ok=True)
     for id, name, asset, texture_name, color in ENTRANCES:
         source = decoded / (asset + '.json')
-        document = json.loads(source.read_text())
+        document = json.loads(source.read_text(encoding='utf-8-sig'))
         vertices, uvs, triangles = mesh(document)
         bulk_path = decoded / (str(texture_name) + '.ubulk')
-        tex = diffuse(json.loads((decoded / (texture_name + '.json')).read_text()),
+        tex = diffuse(json.loads((decoded / (texture_name + '.json')).read_text(encoding='utf-8-sig')),
                       bulk_path.read_bytes() if bulk_path.exists() else None) if texture_name else None
         path = output / f'entrance_{id}.png'
         preview(vertices, uvs, triangles, tex, color, yaw=180 if id == 'rock_cave' else 90 if id == 'dwarven_cave' else 0).save(path, optimize=True)
@@ -231,7 +231,8 @@ def build(decoded, output):
         catalog['entrances'].append({'id': id, 'name': name, 'image': path.name, 'mesh': package,
             'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
             'vertices': len(vertices), 'triangles': len(triangles), 'preview': 'Native LOD0 geometry; simplified lighting and diffuse sampling'})
-    (output / 'locations.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')
+    (output / 'locations.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n',
+                                           encoding='utf-8', newline='\n')
     print(f'Built {len(vendors)} native inventory/combined vendor choices and {len(ENTRANCES)} entrance previews.')
 
 
