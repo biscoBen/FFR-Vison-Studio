@@ -11,11 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Fix the game-launch crash with **Cycle walking character (LB / L1)** enabled: Dark Fina's private field
-  project now includes the native keyframe payload for each added diagonal idle alias. Preserve every original
-  animation and payload; reject incomplete or unsupported payloads before generating the asset. Regression tests
-  cover the formerly accepted missing tail. Native serialization/container checks supplement Windows gates;
-  launching Resonance and controller cycling still require a live-game retest after rebuilding/installing.
+None.
+
+## Published field-leader launch serialization repair — 2026-10-03
+
+Code: [`8d17073`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8d17073f5af8fa835fdb68ff5073c60396d24082).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37168358782),
+[Windows run 37168358782](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37168358782).
+
+- Fix the launch serialization fault with **Cycle walking character (LB / L1)** enabled. Dark Fina's four private
+  diagonal idle aliases now include their native binary keyframes as well as reflected animation properties.
+  Preserve all original clips and keyframes; reject incomplete or unsupported payloads during generation.
+  After updating Studio, rebuild/install the mod to replace the broken asset.
+- Verification: 228 Python tests (3 local reference/platform skips), missing-tail regression, actual feature-builder
+  readback and all 29 clips/6,064 keyframe bytes through UE5.6 IoStore. All required Windows gates passed, including
+  Flutter, real frozen-engine startup and launcher/updater checks. Reused the one push run; authenticated checksum,
+  exact-commit provenance and all 33 packaged files verified. Resonance launch/controller behavior needs live retesting.
+- Measured from the first recorded clock reading to verified package: **10m46s** — **4m01s remaining implementation**,
+  **47s local checks/push**, **5m28s CI**, **30s package verification**. Earlier initial inspection took a few minutes
+  before that clock reading and is excluded from this measured window. First complete candidate to verified package:
+  **6m45s**. CI used **7m52s runner time**. Publication notes use the documentation-only path.
 
 ## Published field-leader cycling and window controls — 2026-10-03
 
