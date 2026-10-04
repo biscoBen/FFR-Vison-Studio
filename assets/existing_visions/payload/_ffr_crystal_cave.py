@@ -42,7 +42,7 @@ ENTRANCE = (17600.0, 21400.0, 160.0)
 ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
 FINA_SCALE = 4.25
-VISION_SCALE = FINA_SCALE * .60
+VISION_SCALE = FINA_SCALE * .60 * 1.05
 FINA_FLOAT = 40.0
 FINA_ALIGNMENT_Y = 144.0  # Live test: two field-sprite widths, plus a small final nudge right.
 RETURN = (17250.0, 21400.0, 200.0)
@@ -82,6 +82,7 @@ class CaveSpec:
     placement_yaw: float | None = None
     placement_scale: float = 1.0
     ground_z: float | None = None
+    return_direction: str = 'South'
 
     @property
     def stone_name(self): return self.name + '_Stone'
@@ -119,6 +120,29 @@ def terrain_height(x, y):
              + (values[(b + 1) * 128 + a] * (1 - du) + values[(b + 1) * 128 + a + 1] * du) * dv)
         return p['z'] + (h - 32768) / 128 * p['dz']
     return None
+
+
+def outside_return(spec):
+    """Land outside the footprint/trigger, on the door's side of the landscape.
+
+    Mesh-local opening directions match the native entrance previews. Native
+    transition points describe the ground, not a capsule center. Ray placement
+    resolves actual collision at runtime (including bridges and changed maps).
+    """
+    opening = {'rock_cave': (0, 1), 'shrine': (0, -1),
+               'dwarven_cave': (-1, 0), 'desert_sinkhole': (0, -1)}
+    key = next(k for k, v in ENTRANCE_MESHES.items() if v == spec.mesh)
+    yaw = math.radians(spec.placement_yaw if spec.placement_yaw is not None else 105.0)
+    a, b = opening[key]
+    dx, dy = a * math.cos(yaw) - b * math.sin(yaw), a * math.sin(yaw) + b * math.cos(yaw)
+    distance = max(350.0, 250.0 * spec.placement_scale + 100.0)
+    x, y = spec.entrance[0] + dx * distance, spec.entrance[1] + dy * distance
+    height = terrain_height(x, y)
+    if height is None: height = spec.ground_z if spec.ground_z is not None else 0.0
+    # Match the closest native eight-way facing; X is north, Y is east.
+    directions = ('North', 'NorthEast', 'East', 'SouthEast', 'South', 'SouthWest', 'West', 'NorthWest')
+    direction = directions[round(math.atan2(dy, dx) / (math.pi / 4)) % 8]
+    return replace(spec, return_point=(x, y, height), return_direction=direction)
 
 
 def prepare_shops(tables, units, rows):
@@ -290,11 +314,10 @@ def cave_plans(units, root, rows=None):
             ground = saved.get('worldZ')
             if ground is None: ground = terrain_height(x, y)
             if ground is None: ground = 0.0
-            outside = terrain_height(x - 350.0, y)
             base = replace(base, entrance=(x, y, ground + 160.0), entrance_model=(x, y, ground),
                            ground_z=ground, placement_yaw=saved.get('yaw', 105.0),
-                           placement_scale=saved.get('scale', .75),
-                           return_point=(x - 350.0, y, (outside if outside is not None else ground) + 200.0))
+                           placement_scale=saved.get('scale', .75))
+        base = outside_return(base)
         entries = []
         for index, unit in enumerate(sorted(group['units'], key=lambda u: u['id'])):
             fina = str((unit.get('ffbe') or {}).get('id')) == SPRITE
@@ -880,6 +903,15 @@ def transition(actor, conditional_template, map_id, point, auto=True):
         actor['Data'] = [p for p in actor['Data'] if p['Name'] != name] + [prop]
 
 
+def overworld_exit(actor, conditional_template, spec):
+    """Use the native unconditional world-map route for both name and travel."""
+    transition(actor, conditional_template, 1000, spec.map_id, auto=False)
+    set_value(actor, 'm_IsUseCondion', False)
+    # Conditional defaults inherited from Earth Shrine suppress this reset.
+    set_value(actor, 'm_IsTransitionChangeMovementMethod', True)
+    set_value(actor, 'm_TransitionMovementType', 'Walking')
+
+
 def make_npc(source, unit, spawn, spec):
     npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + spec.npc_package)
     actors(npc, [70, 0, 31])
@@ -1014,8 +1046,8 @@ def make_levels(source, unit, spec=None, overworld=None, overworld_pl=None):
     names(room, room['Exports'])
 
     stone_gd = private_level(source[DONOR_GD], '/Game/' + DONOR_GD, '/Game/' + spec.package + '_Stone_GD')
-    transition(export(stone_gd, 'BP_MapTransitionTrigger_C_1')[1],
-               export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], 1000, spec.map_id, auto=False)
+    overworld_exit(export(stone_gd, 'BP_MapTransitionTrigger_C_1')[1],
+                   export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], spec)
     actors(stone_gd, [7, 0, 5, 4])
     level_id, stone_level = export(stone_gd, 'PersistentLevel')
     world_id = export(stone_gd, spec.name + '_Stone_GD')[0]
@@ -1069,7 +1101,10 @@ def make_levels(source, unit, spec=None, overworld=None, overworld_pl=None):
     entry['ObjectName'] = spec.name + '_Entrance'; point['ObjectName'] = spec.name + '_Return'
     transition(entry, export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], spec.stone_id, 0, auto=False)
     set_value(entry, 'm_UniqueId', spec.map_id); set_value(point, 'm_PointID', spec.map_id)
-    set_value(point, 'm_Direction', 'South')
+    set_value(point, 'm_Direction', spec.return_direction)
+    ray = copy.deepcopy(property_data(entry, 'm_IsAutoTransition'))
+    ray.update(Name='m_IsUseRay', Value=True, IsZero=False)
+    point['Data'] = [p for p in point['Data'] if p['Name'] != 'm_IsUseRay'] + [ray]
     vector(wld['Exports'][m[2] - 1], 'RelativeLocation', spec.entrance)
     vector(wld['Exports'][m[2] - 1], 'BoxExtent', (160.0, 250.0, 350.0))
     vector(wld['Exports'][m[12] - 1], 'RelativeLocation', spec.return_point)

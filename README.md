@@ -291,11 +291,13 @@ for **Edit placement**: drag its entrance in the local 3D terrain preview, use X
 size controls, or right-click the map to move it. The pin marks the footprint center; saved edits update all assigned
 visions without changing cave IDs. The 3D preview uses native terrain paint, shaded world meshes and tree/bush instances
 with simplified lighting. It omits unavailable assets and Unreal's animated/transparent shaders. Native height/paint
-coverage includes Grandshelt and Dirnado; detailed static scenery currently covers Grandshelt. Elsewhere set Z manually.
-Ordinary cave visions use 60% of the previous scale; Crystal Fina's crystal stays at its tested size. Square native map
+coverage includes Grandshelt and Dirnado. Town/landmark models and bridge instances include inherited Blueprint components
+and landscape levels; later-area models missing from the references remain omitted. Elsewhere set Z manually.
+Ordinary cave visions use 63% of their original scale (5% larger than the previous package); Crystal Fina's crystal stays at its tested size. Square native map
 captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
-The cave portal uses a
-white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
+Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on
+its opening side, at native terrain height with runtime collision snapping; the exact incoming player position is not saved.
+The cave portal uses a white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
 The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37233295971)
 contains selected-vendor routing, smaller ordinary cave visions, aligned 2D captures and the painted 3D placement preview
 (commit `1951934`, run `37233295971`). Update Studio, rebuild/install the mod and restart Resonance.

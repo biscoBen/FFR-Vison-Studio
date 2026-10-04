@@ -2,9 +2,11 @@
 import ast
 import copy
 import json
+import math
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import test_crystal_cave as reference
 from test_existing_visions import installer, fina_installer, ROOT
@@ -112,14 +114,45 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertNotEqual(first.spawn_offset, second.spawn_offset)
         self.assertEqual({built[testing.COMPOSITE][s.event]['ObtainItemList'][0]['ID'] for _, s in plans[0]}, {13520, 13521})
 
-    def test_ordinary_visions_use_sixty_percent_scale_without_shrinking_crystal_fina(self):
+    def test_ordinary_visions_gain_five_percent_without_resizing_crystal_fina(self):
         _, rows, fina = reference.cave_game()
         ordinary = vision(13520); fina['studioAcquisition'] = copy.deepcopy(ordinary['studioAcquisition'])
         with tempfile.TemporaryDirectory() as root:
             plans, _ = cave.cave_plans([ordinary, fina], root, rows)
         by_id = {unit['id']: spec for group in plans for unit, spec in group}
-        self.assertEqual(by_id[ordinary['id']].sprite_scale, 2.55)
+        self.assertAlmostEqual(by_id[ordinary['id']].sprite_scale, 2.55 * 1.05)
         self.assertEqual(by_id[fina['id']].sprite_scale, 4.25)
+
+    def test_returns_follow_rotated_opening_and_ground_not_saved_entrance_height(self):
+        for entrance, opening in [('rock_cave', (0, 1)), ('shrine', (0, -1)),
+                                  ('dwarven_cave', (-1, 0)), ('desert_sinkhole', (0, -1))]:
+            for yaw in (-180, -90, 0, 45, 105, 180):
+                unit = vision(13520, entrance=entrance, x=16964.99, y=22678.74)
+                unit['studioAcquisition']['cave'].update(version=2, worldZ=900, yaw=yaw, scale=2.0)
+                with tempfile.TemporaryDirectory() as root, patch.object(cave, 'terrain_height', return_value=84.33):
+                    _, rows, _ = reference.cave_game()
+                    plans, _ = cave.cave_plans([unit], root, rows)
+                spec = plans[0][0][1]
+                dx, dy = spec.return_point[0] - spec.entrance[0], spec.return_point[1] - spec.entrance[1]
+                angle = math.radians(yaw)
+                self.assertAlmostEqual(dx, (opening[0]*math.cos(angle)-opening[1]*math.sin(angle))*600)
+                self.assertAlmostEqual(dy, (opening[0]*math.sin(angle)+opening[1]*math.cos(angle))*600)
+                self.assertEqual(spec.return_point[2], 84.33)
+                self.assertTrue(abs(dx) > 160 or abs(dy) > 250, 'return overlaps entrance interaction')
+
+    def test_world_exit_uses_world_name_route_and_resets_walking(self):
+        def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
+        actor = {'Data': [prop('m_MapId', 3000), prop('m_PointID', 0),
+                         prop('m_IsTransitionChangeMovementMethod', False), prop('m_TransitionMovementType', 'Flying')]}
+        template = {'Data': [prop('m_IsUseCondion', True), prop('m_IsAutoTransition', True),
+                            prop('mTransitionDataList', [prop('0', [prop('mapId', 3000), prop('pointId', 0)])])]}
+        spec = cave.CaveSpec(map_id=29001)
+        cave.overworld_exit(actor, template, spec)
+        self.assertFalse(cave.property_data(actor, 'm_IsUseCondion')['Value'])
+        self.assertEqual(cave.property_data(actor, 'm_MapId')['Value'], 1000)
+        self.assertEqual(cave.property_data(actor, 'm_PointID')['Value'], 29001)
+        self.assertTrue(cave.property_data(actor, 'm_IsTransitionChangeMovementMethod')['Value'])
+        self.assertEqual(cave.property_data(actor, 'm_TransitionMovementType')['Value'], 'Walking')
 
     def test_new_caves_do_not_reassign_existing_ids_and_native_ids_are_skipped(self):
         original, rows, _ = reference.cave_game()

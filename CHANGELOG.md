@@ -11,6 +11,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Increase ordinary cave visions by 5% from the previous package; preserve Crystal Fina's tested crystal scale.
+- Return outside each cave on its rotated opening side, using native landscape height and runtime collision snapping
+  instead of a fixed westward point 200 units above ground. Restore walking and use the native world-map exit/name route.
+- Restore inherited town/landmark meshes and cooked bridge instances in the 3D placement preview, including components
+  in landscape levels. Cull distant meshes before expanding their geometry. Later-region assets absent from the supplied
+  references and unsupported/translucent meshes still need additional reference coverage; rendering remains simplified.
+- Validation: Flutter analysis, the full local Flutter/Python suites, native read-back and IoStore round-trip passed for
+  four rotated entrances/five visions (44 packages),
+  including grounded return positions, facing, collision snapping and the unconditional world-map exit. Live Resonance
+  gameplay remains a user check; automated checks cannot execute its native transition functions.
+
 ## Published acquisition fixes and scenery — 2026-10-04
 
 Code: [`1951934`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1951934b84a49fe975e3524ff8e42db10b4ae430).

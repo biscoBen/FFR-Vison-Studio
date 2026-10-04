@@ -31,7 +31,20 @@ class CaveSceneryTests(unittest.TestCase):
             for f in scene['foliage']:
                 self.assertIn(f['image'], scene['files']); self.assertGreater(f['width'], 0); self.assertGreater(f['height'], 0)
             self.assertTrue(any('earthtemple001' in p['name'] for p in scene['props']))
+            # Towns inherit their meshes from Blueprint templates; bridges also
+            # live in landscape levels and cooked HISM instance buffers.
+            names = [p['name'] for p in scene['props']]
+            for landmark in ('granshelt001', 'mitlatown001', 'mitlatown002',
+                             'WoodenBridge001', 'WoodenBridge002', 'Bridge001', 'Bridge002', 'Bridge003'):
+                self.assertTrue(any(landmark in name for name in names), landmark)
+            self.assertFalse(any('_Col' in name for name in names), 'inherited collision templates must remain hidden')
+            mitra = next(p for p in scene['props'] if 'mitlatown001' in p['name'])
+            mean = [sum(v[i] for v in mitra['vertices'])/len(mitra['vertices']) for i in range(2)]
+            self.assertLess(abs(mean[0]-16598), 200)
+            self.assertLess(abs(mean[1]-21654), 200)
             self.assertFalse(any('forest_col' in p['name'] or 'foam' in p['name'] for p in scene['props']))
             for prop in scene['props']:
+                self.assertEqual(prop['bounds'], [[min(v[i] for v in prop['vertices']) for i in range(3)],
+                                                 [max(v[i] for v in prop['vertices']) for i in range(3)]])
                 for ids, rgb in prop['faces']:
                     self.assertTrue(all(0<=i<len(prop['vertices']) for i in ids)); self.assertTrue(all(0<=c<=255 for c in rgb))

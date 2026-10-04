@@ -322,6 +322,14 @@ class _TerrainPainter extends CustomPainter {
       }
     }
     for (final prop in scene?.props ?? []) {
+      final bounds = prop['bounds'] as List?;
+      if (bounds != null &&
+          ((bounds[1][0] as num) < center.dx - radius ||
+              (bounds[0][0] as num) > center.dx + radius ||
+              (bounds[1][1] as num) < center.dy - radius ||
+              (bounds[0][1] as num) > center.dy + radius)) {
+        continue;
+      }
       final v = (prop['vertices'] as List)
           .map(
             (p) => (
@@ -331,11 +339,12 @@ class _TerrainPainter extends CustomPainter {
             ),
           )
           .toList();
-      if (!v.any(
-        (p) =>
-            (p.$1 - center.dx).abs() < radius &&
-            (p.$2 - center.dy).abs() < radius,
-      )) {
+      if (bounds == null &&
+          !v.any(
+            (p) =>
+                (p.$1 - center.dx).abs() < radius &&
+                (p.$2 - center.dy).abs() < radius,
+          )) {
         continue;
       }
       for (final f in prop['faces'] as List) {

@@ -36,10 +36,17 @@ def matrix(f):
     return out
 
 
-def component_matrix(document, index, visited=()):
+def component_matrix(document, index, visited=(), assets=None):
     if index in visited or index <= 0: raise ValueError('Invalid native component hierarchy.')
-    f = fields(document['Exports'][index - 1]); result = matrix(f)
-    if f.get('AttachParent'): result = component_matrix(document, f['AttachParent'], visited + (index,)) @ result
+    export = document['Exports'][index - 1]
+    f = fields(export)
+    transform = dict(f)
+    if assets:
+        _, defaults = assets.defaults(document, export)
+        for key in ('RelativeLocation', 'RelativeRotation', 'RelativeScale3D'):
+            if key not in transform and key in defaults: transform[key] = defaults[key]
+    result = matrix(transform)
+    if f.get('AttachParent'): result = component_matrix(document, f['AttachParent'], visited + (index,), assets) @ result
     return result
 
 
@@ -48,8 +55,18 @@ def foliage_matrices(export):
     raw = base64.b64decode(export['Extras'], validate=True)
     # Checked UE5.6 FInstancedStaticMeshInstanceData: LWC FMatrix (16 doubles).
     # Preceded by cooked lighting GUIDs, serialization flags and stride/count.
-    guid_count = struct.unpack_from('<I', raw, 4)[0]
-    start = 8 + guid_count * 34 + 16
+    offset = 0
+    # Blueprint HISM donors retain a 28-byte serialized inherited reference
+    # before the same cooked lighting/instance payload used by foliage.
+    if raw[:4] == b'\x01\0\0\0' and raw[12:28] == bytes(16):
+        inherited, name = struct.unpack_from('<ii', raw, 4)
+        if inherited >= 0 or name < 0: raise ValueError('Invalid inherited instance reference.')
+        offset = 28
+    if len(raw) < offset + 8: raise ValueError('Truncated native instance header.')
+    guid_count = struct.unpack_from('<I', raw, offset + 4)[0]
+    if guid_count > 1024: raise ValueError('Invalid native lighting GUID count.')
+    start = offset + 8 + guid_count * 34 + 16
+    if start + 8 > len(raw): raise ValueError('Truncated native instance buffer.')
     stride, size = struct.unpack_from('<2I', raw, start)
     start += 8
     if stride != 128 or size != count or start + count * stride > len(raw):
@@ -81,15 +98,29 @@ class NativeAssets:
     def package(self, document, ref):
         if ref >= 0: raise ValueError('Expected a native imported asset.')
         value = document['Imports'][-ref-1]
-        parent = document['Imports'][-value['OuterIndex']-1]
-        return parent['ObjectName']
+        while value['OuterIndex'] < 0:
+            value = document['Imports'][-value['OuterIndex']-1]
+        if value['ClassName'] != 'Package': raise ValueError('Native reference has no package.')
+        return value['ObjectName']
+
+    def defaults(self, document, export):
+        """Resolve a component's inherited mesh/transform from its exact template."""
+        ref = export.get('TemplateIndex', 0)
+        if ref >= 0: return document, {}
+        template = document['Imports'][-ref-1]
+        if not self.package(document, ref).startswith('/Game/'): return document, {}
+        doc = self.load(self.package(document, ref))
+        matches = [e for e in doc['Exports'] if e['ObjectName'] == template['ObjectName']]
+        if len(matches) != 1: raise ValueError('Ambiguous native component template.')
+        return doc, fields(matches[0])
 
     def path(self, package):
         if not package.startswith('/Game/'): raise ValueError('Unexpected native package path.')
         rel = package.removeprefix('/Game/')
         for root in self.roots:
-            p = root / (rel + '.uasset')
-            if p.exists(): return p
+            for suffix in ('.uasset', '.umap'):
+                p = root / (rel + suffix)
+                if p.exists(): return p
         raise FileNotFoundError(package)
 
     def load(self, package):
@@ -184,42 +215,55 @@ def build(args):
                     result['foliage'].append({'at': [round(float(v), 4) for v in p],
                                              'width': round(width*max(scale[:2]), 4), 'height': round(height*scale[2], 4), 'image': name})
             except (ValueError, FileNotFoundError, KeyError) as error: result['omitted'].append(package + ': ' + str(error))
-    for source in args.world:
+    for source in dict.fromkeys(args.world + args.landscape):
         document = json.loads(source.read_text(encoding='utf-8-sig'))
         assets.sources[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
         for index, e in enumerate(document['Exports'], 1):
+            if not isinstance(e.get('Data'), list): continue
             f = fields(e)
-            if f.get('StaticMesh', 0) >= 0: continue
-            owner = fields(document['Exports'][e['OuterIndex']-1]) if e.get('OuterIndex', 0) > 0 else {}
-            if f.get('bVisible') is False or f.get('bHiddenInGame') or owner.get('bHidden'):
+            cls = document['Imports'][-e['ClassIndex']-1]['ObjectName'] if e['ClassIndex'] < 0 else ''
+            if 'StaticMeshComponent' not in cls: continue
+            try: default_doc, defaults = assets.defaults(document, e)
+            except (ValueError, FileNotFoundError, KeyError) as error:
+                result['omitted'].append(e['ObjectName'] + ' template: ' + str(error)); continue
+            ref = f.get('StaticMesh', defaults.get('StaticMesh', 0))
+            if ref >= 0: continue
+            owner_export = document['Exports'][e['OuterIndex']-1] if e.get('OuterIndex', 0) > 0 else {}
+            owner = fields(owner_export) if isinstance(owner_export.get('Data'), list) else {}
+            if f.get('bVisible', defaults.get('bVisible')) is False or f.get('bHiddenInGame', defaults.get('bHiddenInGame')) or owner.get('bHidden'):
                 continue
-            package = assets.package(document, f['StaticMesh'])
+            package = assets.package(document if 'StaticMesh' in f else default_doc, ref)
+            if source in args.landscape and 'Billboard' in package: continue
             # These are shader-generated translucent shore/foam surfaces. An
             # opaque diffuse fallback would cover paths and scenery underneath.
             if 'foam' in package.lower():
                 result['omitted'].append(package + ': translucent shader omitted'); continue
             try:
                 d = assets.load(package); vertices, uvs, triangles = mesh(d)
-                m = component_matrix(document, index)
-                v = (m @ np.column_stack([vertices, np.ones(len(vertices))]).T).T[:, :3]
+                uv_coordinates = np.asarray(uvs)
+                m = component_matrix(document, index, assets=assets)
+                transforms = [m @ local for local in foliage_matrices(e)] if 'NumBuiltInstances' in f else [m]
                 mf = fields(next(x for x in d['Exports'] if 'ExtendedBounds' in fields(x)))
                 materials = []
                 for mat in mf['StaticMaterials']:
                     try: materials.append(assets.material_image(d, mat['MaterialInterface']))
                     except (ValueError, FileNotFoundError, KeyError) as error:
                         materials.append(None); result['omitted'].append(package + ' material: ' + str(error))
-                faces = []
-                for ids, material in triangles:
-                    a, b, c = v[list(ids)]; normal = np.cross(b-a, c-a); length = np.linalg.norm(normal)
-                    if length < 1e-8: continue
-                    light = .55 + .45 * abs(np.dot(normal / length, [-.4, -.5, .75]))
-                    color = (49, 109, 127) if any(n in package.lower() for n in ('water', 'river', 'ocean')) else (128, 136, 114)
-                    tex = materials[material] if material < len(materials) else None
-                    if tex is not None:
-                        u, t = np.mean(np.array(uvs)[list(ids)], axis=0)
-                        color = tex.getpixel((int(u%1*tex.width), int(t%1*tex.height)))[:3]
-                    faces.append([list(ids), [int(min(255, max(0, n*light))) for n in color]])
-                result['props'].append({'name': Path(package).name, 'vertices': np.round(v, 3).tolist(), 'faces': faces})
+                for transform in transforms:
+                    v = (transform @ np.column_stack([vertices, np.ones(len(vertices))]).T).T[:, :3]
+                    faces = []
+                    for ids, material in triangles:
+                        a, b, c = v[list(ids)]; normal = np.cross(b-a, c-a); length = np.linalg.norm(normal)
+                        if length < 1e-8: continue
+                        light = .55 + .45 * abs(np.dot(normal / length, [-.4, -.5, .75]))
+                        color = (49, 109, 127) if any(n in package.lower() for n in ('water', 'river', 'ocean')) else (128, 136, 114)
+                        tex = materials[material] if material < len(materials) else None
+                        if tex is not None:
+                            u, t = np.mean(uv_coordinates[list(ids)], axis=0)
+                            color = tex.getpixel((int(u%1*tex.width), int(t%1*tex.height)))[:3]
+                        faces.append([list(ids), [int(min(255, max(0, n*light))) for n in color]])
+                    result['props'].append({'name': Path(package).name, 'vertices': np.round(v, 3).tolist(), 'faces': faces,
+                                            'bounds': [np.round(v.min(axis=0), 3).tolist(), np.round(v.max(axis=0), 3).tolist()]})
             except (ValueError, FileNotFoundError, KeyError) as error: result['omitted'].append(package + ': ' + str(error))
     result['sources'] = assets.sources
     result['omitted'] = sorted(set(result['omitted']))
