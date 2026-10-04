@@ -283,14 +283,18 @@ cave, button-operated crystal portal and glowing crystal room. It contains the a
 that vision's actual item through the native obtain screen, hides it once owned, and returns outside the portal in
 the same stone cave. Multiple visions assigned to one cave have separate interactions and ownership conditions.
 Cave-selected visions are not also sold in Mitra. Saved cave map IDs remain stable across rebuilds. The original
-Crystal Fina cave switch still works; an explicit cave assignment for her takes precedence. Shop/vendor assignments
-remain planning controls and retain the existing shop behavior until vendor routing is implemented. Original visions
+Crystal Fina cave switch still works; an explicit cave assignment for her takes precedence. Shop assignments now route
+to the selected native inventory, including Mitra Weapons. Combined vendors use their item tab, or their first available
+weapon/armor/accessory tab. Unassigned visions keep Mitra Items. Original visions
 retain their native acquisition. Entrances default to 75% size and use decoded native landscape heights where available. Right-click a cave marker
 for **Edit placement**: drag its entrance in the local 3D terrain preview, use X/Y/Z, ground snapping, rotation and
 size controls, or right-click the map to move it. The pin marks the footprint center; saved edits update all assigned
-visions without changing cave IDs. The 3D preview shows native terrain and entrance geometry with simplified prop
-outlines; game shaders and instanced foliage are omitted. Native height coverage currently includes Grandshelt and
-Dirnado; elsewhere set Z manually. All cave visions use the tested Crystal Fina sprite scale. The cave portal uses a
+visions without changing cave IDs. The 3D preview uses native terrain paint, shaded world meshes and tree/bush instances
+with simplified lighting. It omits unavailable assets and Unreal's animated/transparent shaders. Native height/paint
+coverage includes Grandshelt and Dirnado; detailed static scenery currently covers Grandshelt. Elsewhere set Z manually.
+Ordinary cave visions use 60% of the previous scale; Crystal Fina's crystal stays at its tested size. Square native map
+captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
+The cave portal uses a
 white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
 The [verified cave placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37229153450)
 contains precise placement controls, terrain grounding, 75% entrances, corrected cave vision scale and the white portal
@@ -394,8 +398,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   return to the stone cave and controller dialogs. Assigned user-placed Resonance Caves now use this flow; recheck
   their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Refresh the
   checked landscape mip decoder, source height data and placement preview geometry; expand terrain coverage and
-  validate existing saved X/Y/Z, rotation and scale without moving caves silently. Vendor routing
-  remains pending.
+  validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
+  instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest
+  selected vendor inventories and combined-shop tabs, preserving native item conditions and purchase limits.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.

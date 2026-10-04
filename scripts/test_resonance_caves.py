@@ -81,7 +81,7 @@ class ResonanceCavesTests(unittest.TestCase):
             self.assertFalse(portal['IsOpenDialogByFinishEvent'])
             self.assertEqual(portal['TransitionLocation'], {'mapId': spec.map_id, 'pointId': 0, 'bDoAutoSave': False})
             self.assertEqual((spec.ground_z, spec.placement_yaw, spec.placement_scale), (12.5, -90.0, .75))
-            self.assertEqual(spec.sprite_scale, cave.FINA_SCALE)
+            self.assertEqual(spec.sprite_scale, cave.VISION_SCALE)
             saved.update(worldX=17400.25, worldY=21700.75)
             testing.prepare({}, [unit], root, rows)
             moved, _ = cave.cave_plans([unit], root)
@@ -111,6 +111,15 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertNotEqual(first.event, second.event)
         self.assertNotEqual(first.spawn_offset, second.spawn_offset)
         self.assertEqual({built[testing.COMPOSITE][s.event]['ObtainItemList'][0]['ID'] for _, s in plans[0]}, {13520, 13521})
+
+    def test_ordinary_visions_use_sixty_percent_scale_without_shrinking_crystal_fina(self):
+        _, rows, fina = reference.cave_game()
+        ordinary = vision(13520); fina['studioAcquisition'] = copy.deepcopy(ordinary['studioAcquisition'])
+        with tempfile.TemporaryDirectory() as root:
+            plans, _ = cave.cave_plans([ordinary, fina], root, rows)
+        by_id = {unit['id']: spec for group in plans for unit, spec in group}
+        self.assertEqual(by_id[ordinary['id']].sprite_scale, 2.55)
+        self.assertEqual(by_id[fina['id']].sprite_scale, 4.25)
 
     def test_new_caves_do_not_reassign_existing_ids_and_native_ids_are_skipped(self):
         original, rows, _ = reference.cave_game()

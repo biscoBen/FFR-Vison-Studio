@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:archive/archive.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
@@ -10,9 +14,18 @@ import '../services/cave_terrain.dart';
 typedef Point3 = (double, double, double);
 
 class PlacementScene {
-  PlacementScene(this.meshes, this.props);
+  PlacementScene(
+    this.meshes,
+    this.props,
+    this.terrainImages,
+    this.foliage,
+    this.images,
+  );
   final Map<String, dynamic> meshes;
   final List<dynamic> props;
+  final List<dynamic> terrainImages, foliage;
+  final Map<String, ui.Image> images;
+  static PlacementScene? cached;
   static final bundled = _load();
   static Future<PlacementScene> _load() async {
     final data = json.decode(
@@ -20,14 +33,42 @@ class PlacementScene {
         'assets/acquisition_map/placement_scene.json',
       ),
     ) as Map;
-    return PlacementScene(
+    final manifest = json.decode(
+      await rootBundle.loadString('assets/acquisition_map/scenery.json'),
+    ) as Map;
+    final bytes = (await rootBundle.load('assets/acquisition_map/scenery.zip'))
+        .buffer
+        .asUint8List();
+    if (sha256.convert(bytes).toString() != manifest['sha256']) {
+      throw const FormatException('Native scenery checksum mismatch.');
+    }
+    final archive = ZipDecoder().decodeBytes(bytes);
+    final raw = archive.findFile('scene.json')!.content;
+    if (sha256.convert(raw).toString() != manifest['sceneSha256']) {
+      throw const FormatException('Native scenery catalog checksum mismatch.');
+    }
+    final scenery = json.decode(utf8.decode(raw)) as Map;
+    final images = <String, ui.Image>{};
+    for (final entry in (scenery['files'] as Map).entries) {
+      final content = archive.findFile(entry.key as String)!.content;
+      if (sha256.convert(content).toString() != entry.value) {
+        throw const FormatException('Native scenery image checksum mismatch.');
+      }
+      final codec = await ui.instantiateImageCodec(content);
+      images[entry.key as String] = (await codec.getNextFrame()).image;
+      codec.dispose();
+    }
+    return cached = PlacementScene(
       Map<String, dynamic>.from(data['meshes'] as Map),
-      data['props'] as List,
+      scenery['props'] as List,
+      scenery['terrain'] as List,
+      scenery['foliage'] as List,
+      images,
     );
   }
 }
 
-/// Native terrain geometry, native entrance geometry and simplified prop bounds.
+/// Native painted terrain, shaded world meshes and tree/bush instances.
 class CaveTerrainPreview extends StatefulWidget {
   const CaveTerrainPreview({
     super.key,
@@ -91,11 +132,15 @@ class _CaveTerrainPreviewState extends State<CaveTerrainPreview> {
               onVerticalDragUpdate: move,
               child: FutureBuilder<PlacementScene>(
                 future: PlacementScene.bundled,
+                initialData: PlacementScene.cached,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text(
                       'Could not load the placement preview: ${snapshot.error}',
                     );
+                  }
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
                   }
                   return CustomPaint(
                     size: size,
@@ -139,7 +184,7 @@ class _CaveTerrainPreviewState extends State<CaveTerrainPreview> {
         ],
       ),
       const Text(
-        'Drag to move the entrance. Native terrain; simplified prop outlines.\nGame lighting, shaders and instanced foliage are not shown.',
+        'Drag to move the entrance. Native terrain paint, scenery and trees.\nSimplified lighting; available reference regions only.',
         textAlign: TextAlign.center,
       ),
     ],
@@ -182,9 +227,18 @@ class _TerrainPainter extends CustomPainter {
           p.y > center.dy + radius) {
         continue;
       }
-      for (var v = 0; v < 127; v += 4) {
-        for (var u = 0; u < 127; u += 4) {
-          final a = math.min(127, u + 4), b = math.min(127, v + 4);
+      final painted = scene?.terrainImages
+          .where(
+            (t) =>
+                ((t['x'] as num) - p.x).abs() < .01 &&
+                ((t['y'] as num) - p.y).abs() < .01,
+          )
+          .firstOrNull;
+      final image = painted == null ? null : scene?.images[painted['image']];
+      final positions = <Offset>[], uv = <Offset>[], colors = <Color>[];
+      for (var v = 0; v < 127; v += 2) {
+        for (var u = 0; u < 127; u += 2) {
+          final a = math.min(127, u + 2), b = math.min(127, v + 2);
           if ((p.x + u * p.dx - center.dx).abs() > radius ||
               (p.y + v * p.dy - center.dy).abs() > radius) {
             continue;
@@ -197,9 +251,99 @@ class _TerrainPainter extends CustomPainter {
               : height > 300
               ? const Color(0xff7c7c72)
               : const Color(0xff52734d);
-          faces.add(([point(u, v), point(a, v), point(a, b)], color));
-          faces.add(([point(u, v), point(a, b), point(u, b)], color));
+          for (final ids in [
+            [(u, v), (a, v), (a, b)],
+            [(u, v), (a, b), (u, b)],
+          ]) {
+            if (image == null || height < 0) {
+              faces.add(([for (final q in ids) point(q.$1, q.$2)], color));
+            } else {
+              final nx = (p.at(u, v) - p.at(a, v)) / ((a - u) * p.dx),
+                  ny = (p.at(u, v) - p.at(u, b)) / ((b - v) * p.dy);
+              final light =
+                  (.75 +
+                          (.4 * nx + .5 * ny + .75) /
+                              math.sqrt(nx * nx + ny * ny + 1) *
+                              .25)
+                      .clamp(.45, 1.0);
+              for (final q in ids) {
+                positions.add(project(point(q.$1, q.$2), size));
+                uv.add(Offset(q.$1 + .5, q.$2 + .5));
+                colors.add(
+                  Color.fromRGBO(
+                    (255 * light).round(),
+                    (255 * light).round(),
+                    (255 * light).round(),
+                    1,
+                  ),
+                );
+              }
+            }
+          }
         }
+      }
+      if (positions.isNotEmpty) {
+        final vertices = ui.Vertices(
+          ui.VertexMode.triangles,
+          positions,
+          textureCoordinates: uv,
+          colors: colors,
+        );
+        canvas.drawVertices(
+          vertices,
+          BlendMode.modulate,
+          Paint()
+            ..shader = ui.ImageShader(
+              image!,
+              ui.TileMode.clamp,
+              ui.TileMode.clamp,
+              Float64List.fromList([
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+              ]),
+            )
+            ..filterQuality = FilterQuality.medium,
+        );
+        vertices.dispose();
+      }
+    }
+    for (final prop in scene?.props ?? []) {
+      final v = (prop['vertices'] as List)
+          .map(
+            (p) => (
+              (p[0] as num).toDouble(),
+              (p[1] as num).toDouble(),
+              (p[2] as num).toDouble(),
+            ),
+          )
+          .toList();
+      if (!v.any(
+        (p) =>
+            (p.$1 - center.dx).abs() < radius &&
+            (p.$2 - center.dy).abs() < radius,
+      )) {
+        continue;
+      }
+      for (final f in prop['faces'] as List) {
+        final rgb = f[1] as List;
+        faces.add((
+          [for (final i in f[0] as List) v[i as int]],
+          Color.fromRGBO(rgb[0] as int, rgb[1] as int, rgb[2] as int, 1),
+        ));
       }
     }
     final mesh = scene?.meshes[entrance] as Map?;
@@ -233,52 +377,41 @@ class _TerrainPainter extends CustomPainter {
         path.lineTo(q.dx, q.dy);
       }
       path.close();
-      canvas.drawPath(path, Paint()..color = face.$2);
       canvas.drawPath(
         path,
         Paint()
-          ..color = Colors.black.withValues(alpha: .12)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = .4,
+          ..color = face.$2
+          ..isAntiAlias = false,
       );
     }
-    for (final prop in scene?.props ?? []) {
-      final vertices = (prop['corners'] as List)
-          .map(
-            (p) => (
-              (p[0] as num).toDouble(),
-              (p[1] as num).toDouble(),
-              (p[2] as num).toDouble(),
-            ),
-          )
-          .toList();
-      if ((vertices[0].$1 - center.dx).abs() > radius ||
-          (vertices[0].$2 - center.dy).abs() > radius) {
+    final foliage =
+        (scene?.foliage ?? [])
+            .where(
+              (f) =>
+                  ((f['at'][0] as num) - center.dx).abs() < radius &&
+                  ((f['at'][1] as num) - center.dy).abs() < radius,
+            )
+            .toList()
+          ..sort((a, b) => (b['at'][0] as num).compareTo(a['at'][0] as num));
+    for (final f in foliage) {
+      // Native sea rendering occludes trees entirely below the water surface.
+      if ((f['at'][2] as num) + (f['height'] as num) <= 0) {
         continue;
       }
-      final paint = Paint()
-        ..color = const Color(0xff9db08b)
-        ..strokeWidth = 1;
-      for (final edge in const [
-        (0, 1),
-        (0, 2),
-        (0, 4),
-        (1, 3),
-        (1, 5),
-        (2, 3),
-        (2, 6),
-        (3, 7),
-        (4, 5),
-        (4, 6),
-        (5, 7),
-        (6, 7),
-      ]) {
-        canvas.drawLine(
-          project(vertices[edge.$1], size),
-          project(vertices[edge.$2], size),
-          paint,
-        );
-      }
+      final at = project((
+        (f['at'][0] as num).toDouble(),
+        (f['at'][1] as num).toDouble(),
+        (f['at'][2] as num).toDouble(),
+      ), size);
+      final image = scene!.images[f['image']]!;
+      final width = (f['width'] as num) * units,
+          height = (f['height'] as num) * units;
+      canvas.drawImageRect(
+        image,
+        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+        Rect.fromLTWH(at.dx - width / 2, at.dy - height, width, height),
+        Paint()..filterQuality = FilterQuality.medium,
+      );
     }
     final at = project((world.dx, world.dy, z), size);
     canvas.drawCircle(at, 6, Paint()..color = const Color(0xffffcf4a));

@@ -217,6 +217,8 @@ def expected_edits(root):
     tables = {}
     if native_units:
         split(native_units, rows); prepare(tables, [], native_units, root, rows)
+    import _ffr_crystal_cave
+    _ffr_crystal_cave.prepare_shops(tables, units, rows)
     expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
     import _ffr_ability_modes
     if _ffr_ability_modes.enabled(root) and (root / 'build/animation-repair-report.json').is_file():

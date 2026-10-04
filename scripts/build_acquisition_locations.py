@@ -74,15 +74,27 @@ def _mesh(document):
     export = next(e for e in document['Exports'] if e['ClassIndex'] < 0 and
                   document['Imports'][-e['ClassIndex'] - 1]['ObjectName'] == 'StaticMesh')
     raw = base64.b64decode(export['Extras'], validate=True)
-    if raw[:14] != bytes.fromhex('0500010000000100000002000000') or raw[38:40] != b'\x05\x08':
+    if raw[:14] != bytes.fromhex('0500010000000100000002000000'):
         raise ValueError('Unsupported cooked entrance mesh layout.')
-    lods, sections = struct.unpack_from('<I', raw, 34)[0], struct.unpack_from('<I', raw, 40)[0]
+    lods = struct.unpack_from('<I', raw, 34)[0]
+    start = 38
+    # Native foliage strips LOD0 when MinLOD=1. A cooked-out UE5.6 LOD
+    # retains sections, LWC bounds, deviation and cooked/inlined flags only.
+    while raw[start:start + 2] == b'\x05\x0a':
+        n = struct.unpack_from('<I', raw, start + 2)[0]
+        end = start + 74 + 40 * n
+        if not 0 < n <= 16 or struct.unpack_from('<I', raw, end - 8)[0] != 1:
+            raise ValueError('Unsupported cooked-out native LOD.')
+        start = end
+    if raw[start:start + 2] != b'\x05\x08':
+        raise ValueError('Unsupported cooked entrance mesh layout.')
+    sections = struct.unpack_from('<I', raw, start + 2)[0]
     if not 0 < lods <= 8 or not 0 < sections <= 16:
         raise ValueError('Invalid entrance LOD or section count.')
-    section_data = [struct.unpack_from('<5I', raw, 44 + i * 40) for i in range(sections)]
+    section_data = [struct.unpack_from('<5I', raw, start + 6 + i * 40) for i in range(sections)]
     # UE5.6 LOD0 sections, deviation, LWC bounds, cooked/inlined/raytracing flags,
     # followed by FPositionVertexBuffer. This reader supports these donors only.
-    p = 118 + 40 * sections
+    p = start + 80 + 40 * sections
     stride, count, item_size, item_count = struct.unpack_from('<4I', raw, p)
     p += 16
     if stride != 12 or item_size != 12 or count != item_count or not 0 < count <= 20000:
@@ -109,9 +121,17 @@ def _mesh(document):
         raise ValueError('Invalid entrance texture coordinates.')
     uvs = [struct.unpack_from('<2f' if full else '<2e', raw, p + i * coords * size) for i in range(count)]
     p += size * n
-    if raw[p:p + 10] != b'\x05\x00' + bytes(8):
+    if raw[p:p + 2] != b'\x05\x00':
         raise ValueError('Unsupported entrance vertex colors.')
+    stride, color_count = struct.unpack_from('<2I', raw, p + 2)
     p += 10
+    if color_count:
+        size, n = struct.unpack_from('<2I', raw, p)
+        if stride != 4 or color_count != count or size != 4 or n != count:
+            raise ValueError('Invalid native vertex color buffer.')
+        p += 8 + count * 4
+    elif stride:
+        raise ValueError('Invalid empty native vertex color buffer.')
     wide, size, n = struct.unpack_from('<3I', raw, p)
     p += 12
     if wide not in (0, 1) or size != 1 or n % (12 if wide else 6):

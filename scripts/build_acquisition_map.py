@@ -83,8 +83,15 @@ def build(decoded, output):
         name = f'Wld_{index}'
         if capture != f'/Game/UI/Textures/MapCapture/Wld/{name}':
             raise ValueError('The native Shipping map capture path changed.')
+        # BoxSize bounds the region, not the square capture image. The native
+        # camera height is half the longest side (90-degree capture). Stretching
+        # the image to BoxSize moves landmarks and coastal pins off the land.
+        side = float(entry['CaptureCameraHeight']) * 2
+        if abs(side - max(vector(entry['BoxSize']))) > .001:
+            raise ValueError('The native square capture camera changed.')
         manifest['tiles'].append({'id': index, 'center': vector(entry['WorldLocation']),
-                                  'size': vector(entry['BoxSize']), 'image': f'{name}.png'})
+                                  'size': [side, side], 'regionSize': vector(entry['BoxSize']),
+                                  'image': f'{name}.png'})
     for name in [f'Wld_{i}' for i in range(1, 10)] + ['T_Wld_ocean']:
         data = json.loads((decoded / name / 'data.json').read_text())
         # Numbered Unreal FNames store their base separately from the suffix.

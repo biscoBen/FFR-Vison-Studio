@@ -70,6 +70,18 @@ class AcquisitionLocationsTests(unittest.TestCase):
         self.assertEqual(uvs, [(0., 0.)] * 3)
         self.assertEqual(triangles, [((0, 1, 2), 0)])
 
+    def test_cooked_out_foliage_lod_and_colored_vertices_keep_valid_buffers(self):
+        document = self.fixture(); raw = bytearray(base64.b64decode(document['Exports'][0]['Extras']))
+        colors = b'\x05\x00' + struct.pack('<4I', 4, 3, 4, 3) + bytes([0, 64, 128, 255])*3
+        p = len(raw)-28
+        raw[p:p+10] = colors
+        stripped = bytearray(114); stripped[:2] = b'\x05\x0a'
+        struct.pack_into('<I', stripped, 2, 1); struct.pack_into('<2I', stripped, 106, 1, 1)
+        raw = raw[:38] + stripped + raw[38:]
+        struct.pack_into('<I', raw, 34, 2)
+        document['Exports'][0]['Extras'] = base64.b64encode(raw).decode()
+        self.assertEqual([len(x) for x in mesh(document)], [3, 3, 1])
+
     def test_truncated_incompatible_or_out_of_range_mesh_is_rejected(self):
         original = self.fixture()
         raw = bytearray(base64.b64decode(original['Exports'][0]['Extras']))

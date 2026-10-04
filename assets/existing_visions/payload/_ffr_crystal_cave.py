@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import struct
+import subprocess
 import tempfile
 import uuid
 import zlib
@@ -41,6 +42,7 @@ ENTRANCE = (17600.0, 21400.0, 160.0)
 ENTRANCE_MODEL = (ENTRANCE[0], ENTRANCE[1], 80.0)
 ENTRANCE_SCALE = (0.8, 0.8, 0.8)
 FINA_SCALE = 4.25
+VISION_SCALE = FINA_SCALE * .60
 FINA_FLOAT = 40.0
 FINA_ALIGNMENT_Y = 144.0  # Live test: two field-sprite widths, plus a small final nudge right.
 RETURN = (17250.0, 21400.0, 200.0)
@@ -117,6 +119,73 @@ def terrain_height(x, y):
              + (values[(b + 1) * 128 + a] * (1 - du) + values[(b + 1) * 128 + a + 1] * du) * dv)
         return p['z'] + (h - 32768) / 128 * p['dz']
     return None
+
+
+def prepare_shops(tables, units, rows):
+    """Route Added visions to freshly extracted native vendor inventories.
+
+    Combined vendors expose existing inventory tabs. Prefer their item tab,
+    otherwise the first supported tab; never create a second vendor identity.
+    """
+    selected = {}
+    for unit in units:
+        if unit.get('native') or unit.get('party') or assignment(unit) is not None:
+            continue
+        uid = unit.get('id')
+        if type(uid) is not int or not 13500 <= uid < 14000:
+            raise ValueError('Shop acquisition requires an Added vision identity.')
+        location = (unit.get('studioAcquisition') or {}).get('location', 'mitra_shop')
+        sid = 1 if location == 'mitra_shop' else int(location.removeprefix('shop_'))
+        if uid in selected: raise ValueError('Duplicate shop vision identity.')
+        selected[uid] = sid
+    if not selected: return tables
+    rel = 'Shop/DT_ShopList'; inventories = rows(rel)
+    by_id = {}
+    for key, row in inventories.items():
+        sid = row.get('ShopID')
+        if sid in by_id: raise ValueError('Duplicate native shop identity.')
+        by_id[sid] = key
+    combined = None; targets = {}
+    for uid, sid in selected.items():
+        if sid not in by_id:
+            if combined is None: combined = rows('Shop/DT_VariousShopsList')
+            matches = [v for v in combined.values() if v.get('ID') == sid]
+            if len(matches) != 1: raise ValueError(f'Selected vendor {sid} is unavailable. Re-run game preparation.')
+            sid = next((matches[0].get(k) for k in ('ToolShopID', 'WeaponShopID', 'ArmorShopID', 'AccessoryShopID')
+                        if matches[0].get(k, -1) in by_id), None)
+            if sid is None: raise ValueError('Selected combined vendor has no supported inventory.')
+        targets.setdefault(by_id[sid], []).append(uid)
+    edits = []
+    for key, ids in targets.items():
+        items = copy.deepcopy(inventories[key]['ItemList'])
+        if not items: raise ValueError('Selected vendor has no native item template.')
+        if any(it['ItemId'] in selected for it in items):
+            raise ValueError('Prepared native shop already contains a custom vision. Re-run game preparation.')
+        empty = [i for i, item in enumerate(items) if item['ItemId'] == -1]
+        for uid in ids:
+            entry = dict(items[0], ItemId=uid, Condition='', MaxOrderNum=1, PriceRatio=1.0)
+            if empty: items[empty.pop(0)] = entry
+            else: items.append(entry)
+        edits.append({'row': key, 'set': {'ItemList': items}})
+    operation = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+    if operation['set']: raise ValueError('Another extension already changed the selected shop inventories.')
+    operation['set'].extend(edits)
+    return tables
+
+
+def verify_shops(root, tool, usmap):
+    root = Path(root)
+    units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
+    def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    operations = prepare_shops({}, units, rows)
+    if not operations: return
+    import _ffr_testing
+    rel = 'Shop/DT_ShopList'; operation = operations[rel]
+    target = root / 'build/vision-testing/shops-verified.json'; target.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
+                           str(target), '--usmap', usmap], check=True, capture_output=True)
+    _ffr_testing.check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+    print('OK: selected native vendor inventories and unrelated rows verified')
 
 
 def assignment(unit):
@@ -243,7 +312,7 @@ def cave_plans(units, root, rows=None):
             uid = None if key == 'crystal_cave' and fina and legacy else unit['id']
             offset = (0.0, (index - (len(group['units']) - 1) / 2) * 160.0, 0.0)
             entries.append((unit, replace(base, unit_id=uid, material=material, sprite=sprite,
-                                           sprite_scale=FINA_SCALE,
+                                           sprite_scale=FINA_SCALE if fina else VISION_SCALE,
                                            sprite_float=FINA_FLOAT if fina else 0.0, spawn_offset=offset)))
         plans.append(entries)
     return plans, registry
@@ -830,13 +899,16 @@ def make_npc(source, unit, spawn, spec):
     prop = copy.deepcopy(property_data(npc['Exports'][56], 'm_IsAnimationUseDirection'))
     operation['Data'].append(prop)
     prop = copy.deepcopy(property_data(npc['Exports'][63], 'UUPerPixel'))
-    prop['Name'] = 'm_SsPlayerScale'; prop['Value'] = spec.sprite_scale; prop['IsZero'] = False
+    # These native fields are float32. Author their exact stored value so the
+    # strict asset read-back verifier also accepts non-binary scales like 2.55.
+    sprite_scale = struct.unpack('<f', struct.pack('<f', spec.sprite_scale))[0]
+    prop['Name'] = 'm_SsPlayerScale'; prop['Value'] = sprite_scale; prop['IsZero'] = False
     owner['Data'].append(prop)
     ss = npc['Exports'][63]
     sprite = spec.sprite or f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
     set_value(ss, 'AutoPlayAnimPackName', Path(sprite).name)
     set_value(ss, 'AutoPlayAnimationName', 'idle'); set_value(ss, 'AutoPlayAnimationIndex', 0)
-    set_value(ss, 'UUPerPixel', spec.sprite_scale)
+    set_value(ss, 'UUPerPixel', sprite_scale)
     for imp in npc['Imports']:
         if imp['ObjectName'] == '/Game/Chara/Field_Unit/npc9020/npc9020':
             imp['ObjectName'] = sprite

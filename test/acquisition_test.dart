@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/screens/steps/acquisition_step.dart';
+import 'package:ffr_vision_studio/screens/cave_terrain_preview.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/services/acquisition.dart';
@@ -25,6 +26,7 @@ void main() {
   setUpAll(() async {
     await AcquisitionMapData.bundled;
     await CaveTerrain.bundled;
+    await PlacementScene.bundled;
     await AcquisitionCatalog.bundled;
     await (FontLoader(
       'Barlow',
@@ -43,10 +45,21 @@ void main() {
       final tile = map.captures.first;
       final rect = map.captureRect(tile, viewport);
       const expected = {
-        'earth_shrine': Offset(617, 177),
-        'crystal_cave': Offset(688, 228),
-        'mitra_shop': Offset(725, 342),
+        'earth_shrine': Offset(594, 177),
+        'crystal_cave': Offset(649, 228),
+        'mitra_shop': Offset(677, 342),
       };
+      expect(tile.size, const Size(9000, 9000));
+      // Reported coastal placement stays on the native image, at (794, 300),
+      // rather than the old horizontally stretched image's ocean pixel (875).
+      final coast = map.toViewport(
+        AcquisitionMapData.project(16964.99, 22678.74),
+        viewport,
+      );
+      expect(
+        (coast.dx - rect.left) / rect.width * 1024,
+        closeTo(794.02553, .0001),
+      );
       for (final site in Acquisition.sites) {
         final projected = AcquisitionMapData.project(
           site.worldX!,

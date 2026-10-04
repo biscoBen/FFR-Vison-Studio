@@ -32,7 +32,10 @@ class AcquisitionMapTests(unittest.TestCase):
                     self.assertIsNotNone(image.getbbox())
         first = manifest['tiles'][0]
         self.assertEqual(first['center'], [20200, -15100])
-        self.assertEqual(first['size'], [7000, 9000])
+        self.assertEqual(first['size'], [9000, 9000])
+        self.assertEqual(first['regionSize'], [7000, 9000])
+        for tile in manifest['tiles']:
+            self.assertEqual(tile['size'], [max(tile['regionSize'])] * 2)
 
     def fixture(self):
         # Known BC7 block from the native tutorial texture: native tutorial image.

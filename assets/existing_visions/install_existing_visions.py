@@ -111,6 +111,9 @@ def hook_builder(raw):
                  and 'UI/Skill/DT_CommandSkillIcon' in ast.unparse(n.iter)]
     shop_slot, = [n for n in loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                   and ast.unparse(n.value.func) == 'shop_slots.append']
+    shop_start, = [n for n in main.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'shop']
+    shop_end, = [n for n in main.body if isinstance(n, ast.Expr) and
+                 ast.unparse(n).startswith("tbl('Shop/DT_ShopList')['set'].append(")]
     if 'UNUSED_ICON_TAGS' not in ast.unparse(icon_tag.value):
         raise RuntimeError('Unsupported command icon allocation.')
     generator, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'generate_sprites']
@@ -162,6 +165,8 @@ def hook_builder(raw):
     index = shop_slot.lineno - 1
     indent = lines[index][:len(lines[index]) - len(lines[index].lstrip())]
     lines[index] = indent + 'if _ffr_crystal_cave.assignment(u) is None:' + nl + '    ' + lines[index]
+    for i in range(shop_start.lineno - 1, shop_end.end_lineno): lines[i] = ''
+    lines[shop_start.lineno - 1] = '    _ffr_crystal_cave.prepare_shops(tables, UNITS, rows)' + nl
     argument = sprite_call.args[0]
     if argument.lineno != argument.end_lineno: raise RuntimeError('Unsupported sprite converter call layout.')
     lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),
@@ -218,7 +223,7 @@ def hook_verifier(raw):
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
     lines[count.lineno - 1] = '    n = len([u for u in json.load(open(spec, encoding="utf-8")) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
     finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
-    lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
+    lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_crystal_cave' + nl + '    _ffr_crystal_cave.verify_shops(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
     additions = {
         expected.end_lineno: [MARKER, 'import _ffr_existingvisions', 'native_expected = _ffr_existingvisions.expected_edits(ROOT)'],
         unexpected.end_lineno: [MARKER, 'unexpected = [k for k in unexpected if k not in changed or not _ffr_existingvisions.expected_row_change(rel, k, orig[k], built[k], native_expected, equivalent)]'],

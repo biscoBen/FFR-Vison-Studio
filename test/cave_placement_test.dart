@@ -13,6 +13,16 @@ void main() {
     await PlacementScene.bundled;
     await AcquisitionCatalog.bundled;
   });
+  test('native placement scenery loads paint and directional-independent tree textures', () {
+    final scene = PlacementScene.cached!;
+    expect(scene.terrainImages, hasLength(74));
+    expect(scene.foliage.length, greaterThan(2500));
+    expect(scene.images, isNotEmpty);
+    expect(
+      scene.props.any((p) => p['name'].toString().contains('forest_col')),
+      isFalse,
+    );
+  });
   test('native height interpolation matches decoded game terrain and rejects unknown regions', () async {
     final terrain = await CaveTerrain.bundled;
     expect(terrain.patches, hasLength(74));

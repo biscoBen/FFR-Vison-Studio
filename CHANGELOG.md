@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Reduce ordinary cave visions to 60% of their previous sprite scale, preserving Crystal Fina's tested crystal size.
+- Wire saved vendor choices into native shop inventories; Mitra Weapons no longer falls back to Mitra Items. Preserve
+  original contents, purchase limits and native vision acquisition. Combined vendors use an existing inventory tab.
+- Correct 2D coastal marker alignment by displaying native captures as squares instead of stretching them to region
+  bounds. Retain saved cave coordinates and the reversible map projection.
+- Replace the placement preview's wireframe with native painted terrain, paths, shaded scenery and tree/bush instances.
+  Lighting is simplified, transparent shaders are omitted, and coverage is limited to available native reference regions.
+
 ## Published precise cave placement — 2026-10-04
 
 Code: [`011d0e2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/011d0e287548b2a69cf918d857e1ffac4cfe224f).

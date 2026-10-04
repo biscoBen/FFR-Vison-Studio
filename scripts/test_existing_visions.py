@@ -285,6 +285,7 @@ class NativeVisionTests(unittest.TestCase):
 
     def test_normal_post_build_verifier_accepts_native_edits_but_rejects_unrelated_fields_and_missing_rows(self):
         game, _, spec = fixture(); spec['stats']['Attack'] = 99
+        game['Shop/DT_ShopList'] = {'Mitra': {'ShopID': 1, 'ItemList': [{'ItemId': -1, 'Condition': None, 'MaxOrderNum': -1, 'PriceRatio': 1.0}]}}
         original = game[native.UNIT]
         changed = copy.deepcopy(original); changed['Cloud']['Attack'] = 99
         raw = (ROOT / 'scripts/fixtures/existing_visions/verify_mod.py').read_bytes()
@@ -312,7 +313,7 @@ class NativeVisionTests(unittest.TestCase):
                 self.assertEqual(env['icon_rows']('UI/Skill/DT_CommandSkillIcon'), {'first'})
                 for code, built in ((0, changed), (1, {**changed, 'Cloud': {**changed['Cloud'], 'SaveId': 999}}), (1, {})):
                     changed = built
-                    with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(SystemExit) as exit:
+                    with contextlib.redirect_stdout(io.StringIO()), mock.patch.object(sys.modules['_ffr_crystal_cave'], 'verify_shops'), self.assertRaises(SystemExit) as exit:
                         env['main']()
                     self.assertEqual(exit.exception.code, code)
 
@@ -401,8 +402,7 @@ class NativeVisionTests(unittest.TestCase):
             self.assertFalse(stale.exists())
             self.assertEqual(game, before)
             self.assertEqual(result['clones'], [])
-            self.assertEqual(result['tables'], [{'asset': 'FFRS/Content/Datatable/Shop/DT_ShopList', 'add': [],
-                                                'set': [{'row': 'fixture shop', 'set': {'ItemList': before['Shop/DT_ShopList']['fixture shop']['ItemList']}}]}])
+            self.assertEqual(result['tables'], [])
             self.assertTrue(all(not obj['mapAdd']['assetMap'] for obj in result['objects']))
 
 

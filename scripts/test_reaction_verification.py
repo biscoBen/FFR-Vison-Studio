@@ -28,6 +28,8 @@ class ReactionVerificationTests(unittest.TestCase):
         self.game = {self.rel: {}, 'Skill/DT_SkillData': {}, 'Skill/DT_SkillEffectData': {},
                      'Asset/Skill/DT_SkillAsset': {}, 'Asset/Skill/CDT_SkillAsset_Demo': {},
                      'UI/Skill/DT_CommandSkillIcon': {}, 'UI/Skill/CDT_SkillIcon': {}}
+        self.game['Shop/DT_ShopList'] = {'Mitra': {'ShopID': 1, 'ItemList': [
+            {'ItemId': -1, 'Condition': '', 'MaxOrderNum': -1, 'PriceRatio': 1.0}]}}
         skills = []
         for sid, name in self.targets.items():
             donor, donor_name = self.sources[sid]; element = 'Water' if sid == 446800 else 'Wind'
@@ -75,6 +77,7 @@ class ReactionVerificationTests(unittest.TestCase):
     def verify(self):
         output = io.StringIO()
         with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_animation_repair': animation}), \
+                mock.patch.object(sys.modules['_ffr_crystal_cave'], 'verify_shops'), \
                 contextlib.redirect_stdout(output), self.assertRaises(SystemExit) as result:
             self.env['main']()
         return result.exception.code, output.getvalue()
