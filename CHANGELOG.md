@@ -11,12 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published native vendors and user-placed caves — 2026-10-04
+
+Code: [`37f42ba`](https://github.com/biscoBen/FFR-Vison-Studio/commit/37f42ba2ebf41dc4b8fbe3f9da66c26b7f3085b5).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37222696350),
+[Windows run 37222696350](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37222696350).
+
 - Replace specific acquisition checkboxes with **Shop**/**Cave** and dropdowns. Include all native shop inventory and
   combined-shop records, preserving IDs/chapter variants; later-game/moving shops without known coordinates have no pin.
 - Right-click the map to save a named cave at the clicked location and choose from four native entrance model previews.
   Keep a shared persistent pool beginning with our Crystal Fina cave; the user places the remaining caves toward 30.
   Selecting a cave centers its marker. Preserve spoiler hiding, random rerolls and saved character configs; include a
   selected custom cave snapshot so configs can restore it. These are Studio placements; game acquisition is still unchanged.
+- Verification: Flutter analysis, 197 passing local Flutter tests and 241 Python tests (existing local platform/reference
+  skips). Cover pan/zoom placement, cancellation, selecting and centering caves, thirty user-chosen saved locations,
+  config restoration and preservation of corrupt files. All Windows gates passed, including genuine frozen-engine
+  startup and launcher/updater checks. Verify authenticated release checksum, exact-commit provenance and all 50
+  packaged resource files. No new live game behavior is introduced.
+- Measured request clock to verified package: **40m58s** — **24m28s investigation/implementation** (including reference
+  gathering), **6m40s local checks, correction and pushes**, **9m30s CI/waiting**, **20s release verification**.
+  First complete candidate to verified package: **16m30s**. The final CI run took **4m36s**, using **7m58s runner time**.
+  The first build failed because Windows read UTF-8 source labels as cp1252; fix explicit encoding and verify native
+  regeneration under that default. Two code pushes, two push builds and one cancelled helper-generated retry consumed
+  **23m03s total runner time**. Publication notes use the documentation-only path.
 
 ## Published acquisition planning UI and native map — 2026-10-04
 

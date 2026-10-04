@@ -274,6 +274,8 @@ Right-click the map, choose **Add cave here**, name it and select an entrance mo
 with our Crystal Fina cave; you place the rest toward the 30-cave target. Selecting a cave centers its pin. Entrance
 previews use native geometry with simplified lighting. Cave locations persist across Studio restarts, and the selected
 cave is included in character configs. This remains a UI preview; in-game placement/acquisition will be connected later.
+The [verified acquisition placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37222696350)
+contains these controls and the native vendor/entrance catalog.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
