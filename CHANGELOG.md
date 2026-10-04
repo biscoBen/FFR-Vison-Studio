@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published acquisition fixes and scenery — 2026-10-04
+
+Code: [`1951934`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1951934b84a49fe975e3524ff8e42db10b4ae430).
+[Verified Windows test release / run 37233295971](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37233295971).
+
 - Reduce ordinary cave visions to 60% of their previous sprite scale, preserving Crystal Fina's tested crystal size.
 - Wire saved vendor choices into native shop inventories; Mitra Weapons no longer falls back to Mitra Items. Preserve
   original contents, purchase limits and native vision acquisition. Combined vendors use an existing inventory tab.
@@ -18,6 +23,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   bounds. Retain saved cave coordinates and the reversible map projection.
 - Replace the placement preview's wireframe with native painted terrain, paths, shaded scenery and tree/bush instances.
   Lighting is simplified, transparent shaders are omitted, and coverage is limited to available native reference regions.
+
+- Verification: Flutter analysis, 205 local Flutter tests (one existing platform skip) and 258 Python tests (three
+  existing platform/reference skips). All Windows gates passed, including fresh frozen-engine startup and shortcut/updater
+  tests. All 125 vendor choices resolve to native inventories, with each assigned vision present exactly once and the
+  Mitra Weapons assignment absent from Mitra Items. Native asset read-back and IoStore round-trip preserve all 44 cave
+  map/timeline packages, including exact float32 sprite scales, collision, grants and returns. The authenticated release
+  download matches the code commit and checksum; all 54 packaged resources and the scenery archive's members are verified.
+  These checks do not execute Resonance gameplay; lighting/shader parity and later-game vendor accessibility need live tests.
+- Measured request start to verified package: **26m39s** — implementation/investigation **18m05s**, local checks/corrections/push
+  **3m00s**, CI **5m13s**, verification **0m21s**. First complete candidate to verified package: **8m34s**;
+  native read-back caught a non-binary float32 scale and it was corrected before pushing. CI used **9m04s** of runner time.
+  One code push and one reused Windows build. Publication notes use the documentation-only path.
 
 ## Published precise cave placement — 2026-10-04
 

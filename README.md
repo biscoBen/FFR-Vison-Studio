@@ -296,9 +296,9 @@ Ordinary cave visions use 60% of the previous scale; Crystal Fina's crystal stay
 captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
 The cave portal uses a
 white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
-The [verified cave placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37229153450)
-contains precise placement controls, terrain grounding, 75% entrances, corrected cave vision scale and the white portal
-transition (commit `011d0e2`, run `37229153450`).
+The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37233295971)
+contains selected-vendor routing, smaller ordinary cave visions, aligned 2D captures and the painted 3D placement preview
+(commit `1951934`, run `37233295971`). Update Studio, rebuild/install the mod and restart Resonance.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
