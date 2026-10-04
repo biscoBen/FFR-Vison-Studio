@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published acquisition planning UI and native map — 2026-10-04
+
+Code: [`0e9ad33`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0e9ad33595202f23b73977b5d1e59dc9d1f64ca8).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37217313830),
+[Windows run 37217313830](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37217313830).
+
 - Add an **Acquisition** tab with Random and Hide for spoilers enabled by default. Save each vision's
   preview selection in its character configuration; either Random transition chooses a different site.
   Reveal the selected, disabled option while Random is on, or choose manually with it off. Hide both
@@ -18,6 +26,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Use the game's own world-map menu captures and native coordinates, with zoom, mouse dragging and
   a full-map view. Bundle the images for offline use. These preferences only plan future acquisition;
   installing still uses the existing shop/cave behavior. No game acquisition logic changes in this update.
+- Verification: Flutter analysis, 190 local Flutter tests and 237 Python tests (existing local platform/reference
+  skips). Test spoiler hiding, rerolling, manual selection, config persistence, zoom/pan and minimum-width layout;
+  verify native texture decoding, map projection and image checksums. All Windows gates passed, including genuine
+  frozen-engine startup and launcher/updater checks. Authenticated release checksum, exact-commit provenance and
+  all 45 packaged resource files verified. No new live game behavior is introduced.
+- Measured from the initial request clock to verified package: **35m16s** — **20m47s investigation/implementation**,
+  including extraction and reference gathering, **9m22s local checks, test corrections and push**, **4m46s CI**,
+  **21s release verification**. First complete candidate to verified package: **14m29s**. CI used **8m08s runner time**.
+  One code push and one reused build; publication notes use the documentation-only path.
 
 ## Published complete directional FFBE field selector — 2026-10-03
 
