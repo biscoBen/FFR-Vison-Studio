@@ -7,7 +7,7 @@ import 'package:http/testing.dart';
 
 void main() {
   test('changing a testing switch preserves the other persisted settings', () async {
-    var settings = <String, dynamic>{'schema': 1, 'maxMr': true, 'practiceBattle': false, 'crystalCave': false};
+    var settings = <String, dynamic>{'schema': 1, 'maxMr': true, 'practiceBattle': false, 'crystalCave': false, 'fieldLeader': true};
     final client = MockClient((request) async {
       expect(request.url.path, '/api/testing');
       if (request.method == 'PUT') {
@@ -19,9 +19,12 @@ void main() {
       final api = Api('http://studio');
       await api.saveCrystalCave(true);
       await api.saveTestingPracticeBattle(true);
-      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true, 'crystalCave': true});
+      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true, 'crystalCave': true, 'fieldLeader': true});
       await api.saveTestingMaxMr(false);
-      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'crystalCave': true});
+      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'crystalCave': true, 'fieldLeader': true});
+      expect(await api.fieldLeader(), isTrue);
+      await api.saveFieldLeader(false);
+      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'crystalCave': true, 'fieldLeader': false});
       expect(await api.testingPracticeBattle(), isTrue);
       expect(await api.crystalCave(), isTrue);
     }, () => client);
@@ -32,6 +35,7 @@ void main() {
     await http.runWithClient(() async {
       expect(await Api('http://studio').testingPracticeBattle(), isFalse);
       expect(await Api('http://studio').crystalCave(), isFalse);
+      expect(await Api('http://studio').fieldLeader(), isFalse);
     }, () => client);
   });
 }
