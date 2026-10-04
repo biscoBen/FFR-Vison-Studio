@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published grounded cave exits and map details — 2026-10-04
+
+Code: [`d94d02e`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d94d02e2139612ac8de7204b9a7d052b7f123bc9).
+[Verified Windows test release / run 37237225179](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37237225179).
+
 - Increase ordinary cave visions by 5% from the previous package; preserve Crystal Fina's tested crystal scale.
 - Return outside each cave on its rotated opening side, using native landscape height and runtime collision snapping
   instead of a fixed westward point 200 units above ground. Restore walking and use the native world-map exit/name route.
@@ -18,10 +25,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   3D preview. Restore inherited town/landmark meshes and cooked bridge instances, including components
   in landscape levels. Cull distant meshes before expanding their geometry. Later-region assets absent from the supplied
   references and unsupported/translucent meshes still need additional reference coverage; rendering remains simplified.
-- Validation: Flutter analysis, the full local Flutter/Python suites, native read-back and IoStore round-trip passed for
-  four rotated entrances/five visions (44 packages),
-  including grounded return positions, facing, collision snapping and the unconditional world-map exit. Live Resonance
-  gameplay remains a user check; automated checks cannot execute its native transition functions.
+- Validation: clean Flutter analysis, 205 Flutter tests (one existing platform skip), 260 Python tests (three existing
+  platform/reference skips), and all required Windows gates, including fresh frozen-engine startup and launcher/updater
+  tests. Native read-back and IoStore round-trip passed for four rotated entrances/five visions (44 packages), including
+  grounded returns, facing, collision snapping and the unconditional world-map exit. Authenticated download verified the
+  exact commit/run, release checksum, all 54 packaged resources and scenery members. Live Resonance gameplay remains a
+  user check; automated checks cannot execute its native transition functions.
+- Measured request start to verified package: **32m53s** — investigation/implementation and preview correction **19m25s**,
+  local checks/pushes **3m46s**, CI/waiting **8m57s**, release verification **45s**. First complete candidate to verified
+  package: **17m13s**, including both builds and the correction. A visual check during the first build caught low ground
+  being colored as ocean; the second code push fixes that. Both exact-commit push builds were reused, without duplicate
+  dispatch. Their CI durations were **5m25s** and **6m06s**, overlapping the correction; summed runner time **17m48s**.
+  Publication notes use the documentation-only path.
 
 ## Published acquisition fixes and scenery — 2026-10-04
 

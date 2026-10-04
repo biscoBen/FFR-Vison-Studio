@@ -299,9 +299,9 @@ captures are displayed without stretching them to region bounds, keeping 2D pins
 Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on
 its opening side, at native terrain height with runtime collision snapping; the exact incoming player position is not saved.
 The cave portal uses a white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
-The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37233295971)
-contains selected-vendor routing, smaller ordinary cave visions, aligned 2D captures and the painted 3D placement preview
-(commit `1951934`, run `37233295971`). Update Studio, rebuild/install the mod and restart Resonance.
+The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37237225179)
+contains grounded cave exits, the 5% vision size adjustment, restored landmarks/bridges and corrected low-ground paint
+(commit `d94d02e`, run `37237225179`). Update Studio, rebuild/install the mod and restart Resonance.
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
@@ -403,6 +403,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   checked landscape mip decoder, source height data and placement preview geometry; expand terrain coverage and
   validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
   instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest
+  inherited Blueprint transforms, cooked bridge instances, capture-alpha coastline masks, door-side returns and runtime
+  collision snapping with restored walking, including placements on low ground and elevated entrances. Retest
   selected vendor inventories and combined-shop tabs, preserving native item conditions and purchase limits.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
