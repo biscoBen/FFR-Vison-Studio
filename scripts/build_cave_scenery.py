@@ -89,6 +89,32 @@ def weightmap(export):
     return np.frombuffer(raw, np.uint8, w*h*4, start).reshape(h, w, 4)[:, :, [2, 1, 0, 3]]
 
 
+class NativeLandMask:
+    """Native map captures use transparent ocean over the separate ocean image."""
+    def __init__(self, root, sources):
+        path = root / 'manifest.json'
+        data = json.loads(path.read_bytes())
+        if data['projection'] != ['worldY', '-worldX']: raise ValueError('Unsupported native capture projection.')
+        sources['map-capture-manifest'] = hashlib.sha256(path.read_bytes()).hexdigest()
+        self.tiles = []
+        for tile in data['tiles']:
+            image = root / tile['image']
+            sources[tile['image']] = hashlib.sha256(image.read_bytes()).hexdigest()
+            self.tiles.append((tile, np.asarray(Image.open(image).convert('RGBA'))[:, :, 3]))
+
+    def at(self, x, y):
+        x, y = np.broadcast_arrays(x, y)
+        land = np.zeros(x.shape, dtype=bool)
+        for tile, alpha in self.tiles:
+            u = (y - tile['center'][0]) / tile['size'][0] + .5
+            v = (-x - tile['center'][1]) / tile['size'][1] + .5
+            covered = (u >= 0) & (u < 1) & (v >= 0) & (v < 1)
+            samples = alpha[np.clip((v*alpha.shape[0]).astype(int), 0, alpha.shape[0]-1),
+                            np.clip((u*alpha.shape[1]).astype(int), 0, alpha.shape[1]-1)]
+            land |= covered & (samples >= 128)
+        return land
+
+
 class NativeAssets:
     def __init__(self, roots, cache, sdk, mapping):
         self.roots, self.cache, self.sdk, self.mapping = roots, cache, sdk, mapping
@@ -157,6 +183,7 @@ class NativeAssets:
 def build(args):
     assets = NativeAssets(args.content, args.cache, args.sdk, args.usmap)
     result = {'schema': 1, 'terrain': [], 'props': [], 'foliage': [], 'sources': {}, 'omitted': []}
+    land_mask = NativeLandMask(getattr(args, 'map_images', Path('assets/acquisition_map')), assets.sources)
     images = {}
     # The material's paint establishes paths/grass/rock boundaries. Diffuse
     # samples retain native surface detail with simplified, static lighting.
@@ -193,6 +220,8 @@ def build(args):
                 color += base * w[:, :, None]; total += w
             if np.any(total == 0): raise ValueError('Native paint has an unassigned texel.')
             rgb = np.clip(color / total[:, :, None], 0, 255).astype('uint8')
+            xx, yy = np.meshgrid(np.arange(128)*dx+at[0], np.arange(128)*dy+at[1])
+            rgb[~land_mask.at(xx, yy)] = (49, 88, 120)
             name = f'terrain_{len(result["terrain"])}.png'; images[name] = Image.fromarray(rgb)
             result['terrain'].append({'x': float(at[0]), 'y': float(at[1]), 'image': name})
         for index, e in enumerate(document['Exports'], 1):
@@ -213,7 +242,8 @@ def build(args):
                 for local in foliage_matrices(e):
                     m = parent @ local; p = m[:3, 3]; scale = np.linalg.norm(m[:3, :3], axis=0)
                     result['foliage'].append({'at': [round(float(v), 4) for v in p],
-                                             'width': round(width*max(scale[:2]), 4), 'height': round(height*scale[2], 4), 'image': name})
+                                             'width': round(width*max(scale[:2]), 4), 'height': round(height*scale[2], 4),
+                                             'onLand': bool(land_mask.at(p[0], p[1])), 'image': name})
             except (ValueError, FileNotFoundError, KeyError) as error: result['omitted'].append(package + ': ' + str(error))
     for source in dict.fromkeys(args.world + args.landscape):
         document = json.loads(source.read_text(encoding='utf-8-sig'))
@@ -289,4 +319,5 @@ if __name__ == '__main__':
     p.add_argument('--landscape', type=Path, action='append', required=True)
     p.add_argument('--world', type=Path, action='append', required=True)
     p.add_argument('--output', type=Path, default=Path('assets/acquisition_map/scenery.zip'))
+    p.add_argument('--map-images', type=Path, default=Path('assets/acquisition_map'))
     build(p.parse_args())

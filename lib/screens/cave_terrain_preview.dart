@@ -255,7 +255,7 @@ class _TerrainPainter extends CustomPainter {
             [(u, v), (a, v), (a, b)],
             [(u, v), (a, b), (u, b)],
           ]) {
-            if (image == null || height < 0) {
+            if (image == null) {
               faces.add(([for (final q in ids) point(q.$1, q.$2)], color));
             } else {
               final nx = (p.at(u, v) - p.at(a, v)) / ((a - u) * p.dx),
@@ -403,8 +403,8 @@ class _TerrainPainter extends CustomPainter {
             .toList()
           ..sort((a, b) => (b['at'][0] as num).compareTo(a['at'][0] as num));
     for (final f in foliage) {
-      // Native sea rendering occludes trees entirely below the water surface.
-      if ((f['at'][2] as num) + (f['height'] as num) <= 0) {
+      // Native captures identify the coast; low terrain also includes towns.
+      if (f['onLand'] == false) {
         continue;
       }
       final at = project((

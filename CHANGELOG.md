@@ -14,7 +14,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Increase ordinary cave visions by 5% from the previous package; preserve Crystal Fina's tested crystal scale.
 - Return outside each cave on its rotated opening side, using native landscape height and runtime collision snapping
   instead of a fixed westward point 200 units above ground. Restore walking and use the native world-map exit/name route.
-- Restore inherited town/landmark meshes and cooked bridge instances in the 3D placement preview, including components
+- Use native capture transparency to distinguish coast/ocean from low ground; Mitra no longer appears in water in the
+  3D preview. Restore inherited town/landmark meshes and cooked bridge instances, including components
   in landscape levels. Cull distant meshes before expanding their geometry. Later-region assets absent from the supplied
   references and unsupported/translucent meshes still need additional reference coverage; rendering remains simplified.
 - Validation: Flutter analysis, the full local Flutter/Python suites, native read-back and IoStore round-trip passed for

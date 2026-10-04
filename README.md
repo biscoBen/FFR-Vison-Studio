@@ -292,7 +292,8 @@ size controls, or right-click the map to move it. The pin marks the footprint ce
 visions without changing cave IDs. The 3D preview uses native terrain paint, shaded world meshes and tree/bush instances
 with simplified lighting. It omits unavailable assets and Unreal's animated/transparent shaders. Native height/paint
 coverage includes Grandshelt and Dirnado. Town/landmark models and bridge instances include inherited Blueprint components
-and landscape levels; later-area models missing from the references remain omitted. Elsewhere set Z manually.
+and landscape levels. Native capture transparency defines the coast, so low towns remain on land; later-area models
+missing from the references remain omitted. Elsewhere set Z manually.
 Ordinary cave visions use 63% of their original scale (5% larger than the previous package); Crystal Fina's crystal stays at its tested size. Square native map
 captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
 Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on

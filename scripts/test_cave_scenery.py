@@ -25,6 +25,14 @@ class CaveSceneryTests(unittest.TestCase):
                 self.assertTrue(any(abs(t['x']-p['x']) < .01 and abs(t['y']-p['y']) < .01 for p in terrain))
                 with Image.open(io.BytesIO(z.read(t['image']))) as image:
                     self.assertEqual(image.size, (128, 128))
+            # Mitra is below Z=0 but is dry land. Native capture alpha also
+            # identifies the offshore control point, independently of heights.
+            for x, y, water in [(16598, 21654, False), (15500, 24000, True)]:
+                patch = next(p for p in terrain if p['x'] <= x <= p['x']+127*p['dx'] and p['y'] <= y <= p['y']+127*p['dy'])
+                entry = next(t for t in scene['terrain'] if abs(t['x']-patch['x']) < .01 and abs(t['y']-patch['y']) < .01)
+                with Image.open(io.BytesIO(z.read(entry['image']))) as image:
+                    rgb = image.getpixel((int((x-patch['x'])/patch['dx']), int((y-patch['y'])/patch['dy'])))
+                self.assertEqual(rgb == (49, 88, 120), water)
             for name, digest in scene['files'].items(): self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(), digest)
             self.assertGreater(len(scene['foliage']), 2500)
             self.assertTrue(any(abs(f['at'][0]-16964.99)<800 and abs(f['at'][1]-22678.74)<800 for f in scene['foliage']))
