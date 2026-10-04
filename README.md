@@ -293,7 +293,8 @@ visions without changing cave IDs. The 3D preview uses native terrain paint, sha
 with simplified lighting. It omits unavailable assets and Unreal's animated/transparent shaders. Native height/paint
 coverage includes Grandshelt and Dirnado. Town/landmark models and bridge instances include inherited Blueprint components
 and landscape levels. Native capture transparency defines the coast, so low towns remain on land; later-area models
-missing from the references remain omitted. Elsewhere set Z manually.
+now include the supplied Lanzelt towns/large bridges, Dirnado settlements and vision shrines (888 mesh instances).
+Unsupported rock geometry and missing shader dependencies remain omitted/simplified. Elsewhere set Z manually.
 Ordinary cave visions use 63% of their original scale (5% larger than the previous package); Crystal Fina's crystal stays at its tested size. Square native map
 captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
 Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on

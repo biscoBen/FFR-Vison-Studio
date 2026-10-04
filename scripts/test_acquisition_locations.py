@@ -116,6 +116,30 @@ class AcquisitionLocationsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             diffuse(external, payload)
 
+    def test_skipped_source_mip_uses_cooked_dimensions_and_checks_payload(self):
+        original = test_acquisition_map.AcquisitionMapTests().fixture()
+        expected = diffuse(original)
+        raw = bytearray(base64.b64decode(original['Exports'][0]['Extras']))
+        width, height = expected.size
+        struct.pack_into('<2I', raw, 44, width * 2, height * 2)
+        struct.pack_into('<I', raw, 67, 1)
+        payload = bytes(raw[79:95])
+        for external in (False, True):
+            document = copy.deepcopy(original)
+            cooked = raw[:79] + raw[95:] if external else raw
+            document['Exports'][0]['Extras'] = base64.b64encode(cooked).decode()
+            if external:
+                document['DataResources'] = [{'SerialSize': 16, 'RawSize': 16, 'SerialOffset': 0, 'LegacyBulkDataFlags': 66817}]
+            with self.subTest(external=external):
+                actual = diffuse(document, payload if external else None)
+                self.assertEqual(actual.size, expected.size)
+                self.assertEqual(actual.tobytes(), expected.tobytes())
+                invalid = bytearray(cooked)
+                struct.pack_into('<I', invalid, 67, 2)
+                document['Exports'][0]['Extras'] = base64.b64encode(invalid).decode()
+                with self.assertRaises(ValueError):
+                    diffuse(document, payload if external else None)
+
 
 if __name__ == '__main__':
     unittest.main()

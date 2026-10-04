@@ -43,8 +43,12 @@ class CaveSceneryTests(unittest.TestCase):
             # live in landscape levels and cooked HISM instance buffers.
             names = [p['name'] for p in scene['props']]
             for landmark in ('granshelt001', 'mitlatown001', 'mitlatown002',
-                             'WoodenBridge001', 'WoodenBridge002', 'Bridge001', 'Bridge002', 'Bridge003'):
+                             'WoodenBridge001', 'WoodenBridge002', 'Bridge001', 'Bridge002', 'Bridge003',
+                             'bigbridge001', 'bigbridge002', 'bigbridge003', 'bigbridge004',
+                             'colehouse001', 'dilmagia001', 'dwarvecave001', 'mobreeze001', 'shrinegate001'):
                 self.assertTrue(any(landmark in name for name in names), landmark)
+            self.assertFalse(any('bulk resource' in error for error in scene['omitted']),
+                             'cooked bridge mips must decode their available native textures')
             self.assertFalse(any('_Col' in name for name in names), 'inherited collision templates must remain hidden')
             mitra = next(p for p in scene['props'] if 'mitlatown001' in p['name'])
             mean = [sum(v[i] for v in mitra['vertices'])/len(mitra['vertices']) for i in range(2)]

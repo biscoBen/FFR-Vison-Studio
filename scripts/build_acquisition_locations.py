@@ -158,6 +158,15 @@ def diffuse(document, bulk=None):
     fmt = raw[60:60 + count - 1].decode('ascii')
     block = {'PF_DXT1': 8, 'PF_DXT5': 16, 'PF_BC7': 16}[fmt]
     end = 60 + count
+    first_mip, mip_count, _ = struct.unpack_from('<3I', raw, end)
+    if not (0 <= first_mip <= 12 and 0 < mip_count <= 13 and 0 < width <= 4096 and 0 < height <= 4096):
+        raise ValueError('Invalid cooked diffuse mip range or dimensions.')
+    # Native bridge textures retain their original platform dimensions but
+    # serialize from a smaller cooked mip. Check that mip's actual payload,
+    # then present it to the single-mip decoder with matching dimensions.
+    width, height = max(1, width >> first_mip), max(1, height >> first_mip)
+    struct.pack_into('<2I', raw, 44, width, height)
+    struct.pack_into('<I', raw, end, 0)
     length = ((width + 3) // 4) * ((height + 3) // 4) * block
     # Inline payloads and explicit native .ubulk resources are both supported.
     # The resource's offset, raw/serialized sizes and mip dimensions must agree.

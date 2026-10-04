@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Restore 164 additional native scenery objects from the new reference files: Lanzelt's large bridges and towns,
+  Dirnado settlements and industrial landmarks, and vision shrines. Preserve existing paint, foliage and landmark coverage.
+- Decode textures whose highest source mip was stripped by cooking, retaining payload-size/dimension checks. Large bridges
+  now use their available native diffuse colors. Shader effects and unsupported rock geometry remain simplified/omitted.
 
 ## Published grounded cave exits and map details — 2026-10-04
 
