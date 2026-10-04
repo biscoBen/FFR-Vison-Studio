@@ -284,6 +284,8 @@ Crystal Fina cave switch still works; an explicit cave assignment for her takes 
 remain planning controls and retain the existing shop behavior until vendor routing is implemented. Original visions
 retain their native acquisition. Entrance height uses the tested overworld baseline; terrain/accessibility and the new
 entrance appearances need an in-game placement check. Automated asset checks do not execute gameplay.
+The [verified Resonance Cave package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37225348474)
+contains the assigned-vision cave integration (commit `203f976`, run `37225348474`).
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation

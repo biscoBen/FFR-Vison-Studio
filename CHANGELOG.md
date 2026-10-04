@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published assigned Resonance Caves — 2026-10-04
+
+Code: [`203f976`](https://github.com/biscoBen/FFR-Vison-Studio/commit/203f976f70e684de6fa77be424a2b2d5f99c3e16).
+[Verified Windows test release](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37225348474).
+
 - Build saved cave assignments as **Resonance Caves**, with each selected vision's sprite, native item grant and
   once-owned disappearance. Reuse the Crystal Fina stone cave, button-operated portal, blockers, crystal room,
   controller-compatible obtain flow and return point. Group shared cave assignments with independent vision grants.
@@ -19,6 +24,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   vision acquisition and the legacy Crystal Fina switch remain compatible. Vendor routing is still a planning feature.
   Native tables and all four entrance types pass asset serialization with independent shared-cave grants. Live terrain,
   appearance and acquisition checks remain necessary; automated asset checks do not execute gameplay.
+- Validation: Flutter analysis and the full Flutter/Python suites, Windows frozen-engine startup, launcher/updater
+  checks and publication gates passed. All 44 generated native map/timeline packages survived IoStore packing and
+  extraction; the downloaded release's provenance, checksum and 50 bundled resources were verified.
 
 ## Published native vendors and user-placed caves — 2026-10-04
 
