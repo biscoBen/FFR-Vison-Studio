@@ -325,6 +325,9 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 ## Developing without touching your real install
 
+When creating Windows reference-extraction scripts, default their output to `%USERPROFILE%\Downloads\FFR Mod`,
+with a separate named or timestamped collection folder. Keep extracted files and upload ZIPs there, off the Desktop.
+
 Update the fork section of [CHANGELOG.md](CHANGELOG.md) with each user-facing change. Keep work under **Unreleased**
 until its Windows package passes the required checks; then record its date, commit and test-release link. Preserve the
 original project's release notes below the fork history.

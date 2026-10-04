@@ -11,11 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Smooth Vagrant Knight Rain's directional walk/run loops by using the six moving cells, excluding the identical
-  standing pose in column zero. Correct the swapped northwest/northeast rows in both the Studio preview and generated
-  idle/walk/run clips. Match the preview to the same six-frame cycle. Keep Resonance's normal
-  movement modes: full-stick movement and B-held running share its dash animation at different playback rates.
-  Field-leader cycling is still under investigation; the native animation projects and input bindings need verification.
+Field-leader cycling awaits runtime integration. All eight native party projects have eight-direction walk/run clips;
+Dark Fina has four-direction idle poses. Right-stick click currently zooms the minimap. The shipped player Blueprints
+contain no scripted switching handler; runtime function access is needed before implementing the hotkey and guards.
+
+## Published Vagrant Rain movement loops and directions — 2026-10-03
+
+Code: [`c26b650`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c26b650fb3c2756f59af289e9a8edee06850b401).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37163210493),
+[Windows run 37163210493](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37163210493).
+
+- Remove the identical standing pose from Vagrant Knight Rain's movement loops and use the six moving cells.
+  Correct swapped northwest/northeast rows for idle, walk and run; match the Studio preview's rows and cycle.
+  Keep native movement modes: ordinary full-stick jogging and B-held running share `dash` at different rates.
+  Rebuild/install after updating to regenerate field assets. In-game smoothness and directions need retesting.
+- Verification: 218 final local Python tests (3 reference/platform skips), Flutter analysis, bundle checks,
+  genuine native table/project/texture generation and readback, 44 decoded clip timings and 31 packaged files.
+  All required Windows checks and release gates passed for the final commit; exact-commit reuse and authenticated
+  release download verified. Original party walk/run coverage and field input mappings inspected from the new archive.
+- Measured to verified package: **18m20s from request**, including **4m16s initial investigation/implementation**,
+  **2m37s local checks/revision/push**, **10m36s across two CI runs** and **51s release verification**.
+  The direction correction arrived during the first build; both builds passed and the final one was reused.
+  CI used **16m51s runner time**. First complete candidate to verified package: **14m04s**; overlapping correction
+  work is included in the elapsed clock. Publication notes use the documentation-only path.
 
 ## Published cave navigation and controller repair — 2026-10-03
 
