@@ -143,6 +143,7 @@ class ResonanceCavesTests(unittest.TestCase):
     def test_world_exit_uses_world_name_route_and_resets_walking(self):
         def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
         actor = {'Data': [prop('m_MapId', 3000), prop('m_PointID', 0),
+                         prop('m_RegionId', 3000),
                          prop('m_IsTransitionChangeMovementMethod', False), prop('m_TransitionMovementType', 'Flying')]}
         template = {'Data': [prop('m_IsUseCondion', True), prop('m_IsAutoTransition', True),
                             prop('mTransitionDataList', [prop('0', [prop('mapId', 3000), prop('pointId', 0)])])]}
@@ -150,9 +151,17 @@ class ResonanceCavesTests(unittest.TestCase):
         cave.overworld_exit(actor, template, spec)
         self.assertFalse(cave.property_data(actor, 'm_IsUseCondion')['Value'])
         self.assertEqual(cave.property_data(actor, 'm_MapId')['Value'], 1000)
+        self.assertEqual(cave.property_data(actor, 'm_RegionId')['Value'], 1000)
+        self.assertEqual(len([p for p in actor['Data'] if p['Name'] == 'm_RegionId']), 1)
         self.assertEqual(cave.property_data(actor, 'm_PointID')['Value'], 29001)
         self.assertTrue(cave.property_data(actor, 'm_IsTransitionChangeMovementMethod')['Value'])
         self.assertEqual(cave.property_data(actor, 'm_TransitionMovementType')['Value'], 'Walking')
+
+        # Native donors omit this field when using their constructor default.
+        actor['Data'] = [p for p in actor['Data'] if p['Name'] != 'm_RegionId']
+        cave.overworld_exit(actor, template, spec)
+        self.assertEqual(cave.property_data(actor, 'm_RegionId')['Value'], 1000)
+        self.assertFalse(cave.property_data(actor, 'm_RegionId')['IsZero'])
 
     def test_new_caves_do_not_reassign_existing_ids_and_native_ids_are_skipped(self):
         original, rows, _ = reference.cave_game()

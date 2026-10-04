@@ -904,8 +904,14 @@ def transition(actor, conditional_template, map_id, point, auto=True):
 
 
 def overworld_exit(actor, conditional_template, spec):
-    """Use the native unconditional world-map route for both name and travel."""
+    """Set the native world-map travel and region/display identities explicitly."""
     transition(actor, conditional_template, 1000, spec.map_id, auto=False)
+    # The destination banner also uses the trigger's region ID. Leaving this
+    # native property implicit retained the Earth Shrine banner/level even
+    # while m_MapId correctly sent the player back to the world map.
+    region = copy.deepcopy(property_data(actor, 'm_MapId'))
+    region.update(Name='m_RegionId', Value=1000, IsZero=False)
+    actor['Data'] = [p for p in actor['Data'] if p['Name'] != 'm_RegionId'] + [region]
     set_value(actor, 'm_IsUseCondion', False)
     # Conditional defaults inherited from Earth Shrine suppress this reset.
     set_value(actor, 'm_IsTransitionChangeMovementMethod', True)

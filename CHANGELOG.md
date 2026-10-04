@@ -11,7 +11,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Set cave exits' native region/display ID explicitly to the world map, alongside their existing world-map travel target.
+  This addresses the inherited Earth Shrine name/recommended-level banner while preserving grounded return locations.
 
 ## Published additional world-map landmarks — 2026-10-04
 
