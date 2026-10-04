@@ -11,12 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published precise cave placement — 2026-10-04
+
+Code: [`011d0e2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/011d0e287548b2a69cf918d857e1ffac4cfe224f).
+[Test package / run 37229153450](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37229153450).
+
 - Add/edit cave placements with local 3D terrain dragging, precise X/Y/Z, ground snapping, rotation and size controls.
   Entrances default to 75% of the previous size. Ground their footprint centers using native terrain instead of a
   shared fixed height; preserve cave identities and update every assigned vision when editing a shared placement.
 - Give assigned cave visions Crystal Fina's tested sprite scale and make the cave-to-crystal-room transition white.
   Keep the existing shrine model and its native glow. The preview uses simplified prop outlines and omits game
   shaders/instanced foliage; terrain references cover Grandshelt and Dirnado, with manual height elsewhere.
+- Validation: Flutter analysis, full Flutter/Python suites, Windows frozen-engine startup and launcher/updater gates
+  passed. Native SDK/IoStore checks cover 44 level/timeline packages; four mesh bounds match their saved centers,
+  terrain bases and 75% size. The exact-commit release ZIP and 52 packaged resources/data files were verified.
+  Live placement, the new white portal transition and sprite sizing still need an in-game check.
+- Timing: 29m 06s from request to verified package, including investigation/development checks. Final candidate to
+  verification took 7m 29s; CI elapsed 5m 09s and used 8m 44s of runner time. One code push, one reused push build.
 
 ## Published cave-marker removal — 2026-10-04
 

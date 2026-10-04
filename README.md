@@ -292,8 +292,9 @@ visions without changing cave IDs. The 3D preview shows native terrain and entra
 outlines; game shaders and instanced foliage are omitted. Native height coverage currently includes Grandshelt and
 Dirnado; elsewhere set Z manually. All cave visions use the tested Crystal Fina sprite scale. The cave portal uses a
 white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
-The [verified cave placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37227168310)
-contains assigned-vision caves and marker removal (commit `86600ac`, run `37227168310`).
+The [verified cave placement package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37229153450)
+contains precise placement controls, terrain grounding, 75% entrances, corrected cave vision scale and the white portal
+transition (commit `011d0e2`, run `37229153450`).
 
 Open a vision and use **Save character config** at the bottom left to save a `.vision.json` file. It contains the full
 character spec: abilities and passives by tier, custom moves, stats, resistances, roles, Resonance mechanics and animation
