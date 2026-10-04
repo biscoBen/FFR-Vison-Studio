@@ -11,8 +11,25 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published cave exit display identity — 2026-10-04
+
+Code: [`97dc8e2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/97dc8e23d1ab1b8af0a8360f18f09373a4fa6085).
+[Verified Windows test release / run 37241624765](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37241624765).
+
 - Set cave exits' native region/display ID explicitly to the world map, alongside their existing world-map travel target.
   This addresses the inherited Earth Shrine name/recommended-level banner while preserving grounded return locations.
+- Validation: 14 focused cave checks and the full 261-test Python suite (three existing skips). Native SDK read-back and
+  IoStore pack/extract verification preserve all 44 generated packages for four entrances/five visions; every tested exit
+  has explicit travel and region IDs of 1000, with unchanged return coordinates, facing and collision snapping. All required
+  Windows gates passed, including analysis, the full Flutter suite, fresh frozen-engine startup and launcher/updater tests.
+  Authenticated download verified exact commit/run provenance, release checksum and all 54 packaged resources. The native
+  banner's live display still requires the user's Resonance test; this workspace cannot execute the game.
+- Measured request start to verified package: **14m53s** — inspection/implementation **4m27s**, local checks/native asset
+  validation/push **4m20s**, CI **5m16s**, package verification **50s**. First complete candidate to verified package:
+  **10m26s**. One code push and one reused automatic Windows build; CI used **8m33s** runner time. Publication notes use
+  the documentation-only path.
 
 ## Published additional world-map landmarks — 2026-10-04
 
