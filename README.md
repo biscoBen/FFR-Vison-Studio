@@ -2,6 +2,7 @@
 
 This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), separately from the original project's
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
+Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
 For the Crystal Fina cave trial, enable **Crystal Fina cave** on the main screen, build/install the mod, and restart
 Resonance. Look north of the road between Earth Shrine and Mitra. The stone cave's crystal portal leads to her glowing
@@ -348,6 +349,54 @@ existing game Resonance; creating a custom Resonance remains available for separ
 sprite layouts and incomplete placeholders are excluded. Engine integration runs automatically at startup and after
 compatible updates, alongside Crystal Fina's transparency integration. No separate script is required.
 
+## Full-game release checklist
+
+This is the running project list for the full game's release, started **2026-10-04** from the `Sephira's-Update`
+demo baseline `b15a4c0`. These are areas to review when the full game is available, not confirmed future bugs.
+Keep user cave placements, character configs, concise descriptions and source labels. Add new demo-dependent
+features here as work continues. Mark an item complete only with the tested game version, Studio commit and evidence;
+retain unresolved cases and record the date/source fingerprints when refreshing catalogs.
+
+- [ ] **Vendors and cave entrance images/models.** Regenerate from full-game shop tables and entrance assets.
+  Retain native IDs/chapter variants, review unused entries, locate currently unmapped vendors where data permits,
+  and recheck all four entrance previews.
+- [ ] **Skills: verified, unverified and hide/show modes.** Audit the updated catalog, including newly available
+  native timelines/effects, MR/awakening assignments and source ownership. Native timelines take precedence over our
+  fallback repairs. Reassess the 304 reviewed hides and original picker filters while retaining the three modes and
+  descriptions/source labels. Do not assume every missing demo skill will be implemented. `Verified` currently
+  tracks an applied visual mapping, rather than observation of every skill in a running game.
+- [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
+  Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
+- [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,
+  portraits and acquisition rules. Review new characters/placeholders and preserve original identities when replacing models.
+- [ ] **Espers and summons.** Inspect full-game sprites, effects and timelines. Reassess esper-owned hiding separately
+  from ordinary summon commands; check whether assets absent from the demo are now available.
+- [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,
+  return points, event timelines and ownership conditions. Retest granting the vision, disappearance, white flash,
+  return to the stone cave and controller dialogs. Additional user-placed caves are currently saved Studio plans;
+  connecting their interiors and acquisitions to the game remains pending.
+- [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
+  restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
+  changes or additional suitable sheets become available.
+- [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
+  active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
+- [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
+  schemas, SpriteStudio serialization and IoStore roundtrips. Separate or invalidate prepared demo data. Review our engine
+  extensions against upstream updates; change pinned checksums only for verified replacements. Preserve engine hosting.
+- [ ] **Testing features.** Recheck the Young Woman binding, practice enemies, backdrop and return; original-vision
+  grants and toggle restoration. Recompute the one-battle MR reward within actual numeric bounds: 11,430 AP comes from
+  the current demo's rank costs. Test with clean saves.
+- [ ] **Custom IDs, capacity and configs.** Check reserved skill/unit/map/event/asset ranges against newly occupied IDs.
+  Revalidate the 64-added-unit limit against engine/table constraints. Preserve old configs, separate appearance choices
+  and selected cave snapshots.
+- [ ] **Installation, updater and release validation.** Verify full-game detection, engine/host compatibility,
+  rebuild/install, restore and config migration with a separate test profile. Decide whether demo support remains and
+  identify supported game builds. Run the batch animation audit and required Windows release gates, followed by
+  representative live-game checks; package validation alone does not establish gameplay compatibility.
+
+Deferred feature: **FFBE battle voices** remain on hold. Resume source/audio-bank investigation when requested;
+review available full-game voice routing and preserve story dialogue. This is not an implemented compatibility feature.
+
 ## Layout
 
 - `lib/main.dart` window, single-instance lock, header, engine-down banner
@@ -361,6 +410,9 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 When creating Windows reference-extraction scripts, default their output to `%USERPROFILE%\Downloads\FFR Mod`,
 with a separate named or timestamped collection folder. Keep extracted files and upload ZIPs there, off the Desktop.
+
+When adding or changing a demo-dependent feature, update the [full-game release checklist](#full-game-release-checklist)
+in this README so future task threads can continue from the same list.
 
 Update the fork section of [CHANGELOG.md](CHANGELOG.md) with each user-facing change. Keep work under **Unreleased**
 until its Windows package passes the required checks; then record its date, commit and test-release link. Preserve the
