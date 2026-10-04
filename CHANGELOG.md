@@ -11,13 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Party characters' **Revert to original** offers separate battle, overworld and both choices. Reverting one keeps the
-  other appearance and unrelated roster edits. Rename **Edit battle appearance** to **Manage appearances** for the
-  preview/config page; **Change battle model** still opens the model picker.
+Field-leader cycling remains pending. All eight native party projects have eight-direction walk/run clips; Dark Fina
+has four-direction idle poses. The native animation switch selects the current actor's own asset slots, so a party
+asset bank and guarded runtime input handler need a prototype. Party/input call signatures and live behavior are not
+verified. Right-stick click already zooms the minimap; the native LB/L1 action's behavior also needs confirmation.
 
-Field-leader cycling awaits runtime integration. All eight native party projects have eight-direction walk/run clips;
-Dark Fina has four-direction idle poses. Right-stick click currently zooms the minimap. The shipped player Blueprints
-contain no scripted switching handler; runtime function access is needed before implementing the hotkey and guards.
+## Published independent party appearance reversion — 2026-10-03
+
+Code: [`b34af8b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b34af8bb3d649194f87f4f811cc492e6fbc63377).
+[Test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37164080230),
+[Windows run 37164080230](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/37164080230).
+
+- Party characters' **Revert to original** offers **Revert battle only**, **Revert overworld only** and **Revert both**
+  from home or their management page. Reverting one keeps the other appearance and unrelated pending roster edits.
+  Rename **Edit battle appearance** to **Manage appearances** for previews and config save/load;
+  **Change battle model** still opens the FFBE picker. Build/install to apply appearance reverts to the game.
+- Verification: focused party, native-vision and picker tests, Flutter analysis, failed-save/cancel/build guards,
+  all required Windows Flutter/Python checks (218 Python tests, 3 reference/platform skips), real frozen-engine startup,
+  launcher/updater checks and publication. Exact push build reused; authenticated release checksum/provenance and all
+  31 bundled files verified. Includes the already published Vagrant Rain movement repair; no cycling handler yet.
+- Measured from this additional revert request to verified package: **14m11s** — **5m16s implementation/investigation**,
+  **1m17s local checks/corrections/push**, **6m21s CI** and **1m17s release verification**. CI used **10m17s runner time**.
+  First complete candidate to verified package: **8m55s**. One code push/build for this request; notes use the
+  documentation-only path. The earlier movement task's builds and timings are recorded below.
 
 ## Published Vagrant Rain movement loops and directions — 2026-10-03
 
