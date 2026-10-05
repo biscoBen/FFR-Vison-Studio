@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published party attack and LB voice replacements — 2026-10-05
+
+Code: [`c60b37a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c60b37a400490e23980dbcc1428dbff2ffcf8e1a).
+[Verified Windows test release / run 37361816629](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37361816629).
+
 - Replace fixed normal-attack grunts and party LB voice sections for every native party-to-party voice override.
   Use the selected speaker's native attack and generic LB cues, confirmed in base/English/Japanese demo banks.
   Keep original effects, section timing, animations and skill mechanics; original-voice selection restores authored audio.
@@ -21,6 +28,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   read-back verifies 30 available authored sections and 15 cue assets; the new voice references survive IoStore packing
   and extraction. Frozen Windows startup also checks installation and all eight speaker profiles. Live playback remains
   an in-game user check.
+
+- All required Windows gates passed: full Flutter/Python suites, analysis, fresh frozen-engine startup,
+  launcher/updater tests, compilation and publication. Authenticated release download verifies exact commit/run,
+  checksum and all 56 packaged resources. No audio recordings or engine archives were uploaded or rehosted.
+- Measured original inspection to verified package: **52m25s**, including **3m55s** awaiting the native cue reference.
+  From that upload: **29m11s** — implementation **13m39s**, local checks/corrections/push **8m03s**,
+  CI **6m22s**, package verification **1m06s**. First complete candidate to verified package: **15m32s**.
+  The main CI run used **9m20s** runner time. One code push and one completed automatic Windows build;
+  an initial helper discovery race dispatched an unintended duplicate, cancelled before compilation/publication.
+  Publication notes use the documentation-only path.
 
 ## Published native party battle voice selector — 2026-10-05
 
