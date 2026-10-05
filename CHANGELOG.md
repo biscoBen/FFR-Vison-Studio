@@ -11,9 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published cave exit object identities — 2026-10-04
+
+Code: [`808e515`](https://github.com/biscoBen/FFR-Vison-Studio/commit/808e515d9782b7db849bfffb00b756fa0939b186).
+[Verified Windows test release / run 37270830560](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37270830560).
+
 - Give every Resonance Cave world-map exit its own stable reserved object ID instead of inheriting `0`, which is also
   used by Earth Shrine's world entrance. Keep the existing travel target, grounded return, interaction and collision.
-  This tests the object-identity explanation for the persistent Earth Shrine banner; live confirmation remains necessary.
+  The previous banner-policy change still showed Earth Shrine in live testing. This update tests the object-identity
+  explanation; live confirmation remains necessary. Rebuild/install the mod after updating Studio to regenerate exits.
+- Validation: 15 focused cave tests and the full 262-test Python suite (three existing skips). Native SDK read-back and
+  IoStore round-trip preserve all 45 generated packages for four entrances/five visions, including nonzero exit IDs
+  distinct from the portals and unchanged routes/collision/grants. All required Windows gates passed, including the full
+  Flutter suite, analysis, fresh frozen-engine startup and launcher/updater checks. Authenticated release download verified
+  the exact commit/run, checksum and all 54 packaged resources. No new runtime diagnostic is included.
+- Measured request to verified package: **10m00s** — implementation **1m27s**, local checks/push **2m57s**,
+  CI **5m20s**, package verification **16s**. First complete candidate to verified package: **8m33s**.
+  One code push and one reused automatic Windows build; CI used **8m46s** runner time. Publication notes use the
+  documentation-only path.
 
 ## Published cave entrance selector and World Map banners — 2026-10-04
 
