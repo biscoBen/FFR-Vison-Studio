@@ -11,7 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Random acquisition chooses caves 75% of the time and vendors 25%, independent of their list sizes. Apply the same
+  weighting to initial selections and both Random-toggle rerolls. Prefer another location in the selected category when
+  available; a sole cave can repeat to preserve the odds. With no caves, use vendors. Preserve saved/manual choices.
+- Show the odds beside Random and record the final-quarter story-access filter in the shared full-game release checklist.
+  That exclusion remains pending reliable progression/cutoff data for vendors and custom cave positions.
 
 ## Published cave exit object identities — 2026-10-04
 

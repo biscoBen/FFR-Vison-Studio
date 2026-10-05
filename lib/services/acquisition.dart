@@ -96,7 +96,33 @@ class Acquisition {
   );
 
   factory Acquisition.initial({Random? rng}) =>
-      Acquisition(location: sites[(rng ?? Random()).nextInt(sites.length)].id);
+      Acquisition(location: pick(sites, rng: rng).id);
+
+  /// Choose the category before its location, independent of pool sizes.
+  static AcquisitionSite pick(
+    Iterable<AcquisitionSite> sites, {
+    Random? rng,
+    String? previous,
+  }) {
+    final caves = sites.where((s) => s.kind == 'cave').toList();
+    final shops = sites.where((s) => s.kind == 'shop').toList();
+    if (caves.isEmpty && shops.isEmpty) {
+      throw StateError('No acquisition locations are available.');
+    }
+    final random = rng ?? Random();
+    final category = caves.isEmpty
+        ? shops
+        : shops.isEmpty
+        ? caves
+        : random.nextInt(4) < 3
+        ? caves
+        : shops;
+    final alternatives = category.where((s) => s.id != previous).toList();
+    // A category with one location may repeat; forcing the other category would
+    // break the 75/25 odds when only one cave is available.
+    final choices = alternatives.isEmpty ? category : alternatives;
+    return choices[random.nextInt(choices.length)];
+  }
 
   Acquisition copyWith({String? location, bool? random, bool? hideSpoilers}) =>
       Acquisition(
@@ -117,12 +143,11 @@ class Acquisition {
     cave: cave,
   );
 
-  /// Exclude the previous choice so a reroll visibly picks a fresh location.
+  /// Prefer a different location within the newly rolled category when possible.
   Acquisition reroll(bool random, {Random? rng}) {
-    final alternatives = sites.where((s) => s.id != location).toList();
     return copyWith(
       random: random,
-      location: alternatives[(rng ?? Random()).nextInt(alternatives.length)].id,
+      location: pick(sites, rng: rng, previous: location).id,
     );
   }
 

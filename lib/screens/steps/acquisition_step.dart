@@ -238,6 +238,11 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                         key: const ValueKey('acquisition-random'),
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Random'),
+                        subtitle: Text(
+                          widget.locations.caves.isEmpty
+                              ? 'No caves available; uses vendors'
+                              : '75% caves · 25% vendors',
+                        ),
                         value: preferences.random,
                         onChanged: (value) => _change(
                           widget.locations.reroll(preferences, value, catalog),

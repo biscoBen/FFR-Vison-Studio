@@ -267,7 +267,10 @@ are preserved until edited; character config files include these rewards. Build/
 
 The **Acquisition** tab assigns Added visions to saved locations. **Random** and **Hide for spoilers** start on.
 Turn off Hide to reveal the selected location and its map marker; choices remain disabled until Random is off.
-Changing Random in either direction picks another location. Choose **Shop** and a vendor, or **Cave** and one of our
+Random picks a category first: **75% caves / 25% vendors**, regardless of how many locations each list contains.
+Changing Random in either direction rerolls; it prefers a different location within the selected category, but a sole
+cave/vendor can repeat to preserve the odds. With no caves available, it uses vendors. Existing saved assignments stay
+in place until rerolled. Choose **Shop** and a vendor, or **Cave** and one of our
 custom caves. The vendor list retains all 105 native inventory and 20 combined-shop records, including chapter variants;
 it uses readable translations of their source labels. Moving/later-game entries without identifiable native map coordinates
 remain selectable with their pin unavailable. Zoom and drag the native world-map menu images, or use **Full map**.
@@ -391,6 +394,14 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Vendors and cave entrance images/models.** Regenerate from full-game shop tables and entrance assets.
   Retain native IDs/chapter variants, review unused entries, locate currently unmapped vendors where data permits,
   and recheck all four entrance previews.
+- [ ] **Random acquisition progression limits.** Exclude the final quarter of story access from both random vendor and
+  cave pools before applying the 75% cave / 25% vendor weighting. Establish the full game's ordered story milestones
+  and cutoff; tag each vendor/chapter variant and cave position with its earliest reachable milestone, including transport
+  requirements. Keep unknown, unused and no-longer-accessible locations out of that filtered random pool; keep manual
+  choices available. Do not infer progression from vendor IDs, alphabetical order or map distance. Only 28 of the current
+  125 vendor records have mapped locations, and custom caves have no story-access tags, so this exclusion is not active
+  yet. Confirm whether chapters 7–8 are actually the final quarter rather than assuming the demo's labels cover the full
+  story. Preserve existing saved assignments until explicitly rerolled and validate that both eligible categories remain.
 - [ ] **Skills: verified, unverified and hide/show modes.** Audit the updated catalog, including newly available
   native timelines/effects, MR/awakening assignments and source ownership. Native timelines take precedence over our
   fallback repairs. Reassess the 304 reviewed hides and original picker filters while retaining the three modes and

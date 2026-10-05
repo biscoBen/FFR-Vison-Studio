@@ -161,8 +161,7 @@ class AcquisitionLocations extends ChangeNotifier {
   }) => preferences.choose(site, cave: cave(site.id)?.toJson(), random: random);
 
   Acquisition initial(AcquisitionCatalog catalog, {Random? rng}) {
-    final all = sites(catalog);
-    final site = all[(rng ?? Random()).nextInt(all.length)];
+    final site = Acquisition.pick(sites(catalog), rng: rng);
     return choose(Acquisition(location: site.id), site);
   }
 
@@ -172,13 +171,11 @@ class AcquisitionLocations extends ChangeNotifier {
     AcquisitionCatalog catalog, {
     Random? rng,
   }) {
-    final all = sites(catalog)
-        .where((s) => s.id != preferences.location)
-        .toList();
+    final all = sites(catalog);
     if (all.isEmpty) return preferences.copyWith(random: random);
     return choose(
       preferences,
-      all[(rng ?? Random()).nextInt(all.length)],
+      Acquisition.pick(all, rng: rng, previous: preferences.location),
       random: random,
     );
   }

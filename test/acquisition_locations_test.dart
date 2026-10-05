@@ -17,6 +17,24 @@ class CaveRemovalApi extends ConfigApi {
   Future<void> saveCrystalCave(bool value) async => crystalSettings.add(value);
 }
 
+class SequenceRandom implements Random {
+  SequenceRandom(List<int> values) : _values = List.of(values);
+  final List<int> _values;
+  final bounds = <int>[];
+  @override
+  int nextInt(int max) {
+    bounds.add(max);
+    final value = _values.removeAt(0);
+    if (value < 0 || value >= max) throw RangeError.range(value, 0, max - 1);
+    return value;
+  }
+
+  @override
+  bool nextBool() => throw UnsupportedError('Use nextInt.');
+  @override
+  double nextDouble() => throw UnsupportedError('Use nextInt.');
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
@@ -36,6 +54,122 @@ void main() {
       'desert_sinkhole',
     ]);
   });
+
+  test('initial random choice is 75/25 with one cave and 125 vendors', () {
+    final pool = AcquisitionLocations();
+    addTearDown(pool.dispose);
+    final catalog = AcquisitionCatalog.cached!;
+    for (var roll = 0; roll < 4; roll++) {
+      final rng = SequenceRandom([roll, 0]);
+      final value = pool.initial(catalog, rng: rng);
+      expect(pool.site(value, catalog)!.kind, roll < 3 ? 'cave' : 'shop');
+      expect(value.random, isTrue);
+      expect(value.hideSpoilers, isTrue);
+      expect(Acquisition.valid(value.toJson()), isTrue);
+      expect(rng.bounds, [4, roll < 3 ? 1 : 125]);
+    }
+  });
+
+  test('category selection gives every location in that category a choice', () {
+    final sites = [
+      for (var i = 0; i < 3; i++)
+        AcquisitionSite('cave_$i', 'Cave $i', 0, 0, kind: 'cave'),
+      for (var i = 0; i < 5; i++) AcquisitionSite('shop_$i', 'Shop $i', 0, 0),
+    ];
+    for (var roll = 0; roll < 4; roll++) {
+      final category = sites
+          .where((s) => s.kind == (roll < 3 ? 'cave' : 'shop'))
+          .toList();
+      for (var index = 0; index < category.length; index++) {
+        final rng = SequenceRandom([roll, index]);
+        expect(Acquisition.pick(sites, rng: rng), same(category[index]));
+        expect(rng.bounds, [4, category.length]);
+      }
+    }
+    for (var roll = 0; roll < 4; roll++) {
+      expect(
+        Acquisition.initial(rng: SequenceRandom([roll, 0])).site.kind,
+        roll < 3 ? 'cave' : 'shop',
+      );
+    }
+  });
+
+  test(
+    'rerolls preserve 75/25 even when the previous location is the only cave',
+    () async {
+      final pool = AcquisitionLocations();
+      addTearDown(pool.dispose);
+      final catalog = AcquisitionCatalog.cached!;
+      final previous = pool.choose(
+        const Acquisition(location: 'mitra_shop', hideSpoilers: false),
+        pool.caves.single.site,
+      );
+      final saved = previous.toJson();
+      for (final random in [false, true]) {
+        for (var roll = 0; roll < 4; roll++) {
+          final value = pool.reroll(
+            previous,
+            random,
+            catalog,
+            rng: SequenceRandom([roll, 0]),
+          );
+          expect(pool.site(value, catalog)!.kind, roll < 3 ? 'cave' : 'shop');
+          expect(value.random, random);
+          expect(value.hideSpoilers, isFalse);
+          expect(value.cave, roll < 3 ? previous.cave : isNull);
+          expect(Acquisition.valid(value.toJson()), isTrue);
+        }
+      }
+      expect(previous.toJson(), saved);
+      await pool.add(
+        const CaveLocation(
+          id: 'cave_other',
+          name: 'Other cave',
+          entrance: 'rock_cave',
+          worldX: 0,
+          worldY: 0,
+        ),
+      );
+      final value = pool.reroll(
+        previous,
+        true,
+        catalog,
+        rng: SequenceRandom([0, 0]),
+      );
+      expect(value.location, 'cave_other');
+      expect(value.cave, pool.cave('cave_other')!.toJson());
+    },
+  );
+
+  test(
+    'missing categories use available locations and empty pools fail clearly',
+    () async {
+      final pool = AcquisitionLocations();
+      addTearDown(pool.dispose);
+      final catalog = AcquisitionCatalog.cached!;
+      await pool.remove('crystal_cave');
+      final rng = SequenceRandom([124]);
+      final value = pool.initial(catalog, rng: rng);
+      expect(value.location, catalog.vendors.last.id);
+      expect(value.cave, isNull);
+      expect(rng.bounds, [125]);
+      final rerolled = pool.reroll(
+        value,
+        false,
+        catalog,
+        rng: SequenceRandom([123]),
+      );
+      expect(rerolled.location, isNot(value.location));
+      expect(rerolled.random, isFalse);
+      expect(
+        Acquisition.pick([
+          CaveLocation.original.site,
+        ], rng: SequenceRandom([0])).kind,
+        'cave',
+      );
+      expect(() => Acquisition.pick(const []), throwsStateError);
+    },
+  );
 
   test('the shared pool starts with our cave; thirty caves persist without choosing locations for the user', () async {
     final dir = Directory.systemTemp.createTempSync('cave-pool-');
