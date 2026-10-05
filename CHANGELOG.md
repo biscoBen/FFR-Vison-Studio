@@ -11,12 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published native party battle voice selector — 2026-10-05
+
+Code: [`c5024e8`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c5024e8193bce9efe69d4447a674df586efb75ea).
+[Verified Windows test release / run 37354335281](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37354335281).
+
 - Add **Change battle voice** for all eight party characters, with independent save/load and voice-only revert.
   Use the game's native battle voice labels; preserve story dialogue, identities, models, stats and progression.
   This first pass covers standard battle routing. Fixed cinematic voices and team victory conversations remain authored;
-  available recordings for demo-unavailable characters still require live testing.
-- Local validation: 29 focused Flutter tests, clean analysis, 265 Python tests (three Windows CI-only skips), all
-  64 voice-selection pairs and native serialization/IoStore read-back of all 643 character rows. Windows gates pending.
+  available recordings for demo-unavailable characters still require live testing. Rebuild/install and restart the game.
+- Validation: 29 focused Flutter tests, clean analysis and 265 Python tests (three local Windows CI-only skips).
+  Cover all 64 voice-selection pairs. Native serialization and IoStore read-back preserve the selected labels and other
+  properties of all 643 character rows. All required Windows gates passed, including the full Flutter/Python suites,
+  fresh frozen-engine startup, launcher/updater checks, compilation and publication. Authenticated release download
+  verified the exact commit/run, checksum and all 54 packaged resources.
+- Measured first recorded inspection timestamp to verified package: **17m51s** — inspection/implementation **6m45s**,
+  local validation/review/push **4m31s**, CI **5m54s**, package verification **40s**. Initial skill/setup work preceded
+  that first timestamp, so this is a lower bound on the full request time. First complete candidate to verified package:
+  **11m06s**. One code push and one reused automatic Windows build; CI used **9m40s** runner time.
+  Publication notes use the documentation-only path.
 
 ## Published weighted random acquisition — 2026-10-05
 
