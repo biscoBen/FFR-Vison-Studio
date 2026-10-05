@@ -907,6 +907,10 @@ def transition(actor, conditional_template, map_id, point, auto=True):
 def overworld_exit(actor, conditional_template, spec):
     """Keep world-map routing and walking reset independent of banner policy."""
     transition(actor, conditional_template, 1000, spec.map_id, auto=False)
+    # The donor's ID 0 is also the native Earth Shrine entrance's identity.
+    # Give each exit its reserved even cave ID, distinct from its odd portal/
+    # entrance ID, so interaction metadata cannot alias the donor landmark.
+    set_value(actor, 'm_UniqueId', spec.stone_id)
     # Retain explicit destination IDs; the banner's separate bUseLandName
     # policy is patched below. Region IDs alone do not select its text.
     region = copy.deepcopy(property_data(actor, 'm_MapId'))

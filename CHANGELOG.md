@@ -11,7 +11,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Give every Resonance Cave world-map exit its own stable reserved object ID instead of inheriting `0`, which is also
+  used by Earth Shrine's world entrance. Keep the existing travel target, grounded return, interaction and collision.
+  This tests the object-identity explanation for the persistent Earth Shrine banner; live confirmation remains necessary.
 
 ## Published cave entrance selector and World Map banners — 2026-10-04
 
