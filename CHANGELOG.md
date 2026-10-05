@@ -11,11 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published weighted random acquisition — 2026-10-05
+
+Code: [`4a37020`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4a370208401451b6b84ce27c24fa7a77a5de69d6).
+[Verified Windows test release / run 37345207748](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37345207748).
+
 - Random acquisition chooses caves 75% of the time and vendors 25%, independent of their list sizes. Apply the same
   weighting to initial selections and both Random-toggle rerolls. Prefer another location in the selected category when
   available; a sole cave can repeat to preserve the odds. With no caves, use vendors. Preserve saved/manual choices.
 - Show the odds beside Random and record the final-quarter story-access filter in the shared full-game release checklist.
   That exclusion remains pending reliable progression/cutoff data for vendors and custom cave positions.
+- Validation: 23 focused acquisition tests and clean Flutter analysis. Cover unequal pool sizes, all category outcomes,
+  within-category choice, both toggle directions, a sole cave, missing categories, saved/manual choices, config persistence
+  and UI behavior. All required Windows gates passed, including the full Flutter/Python suites, fresh frozen-engine startup,
+  launcher/updater checks and compilation. Authenticated release download verified the exact commit/run, checksum and all
+  54 packaged resources. Engine assets and native cave generation are unchanged.
+- Measured request to verified package: **16m06s** — inspection/implementation **5m34s**, local validation/review/push
+  **3m53s**, CI **6m14s**, package verification **24s**. First complete candidate to verified package: **10m31s**.
+  One code push and one reused automatic Windows build; CI used **9m58s** runner time. Publication notes use the
+  documentation-only path. The first local test invocation was blocked from opening its loopback socket; rerunning with
+  network permission resolved that setup issue before tests executed.
 
 ## Published cave exit object identities — 2026-10-04
 
