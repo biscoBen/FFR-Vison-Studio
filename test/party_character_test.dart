@@ -4,6 +4,8 @@ import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/services/crystal_fina.dart';
 import 'package:ffr_vision_studio/services/overworld_appearance.dart';
+import 'package:ffr_vision_studio/services/battle_voice.dart';
+import 'package:ffr_vision_studio/screens/battle_voice_dialog.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/screens/native_vision_dialog.dart';
@@ -101,6 +103,80 @@ void main() {
     final fieldOnly = CharacterConfig.copy(saved)..remove('ffbe');
     CharacterConfig.validate(fieldOnly);
     expect(CharacterConfig.decode(CharacterConfig.encode(fieldOnly)), fieldOnly);
+  });
+
+  test('all native voice choices survive portable configs and reject invalid donors', () {
+    for (final source in BattleVoice.names.keys) {
+      final saved = party(replacement: true)
+        ..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile)
+        ..['battleVoice'] = source;
+      expect(CharacterConfig.decode(CharacterConfig.encode(saved)), saved);
+      expect(CharacterConfig.decodeAll(CharacterConfig.encodeAll([profile(), saved])).last, saved);
+      expect(BattleVoice.name(saved), BattleVoice.names[source]);
+    }
+    for (final value in [null, true, '1002', 1002.0, 999, 1009, <String, dynamic>{}]) {
+      expect(() => CharacterConfig.validate({...party(), 'battleVoice': value}), throwsFormatException);
+    }
+    expect(BattleVoice.name(party()), 'Rain');
+  });
+
+  test('voice saves and reverts preserve appearances and pending edits, including failed saves', () async {
+    final directory = Directory.systemTemp.createTempSync('party-voice-');
+    final replacement = party(replacement: true)..['overworld'] = Map<String, dynamic>.from(OverworldAppearance.profile);
+    final api = PartyApi([profile(), replacement]);
+    final app = AppState(hostBase: 'http://unused', appPaths: AppPaths.at(directory.path))
+      ..api = api..units = clone(api.roster);
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 123;
+    app.update(edited);
+    await app.editPartyCharacter(1001, battleVoice: 1008);
+    expect(api.roster.first['stats']['Attack'], 123);
+    expect(api.roster.last, {...replacement, 'battleVoice': 1008});
+    api.fail = true;
+    await expectLater(app.editPartyCharacter(1001, battleVoice: 1002), throwsStateError);
+    expect(app.units.last['battleVoice'], 1008);
+    api.fail = false;
+    await app.editPartyCharacter(1001, clearBattle: true, clearOverworld: true);
+    expect(api.roster.last, {...party(), 'battleVoice': 1008});
+    await app.editPartyCharacter(1001, battleVoice: 1001);
+    expect(api.roster.last, party());
+    await app.editPartyCharacter(1001, battleVoice: 1002);
+    await app.editPartyCharacter(1001, clearVoice: true);
+    expect(api.roster.last, party());
+    app.buildState = {'running': true};
+    await expectLater(app.editPartyCharacter(1001, battleVoice: 1008), throwsStateError);
+  });
+
+  testWidgets('voice dialog lists all eight speakers, preserves cancel and saves selection', (tester) async {
+    final directory = Directory.systemTemp.createTempSync('party-voice-ui-');
+    final api = PartyApi([party()..['battleVoice'] = 1002]);
+    final app = AppState(hostBase: 'http://unused', appPaths: AppPaths.at(directory.path))
+      ..api = api..units = clone(api.roster);
+    addTearDown(() { app.dispose(); directory.deleteSync(recursive: true); });
+    await tester.pumpWidget(ChangeNotifierProvider.value(value: app,
+      child: MaterialApp(theme: Guide.theme(), home: Scaffold(body: Builder(
+        builder: (context) => GuideButton('Voice', onPressed: () => showBattleVoice(context, party())),
+      )))));
+    await tester.tap(find.text('Voice')); await tester.pumpAndSettle();
+    var field = tester.widget<DropdownButtonFormField<int>>(find.byKey(const Key('battle-voice-source')));
+    expect(field.initialValue, 1002);
+    final dropdown = tester.widget<DropdownButton<int>>(find.descendant(
+      of: find.byKey(const Key('battle-voice-source')), matching: find.byType(DropdownButton<int>)));
+    expect(dropdown.items!.map((item) => item.value), BattleVoice.names.keys);
+    await tester.tap(find.text('Cancel')); await tester.pumpAndSettle();
+    expect(api.saves, 0);
+    await tester.tap(find.text('Voice')); await tester.pumpAndSettle();
+    field = tester.widget<DropdownButtonFormField<int>>(find.byKey(const Key('battle-voice-source')));
+    field.onChanged!(1008); await tester.pump();
+    await tester.tap(find.text('Save voice'));
+    for (var n = 0; n < 30 && api.roster.last['battleVoice'] != 1008; n++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pump();
+    }
+    await tester.pumpAndSettle();
+    expect(api.roster.last['battleVoice'], 1008);
+    expect(app.selected, api.roster.last);
+    expect(tester.takeException(), isNull);
   });
 
   test('changing and reverting overworld preserves battle and unrelated pending edits', () async {

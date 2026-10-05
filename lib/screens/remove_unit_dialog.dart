@@ -64,7 +64,7 @@ Future<void> _confirmRevertParty(
       shape: Border.fromBorderSide(Guide.frame),
       title: Text('Revert ${unit['en']} to original?', style: Guide.h2()),
       content: Text(
-        'Choose which appearance to restore. Reverting only one keeps your other choice. Build/install afterward to apply it to the game. Save the character config first to keep your choices.',
+        'Choose which appearance to restore. Appearance reverts keep your battle voice choice. Revert all also restores the original voice. Build/install afterward to apply it to the game. Save the character config first to keep your choices.',
         style: Guide.text(),
       ),
       actions: [
@@ -75,16 +75,18 @@ Future<void> _confirmRevertParty(
           onPressed: app.building || !overworld ? null : () => Navigator.pop(c, 'overworld')),
         GuideButton('Revert both', danger: true,
           onPressed: app.building || overrides.isEmpty ? null : () => Navigator.pop(c, 'both')),
+        if (current['battleVoice'] != null) GuideButton('Revert all', danger: true,
+          onPressed: app.building ? null : () => Navigator.pop(c, 'all')),
       ],
     ),
   );
   if (choice == null) { return; }
   try {
-    if (choice == 'both') {
+    if (choice == 'all' || (choice == 'both' && current['battleVoice'] == null)) {
       await app.removeUnit(unit['key'] as String);
     } else {
       await app.editPartyCharacter(unit['id'] as int,
-        clearBattle: choice == 'battle', clearOverworld: choice == 'overworld');
+        clearBattle: choice == 'battle' || choice == 'both', clearOverworld: choice == 'overworld' || choice == 'both');
     }
   } catch (e) {
     app.showNotice('Could not revert this appearance: $e');

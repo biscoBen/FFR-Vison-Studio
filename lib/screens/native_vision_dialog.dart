@@ -6,6 +6,7 @@ import '../design/widgets.dart';
 import '../state/app_state.dart';
 import 'add_unit_dialog.dart';
 import 'remove_unit_dialog.dart';
+import 'battle_voice_dialog.dart';
 
 Future<void> chooseNativeVision(
   BuildContext context,
@@ -83,6 +84,7 @@ Future<void> choosePartyCharacter(BuildContext context, Map<String, dynamic> cha
         GuideButton('Manage appearances', onPressed: app.building ? null : () => Navigator.pop(c, 'edit')),
         GuideButton('Change battle model', onPressed: app.building ? null : () => Navigator.pop(c, 'model')),
         GuideButton('Edit overworld appearance', onPressed: app.building ? null : () => Navigator.pop(c, 'overworld')),
+        GuideButton('Change battle voice', onPressed: app.building ? null : () => Navigator.pop(c, 'voice')),
         GuideButton('Revert to original', danger: true, onPressed: app.building || !edited ? null : () => Navigator.pop(c, 'revert')),
       ],
     ),
@@ -90,6 +92,7 @@ Future<void> choosePartyCharacter(BuildContext context, Map<String, dynamic> cha
   if (!context.mounted || choice == null) { return; }
   if (choice == 'model') { await showPartyModel(context, character['id'] as int); return; }
   if (choice == 'overworld') { await showOverworldModel(context, character['id'] as int); return; }
+  if (choice == 'voice') { await showBattleVoice(context, character); return; }
   if (choice == 'revert') { await confirmRemove(context, app, character); return; }
   try { await app.editPartyCharacter(character['id'] as int); }
   catch (e) { app.showNotice('Could not open this party character: $e'); }

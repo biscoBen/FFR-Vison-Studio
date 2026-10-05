@@ -228,6 +228,9 @@ def expected_edits(root):
     for u in units:
         if u.get('party') and u.get('ffbe'):
             expected[(_ffr_party.TABLE, u['jp'])] = _ffr_party.asset_updates(u)
+        if u.get('party') and u.get('battleVoice') is not None:
+            _ffr_party.validate(u)
+            expected[(_ffr_party.VOICE_TABLE, u['jp'])] = {'BattleVoiceLabel': _ffr_party.voice_label(u['battleVoice'])}
         if u.get('party') and u.get('overworld'):
             expected[(_ffr_overworld.TABLE, u['jp'])] = _ffr_overworld.updates(u)
     import _ffr_testing

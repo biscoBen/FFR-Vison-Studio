@@ -351,6 +351,12 @@ config save/load. **Revert to original** offers **Revert battle only**, **Revert
 Reverting one appearance keeps the other; build/install to apply it. Single/bulk character configs include
 these choices. Party abilities, equipment and progression stay original; the builder writes private battle assets and
 redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
+**Change battle voice** independently selects any of the eight original party speakers. Standard battle events use the
+selected character's native `BattleVoiceLabel`; story dialogue, character identity and progression stay original.
+Fixed skill cinematics and team victory conversations retain their authored recordings in this first pass. The demo
+lists all eight voice banks, but recording coverage for unavailable characters still needs an in-game check.
+The choice survives single/bulk config saves. **Revert battle voice** restores only audio; appearance reverts keep it,
+and **Revert all** restores appearances and voice. Rebuild/install and restart the game after changing voices.
 Use **Edit overworld appearance** for an independent walking model. The picker includes every reviewed FFBE town
 sheet with genuine directional running art: **Rain, Vagrant Knight Rain and Pyro Glacial Lasswell** are 8-way;
 **Lasswell, Fina, Nichol, Lid and Jake** are 4-way. One additional 8-way sheet is listed as **Unidentified cloaked
@@ -446,6 +452,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 
 Deferred feature: **FFBE battle voices** remain on hold. Resume source/audio-bank investigation when requested;
 review available full-game voice routing and preserve story dialogue. This is not an implemented compatibility feature.
+Native party voice overrides must also be checked against full-game bank contents, fixed cinematic cues and team
+victory exchanges before claiming complete battle voice coverage.
 
 ## Layout
 

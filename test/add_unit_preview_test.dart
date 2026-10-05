@@ -63,8 +63,8 @@ class PreviewState extends AppState {
   Map<String, dynamic>? fieldChoice;
   int? fieldPartyId;
   @override
-  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearBattle = false, bool clearOverworld = false}) async {
-    if (appearance != null || clearBattle || clearOverworld) { throw StateError('This test only changes overworld appearance.'); }
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, int? battleVoice, bool clearVoice = false, bool clearBattle = false, bool clearOverworld = false}) async {
+    if (appearance != null || battleVoice != null || clearVoice || clearBattle || clearOverworld) { throw StateError('This test only changes overworld appearance.'); }
     fieldPartyId = id; fieldChoice = overworld;
     return {'id': id, 'overworld': overworld};
   }

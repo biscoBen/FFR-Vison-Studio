@@ -11,7 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Add **Change battle voice** for all eight party characters, with independent save/load and voice-only revert.
+  Use the game's native battle voice labels; preserve story dialogue, identities, models, stats and progression.
+  This first pass covers standard battle routing. Fixed cinematic voices and team victory conversations remain authored;
+  available recordings for demo-unavailable characters still require live testing.
+- Local validation: 29 focused Flutter tests, clean analysis, 265 Python tests (three Windows CI-only skips), all
+  64 voice-selection pairs and native serialization/IoStore read-back of all 643 character rows. Windows gates pending.
 
 ## Published weighted random acquisition — 2026-10-05
 

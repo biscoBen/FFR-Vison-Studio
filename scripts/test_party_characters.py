@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import sys
 from types import SimpleNamespace
 from unittest import mock
 from test_existing_visions import ROOT, party, animation, installer, fina_installer
@@ -66,6 +67,64 @@ def unit(id=1001, form='401001207'):
 
 
 class PartyCharacterTests(unittest.TestCase):
+    def test_native_voice_selection_for_all_64_pairs_changes_only_battle_label(self):
+        original = {jp: {'ID': id, 'SaveId': id, 'BattleVoiceLabel': party.voice_label(id),
+                         'FaceIconId': id, 'stats': {'Attack': 50}} for id, jp, _, _ in party.CHARACTERS}
+        banks = {'VO_BTL_' + party.voice_label(id)[:-1]: {
+            'CueSheetName': 'VO_BTL_' + party.voice_label(id),
+            'pCueSheet': f'/Game/Sound/Cri/Voice/VO_BTL/VO_BTL_{party.voice_label(id)}/VO_BTL_{party.voice_label(id)}'}
+            for id, _, _, _ in party.CHARACTERS}
+        def rows(rel): return copy.deepcopy(banks if rel == party.VOICE_BANK_TABLE else original)
+        for target, _, _, _ in party.CHARACTERS:
+            for source, _, _, _ in party.CHARACTERS:
+                with self.subTest(target=target, source=source):
+                    chosen = unit(target); chosen.pop('ffbe'); chosen['battleVoice'] = source
+                    before = copy.deepcopy(chosen); tables = {}
+                    party.prepare(tables, [chosen], rows)
+                    built = copy.deepcopy(original)
+                    if source != target:
+                        self.assertEqual(set(tables), {party.VOICE_TABLE})
+                        self.assertEqual(tables[party.VOICE_TABLE]['add'], [])
+                        self.assertEqual(tables[party.VOICE_TABLE]['set'],
+                            [{'row': chosen['jp'], 'set': {'BattleVoiceLabel': party.voice_label(source)}}])
+                        built[chosen['jp']]['BattleVoiceLabel'] = party.voice_label(source)
+                    else: self.assertEqual(tables, {})
+                    party.check_voice_rows(original, built, [chosen])
+                    bad = copy.deepcopy(built); bad[chosen['jp']]['SaveId'] = 9999
+                    with self.assertRaises(ValueError): party.check_voice_rows(original, bad, [chosen])
+                    self.assertEqual(chosen, before)
+
+    def test_voice_validation_and_missing_native_routes_stop_before_patching(self):
+        for source in [None, True, 1002.0, '1002', 999, 1009, {}, []]:
+            chosen = unit(); chosen['battleVoice'] = source
+            with self.subTest(source=source), self.assertRaises(ValueError): party.validate(chosen)
+        chosen = unit(1002); chosen.pop('ffbe'); chosen['battleVoice'] = 1008
+        params = {jp: {'ID': id, 'BattleVoiceLabel': party.voice_label(id)} for id, jp, _, _ in party.CHARACTERS}
+        for missing in ['label', 'bank']:
+            def rows(rel):
+                values = copy.deepcopy(params)
+                if rel == party.VOICE_BANK_TABLE: return {}
+                if missing == 'label': values[chosen['jp']]['BattleVoiceLabel'] = 'unexpected'
+                return values
+            tables = {}
+            with self.assertRaisesRegex(ValueError, 'battle voice'): party.prepare(tables, [chosen], rows)
+            self.assertEqual(tables, {})
+
+    def test_verifier_accepts_only_the_saved_voice_override(self):
+        chosen = unit(1002); chosen.pop('ffbe'); chosen['battleVoice'] = 1008
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); spec = root / 'mods/EstherTsukiko/units.json'; spec.parent.mkdir(parents=True)
+            spec.write_text(json.dumps([chosen]))
+            from test_existing_visions import native
+            with mock.patch.dict(sys.modules, {'_ffr_animation_repair': animation}):
+                expected = native.expected_edits(root)
+            self.assertEqual(expected[(party.VOICE_TABLE, chosen['jp'])], {'BattleVoiceLabel': 'CHR0080'})
+            original = {'ID': 1002, 'BattleVoiceLabel': 'CHR0020', 'SaveId': 1002}
+            built = {**original, 'BattleVoiceLabel': 'CHR0080'}
+            equivalent = lambda a, b: a == b
+            self.assertTrue(native.expected_row_change(party.VOICE_TABLE, chosen['jp'], original, built, expected, equivalent))
+            self.assertFalse(native.expected_row_change(party.VOICE_TABLE, chosen['jp'], original, {**built, 'SaveId': 1008}, expected, equivalent))
+
     def test_saved_roster_loader_keeps_party_specs_sparse_and_converts_vision_skills(self):
         source = (ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()
         patched = installer.hook_builder(fina_installer.hook_builder(source))

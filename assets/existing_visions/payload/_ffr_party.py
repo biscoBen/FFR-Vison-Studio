@@ -1,4 +1,4 @@
-"""Independent party battle and field appearances, preserving character identity."""
+"""Independent party appearances and native battle voices, preserving identity."""
 import copy
 import json
 from pathlib import Path
@@ -17,6 +17,9 @@ CHARACTERS = (
     (1008, 'サクラ', 'Sakura', 'unit0080'),
 )
 FINA = '99887755552703'
+VOICE_TABLE = 'Unit/DT_UnitParameter'
+VOICE_ASSET = 'FFRS/Content/Datatable/' + VOICE_TABLE
+VOICE_BANK_TABLE = 'Asset/Sound/DT_SoundCueSheetAsset'
 
 
 def identity(id):
@@ -36,8 +39,10 @@ def validate(u):
     if (not c or type(u['id']) is not int or u.get('key') != f'party_{c[0]}'
             or u.get('jp') != c[1] or u.get('en') != c[2]
             or u.get('party') != {'version': 1, 'id': c[0]}
-            or set(u) - {'key', 'id', 'jp', 'en', 'party', 'ffbe', 'overworld', 'menuScale', 'icon'}):
+            or set(u) - {'key', 'id', 'jp', 'en', 'party', 'ffbe', 'overworld', 'battleVoice', 'menuScale', 'icon'}):
         raise ValueError('Invalid party replacement; its original character identity must be preserved.')
+    if 'battleVoice' in u and (type(u['battleVoice']) is not int or not identity(u['battleVoice'])):
+        raise ValueError('The battle voice must belong to an original party character.')
     if 'overworld' in u:
         import _ffr_overworld
         _ffr_overworld.validate(u['overworld'])
@@ -94,6 +99,7 @@ def prepare(tables, units, rows):
     """
     import _ffr_overworld
     _ffr_overworld.prepare(tables, units, rows)
+    prepare_voices(tables, units, rows)
     for u in units:
         if not u.get('ffbe'): continue
         validate(u)
@@ -104,6 +110,44 @@ def prepare(tables, units, rows):
             raise ValueError('The original party runtime battle assets are unavailable. Prepare the game files again.')
         table = tables.setdefault(TABLE, {'asset': ASSET, 'add': [], 'set': []})
         table['set'].append({'row': u['jp'], 'set': asset_updates(u)})
+
+
+def voice_label(id):
+    return 'CHR' + identity(id)[3].removeprefix('unit')
+
+
+def prepare_voices(tables, units, rows):
+    """Use the native battle-only label; never alias audio banks/story assets.
+
+    Generic DT_BtlVoiceData and DT_SkillData cues append this character label.
+    Fixed cinematic cues and authored victory conversations are separate routes
+    and deliberately retain their original recordings in this first pass.
+    """
+    for u in units:
+        validate(u)
+        source = u.get('battleVoice')
+        if source is None or source == u['id']: continue
+        parameters = rows(VOICE_TABLE)
+        for id in (u['id'], source):
+            row = parameters.get(identity(id)[1], {})
+            if row.get('ID') != id or row.get('BattleVoiceLabel') != voice_label(id):
+                raise ValueError('The original party battle voice labels changed. Prepare the game files again.')
+        label = voice_label(source); bank = 'VO_BTL_' + label
+        reference = rows(VOICE_BANK_TABLE).get(bank[:-1], {})
+        if (reference.get('CueSheetName') != bank
+                or reference.get('pCueSheet') != f'/Game/Sound/Cri/Voice/VO_BTL/{bank}/{bank}'):
+            raise ValueError('The selected battle voice bank is unavailable in the prepared game tables.')
+        table = tables.setdefault(VOICE_TABLE, {'asset': VOICE_ASSET, 'add': [], 'set': []})
+        table['set'].append({'row': u['jp'], 'set': {'BattleVoiceLabel': label}})
+
+
+def check_voice_rows(original, built, units):
+    replacements = {u['id']: u['battleVoice'] for u in units if u.get('battleVoice') is not None}
+    for id, jp, _, _ in CHARACTERS:
+        desired = copy.deepcopy(original[jp])
+        if id in replacements: desired['BattleVoiceLabel'] = voice_label(replacements[id])
+        if built.get(jp) != desired:
+            raise ValueError('Party battle voice did not match the selection, or an unrelated character property changed.')
 
 
 def check_rows(original, built, units):
@@ -221,6 +265,16 @@ def verify(root, tool, usmap):
     party = [validate(u) for u in units if u.get('party')]
     import _ffr_overworld
     _ffr_overworld.verify(root, tool, usmap, units)
+    voiced = [u for u in party if u.get('battleVoice') is not None and u['battleVoice'] != u['id']]
+    if voiced:
+        work = root / 'build/party-voices'; work.mkdir(parents=True, exist_ok=True)
+        original = work / 'verify-original.json'; built = work / 'verify-built.json'
+        for source, target in ((root / 'extracted/legacy', original), (root / 'build/visions_mod/assets', built)):
+            subprocess.run(tool + ['rows', str(source / (VOICE_ASSET + '.uasset')), str(target), '--usmap', usmap],
+                           check=True, capture_output=True)
+        check_voice_rows(json.loads(original.read_text(encoding='utf-8-sig'))['rows'],
+                         json.loads(built.read_text(encoding='utf-8-sig'))['rows'], party)
+        print('OK: native party battle voice labels and unchanged original character properties verified')
     selected = [u for u in party if u.get('ffbe')]
     if not selected: return
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)

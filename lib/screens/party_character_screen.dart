@@ -11,6 +11,8 @@ import 'remove_unit_dialog.dart';
 import 'unit_anim_pane.dart';
 import 'overworld_anim_pane.dart';
 import '../services/overworld_appearance.dart';
+import '../services/battle_voice.dart';
+import 'battle_voice_dialog.dart';
 
 class PartyCharacterScreen extends StatelessWidget {
   const PartyCharacterScreen({super.key, required this.unit});
@@ -70,6 +72,17 @@ class PartyCharacterScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
+                Text('Battle voice · ${BattleVoice.name(unit)}', style: Guide.h2()),
+                const SizedBox(height: 12),
+                Wrap(spacing: 12, runSpacing: 12, children: [
+                  GuideButton('Change battle voice', onPressed: app.building ? null : () => showBattleVoice(context, unit)),
+                  if (unit['battleVoice'] != null) GuideButton('Revert battle voice', danger: true,
+                    onPressed: app.building ? null : () async {
+                      try { await app.editPartyCharacter(unit['id'] as int, clearVoice: true); }
+                      catch (e) { app.showNotice('Could not revert battle voice: $e'); }
+                    }),
+                ]),
                 const SizedBox(height: 20),
                 Text('Overworld appearance', style: Guide.h2()),
                 const SizedBox(height: 12),

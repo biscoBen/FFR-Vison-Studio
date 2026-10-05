@@ -767,7 +767,7 @@ class AppState extends ChangeNotifier {
     fieldLeader = value; notifyListeners();
   });
 
-  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, bool clearBattle = false, bool clearOverworld = false}) => _withRoster(() async {
+  Future<JsonMap> editPartyCharacter(int id, {JsonMap? appearance, JsonMap? overworld, int? battleVoice, bool clearVoice = false, bool clearBattle = false, bool clearOverworld = false}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel(); await _savePending();
@@ -786,6 +786,8 @@ class AppState extends ChangeNotifier {
     }
     if (clearOverworld) { unit.remove('overworld'); }
     else if (overworld != null) { unit['overworld'] = CharacterConfig.copy(overworld); }
+    if (clearVoice || battleVoice == id) { unit.remove('battleVoice'); }
+    else if (battleVoice != null) { unit['battleVoice'] = battleVoice; }
     CharacterConfig.validate(unit);
     final next = [for (final u in current) u['party']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
     final revision = _rosterRevision;
