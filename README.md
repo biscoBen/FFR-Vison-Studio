@@ -353,8 +353,10 @@ these choices. Party abilities, equipment and progression stay original; the bui
 redirects the selected party rows in the runtime `DT_BtlUnitAsset` table, alongside existing vision changes.
 **Change battle voice** independently selects any of the eight original party speakers. Standard battle events use the
 selected character's native `BattleVoiceLabel`; story dialogue, character identity and progression stay original.
-Fixed skill cinematics and team victory conversations retain their authored recordings in this first pass. The demo
-lists all eight voice banks, but recording coverage for unavailable characters still needs an in-game check.
+Authored normal-attack and party LB voice sections also use the selected speaker. LB openings, attack lines and
+finishers use verified native generic LB cues; their wording may differ from the original skill. Non-voice effects,
+animations and timeline timing stay original. Story dialogue and team victory conversations keep their authored voices.
+The demo cue inventory covers all eight speakers in English and Japanese; live playback still needs in-game testing.
 The choice survives single/bulk config saves. **Revert battle voice** restores only audio; appearance reverts keep it,
 and **Revert all** restores appearances and voice. Rebuild/install and restart the game after changing voices.
 Use **Edit overworld appearance** for an independent walking model. The picker includes every reviewed FFBE town

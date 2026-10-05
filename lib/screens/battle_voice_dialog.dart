@@ -51,12 +51,12 @@ Future<void> showBattleVoice(
               ),
               const SizedBox(height: 16),
               Text(
-                'Changes the game’s standard battle voice routing. Story dialogue keeps its original voice. Fixed skill cinematics and team victory conversations may retain their authored voices.',
+                'Changes standard battle voices and authored normal-attack/LB voice sections. Story dialogue and team victory conversations keep their original voices.',
                 style: Guide.text(),
               ),
               const SizedBox(height: 12),
               Text(
-                'Build/install afterward to apply this choice. Voice-bank contents still need an in-game check for characters unavailable in the demo.',
+                'Build/install afterward to apply this choice. LB voice lines use the selected character’s generic LB recordings; wording may differ from the skill.',
                 style: Guide.small(),
               ),
             ],

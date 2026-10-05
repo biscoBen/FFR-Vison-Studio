@@ -22,6 +22,7 @@ def module(name, path):
 
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
 sys.modules['_ffr_party'] = party
+sys.modules['_ffr_party_voices'] = module('_ffr_party_voices', ROOT / 'assets/existing_visions/payload/_ffr_party_voices.py')
 sys.modules['_ffr_overworld'] = module('_ffr_overworld', ROOT / 'assets/existing_visions/payload/_ffr_overworld.py')
 sys.modules['_ffr_field_leader'] = module('_ffr_field_leader', ROOT / 'assets/existing_visions/payload/_ffr_field_leader.py')
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')

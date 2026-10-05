@@ -11,7 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Replace fixed normal-attack grunts and party LB voice sections for every native party-to-party voice override.
+  Use the selected speaker's native attack and generic LB cues, confirmed in base/English/Japanese demo banks.
+  Keep original effects, section timing, animations and skill mechanics; original-voice selection restores authored audio.
+  Story dialogue and team victory conversations stay original. LB wording and live playback require an in-game trial.
+  Rebuild/install and restart Resonance after updating Studio.
+- Local validation: 16 focused Flutter tests, clean analysis, and 270 Python tests (three existing Windows-only skips).
+  Cover all 64 voice-selection pairs, duplicate export names and unchanged effect/timing properties. Native SDK
+  read-back verifies 30 available authored sections and 15 cue assets; the new voice references survive IoStore packing
+  and extraction. Frozen Windows startup also checks installation and all eight speaker profiles. Live playback remains
+  an in-game user check.
 
 ## Published native party battle voice selector — 2026-10-05
 

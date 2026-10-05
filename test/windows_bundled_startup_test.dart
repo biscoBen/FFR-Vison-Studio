@@ -68,6 +68,8 @@ void main() {
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_party.py',
+        '_ffr_party_voices.py',
+        'party_voice_cues.json',
         '_ffr_overworld.py',
         '_ffr_field_leader.py',
         'field_leader.lua',
@@ -89,12 +91,14 @@ void main() {
           File('assets/existing_visions/payload/$name').readAsBytesSync(),
         );
       }
-      final fieldCheck = File(p.join(paths.engineDir, 'check_overworld_startup.py'));
+      final fieldCheck = File(
+        p.join(paths.engineDir, 'check_overworld_startup.py'),
+      );
       fieldCheck.writeAsStringSync('''
 import sys, io
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / 'tools'))
-import _ffr_party, _ffr_overworld
+import _ffr_party, _ffr_party_voices, _ffr_overworld
 from PIL import Image
 _ffr_party.validate({'key':'party_1001', 'id':1001, 'jp':'レイン', 'en':'Rain',
     'party':{'version':1, 'id':1001}, 'overworld':{'version':1, 'model':'vagrant_knight_rain'}})
@@ -102,6 +106,10 @@ assert 'idle9' in [a['name'] for a in _ffr_overworld.spec('pc0010')['animations'
 with Image.open(Path(_ffr_overworld.__file__).with_name(_ffr_overworld.SHEET)) as image:
     assert image.size == (448,1536)
 assert len(_ffr_overworld.catalog()['models']) == 9
+for speaker, _, _, _ in _ffr_party.CHARACTERS:
+    cues = _ffr_party_voices.profile(speaker)
+    assert cues['attack']['name'] == 'VO_BTL_ATK_01_' + _ffr_party.voice_label(speaker)
+    assert all(cues[phase]['duration'] > 0 for phase in ('opening', 'release', 'finish'))
 for model, entry in _ffr_overworld.catalog()['models'].items():
     choice = {'version':1, 'model':model}
     _ffr_overworld.validate(choice)
@@ -112,9 +120,19 @@ for model, entry in _ffr_overworld.catalog()['models'].items():
         assert image.width > 0
 print('Overworld module and field sheet ready')
 ''');
-      final fieldResult = await Process.run(paths.engineExe, ['--run', fieldCheck.path], workingDirectory: paths.engineDir);
-      expect(fieldResult.exitCode, 0, reason: '${fieldResult.stdout}\n${fieldResult.stderr}');
-      expect(fieldResult.stdout.toString(), contains('Overworld module and field sheet ready'));
+      final fieldResult = await Process.run(paths.engineExe, [
+        '--run',
+        fieldCheck.path,
+      ], workingDirectory: paths.engineDir);
+      expect(
+        fieldResult.exitCode,
+        0,
+        reason: '${fieldResult.stdout}\n${fieldResult.stderr}',
+      );
+      expect(
+        fieldResult.stdout.toString(),
+        contains('Overworld module and field sheet ready'),
+      );
     },
     skip: !Platform.isWindows || fixture == null,
     timeout: const Timeout(Duration(minutes: 3)),

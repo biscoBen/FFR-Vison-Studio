@@ -241,6 +241,8 @@ class BundledFeatures {
           'payload/manifest.json',
           'payload/_ffr_existingvisions.py',
           'payload/_ffr_party.py',
+          'payload/_ffr_party_voices.py',
+          'payload/party_voice_cues.json',
           'payload/_ffr_overworld.py',
           'payload/_ffr_field_leader.py',
           'payload/field_leader.lua',
@@ -258,7 +260,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 20) {
+        (manifest['files'] as Map).length != 22) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

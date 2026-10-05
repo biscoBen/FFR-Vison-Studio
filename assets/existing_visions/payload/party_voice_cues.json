@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "reference": "FFR demo voice inventory 2026-10-05; base, English and Japanese",
+  "speakers": {
+    "CHR0010": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0010",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0010_SERIOUS",
+        "duration": 2.4878125
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0010_SERIOUS",
+        "duration": 1.6186666666666667
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0010_SERIOUS",
+        "duration": 3.587083333333333
+      }
+    },
+    "CHR0020": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0020",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0020_SERIOUS",
+        "duration": 3.5567291666666665
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0020_SERIOUS",
+        "duration": 2.08475
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0020_SERIOUS",
+        "duration": 4.633333333333334
+      }
+    },
+    "CHR0030": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0030",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0030_SERIOUS",
+        "duration": 3.099125
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0030_SERIOUS",
+        "duration": 2.7727083333333336
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0030_SERIOUS",
+        "duration": 4.837020833333334
+      }
+    },
+    "CHR0040": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0040",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0040_SERIOUS",
+        "duration": 4.02125
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0040_SERIOUS",
+        "duration": 3.8930625
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0040_SERIOUS",
+        "duration": 4.171291666666667
+      }
+    },
+    "CHR0050": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0050",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0050_SERIOUS",
+        "duration": 3.2022083333333335
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0050_SERIOUS",
+        "duration": 2.5961875
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0050_SERIOUS",
+        "duration": 3.2903541666666665
+      }
+    },
+    "CHR0060": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0060",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0060_SERIOUS",
+        "duration": 3.6590416666666665
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0060_SERIOUS",
+        "duration": 2.725229166666667
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0060_SERIOUS",
+        "duration": 3.6666666666666665
+      }
+    },
+    "CHR0070": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0070",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0070_SERIOUS",
+        "duration": 4.0711875
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0070_SERIOUS",
+        "duration": 2.9800416666666667
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0070_SERIOUS",
+        "duration": 3.5187916666666665
+      }
+    },
+    "CHR0080": {
+      "attack": {
+        "name": "VO_BTL_ATK_01_CHR0080",
+        "duration": 0.0
+      },
+      "opening": {
+        "name": "VO_BTL_VLB_LAK_01_CHR0080_SERIOUS",
+        "duration": 3.6752083333333334
+      },
+      "release": {
+        "name": "VO_BTL_VLB_LAK_02_CHR0080_SERIOUS",
+        "duration": 1.6513125
+      },
+      "finish": {
+        "name": "VO_BTL_VLB_FNS_01_CHR0080_SERIOUS",
+        "duration": 5.036604166666667
+      }
+    }
+  }
+}

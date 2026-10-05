@@ -274,6 +274,8 @@ def verify(root, tool, usmap):
                            check=True, capture_output=True)
         check_voice_rows(json.loads(original.read_text(encoding='utf-8-sig'))['rows'],
                          json.loads(built.read_text(encoding='utf-8-sig'))['rows'], party)
+        import _ffr_party_voices
+        _ffr_party_voices.verify(root, tool, usmap, voiced)
         print('OK: native party battle voice labels and unchanged original character properties verified')
     selected = [u for u in party if u.get('ffbe')]
     if not selected: return
