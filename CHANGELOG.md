@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published cave entrance selector and World Map banners — 2026-10-04
+
+Code: [`da6c177`](https://github.com/biscoBen/FFR-Vison-Studio/commit/da6c177585fafd924b8a6c92802a65e6247ffb84).
+[Verified Windows test release / run 37267588481](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37267588481).
+
 - New caves require an explicit entrance-image selection before opening the placement map. The placement editor shows the
   chosen model and offers **Change** to revisit the selector. Cancelling either step preserves saved caves and assignments.
 - Correct the native destination-banner policy for map 1000 to use **World Map** rather than a landmark's name and
@@ -20,7 +27,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   separate `bUseLandName` setting. Native gameplay still needs the user's in-game test.
 - Local validation: 14 focused Flutter tests, clean analysis, and the 262-test Python suite (three existing skips). Native
   SDK read-back and IoStore pack/extract checks preserve all 45 generated packages for four entrances/five visions,
-  including the banner policy and unchanged other UI entries. Publication awaits the required Windows gates.
+  including the banner policy and unchanged other UI entries. All required Windows gates passed: analysis, the full Flutter suite, fresh frozen-engine startup, launcher/updater checks,
+  compilation and release publication. Authenticated download verified exact commit/run provenance, checksum and all 54
+  packaged resources. The banner's live display remains an in-game user check.
+- Measured original request to verified package: **2h27m03s**, including **2h09m16s**
+  awaiting the missing native reference. Work resumed with the upload: **11m25s** to verified package;
+  active work across both turns **17m47s**. Implementation **7m57s**, local checks/push
+  **4m04s**, CI **5m20s**, package verification **0m25s**. First complete candidate to verified
+  package: **8m41s**. One code push and one reused automatic Windows build; CI used **9m02s**
+  runner time. Publication notes use the documentation-only path.
 
 ## Published cave exit display identity — 2026-10-04
 
