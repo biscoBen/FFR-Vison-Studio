@@ -11,7 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- New caves require an explicit entrance-image selection before opening the placement map. The placement editor shows the
+  chosen model and offers **Change** to revisit the selector. Cancelling either step preserves saved caves and assignments.
+- Correct the native destination-banner policy for map 1000 to use **World Map** rather than a landmark's name and
+  recommended level. This applies while Resonance caves are installed, including world-map exit previews from native
+  locations. Preserve native display timing/visibility, all other map entries, translations, and cave travel/collision.
+  The previous region-ID change was insufficient in live testing; the supplied native place-name data exposed the
+  separate `bUseLandName` setting. Native gameplay still needs the user's in-game test.
+- Local validation: 14 focused Flutter tests, clean analysis, and the 262-test Python suite (three existing skips). Native
+  SDK read-back and IoStore pack/extract checks preserve all 45 generated packages for four entrances/five visions,
+  including the banner policy and unchanged other UI entries. Publication awaits the required Windows gates.
 
 ## Published cave exit display identity — 2026-10-04
 

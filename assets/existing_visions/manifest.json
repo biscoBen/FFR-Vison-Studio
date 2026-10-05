@@ -5,7 +5,7 @@
     "payload/_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "payload/_ffr_animation_repair.py": "90adf0c3626a4261c2ced800bb1de972122cf6511811576c322edfaeb6773abc",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_crystal_cave.py": "13e637d0e6bcd8599fbddf6559ca29de588293648c9476f734805edafd083b52",
+    "payload/_ffr_crystal_cave.py": "9cdcc74f6db664006d562acca6bd382cf6062bab1c90d13f96a40eae71b3ccdd",
     "payload/_ffr_existingvisions.py": "db4fcb34e82d5e97fe40705775a5f1c5204958dbaf567c305ab5897dd24fb2c1",
     "payload/_ffr_field_leader.py": "a2b0b8a808b4b4f85030d70689d8cbfaea04469b133c2f10c7eb6fa6f9898fc0",
     "payload/_ffr_library.py": "d5991b67f4968470d6dad2481e00290e92e3611ed986c90713c98eb4b4f3f0f4",
@@ -17,7 +17,7 @@
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
     "payload/field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
-    "payload/manifest.json": "5fbf3c3fa37e8abeee3814844732308a11d829ec72b7c843b2d5093d54c4ad6e",
+    "payload/manifest.json": "475c7d99e56b1afc4dd7a53da3d03adce9c2bb095a9545b28605a8bb95fc47fc",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"

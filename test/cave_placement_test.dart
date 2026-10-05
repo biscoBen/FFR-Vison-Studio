@@ -35,6 +35,53 @@ void main() {
     );
   });
   testWidgets(
+    'entrance selection is accessible before terrain on a short window',
+    (tester) async {
+      tester.view.physicalSize = const Size(800, 500);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final pool = AcquisitionLocations();
+      addTearDown(pool.dispose);
+      final before = pool.caves.map((c) => c.toJson()).toList();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showCavePlacement(
+                  context,
+                  pool,
+                  AcquisitionCatalog.cached!,
+                  const Offset(17600, 21400),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      expect(find.text('Choose cave entrance'), findsOneWidget);
+      expect(find.byType(CaveTerrainPreview), findsNothing);
+      for (final entrance in AcquisitionCatalog.cached!.entrances) {
+        final tile = find.byKey(ValueKey('cave-entrance-${entrance.id}'));
+        await tester.ensureVisible(tile);
+        await tester.tap(tile);
+        await tester.pump();
+        expect(
+          find.descendant(of: tile, matching: find.byIcon(Icons.check)),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      }
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(pool.caves.map((c) => c.toJson()).toList(), before);
+    },
+  );
+  testWidgets(
     '3D dragging, height and size persist; cancelling an edit leaves the saved cave intact',
     (tester) async {
       tester.view.physicalSize = const Size(1200, 1000);
@@ -65,6 +112,19 @@ void main() {
       );
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
+      expect(find.byType(CaveTerrainPreview), findsNothing);
+      expect(
+        tester
+            .widget<TextButton>(
+              find.byKey(const ValueKey('cave-entrance-next')),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-shrine')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-next')));
+      await tester.pumpAndSettle();
       expect(find.text('Size 75%'), findsOneWidget);
       final beforeX =
           (tester
@@ -84,7 +144,6 @@ void main() {
             .text,
         isNot(beforeX),
       );
-      await tester.tap(find.byKey(const ValueKey('cave-entrance-shrine')));
       await tester.enterText(find.byKey(const ValueKey('cave-z')), '12.5');
       await tester.tap(find.byKey(const ValueKey('cave-add')));
       await tester.pumpAndSettle();
@@ -115,6 +174,12 @@ void main() {
         ),
       );
       await tester.tap(find.text('Edit'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('cave-change-entrance')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-rock_cave')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-next')));
       await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const ValueKey('cave-z')), '-100');
       await tester.tap(find.text('Cancel'));

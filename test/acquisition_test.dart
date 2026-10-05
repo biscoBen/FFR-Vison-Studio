@@ -368,11 +368,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(locations.caves, hasLength(1));
       await open();
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-shrine')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('cave-entrance-next')));
+      await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const ValueKey('cave-name')),
         'Chosen test cave',
       );
-      await tester.tap(find.byKey(const ValueKey('cave-entrance-shrine')));
       await tester.tap(find.byKey(const ValueKey('cave-add')));
       await tester.pumpAndSettle();
       expect(locations.caves, hasLength(2));

@@ -140,7 +140,40 @@ class ResonanceCavesTests(unittest.TestCase):
                 self.assertEqual(spec.return_point[2], 84.33)
                 self.assertTrue(abs(dx) > 160 or abs(dy) > 250, 'return overlaps entrance interaction')
 
-    def test_world_exit_uses_world_name_route_and_resets_walking(self):
+    def test_world_banner_changes_only_landmark_policy_and_preserves_native_entries(self):
+        def flag(name, value):
+            return {'$type': 'UAssetAPI.PropertyTypes.Objects.BoolPropertyData, UAssetAPI',
+                    'Name': name, 'Value': value, 'IsZero': not value}
+        def entry(uid, value):
+            return [{'Name': 'MapIdPropertyMap', 'Value': uid},
+                    {'Name': 'MapIdPropertyMap', 'StructType': 'UIPlaceNameProperty',
+                     'Value': [flag('bUseLandName', value), flag('bAllowDisplayOnTransition', False)]}]
+        owner = {'ObjectName': 'DA_UI_PlaceNameProperty', 'Data': [
+            {'Name': 'DefaultProperty', 'Value': [flag('bAllowDisplayOnTransition', True)]},
+            {'Name': 'MapIdPropertyMap', 'Value': [entry(1000, True), entry(5200, False)]}]}
+        original = {'NameMap': ['NativeName'], 'Exports': [owner], 'Imports': [], 'Extras': 'opaque'}
+        before = copy.deepcopy(original)
+        patched = cave.world_destination_banner(original)
+        expected = copy.deepcopy(original)
+        policy = expected['Exports'][0]['Data'][1]['Value'][0][1]['Value'][0]
+        policy.update(Value=False, IsZero=False)
+        self.assertEqual(original, before)
+        self.assertEqual(patched, expected)
+        self.assertEqual(cave.world_destination_banner(patched), patched)
+
+        # Fail clearly on a changed native contract rather than touching defaults
+        # or applying a map-wide rule to the wrong destination.
+        for entries in ([], [entry(5200, False)], [entry(1000, True), entry(1000, True)]):
+            malformed = copy.deepcopy(original)
+            malformed['Exports'][0]['Data'][1]['Value'] = entries
+            with self.assertRaisesRegex(ValueError, 'world-map banner entry changed'):
+                cave.world_destination_banner(malformed)
+        malformed = copy.deepcopy(original)
+        malformed['Exports'][0]['Data'][1]['Value'][0][1]['Value'][0]['Value'] = 1
+        with self.assertRaisesRegex(ValueError, 'landmark-name policy changed'):
+            cave.world_destination_banner(malformed)
+
+    def test_world_exit_keeps_world_route_and_resets_walking(self):
         def prop(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
         actor = {'Data': [prop('m_MapId', 3000), prop('m_PointID', 0),
                          prop('m_RegionId', 3000),

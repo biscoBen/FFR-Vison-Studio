@@ -34,6 +34,7 @@ WORLD_BG = 'Map/Wld/01Gra/BG/Wld_01Gra_BG'
 TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
 PACKAGE = 'Map/StudioCrystalCave/' + NAME
 GRANT_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_014_03/SEQ_C01_014_03'
+PLACE_NAME = 'UI/Field/PlaceName/Data/DA_UI_PlaceNameProperty'
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -904,11 +905,10 @@ def transition(actor, conditional_template, map_id, point, auto=True):
 
 
 def overworld_exit(actor, conditional_template, spec):
-    """Set the native world-map travel and region/display identities explicitly."""
+    """Keep world-map routing and walking reset independent of banner policy."""
     transition(actor, conditional_template, 1000, spec.map_id, auto=False)
-    # The destination banner also uses the trigger's region ID. Leaving this
-    # native property implicit retained the Earth Shrine banner/level even
-    # while m_MapId correctly sent the player back to the world map.
+    # Retain explicit destination IDs; the banner's separate bUseLandName
+    # policy is patched below. Region IDs alone do not select its text.
     region = copy.deepcopy(property_data(actor, 'm_MapId'))
     region.update(Name='m_RegionId', Value=1000, IsZero=False)
     actor['Data'] = [p for p in actor['Data'] if p['Name'] != 'm_RegionId'] + [region]
@@ -1278,6 +1278,29 @@ def check_level(expected, built):
             raise ValueError('Cave level properties changed: ' + a['ObjectName'])
 
 
+
+def world_destination_banner(original):
+    """Use the world map's native name rather than a nearby landmark's banner.
+
+    The native world-map entry uses bUseLandName even for cave exit previews.
+    It can therefore show Earth Shrine / level 3 while travel goes to map 1000.
+    Change only this flag; retain native visibility, other destinations, bindings
+    and translations. This policy affects world-map destination previews while
+    caves are installed, including exits from native locations.
+    """
+    result = copy.deepcopy(original)
+    _, owner = export(result, 'DA_UI_PlaceNameProperty')
+    entries = property_data(owner, 'MapIdPropertyMap')['Value']
+    world = [value for key, value in entries if key.get('Value') == 1000]
+    if len(world) != 1 or world[0].get('StructType') != 'UIPlaceNameProperty':
+        raise ValueError('The native world-map banner entry changed; no banner override was built.')
+    flag = property_data(world[0], 'bUseLandName')
+    if 'BoolPropertyData' not in flag.get('$type', '') or type(flag.get('Value')) is not bool:
+        raise ValueError('The native landmark-name policy changed; no banner override was built.')
+    set_value(world[0], 'bUseLandName', False)
+    return result
+
+
 def build(units, env):
     plans, _ = cave_plans(units, env['ROOT'], env.get('rows'))
     if not plans: return
@@ -1289,8 +1312,8 @@ def build(units, env):
     source = {}
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
-    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, *meshes):
-        suffix = '.uasset' if rel == GRANT_DONOR or rel in meshes else '.umap'
+    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes):
+        suffix = '.uasset' if rel in (GRANT_DONOR, PLACE_NAME) or rel in meshes else '.umap'
         relative = rel.removeprefix('/Game/')
         path = legacy / ('FFRS/Content/' + relative + suffix)
         if not path.is_file():
@@ -1299,12 +1322,13 @@ def build(units, env):
         env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
         source[rel] = json.loads(dump.read_text(encoding='utf-8-sig'))
     expected = make_caves(source, plans)
+    expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
     mapping = blueprint_mappings(expected, env, work)
     for rel, view in expected.items():
         names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        suffix = '.uasset' if rel in sequence_paths else '.umap'
+        suffix = '.uasset' if rel in sequence_paths or rel == PLACE_NAME else '.umap'
         destination = Path(env['OUT']) / ('FFRS/Content/' + rel + suffix)
         destination.parent.mkdir(parents=True, exist_ok=True)
         env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])
@@ -1314,7 +1338,7 @@ def build(units, env):
     for entries in plans:
         unit, spec = entries[0]
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
-    print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits.')
+    print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
 
 
 def make_caves(source, plans):

@@ -271,7 +271,8 @@ Changing Random in either direction picks another location. Choose **Shop** and 
 custom caves. The vendor list retains all 105 native inventory and 20 combined-shop records, including chapter variants;
 it uses readable translations of their source labels. Moving/later-game entries without identifiable native map coordinates
 remain selectable with their pin unavailable. Zoom and drag the native world-map menu images, or use **Full map**.
-Right-click the map, choose **Add cave here**, name it and select an entrance model image. The shared cave list starts
+Right-click the map, choose **Add cave here**, select an entrance image and click **Position cave**. Then name and place
+it; use **Change** beside the selected entrance to choose another model. The shared cave list starts
 with our Crystal Fina cave; you place the rest toward the 30-cave target. Selecting a cave centers its pin. Entrance
 previews use native geometry with simplified lighting. Cave locations persist across Studio restarts. Right-click any
 visible cave marker for **Remove cave**. Removal clears all current vision assignments
@@ -297,7 +298,9 @@ now include the supplied Lanzelt towns/large bridges, Dirnado settlements and vi
 Unsupported rock geometry and missing shader dependencies remain omitted/simplified. Elsewhere set Z manually.
 Ordinary cave visions use 63% of their original scale (5% larger than the previous package); Crystal Fina's crystal stays at its tested size. Square native map
 captures are displayed without stretching them to region bounds, keeping 2D pins aligned with saved world coordinates.
-Cave exits use the native world-map destination/name and restore walking. Returns are placed outside the entrance on
+Cave exits travel to the world map and restore walking. While Resonance caves are installed, native world-map destination
+banners use **World Map** rather than landmark names/recommended levels; this also affects native location exit previews.
+Other destinations and native banner visibility settings are preserved. Returns are placed outside the entrance on
 its opening side, at native terrain height with runtime collision snapping; the exact incoming player position is not saved.
 The cave portal uses a white loading transition. Terrain/accessibility still need an in-game placement check. Automated asset checks do not execute gameplay.
 The [verified acquisition package](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37241624765)
