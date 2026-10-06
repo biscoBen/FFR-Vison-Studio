@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/services/character_config.dart';
@@ -82,7 +81,7 @@ void main() {
     expect(reset['master']['id'], old['master']['id']);
     expect(reset['studioAcquisition'], edited['studioAcquisition']);
     final backup = Directory(app.paths.configBackups).listSync().whereType<File>().single;
-    final saved = json.decode(backup.readAsStringSync()) as List;
+    final saved = CharacterConfig.decodeAll(backup.readAsStringSync());
     expect(saved.firstWhere((u) => u['key'] == old['key'])['stats']['Attack'], 47);
   });
 

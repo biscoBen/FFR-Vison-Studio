@@ -490,10 +490,10 @@ class AppState extends ChangeNotifier {
       notifyListeners();
       final current = _mergePending(await api!.spec());
       final next = await _prepareSephira(current, presetId: presetId, reset: reset);
-      if (reset) {
+      if (reset && current.isNotEmpty) {
         final backup = File(p.join(paths.configBackups, 'sephira-${DateTime.now().microsecondsSinceEpoch}.json'));
         await backup.parent.create(recursive: true);
-        await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
+        await backup.writeAsString(CharacterConfig.encodeAll(current), flush: true);
       }
       await _commitSephira(next, enabled: sephiraEnabled);
     } finally {
