@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/services/sephira_visions.dart';
@@ -16,6 +17,19 @@ Map<String, dynamic> preset(String name, String form) {
   unit['ffbe'] = {'id': form, 'base': '10', 'source': 'JP', 'dir': 'units/ffbe/sephira_$name/sprites/$form'};
   if (name == 'christine') unit = CharacterConfig.restore(unit, [profile()]);
   return {'id': name, 'name': name, 'theme': 'Test', 'profile': unit};
+}
+
+class CatalogConfigApi extends ConfigApi {
+  CatalogConfigApi(super.roster, this.hostUnits);
+  final List<Map<String, dynamic>> hostUnits;
+
+  @override
+  Future<Map<String, dynamic>> prepareAssets(String ffbeId, String form) {
+    final allowed = hostUnits.any((unit) => unit['id'] == ffbeId &&
+        (unit['packs'] as List).contains(form));
+    if (!allowed) throw StateError('This look is not available for the selected unit.');
+    return super.prepareAssets(ffbeId, form);
+  }
 }
 
 void main() {
@@ -158,6 +172,53 @@ void main() {
     final dual = (minfilia['skills'] as Map).values.single;
     expect(dual['set']['mimicableUnitId'], minfilia['id']);
     expect(minfilia['id'], isNot(configs[6]['id']));
+  });
+
+  test('all selected presets prepare with separate Alice shift and base owners', () async {
+    final presets = await SephiraVisions.bundled;
+    final hostUnits = <Map<String, dynamic>>[];
+    for (final preset in presets) {
+      final ffbe = preset['profile']['ffbe'] as Map;
+      if (ffbe['source'] == 'CUSTOM') continue;
+      final forms = <String>[ffbe['id'] as String];
+      if (ffbe['baseForm'] is String && preset['id'] != 'alice') {
+        forms.add(ffbe['baseForm'] as String);
+      }
+      hostUnits.add({'id': ffbe['base'], 'packs': forms});
+    }
+    // These are two distinct rows in the hosted catalog, not one unit with
+    // two looks. Both are needed to restore the selected Brave Shift config.
+    hostUnits.add({'id': '336000105', 'packs': ['336000117']});
+    final strict = CatalogConfigApi(clone(api.roster) as List, hostUnits)
+      ..paths = app.paths;
+    app.api = strict;
+    app.hostIndex = {'units': hostUnits};
+    app.sephiraPresets = presets;
+    final original = CharacterConfig.copy(app.units.single);
+    await app.setSephiraEnabled(true);
+    expect(app.sephiraUnits, hasLength(31));
+    expect(strict.saves, 1);
+    expect(strict.preparations, containsAll([
+      '336000127:336000127', '336000105:336000117',
+      '215002407:215002417', '215002407:215002407',
+      '304000707:304000717', '304000707:304000707',
+    ]));
+    expect(app.units.singleWhere((u) => u['key'] == original['key'])['stats'], original['stats']);
+    final alice = app.sephiraUnits.singleWhere((u) => u['sephiraVision']['preset'] == 'alice');
+    expect(alice['ffbe']['id'], '336000127');
+    expect(alice['ffbe']['baseForm'], '336000117');
+    CharacterConfig.validateAll(strict.roster);
+  });
+
+  test('failed preparation names the preset and preserves the roster', () async {
+    api.failPreparation = true;
+    final original = clone(app.units);
+    await expectLater(app.setSephiraEnabled(true), throwsA(
+      isA<ApiException>().having((e) => e.message, 'message',
+          contains('Could not prepare a2:'))));
+    expect(app.units, original);
+    expect(api.roster, original);
+    expect(app.sephiraEnabled, isFalse);
   });
 
   test('existing Crystal Fina is adopted once without resetting her edits', () async {

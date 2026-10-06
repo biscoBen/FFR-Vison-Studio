@@ -554,7 +554,15 @@ class AppState extends ChangeNotifier {
     for (var i = 0; i < loaded.length; i++) {
       sephiraProgress = 'Preparing ${wanted[i]['name']} (${i + 1}/${loaded.length})';
       notifyListeners();
-      await _checkCharacterArtwork(loaded[i]);
+      try {
+        await _checkCharacterArtwork(loaded[i]);
+      } catch (error) {
+        final message = error is StateError ? error.message : error.toString();
+        if (error is ApiException) {
+          throw ApiException('Could not prepare ${wanted[i]['name']}: $message', statusCode: error.statusCode);
+        }
+        throw StateError('Could not prepare ${wanted[i]['name']}: $message');
+      }
     }
     // A reset must never silently overwrite an edit made during preparation.
     if (reset && revision != _rosterRevision) {
@@ -698,13 +706,19 @@ class AppState extends ChangeNotifier {
     if (CrystalFina.matches(saved)) { await features.ensureUnitAssets(paths); }
     final ffbe = saved['ffbe'] as JsonMap;
     final form = ffbe['id'] as String;
-    final hosted = ((hostIndex?['units'] as List?) ?? []).cast<JsonMap>().where(
-      (u) => (u['packs'] as List? ?? []).map((f) => f.toString()).contains(form),
-    ).firstOrNull;
     final base = ffbe['base']?.toString();
-    final uid = ffbe['source'] == 'CUSTOM' ? null : hosted?['id']?.toString() ??
-        (base != null && RegExp(r'^\d+$').hasMatch(base) &&
-         (ffbe['dir'] as String).replaceAll('\\', '/').startsWith('units/ffbe/') ? base : null);
+    String? owner(String id) {
+      if (ffbe['source'] == 'CUSTOM') return null;
+      // A Brave Shift can have its own catalog row while its base form belongs
+      // to another unit (for example Alice/Half Nightmare and original Alice).
+      final hosted = ((hostIndex?['units'] as List?) ?? []).cast<JsonMap>().where(
+        (u) => (u['packs'] as List? ?? u['spriteForms'] as List? ?? [])
+            .map((f) => f.toString()).contains(id),
+      ).firstOrNull;
+      return hosted?['id']?.toString() ??
+          (base != null && RegExp(r'^\d+$').hasMatch(base) &&
+           (ffbe['dir'] as String).replaceAll('\\', '/').startsWith('units/ffbe/') ? base : null);
+    }
     String directory(String relative) => p.joinAll([paths.engineDir, ...relative.replaceAll('\\', '/').split('/')]);
     bool hasArtwork(String relative, String id) =>
         ['unit_anime_$id.png', 'unit_cgg_$id.csv'].every((name) {
@@ -712,6 +726,7 @@ class AppState extends ChangeNotifier {
           return file.existsSync() && file.lengthSync() > 0;
         });
     Future<void> restoreForm(String id, String relative) async {
+      final uid = owner(id);
       if (uid == null) return;
       if (hasArtwork(relative, id) && _sprites.hasSheets(id) && (await api!.anims(id)).isNotEmpty) return;
       await prepareUnitPreview(uid, id);
