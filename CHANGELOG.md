@@ -24,12 +24,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   select her allocated vision identity. Preserve native originals. Adopt an
   existing Crystal Fina without changing her kit or cave assignment; reset her
   explicitly to apply the balanced recipe.
+- Reserve the native skill catalog during preset ID allocation and recheck at
+  build time. Keep new LB IDs in the custom namespace; reset backups can be
+  imported directly through Studio’s character-config controls.
 - Document every selected form, kit and unlock rank in `SEPHIRAS_VISIONS.md`,
   with machine-readable coverage and native balance budgets. Local native-SDK
   read-back confirms 21 private rows and unchanged originals; the pinned engine
   accepts all 30 hosted LB timelines. Windows packaging and live-game balance
   checks remain pending.
-- Local checks: 229 Flutter tests (one Windows-only skip), 277 Python tests
+- Local checks: 230 Flutter tests (one Windows-only skip), 278 Python tests
   (three existing Windows-only skips), clean analysis and verified bundles.
 
 ## Published exact native kits and MR labels — 2026-10-06

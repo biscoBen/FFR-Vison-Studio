@@ -64,9 +64,14 @@ def bind_units(units, rows):
     if not any(membership(u) is not None for u in result): return result
     passives = {v['ID']: (k, v) for k, v in rows(PASSIVE).items()}
     effects = {v['ID']: (k, v) for k, v in rows(EFFECT).items()}
+    native_skills = {v['ID'] for v in rows('Skill/DT_SkillData').values()}
     for u in result:
         value = membership(u)
         if value is None: continue
+        owned = {int(sid) for sid in u.get('skills', {})}
+        if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)
+        if native_skills & owned:
+            raise ValueError('A Sephira custom skill/LB ID overlaps the game catalog. Reset this preset in Studio to allocate safe IDs.')
         private = {}
         for field in ['awakening', 'synchro']:
             for tier in u[field]:

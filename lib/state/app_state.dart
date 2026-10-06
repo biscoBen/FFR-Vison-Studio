@@ -545,7 +545,11 @@ class AppState extends ChangeNotifier {
       if (existing[p['id']]?.containsKey(Acquisition.field) == true)
         Acquisition.field: CharacterConfig.copy(existing[p['id']]![Acquisition.field] as JsonMap),
     }];
-    final loaded = CharacterConfig.restoreAll(sources, current, targets);
+    final reservedSkills = <int>{
+      for (final skill in catalog?['skills'] as List? ?? [])
+        if (skill['id'] is num) (skill['id'] as num).toInt(),
+    };
+    final loaded = CharacterConfig.restoreAll(sources, current, targets, reservedSkillIds: reservedSkills);
     final revision = _rosterRevision;
     for (var i = 0; i < loaded.length; i++) {
       sephiraProgress = 'Preparing ${wanted[i]['name']} (${i + 1}/${loaded.length})';

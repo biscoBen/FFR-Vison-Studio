@@ -167,8 +167,9 @@ class CharacterConfig {
   static List<Map<String, dynamic>> restoreAll(
     List<Map<String, dynamic>> saved,
     List<dynamic> roster,
-    List<Map<String, dynamic>?> replacing,
-  ) {
+    List<Map<String, dynamic>?> replacing, {
+    Set<int> reservedSkillIds = const {},
+  }) {
     validateAll(saved);
     if (saved.length != replacing.length) {
       throw ArgumentError('One target is required for each config.');
@@ -182,7 +183,7 @@ class CharacterConfig {
     // cannot unnecessarily displace another saved or re-added character.
     final reserved = [
       for (var i = 0; i < saved.length; i++)
-        restore(saved[i], [], replacing: replacing[i]),
+        restore(saved[i], [], replacing: replacing[i], reservedSkillIds: reservedSkillIds),
     ];
     // Existing characters keep their current IDs ahead of a missing character
     // whose old ID has since been reused by one of them.
@@ -193,7 +194,7 @@ class CharacterConfig {
     final reserve = [
       for (var i = 0; i < saved.length; i++)
         replacing[i] != null ||
-            restore(reserved[i], existingReservations)['id'] ==
+            restore(reserved[i], existingReservations, reservedSkillIds: reservedSkillIds)['id'] ==
                 reserved[i]['id'],
     ];
     final loaded = <Map<String, dynamic>>[];
@@ -204,7 +205,7 @@ class CharacterConfig {
           ...loaded,
           for (var j = i + 1; j < reserved.length; j++)
             if (reserve[j]) reserved[j],
-        ], replacing: replacing[i]),
+        ], replacing: replacing[i], reservedSkillIds: reservedSkillIds),
       );
     }
     final activeIds = <int, int>{}, masterIds = <int, int>{};
@@ -516,6 +517,7 @@ class CharacterConfig {
     Map<String, dynamic> saved,
     List<dynamic> roster, {
     Map<String, dynamic>? replacing,
+    Set<int> reservedSkillIds = const {},
   }) {
     validate(saved);
     final other = roster
@@ -560,13 +562,15 @@ class CharacterConfig {
           id == oldId ? saved['command']['id'] : 320 + id - 13500,
         ) &&
         !masterIds.contains(id == oldId ? saved['master']['id'] : id * 100) &&
-        (saved['lb_custom'] == null || !skillIds.contains(resonanceId(id))) &&
+        (saved['lb_custom'] == null ||
+            (!skillIds.contains(resonanceId(id)) && !reservedSkillIds.contains(resonanceId(id)))) &&
         owned.every(
-          (v) => !skillIds.contains(skillBase(id) + v - skillBase(oldId)),
+          (v) => !skillIds.contains(skillBase(id) + v - skillBase(oldId)) &&
+              !reservedSkillIds.contains(skillBase(id) + v - skillBase(oldId)),
         );
     var id = replacing?['id'] as int? ?? oldId;
     if (!free(id)) {
-      id = visionIds.fold(13499, (a, b) => a > b ? a : b) + 1;
+      id = 13500;
       while (!free(id)) {
         id++;
       }

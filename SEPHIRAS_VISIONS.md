@@ -113,7 +113,7 @@ Sprite `214000304` (GL); stat/MR budget: Onion Knight. Growth: Lightning.
 - Awakening 1: Stone [220210]; Protect [230040]; Late Bloomer [1411]; Magic Attack +20% [1311].
 - Awakening 2: Stonera [220220]; Protectga [230050].
 - Awakening 3: Stonega [220230]; Blade Torrent [445200]; Chuck [1412].
-- Awakening 4: Dual Jobs [495690]; Job Change [1410].
+- Awakening 4: Dual Jobs [485690]; Job Change [1410].
 - MR 1: Throw [400240].
 - MR 5: Observe and Recover HP [1465].
 - MR 7: Observe and Attack [1343].

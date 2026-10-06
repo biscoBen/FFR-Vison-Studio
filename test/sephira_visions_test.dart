@@ -177,4 +177,19 @@ void main() {
     expect(app.includedUnitCount, 0);
     expect(app.units.single['stats']['Mind'], 57);
   });
+
+  test('preset allocation reserves native skills as well as user roster IDs', () async {
+    final reserved = {
+      CharacterConfig.resonanceId(13503),
+      CharacterConfig.resonanceId(13500),
+      CharacterConfig.skillBase(13501),
+    };
+    app.catalog = {'skills': [for (final id in reserved) {'id': id}]};
+    await app.setSephiraEnabled(true);
+    for (final u in app.sephiraUnits) {
+      final owned = {CharacterConfig.resonanceId(u['id'] as int),
+        ...(u['skills'] as Map).keys.map((k) => int.parse(k.toString()))};
+      expect(owned.intersection(reserved), isEmpty);
+    }
+  });
 }

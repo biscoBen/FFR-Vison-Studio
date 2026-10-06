@@ -84,6 +84,10 @@ def generate(reference):
     def rows(name): return json.loads((rows_dir / (name + '.json')).read_text())['rows']
     def by_id(name, id): return next(v for v in rows(name).values() if v['ID'] == id)
     native = {v['id']: v for v in json.loads((reference/'native-kit-audit.json').read_text())['checked']}
+    reservations={key: sorted({v['ID'] for v in rows(rel).values()}) for key,rel in [
+        ('visions','Item/Vision/DT_VisionItemData'),('units','Unit/DT_UnitParameter'),
+        ('commands','Skill/DT_CommandSkillData'),('masters','Skill/DT_MasterSkillData'),
+        ('skills','Skill/DT_SkillData')]}
     pool = {}
     for u in native.values():
         for field in ['awakening','synchro']:
@@ -94,7 +98,7 @@ def generate(reference):
     host = json.loads((reference/'sephira-research/host-index.json').read_text())
     presets=[]; assigned={}
     for i, (key,title,form,theme,budget,actives,passives) in enumerate(PLANS):
-        vid=13600+i
+        vid=13500+i
         stats=by_id('Unit/DT_UnitParameter',budget)
         stats={k:stats[k] for k in ['MaxHitPoint','MaxMagicPoint','Attack','Defence','Intelligence','Mind','Agility']}
         attack = 'Magic' if key in ['christine','crystal_fina','folka','mystea','eiko','trance_terra','ariana','elephim','relm','lunafreya','mog','aria'] else 'Physic'
@@ -105,7 +109,7 @@ def generate(reference):
         unit={'key':'sephira_'+key,'id':vid,'sort':vid+70,'jp':'Sephira_'+key,
               'en':title,'desc':theme+'. A Sephira vision with native-budget Resonance skills.',
               'donor':donor,'attackType':attack,'stats':stats,'roles':['eUnitRole::'+('Healer' if key in ['crystal_fina','aria','ariana'] else 'Defender' if key in ['lenneth','mystea','lilith'] else 'Jammer' if key in ['lunafreya','elephim'] else 'Attacker')],
-              'elemRes':{},'command':{'id':420+i,'en':title+' Skills','desc':theme+'.'},
+              'elemRes':{},'command':{'id':320+i,'en':title+' Skills','desc':theme+'.'},
               'master':{'id':vid*100,'en':'Spirit of '+title,'desc':title+"'s learned mastery rewards flow into the wearer."},
               'price':1000,'skills':{},'ffbeMap':{'skills':{},'passives':{}},'menuScale':2.0,
               'awakening':[[],[],[],[]], 'synchro':[[] for _ in range(10)]}
@@ -165,6 +169,11 @@ def generate(reference):
         for rank,tier in enumerate(native[budget]['synchro']):
             unit['synchro'][rank].extend(copy.deepcopy([g for g in tier if g[0]=='BaseParameter']))
         unit['synchro'][9].append(['MasterSkill',vid*100,-1])
+        checks={'visions':{vid},'units':{vid},'commands':{unit['command']['id']},
+                'masters':{unit['master']['id']},
+                'skills':{int(s) for s in unit['skills']} | {440000+(vid-13099)*10}}
+        for category,ids in checks.items():
+            if ids & set(reservations[category]): raise ValueError(f'{key}: native {category} ID collision')
         for field,cap in [('awakening',8),('synchro',5)]:
             if any(len(t)>cap for t in unit[field]): raise ValueError(f'{key} {field} capacity: {[len(t) for t in unit[field]]}')
         form_label='Custom' if key=='crystal_fina' else str(detail['forms'][form]['rarity'])
@@ -186,7 +195,7 @@ def generate(reference):
             e['privateClone']='Command/LB condition rebound on a private copy at build time; magnitude, cost and unlock rank retained.'
     audit['status']='All excluded native grants allocated once; owner bindings applied by build helper.'
     (ROOT/'assets/sephira_visions/native_coverage.json').write_text(json.dumps(audit,indent=2)+'\n')
-    catalog={'schema':1,'status':'ready','presets':presets,'nativeBudgets':{
+    catalog={'schema':1,'status':'ready','presets':presets,'nativeReservations':reservations,'nativeBudgets':{
         str(vid):{'stats':{k:by_id('Unit/DT_UnitParameter',vid)[k] for k in presets[0]['profile']['stats']},
                   'statRewards':[[rank,*g] for rank,t in enumerate(native[vid]['synchro']) for g in t if g[0]=='BaseParameter']}
         for vid in {p['balance']['nativeBudget'] for p in presets}},

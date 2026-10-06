@@ -33,6 +33,10 @@ class SephiraTests(unittest.TestCase):
             masters = [g for t in u['synchro'] for g in t if g[0]=='MasterSkill']
             self.assertEqual(masters, [['MasterSkill',u['master']['id'],-1]])
             self.assertEqual(u['master']['id'],u['id']*100)
+            owned={int(s) for s in u['skills']} | {440000+(u['id']-13099)*10}
+            self.assertFalse(owned & set(catalog['nativeReservations']['skills']))
+            for kind,id in [('visions',u['id']),('units',u['id']),('commands',u['command']['id']),('masters',u['master']['id'])]:
+                self.assertNotIn(id,catalog['nativeReservations'][kind])
             self.assertEqual(u['lb_custom']['mechanics'],'custom')
             self.assertFalse({'magnification','breakDamageValue','Cost','effectBundleList'} & u['lb_custom']['set'].keys())
             for field in ['awakening','synchro']:
@@ -56,7 +60,7 @@ class SephiraTests(unittest.TestCase):
     def test_owner_bindings_change_only_semantic_conditions_on_private_rows(self):
         audit=json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())
         entries={e['id']:e for e in audit['entries'] if e['kind']=='PassiveSkill'}
-        tables={pack.PASSIVE:{},pack.EFFECT:{}}
+        tables={pack.PASSIVE:{},pack.EFFECT:{},'Skill/DT_SkillData':{}}
         for sid in [1406,1410,1411,1418,1420,1432,1433,1454]:
             e=entries[sid]
             tables[pack.PASSIVE][str(sid)]={'ID':sid,'equipCost':e['equipCost'],'effectBundleList':e['effectBundles']}
@@ -78,6 +82,13 @@ class SephiraTests(unittest.TestCase):
         tables[pack.EFFECT]['15125']['ParamList'][1]=999
         with self.assertRaisesRegex(ValueError,'re-audit'):
             pack.bind_units([unit],tables.__getitem__)
+
+    def test_build_rejects_a_private_lb_that_would_shadow_a_native_skill(self):
+        tables={pack.PASSIVE:{},pack.EFFECT:{},'Skill/DT_SkillData':{'Vanguard Glaive':{'ID':445010}}}
+        u=member('a2',True)
+        u.update({'id':13600,'lb_custom':{'from':440110},'awakening':[],'synchro':[]})
+        with self.assertRaisesRegex(ValueError,'overlaps the game catalog'):
+            pack.bind_units([u],tables.__getitem__)
 
     def test_non_pack_build_never_requires_optional_binding_tables(self):
         def unexpected(_): raise AssertionError('Should not read Sephira tables')

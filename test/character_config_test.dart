@@ -773,7 +773,8 @@ void main() {
         null,
         null,
       ]);
-      expect(loaded[0]['id'], 13505);
+      expect(loaded[0]['id'], isNot(second['id']));
+      expect(loaded[0]['id'], isNot(occupied['id']));
       expect(loaded[1]['id'], second['id']);
     },
   );
