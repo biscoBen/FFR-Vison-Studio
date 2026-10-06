@@ -137,10 +137,11 @@ A failed preparation reports its error and keeps the roster unchanged; retry loa
 ## Sephira’s Visions
 
 The home page has an optional **Sephira’s Visions** section with 31 editable presets in the requested FFBE forms.
-[Verified Windows test package / run 37535223224](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37535223224)
-contains code `5886393` and passed all required Windows checks on 2026-10-06. Live battle balance and appearance still
+[Verified Windows test package / run 37541028882](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37541028882)
+contains code `a5ace73` and passed all required Windows checks on 2026-10-06. Live battle balance and appearance still
 need in-game testing.
 Enable it to prepare missing artwork and add the profiles, then build/install to make them available in the game.
+Each required look resolves its own hosted unit, including Alice’s separately listed Brave Shift and base form.
 Their specialties include attacks and secondary utility. Native stats, MR rewards and combat mechanics provide the
 balance baseline; the collection covers the excluded original visions’ skills and passives. See
 [the complete kits and unlock ranks](SEPHIRAS_VISIONS.md).

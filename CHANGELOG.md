@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published preset appearance preparation fix — 2026-10-06
+
+Code: [`a5ace73`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a5ace736273bc3b707dc1ffe82c6f3dd556b8ad9).
+[Verified Windows test release / run 37541028882](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37541028882).
+
 - Fix enabling Sephira’s Visions when a Brave Shift's base appearance belongs
   to a separate hosted unit. Resolve each appearance's download owner independently,
   including Alice/Half Nightmare and original Alice, without changing the selected
@@ -19,7 +24,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   including shared-owner and separate-owner shifted forms. The pinned engine accepts
   all 33 required hosted form requests. Local checks: 232 Flutter tests (one existing
   Windows-only skip), 278 Python tests (three existing Windows-only skips), clean
-  analysis and verified bundles. Windows packaging pending.
+  analysis and verified bundles.
+- All required Windows gates passed, including full suites, analysis, frozen-engine
+  startup, launcher/updater checks, compilation and publication. Authenticated
+  download verified the exact commit/run, package checksum and all 59 bundled
+  resources. Saved kits, selected looks, engine payloads and master are unchanged.
+- Measured first inspection to verified package: **9m04s**. First complete candidate
+  to verified package: **7m02s**, including local checks and the correction to retain
+  API error types. One code push and one reused automatic build. CI took **5m10s**
+  and **8m30s** runner time; verification after CI took **18s**. Publication notes
+  use the documentation-only path.
 
 ## Published Sephira’s Visions collection — 2026-10-06
 
