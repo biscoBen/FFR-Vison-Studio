@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published expanded Sephira kits — 2026-10-06
+
+Code: [`fa81e40`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fa81e402e05b5d86eec2a8580ac0b74d1486c09c).
+[Verified Windows test release / run 37546814857](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37546814857).
+
 - Expand the Sephira collection from 11–16 to 20–25 distinct abilities/passives
   using the wider native and enemy catalog. Keep exact native stat/MR budgets
   and all 291 excluded-vision grants covered once. Supplemental player copies
@@ -27,6 +32,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Kit counts, sources, costs, unlocks and balance limits are documented in
   `SEPHIRAS_VISIONS.md`. Live-game balance and demo animation availability still
   require testing.
+- Local checks passed: 234 Flutter tests (one existing platform skip), 280 Python
+  tests (three existing platform skips), clean analysis and bundle verification.
+  Native SDK readback verified 177 private skill/passive/effect rows and unchanged
+  originals; the pinned engine accepted all 29 hosted LB timelines. Regression
+  checks cover kit bounds, unique sources, safe costs/drain/hit ratios, command
+  remapping, update notices, backed-up resets and retired-entry filtering.
+- All required Windows gates passed: full validation, frozen-engine startup,
+  launcher/updater checks, compilation and publication. Authenticated download
+  verified the exact commit/run, ZIP checksum and all 59 bundled resources,
+  including the 30 presets and 631 distinct grants. Master remains unchanged.
+- Measured audit start to verified package: **40m59s**. First recorded complete
+  candidate to verified package: **11m49s**, including local checks, damage-ratio
+  precision correction and final command-binding correction. One code push and
+  one reused automatic build. CI took **5m09s** and **8m48s** runner time;
+  verification after CI took **1m20s**. Publication notes use the documentation-only path.
 
 ## Published preset appearance preparation fix — 2026-10-06
 

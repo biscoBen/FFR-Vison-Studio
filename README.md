@@ -140,8 +140,8 @@ The home page has an optional **Sephira’s Visions** section with 30 editable p
 Revised kits have 20–25 distinct abilities/passives with native stat/MR budgets and balanced additions from the broader
 native/enemy catalog. Great Dragon is retired from this collection. Existing edits are preserved; use **Reset all presets**
 to apply expanded kits (backs up the roster and keeps acquisition), then build/install.
-[Verified Windows test package / run 37541028882](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37541028882)
-contains code `a5ace73` and passed all required Windows checks on 2026-10-06. Live battle balance and appearance still
+[Verified Windows test package / run 37546814857](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37546814857)
+contains code `fa81e40` and passed all required Windows checks on 2026-10-06. Live battle balance and appearance still
 need in-game testing.
 Enable it to prepare missing artwork and add the profiles, then build/install to make them available in the game.
 Each required look resolves its own hosted unit, including Alice’s separately listed Brave Shift and base form.
