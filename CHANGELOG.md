@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+No pending changes.
+
+## Published exact native kits and MR labels — 2026-10-06
+
+Code: [`0f45572`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0f45572ecef4bf4120a3875eb7ed5a2eedc353bb).
+[Verified Windows test release / run 37524217402](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37524217402).
+
 - Correct the default-vision editor's MR numbering to the game's 0–9 ranks. Label permanent stat rewards and
   passive equip costs, using Speed/Magic/AP for the matching native stats.
 - Show each default vision's actual learning ranks for its inherited abilities/passives, including shared IDs.
@@ -21,6 +28,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   awakening/MR abilities and passives even after removing them from an edit, and assign that exact version elsewhere.
 - Local validation: 219 Flutter tests (one existing skip), clean analysis, 271 Python tests (three existing Windows-only
   skips), and bundle verification. Re-add/transfer tests distinguish same-named IDs and retain native rewards unchanged.
+- All required Windows gates passed: full Flutter/Python suites, analysis, fresh frozen-engine startup,
+  launcher/updater checks, compilation and publication. Authenticated release download verified the exact commit/run,
+  package checksum and all 56 packaged resources. The default game recipes, engine payloads and master are unchanged.
+- Measured first inspection to verified package: **20m35s** — inspection/implementation and focused checks **12m38s**,
+  final local checks/review/push **1m36s**, CI **5m30s**, package verification **50s**. First complete candidate to
+  verified package: **13m08s**, including the additional exact-kit filter work. One code push and one reused automatic
+  Windows build; CI used **8m08s** runner time. Publication notes use the documentation-only path.
 
 ## Published party attack and LB voice replacements — 2026-10-05
 
