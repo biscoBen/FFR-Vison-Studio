@@ -6,6 +6,7 @@ import 'package:ffr_vision_studio/screens/steps/bonuses_step.dart';
 import 'package:ffr_vision_studio/screens/steps/tiers.dart';
 import 'package:ffr_vision_studio/screens/steps/mr_step.dart';
 import 'package:ffr_vision_studio/screens/steps/native_resonance_step.dart';
+import 'package:ffr_vision_studio/screens/steps/native_kit_filter.dart';
 import 'package:ffr_vision_studio/design/description_details.dart';
 
 import 'catalog_compact_summaries_test.dart' show compactExamples;
@@ -19,6 +20,8 @@ import 'package:provider/provider.dart';
 class CatalogState extends ChangeNotifier implements AppState {
   @override
   List<dynamic> units = [];
+  @override
+  List<dynamic> nativeVisions = [];
   @override
   JsonMap? catalog = {
     'abilityModes': {'schema': 1, 'showUnverified': true, 'useChanges': true},
@@ -71,6 +74,21 @@ class CatalogState extends ChangeNotifier implements AppState {
 }
 
 void main() {
+  test('native kit filters use immutable exact-ID snapshots, including MR grants', () {
+    final original = {'id': 13024, 'en': 'Tronn',
+      'awakening': [[['ActiveSkill', 220010]]],
+      'synchro': [[], [['PassiveSkill', 1281, -1]]],
+    };
+    final source = {'id': 13024, 'native': {'id': 13024, 'baseline': original},
+      'awakening': [], 'synchro': []};
+    final before = json.encode(source);
+    final kit = nativeKitOptions([source], {}).single;
+    expect(nativeKitContains(kit, 'skills', 220010), isTrue);
+    expect(nativeKitContains(kit, 'skills', 250010), isFalse);
+    expect(nativeKitContains(kit, 'passives', 1281), isTrue);
+    expect(nativeKitContains(kit, 'passives', 1280), isFalse);
+    expect(json.encode(source), before);
+  });
   setUpAll(() async {
     final text = FontLoader('Barlow')
       ..addFont(rootBundle.load('assets/fonts/Barlow-Regular.ttf'));
@@ -107,6 +125,78 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  testWidgets('native kit selection restores the exact removed skill on another vision', (tester) async {
+    final app = CatalogState();
+    app.nativeVisions = [{'id': 13024, 'native': {'id': 13024, 'baseline': {
+      'id': 13024, 'en': 'Tronn',
+      'awakening': [[['ActiveSkill', 220010]]], 'synchro': [],
+    }}}];
+    app.catalog = {'skills': [
+      for (final id in [220010, 250010, 777777])
+        {'id': id, 'name': 'Fire', 'attr': 'Magic', 'element': 'Fire',
+          'hasUnit': 'All', 'seq': [1],
+          if (id == 250010) 'row': '(敵用)ファイア'},
+    ], 'passives': [], 'icons': [],
+      'abilityModes': {'showUnverified': true, 'useChanges': false}};
+    final unit = <String, dynamic>{};
+    await showStep(tester, (u, set) => AbilitiesStep(unit: u, set: set), unit, state: app);
+    await tester.tap(find.byKey(const ValueKey('native-kit-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tronn').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Game ID: 220010'), findsOneWidget);
+    expect(find.text('Game ID: 250010'), findsNothing);
+    expect(find.text('Game ID: 777777'), findsNothing);
+    for (var attempt = 0; attempt < 2; attempt++) {
+      await tester.tap(find.byType(TierMenu).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Tier 1'));
+      await tester.pumpAndSettle();
+      expect(unit['awakening'][0], [['ActiveSkill', 220010]]);
+      if (attempt == 0) {
+        await tester.tap(find.byTooltip('Remove'));
+        await tester.pumpAndSettle();
+        expect(unit['awakening'][0], isEmpty);
+        expect(find.text('Fire — Source: Tronn; awakening=1'), findsOneWidget);
+      }
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final mr in [false, true]) {
+    testWidgets('native kit filter keeps exact same-named passives in ${mr ? 'MR' : 'bonuses'}', (tester) async {
+      final app = CatalogState();
+      app.nativeVisions = [{'id': 13024, 'native': {'id': 13024, 'baseline': {
+        'en': 'Tronn', 'awakening': [], 'synchro': [
+          for (var i = 0; i < 8; i++) i == 7 ? [['PassiveSkill', 1279, -1]] : [],
+        ],
+      }}}];
+      app.catalog = {'skills': [], 'passives': [
+        {'id': 1279, 'name': 'Stagger Power +20%'},
+        {'id': 888888, 'name': 'Stagger Power +20%'},
+      ], 'icons': [], 'abilityModes': {'showUnverified': true}};
+      final unit = <String, dynamic>{};
+      await showStep(tester, (u, set) => mr ? MrStep(unit: u, set: set) : BonusesStep(unit: u, set: set), unit, state: app);
+      await tester.tap(find.byKey(const ValueKey('native-kit-filter')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Tronn').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Game ID: 1279'), findsOneWidget);
+      expect(find.text('Game ID: 888888'), findsNothing);
+      expect(find.text('Stagger Power +20% — Source: Tronn; MR=7'), findsOneWidget);
+      if (mr) {
+        await tester.tap(find.byTooltip('Add to MR 0'));
+      } else {
+        await tester.tap(find.byType(TierMenu).last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Tier 1'));
+      }
+      await tester.pumpAndSettle();
+      expect(unit[mr ? 'synchro' : 'awakening'][0], [['PassiveSkill', 1279]]);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets(

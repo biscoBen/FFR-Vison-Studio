@@ -8,6 +8,7 @@ import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
 import 'tiers.dart';
+import 'native_kit_filter.dart';
 
 /// Step 1: the game's own abilities, granted by id to awakening tiers.
 class AbilitiesStep extends StatefulWidget {
@@ -21,6 +22,7 @@ class AbilitiesStep extends StatefulWidget {
 class _AbilitiesStepState extends State<AbilitiesStep> {
   String q = '';
   String group = 'all';
+  int nativeSource = 0;
 
   String _group(Map<String, dynamic> s) {
     final attr = s['attr'];
@@ -37,7 +39,9 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog!;
-    String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'skills', row);
+    final kits = nativeKitOptions(app.nativeVisions, widget.unit);
+    final kit = selectedNativeKit(kits, nativeSource);
+    String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'skills', row, nativeUnit: nativeKitContext(kit, widget.unit));
     final skills = (cat['skills'] as List).cast<Map<String, dynamic>>();
     final descriptions = catalogDescriptions(cat, 'skills');
     final summaries = catalogAbilitySummaries(cat);
@@ -46,13 +50,13 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
     final studio = ((cat['studioSkills'] as List?) ?? []).cast<Map<String, dynamic>>();
     final groups = [if (studio.isNotEmpty) 'Studio moves', ...lib.map(_group).toSet()];
     final s = q.trim().toLowerCase();
-    final shown = lib.where((x) => (group == 'all' || _group(x) == group) && (s.isEmpty || title(x).toLowerCase().contains(s) || (descriptions[x['id']] ?? '').toLowerCase().contains(s))).toList();
+    final shown = lib.where((x) => nativeKitContains(kit, 'skills', x['id'] as num) && (group == 'all' || _group(x) == group) && (s.isEmpty || title(x).toLowerCase().contains(s) || (descriptions[x['id']] ?? '').toLowerCase().contains(s))).toList();
     final aw = awakening(widget.unit);
     final granted = <num>{for (final t in aw) for (final g in t) if (g[0] == 'ActiveSkill') g[1] as num};
     final byId = {for (final x in skills) x['id'] as num: x};
     final mySkills = Map<String, dynamic>.from((widget.unit['skills'] as Map?) ?? {});
     final studioGranted = {for (final e in mySkills.entries) if ((e.value as Map)['studio'] != null) (e.value as Map)['studio'].toString()};
-    final studioShown = (group == 'all' || group == 'Studio moves') ? studio.where((x) => s.isEmpty || x['name'].toString().toLowerCase().contains(s) || x['desc'].toString().toLowerCase().contains(s)).toList() : <Map<String, dynamic>>[];
+    final studioShown = kit == null && (group == 'all' || group == 'Studio moves') ? studio.where((x) => s.isEmpty || x['name'].toString().toLowerCase().contains(s) || x['desc'].toString().toLowerCase().contains(s)).toList() : <Map<String, dynamic>>[];
 
     void add(int tier, num id) {
       if (granted.contains(id)) return;
@@ -98,6 +102,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               ),
             ]),
           ),
+          NativeKitFilter(options: kits, selected: nativeSource, onChanged: (id) => setState(() => nativeSource = id)),
           Padding(padding: const EdgeInsets.fromLTRB(12, 0, 12, 6), child: Text('Drag one onto a tier, or use "add". Hover for full details. Resonance moves are reserved for Resonance selection.', style: Guide.small())),
           Expanded(
             child: Container(
@@ -128,6 +133,7 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
                           title: title(x),
                           summary: summaries[x['id']]?.description,
                           detail: summaries[x['id']]?.stats ?? '',
+                          gameId: x['id'] as num,
                           fullDescription: descriptions[x['id']] ?? '',
                           leading: ElementSwatch(x['element'] as String?),
                           icon: png != null ? Frame(padding: 1, width: 1, child: Image.network(app.api!.iconUrl(png), width: 22, height: 22)) : null,
@@ -161,10 +167,10 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: DescriptionDetails(title: custom != null ? custom['en'].toString() : x != null ? title(x) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
+                Expanded(child: DescriptionDetails(title: custom != null ? custom['en'].toString() : x != null ? catalogEntryTitle(cat, 'skills', x, nativeUnit: widget.unit) : 'skill ${g[1]}', description: custom != null ? (custom['desc'] ?? '').toString() : descriptions[g[1]] ?? '', child: custom != null
                     ? Row(children: [Text(custom['en'].toString(), style: Guide.strong()), const SizedBox(width: 6), Text('CUSTOM', style: Guide.label(Guide.purple).copyWith(fontSize: 10))])
                     : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(x != null ? title(x) : 'skill ${g[1]}', style: Guide.strong()),
+                        Text(x != null ? catalogEntryTitle(cat, 'skills', x, nativeUnit: widget.unit) : 'skill ${g[1]}', style: Guide.strong()),
                         if (summaries[g[1]] != null) ...[
                           Text(summaries[g[1]]!.description, style: Guide.small(), maxLines: 2, overflow: TextOverflow.ellipsis),
                           if (summaries[g[1]]!.stats.isNotEmpty) Text(summaries[g[1]]!.stats, style: Guide.small()),

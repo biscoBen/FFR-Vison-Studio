@@ -8,6 +8,37 @@ void main() {
   String title(int id, {String name = 'Move', String kind = 'skills'}) =>
       catalogEntryTitle({}, kind, {'id': id, 'name': name});
 
+  test('native kits label the exact shared ID and their own granting ranks', () {
+    final unit = <String, dynamic>{
+      'native': {'baseline': {
+        'en': 'Tronn',
+        'awakening': [[['ActiveSkill', 220010]], [], [], []],
+        'synchro': [for (var i = 0; i < 10; i++)
+          i == 7 ? [['PassiveSkill', 1279, -1]] : []],
+      }},
+    };
+    final fire = {'id': 220010, 'name': 'Fire', 'attr': 'Magic',
+      'seq': [1], 'hasUnit': 'All'};
+    final cat = <String, dynamic>{'visions': [
+      for (final name in ['Amelia', 'Rain', 'Tronn'])
+        {'name': name, 'awakening': [[['ActiveSkill', 220010]]]},
+    ]};
+    expect(catalogEntryTitle(cat, 'skills', fire),
+      'Fire — Source: Amelia, Rain, Tronn; awakening=1 (Amelia)');
+    expect(catalogEntryTitle(cat, 'skills', fire, nativeUnit: unit),
+      'Fire — Source: Tronn; awakening=1');
+    expect(catalogEntryTitle(cat, 'passives',
+      {'id': 1279, 'name': 'Stagger Power +20%'}, nativeUnit: unit),
+      'Stagger Power +20% — Source: Tronn; MR=7');
+    expect(catalogEntryTitle(cat, 'skills',
+      {'id': 250010, 'name': 'Fire', 'row': '(敵用)ファイア'}, nativeUnit: unit),
+      'Fire (Unverified) (Enemy version) — Source: Tronn');
+    // A newly equipped same-name ID cannot acquire the inherited ID's labels.
+    expect(catalogEntryTitle(cat, 'skills',
+      {'id': 777777, 'name': 'Fire'}, nativeUnit: unit),
+      'Fire (Unverified)');
+  });
+
   test('the full 91-page PDF covers every assigned game ID, with explicit awakening only', () {
     final references = catalogSourceReferences.values.expand(
       (rows) => rows.values,

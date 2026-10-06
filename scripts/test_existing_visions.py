@@ -82,6 +82,28 @@ def sprite_fixture(legacy, folder, vid):
 
 
 class NativeVisionTests(unittest.TestCase):
+    def test_same_named_enemy_and_other_vision_ids_never_replace_native_grants(self):
+        game, _, _ = fixture(13024)
+        game['Skill/DT_SkillData'] = {
+            'Shared Fire': {'ID': 220010, 'Name': 'Fire'},
+            'Enemy Fire': {'ID': 250010, 'Name': 'Fire'},
+        }
+        game[native.AWAKENING]['Aw0']['detailData'][0]['params'] = [220010, -1]
+        game[native.AWAKENING]['Aw0']['detailData'][1] = {
+            'parameterType': 'PassiveSkill', 'params': [1279, -1]}
+        game[native.SYNCHRO]['Mr7']['detailData'][0] = {
+            'parameterType': 'PassiveSkill', 'params': [1279, -1]}
+        rows = lambda rel: copy.deepcopy(game[rel])
+        misleading_catalog = {'visions': [{'id': 13024, 'name': 'Tronn',
+            'awakening': [[['ActiveSkill', 250010], ['PassiveSkill', 999]]],
+            'synchro': [[['PassiveSkill', 999]]]}]}
+        spec = native.snapshot(13024, rows, misleading_catalog)
+        self.assertEqual(spec['awakening'][0], [['ActiveSkill', 220010, -1], ['PassiveSkill', 1279, -1]])
+        self.assertEqual(spec['synchro'][7], [['PassiveSkill', 1279, -1]])
+        self.assertEqual(spec['synchro'][0], [])
+        tables = {}; native.prepare(tables, [], [spec], '.', rows)
+        self.assertEqual(tables, {})
+
     def test_all_original_vision_kits_bypass_custom_animation_repair(self):
         # Opening any of the 26 originals, changing stats/passives, or moving an
         # inherited skill between ranks must not require its donor particles.

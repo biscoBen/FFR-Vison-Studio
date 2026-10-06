@@ -7,6 +7,7 @@ import '../../design/description_details.dart';
 import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
+import 'native_kit_filter.dart';
 import 'tiers.dart';
 
 /// MR rewards use the engine's separate, zero-based synchro mastery rows.
@@ -25,11 +26,21 @@ class _MrStepState extends State<MrStep> {
     return caps != null && target < caps.length ? caps[target] as int : 5;
   }
 
-  static const stats = [...statParams, (11, 'Equip cost', 8)];
+  static const stats = [
+    (1, 'HP', 50),
+    (2, 'MP', 10),
+    (5, 'Attack', 5),
+    (6, 'Defence', 5),
+    (7, 'Magic', 5),
+    (8, 'Mind', 5),
+    (9, 'Speed', 3),
+    (11, 'AP', 8),
+  ];
   final amounts = <int, int>{for (final p in stats) p.$1: p.$3};
   int rank = 0;
   String query = '';
   String group = 'all';
+  int nativeSource = 0;
 
   List<List<dynamic>> _rewards() {
     final rows = (widget.unit['synchro'] as List? ?? [])
@@ -47,7 +58,7 @@ class _MrStepState extends State<MrStep> {
   void _full(int target) => ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
-        'MR ${target + 1} already has ${_cap(target)} rewards. Remove or move one first.',
+        'MR $target already has ${_cap(target)} rewards. Remove or move one first.',
       ),
     ),
   );
@@ -96,10 +107,12 @@ class _MrStepState extends State<MrStep> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog ?? {};
+    final kits = nativeKitOptions(app.nativeVisions, widget.unit);
+    final kit = selectedNativeKit(kits, nativeSource);
     String abilityTitle(Map<String, dynamic> row) =>
-        catalogEntryTitle(cat, 'skills', row);
+        catalogEntryTitle(cat, 'skills', row, nativeUnit: widget.unit);
     String passiveTitle(Map<String, dynamic> row) =>
-        catalogEntryTitle(cat, 'passives', row);
+        catalogEntryTitle(cat, 'passives', row, nativeUnit: widget.unit);
     final skillDescriptions = catalogDescriptions(cat, 'skills');
     final skillSummaries = catalogAbilitySummaries(cat);
     final passiveDescriptions = catalogDescriptions(cat, 'passives');
@@ -142,12 +155,32 @@ class _MrStepState extends State<MrStep> {
     final master = widget.unit['master'] as Map?;
     final library = <Map<String, dynamic>>[
       for (final s in skills.values)
-        if (s['custom'] == true || visibleSkills.contains(s['id']))
-          {...s, 'kind': 'ActiveSkill', 'title': abilityTitle(s)},
+        if ((s['custom'] == true || visibleSkills.contains(s['id'])) &&
+            nativeKitContains(kit, 'skills', s['id'] as num))
+          {
+            ...s,
+            'kind': 'ActiveSkill',
+            'title': catalogEntryTitle(
+              cat,
+              'skills',
+              s,
+              nativeUnit: nativeKitContext(kit, widget.unit),
+            ),
+          },
       for (final p in passives.values)
-        if (visiblePassives.contains(p['id']))
-          {...p, 'kind': 'PassiveSkill', 'title': passiveTitle(p)},
-      if (master != null)
+        if (visiblePassives.contains(p['id']) &&
+            nativeKitContains(kit, 'passives', p['id'] as num))
+          {
+            ...p,
+            'kind': 'PassiveSkill',
+            'title': catalogEntryTitle(
+              cat,
+              'passives',
+              p,
+              nativeUnit: nativeKitContext(kit, widget.unit),
+            ),
+          },
+      if (master != null && (kit == null || kit['id'] == widget.unit['id']))
         {
           'id': master['id'],
           'name': master['en'],
@@ -186,6 +219,14 @@ class _MrStepState extends State<MrStep> {
       'MasterSkill' => (master?['desc'] ?? '').toString(),
       _ => '',
     };
+    String grantInfo(Grant g) {
+      if (g[0] == 'BaseParameter') return 'Permanent';
+      if (g[0] == 'MasterSkill') return 'Master reward';
+      final cost = (g[0] == 'PassiveSkill'
+          ? passives
+          : skills)[g[1]]?['equipCost'];
+      return cost is num ? 'Equip cost: $cost' : '';
+    }
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -206,10 +247,7 @@ class _MrStepState extends State<MrStep> {
                       value: rank,
                       items: [
                         for (var i = 0; i < rows.length; i++)
-                          DropdownMenuItem(
-                            value: i,
-                            child: Text('MR ${i + 1}'),
-                          ),
+                          DropdownMenuItem(value: i, child: Text('MR $i')),
                       ],
                       onChanged: (i) {
                         if (i != null) {
@@ -265,7 +303,7 @@ class _MrStepState extends State<MrStep> {
                               ),
                             ),
                             IconButton(
-                              tooltip: 'Add ${p.$2} to MR ${rank + 1}',
+                              tooltip: 'Add ${p.$2} to MR $rank',
                               icon: const Icon(Icons.add, size: 18),
                               onPressed: () =>
                                   _add(['BaseParameter', p.$1, amounts[p.$1]!]),
@@ -277,6 +315,11 @@ class _MrStepState extends State<MrStep> {
                 ),
               ),
               Band('Abilities and passives', color: Guide.purple),
+              NativeKitFilter(
+                options: kits,
+                selected: nativeSource,
+                onChanged: (id) => setState(() => nativeSource = id),
+              ),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Row(
@@ -345,6 +388,10 @@ class _MrStepState extends State<MrStep> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
+                                  Text(
+                                    'Game ID: ${r['id']}',
+                                    style: Guide.small(),
+                                  ),
                                   if (r['kind'] == 'ActiveSkill' &&
                                       r['custom'] != true) ...[
                                     Text(
@@ -371,8 +418,8 @@ class _MrStepState extends State<MrStep> {
                           ),
                           IconButton(
                             tooltip: granted
-                                ? 'Already granted at MR ${rank + 1}'
-                                : 'Add to MR ${rank + 1}',
+                                ? 'Already granted at MR $rank'
+                                : 'Add to MR $rank',
                             icon: Icon(
                               granted ? Icons.check : Icons.add,
                               size: 18,
@@ -425,7 +472,7 @@ class _MrStepState extends State<MrStep> {
                                 ),
                                 child: Row(
                                   children: [
-                                    Text('MR ${i + 1}', style: Guide.label()),
+                                    Text('MR $i', style: Guide.label()),
                                     const Spacer(),
                                     Text(
                                       '${rows[i].length}/${_cap(i)}',
@@ -455,11 +502,23 @@ class _MrStepState extends State<MrStep> {
                                         description: grantDescription(
                                           rows[i][j],
                                         ),
-                                        child: Text(
-                                          grantName(rows[i][j]),
-                                          style: Guide.strong(),
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              grantName(rows[i][j]),
+                                              style: Guide.strong(),
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            if (grantInfo(rows[i][j])
+                                                .isNotEmpty)
+                                              Text(
+                                                grantInfo(rows[i][j]),
+                                                style: Guide.small(),
+                                              ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -506,7 +565,7 @@ class _MrStepState extends State<MrStep> {
                                           PopupMenuItem(
                                             value: to,
                                             enabled: to != i,
-                                            child: Text('MR ${to + 1}'),
+                                            child: Text('MR $to'),
                                           ),
                                       ],
                                       onSelected: (to) => _move(i, j, to),

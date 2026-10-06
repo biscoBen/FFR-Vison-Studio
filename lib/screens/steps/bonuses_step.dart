@@ -8,6 +8,7 @@ import '../../state/app_state.dart';
 import '../../state/catalog_helpers.dart';
 import '../../state/catalog_descriptions.dart';
 import 'tiers.dart';
+import 'native_kit_filter.dart';
 
 /// Step 2: stat boosts and the game's passives.
 class BonusesStep extends StatefulWidget {
@@ -20,18 +21,21 @@ class BonusesStep extends StatefulWidget {
 
 class _BonusesStepState extends State<BonusesStep> {
   String q = '';
+  int nativeSource = 0;
   final amounts = <int, int>{for (final p in statParams) p.$1: p.$3};
   @override
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final cat = app.catalog!;
-    String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'passives', row);
+    final kits = nativeKitOptions(app.nativeVisions, widget.unit);
+    final kit = selectedNativeKit(kits, nativeSource);
+    String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'passives', row, nativeUnit: nativeKitContext(kit, widget.unit));
     final allPassives = (cat['passives'] as List).cast<Map<String, dynamic>>();
     final descriptions = catalogDescriptions(cat, 'passives');
     final passives = catalogSelectableLibrary(cat, 'passives', [...app.units, widget.unit])
       ..sort((a, b) => title(a).compareTo(title(b)));
     final s = q.trim().toLowerCase();
-    final shown = passives.where((p) => s.isEmpty || title(p).toLowerCase().contains(s) || (descriptions[p['id']] ?? '').toLowerCase().contains(s)).toList();
+    final shown = passives.where((p) => nativeKitContains(kit, 'passives', p['id'] as num) && (s.isEmpty || title(p).toLowerCase().contains(s) || (descriptions[p['id']] ?? '').toLowerCase().contains(s))).toList();
     final aw = awakening(widget.unit);
     final grantedP = <num>{for (final t in aw) for (final g in t) if (g[0] == 'PassiveSkill') g[1] as num};
     final byId = {for (final p in allPassives) p['id'] as num: p};
@@ -82,6 +86,7 @@ class _BonusesStepState extends State<BonusesStep> {
             ]),
           ),
           Band('The game\'s passives', color: Guide.purple),
+          NativeKitFilter(options: kits, selected: nativeSource, onChanged: (id) => setState(() => nativeSource = id)),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
             child: TextField(decoration: const InputDecoration(hintText: 'Search passives', prefixIcon: Icon(Icons.search, size: 18)), onChanged: (v) => setState(() => q = v)),
@@ -99,6 +104,7 @@ class _BonusesStepState extends State<BonusesStep> {
                     zebra: i.isOdd,
                     title: title(p),
                     detail: descriptions[p['id']] ?? '',
+                    gameId: p['id'] as num,
                     icon: png != null ? Image.network(app.api!.iconUrl(png), width: 22, height: 22) : null,
                     payload: DragPayload('grant', ['PassiveSkill', p['id']]),
                     done: grantedP.contains(p['id'] as num),
@@ -146,7 +152,7 @@ class _BonusesStepState extends State<BonusesStep> {
               child: Row(children: [
                 if (png != null) Image.network(app.api!.iconUrl(png), width: 20, height: 20) else const SizedBox(width: 20),
                 const SizedBox(width: 8),
-                Expanded(child: DescriptionDetails(title: p != null ? title(p) : 'passive ${g[1]}', description: descriptions[g[1]] ?? '', child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p != null ? title(p) : 'passive ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
+                Expanded(child: DescriptionDetails(title: p != null ? catalogEntryTitle(cat, 'passives', p, nativeUnit: widget.unit) : 'passive ${g[1]}', description: descriptions[g[1]] ?? '', child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(p != null ? catalogEntryTitle(cat, 'passives', p, nativeUnit: widget.unit) : 'passive ${g[1]}', style: Guide.strong()), Text(descriptions[g[1]] ?? '', style: Guide.small(), maxLines: 1, overflow: TextOverflow.ellipsis)]))),
                 GrantTools(tier: i, onMove: (t) => move(g, i, j, t), onRemove: () => remove(i, j)),
               ]),
             );

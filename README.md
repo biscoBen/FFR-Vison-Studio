@@ -260,10 +260,18 @@ For a batch preflight against prepared game tables and timelines, run
 The JSON/CSV inventory includes hidden/internal rows, lists every unsupported effect together, and changes no mod or
 roster. Missing reference folders must be extracted first. Never infer animation ownership from learning sources alone.
 
-The character page's **MR** tab edits the rewards at each of the ten ranks. Select a rank, then add stat bonuses,
+The character page's **MR** tab uses the game's **MR 0–9** ranks. Select a rank, then add stat bonuses,
 abilities, passives, or the vision's master reward. Rewards can be moved to another rank or removed, and stat amounts
 can be edited directly. The engine supports five rewards per rank. Existing rewards and unlock-point requirements
 are preserved until edited; character config files include these rewards. Build/install afterward to apply them in-game.
+Flat rewards are marked **Permanent**, with **Speed**, **Magic** and **AP** matching the game terminology; passives
+show their equip cost. Default visions retain the exact IDs from their native awakening/MR tables. Their inherited
+entries show that vision's actual learning ranks, while library sources include other native learners of shared IDs.
+An **Enemy version** label identifies rows explicitly marked for enemies in the game data. A PDF source label does
+not mean that a default vision learns that version: Tronn learns shared Fire `220010`, not enemy Fire `250010`.
+The **Native kit** filter on Abilities, Bonuses and MR selects a default vision's exact original awakening/MR IDs,
+including entries removed from its current edit. Use it when re-adding a skill or assigning the same version to another
+vision. Library entries show their game ID; all existing visibility filters still apply.
 
 The **Acquisition** tab assigns Added visions to saved locations. **Random** and **Hide for spoilers** start on.
 Turn off Hide to reveal the selected location and its map marker; choices remain disabled until Random is off.

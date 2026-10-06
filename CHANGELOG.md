@@ -11,7 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Correct the default-vision editor's MR numbering to the game's 0–9 ranks. Label permanent stat rewards and
+  passive equip costs, using Speed/Magic/AP for the matching native stats.
+- Show each default vision's actual learning ranks for its inherited abilities/passives, including shared IDs.
+  Include verified native learners in library source labels and identify explicitly marked enemy versions.
+  Preserve exact game IDs, reward amounts, unlock points, hiding rules and descriptions. All 26 prepared default
+  kits were audited against native tables; Tronn learns shared Fire 220010, not enemy Fire 250010.
+- Add a Native kit filter to Abilities, Bonuses and MR, with visible game IDs. Browse any default vision's original
+  awakening/MR abilities and passives even after removing them from an edit, and assign that exact version elsewhere.
+- Local validation: 219 Flutter tests (one existing skip), clean analysis, 271 Python tests (three existing Windows-only
+  skips), and bundle verification. Re-add/transfer tests distinguish same-named IDs and retain native rewards unchanged.
 
 ## Published party attack and LB voice replacements — 2026-10-05
 

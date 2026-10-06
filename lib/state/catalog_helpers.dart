@@ -189,7 +189,7 @@ List<String> catalogDefaultOwners(
   return owners.toList()..sort();
 }
 
-String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bool? verified}) {
+String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bool? verified, Map? nativeUnit}) {
   final name = (row['name'] ?? '').toString();
   final label = name.isEmpty
       ? '${kind == 'skills' ? 'skill' : 'passive'} ${row['id']}'
@@ -203,22 +203,39 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
   final reference = row['custom'] == true
       ? null
       : catalogSourceReferences[kind]?[row['id']];
+  // A default vision's kit comes from exact game IDs, not the PDF's
+  // representative owner. Describe its inherited grants in that context.
+  final baseline = (nativeUnit?['native'] as Map?)?['baseline'] as Map?;
+  List<int> ranks(String field) {
+    final tiers = baseline?[field] as List? ?? [];
+    return [for (var i = 0; i < tiers.length; i++)
+      if ((tiers[i] as List).any((g) => g is List && g.length >= 2 &&
+          g[0] == (kind == 'skills' ? 'ActiveSkill' : 'PassiveSkill') &&
+          g[1] == row['id'])) i];
+  }
+  final nativeAwakening = ranks('awakening');
+  final nativeMr = ranks('synchro');
+  final nativeName = (baseline?['en'] ?? '').toString();
+  final inherited = nativeName.isNotEmpty &&
+      (nativeAwakening.isNotEmpty || nativeMr.isNotEmpty);
   final confirmedSources = {
-    if (unverified) ...owners,
+    ...owners,
     for (final name in ((((catalog['duplicatePolicy'] as Map?)?['sources'] as Map?)?[kind] as Map?)?['${row['id']}'] as List? ?? []))
       if (catalogNameIsEnglish(name)) name.toString(),
     if (reference != null && !reference.internalLabelOnly) reference.owner,
   };
-  final sources = {
+  final sources = (inherited ? {nativeName} : {
     ...confirmedSources,
     if (reference != null) reference.owner,
-  }.toList()..sort();
+  }).toList()..sort();
   final sourceLabels = sources.map((name) =>
       reference?.internalLabelOnly == true &&
               name == reference!.owner && !confirmedSources.contains(name)
           ? '$name (internal label only)'
           : name);
-  final awakening = reference?.awakening;
+  final awakening = inherited ? null : reference?.awakening;
+  final mr = inherited ? null : reference?.mr;
+  final enemyVersion = (row['row'] ?? '').toString().startsWith('(敵用)');
   final animationPolicy = catalog['animationPolicy'];
   final trials = animationPolicy is Map ? animationPolicy['trials'] : null;
   final trialMetadata = trials is Map ? trials['${row['id']}'] : null;
@@ -228,9 +245,12 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       : null;
   final trialLabel = ['FFR', 'FFBE', 'FFR mob'].contains(trial) ? '; $trial test' : '';
   return '$label${trialLabel.isNotEmpty ? ' (Verified$trialLabel)' : hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
+      '${enemyVersion ? ' (Enemy version)' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
       '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}'
-      '${reference?.mr != null ? '; MR=${reference!.mr}${sources.length > 1 ? ' (${reference.owner})' : ''}' : ''}';
+      '${mr != null ? '; MR=$mr${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}'
+      '${nativeAwakening.isNotEmpty && inherited ? '; awakening=${nativeAwakening.map((i) => i + 1).join(', ')}' : ''}'
+      '${nativeMr.isNotEmpty && inherited ? '; MR=${nativeMr.join(', ')}' : ''}';
 }
 
 Map<String, dynamic> migrateCgResonance(Map<String, dynamic> unit) {

@@ -74,6 +74,126 @@ void main() {
   }
 
   testWidgets(
+    'Tronn displays native MR 0–9, exact shared passives and permanent stats',
+    (tester) async {
+      final unit = fina();
+      unit['en'] = 'Tronn';
+      unit['awakening'] = [
+        [
+          ['ActiveSkill', 220010],
+        ],
+        [],
+        [],
+        [],
+      ];
+      unit['synchro'] = [
+        [],
+        [
+          ['PassiveSkill', 1281, -1],
+        ],
+        [
+          ['BaseParameter', 9, 5],
+        ],
+        [
+          ['PassiveSkill', 1280, -1],
+        ],
+        [
+          ['BaseParameter', 11, 8],
+        ],
+        [
+          ['ActiveSkill', 400630, -1],
+        ],
+        [
+          ['BaseParameter', 2, 20],
+        ],
+        [
+          ['PassiveSkill', 1279, -1],
+        ],
+        [
+          ['BaseParameter', 7, 15],
+        ],
+        [
+          ['PassiveSkill', 1045, -1],
+          ['BaseParameter', 11, 8],
+          ['MasterSkill', unit['master']['id']],
+        ],
+      ];
+      unit['native'] = {
+        'synchroCaps': List.filled(10, 5),
+        'baseline': {
+          'en': 'Tronn',
+          'awakening': copy(unit['awakening']),
+          'synchro': copy(unit['synchro']),
+        },
+      };
+      final original = copy(unit);
+      final app = CatalogState();
+      addTearDown(app.dispose);
+      app.catalog = {
+        'skills': [
+          {
+            'id': 400630,
+            'name': 'Focus Magic',
+            'attr': 'Ability',
+            'hasUnit': 'All',
+            'seq': [1],
+          },
+        ],
+        'passives': [
+          {'id': 1281, 'name': 'Restore MP on Stagger', 'equipCost': 20},
+          {'id': 1280, 'name': 'Fill LB on Stagger', 'equipCost': 20},
+          {'id': 1279, 'name': 'Stagger Power +20%', 'equipCost': 40},
+          {'id': 1045, 'name': 'Half MP Cost', 'equipCost': 50},
+        ],
+      };
+      await show(tester, unit, state: app);
+      expect(find.text('MR 0'), findsWidgets);
+      expect(find.text('MR 10'), findsNothing);
+      expect(
+        find.text('Restore MP on Stagger — Source: Tronn; MR=1'),
+        findsWidgets,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('mr-grant-1-0')),
+          matching: find.text('Equip cost: 20'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('mr-grant-2-0')),
+          matching: find.text('Permanent'),
+        ),
+        findsOneWidget,
+      );
+      final scroll = find
+          .descendant(
+            of: find.byKey(const ValueKey('mr-ranks')),
+            matching: find.byType(Scrollable),
+          )
+          .first;
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('mr-rank-7')),
+        200,
+        scrollable: scroll,
+      );
+      expect(
+        find.text('Stagger Power +20% — Source: Tronn; MR=7'),
+        findsWidgets,
+      );
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('mr-rank-9')),
+        200,
+        scrollable: scroll,
+      );
+      expect(find.text('MR 9'), findsOneWidget);
+      expect(unit, original);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'original visions use their actual rank count and reward capacities',
     (tester) async {
       final unit = fina();
@@ -82,11 +202,11 @@ void main() {
         'synchroCaps': [1],
       };
       await show(tester, unit);
-      await tester.tap(find.byTooltip('Add HP to MR 1'));
+      await tester.tap(find.byTooltip('Add HP to MR 0'));
       await tester.pumpAndSettle();
       expect(unit['synchro'], hasLength(1));
       expect(unit['synchro'][0], hasLength(1));
-      await tester.tap(find.byTooltip('Add HP to MR 1'));
+      await tester.tap(find.byTooltip('Add HP to MR 0'));
       await tester.pumpAndSettle();
       expect(unit['synchro'][0], hasLength(1));
       expect(find.textContaining('already has 1 rewards'), findsOneWidget);
@@ -104,7 +224,7 @@ void main() {
         find.textContaining('Unlock points stay unchanged'),
         findsOneWidget,
       );
-      expect(find.text('Equip cost'), findsOneWidget);
+      expect(find.text('AP'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.byKey(const ValueKey('mr-rank-9')),
         200,
@@ -126,9 +246,9 @@ void main() {
       final unit = fina();
       final original = copy(unit);
       await show(tester, unit);
-      await selectRank(tester, 2);
+      await selectRank(tester, 1);
       await tester.enterText(find.byKey(const ValueKey('mr-stat-1')), '123');
-      await tester.tap(find.byTooltip('Add HP to MR 2'));
+      await tester.tap(find.byTooltip('Add HP to MR 1'));
       await tester.pumpAndSettle();
       expect(unit['synchro'][1], [
         ['BaseParameter', 1, 50],
@@ -146,7 +266,7 @@ void main() {
         find.descendant(of: reward, matching: find.byTooltip('Move reward')),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('MR 3').last);
+      await tester.tap(find.text('MR 2').last);
       await tester.pumpAndSettle();
       expect(unit['synchro'][1], [
         ['BaseParameter', 1, 123],
@@ -178,7 +298,7 @@ void main() {
         'desc': 'Custom fixture description',
       };
       await show(tester, unit);
-      await selectRank(tester, 3);
+      await selectRank(tester, 2);
       final search = find.widgetWithText(TextField, 'Search MR rewards');
       for (final choice in [
         ('English', 'PassiveSkill', 1000),
@@ -188,7 +308,10 @@ void main() {
         await tester.enterText(search, choice.$1);
         await tester.pumpAndSettle();
         if (choice.$1 == 'English') {
-          expect(find.text('English passive — Source: Terra; MR=5'), findsOneWidget);
+          expect(
+            find.text('English passive — Source: Terra; MR=5'),
+            findsOneWidget,
+          );
         }
         if (choice.$1 == 'No sequence') {
           expect(
@@ -196,10 +319,10 @@ void main() {
             findsOneWidget,
           );
         }
-        await tester.tap(find.byTooltip('Add to MR 3'));
+        await tester.tap(find.byTooltip('Add to MR 2'));
         await tester.pumpAndSettle();
         expect(unit['synchro'][2], contains(equals([choice.$2, choice.$3])));
-        expect(find.byTooltip('Already granted at MR 3'), findsOneWidget);
+        expect(find.byTooltip('Already granted at MR 2'), findsOneWidget);
       }
       expect(tester.takeException(), isNull);
     },
@@ -213,11 +336,11 @@ void main() {
         for (var i = 0; i < 5; i++) ['BaseParameter', 1, i + 1],
       ];
       await show(tester, unit);
-      await tester.tap(find.byTooltip('Add MP to MR 1'));
+      await tester.tap(find.byTooltip('Add MP to MR 0'));
       await tester.pump();
       expect(unit['synchro'][0], hasLength(5));
       expect(
-        find.text('MR 1 already has 5 rewards. Remove or move one first.'),
+        find.text('MR 0 already has 5 rewards. Remove or move one first.'),
         findsOneWidget,
       );
       expect(tester.takeException(), isNull);
@@ -246,7 +369,7 @@ void main() {
         temporary.deleteSync(recursive: true);
       });
       await show(tester, unit, state: app);
-      await tester.tap(find.byTooltip('Add HP to MR 1'));
+      await tester.tap(find.byTooltip('Add HP to MR 0'));
       await tester.pump();
       await tester.runAsync(app.save);
       await tester.pump(const Duration(milliseconds: 800));
