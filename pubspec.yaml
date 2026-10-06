@@ -64,6 +64,7 @@ flutter:
   assets:
     - assets/fonts/OFL.txt
     - assets/brand/
+    - assets/sephira_visions/
     - assets/acquisition_map/
     - assets/native_portraits/
     - assets/party_portraits/

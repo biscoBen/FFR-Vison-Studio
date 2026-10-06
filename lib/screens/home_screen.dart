@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
+import '../services/sephira_visions.dart';
 import 'add_unit_dialog.dart';
 import 'build_status.dart';
 import 'character_config_buttons.dart';
@@ -19,9 +20,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
-    final canBuild = app.units.isNotEmpty || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.fieldLeader;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.fieldLeader;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
-    final added = app.units.where((u) => u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
+    final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
     final editedPartyIds = app.units.where((u) => u['party'] != null).map((u) => u['id']).toSet();
     final party = [...app.units.where((u) => u['party'] != null), ...app.partyCharacters.where((u) => !editedPartyIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -32,6 +33,10 @@ class HomeScreen extends StatelessWidget {
           Expanded(
             child: _visionBox(context, app, added, title: 'Added visions', key: const Key('added-visions'), allowAdd: true),
           ),
+          const SizedBox(height: 12),
+          if (app.sephiraUnits.isEmpty)
+            SizedBox(height: 154, child: _visionBox(context, app, app.sephiraUnits, title: "Sephira's Visions", key: const Key('sephira-visions'), isSephira: true))
+          else Expanded(flex: 2, child: _visionBox(context, app, app.sephiraUnits, title: "Sephira's Visions", key: const Key('sephira-visions'), isSephira: true)),
           const SizedBox(height: 12),
           Expanded(
             child: _visionBox(context, app, defaults, title: 'Default visions', key: const Key('default-visions')),
@@ -55,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                   child: Column(children: [
                     StatRow('Game', app.gameRunning ? 'running' : 'closed', trailing: Icon(app.gameRunning ? Icons.warning_amber : Icons.check, size: 16, color: app.gameRunning ? Guide.gold : Guide.green)),
                     StatRow('Mod in the game', app.modInstalled ? 'installed' : 'not installed', zebra: true),
-                    StatRow('Units ready', '${app.units.length}'),
+                    StatRow('Units ready', '${app.includedUnitCount}'),
                   ]),
                 ),
                 const SizedBox(height: 14),
@@ -127,12 +132,12 @@ class HomeScreen extends StatelessWidget {
                 Text('Drag default visions into Added visions to acquire the originals at the next battle start. Drag them back to stop. Install after changes; test on a clean save without saving, then disable and reinstall before reloading.', style: Guide.small()),
                 const SizedBox(height: 14),
                 Row(children: [
-                  GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building ? null : () => app.startBuild(install: true)),
+                  GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building || app.sephiraWorking ? null : () => app.startBuild(install: true)),
                 ]),
                 const SizedBox(height: 10),
                 Wrap(spacing: 8, runSpacing: 8, children: [
-                  GuideButton('Build without installing', onPressed: !canBuild || app.building ? null : () => app.startBuild(install: false)),
-                  GuideButton('Install the last build', onPressed: app.gameRunning || app.building ? null : app.installLast),
+                  GuideButton('Build without installing', onPressed: !canBuild || app.building || app.sephiraWorking ? null : () => app.startBuild(install: false)),
+                  GuideButton('Install the last build', onPressed: app.gameRunning || app.building || app.sephiraWorking ? null : app.installLast),
                   GuideButton('Advanced studio', icon: Icons.open_in_new, onPressed: app.api == null ? null : () => launchUrl(Uri.parse(app.api!.advancedUrl()))),
                 ]),
                 const SizedBox(height: 6),
@@ -161,8 +166,8 @@ class HomeScreen extends StatelessWidget {
     ]);
   }
 
-  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false}) => DragTarget<int>(
-        onWillAcceptWithDetails: (details) => !app.building && !isParty &&
+  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false, bool isSephira = false}) => DragTarget<int>(
+        onWillAcceptWithDetails: (details) => !app.building && !isParty && !isSephira &&
             entries.every((u) => u['id'] != details.data),
         onAcceptWithDetails: (details) async {
           try {
@@ -173,15 +178,37 @@ class HomeScreen extends StatelessWidget {
         key: key,
         decoration: BoxDecoration(border: Border.all(color: candidates.isEmpty ? Guide.ink : Guide.blue, width: 1.5)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Band(title, trailing: Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
+          Band(title, trailing: isSephira ? Switch(
+            key: const Key('sephira-enabled'),
+            value: app.sephiraEnabled,
+            onChanged: app.building || app.sephiraWorking || app.api == null ? null : (value) async {
+              try { await app.setSephiraEnabled(value); } catch (e) { app.showNotice('$e'); }
+            },
+          ) : Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
+          if (isSephira) Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(app.sephiraWorking ? app.sephiraProgress ?? 'Preparing visions…'
+                  : app.sephiraEnabled ? '${entries.length} presets enabled. Build/install to apply.'
+                  : 'Off. Presets and edits are kept; build/install to remove them from the game.', style: Guide.small()),
+              Wrap(spacing: 8, children: [
+                GuideButton('Restore missing', key: const Key('sephira-restore-missing'),
+                  onPressed: app.building || app.sephiraWorking || app.api == null ? null : () async {
+                    try { await app.restoreSephira(); } catch (e) { app.showNotice('$e'); }
+                  }),
+                GuideButton('Reset all presets', key: const Key('sephira-reset-all'),
+                  onPressed: app.building || app.sephiraWorking || app.api == null ? null : () => confirmResetSephira(context, app)),
+              ]),
+            ]),
+          ),
           Expanded(
             child: entries.isEmpty
-                ? allowAdd ? SingleChildScrollView(child: _empty(context)) : Center(child: Text(isParty ? 'Prepare game files to load party characters.' : 'No default visions loaded.', style: Guide.small()))
+                ? allowAdd ? SingleChildScrollView(child: _empty(context)) : Center(child: Text(isSephira ? 'Enable the collection to add its presets.' : isParty ? 'Prepare game files to load party characters.' : 'No default visions loaded.', style: Guide.small()))
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 300, mainAxisExtent: 128, crossAxisSpacing: 12, mainAxisSpacing: 12),
                     itemCount: entries.length + (allowAdd ? 1 : 0),
-                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i], allowRemove: allowAdd),
+                    itemBuilder: (_, i) => i == entries.length ? _addEntry(context) : _entry(context, app, entries[i], allowRemove: allowAdd || isSephira),
                   ),
           ),
         ]),
@@ -221,11 +248,15 @@ class HomeScreen extends StatelessWidget {
         value: 'remove',
         enabled: !app.building && app.api != null,
         child: Text('Remove vision', style: Guide.text()),
+      ), if (SephiraVisions.member(unit)) PopupMenuItem(
+        value: 'reset', enabled: !app.building && !app.sephiraWorking && app.api != null,
+        child: Text('Reset to preset', style: Guide.text()),
       )],
     );
     if (action == 'remove' && context.mounted) {
       await confirmRemove(context, app, unit);
     }
+    if (action == 'reset' && context.mounted) await confirmResetSephira(context, app, unit: unit);
   }
 
   Widget _entry(BuildContext context, AppState app, Map<String, dynamic> u, {bool allowRemove = false}) {

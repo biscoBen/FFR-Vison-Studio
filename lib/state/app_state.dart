@@ -15,6 +15,7 @@ import '../services/downloader.dart';
 import '../services/engine.dart';
 import '../services/game_locator.dart';
 import '../services/paths.dart';
+import '../services/sephira_visions.dart';
 import '../services/sprite_cache.dart';
 import '../version.dart';
 import 'catalog_helpers.dart';
@@ -62,6 +63,13 @@ class AppState extends ChangeNotifier {
   bool crystalCave = false;
   bool fieldLeader = false;
   bool dark = false; // the night edition of the guide
+  bool sephiraEnabled = false;
+  bool sephiraInitialized = false;
+  bool sephiraWorking = false;
+  String? sephiraProgress;
+  List<JsonMap> sephiraPresets = [];
+  List<JsonMap> get sephiraUnits => units.cast<JsonMap>().where(SephiraVisions.member).toList();
+  int get includedUnitCount => units.cast<JsonMap>().where(SephiraVisions.included).length;
   final Map<String, List<String>> _anims = {};
   int backups = 0;
   int placed = 0;
@@ -295,6 +303,11 @@ class AppState extends ChangeNotifier {
   Future<void> loadAll() async {
     catalog = await api!.catalog();
     units = await api!.spec();
+    sephiraPresets = await SephiraVisions.bundled;
+    if (sephiraUnits.isNotEmpty) {
+      sephiraInitialized = true;
+      sephiraEnabled = sephiraUnits.any(SephiraVisions.included);
+    }
     units = units.map((u) {
       final migrated = CharacterConfig.retireComparisonAbilities(u as JsonMap);
       if (!identical(migrated, u)) dirty = true;
@@ -446,6 +459,132 @@ class AppState extends ChangeNotifier {
       return false;
     }
   });
+
+  /// All artwork and ID allocation are prepared before changing the roster.
+  /// Enabling a previously initialized collection preserves edits and removals.
+  Future<void> setSephiraEnabled(bool value) => _withRoster(() async {
+    _checkSephiraChange();
+    _saveTimer?.cancel();
+    await _savePending();
+    var next = _mergePending(await api!.spec());
+    try {
+      sephiraWorking = true;
+      notifyListeners();
+      if (value && !sephiraInitialized) next = await _prepareSephira(next);
+      next = next.map((u) => SephiraVisions.member(u as Map)
+          ? SephiraVisions.setEnabled(u as JsonMap, value) : u).toList();
+      await _commitSephira(next, enabled: value);
+    } finally {
+      sephiraWorking = false;
+      sephiraProgress = null;
+      notifyListeners();
+    }
+  });
+
+  Future<void> restoreSephira({String? presetId, bool reset = false}) => _withRoster(() async {
+    _checkSephiraChange();
+    _saveTimer?.cancel();
+    await _savePending();
+    try {
+      sephiraWorking = true;
+      notifyListeners();
+      final current = _mergePending(await api!.spec());
+      final next = await _prepareSephira(current, presetId: presetId, reset: reset);
+      if (reset) {
+        final backup = File(p.join(paths.configBackups, 'sephira-${DateTime.now().microsecondsSinceEpoch}.json'));
+        await backup.parent.create(recursive: true);
+        await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
+      }
+      await _commitSephira(next, enabled: sephiraEnabled);
+    } finally {
+      sephiraWorking = false;
+      sephiraProgress = null;
+      notifyListeners();
+    }
+  });
+
+  void _checkSephiraChange() {
+    if (building) throw StateError('Wait for the current build to finish.');
+    if (api == null || engineDown) throw StateError('The engine is not running.');
+  }
+
+  Future<List<dynamic>> _prepareSephira(List<dynamic> current, {String? presetId, bool reset = false}) async {
+    if (sephiraPresets.isEmpty) sephiraPresets = await SephiraVisions.bundled;
+    final existing = {for (final u in current.cast<JsonMap>().where(SephiraVisions.member)) SephiraVisions.presetId(u): u};
+    String? adoptedKey;
+    // The cave has one Crystal Fina identity. Adopt an existing custom Fina,
+    // retaining her kit, ID and acquisition until an explicit preset reset.
+    if (!existing.containsKey('crystal_fina') &&
+        (presetId == null || presetId == 'crystal_fina') &&
+        sephiraPresets.any((p) => p['id'] == 'crystal_fina')) {
+      final candidates = current.cast<JsonMap>().where((u) => u['native'] == null &&
+          u['party'] == null && CrystalFina.matches(u) && !SephiraVisions.member(u)).toList();
+      if (candidates.length > 1) throw StateError('More than one Crystal Fina is in the roster. Keep one before enabling the collection.');
+      if (candidates.isNotEmpty) {
+        adoptedKey = candidates.single['key'] as String;
+        final adopted = {...candidates.single, SephiraVisions.field:
+          {'version': 1, 'preset': 'crystal_fina', 'enabled': sephiraEnabled}};
+        existing['crystal_fina'] = adopted;
+        current = [for (final u in current) u['key'] == adoptedKey ? adopted : u];
+      }
+    }
+    final wanted = sephiraPresets.where((p) =>
+        (presetId == null || p['id'] == presetId) && (reset || !existing.containsKey(p['id']))).toList();
+    if (presetId != null && sephiraPresets.every((p) => p['id'] != presetId)) {
+      throw StateError('This preset is not in the bundled collection.');
+    }
+    final unresolved = wanted.where((p) => p['profile'] == null).toList();
+    if (unresolved.isNotEmpty) {
+      throw StateError('Versions and kits are still being selected for ${unresolved.map((p) => p['name']).join(', ')}.');
+    }
+    if (wanted.isEmpty) return current;
+    final targets = wanted.map((p) => existing[p['id']]).toList();
+    final sources = [for (final p in wanted) {
+      ...CharacterConfig.copy(p['profile'] as JsonMap),
+      SephiraVisions.field: {'version': 1, 'preset': p['id'], 'enabled': sephiraEnabled},
+      if (existing[p['id']]?.containsKey(Acquisition.field) == true)
+        Acquisition.field: CharacterConfig.copy(existing[p['id']]![Acquisition.field] as JsonMap),
+    }];
+    final loaded = CharacterConfig.restoreAll(sources, current, targets);
+    final revision = _rosterRevision;
+    for (var i = 0; i < loaded.length; i++) {
+      sephiraProgress = 'Preparing ${wanted[i]['name']} (${i + 1}/${loaded.length})';
+      notifyListeners();
+      await _checkCharacterArtwork(loaded[i]);
+    }
+    // A reset must never silently overwrite an edit made during preparation.
+    if (reset && revision != _rosterRevision) {
+      throw StateError('A character changed while preparing presets. Your edits are kept; retry the reset.');
+    }
+    final replaced = {for (var i = 0; i < loaded.length; i++) if (targets[i] != null) targets[i]!['key']: loaded[i]};
+    return [
+      for (final u in _mergePending(current)) replaced[u['key']] ??
+          (u['key'] == adoptedKey ? {...u as JsonMap, SephiraVisions.field:
+            {'version': 1, 'preset': 'crystal_fina', 'enabled': sephiraEnabled}} : u),
+      for (var i = 0; i < loaded.length; i++) if (targets[i] == null) loaded[i],
+    ];
+  }
+
+  Future<void> _commitSephira(List<dynamic> next, {required bool enabled}) async {
+    if (next.isNotEmpty) CharacterConfig.validateAll(next);
+    final revision = _rosterRevision;
+    await api!.saveSpec(CharacterConfig.copy({'units': next})['units'] as List);
+    units = _mergePending(next).map((u) => SephiraVisions.member(u as Map)
+        ? SephiraVisions.setEnabled(u as JsonMap, enabled) : u).toList();
+    if (revision == _rosterRevision) { dirty = false; _pendingEdits.clear(); }
+    await _savePending();
+    sephiraEnabled = enabled;
+    sephiraInitialized = true;
+    try {
+      final f = File(paths.settingsFile);
+      final j = f.existsSync() ? json.decode(await f.readAsString()) as Map : <String, dynamic>{};
+      j['sephiraEnabled'] = enabled;
+      j['sephiraInitialized'] = true;
+      await f.parent.create(recursive: true);
+      await f.writeAsString(json.encode(j), flush: true);
+    } catch (e) { notice = 'Visions saved; could not save the section setting: $e'; }
+    _anims.clear();
+  }
 
   /// The face icon of a unit form, from the icons pack on disk (one download at setup; nothing is fetched per row: the host
   /// answered the old one-request-per-icon pickers with 429s once many people used the app at the same time).
@@ -878,7 +1017,12 @@ class AppState extends ChangeNotifier {
   void _loadSettings() {
     try {
       final f = File(paths.settingsFile);
-      if (f.existsSync()) { final j = json.decode(f.readAsStringSync()) as Map; dark = j['dark'] == true; }
+      if (f.existsSync()) {
+        final j = json.decode(f.readAsStringSync()) as Map;
+        dark = j['dark'] == true;
+        sephiraEnabled = j['sephiraEnabled'] == true;
+        sephiraInitialized = j['sephiraInitialized'] == true;
+      }
     } catch (_) {}
   }
 

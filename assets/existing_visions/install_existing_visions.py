@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_sephira.py', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -125,6 +125,7 @@ def hook_builder(raw):
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
     prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
+               'import _ffr_sephira', 'UNITS = _ffr_sephira.bind_units(_ffr_sephira.active_units(UNITS), rows)',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',
@@ -139,7 +140,7 @@ def hook_builder(raw):
                '    nonlocal clones, post_objects, post_bytecode, post_frames, post_retime, authored_sequences, effect_jobs, built_effects',
                '    vid = u["id"]', '    d = u["donor"]',
                *['    ' + s for s in skill_body.splitlines()]]
-    before_patch = [MARKER, 'for u in native_units:', '    _native_skills(u)',
+    before_patch = [MARKER, '_ffr_sephira.prepare(tables, UNITS)', 'for u in native_units:', '    _native_skills(u)',
                     '_ffr_existingvisions.prepare(tables, objects, native_units, ROOT, rows)',
                     '_ffr_party.prepare(tables, party_units, rows)',
                     'import _ffr_party_voices',
@@ -164,6 +165,9 @@ def hook_builder(raw):
     index = skill_conversion.lineno - 1
     line = lines[index]; indent = line[:len(line) - len(line.lstrip())]
     lines[index] = indent + "if u.get('party') is None:" + nl + '    ' + line
+    roster_loop, = [n for n in ast.walk(loader) if isinstance(n, ast.For) and ast.unparse(n.iter) == 'units']
+    loader_indent = ' ' * roster_loop.col_offset
+    lines[roster_loop.lineno - 1] = loader_indent + 'import _ffr_sephira' + nl + loader_indent + 'units = _ffr_sephira.active_units(units)' + nl + lines[roster_loop.lineno - 1]
     # A cave-selected vision is acquired inside its cave, not also sold in Mitra.
     index = shop_slot.lineno - 1
     indent = lines[index][:len(lines[index]) - len(lines[index].lstrip())]
@@ -224,7 +228,7 @@ def hook_verifier(raw):
     if ast.unparse(expected.value) != 'expected_rows()' or count.lineno != count.end_lineno or unexpected.lineno != unexpected.end_lineno:
         raise RuntimeError('Unsupported native vision verifier layout.')
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
-    lines[count.lineno - 1] = '    n = len([u for u in json.load(open(spec, encoding="utf-8")) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
+    lines[count.lineno - 1] = '    import _ffr_sephira' + nl + '    n = len([u for u in _ffr_sephira.active_units(json.load(open(spec, encoding="utf-8"))) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
     finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
     lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_crystal_cave' + nl + '    _ffr_crystal_cave.verify_shops(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
     additions = {

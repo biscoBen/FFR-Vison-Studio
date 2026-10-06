@@ -21,6 +21,7 @@ def module(name, path):
 
 
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
+sys.modules['_ffr_sephira'] = module('_ffr_sephira', ROOT / 'assets/existing_visions/payload/_ffr_sephira.py')
 sys.modules['_ffr_party'] = party
 sys.modules['_ffr_party_voices'] = module('_ffr_party_voices', ROOT / 'assets/existing_visions/payload/_ffr_party_voices.py')
 sys.modules['_ffr_overworld'] = module('_ffr_overworld', ROOT / 'assets/existing_visions/payload/_ffr_overworld.py')

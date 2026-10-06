@@ -11,7 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-No pending changes.
+- Add 31 balanced, optional Sephira’s Visions presets using the requested FFBE
+  rarities, Brave Shift/Super Limit Burst forms and custom Crystal Fina. Their
+  native stat/MR budgets and unique skills cover all 160 active skills and 131
+  passives of the 15 excluded originals. Specialists also have attacks and
+  secondary utility; no FFBE stat or LB multiplier conversion is used.
+- Add a home-page section with
+  edit-preserving enable/disable, restore-missing and backed-up preset resets.
+  Disabled entries are filtered before sprites, animations, acquisition and
+  verification without deleting their saved configs or reusing their IDs.
+- Rebind command/LB bonuses on private copies and make Minfilia’s Dual Jobs
+  select her allocated vision identity. Preserve native originals. Adopt an
+  existing Crystal Fina without changing her kit or cave assignment; reset her
+  explicitly to apply the balanced recipe.
+- Document every selected form, kit and unlock rank in `SEPHIRAS_VISIONS.md`,
+  with machine-readable coverage and native balance budgets. Local native-SDK
+  read-back confirms 21 private rows and unchanged originals; the pinned engine
+  accepts all 30 hosted LB timelines. Windows packaging and live-game balance
+  checks remain pending.
+- Local checks: 229 Flutter tests (one Windows-only skip), 277 Python tests
+  (three existing Windows-only skips), clean analysis and verified bundles.
 
 ## Published exact native kits and MR labels — 2026-10-06
 

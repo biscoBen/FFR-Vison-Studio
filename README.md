@@ -134,6 +134,19 @@ Config loading restores only the selected appearance and its required base form,
 cached files. Single-character and **Load all character configs** saves retain their appearances when reopened.
 A failed preparation reports its error and keeps the roster unchanged; retry loading the config after the host recovers.
 
+## Sephira’s Visions
+
+The home page has an optional **Sephira’s Visions** section with 31 editable presets in the requested FFBE forms.
+Enable it to prepare missing artwork and add the profiles, then build/install to make them available in the game.
+Their specialties include attacks and secondary utility. Native stats, MR rewards and combat mechanics provide the
+balance baseline; the collection covers the excluded original visions’ skills and passives. See
+[the complete kits and unlock ranks](SEPHIRAS_VISIONS.md).
+
+Turning the section off keeps your edits but omits the presets and their acquisition caves from the next build.
+**Restore missing** replaces removed entries without resetting edited ones. **Reset all presets**, or right-click a
+card and choose **Reset to preset**, restores the recipe and backs up the old roster while keeping IDs and acquisition
+locations. An existing Crystal Fina is reused with her edits intact; explicitly reset her to apply the balanced kit.
+
 ## Original vision testing
 
 Drag a **Default vision** into **Added visions**, then install the mod. At the next battle start, a native game event
@@ -427,6 +440,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,
   portraits and acquisition rules. Review new characters/placeholders and preserve original identities when replacing models.
+- [ ] **Sephira’s Visions presets.** Re-audit the excluded-vision coverage, exact
+  skill/passive IDs, command-specific bonus bindings, native power budgets,
+  MR stat rewards and unlock ranks. Check recipes against the full game's
+  mechanics and ID reservations; preserve edited and disabled presets instead
+  of silently resetting them. See `SEPHIRAS_VISIONS.md` for the agreed design.
 - [ ] **Espers and summons.** Inspect full-game sprites, effects and timelines. Reassess esper-owned hiding separately
   from ordinary summon commands; check whether assets absent from the demo are now available.
 - [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,

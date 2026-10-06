@@ -232,6 +232,8 @@ def verification_operations(root, units, rows):
 def verify(root, tool, usmap):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
+    import _ffr_sephira
+    units = _ffr_sephira.active_units(units)
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
     operations = verification_operations(root, units, rows)
     work = root / 'build/vision-testing'; work.mkdir(parents=True, exist_ok=True)

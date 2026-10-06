@@ -201,6 +201,8 @@ def prepare_shops(tables, units, rows):
 def verify_shops(root, tool, usmap):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
+    import _ffr_sephira
+    units = _ffr_sephira.active_units(units)
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
     operations = prepare_shops({}, units, rows)
     if not operations: return
@@ -270,6 +272,17 @@ def cave_plans(units, root, rows=None):
             raise ValueError('Duplicate cave vision identity.')
         previous['units'].append(unit)
     legacy = testing.settings(root)['crystalCave']
+    if legacy:
+        # An optional disabled pack keeps its saved cave preference, but emits
+        # no acquisition actors. Preserve the missing-profile error otherwise.
+        import _ffr_sephira
+        saved_roster = Path(root) / 'mods/EstherTsukiko/units.json'
+        if saved_roster.is_file():
+            saved_units = json.loads(saved_roster.read_bytes())
+            if any(_ffr_sephira.membership(u) is not None and
+                   not _ffr_sephira.membership(u)['enabled'] and
+                   str((u.get('ffbe') or {}).get('id')) == '99887755552703' for u in saved_units):
+                legacy = False
     if legacy:
         unit = target(units)
         if not any(unit['id'] == u['id'] for group in groups.values() for u in group['units']):

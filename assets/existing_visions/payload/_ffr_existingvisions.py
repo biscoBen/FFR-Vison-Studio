@@ -210,6 +210,8 @@ def expected_edits(root):
     """Recompute intentional native and audited visual field edits for verification."""
     root = Path(root); spec = root / 'mods/EstherTsukiko/units.json'
     units = json.loads(spec.read_bytes()) if spec.is_file() else []
+    import _ffr_sephira
+    units = _ffr_sephira.active_units(units)
     import _ffr_animation_repair
     units = [_ffr_animation_repair.retire_comparison_skills(u) for u in units]
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']

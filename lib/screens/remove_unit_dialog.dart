@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
+import '../services/sephira_visions.dart';
 
 /// Removes an added unit or reverts a default vision/party character.
 Future<void> confirmRemove(
@@ -29,7 +30,9 @@ Future<void> confirmRemove(
       content: Text(
         native
             ? 'This restores the original model, abilities, bonuses, stats, Resonance and MR rewards by removing this vision\'s overrides. Save its character config first to keep your edits. The next build/install applies the original vision to the game.'
-            : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.',
+            : SephiraVisions.member(unit)
+                ? 'This removes the vision from the collection. Restore missing brings back its preset later. Save its character config to keep your edits. Build/install to remove it from the game.'
+                : 'The unit and its choices are deleted from the mod. Save its character config first if you want to restore this setup later. The next install removes it from the game.',
         style: Guide.text(),
       ),
       actions: [
@@ -44,6 +47,22 @@ Future<void> confirmRemove(
   );
   if (ok == true) {
     await app.removeUnit(unit['key'] as String);
+  }
+}
+
+Future<void> confirmResetSephira(BuildContext context, AppState app, {Map<String, dynamic>? unit}) async {
+  final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+    backgroundColor: Guide.paper,
+    title: Text(unit == null ? 'Reset all Sephira presets?' : 'Reset ${unit['en']} to its preset?', style: Guide.h2()),
+    content: Text('Restores preset kits and appearances, replacing their edits and bringing back missing entries. Acquisition locations are kept. A roster backup is saved in your config backups. Your other visions and party edits are kept.', style: Guide.text()),
+    actions: [
+      GuideButton('Keep edits', onPressed: () => Navigator.pop(c, false)),
+      GuideButton('Reset to preset', danger: true, onPressed: () => Navigator.pop(c, true)),
+    ],
+  ));
+  if (ok == true) {
+    try { await app.restoreSephira(presetId: unit == null ? null : SephiraVisions.presetId(unit), reset: true); }
+    catch (e) { app.showNotice('$e'); }
   }
 }
 

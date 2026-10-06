@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'acquisition.dart';
 import 'overworld_appearance.dart';
 import 'battle_voice.dart';
+import 'sephira_visions.dart';
 
 /// A portable snapshot of the complete engine spec, including advanced fields.
 /// Artwork stays in the Studio cache when a vision is removed.
@@ -93,7 +94,8 @@ class CharacterConfig {
         ids = <int>{},
         commands = <int>{},
         masters = <int>{},
-        skills = <int>{};
+        skills = <int>{},
+        presets = <String>{};
     for (final unit in units) {
       if (unit is! Map<String, dynamic>) {
         throw const FormatException(
@@ -101,6 +103,9 @@ class CharacterConfig {
         );
       }
       validate(unit);
+      if (SephiraVisions.member(unit) && !presets.add(SephiraVisions.presetId(unit)!)) {
+        throw const FormatException('Duplicate Sephira preset. Keep one entry per preset before restoring this file.');
+      }
       if (unit['party'] != null) {
         if (!keys.add(unit['key'] as String) || !ids.add(unit['id'] as int)) {
           throw const FormatException('Duplicate party character override.');
@@ -256,6 +261,11 @@ class CharacterConfig {
     Never invalid() => throw const FormatException(
       'This character config is incomplete or invalid. Your roster has not been changed.',
     );
+    if (unit.containsKey(SephiraVisions.field) &&
+        (!SephiraVisions.valid(unit[SephiraVisions.field]) ||
+            unit['native'] != null || unit['party'] != null)) {
+      throw const FormatException('Invalid Sephira vision membership.');
+    }
     if (unit.containsKey(Acquisition.field) && !Acquisition.valid(unit[Acquisition.field])) {
       throw const FormatException('This character config has invalid acquisition preferences.');
     }
@@ -576,6 +586,10 @@ class CharacterConfig {
       result['skills'] = {
         for (final v in owned) '${remap[v]}': result['skills']['$v'],
       };
+      for (final definition in (result['skills'] as Map).values) {
+        final settings = definition['set'] as Map?;
+        if (settings?['mimicableUnitId'] == oldId) settings!['mimicableUnitId'] = id;
+      }
       for (final tiers in [result['awakening'], result['synchro']]) {
         for (final tier in tiers as List) {
           for (final grant in tier as List) {
