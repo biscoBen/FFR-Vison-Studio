@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Sephira’s Visions collection — 2026-10-06
+
+Code: [`5886393`](https://github.com/biscoBen/FFR-Vison-Studio/commit/5886393d22f7b3d89c283aa33e4c659e28402fd0).
+[Verified Windows test release / run 37535223224](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37535223224).
+
 - Add 31 balanced, optional Sephira’s Visions presets using the requested FFBE
   rarities, Brave Shift/Super Limit Burst forms and custom Crystal Fina. Their
   native stat/MR budgets and unique skills cover all 160 active skills and 131
@@ -30,10 +35,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Document every selected form, kit and unlock rank in `SEPHIRAS_VISIONS.md`,
   with machine-readable coverage and native balance budgets. Local native-SDK
   read-back confirms 21 private rows and unchanged originals; the pinned engine
-  accepts all 30 hosted LB timelines. Windows packaging and live-game balance
-  checks remain pending.
+  accepts all 30 hosted LB timelines. Live-game balance and visual checks remain
+  an in-game testing task; the presets use native budgets as their starting point.
 - Local checks: 230 Flutter tests (one Windows-only skip), 278 Python tests
   (three existing Windows-only skips), clean analysis and verified bundles.
+- All required Windows gates passed: full Flutter/Python suites, analysis,
+  fresh frozen-engine startup, launcher/updater checks, compilation and
+  publication. Authenticated release download verified the exact commit/run,
+  package checksum and all 59 packaged resources, including the 31 presets and
+  their complete native coverage audit. Master remains unchanged.
+- Measured first inspection to verified package: **1h12m11s**, including form
+  selection, research, implementation, checks, corrections and build waiting.
+  First complete candidate to verified package: **22m32s**. Three code pushes:
+  the first run was cancelled, the second completed but its superseded release
+  was withdrawn into draft after the native-ID correction, and the final exact
+  automatic run was reused for delivery. Final CI took **5m34s** and **9m07s**
+  runner time; all three runs used **27m01s** runner time. Package verification
+  after CI completion took **1m38s**. Publication notes use the documentation-only path.
 
 ## Published exact native kits and MR labels — 2026-10-06
 
