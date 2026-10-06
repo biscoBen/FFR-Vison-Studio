@@ -11,6 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Expand the Sephira collection from 11–16 to 20–25 distinct abilities/passives
+  using the wider native and enemy catalog. Keep exact native stat/MR budgets
+  and all 291 excluded-vision grants covered once. Supplemental player copies
+  receive appropriate MP costs, capped boss accuracy/power and safe drain values;
+  original game skills remain intact. Alice's slam line now uses ice.
+- Retire Great Dragon, leaving 30 presets. Keep his required original rewards
+  covered by suitable remaining visions; Reberta's Eikon/fire bundle stays together.
+  Older tagged Great Dragons are omitted from builds; Reset all presets backs up
+  and removes the retired entry. Independent user-added copies are preserved.
+- Show when saved kits have a newer recipe available. Apply it with the existing
+  backed-up **Reset all presets** (or individual reset), then build/install;
+  saved edits and acquisition placements remain intact until reset. Keep copied
+  skills' player command bindings correct when allocating another vision ID.
+- Kit counts, sources, costs, unlocks and balance limits are documented in
+  `SEPHIRAS_VISIONS.md`. Live-game balance and demo animation availability still
+  require testing.
+
 ## Published preset appearance preparation fix — 2026-10-06
 
 Code: [`a5ace73`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a5ace736273bc3b707dc1ffe82c6f3dd556b8ad9).

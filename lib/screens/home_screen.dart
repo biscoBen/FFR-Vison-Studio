@@ -189,6 +189,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(app.sephiraWorking ? app.sephiraProgress ?? 'Preparing visions…'
+                  : app.sephiraRecipeUpdate ? 'Expanded kits available. Reset all presets (backs up edits), then build/install.'
                   : app.sephiraEnabled ? '${entries.length} presets enabled. Build/install to apply.'
                   : 'Off. Presets and edits are kept; build/install to remove them from the game.', style: Guide.small()),
               Wrap(spacing: 8, children: [

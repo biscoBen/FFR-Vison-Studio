@@ -20,7 +20,8 @@ class SephiraTests(unittest.TestCase):
     def test_complete_catalog_coverage_unique_grants_and_native_stat_budgets(self):
         catalog = json.loads((ROOT / 'assets/sephira_visions/catalog.json').read_bytes())
         audit = json.loads((ROOT / 'assets/sephira_visions/native_coverage.json').read_bytes())
-        self.assertEqual(len(catalog['presets']), 31)
+        self.assertEqual(len(catalog['presets']), 30)
+        self.assertNotIn('great_dragon',[p['id'] for p in catalog['presets']])
         seen = {}
         for p in catalog['presets']:
             u = p['profile']; budget = catalog['nativeBudgets'][str(p['balance']['nativeBudget'])]
@@ -56,6 +57,51 @@ class SephiraTests(unittest.TestCase):
         excluded={v['id'] for v in audit['excludedVisions']}
         budgets={p['balance']['nativeBudget'] for p in catalog['presets']}
         self.assertLessEqual(excluded,budgets)
+
+    def test_expanded_kits_stay_in_requested_bounds_and_enemy_copies_have_player_limits(self):
+        catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
+        hidden={s['id'] for s in json.loads((ROOT/'assets/existing_visions/payload/ability_hiding_review.json').read_bytes())['skills']}
+        enemy_count=0
+        for p in catalog['presets']:
+            u=p['profile']; b=p['balance']
+            grants=[g for f in ['awakening','synchro'] for t in u[f] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
+            self.assertGreaterEqual(len(grants),18,p['id'])
+            self.assertLessEqual(len(grants),26,p['id'])
+            self.assertEqual(len(grants),b['kitCount'])
+            self.assertGreater(b['kitCount'],b['previousCount'])
+            visual_ids=set()
+            for sid in map(int,u['skills']):
+                self.assertFalse(visual_ids & {sid,sid+1,sid+2})
+                visual_ids.update([sid,sid+1,sid+2])
+            for x in b['playerCopies']:
+                recipe=u['skills'][str(x['id'])]; s=recipe['set']; combat=x['combat']
+                self.assertNotIn(x['source'],hidden)
+                self.assertEqual(s['belongCommandList'],[u['command']['id']])
+                self.assertEqual(s['skillIdAfterModeChange'],-1)
+                self.assertFalse(s['isApplyAllMag'])
+                self.assertGreater(s['Cost'],0)
+                self.assertLessEqual(s['accuracy'],100)
+                self.assertLessEqual(combat['hitCount'],4)
+                self.assertLessEqual(combat['breakDamageValue'],60)
+                self.assertIn(combat['damageCalcType'],['None','Physic','Magic','Fixed','TargetMaxHPRatio','MPAbsorb'])
+                if 'hitDamageRatioList' in s:
+                    self.assertAlmostEqual(sum(s['hitDamageRatioList']),1)
+                    self.assertEqual(sum(v>0 for v in s['hitDamageRatioList']),combat['hitCount'])
+                if x['sourceCategory']=='enemy':
+                    enemy_count+=1
+                    if combat['parameterVariationType']=='Decrease' and combat['DamageType']!='None':
+                        self.assertLessEqual(combat['magnification'],40)
+                if x['source']==570710:
+                    self.assertEqual(x['effects'],[1066])
+                    self.assertNotIn(1446,x['effects'])
+        self.assertGreater(enemy_count,100)
+
+    def test_retired_dragon_is_excluded_even_in_older_enabled_rosters(self):
+        old=member('great_dragon',True)
+        user={'key':'independent_dragon','en':'Great Dragon'}
+        before=copy.deepcopy(old)
+        self.assertEqual(pack.active_units([old,user]),[user])
+        self.assertEqual(old,before)
 
     def test_owner_bindings_change_only_semantic_conditions_on_private_rows(self):
         audit=json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())

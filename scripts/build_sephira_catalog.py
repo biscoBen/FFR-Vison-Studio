@@ -7,8 +7,121 @@ import argparse
 import copy
 import json
 from pathlib import Path
+from sephira_kit_expansion import EXPANSIONS
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Known, actor-independent spell/attack presentations. Prefer an available
+# source sequence; otherwise borrow a native spell of the same element/tier.
+SPELLS = {'Fire':220010,'Ice':220050,'Thunder':220090,'Water':220130,
+          'Wind':220170,'Earth':220210,'Light':210250}
+SUPPORT = {
+    210240:'Grant Reraise to an ally.', 400790:'Choose a physical and magic counter; reduce incoming damage this turn.',
+    502470:'Reduce enemy physical and magic defense by 30% for 3 turns.',
+    500860:'Reduce party physical and magic damage taken by 30%.',
+    500700:'Raise own physical evasion by 50%.',
+    502080:'Raise own defenses while lowering attack and magic.',
+    501700:'Raise own attack and magic by 50%, lowering both defenses.',
+    501120:'Raise party magic and speed by 50%.',
+    570130:'Raise an ally’s attack/magic by 50% and reduce incoming physical/magic damage by 30%.',
+    505560:'Reduce enemy physical and magic defense by 30% for 3 turns.',
+    505570:'Reduce party physical and magic damage taken by 30%.',
+    502230:'Also raise own attack by 50%.', 502370:'Also reduce own physical/magic damage taken by 30%.',
+    505410:'Also defend after attacking.', 501400:'Also reduce enemy physical and magic defense.',
+    501420:'Also reduce enemy physical and magic defense.',
+    505960:'Also reduce enemy physical and magic defense.',
+    505910:'Also reduce enemy attack and magic.',
+}
+
+
+def place_grant(unit, kind, sid, pool, preferred):
+    """Keep native unlocks; spread new utility/power over awakening and MR."""
+    options = pool.get((kind,sid))
+    if options:
+        aw=[r for f,r in options if f=='awakening']
+        field,rank=('awakening',min(aw)) if aw else ('synchro',min(r for f,r in options))
+        candidates=[(field,rank)]
+    else:
+        field,rank=preferred
+        candidates=[(field,rank)]
+        if field=='awakening':
+            candidates += [('awakening',r) for r in range(rank+1,4)]
+        candidates += [('synchro',r) for r in [7,9,5,3,1]]
+    for field,rank in candidates:
+        if len(unit[field][rank]) < (8 if field=='awakening' else 5):
+            unit[field][rank].append([kind,sid,-1]); return field,rank
+    raise ValueError(f"{unit['key']}: no room for {kind} {sid}")
+
+
+def player_recipe(unit, slot, spec, native, english, effects):
+    source,name,mp,overrides=spec
+    original=native[source]
+    settings={'Cost':mp, 'accuracy':min(original['accuracy'],100),
+              'belongCommandList':[unit['command']['id']],
+              'commandIdBelongDebuggingAllSkills':[unit['command']['id'],-1],
+              # Enemy group-toggle partners must not bypass this copy's cost.
+              'skillIdAfterModeChange':-1, 'isApplyAllMag':False,
+              'playSequencerId':-1, 'sequencerIdWhenTargetFriendlies':-1,
+              'voiceLabel':'None', 'selfSkillActivateVoiceLabel':'None',
+              **overrides}
+    if source==570710:
+        # The monster's drain multiplier is 10000%; player Predation heals
+        # only the HP damage actually dealt, like the normal Drain effect.
+        bundles=copy.deepcopy(original['effectBundleList'])
+        for b in bundles:
+            if b['effectId']==1446: b['effectId']=1066
+        settings['effectBundleList']=bundles
+    if 'hitCount' in overrides:
+        n=overrides['hitCount']
+        # Integer percentages total 100%, with stable native float readback.
+        settings['hitDamageRatioList']=[(100//n+(i<100%n))/100 for i in range(n)]+[0.0]*(len(original['hitDamageRatioList'])-n)
+    effective={**original,**settings}
+    sid=445000+(unit['id']-13100)*100+slot*3
+    vis=source
+    if not english[source]['seq']:
+        element=effective['element']; power=effective['magnification']
+        if effective['parameterVariationType']=='Increase' and effective['parameterType']=='HitPoint':
+            vis=210010 if power<=200 else 210020 if power<=600 else 210030
+        elif element in SPELLS:
+            vis=SPELLS[element]+(20 if power>40 else 10 if power>20 else 0)
+            if not english.get(vis,{}).get('seq'): vis=SPELLS[element]
+            if effective['DamageType']=='Physic' and element in ['Earth','Thunder']:
+                vis=(420160 if element=='Earth' else 420070)+(20 if power>40 else 10 if power>20 else 0)
+        elif effective['DamageType']=='Physic': vis=400530
+        elif effective['element']=='Dark': vis=408050
+        else: vis=400630
+    desc=[]
+    if effective['skillEffectType']=='DamageAndRecovery':
+        heal=effective['parameterVariationType']=='Increase'
+        calc=effective['damageCalcType']; power=effective['magnification']
+        if heal:
+            amount=f'{power}% max HP' if calc in ['TargetMaxHPRatio','SelfMaxHPRatio'] else f'{power} HP' if calc=='Fixed' else f'healing power {power}'
+            desc.append('Restore '+amount+'.')
+        elif calc=='MPAbsorb': desc.append(f'Drain MP; power {power}.')
+        else: desc.append(f"{effective['element'] if effective['element']!='None' else 'Non-elemental'} {'physical' if effective['DamageType']=='Physic' else 'magic'} damage; power {power}.")
+    if source in SUPPORT: desc.append(SUPPORT[source])
+    else:
+        labels=[]
+        for b in effective['effectBundleList']:
+            e=effects.get(b['effectId'])
+            if not e: continue
+            if e['status']!='None': labels.append(f"{e['status']} ({e['prob']}%)")
+            elif e['type']=='DamageAbsorb': labels.append(f"{'HP' if e['params'][0]==0 else 'MP'} drain ({e['params'][1]}% of damage)")
+        if labels: desc.append('Apply '+', '.join(dict.fromkeys(labels))+'.')
+    # Retain native description for otherwise unclassified support, not its
+    # placeholder statistics. The numbers below always describe the copy.
+    if not desc: desc.append(english[source]['desc'].split('. ')[0].rstrip('.')+'.')
+    desc.append(f"{effective['TargetType']} {effective['defaultTargetRelation'].lower()}; MP {mp}; hits {effective['hitCount']}; accuracy {effective['accuracy']}; stagger {effective['breakDamageValue']}.")
+    recipe={'from':source,'visuals':vis,'jp':f"{unit['jp']}_Kit_{slot}",
+            'en':name,'desc':' '.join(desc),'descAuto':False,'set':settings}
+    unit['skills'][str(sid)]=recipe
+    return sid, {'id':sid,'source':source,'name':name,'originalName':english[source]['name'],
+                 'sourceCategory':'enemy' if 500000<=source<600000 or 240000<=source<260000 else 'native',
+                 'original':{k:original[k] for k in settings},'adjusted':settings,
+                 'combat':{k:effective[k] for k in ['Cost','magnification','DamageType','damageCalcType',
+                           'element','TargetType','defaultTargetRelation','parameterVariationType',
+                           'hitCount','breakDamageValue']},
+                 'effects':[b['effectId'] for b in effective['effectBundleList'] if b['effectId']>0]}
 
 # Exact native IDs, deliberately allocated once within this collection.
 # Requested specialties take priority over the source game's automatic role labels.
@@ -27,7 +140,7 @@ PLANS = [
  ('lunafreya','Oracle Maiden Lunafreya','215002417','Debuff specialist with water/wind magic',13118,
   [446800,446810,446820,446830,446860,446870,230080,230090], [1425,1468,1131,1132,1326,1396]),
  ('minfilia','Minfilia','214000304','Mixed earth/wind offense and party protection',13102,
-  [220210,220220,220230,445200,445210,400240,230040,230050], [1410,1411,1412,1311,1465,1343]),
+  [220210,220220,220230,445200,445210,400240,230040,230050], [1410,1411,1412,1311,1465,1343,1362]),
  ('folka','Folka','100018306','Water magic with restorative utility',13024,
   [220130,220140,220150,220310,210050,414510,400680,400360], [1251,1348,1367,1380,1307,1445]),
  ('fryevia','Fryevia','302001405','Ice spellblade and precision physical',13105,
@@ -35,11 +148,11 @@ PLANS = [
  ('lenneth','Lenneth','330000106','Physical cover tank with light attacks',13100,
   [445010,445020,445030,420330,420340,420350,400390], [1408,1409,1029,1290,1042,1331]),
  ('lila','Lila','100013806','Martial physical damage and self recovery',13101,
-  [421010,421020,421030,445100,445110,445120,400440,400650], [1353,1288,1077,1273,1325,1284]),
+  [421010,421020,421030,445100,445110,445120,400440,400650], [1353,1288,1077,1273,1325,1284,1286]),
  ('mystea','Mystea','100011005','Magic tank, barriers and counter magic',13103,
   [230060,230070,230120,220410,220510], [1315,1073,1395,1299,1030,1291,1402]),
- ('reberta','Reberta (JP)','100014405','Dragoon with fire/wind spear attacks',13128,
-  [400210,421040,421050,421060,421310,421320,421330,400670], [1257,1360,1320,1335,1359,1437]),
+ ('reberta','Reberta (JP)','100014405','Dragoon with fire/wind spear attacks',13130,
+  [400210,421040,421050,421060,421310,421320,421330,400670,448000,448010], [1257,1360,1320,1335,1359,1437,1442,1460]),
  ('snow_white','Snow White','336000207','Dark physical drain and risk/reward',13103,
   [422040,420300,420310,420320,400490,422020,220300], [1457,1405,1431,1358,1318,1293]),
  ('aria','Aria','203000905','Water support, healing and water blade',13045,
@@ -54,10 +167,8 @@ PLANS = [
   [220390,220520,220400,445310,400380,414600,414610], [1413,1333,1339,1369,1253,1300]),
  ('freya','Dragon Knight Freya','209001805','Aerial light physical and water lance',13128,
   [447810,447800,421190,421200,421210,400280], [1361,1466,1116,1340,1438,1394]),
- ('great_dragon','Great Dragon','337000704','Fire breath and physical dragon assault',13130,
-  [448000,448010,220010,220020,220030], [1442,1460,1011,1362,1038,1286]),
  ('trance_terra','Trance Terra','206000125','Dark/fire magic, poison and costly finishers',13123,
-  [447300,447310,220250,220260,220320,220350,400730,220380,220340], [1432,1433,1275,1381,1319,1351]),
+  [447300,447310,220250,220260,220320,220350,400730,220380,220340,220010,220020,220030], [1432,1433,1275,1381,1319,1351,1038]),
  ('ariana','Charming Kitty Ariana','401002405','Healing singer with control and arcane attacks',13051,
   [210120,400540,400460,230100,230180,220280,220290], [1464,1392,1391,1114,1109,1301]),
  ('elephim','Elephim','100017107','Buff/debuff bard with ranged attacks',13124,
@@ -65,7 +176,7 @@ PLANS = [
  ('jade','Jade','337001205','Lightning martial attacker and crowd damage',13110,
   [420070,420080,420090,421160,421170,421180,400310,400700], [1323,1250,1366,1371,1385,1308]),
  ('primm','Spirited Heart Primm','304000717','Mixed elemental sabers and support',13102,
-  [421280,421290,421300,420160,420170,420180,445300,400660,400770], [1310,1370,1355,1461,1390]),
+  [421280,421290,421300,420160,420170,420180,445300,400660,400770], [1310,1370,1355,1461,1390,1011]),
  ('relm','Relm','206001005','Painter with lightning magic and mimicry',13123,
   [220090,220100,220110,220330,400330,400720], [1104,1237,1280,1279,1332,1328]),
  ('rikku','Rikku (FFX-2)','249000206','Thief, item utility and fire physical breaks',13124,
@@ -81,8 +192,16 @@ PLANS = [
 
 def generate(reference):
     rows_dir = reference / 'unverified-export/extracted/rows'
-    def rows(name): return json.loads((rows_dir / (name + '.json')).read_text())['rows']
+    cache={}
+    def rows(name):
+        if name not in cache: cache[name]=json.loads((rows_dir / (name + '.json')).read_text())['rows']
+        return cache[name]
     def by_id(name, id): return next(v for v in rows(name).values() if v['ID'] == id)
+    english=json.loads((reference/'user-animation-reference/inspection/data/ffr_catalog.json').read_text())
+    skill_names={x['id']:x for x in english['skills']}
+    effects={x['id']:x for x in english['effects']}
+    skill_rows={v['ID']:v for v in rows('Skill/DT_SkillData').values()}
+    hidden={s['id'] for s in json.loads((ROOT/'assets/existing_visions/payload/ability_hiding_review.json').read_text())['skills']}
     native = {v['id']: v for v in json.loads((reference/'native-kit-audit.json').read_text())['checked']}
     reservations={key: sorted({v['ID'] for v in rows(rel).values()}) for key,rel in [
         ('visions','Item/Vision/DT_VisionItemData'),('units','Unit/DT_UnitParameter'),
@@ -98,7 +217,9 @@ def generate(reference):
     host = json.loads((reference/'sephira-research/host-index.json').read_text())
     presets=[]; assigned={}
     for i, (key,title,form,theme,budget,actives,passives) in enumerate(PLANS):
-        vid=13500+i
+        # Keep 13520 (the retired Great Dragon slot) out of preferred IDs so
+        # every later preset retains its original identity.
+        vid=13500+i+(1 if i>=20 else 0)
         stats=by_id('Unit/DT_UnitParameter',budget)
         stats={k:stats[k] for k in ['MaxHitPoint','MaxMagicPoint','Attack','Defence','Intelligence','Mind','Agility']}
         attack = 'Magic' if key in ['christine','crystal_fina','folka','mystea','eiko','trance_terra','ariana','elephim','relm','lunafreya','mog','aria'] else 'Physic'
@@ -109,9 +230,10 @@ def generate(reference):
         unit={'key':'sephira_'+key,'id':vid,'sort':vid+70,'jp':'Sephira_'+key,
               'en':title,'desc':theme+'. A Sephira vision with native-budget Resonance skills.',
               'donor':donor,'attackType':attack,'stats':stats,'roles':['eUnitRole::'+('Healer' if key in ['crystal_fina','aria','ariana'] else 'Defender' if key in ['lenneth','mystea','lilith'] else 'Jammer' if key in ['lunafreya','elephim'] else 'Attacker')],
-              'elemRes':{},'command':{'id':320+i,'en':title+' Skills','desc':theme+'.'},
+              'elemRes':{},'command':{'id':320+vid-13500,'en':title+' Skills','desc':theme+'.'},
               'master':{'id':vid*100,'en':'Spirit of '+title,'desc':title+"'s learned mastery rewards flow into the wearer."},
               'price':1000,'skills':{},'ffbeMap':{'skills':{},'passives':{}},'menuScale':2.0,
+              'sephiraRecipe':2,
               'awakening':[[],[],[],[]], 'synchro':[[] for _ in range(10)]}
         if key=='crystal_fina':
             original=json.loads((ROOT/'assets/crystal_fina/profile.json').read_text())
@@ -165,6 +287,32 @@ def generate(reference):
             for tier in unit['awakening']:
                 for g in tier:
                     if g[:2]==['ActiveSkill',445210]: g[1]=sid
+        extra_actives,extra_passives=EXPANSIONS[key]
+        additions=[]
+        for slot,spec in enumerate(extra_actives,1):
+            source=spec[0]
+            if source in hidden: raise ValueError(f'{key}: hidden source {source}')
+            if ('ActiveSkill',source) in assigned: raise ValueError(f'{key}: duplicate added active {source}')
+            assigned['ActiveSkill',source]=key
+            sid,copy_audit=player_recipe(unit,slot,spec,skill_rows,skill_names,effects)
+            # Lookup source unlocks before replacing its identity with a copy.
+            mp=spec[2]; tier=0 if mp<=12 else 1 if mp<=24 else 2 if mp<=40 else 3
+            field,rank=place_grant(unit,'ActiveSkill',source,pool,('awakening',tier))
+            unit[field][rank][-1][1]=sid
+            copy_audit['unlock']=[field,rank]; additions.append(copy_audit)
+        for n,sid in enumerate(extra_passives):
+            if ('PassiveSkill',sid) in assigned: raise ValueError(f'{key}: duplicate added passive {sid}')
+            assigned['PassiveSkill',sid]=key
+            place_grant(unit,'PassiveSkill',sid,pool,('synchro',3 if n==0 else 7))
+        if key=='alice':
+            # Aileen's earth slams were thematic placeholders in revision 1.
+            # Keep native multipliers/costs; express Alice's ice specialization.
+            for slot,source in enumerate([421370,421380,421390],20):
+                sid,copy_audit=player_recipe(unit,slot,(source,['Ice Slam','Icera Slam','Icega Slam'][slot-20],skill_rows[source]['Cost'],{'element':'Ice'}),skill_rows,skill_names,effects)
+                for tier in unit['awakening']:
+                    for g in tier:
+                        if g[:2]==['ActiveSkill',source]: g[1]=sid
+                additions.append(copy_audit)
         # Stat rewards are copied exactly, including ranks, AP and totals.
         for rank,tier in enumerate(native[budget]['synchro']):
             unit['synchro'][rank].extend(copy.deepcopy([g for g in tier if g[0]=='BaseParameter']))
@@ -179,7 +327,12 @@ def generate(reference):
         form_label='Custom' if key=='crystal_fina' else str(detail['forms'][form]['rarity'])
         if key!='crystal_fina' and shift: form_label += ' Super Limit Burst' if shift['kind']=='slb' else ' Brave Shift'
         presets.append({'id':key,'name':title,'theme':theme,'profile':unit,
-                        'balance':{'nativeBudget':budget,'nativeName':native[budget]['name'],'growthDonor':donor},
+                        'balance':{'nativeBudget':budget,'nativeName':native[budget]['name'],'growthDonor':donor,
+                                   'activeCount':len(actives)+len(extra_actives),
+                                   'passiveCount':len(passives)+len(extra_passives),
+                                   'kitCount':len(actives)+len(passives)+len(extra_actives)+len(extra_passives),
+                                   'previousCount':len(actives)+len(passives)-({'reberta':4,'minfilia':1,'lila':1,'trance_terra':4,'primm':1}.get(key,0)),
+                                   'additionalPassives':extra_passives,'playerCopies':additions},
                         'form':{'id':form,'label':form_label,
                                 'sha256':None if key=='crystal_fina' else record['sha256'],
                                 'source':unit['ffbe']['source']}})
@@ -210,18 +363,26 @@ def describe(catalog, reference):
     skill={x['id']:x['name'] for x in english['skills']}
     passive={x['id']:x['name'] for x in english['passives']}
     lines=['# Sephira’s Visions','',
-        '31 optional, editable presets using the requested FFBE forms. Enable the section on the home page, then build/install. First enable downloads only the missing selected artwork and adds the profiles after all preparations succeed.', '',
+        '30 optional, editable presets using the requested FFBE forms. Enable the section on the home page, then build/install. First enable downloads only the missing selected artwork and adds the profiles after all preparations succeed.', '',
         'Turning the section off keeps edits and removed entries; its units and acquisition caves are omitted by the next build. **Restore missing** adds removed presets without resetting existing ones. **Reset all presets** or a card’s **Reset to preset** replaces its kit and appearance, preserves its IDs and acquisition location, and backs up the previous roster in Studio’s character-config backups.', '',
         'An existing custom Crystal Fina is adopted with her current edits and acquisition intact. Reset her explicitly to use this balanced recipe. Other user-added copies and original vision/party edits are preserved.', '',
         '## Balance and coverage', '',
         '- Every preset copies a native level-one stat profile and its exact permanent MR stat rewards/ranks. AP remains the native +8 at MR 4 and +8 at MR 9. Native physical or magic growth curves are used.',
-        '- Native skills retain damage, MP cost, targeting, equip cost and effects. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role, and their own FFBE sprite animations supply presentation.',
+        '- Existing native grants retain their mechanics. Supplemental skills come from the wider native/enemy catalog on private player copies: zero-MP enemy attacks receive MP costs; excessive accuracy, multipliers and hit counts are reduced. Group spells/healing cost more than comparable single-target spells. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role.',
         '- All 160 distinct active skills and 131 passives from the 15 excluded original visions are allocated. Within the pack, each exact active/passive appears once; permanent MR stats may repeat. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.',
         '- Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.',
-        '- Most presets have fewer options than a complete original kit. They specialize without being restricted to one action type: healers and debuffers also have attacks. Added visions default to a 1,000-gil vendor price; acquisition can be edited normally.',
+        '- Each revised kit has 20–25 distinct abilities/passives, excluding permanent MR stats, its Spirit wrapper and LB. Reberta has 24 because Clive’s Eikon skills and associated fire passives stay together; Trance Terra has 25 with the full native fire spell line. They specialize without being restricted to one action type: healers and debuffers also have attacks. Added visions default to a 1,000-gil vendor price; acquisition can be edited normally.',
+        '- Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.',
+        '- New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. New passives retain native magnitudes/equip costs and are learned through MR or their native ranks. No new permanent stat boosts are added. Alice’s three earth slams become ice slams with unchanged power/cost.',
         '- Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.', '',
         'The excluded originals are Tronn, Wilhelm, Warrior of Light, Firion, Onion Knight, Cecil, Bartz, Cloud, Squall, Zidane, Tidus, Shantotto, Vaan, Noctis and Clive. Their exact grants, native ranks, descriptions, mechanics and allocations are retained in `assets/sephira_visions/native_coverage.json`.', '',
-        '## Selected forms and kits', '',
+        '## Kit sizes', '',
+        'Revision 2 adds broader game skills rather than dividing only the excluded originals. Existing saved kits are preserved: use **Reset all presets** to apply this revision, then build/install. Individual reset is also available. Reset backs up edits and keeps allocated identity/acquisition.', '',
+        '| Vision | Previous | Active | Passive | Total |',
+        '|---|---:|---:|---:|---:|']
+    for p in catalog['presets']:
+        b=p['balance']; lines.append(f"| {p['name']} | {b['previousCount']} | {b['activeCount']} | {b['passiveCount']} | {b['kitCount']} |")
+    lines += ['', '## Selected forms and kits', '',
         'Awakening ranks below are numbered 1–4 for readability. MR ranks use the game’s 0–9 values. Native source names are retained for skills so their exact versions remain identifiable.', '']
     for p in catalog['presets']:
         u=p['profile'];lines += [f"### {p['name']} — {p['form']['label']}", '',p['theme']+'.', '',
@@ -234,6 +395,15 @@ def describe(catalog, reference):
                     if g[0]=='PassiveSkill': names.append(passive[g[1]]+f' [{g[1]}]')
                 if names: lines.append(f"- {label} {rank+1 if field=='awakening' else rank}: "+'; '.join(names)+'.')
         lines.append('')
+        copies=p['balance']['playerCopies']
+        if copies:
+            lines += ['Supplemental player copies (native source ID; final MP/power):', '']
+            for x in copies:
+                s=u['skills'][str(x['id'])]
+                # Native power is retained unless explicitly overridden.
+                source=next(v for v in english['skills'] if v['id']==x['source'])
+                lines.append(f"- {x['name']} ← {x['originalName']} [{x['source']}, {x['sourceCategory']}]: MP {x['adjusted']['Cost']}, power {x['adjusted'].get('magnification',source['mag'])}. {s['desc']}")
+            lines.append('')
     lines += ['## Research and validation limits','',
         'Selected hosted packs were checked against their published SHA-256 values, including base packs for shifted forms. Unit records, selected-form sprite motions and LB profiles were inspected. FFBE themes are references, not imported combat numbers. The archived Global datamine is `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`; hosted merged records also cover Japanese and post-archive forms. Reberta’s Japanese hosted record has no translated skill list; her requested physical dragoon role and the original Reberta elemental/jump theme guide that kit.', '',
         'Automated checks cover portable configs, unique allocation, native stat/MR budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. The existing unverified-skill visibility/animation toggles continue to govern demo animation repairs.', '',

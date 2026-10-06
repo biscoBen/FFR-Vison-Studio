@@ -9,6 +9,7 @@ import 'character_config.dart';
 class SephiraVisions {
   static const field = 'sephiraVision';
   static const asset = 'assets/sephira_visions/catalog.json';
+  static const retired = {'great_dragon'};
   static Future<List<Map<String, dynamic>>> get bundled async =>
       parse(await rootBundle.loadString(asset));
 
@@ -41,7 +42,21 @@ class SephiraVisions {
 
   static bool member(Map unit) => unit[field] is Map;
   static String? presetId(Map unit) => member(unit) ? unit[field]['preset'] as String? : null;
-  static bool included(Map unit) => !member(unit) || unit[field]['enabled'] == true;
+  static bool retiredMember(Map unit) => retired.contains(presetId(unit));
+  static bool included(Map unit) => !member(unit) ||
+      (!retiredMember(unit) && unit[field]['enabled'] == true);
+
+  static bool hasRecipeUpdate(Map unit, List<Map<String, dynamic>> presets) {
+    final id = presetId(unit);
+    if (id == null) return false;
+    final current = unit['sephiraRecipe'];
+    return presets.any((p) {
+      final profile = p['profile'];
+      final latest = profile is Map ? profile['sephiraRecipe'] : null;
+      return p['id'] == id && latest is int &&
+          latest > (current is int ? current : 0);
+    });
+  }
 
   static bool valid(dynamic value) => value is Map && value.length == 3 &&
       value['version'] == 1 && value['preset'] is String &&

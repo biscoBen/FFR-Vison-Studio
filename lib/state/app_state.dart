@@ -68,7 +68,10 @@ class AppState extends ChangeNotifier {
   bool sephiraWorking = false;
   String? sephiraProgress;
   List<JsonMap> sephiraPresets = [];
-  List<JsonMap> get sephiraUnits => units.cast<JsonMap>().where(SephiraVisions.member).toList();
+  List<JsonMap> get sephiraUnits => units.cast<JsonMap>().where((u) =>
+      SephiraVisions.member(u) && !SephiraVisions.retiredMember(u)).toList();
+  bool get sephiraRecipeUpdate => sephiraUnits.any((u) =>
+      SephiraVisions.hasRecipeUpdate(u, sephiraPresets));
   int get includedUnitCount => units.cast<JsonMap>().where(SephiraVisions.included).length;
   final Map<String, List<String>> _anims = {};
   int backups = 0;
@@ -510,6 +513,9 @@ class AppState extends ChangeNotifier {
 
   Future<List<dynamic>> _prepareSephira(List<dynamic> current, {String? presetId, bool reset = false}) async {
     if (sephiraPresets.isEmpty) sephiraPresets = await SephiraVisions.bundled;
+    if (reset && presetId == null) {
+      current = current.where((u) => !SephiraVisions.retiredMember(u as Map)).toList();
+    }
     final existing = {for (final u in current.cast<JsonMap>().where(SephiraVisions.member)) SephiraVisions.presetId(u): u};
     String? adoptedKey;
     // The cave has one Crystal Fina identity. Adopt an existing custom Fina,

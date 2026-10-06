@@ -3,6 +3,7 @@
 import copy
 
 FIELD = 'sephiraVision'
+RETIRED = {'great_dragon'}
 PASSIVE = 'Skill/DT_PassiveSkillData'
 EFFECT = 'Skill/DT_SkillEffectData'
 
@@ -48,7 +49,7 @@ def active_units(units):
             if value['preset'] in seen:
                 raise ValueError('Duplicate Sephira preset in the saved roster.')
             seen.add(value['preset'])
-            if not value['enabled']:
+            if not value['enabled'] or value['preset'] in RETIRED:
                 continue
         result.append(unit)
     return result

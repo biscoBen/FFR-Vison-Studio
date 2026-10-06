@@ -593,6 +593,13 @@ class CharacterConfig {
       for (final definition in (result['skills'] as Map).values) {
         final settings = definition['set'] as Map?;
         if (settings?['mimicableUnitId'] == oldId) settings!['mimicableUnitId'] = id;
+        for (final field in ['belongCommandList', 'commandIdBelongDebuggingAllSkills']) {
+          final commands = settings?[field];
+          if (commands is List) {
+            settings![field] = commands.map((value) => value == saved['command']['id']
+                ? result['command']['id'] : value).toList();
+          }
+        }
       }
       for (final tiers in [result['awakening'], result['synchro']]) {
         for (final tier in tiers as List) {

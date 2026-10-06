@@ -543,7 +543,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "trance_terra",
       "mechanics": {
         "attr": "Magic",
         "effectType": "DamageAndRecovery",
@@ -920,7 +920,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "trance_terra",
       "mechanics": {
         "attr": "Magic",
         "effectType": "DamageAndRecovery",
@@ -1187,7 +1187,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "trance_terra",
       "mechanics": {
         "attr": "Magic",
         "effectType": "DamageAndRecovery",
@@ -17813,7 +17813,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "reberta",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -17906,7 +17906,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "reberta",
       "mechanics": {
         "attr": "Ability",
         "effectType": "DamageAndRecovery",
@@ -18007,7 +18007,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "primm",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -18100,7 +18100,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "reberta",
       "mechanics": {
         "attr": "Ability",
         "effectType": "DamageAndRecovery",
@@ -18200,7 +18200,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "lila",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -18293,7 +18293,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "reberta",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -18386,7 +18386,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "minfilia",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -18886,7 +18886,7 @@
           "rank": 9
         }
       ],
-      "assignedTo": "great_dragon",
+      "assignedTo": "trance_terra",
       "equipCost": 50,
       "effectBundles": [
         {

@@ -160,7 +160,7 @@ void main() {
 
   test('the complete selected catalog is portable and collision-safe', () async {
     final presets = await SephiraVisions.bundled;
-    expect(presets, hasLength(31));
+    expect(presets, hasLength(30));
     expect(presets.where((p) => p['profile'] == null), isEmpty);
     final configs = presets.map((p) => CharacterConfig.copy(p['profile'] as Map<String, dynamic>)).toList();
     CharacterConfig.validateAll(configs);
@@ -169,9 +169,18 @@ void main() {
     final loaded = CharacterConfig.restoreAll(configs, configs, targets);
     CharacterConfig.validateAll([...configs, ...loaded]);
     final minfilia = loaded.singleWhere((u) => u['en'] == 'Minfilia');
-    final dual = (minfilia['skills'] as Map).values.single;
+    final dual = (minfilia['skills'] as Map).values.singleWhere((s) => s['from'] == 445210);
     expect(dual['set']['mimicableUnitId'], minfilia['id']);
     expect(minfilia['id'], isNot(configs[6]['id']));
+    for (final u in loaded) {
+      for (final skill in (u['skills'] as Map).values) {
+        final settings = skill['set'] as Map;
+        if (settings.containsKey('belongCommandList')) {
+          expect(settings['belongCommandList'], [u['command']['id']]);
+          expect(settings['commandIdBelongDebuggingAllSkills'], [u['command']['id'], -1]);
+        }
+      }
+    }
   });
 
   test('all selected presets prepare with separate Alice shift and base owners', () async {
@@ -196,7 +205,7 @@ void main() {
     app.sephiraPresets = presets;
     final original = CharacterConfig.copy(app.units.single);
     await app.setSephiraEnabled(true);
-    expect(app.sephiraUnits, hasLength(31));
+    expect(app.sephiraUnits, hasLength(30));
     expect(strict.saves, 1);
     expect(strict.preparations, containsAll([
       '336000127:336000127', '336000105:336000117',
@@ -208,6 +217,40 @@ void main() {
     expect(alice['ffbe']['id'], '336000127');
     expect(alice['ffbe']['baseForm'], '336000117');
     CharacterConfig.validateAll(strict.roster);
+  });
+
+  test('recipe update notice preserves saved edits until explicit reset', () async {
+    await app.setSephiraEnabled(true);
+    final edited = CharacterConfig.copy(app.sephiraUnits.first);
+    edited['stats']['Attack'] = 47;
+    app.update(edited);
+    app.sephiraPresets.first['profile']['sephiraRecipe'] = 2;
+    expect(app.sephiraRecipeUpdate, isTrue);
+    await app.setSephiraEnabled(false);
+    await app.setSephiraEnabled(true);
+    expect(app.sephiraRecipeUpdate, isTrue);
+    expect(app.sephiraUnits.first['stats']['Attack'], 47);
+    await app.restoreSephira(presetId: 'a2', reset: true);
+    expect(app.sephiraRecipeUpdate, isFalse);
+    expect(app.sephiraUnits.first['sephiraRecipe'], 2);
+    expect(app.sephiraUnits.first['stats']['Attack'], isNot(47));
+  });
+
+  test('reset all backs up retired Great Dragon and preserves independent copies', () async {
+    await app.setSephiraEnabled(true);
+    final retired = CharacterConfig.restore(profile(), app.units)
+      ..[SephiraVisions.field] = {'version': 1, 'preset': 'great_dragon', 'enabled': true};
+    final independent = CharacterConfig.restore(profile(), [...app.units, retired])
+      ..['en'] = 'Great Dragon';
+    api.roster = clone([...app.units, retired, independent]) as List;
+    app.units = clone(api.roster) as List;
+    expect(SephiraVisions.included(retired), isFalse);
+    expect(app.sephiraUnits, hasLength(2));
+    await app.restoreSephira(reset: true);
+    expect(app.units.where((u) => SephiraVisions.retiredMember(u as Map)), isEmpty);
+    expect(app.units.singleWhere((u) => u['key'] == independent['key']), independent);
+    final backup = Directory(app.paths.configBackups).listSync().whereType<File>().single;
+    expect(CharacterConfig.decodeAll(backup.readAsStringSync()).where(SephiraVisions.retiredMember), hasLength(1));
   });
 
   test('failed preparation names the preset and preserves the roster', () async {
