@@ -29,8 +29,8 @@ Code: [`a5ace73`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a5ace73627
   startup, launcher/updater checks, compilation and publication. Authenticated
   download verified the exact commit/run, package checksum and all 59 bundled
   resources. Saved kits, selected looks, engine payloads and master are unchanged.
-- Measured first inspection to verified package: **9m04s**. First complete candidate
-  to verified package: **7m02s**, including local checks and the correction to retain
+- Measured first inspection to verified package: **9m04s**. First recorded complete candidate
+  to verified package: **7m41s**, including local checks and the correction to retain
   API error types. One code push and one reused automatic build. CI took **5m10s**
   and **8m30s** runner time; verification after CI took **18s**. Publication notes
   use the documentation-only path.
