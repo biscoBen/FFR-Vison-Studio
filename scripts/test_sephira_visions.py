@@ -116,6 +116,7 @@ class SephiraTests(unittest.TestCase):
         copies={x['source']:x for p in catalog['presets'] for x in p['balance']['playerCopies']}
         expected={501780:[16101,16102],502710:[16102],502730:[16101],
                   505420:[1042],505430:[1163],505530:[1042,1163],
+                  505360:[1025,20012],
                   501340:[1042],500930:[1042],503700:[1066],570710:[1066]}
         for source,ids in expected.items():
             self.assertEqual(copies[source]['effects'],ids)

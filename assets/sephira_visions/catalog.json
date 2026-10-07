@@ -11808,7 +11808,113 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None",
               "TargetType": "Group",
-              "defaultTargetRelation": "Friendlies"
+              "defaultTargetRelation": "Friendlies",
+              "effectBundleList": [
+                {
+                  "effectId": -1,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 1025,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 20012,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                }
+              ]
             }
           },
           "485945": {
@@ -12982,7 +13088,113 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None",
               "TargetType": "All",
-              "defaultTargetRelation": "Enemies"
+              "defaultTargetRelation": "Enemies",
+              "effectBundleList": [
+                {
+                  "effectId": 1181,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 1025,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 20012,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                }
+              ]
             },
             "adjusted": {
               "Cost": 35,
@@ -13001,7 +13213,113 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None",
               "TargetType": "Group",
-              "defaultTargetRelation": "Friendlies"
+              "defaultTargetRelation": "Friendlies",
+              "effectBundleList": [
+                {
+                  "effectId": -1,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 1025,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": 20012,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                }
+              ]
             },
             "combat": {
               "Cost": 35,
@@ -13016,7 +13334,6 @@
               "breakDamageValue": 12
             },
             "effects": [
-              1181,
               1025,
               20012
             ],
