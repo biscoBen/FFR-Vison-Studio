@@ -18,7 +18,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   saved kits without resetting them and independently of library visibility/repair
   controls. Missing source animations stay missing in the demo; full-game visuals
   still need testing. Explicitly edited donors and authored sequences are preserved.
-- Validation: 237 Flutter tests passed (one platform skip), 289 Python tests passed
+  Original mode also retains native shared-sequence pointers such as Absolute Zero's.
+- Validation: 237 Flutter tests passed (one platform skip), 290 Python tests passed
   (three platform skips), clean analysis and verified bundles. Checks cover all 216
   substitutions, mode independence, unchanged combat settings and saved kits,
   persistence/failure handling, and native source timelines supplied by a later game.

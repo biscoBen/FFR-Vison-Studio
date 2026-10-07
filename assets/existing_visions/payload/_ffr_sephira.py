@@ -27,7 +27,7 @@ def settings(root):
         'schema': 1, 'useBorrowedSkillVisuals': True}
 
 
-def visual_units(units, root):
+def visual_units(units, root, rows=None):
     """Choose original visual sources only in the ephemeral build specification.
 
     Match known preset source/donor pairs, independent of allocated private IDs
@@ -40,6 +40,7 @@ def visual_units(units, root):
     policy = json.loads(Path(__file__).with_name('sephira_visuals.json').read_bytes())
     if policy.get('schema') != 1:
         raise ValueError('Unsupported Sephira visual policy.')
+    sources = {v['ID']: v for v in rows('Skill/DT_SkillData').values()} if rows else {}
     for unit in result:
         value = membership(unit)
         if value is None:
@@ -52,6 +53,13 @@ def visual_units(units, root):
                     or recipe.get('visuals') != donors.get(str(recipe.get('from')))):
                 continue
             recipe['visuals'] = recipe['from']
+            # Some native sources play a shared sequence without owning an asset
+            # row. Remove only our default pointer overrides, retaining any
+            # explicit user-selected pointer and every combat setting.
+            source = sources.get(recipe['from'], {})
+            for field in ('playSequencerId', 'sequencerIdWhenTargetFriendlies'):
+                if field in source and (recipe.get('set') or {}).get(field) == -1:
+                    recipe['set'][field] = source[field]
             # A missing demo source must stay missing even with library repairs
             # enabled. A newly available native source timeline still wins.
             recipe['_sephiraSourceVisuals'] = True

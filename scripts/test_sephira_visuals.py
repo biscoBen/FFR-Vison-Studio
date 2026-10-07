@@ -114,6 +114,27 @@ class SephiraVisualTests(unittest.TestCase):
             self.assertEqual(get(), off)
             for name, raw in unchanged.items(): self.assertEqual((other / name).read_text(), raw)
 
+    def test_original_mode_restores_native_shared_sequence_pointers_and_retains_user_pointers(self):
+        unit = presets()[1]
+        sid, recipe = next((sid, s) for sid, s in unit['skills'].items() if s['from'] == 500230)
+        self.assertEqual(recipe['set']['playSequencerId'], -1)
+        source = {'ID': 500230, 'playSequencerId': 225042, 'sequencerIdWhenTargetFriendlies': 225041}
+        rows = lambda rel: {'Absolute Zero': source}
+        before = copy.deepcopy(unit)
+        with tempfile.TemporaryDirectory() as root:
+            write(root, False)
+            result = pack.visual_units([unit], root, rows)[0]
+            changed = result['skills'][sid]
+            self.assertEqual(changed['set']['playSequencerId'], 225042)
+            self.assertEqual(changed['set']['sequencerIdWhenTargetFriendlies'], 225041)
+            combat = {k: v for k, v in changed['set'].items() if k not in source}
+            self.assertEqual(combat, {k: v for k, v in recipe['set'].items() if k not in source})
+            self.assertEqual(unit, before)
+            edited = copy.deepcopy(unit); edited['skills'][sid]['set']['playSequencerId'] = 210011
+            self.assertEqual(pack.visual_units([edited], root, rows)[0]['skills'][sid]['set']['playSequencerId'], 210011)
+            write(root, True)
+            self.assertEqual(pack.visual_units([unit], root, rows), [before])
+
     def test_library_repairs_cannot_replace_missing_original_visuals_in_any_mode(self):
         unit = presets()[0]
         sid, recipe = next((int(sid), s) for sid, s in unit['skills'].items() if s['visuals'] != s['from'])
