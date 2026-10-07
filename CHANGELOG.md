@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add a separate saved **Use borrowed Sephira skill visuals** toggle, on by default.
+  Turn it off and rebuild/install to use the original source visuals for the 216
+  preset substitutions, while retaining MP, power, effects, stats, MR and saved edits.
+  Turn it on and rebuild/install to restore the borrowed visuals. Works with existing
+  saved kits without resetting them and independently of library visibility/repair
+  controls. Missing source animations stay missing in the demo; full-game visuals
+  still need testing. Explicitly edited donors and authored sequences are preserved.
+- Validation: 237 Flutter tests passed (one platform skip), 289 Python tests passed
+  (three platform skips), clean analysis and verified bundles. Checks cover all 216
+  substitutions, mode independence, unchanged combat settings and saved kits,
+  persistence/failure handling, and native source timelines supplied by a later game.
+
 ## Published awakening and MR count correction — 2026-10-06
 
 Code: [`a4f82e8`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a4f82e81e054ba029346b5936c809bb7f5cd8d87).

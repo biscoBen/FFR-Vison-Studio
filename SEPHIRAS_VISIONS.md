@@ -880,7 +880,7 @@ Supplemental player copies (native source ID; final MP/power):
 
 Selected hosted packs were checked against their published SHA-256 values, including base packs for shifted forms. Unit records, selected-form sprite motions and LB profiles were inspected. FFBE themes are references, not imported combat numbers. The archived Global datamine is `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`; hosted merged records also cover Japanese and post-archive forms. Reberta’s Japanese hosted record has no translated skill list; her requested physical dragoon role and the original Reberta elemental/jump theme guide that kit.
 
-Automated checks cover portable configs, unique allocation, native stat/MR budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. The existing unverified-skill visibility/animation toggles continue to govern demo animation repairs.
+Automated checks cover portable configs, unique allocation, native stat/MR budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. Library repairs use the existing unverified-skill controls. The separate **Use borrowed Sephira skill visuals** toggle defaults on; turn it off and rebuild/install to restore the 216 preset source visual mappings without changing mechanics or saved kits. Turn it on and rebuild/install to restore borrowed visuals. Explicit visual donor edits and authored sequences are preserved; missing demo source animations may stay blank.
 
 ## Full-game release review
 

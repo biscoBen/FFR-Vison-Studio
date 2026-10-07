@@ -1,11 +1,88 @@
 """Keep optional Sephira presets editable while excluding disabled entries from builds."""
 
 import copy
+import json
+import os
+from pathlib import Path
+import tempfile
 
 FIELD = 'sephiraVision'
 RETIRED = {'great_dragon'}
 PASSIVE = 'Skill/DT_PassiveSkillData'
 EFFECT = 'Skill/DT_SkillEffectData'
+CONFIG = 'mods/EstherTsukiko/sephira-settings.json'
+
+
+def validate_settings(value):
+    if (not isinstance(value, dict) or set(value) != {'schema', 'useBorrowedSkillVisuals'}
+            or type(value['schema']) is not int or value['schema'] != 1
+            or type(value['useBorrowedSkillVisuals']) is not bool):
+        raise ValueError('Invalid Sephira skill visual settings.')
+    return dict(value)
+
+
+def settings(root):
+    path = Path(root) / CONFIG
+    return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
+        'schema': 1, 'useBorrowedSkillVisuals': True}
+
+
+def visual_units(units, root):
+    """Choose original visual sources only in the ephemeral build specification.
+
+    Match known preset source/donor pairs, independent of allocated private IDs
+    and recipe revisions. Preserve explicitly edited donors and authored sequences.
+    Saved recipes keep the borrowed donors so turning the setting on restores them.
+    """
+    result = copy.deepcopy(units)
+    if settings(root)['useBorrowedSkillVisuals']:
+        return result
+    policy = json.loads(Path(__file__).with_name('sephira_visuals.json').read_bytes())
+    if policy.get('schema') != 1:
+        raise ValueError('Unsupported Sephira visual policy.')
+    for unit in result:
+        value = membership(unit)
+        if value is None:
+            continue
+        donors = policy['presets'].get(value['preset'], {})
+        for recipe in (unit.get('skills') or {}).values():
+            if (not recipe or recipe.get('clone_sequence')
+                    or recipe.get('tint') is not None or recipe.get('motion')
+                    or str(recipe.get('from')) not in donors
+                    or recipe.get('visuals') != donors.get(str(recipe.get('from')))):
+                continue
+            recipe['visuals'] = recipe['from']
+            # A missing demo source must stay missing even with library repairs
+            # enabled. A newly available native source timeline still wins.
+            recipe['_sephiraSourceVisuals'] = True
+    return result
+
+
+def register(app, env):
+    from fastapi import HTTPException
+
+    @app.get('/api/sephira/settings')
+    def get_settings():
+        try: return settings(env['ROOT'])
+        except (OSError, ValueError) as e: raise HTTPException(422, str(e)) from e
+
+    @app.put('/api/sephira/settings')
+    def put_settings(value: dict):
+        try:
+            value = validate_settings(value)
+            if env.get('state', {}).get('running'):
+                raise ValueError('Wait for the current build to finish.')
+            path = Path(env['ROOT']) / CONFIG
+            path.parent.mkdir(parents=True, exist_ok=True)
+            fd, temporary = tempfile.mkstemp(prefix='sephira-settings-', dir=path.parent)
+            try:
+                with os.fdopen(fd, 'w', encoding='utf-8') as f:
+                    json.dump(value, f); f.flush(); os.fsync(f.fileno())
+                os.replace(temporary, path)
+            finally:
+                Path(temporary).unlink(missing_ok=True)
+            return value
+        except (OSError, ValueError) as e: raise HTTPException(422, str(e)) from e
 
 # Effect ID, semantic type, parameter index, original value, replacement kind.
 # These are identified command/LB fields, not a search/replace of all numbers.

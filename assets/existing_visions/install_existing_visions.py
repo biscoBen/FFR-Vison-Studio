@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.2'
+VERSION = '1.2.3'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_sephira.py', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -125,7 +125,8 @@ def hook_builder(raw):
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
     prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
-               'import _ffr_sephira', 'UNITS = _ffr_sephira.bind_units(_ffr_sephira.active_units(UNITS), rows)',
+               'import _ffr_sephira', 'UNITS = _ffr_sephira.visual_units(_ffr_sephira.active_units(UNITS), ROOT)',
+               'UNITS = _ffr_sephira.bind_units(UNITS, rows)',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
                'native_units, UNITS = _ffr_existingvisions.split(UNITS, rows)',

@@ -51,6 +51,10 @@ class Api {
       (await put('/api/abilities/settings', {
         'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges,
       })) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async =>
+      (await put('/api/sephira/settings', {
+        'schema': 1, 'useBorrowedSkillVisuals': useBorrowedSkillVisuals,
+      })) as Map<String, dynamic>;
   Future<void> _saveTestingFlag(String name, bool value) async {
     final current = await get('/api/testing');
     await put('/api/testing', {

@@ -66,6 +66,14 @@ class NativeApi extends ConfigApi {
   @override
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
       {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges};
+  bool borrowedVisuals = true;
+  bool failVisualSettings = false;
+  @override
+  Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async {
+    if (failVisualSettings) throw StateError('Settings write failed.');
+    borrowedVisuals = useBorrowedSkillVisuals;
+    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals};
+  }
   @override
   Future<bool> testingMaxMr() async => maxMr;
   @override
@@ -456,6 +464,44 @@ void main() {
     await wait(tester, () => !app.testingPracticeBattle);
     expect(api.practiceBattle, isFalse);
     expect(api.maxMr, isTrue);
+  });
+
+  testWidgets('Sephira visuals switch independently without resetting saved kits', (tester) async {
+    final before = clone(api.roster);
+    await show(tester);
+    final control = find.byKey(const Key('sephira-borrowed-skill-visuals'));
+    await tester.ensureVisible(control);
+    expect(app.useSephiraBorrowedVisuals, isTrue);
+    expect(app.showUnverifiedSkills, isFalse);
+    expect(app.useAbilityChanges, isFalse);
+    expect(tester.widget<SwitchListTile>(control).onChanged, isNotNull);
+    await tester.tap(control);
+    await wait(tester, () => !app.useSephiraBorrowedVisuals);
+    expect(api.borrowedVisuals, isFalse);
+    expect(api.roster, before);
+    expect(app.units, before);
+    expect(app.showUnverifiedSkills, isFalse);
+    expect(app.useAbilityChanges, isFalse);
+    await app.setAbilityModes(showUnverified: true, useChanges: true);
+    expect(app.useSephiraBorrowedVisuals, isFalse);
+    await tester.tap(control);
+    await wait(tester, () => app.useSephiraBorrowedVisuals);
+    expect(api.borrowedVisuals, isTrue);
+    expect(app.useAbilityChanges, isTrue);
+    expect(api.roster, before);
+    app.buildState = {'running': true}; app.notifyListeners();
+    await tester.pump();
+    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+    await expectLater(app.setSephiraBorrowedVisuals(false), throwsStateError);
+    expect(api.borrowedVisuals, isTrue);
+  });
+
+  test('Sephira visuals preserve the current selection after a failed settings save', () async {
+    api.failVisualSettings = true;
+    final before = clone(api.roster);
+    await expectLater(app.setSephiraBorrowedVisuals(false), throwsStateError);
+    expect(app.useSephiraBorrowedVisuals, isTrue);
+    expect(api.roster, before);
   });
 
   testWidgets('controller cycling toggle persists with an empty roster and retains other settings', (tester) async {

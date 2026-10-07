@@ -62,4 +62,17 @@ void main() {
           {'schema': 1, 'showUnverified': true, 'useChanges': false});
     }, () => client);
   });
+
+  test('Sephira visual setting uses its own endpoint and sends only its saved flag', () async {
+    final client = MockClient((request) async {
+      expect(request.url.path, '/api/sephira/settings');
+      expect(request.method, 'PUT');
+      expect(jsonDecode(request.body), {'schema': 1, 'useBorrowedSkillVisuals': false});
+      return http.Response(request.body, 200);
+    });
+    await http.runWithClient(() async {
+      expect(await Api('http://studio').saveSephiraVisualSettings(useBorrowedSkillVisuals: false),
+          {'schema': 1, 'useBorrowedSkillVisuals': false});
+    }, () => client);
+  });
 }

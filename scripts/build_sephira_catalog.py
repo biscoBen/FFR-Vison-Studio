@@ -400,6 +400,7 @@ def generate(reference):
         for vid in {p['balance']['nativeBudget'] for p in presets}},
         'grantUnlocks':{f'{kind}:{sid}':[[f,r] for f,r in options] for (kind,sid),options in pool.items()}}
     (ROOT/'assets/sephira_visions/catalog.json').write_text(json.dumps(catalog,indent=2)+'\n')
+    write_visual_policy(catalog)
     describe(catalog, reference)
     print('Generated',len(presets),'presets;',len(assigned),'distinct grants.')
 
@@ -452,10 +453,18 @@ def describe(catalog, reference):
             lines.append('')
     lines += ['## Research and validation limits','',
         'Selected hosted packs were checked against their published SHA-256 values, including base packs for shifted forms. Unit records, selected-form sprite motions and LB profiles were inspected. FFBE themes are references, not imported combat numbers. The archived Global datamine is `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`; hosted merged records also cover Japanese and post-archive forms. Reberta’s Japanese hosted record has no translated skill list; her requested physical dragoon role and the original Reberta elemental/jump theme guide that kit.', '',
-        'Automated checks cover portable configs, unique allocation, native stat/MR budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. The existing unverified-skill visibility/animation toggles continue to govern demo animation repairs.', '',
+        'Automated checks cover portable configs, unique allocation, native stat/MR budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. Library repairs use the existing unverified-skill controls. The separate **Use borrowed Sephira skill visuals** toggle defaults on; turn it off and rebuild/install to restore the 216 preset source visual mappings without changing mechanics or saved kits. Turn it on and rebuild/install to restore borrowed visuals. Explicit visual donor edits and authored sequences are preserved; missing demo source animations may stay blank.', '',
         '## Full-game release review','',
         'Re-audit native stats, level curves, skill mechanics and unlock ranks; private command/LB conditions and IDs; summon availability; selected form/LB presentation; and vendor/acquisition availability. Preserve user edits and require an explicit reset to apply revised recipes. See README’s running full-release checklist.','']
     (ROOT/'SEPHIRAS_VISIONS.md').write_text('\n'.join(lines))
+
+
+def write_visual_policy(catalog):
+    policy = {'schema': 1, 'presets': {
+        p['id']: {str(s['from']): s['visuals'] for s in p['profile']['skills'].values()
+                  if s.get('visuals', s['from']) != s['from']}
+        for p in catalog['presets']}}
+    (ROOT/'assets/existing_visions/payload/sephira_visuals.json').write_text(json.dumps(policy,indent=2)+'\n')
 
 
 if __name__=='__main__':

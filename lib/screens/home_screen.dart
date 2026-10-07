@@ -87,11 +87,22 @@ class HomeScreen extends StatelessWidget {
                   )),
                 ]),
                 Text(!app.showUnverifiedSkills
-                    ? 'Original skill selection; our skill animation changes are off.'
+                    ? 'Original library selection; library skill repairs are off.'
                     : app.useAbilityChanges
                         ? 'Studio skill repairs and reviewed hiding rules are on. Existing game animations take priority.'
-                        : 'Unverified skills are visible with original game animations. Our skill repairs and reviewed hides are off.', style: Guide.small()),
+                        : 'Unverified library skills use original game animations. Library repairs and reviewed hides are off.', style: Guide.small()),
                 Text('Rebuild/install after changing modes to replace the previous mod. Equipped skills and saved configs are retained.', style: Guide.small()),
+                SwitchListTile(
+                  key: const Key('sephira-borrowed-skill-visuals'), contentPadding: EdgeInsets.zero,
+                  title: Text('Use borrowed Sephira skill visuals', style: Guide.text()),
+                  subtitle: Text(app.useSephiraBorrowedVisuals
+                      ? 'Uses the preset spell and attack effects. Turn off to try original source visuals; missing demo effects may stay blank. Rebuild/install to apply.'
+                      : 'Uses original source visuals. MP, power, effects and saved kits are kept. Turn on and rebuild/install to restore the borrowed visuals.', style: Guide.small()),
+                  value: app.useSephiraBorrowedVisuals,
+                  onChanged: app.building || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setSephiraBorrowedVisuals(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
                 const SizedBox(height: 14),
                 SwitchListTile(
                   key: const Key('crystal-fina-cave'), contentPadding: EdgeInsets.zero,

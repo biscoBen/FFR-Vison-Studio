@@ -2,16 +2,16 @@
   "schema": 1,
   "files": {
     "_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
-    "_ffr_animation_repair.py": "90adf0c3626a4261c2ced800bb1de972122cf6511811576c322edfaeb6773abc",
+    "_ffr_animation_repair.py": "969eb737c788c49e78b42dbac0cb4017862edc5a7ca0075761fdd86b15b38940",
     "_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
     "_ffr_crystal_cave.py": "7f97c77a7a92da41f1bc29005b23ef23b4a60464572301604e9961a01cf08bf7",
-    "_ffr_existingvisions.py": "f81809379216976fac463c6f7e18912b86eb1db470921a8a5502cfbb9f505110",
+    "_ffr_existingvisions.py": "ba2e3bbb3167933151c479024b312db12ed0c7ce1dfb63d0fad7a866fc6cea1d",
     "_ffr_field_leader.py": "a2b0b8a808b4b4f85030d70689d8cbfaea04469b133c2f10c7eb6fa6f9898fc0",
-    "_ffr_library.py": "d5991b67f4968470d6dad2481e00290e92e3611ed986c90713c98eb4b4f3f0f4",
+    "_ffr_library.py": "48e4b65d93d335e7cd330cd65e9e9fb764ad68d9383962285c5b4849b034b07e",
     "_ffr_overworld.py": "9e23102f83b2479bb462833045540cce5467ea3a57d82e4b2414be8152166b31",
     "_ffr_party.py": "65070b1c592e2c853c5f9705698a7f0c24674b71c5e63bc10c5ff0e195949175",
     "_ffr_party_voices.py": "7dd587b6298595ae06eb25b0fbd50c7aa3172a86774bb222d089feb3ac87ac34",
-    "_ffr_sephira.py": "7945a2b87615ae2c1845ed05d95b0f74f29ce0a9af7d0bbc848618c60c415762",
+    "_ffr_sephira.py": "587e29f3db49f7bf9a6b5155f9227dfc0633e2325f4742837ea0626fef0b6d80",
     "_ffr_testing.py": "f72c1e5740ab74398f95cabc780ebc7a146e1f605ce7a3dafc720e4728fd5db5",
     "ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
@@ -21,6 +21,7 @@
     "overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",
+    "sephira_visuals.json": "d9a4b121fc63b9e5db0ff4141bc720da14f8279dca969dd717db1a459b47b9b3",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
   }
 }

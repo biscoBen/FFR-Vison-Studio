@@ -1111,6 +1111,9 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             coverage.append({'id': sid, 'status': 'existing_sequence'}); continue
         recipes = [(u.get('skills') or {}).get(str(sid), (u.get('skills') or {}).get(sid)) for u in owners]
         recipe = next((r for r in recipes if r), None)
+        if recipe and recipe.get('_sephiraSourceVisuals'):
+            coverage.append({'id': sid, 'status': 'original_source_visuals', 'source': recipe['from']})
+            continue
         base = by_id.get(recipe['from'] if recipe else sid)
         if not base:
             coverage.append({'id': sid, 'status': 'unresolved', 'reason': 'Skill definition unavailable.'}); continue

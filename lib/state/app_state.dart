@@ -893,6 +893,15 @@ class AppState extends ChangeNotifier {
 
   bool get showUnverifiedSkills => catalogShowsUnverified(catalog ?? {});
   bool get useAbilityChanges => (catalog?['abilityModes'] as Map?)?['useChanges'] == true;
+  bool get useSephiraBorrowedVisuals => (catalog?['sephiraSettings'] as Map?)?['useBorrowedSkillVisuals'] != false;
+
+  Future<void> setSephiraBorrowedVisuals(bool enabled) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    final value = await api!.saveSephiraVisualSettings(useBorrowedSkillVisuals: enabled);
+    catalog = {...?catalog, 'sephiraSettings': value};
+    notifyListeners();
+  });
 
   Future<void> setAbilityModes({bool? showUnverified, bool? useChanges}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }

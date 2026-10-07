@@ -257,7 +257,9 @@ def register(app, env):
     import _ffr_party
     import _ffr_testing
     import _ffr_ability_modes
+    import _ffr_sephira
     _ffr_ability_modes.register(app, env)
+    _ffr_sephira.register(app, env)
     _ffr_testing.register(app, env)
     _ffr_party.register(app, env)
     from fastapi import HTTPException

@@ -155,6 +155,14 @@ Turning the section off keeps your edits but omits the presets and their acquisi
 card and choose **Reset to preset**, restores the recipe and backs up the old roster while keeping IDs and acquisition
 locations. An existing Crystal Fina is reused with her edits intact; explicitly reset her to apply the balanced kit.
 
+**Use borrowed Sephira skill visuals** is a separate saved toggle on the home page,
+enabled by default. Switch it off and rebuild/install to use original source visuals
+for the 216 preset substitutions; switch it back on and rebuild/install to restore
+their borrowed spell/attack effects. MP, power, effects, stats and MR stay as edited.
+This works with existing saved presets without a reset, independently of the library
+skill visibility/repair checkboxes. Missing demo animations may stay blank when off.
+Explicitly edited visual donors and authored sequences remain as saved.
+
 ## Original vision testing
 
 Drag a **Default vision** into **Added visions**, then install the mod. At the next battle start, a native game event
@@ -453,6 +461,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   MR stat rewards and unlock ranks. Check recipes against the full game's
   mechanics and ID reservations; preserve edited and disabled presets instead
   of silently resetting them. See `SEPHIRAS_VISIONS.md` for the agreed design.
+  Turn off **Use borrowed Sephira skill visuals** and rebuild/install to evaluate
+  newly available source animations. This restores the 216 preset visual substitutions
+  independently of library repairs without removing MP, power or other kit edits.
+  Explicit custom donor edits and authored sequences remain as saved; compare both
+  modes and retain the toggle for sources still missing or unsuitable in the full game.
 - [ ] **Espers and summons.** Inspect full-game sprites, effects and timelines. Reassess esper-owned hiding separately
   from ordinary summon commands; check whether assets absent from the demo are now available.
 - [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,
