@@ -141,9 +141,9 @@ Revision 3 kits have 20–28 awakening abilities/bonuses, with learned MR skills
 and balanced additions from the broader native/enemy catalog. Great Dragon is retired from this collection.
 Existing edits are preserved; use **Reset all presets**
 to apply expanded kits (backs up the roster and keeps acquisition), then build/install.
-[Verified Windows test package / run 37554129020](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37554129020)
-contains code `a4f82e8` and passed all required Windows checks on 2026-10-06. Live battle balance and appearance still
-need in-game testing.
+[Verified Windows test package / run 37659730752](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37659730752)
+contains code `d35ceca` and passed all required Windows checks on 2026-10-07. It includes the reversible skill visual toggle.
+Live battle balance and appearance still need in-game testing.
 Enable it to prepare missing artwork and add the profiles, then build/install to make them available in the game.
 Each required look resolves its own hosted unit, including Alice’s separately listed Brave Shift and base form.
 Their specialties include attacks and secondary utility. Native stats, MR rewards and combat mechanics provide the

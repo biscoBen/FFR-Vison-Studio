@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published reversible Sephira skill visuals — 2026-10-07
+
+Code: [`d35ceca`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d35ceca1dfdfc0982d8aad76462d3cdb9c453877).
+[Verified Windows test release / run 37659730752](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37659730752).
+
 - Add a separate saved **Use borrowed Sephira skill visuals** toggle, on by default.
   Turn it off and rebuild/install to use the original source visuals for the 216
   preset substitutions, while retaining MP, power, effects, stats, MR and saved edits.
@@ -23,6 +28,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   (three platform skips), clean analysis and verified bundles. Checks cover all 216
   substitutions, mode independence, unchanged combat settings and saved kits,
   persistence/failure handling, and native source timelines supplied by a later game.
+  An audit against the extracted game tables confirmed all 216 substitutions and
+  retained Absolute Zero's shared native sequence without changing combat settings.
+
+- All required Windows gates passed: full validation, frozen-engine startup,
+  launcher/updater checks, compilation and publication. Authenticated download
+  verified the exact commit/run, ZIP checksum and all 60 bundled resources.
+  The downloaded helper switched all 216 substitutions off/on with unchanged
+  saved kits and combat fields; master remains unchanged. Live-game visuals
+  and the full game's future source assets still require in-game testing.
+- First recorded complete candidate to verified package: **22m31s**,
+  including local checks, final review, waiting and package verification.
+  Two code pushes and two reused automatic builds; the second includes the native
+  shared-sequence correction. No manual dispatch. CI took **5m23s**, with **8m56s**
+  runner time; combined runner time including the earlier candidate was **20m27s**.
+  Verification after CI took **1m11s**.
+  Publication notes use the documentation-only path.
 
 ## Published awakening and MR count correction — 2026-10-06
 
