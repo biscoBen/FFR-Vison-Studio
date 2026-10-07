@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published awakening and MR count correction — 2026-10-06
+
+Code: [`a4f82e8`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a4f82e81e054ba029346b5936c809bb7f5cd8d87).
+[Verified Windows test release / run 37554129020](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37554129020).
+
 - Correct Sephira kit counts to **20–28 awakening abilities/bonuses**, with learned
   MR abilities/bonuses additional. Add 139 awakening grants from the wider catalog;
   current recipes contain 20 awakening grants each, except Elephim with 22. Preserve
@@ -22,13 +27,32 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   reset applies revision 3. Build/install afterwards. Live-game balance and demo
   animation availability still need testing.
 
+- Local checks passed: 234 Flutter tests (one existing platform skip), 282 Python
+  tests (three existing platform skips), clean analysis and verified bundles.
+  Native SDK readback checked 312 private rows and unchanged originals; the pinned
+  engine accepted all 29 hosted LB timelines. Focused Flutter checks, Python checks
+  and native readback were repeated after the cleansing correction. Regression
+  checks count the actual awakening grants independently of MR, preserve every MR
+  reward exactly, verify bonus dependencies, and ensure cleansing keeps friendly buffs.
+- All required Windows gates passed, including full validation, frozen-engine
+  startup, launcher/updater checks, compilation and publication. Authenticated
+  download verified the exact commit/run, ZIP checksum and all 59 bundled resources:
+  30 presets, 602 awakening grants and 168 additional learned MR grants. Master is unchanged.
+- Measured audit start to verified package: **24m49s**.
+  First recorded complete candidate to verified package: **12m59s**,
+  including local checks, the cleansing correction, superseded build, waiting and verification.
+  Two code pushes and two reused automatic builds; the earlier run was superseded.
+  Final CI took **7m26s** and **9m44s** runner time;
+  combined runner time including the superseded run was **17m37s**.
+  Verification after CI took **0m23s**. Publication notes use the documentation-only path.
+
 ## Published expanded Sephira kits — 2026-10-06
 
 Code: [`fa81e40`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fa81e402e05b5d86eec2a8580ac0b74d1486c09c).
 [Verified Windows test release / run 37546814857](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-37546814857).
 
 - Expand the Sephira collection from 11–16 to 20–25 distinct abilities/passives
-  using the wider native and enemy catalog. Keep exact native stat/MR budgets
+  (including learned MR rewards in these earlier totals) using the wider native and enemy catalog. Keep exact native stat/MR budgets
   and all 291 excluded-vision grants covered once. Supplemental player copies
   receive appropriate MP costs, capped boss accuracy/power and safe drain values;
   original game skills remain intact. Alice's slam line now uses ice.
