@@ -173,6 +173,17 @@ void main() {
     expect(dual['set']['mimicableUnitId'], minfilia['id']);
     expect(minfilia['id'], isNot(configs[6]['id']));
     for (final u in loaded) {
+      // Count the portable, remapped grants actually used by the builder;
+      // learned MR skills must remain additional to the awakening quota.
+      final awakening = (u['awakening'] as List).expand((tier) => tier as List)
+          .where((g) => g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill').length;
+      final mr = (u['synchro'] as List).expand((tier) => tier as List)
+          .where((g) => g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill').length;
+      final preset = presets.singleWhere((p) => p['profile']['en'] == u['en']);
+      expect(awakening, inInclusiveRange(20, 28), reason: u['en'] as String);
+      expect(awakening, preset['balance']['kitCount']);
+      expect(mr, preset['balance']['mrSkillCount']);
+      expect(awakening + mr, preset['balance']['totalSkillCount']);
       for (final skill in (u['skills'] as Map).values) {
         final settings = skill['set'] as Map;
         if (settings.containsKey('belongCommandList')) {

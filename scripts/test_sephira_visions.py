@@ -64,10 +64,17 @@ class SephiraTests(unittest.TestCase):
         enemy_count=0
         for p in catalog['presets']:
             u=p['profile']; b=p['balance']
-            grants=[g for f in ['awakening','synchro'] for t in u[f] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
-            self.assertGreaterEqual(len(grants),18,p['id'])
-            self.assertLessEqual(len(grants),26,p['id'])
+            grants=[g for t in u['awakening'] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
+            mr=[g for t in u['synchro'] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
+            self.assertGreaterEqual(len(grants),20,p['id'])
+            self.assertLessEqual(len(grants),28,p['id'])
             self.assertEqual(len(grants),b['kitCount'])
+            self.assertEqual(sum(g[0]=='ActiveSkill' for g in grants),b['activeCount'])
+            self.assertEqual(sum(g[0]=='PassiveSkill' for g in grants),b['passiveCount'])
+            self.assertEqual(sum(g[0]=='ActiveSkill' for g in mr),b['mrActiveCount'])
+            self.assertEqual(sum(g[0]=='PassiveSkill' for g in mr),b['mrPassiveCount'])
+            self.assertEqual(len(mr),b['mrSkillCount'])
+            self.assertEqual(len(grants)+len(mr),b['totalSkillCount'])
             self.assertGreater(b['kitCount'],b['previousCount'])
             visual_ids=set()
             for sid in map(int,u['skills']):
@@ -95,6 +102,28 @@ class SephiraTests(unittest.TestCase):
                     self.assertEqual(x['effects'],[1066])
                     self.assertNotIn(1446,x['effects'])
         self.assertGreater(enemy_count,100)
+
+    def test_awakening_expansion_preserves_every_existing_mr_reward(self):
+        catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
+        baseline=json.loads((ROOT/'scripts/fixtures/sephira_mr_revision2.json').read_bytes())
+        self.assertEqual({p['id'] for p in catalog['presets']},set(baseline))
+        for p in catalog['presets']:
+            self.assertEqual(p['profile']['synchro'],baseline[p['id']],p['id'])
+            self.assertEqual(p['profile']['sephiraRecipe'],3)
+
+    def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):
+        catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
+        copies={x['source']:x for p in catalog['presets'] for x in p['balance']['playerCopies']}
+        expected={501780:[16101,16102],502710:[16102],502730:[16101],
+                  505420:[1042],505430:[1163],505530:[1042,1163],
+                  501340:[1042],500930:[1042],503700:[1066],570710:[1066]}
+        for source,ids in expected.items():
+            self.assertEqual(copies[source]['effects'],ids)
+        self.assertNotIn(20001,copies[570610]['effects'])
+        by_key={p['id']:p['profile'] for p in catalog['presets']}
+        def skills(key): return {g[1] for f in ['awakening','synchro'] for t in by_key[key][f] for g in t}
+        self.assertLessEqual({1441,1464},skills('ariana')) # Scion + Skill Flow
+        self.assertLessEqual({1450,414600,414610},skills('lilith')) # Shield + guard commands
 
     def test_retired_dragon_is_excluded_even_in_older_enabled_rosters(self):
         old=member('great_dragon',True)

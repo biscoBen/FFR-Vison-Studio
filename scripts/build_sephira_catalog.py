@@ -7,7 +7,7 @@ import argparse
 import copy
 import json
 from pathlib import Path
-from sephira_kit_expansion import EXPANSIONS
+from sephira_kit_expansion import EXPANSIONS, AWAKENING_EXPANSIONS, PLAYER_EFFECT_REPLACEMENTS
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,6 +31,22 @@ SUPPORT = {
     501420:'Also reduce enemy physical and magic defense.',
     505960:'Also reduce enemy physical and magic defense.',
     505910:'Also reduce enemy attack and magic.',
+    501780:'Raise own attack and magic by 50% for 3 turns.',
+    502710:'Raise an ally’s magic by 50% for 3 turns.',
+    502730:'Raise an ally’s attack by 50% for 3 turns.',
+    501340:'Also reduce own physical damage taken by 30% for 3 turns.',
+    500930:'Also reduce own physical damage taken by 30% for 3 turns.',
+    505420:'Reduce own physical damage taken by 30% for 3 turns.',
+    505430:'Reduce own magic damage taken by 30% for 3 turns.',
+    505530:'Reduce own physical and magic damage taken by 30% for 3 turns.',
+    505360:'Remove party ailments and stat debuffs.',
+    570690:'Remove an ally’s ailments.',
+    571330:'Also remove enemy buffs.', 571140:'Also remove enemy buffs.',
+    571520:'Remove own ailments/debuffs and gain 30% physical/magic protection for 3 turns.',
+    503170:'Attempt to lower enemy attack, magic, defenses and speed.',
+    503670:'Also lower enemy physical attack and defense.',
+    503680:'Also lower enemy magic and magic defense.',
+    506040:'Also remove enemy buffs.',
 }
 
 
@@ -64,12 +80,15 @@ def player_recipe(unit, slot, spec, native, english, effects):
               'playSequencerId':-1, 'sequencerIdWhenTargetFriendlies':-1,
               'voiceLabel':'None', 'selfSkillActivateVoiceLabel':'None',
               **overrides}
-    if source==570710:
-        # The monster's drain multiplier is 10000%; player Predation heals
-        # only the HP damage actually dealt, like the normal Drain effect.
+    if source in PLAYER_EFFECT_REPLACEMENTS or source==500930:
+        # Finite native player effects replace boss-only or excessive effects.
         bundles=copy.deepcopy(original['effectBundleList'])
         for b in bundles:
-            if b['effectId']==1446: b['effectId']=1066
+            b['effectId']=PLAYER_EFFECT_REPLACEMENTS.get(source,{}).get(b['effectId'],b['effectId'])
+            if source==501340 and b['effectId']==1042:
+                b.update(TargetType='Self',targetRelation='Friendlies')
+        if source==500930:
+            b=bundles[0]; b.update(effectId=1042,TargetType='Self',targetRelation='Friendlies')
         settings['effectBundleList']=bundles
     if 'hitCount' in overrides:
         n=overrides['hitCount']
@@ -233,7 +252,7 @@ def generate(reference):
               'elemRes':{},'command':{'id':320+vid-13500,'en':title+' Skills','desc':theme+'.'},
               'master':{'id':vid*100,'en':'Spirit of '+title,'desc':title+"'s learned mastery rewards flow into the wearer."},
               'price':1000,'skills':{},'ffbeMap':{'skills':{},'passives':{}},'menuScale':2.0,
-              'sephiraRecipe':2,
+              'sephiraRecipe':3,
               'awakening':[[],[],[],[]], 'synchro':[[] for _ in range(10)]}
         if key=='crystal_fina':
             original=json.loads((ROOT/'assets/crystal_fina/profile.json').read_text())
@@ -313,6 +332,26 @@ def generate(reference):
                     for g in tier:
                         if g[:2]==['ActiveSkill',source]: g[1]=sid
                 additions.append(copy_audit)
+        awakening_actives,awakening_passives=AWAKENING_EXPANSIONS[key]
+        for kind,entries in [('ActiveSkill',awakening_actives),('PassiveSkill',awakening_passives)]:
+            for n,entry in enumerate(entries):
+                source=entry[0] if kind=='ActiveSkill' else entry
+                if kind=='ActiveSkill' and source in hidden: raise ValueError(f'{key}: hidden awakening source {source}')
+                if (kind,source) in assigned: raise ValueError(f'{key}: duplicate awakening source {kind} {source}')
+                assigned[kind,source]=key
+                options=[r for f,r in pool.get((kind,source),[]) if f=='awakening']
+                tier=min(options) if options else (0 if entry[2]<=12 else 1 if entry[2]<=24 else 2 if entry[2]<=40 else 3) if kind=='ActiveSkill' else 3
+                sid=source
+                if kind=='ActiveSkill':
+                    sid,copy_audit=player_recipe(unit,10+n,entry,skill_rows,skill_names,effects)
+                # No MR fallback: this revision must meet the awakening quota
+                # independently, without moving or counting any MR rewards.
+                available=[tier] if options else list(range(tier,4))+list(range(tier-1,-1,-1))
+                rank=next((r for r in available if len(unit['awakening'][r])<8),None)
+                if rank is None: raise ValueError(f'{key}: no awakening room for {kind} {source}')
+                unit['awakening'][rank].append([kind,sid,-1])
+                if kind=='ActiveSkill':
+                    copy_audit['unlock']=['awakening',rank]; additions.append(copy_audit)
         # Stat rewards are copied exactly, including ranks, AP and totals.
         for rank,tier in enumerate(native[budget]['synchro']):
             unit['synchro'][rank].extend(copy.deepcopy([g for g in tier if g[0]=='BaseParameter']))
@@ -326,13 +365,20 @@ def generate(reference):
             if any(len(t)>cap for t in unit[field]): raise ValueError(f'{key} {field} capacity: {[len(t) for t in unit[field]]}')
         form_label='Custom' if key=='crystal_fina' else str(detail['forms'][form]['rarity'])
         if key!='crystal_fina' and shift: form_label += ' Super Limit Burst' if shift['kind']=='slb' else ' Brave Shift'
+        counts={f:{k:sum(g[0]==k for t in unit[f] for g in t) for k in ['ActiveSkill','PassiveSkill']} for f in ['awakening','synchro']}
+        awakening_count=sum(counts['awakening'].values())
+        mr_count=sum(counts['synchro'].values())
+        if not 20<=awakening_count<=28: raise ValueError(f'{key}: awakening count {awakening_count}, expected 20–28')
         presets.append({'id':key,'name':title,'theme':theme,'profile':unit,
                         'balance':{'nativeBudget':budget,'nativeName':native[budget]['name'],'growthDonor':donor,
-                                   'activeCount':len(actives)+len(extra_actives),
-                                   'passiveCount':len(passives)+len(extra_passives),
-                                   'kitCount':len(actives)+len(passives)+len(extra_actives)+len(extra_passives),
+                                   'activeCount':counts['awakening']['ActiveSkill'],
+                                   'passiveCount':counts['awakening']['PassiveSkill'],
+                                   'kitCount':awakening_count,
+                                   'mrActiveCount':counts['synchro']['ActiveSkill'],
+                                   'mrPassiveCount':counts['synchro']['PassiveSkill'],
+                                   'mrSkillCount':mr_count,'totalSkillCount':awakening_count+mr_count,
                                    'previousCount':len(actives)+len(passives)-({'reberta':4,'minfilia':1,'lila':1,'trance_terra':4,'primm':1}.get(key,0)),
-                                   'additionalPassives':extra_passives,'playerCopies':additions},
+                                   'additionalPassives':extra_passives+awakening_passives,'playerCopies':additions},
                         'form':{'id':form,'label':form_label,
                                 'sha256':None if key=='crystal_fina' else record['sha256'],
                                 'source':unit['ffbe']['source']}})
@@ -371,17 +417,17 @@ def describe(catalog, reference):
         '- Existing native grants retain their mechanics. Supplemental skills come from the wider native/enemy catalog on private player copies: zero-MP enemy attacks receive MP costs; excessive accuracy, multipliers and hit counts are reduced. Group spells/healing cost more than comparable single-target spells. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role.',
         '- All 160 distinct active skills and 131 passives from the 15 excluded original visions are allocated. Within the pack, each exact active/passive appears once; permanent MR stats may repeat. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.',
         '- Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.',
-        '- Each revised kit has 20–25 distinct abilities/passives, excluding permanent MR stats, its Spirit wrapper and LB. Reberta has 24 because Clive’s Eikon skills and associated fire passives stay together; Trance Terra has 25 with the full native fire spell line. They specialize without being restricted to one action type: healers and debuffers also have attacks. Added visions default to a 1,000-gil vendor price; acquisition can be edited normally.',
+        '- Each revised kit has 20–28 awakening abilities/bonuses; learned MR abilities and bonuses are additional. Permanent MR stats, the Spirit wrapper and LB are excluded from both skill counts. Current recipes have 20 awakening grants each, except Elephim with 22. Clive’s Eikon/fire bundle remains together on Reberta. They specialize without being restricted to one action type: healers and debuffers also have attacks. Added visions default to a 1,000-gil vendor price; acquisition can be edited normally.',
         '- Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.',
-        '- New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. New passives retain native magnitudes/equip costs and are learned through MR or their native ranks. No new permanent stat boosts are added. Alice’s three earth slams become ice slams with unchanged power/cost.',
+        '- New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. New passives retain native magnitudes/equip costs and required skill dependencies. Revision 3 additions unlock through awakening only; existing MR rewards are unchanged. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. No new permanent stat boosts are added. Alice’s three earth slams become ice slams with unchanged power/cost.',
         '- Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.', '',
         'The excluded originals are Tronn, Wilhelm, Warrior of Light, Firion, Onion Knight, Cecil, Bartz, Cloud, Squall, Zidane, Tidus, Shantotto, Vaan, Noctis and Clive. Their exact grants, native ranks, descriptions, mechanics and allocations are retained in `assets/sephira_visions/native_coverage.json`.', '',
         '## Kit sizes', '',
-        'Revision 2 adds broader game skills rather than dividing only the excluded originals. Existing saved kits are preserved: use **Reset all presets** to apply this revision, then build/install. Individual reset is also available. Reset backs up edits and keeps allocated identity/acquisition.', '',
-        '| Vision | Previous | Active | Passive | Total |',
-        '|---|---:|---:|---:|---:|']
+        'Revision 3 counts awakening and MR separately and adds 139 awakening grants (135 abilities and 4 bonuses) from the broader catalog. All revision 2 MR rewards are preserved. Existing saved kits are preserved: use **Reset all presets** to apply this revision, then build/install. Individual reset is also available. Reset backs up edits and keeps allocated identity/acquisition.', '',
+        '| Vision | Awakening abilities | Awakening bonuses | Awakening total | Additional MR abilities | Additional MR bonuses |',
+        '|---|---:|---:|---:|---:|---:|']
     for p in catalog['presets']:
-        b=p['balance']; lines.append(f"| {p['name']} | {b['previousCount']} | {b['activeCount']} | {b['passiveCount']} | {b['kitCount']} |")
+        b=p['balance']; lines.append(f"| {p['name']} | {b['activeCount']} | {b['passiveCount']} | {b['kitCount']} | {b['mrActiveCount']} | {b['mrPassiveCount']} |")
     lines += ['', '## Selected forms and kits', '',
         'Awakening ranks below are numbered 1–4 for readability. MR ranks use the game’s 0–9 values. Native source names are retained for skills so their exact versions remain identifiable.', '']
     for p in catalog['presets']:

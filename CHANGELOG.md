@@ -11,6 +11,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Correct Sephira kit counts to **20–28 awakening abilities/bonuses**, with learned
+  MR abilities/bonuses additional. Add 139 awakening grants from the wider catalog;
+  current recipes contain 20 awakening grants each, except Elephim with 22. Preserve
+  every existing MR reward, native stat budget and required original-skill allocation.
+  Separate awakening and MR counts in the kit document. New support copies replace
+  permanent boss buffs/invulnerability with timed player effects and cap drain at
+  damage dealt. Keep skill-dependent bonuses with their required skills.
+- Saved kits stay intact until the backed-up **Reset all presets** or individual
+  reset applies revision 3. Build/install afterwards. Live-game balance and demo
+  animation availability still need testing.
+
 ## Published expanded Sephira kits — 2026-10-06
 
 Code: [`fa81e40`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fa81e402e05b5d86eec2a8580ac0b74d1486c09c).
