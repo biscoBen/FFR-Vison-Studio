@@ -46,3 +46,10 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Per-installation personal mod sync, credentials stay in the OS keyring.
+/Studio Test Data/
+/Deck Sync/
+**/deck-sync-settings.json
+**/deck-settings.json
+**/installed-state.json

@@ -235,7 +235,7 @@ jobs:
           package(Path('bundle'), Path('Sephira-Studio-Test.zip'), os.environ['COMMIT_SHA'],
                   int(os.environ['RUN_ID']), build=int(os.environ['BUILD_NUMBER']))
           subprocess.run([
-              'gh', 'release', 'create', f"sephira-test-{os.environ['RUN_ID']}", 'Sephira-Studio-Test.zip',
+              'gh', 'release', 'create', f"sephira-test-{os.environ['RUN_ID']}", 'Sephira-Studio-Test.zip', 'Resonance-Deck-Sync.zip',
               '--repo', os.environ['REPO'], '--target', os.environ['COMMIT_SHA'],
               '--prerelease', '--latest=false', '--title', 'Sephira Studio Test ' + os.environ['COMMIT_SHA'][:12],
               '--notes-file', 'Sephira-Studio-Test.json',

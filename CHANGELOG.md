@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add **Steam Deck sync** with local, opt-in private-repository setup and **Build & publish to Deck**.
+  Ordinary installs/builds never upload. PC tokens use Windows Credential Manager; the Deck uses KWallet/Secret
+  Service or prompts without saving. Validate that the destination is private and belongs to the publishing account.
+  Package the verified compiled mod plus its working cycling runtime; exclude credentials, raw Studio config, game
+  files and saves. Publish a release only after its uploaded checksum matches.
+- Publish a small **Resonance-Deck-Sync.zip** containing the standalone **Update my mod.sh / Deck Mod Sync.py** installer,
+  also included in the full Studio test ZIP. Download private packages on
+  SteamOS without Studio, Proton for the app or engine/build setup; detect game libraries/SD cards and create a persistent
+  shortcut in Downloads/FFR Mod. Match the PC game version, check package paths/checksums, back up owned files, preserve
+  other mods/runtime conflicts, remove stale cycling files and recover interrupted installs. Print the cycling Proton
+  launch option. Repository creation remains a one-time local step because the connected GitHub integration lacks it.
+- Add transfer/privacy, checksum/channel, credential, rollback/recovery, runtime ownership and UI/API checks; exercise
+  the managed extension and credential store in the genuine frozen Windows engine. Live private publishing with the
+  user's token and actual Deck/UE4SS gameplay remain unverified. Add the workflow to the full-game checklist.
+
 ## Published Steam Deck launcher (CI checked) — 2026-10-13
 
 Code: [`b520392`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b520392bdb8a5df71f0b950669e3f66c7c862d48).

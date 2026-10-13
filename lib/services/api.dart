@@ -85,6 +85,11 @@ class Api {
   Future<void> build({required bool install}) => post('/api/build', {'install': install});
   Future<Map<String, dynamic>> buildLog() async => (await get('/api/build/log')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> install() async => (await post('/api/install')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> deckSyncStatus() async => (await get('/api/deck/status')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> configureDeckSync({required bool enabled, required String repository, String? token}) async =>
+      (await put('/api/deck/settings', {'enabled': enabled, 'repository': repository, if (token != null && token.isNotEmpty) 'token': token})) as Map<String, dynamic>;
+  Future<void> publishDeckMod() => post('/api/deck/publish');
+  Future<Map<String, dynamic>> forgetDeckToken() async => (await delete('/api/deck/token')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> gameFiles() async => (await get('/api/game/files')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> restoreGame({String? backup}) async => (await post('/api/game/restore', backup == null ? {} : {'backup': backup})) as Map<String, dynamic>;
 

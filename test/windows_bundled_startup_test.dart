@@ -64,9 +64,10 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.3');
+      expect(state['version'], '1.2.4');
       for (final name in [
         '_ffr_existingvisions.py',
+        '_ffr_deck_sync.py',
         '_ffr_party.py',
         '_ffr_party_voices.py',
         'party_voice_cues.json',
@@ -98,7 +99,21 @@ void main() {
 import sys, io
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / 'tools'))
-import _ffr_party, _ffr_party_voices, _ffr_overworld
+import _ffr_party, _ffr_party_voices, _ffr_overworld, _ffr_deck_sync
+from fastapi import FastAPI
+root = Path(__file__).parent
+assert _ffr_deck_sync.settings(root)['enabled'] is False
+vault = _ffr_deck_sync.CredentialStore(root)
+try:
+    vault.put('tester/frozen-fixture', 'github_pat_' + 'A' * 25)
+    assert vault.get('tester/frozen-fixture') == 'github_pat_' + 'A' * 25
+finally:
+    vault.delete('tester/frozen-fixture')
+assert vault.get('tester/frozen-fixture') is None
+app = FastAPI()
+_ffr_deck_sync.register(app, {'ROOT': str(root)})
+status = next(r for r in app.routes if r.path == '/api/deck/status').endpoint()
+assert status['enabled'] is False and status['repository'] == '' and status['hasToken'] is False
 from PIL import Image
 _ffr_party.validate({'key':'party_1001', 'id':1001, 'jp':'レイン', 'en':'Rain',
     'party':{'version':1, 'id':1001}, 'overworld':{'version':1, 'model':'vagrant_knight_rain'}})

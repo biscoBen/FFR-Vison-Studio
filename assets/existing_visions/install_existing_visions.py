@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.3'
+VERSION = '1.2.4'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -201,6 +201,28 @@ def hook_server(raw):
     if not isinstance(app.value, ast.Call) or ast.unparse(app.value.func) != 'FastAPI':
         raise RuntimeError('Unsupported native vision server layout.')
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
+    build, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'run_build']
+    # Invalidate the prior export on every attempt; only a verified successful
+    # build records a new snapshot, including its exact cycling payload.
+    lines[build.body[0].lineno - 1] = nl.join([
+        '    import _ffr_deck_sync', '    try: _ffr_deck_sync.begin_build(ROOT)',
+        '    except Exception:',
+        '        state.update(running=False, result="failed", message="Could not prepare the Deck build snapshot. Check the local build folder.")',
+        '        return',
+    ]) + nl + lines[build.body[0].lineno - 1]
+    finish, = [n for n in build.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == "state['stage']"]
+    lines[finish.lineno - 1] = nl.join([
+        '    try:', '        if state["result"] == "ok": _ffr_deck_sync.capture(globals())',
+        '    except Exception as deck_error:', '        note("Deck export is unavailable: " + str(deck_error))',
+    ]) + nl + lines[finish.lineno - 1]
+    route, = [n for n in tree.body if isinstance(n, ast.AsyncFunctionDef) and n.name == 'build']
+    thread, = [n for n in route.body if isinstance(n, ast.Expr) and 'threading.Thread' in ast.unparse(n)]
+    lines[thread.lineno - 1] = nl.join([
+        '    import _ffr_deck_sync', '    with _ffr_deck_sync._operation:',
+        '        if state["running"] or _ffr_deck_sync._publishing["running"]:',
+        '            raise HTTPException(409, "A build or private publish is running.")',
+        '        state["running"] = True',
+    ]) + nl + '    ' + lines[thread.lineno - 1]
     install, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'install_files']
     restore, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'restore_game']
     # Preflight ownership/loader before package copies, then deploy only after

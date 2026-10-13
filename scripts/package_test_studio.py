@@ -29,13 +29,32 @@ def package(app, output, commit, run_id, branch="Sephira's-Update", build=15):
                 # Windows command files use CRLF even when checked out on Linux.
                 bundle.writestr(path.name, path.read_text().replace("\r\n", "\n").replace("\n", "\r\n"))
         deck = launchers.parent / "steam-deck"
-        for name in ("Start Studio Test.sh", "Studio Deck Launcher.py"):
+        for name in ("Start Studio Test.sh", "Studio Deck Launcher.py", "Update my mod.sh", "Deck Mod Sync.py"):
             info = zipfile.ZipInfo(name)
             info.create_system = 3
             info.external_attr = (0o100755 << 16)
-            bundle.writestr(info, (deck / name).read_text(encoding="utf-8").replace("\r\n", "\n"))
+            source = launchers.parent / 'assets/existing_visions/payload/_ffr_deck_sync.py' if name == 'Deck Mod Sync.py' else deck / name
+            bundle.writestr(info, source.read_text(encoding="utf-8").replace("\r\n", "\n"))
         bundle.writestr("test-build.json", json.dumps(metadata, indent=2) + "\n")
     output.with_suffix(".json").write_text(json.dumps(metadata, indent=2) + "\n")
+    # The Deck only needs this small native installer, not the Windows app ZIP.
+    with zipfile.ZipFile(output.parent / 'Resonance-Deck-Sync.zip', 'w', zipfile.ZIP_DEFLATED) as bundle:
+        for name, source in (
+            ('Update my mod.sh', deck / 'Update my mod.sh'),
+            ('Deck Mod Sync.py', launchers.parent / 'assets/existing_visions/payload/_ffr_deck_sync.py'),
+        ):
+            info = zipfile.ZipInfo(name)
+            info.create_system = 3
+            info.external_attr = 0o100755 << 16
+            bundle.writestr(info, source.read_text(encoding='utf-8').replace('\r\n', '\n'))
+        bundle.writestr('test-build.json', json.dumps(metadata, indent=2) + '\n')
+        bundle.writestr('Read me.txt', 'On PC: use Studio > Set up private sync > Build & publish to Deck.\n'
+                        'On Steam Deck: extract this ZIP into Downloads/FFR Mod/Installer.\n'
+                        'In Desktop Mode, run: bash "$HOME/Downloads/FFR Mod/Installer/Update my mod.sh"\n'
+                        'Choose 1, then enter your private owner/repository and a Contents: read token.\n'
+                        'Close Resonance. The installer detects the game and creates a desktop shortcut.\n'
+                        'Settings/backups/helper stay in Downloads/FFR Mod/Deck Sync.\n'
+                        'See the project README for private setup and cycling Steam launch options.\n')
     return metadata
 
 

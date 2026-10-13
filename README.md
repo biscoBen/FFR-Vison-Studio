@@ -53,6 +53,53 @@ exe next to the engine and the data packs.
 
 ## Steam Deck / SteamOS
 
+### Build on PC, install on Deck (recommended)
+
+Studio's **Steam Deck sync** panel publishes a finished mod to **your own private GitHub repository**.
+The Deck downloads and installs that package without running Studio, downloading the engine or rebuilding assets.
+Personal publishing starts **off**, with no destination or credentials shipped in the public fork. Ordinary builds
+and installs never upload, even when personal publishing is enabled. Each person configures their own destination.
+
+1. On your PC, open **Set up private sync**. Use its links to create a **private** repository in your GitHub account
+   (for example, `Sephira-Deck-Mods`) and **initialize it with a README**. Create a fine-grained token for only that
+   repository, granting **Contents: read and write**. Enter `owner/name` and the token, then **Verify & enable**.
+   Studio rejects public repositories, the program fork and repositories owned by a different account.
+2. Edit your setup as usual, then click **Build & publish to Deck**. Keep Studio open until it reports success.
+   The package comes from that successful, verified build. It contains the three compiled mod files and the working
+   character-cycling loader/scripts when cycling is enabled. Credentials, raw Studio settings, source sprite packs,
+   game files and saves are excluded. Releases stay drafts until the uploaded checksum is verified.
+3. On the Deck, download the small **Resonance-Deck-Sync.zip** from the latest tested release and extract it into
+   **Downloads/FFR Mod/Installer**. In Desktop Mode, run:
+
+   `bash "$HOME/Downloads/FFR Mod/Installer/Update my mod.sh"`
+
+4. Enter the same private repository and a separate fine-grained token with **Contents: read**. Close Resonance.
+   The installer detects Steam libraries, including SD cards; if multiple installs exist it asks which game folder
+   to use. It downloads your most recently published complete package and creates an **Update my Resonance mod**
+   desktop/menu shortcut. You can use that shortcut for later downloads while your PC is off.
+
+PC tokens live in **Windows Credential Manager**, separate from the local destination/settings file. Deck tokens
+can be remembered in **KWallet** or **Secret Service** if available; otherwise the installer prompts each time and
+stores no token. Tokens never appear in a ZIP, public repository, command-line argument or saved settings file.
+The setup dialog and Deck menu include a **Forget token** action. Nothing is uploaded on startup.
+
+Deck helper, settings and backups are kept in **Downloads/FFR Mod/Deck Sync**. Only owned files are replaced;
+unrelated mods are preserved. Turning cycling off in your PC build removes its previously synced runtime files.
+The Deck menu can restore the files that existed before syncing, and an interrupted install is rolled back on the
+next run. Changed files belonging to another runtime are preserved and reported rather than overwritten.
+Checksums must match the game version used for the PC build. Update both games and rebuild after a game update.
+
+When cycling is included, the installer prints the required Steam launch option:
+
+`WINEDLLOVERRIDES="dwmapi=n,b" %command%`
+
+Set it on **Resonance**, preserving any other launch options you use. The runtime comes from your working PC
+installation; real UE4SS/Proton gameplay compatibility still needs a first Deck test. Package transfer does not
+change saves. The connected GitHub integration cannot create personal repositories, so repository/token creation
+is a one-time local setup through the dialog's GitHub links.
+
+### Optional: run Studio itself on Deck
+
 [Download the CI-checked launcher package / run 38446853083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38446853083/Sephira-Studio-Test.zip)
 (code `b520392`, published 2026-10-13). Linux and Windows checks passed; the first real Deck test is pending.
 
@@ -536,6 +583,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Steam libraries/SD cards, update fallback, process detection across prefixes and mod installation. Test real Deck rendering
   and controller use; preserve the separate Studio data and Proton prefix. Confirm full-game Pak paths and runtime-loader
   compatibility on SteamOS independently of Windows CI.
+- [ ] **Private PC-to-Deck mod sync.** Recheck full-game Pak filenames and version fingerprint, private GitHub release
+  APIs and digests, local credential managers, Steam library detection, owned backup/recovery and runtime dependencies.
+  Test UE4SS under the game's Proton with the native `dwmapi` override. Keep destinations/credentials local and
+  personal publishing opt-in; never bundle personal packages/configs into the public program release.
 - [ ] **Installation, updater and release validation.** Verify full-game detection, engine/host compatibility,
   rebuild/install, restore and config migration with a separate test profile. Decide whether demo support remains and
   identify supported game builds. Run the batch animation audit and required Windows release gates, followed by

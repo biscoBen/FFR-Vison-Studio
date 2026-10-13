@@ -86,6 +86,10 @@ class AppState extends ChangeNotifier {
   String? selectedKey;
   bool dirty = false;
   JsonMap? buildState; // /api/build/log
+  JsonMap deckSync = {'enabled': false, 'repository': '', 'hasToken': false};
+  bool get deckWorking => deckSync['running'] == true;
+  bool _publishAfterBuild = false;
+  Timer? _deckTimer;
   Timer? _buildTimer;
   Timer? _statusTimer;
   String? notice; // one-line message in the header for a few seconds
@@ -1079,21 +1083,64 @@ class AppState extends ChangeNotifier {
   // ---------------------------------------------------------------- build / install
   bool get building => buildState?['running'] == true;
 
-  Future<void> startBuild({required bool install}) => _withRoster(() async {
+  Future<void> refreshDeckSync() async {
+    deckSync = await api!.deckSyncStatus();
+    notifyListeners();
+  }
+
+  Future<void> configureDeckSync({required bool enabled, required String repository, String? token}) async {
+    deckSync = await api!.configureDeckSync(enabled: enabled, repository: repository.trim(), token: token);
+    notifyListeners();
+  }
+
+  Future<void> forgetDeckToken() async {
+    deckSync = await api!.forgetDeckToken();
+    notifyListeners();
+  }
+
+  Future<void> _publishDeck() async {
     try {
-      if (building) { throw StateError('A build is already running.'); }
+      await api!.publishDeckMod();
+      deckSync = {...deckSync, 'running': true, 'result': null, 'message': 'Publishing your finished mod...'};
+      notifyListeners();
+      _deckTimer?.cancel();
+      _deckTimer = Timer.periodic(const Duration(milliseconds: 1200), (timer) async {
+        try {
+          await refreshDeckSync();
+          if (!deckWorking) {
+            timer.cancel();
+            showNotice(deckSync['message']?.toString() ?? 'Publishing finished.');
+          }
+        } catch (_) { timer.cancel(); deckSync = {...deckSync, 'running': false}; notifyListeners(); }
+      });
+    } catch (e) { showNotice(e.toString()); }
+  }
+
+  Future<void> startBuild({required bool install, bool publishToDeck = false}) => _withRoster(() async {
+    try {
+      if (building || deckWorking) { throw StateError('A build or publish is already running.'); }
+      if (publishToDeck && (deckSync['enabled'] != true || deckSync['hasToken'] != true)) {
+        throw StateError('Set up and enable your private Deck sync first.');
+      }
       await _savePending();
       await api!.build(install: install);
     } catch (e) {
       showNotice(e.toString()); return;
     }
     buildState = {'running': true, 'log': <String>[], 'stage': 'Starting'};
+    _publishAfterBuild = publishToDeck;
     notifyListeners();
     _buildTimer?.cancel();
     _buildTimer = Timer.periodic(const Duration(milliseconds: 1200), (t) async {
       try {
         buildState = await api!.buildLog();
-        if (buildState?['running'] != true) { t.cancel(); await refreshStatus(); }
+        if (buildState?['running'] != true) {
+          t.cancel();
+          final publish = _publishAfterBuild && buildState?['result'] == 'ok';
+          _publishAfterBuild = false;
+          await refreshStatus();
+          if (publish) { await _publishDeck(); }
+        }
       } catch (_) {}
       notifyListeners();
     });
@@ -1118,7 +1165,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> shutdown() async {
     _stopping = true;
-    _buildTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
+    _buildTimer?.cancel(); _deckTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
     await save();
     await engine?.stop();
   }
@@ -1126,7 +1173,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _stopping = true;
-    _buildTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
+    _buildTimer?.cancel(); _deckTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
     engine?.stop();
     acquisitionLocations.dispose();
     super.dispose();

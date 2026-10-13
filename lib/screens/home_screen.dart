@@ -8,6 +8,7 @@ import '../state/app_state.dart';
 import '../services/sephira_visions.dart';
 import 'add_unit_dialog.dart';
 import 'build_status.dart';
+import 'deck_sync_panel.dart';
 import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
 import 'native_portrait.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
+    final busy = app.building || app.deckWorking;
     final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.fieldLeader;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
@@ -73,7 +75,7 @@ class HomeScreen extends StatelessWidget {
                     key: const Key('show-unverified-skills'), contentPadding: EdgeInsets.zero,
                     title: Text('Show unverified skills', style: Guide.text()),
                     value: app.showUnverifiedSkills,
-                    onChanged: app.building || app.api == null ? null : (value) async {
+                    onChanged: busy || app.api == null ? null : (value) async {
                       try { await app.setAbilityModes(showUnverified: value); } catch (e) { app.showNotice('$e'); }
                     },
                   )),
@@ -81,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                     key: const Key('use-ability-changes'), contentPadding: EdgeInsets.zero,
                     title: Text('Use our skill changes', style: Guide.text()),
                     value: app.useAbilityChanges,
-                    onChanged: !app.showUnverifiedSkills || app.building || app.api == null ? null : (value) async {
+                    onChanged: !app.showUnverifiedSkills || busy || app.api == null ? null : (value) async {
                       try { await app.setAbilityModes(useChanges: value == true); } catch (e) { app.showNotice('$e'); }
                     },
                   )),
@@ -99,7 +101,7 @@ class HomeScreen extends StatelessWidget {
                       ? 'Uses the preset spell and attack effects. Turn off to try original source visuals; missing demo effects may stay blank. Rebuild/install to apply.'
                       : 'Uses original source visuals. MP, power, effects and saved kits are kept. Turn on and rebuild/install to restore the borrowed visuals.', style: Guide.small()),
                   value: app.useSephiraBorrowedVisuals,
-                  onChanged: app.building || app.engineDown || app.api == null ? null : (value) async {
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setSephiraBorrowedVisuals(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
@@ -109,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                   title: Text('Crystal Fina cave', style: Guide.text()),
                   subtitle: Text('Adds a cave north of the road between Earth Shrine and Mitra. A crystal portal leads to the glowing room. Crystal Fina grants her vision through the native acquisition screen, then disappears; you return to the stone cave. Adds her bundled profile if needed. Install after switching.', style: Guide.small()),
                   value: app.crystalCave,
-                  onChanged: app.building || app.api == null ? null : (value) async {
+                  onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCave(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
@@ -118,7 +120,7 @@ class HomeScreen extends StatelessWidget {
                   title: Text('Cycle walking character (LB / L1)', style: Guide.text()),
                   subtitle: Text('Cycles the active party’s field appearances while freely walking. F6 also works. Battle models stay separate; story appearances return for events. Requires the UE4SS loader prepared by the field-reference helper. Rebuild/install after switching.', style: Guide.small()),
                   value: app.fieldLeader,
-                  onChanged: app.building || app.api == null ? null : (value) async {
+                  onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setFieldLeader(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
@@ -127,7 +129,7 @@ class HomeScreen extends StatelessWidget {
                   title: Text('Shop practice battle', style: Guide.text()),
                   subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle with three level 7–8 enemies after her dialogue. Install after switching.', style: Guide.small()),
                   value: app.testingPracticeBattle,
-                  onChanged: app.building || app.api == null ? null : (value) async {
+                  onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
@@ -136,24 +138,26 @@ class HomeScreen extends StatelessWidget {
                   title: Text('One-battle MR for testing', style: Guide.text()),
                   subtitle: Text('Equipped visions earn the bounded native MR completion reward per reward-bearing victory. Does not change awakening ranks.', style: Guide.small()),
                   value: app.testingMaxMr,
-                  onChanged: app.building || app.api == null ? null : (value) async {
+                  onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setTestingMaxMr(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 Text('Drag default visions into Added visions to acquire the originals at the next battle start. Drag them back to stop. Install after changes; test on a clean save without saving, then disable and reinstall before reloading.', style: Guide.small()),
                 const SizedBox(height: 14),
                 Row(children: [
-                  GoButton(app.building ? 'Working' : 'Install into the game', busy: app.building, onPressed: !canBuild || app.gameRunning || app.building || app.sephiraWorking ? null : () => app.startBuild(install: true)),
+                  GoButton(busy ? 'Working' : 'Install into the game', busy: busy, onPressed: !canBuild || app.gameRunning || busy || app.sephiraWorking ? null : () => app.startBuild(install: true)),
                 ]),
                 const SizedBox(height: 10),
                 Wrap(spacing: 8, runSpacing: 8, children: [
-                  GuideButton('Build without installing', onPressed: !canBuild || app.building || app.sephiraWorking ? null : () => app.startBuild(install: false)),
-                  GuideButton('Install the last build', onPressed: app.gameRunning || app.building || app.sephiraWorking ? null : app.installLast),
+                  GuideButton('Build without installing', onPressed: !canBuild || busy || app.sephiraWorking ? null : () => app.startBuild(install: false)),
+                  GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : app.installLast),
                   GuideButton('Advanced studio', icon: Icons.open_in_new, onPressed: app.api == null ? null : () => launchUrl(Uri.parse(app.api!.advancedUrl()))),
                 ]),
                 const SizedBox(height: 6),
                 Text('Advanced opens the full studio in your browser: Brave Exvius kit imports, sprite settings, animation edits. It works on the same units.', style: Guide.small()),
                 if (app.buildState != null) ...[const SizedBox(height: 18), const BuildStatus()],
+                const SizedBox(height: 22),
+                DeckSyncPanel(canBuild: canBuild),
                 const SizedBox(height: 22),
                 Band('Your game files', color: Guide.ink),
                 Box(
@@ -163,7 +167,7 @@ class HomeScreen extends StatelessWidget {
                         : 'Nothing of the studio\'s is in the game folder right now. Installing adds three files to FFRS/Content/Paks/~mods; the game\'s own files are never touched.', style: Guide.text()),
                     const SizedBox(height: 10),
                     Row(children: [
-                      GuideButton('Restore the original game', icon: Icons.history, danger: true, onPressed: app.gameRunning || app.building || app.api == null ? null : () => showRestoreDialog(context)),
+                      GuideButton('Restore the original game', icon: Icons.history, danger: true, onPressed: app.gameRunning || busy || app.api == null ? null : () => showRestoreDialog(context)),
                       const SizedBox(width: 12),
                       Text(app.backups == 0 ? 'no backups yet' : '${app.backups} backup${app.backups == 1 ? '' : 's'} kept', style: Guide.small()),
                     ]),
@@ -178,7 +182,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false, bool isSephira = false}) => DragTarget<int>(
-        onWillAcceptWithDetails: (details) => !app.building && !isParty && !isSephira &&
+        onWillAcceptWithDetails: (details) => !(app.building || app.deckWorking) && !isParty && !isSephira &&
             entries.every((u) => u['id'] != details.data),
         onAcceptWithDetails: (details) async {
           try {
@@ -192,7 +196,7 @@ class HomeScreen extends StatelessWidget {
           Band(title, trailing: isSephira ? Switch(
             key: const Key('sephira-enabled'),
             value: app.sephiraEnabled,
-            onChanged: app.building || app.sephiraWorking || app.api == null ? null : (value) async {
+            onChanged: (app.building || app.deckWorking) || app.sephiraWorking || app.api == null ? null : (value) async {
               try { await app.setSephiraEnabled(value); } catch (e) { app.showNotice('$e'); }
             },
           ) : Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
@@ -205,11 +209,11 @@ class HomeScreen extends StatelessWidget {
                   : 'Off. Presets and edits are kept; build/install to remove them from the game.', style: Guide.small()),
               Wrap(spacing: 8, children: [
                 GuideButton('Restore missing', key: const Key('sephira-restore-missing'),
-                  onPressed: app.building || app.sephiraWorking || app.api == null ? null : () async {
+                  onPressed: (app.building || app.deckWorking) || app.sephiraWorking || app.api == null ? null : () async {
                     try { await app.restoreSephira(); } catch (e) { app.showNotice('$e'); }
                   }),
                 GuideButton('Reset all presets', key: const Key('sephira-reset-all'),
-                  onPressed: app.building || app.sephiraWorking || app.api == null ? null : () => confirmResetSephira(context, app)),
+                  onPressed: (app.building || app.deckWorking) || app.sephiraWorking || app.api == null ? null : () => confirmResetSephira(context, app)),
               ]),
             ]),
           ),
@@ -258,10 +262,10 @@ class HomeScreen extends StatelessWidget {
       shape: Border.fromBorderSide(Guide.frame),
       items: [PopupMenuItem(
         value: 'remove',
-        enabled: !app.building && app.api != null,
+        enabled: !(app.building || app.deckWorking) && app.api != null,
         child: Text('Remove vision', style: Guide.text()),
       ), if (SephiraVisions.member(unit)) PopupMenuItem(
-        value: 'reset', enabled: !app.building && !app.sephiraWorking && app.api != null,
+        value: 'reset', enabled: !(app.building || app.deckWorking) && !app.sephiraWorking && app.api != null,
         child: Text('Reset to preset', style: Guide.text()),
       )],
     );
@@ -312,7 +316,7 @@ class HomeScreen extends StatelessWidget {
     if (!native) { return card; }
     return Draggable<int>(
       key: ValueKey('drag-native-${u['id']}'), data: u['id'] as int,
-      maxSimultaneousDrags: app.building ? 0 : 1,
+      maxSimultaneousDrags: (app.building || app.deckWorking) ? 0 : 1,
       feedback: Material(child: SizedBox(width: 280, height: 128, child: card)),
       childWhenDragging: Opacity(opacity: 0.4, child: card),
       child: card,

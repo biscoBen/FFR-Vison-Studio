@@ -27,6 +27,7 @@ sys.modules['_ffr_party_voices'] = module('_ffr_party_voices', ROOT / 'assets/ex
 sys.modules['_ffr_overworld'] = module('_ffr_overworld', ROOT / 'assets/existing_visions/payload/_ffr_overworld.py')
 sys.modules['_ffr_field_leader'] = module('_ffr_field_leader', ROOT / 'assets/existing_visions/payload/_ffr_field_leader.py')
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
+sys.modules['_ffr_deck_sync'] = module('_ffr_deck_sync', ROOT / 'assets/existing_visions/payload/_ffr_deck_sync.py')
 sys.modules['_ffr_crystal_cave'] = module('_ffr_crystal_cave', ROOT / 'assets/existing_visions/payload/_ffr_crystal_cave.py')
 sys.modules['_ffr_ability_modes'] = module('_ffr_ability_modes', ROOT / 'assets/existing_visions/payload/_ffr_ability_modes.py')
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
@@ -183,10 +184,12 @@ class NativeVisionTests(unittest.TestCase):
                 def add(func): routes[route] = func; return func
                 return add
             put = get
+            post = get
+            delete = get
         class HTTPException(Exception):
             def __init__(self, status_code, detail): super().__init__(detail); self.status_code = status_code
         with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {
-            'fastapi': SimpleNamespace(HTTPException=HTTPException),
+            'fastapi': SimpleNamespace(HTTPException=HTTPException, Request=object),
             'fastapi.responses': SimpleNamespace(FileResponse=object),
         }):
             native.register(App(), {'ROOT': root, 'ffr_catalog': SimpleNamespace(load=lambda: catalog, rows=lambda rel: copy.deepcopy(game[rel]))})
@@ -449,6 +452,8 @@ class NativeInstallerTests(unittest.TestCase):
         self.builder.write_bytes(fina_installer.hook_builder((ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()))
         self.server = self.root / installer.SOURCES[1]; self.server.parent.mkdir(parents=True)
         self.server.write_bytes(b'from fastapi import FastAPI\napp = FastAPI()\ndef keep(): return "upstream"\n'
+            b'def run_build(install):\n    state.update(running=True)\n    state["result"] = "ok"\n    state["stage"] = "Done"; state["running"] = False\n'
+            b'async def build(req):\n    threading.Thread(target=run_build, args=(False,), daemon=True).start()\n    return {"ok": True}\n'
             b'def install_files(log=print):\n    paks = game_paks()\n    st = _game_state(); bdir = "backup"\n    return {"files": 3}\n'
             b'def restore_game(backup=None):\n    paks = game_paks()\n    game = _game_root(paks)\n    if backup:\n        return {"backup": backup}\n    return {"backup": None}\n')
         self.verifier = self.root / installer.SOURCES[2]

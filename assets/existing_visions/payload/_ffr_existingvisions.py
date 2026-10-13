@@ -254,6 +254,8 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 
 
 def register(app, env):
+    import _ffr_deck_sync
+    _ffr_deck_sync.register(app, env)
     import _ffr_party
     import _ffr_testing
     import _ffr_ability_modes

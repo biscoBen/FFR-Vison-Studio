@@ -7,6 +7,8 @@ on:
       - "scripts/package_test_studio.py"
       - "scripts/test_package_test_studio.py"
       - "scripts/test_steam_deck_launcher.py"
+      - "scripts/test_deck_sync.py"
+      - "assets/existing_visions/payload/_ffr_deck_sync.py"
       - ".github/workflows/steam-deck.yml"
   pull_request:
     paths:
@@ -14,6 +16,8 @@ on:
       - "scripts/package_test_studio.py"
       - "scripts/test_package_test_studio.py"
       - "scripts/test_steam_deck_launcher.py"
+      - "scripts/test_deck_sync.py"
+      - "assets/existing_visions/payload/_ffr_deck_sync.py"
       - ".github/workflows/steam-deck.yml"
 permissions:
   contents: read
@@ -24,8 +28,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate the Linux startup wrapper
-        run: bash -n "steam-deck/Start Studio Test.sh"
+        run: |
+          bash -n "steam-deck/Start Studio Test.sh"
+          bash -n "steam-deck/Update my mod.sh"
       - name: Test Linux updater transactions and startup
         run: python3 -m unittest discover -s scripts -p "test_steam_deck_launcher.py" -v
       - name: Test Windows and Linux package layout
         run: python3 -m unittest discover -s scripts -p "test_package_test_studio.py" -v
+      - name: Test private mod transfer and owned installation on Linux
+        run: python3 -m unittest discover -s scripts -p "test_deck_sync.py" -v
