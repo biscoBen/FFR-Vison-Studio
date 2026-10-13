@@ -28,6 +28,12 @@ def package(app, output, commit, run_id, branch="Sephira's-Update", build=15):
             if path.is_file():
                 # Windows command files use CRLF even when checked out on Linux.
                 bundle.writestr(path.name, path.read_text().replace("\r\n", "\n").replace("\n", "\r\n"))
+        deck = launchers.parent / "steam-deck"
+        for name in ("Start Studio Test.sh", "Studio Deck Launcher.py"):
+            info = zipfile.ZipInfo(name)
+            info.create_system = 3
+            info.external_attr = (0o100755 << 16)
+            bundle.writestr(info, (deck / name).read_text(encoding="utf-8").replace("\r\n", "\n"))
         bundle.writestr("test-build.json", json.dumps(metadata, indent=2) + "\n")
     output.with_suffix(".json").write_text(json.dumps(metadata, indent=2) + "\n")
     return metadata

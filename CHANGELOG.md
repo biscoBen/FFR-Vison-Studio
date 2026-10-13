@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add **Start Studio Test.sh** and a Python Steam Deck updater/launcher to test ZIPs.
+  Run in Desktop Mode using an installed Proton, with separate persistent Studio data
+  and Proton prefix. The desktop/menu shortcut checks the same tested branch releases
+  as Windows, verifies SHA-256 and embedded metadata, and retains the cached app after
+  failed/offline updates. Detect additional Steam libraries/SD cards and support a saved
+  or explicit Proton choice; log Proton startup and show the game's Windows Z: path.
+  Preserve native Windows launchers and keep their CRLF formatting; Deck scripts use LF.
+- Add automated coverage for channel selection, package layout, checksum/metadata failures,
+  interrupted updates, atomic state recovery, saved-data/prefix preservation, offline
+  startup, ZIP traversal/symlinks, Steam/Proton detection and Windows launch arguments.
+  Live Deck rendering, engine preparation and game installation remain unverified.
+
 ## Published reversible Sephira skill visuals — 2026-10-07
 
 Code: [`d35ceca`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d35ceca1dfdfc0982d8aad76462d3cdb9c453877).

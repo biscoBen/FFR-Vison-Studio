@@ -50,6 +50,41 @@ If GitHub Actions is disabled on the fork, enable it from the repository's Actio
 download are assembled by the packaging run in the project repository, which passes the same flags and ships the
 exe next to the engine and the data packs.
 
+
+## Steam Deck / SteamOS
+
+Use the Windows test package through Proton. Its Windows command launcher does not run natively on SteamOS;
+the package now includes **Start Studio Test.sh** and **Studio Deck Launcher.py** for Desktop Mode.
+
+1. Switch to **Desktop Mode**. In Steam, enable the **Tools** library filter and install **Proton Experimental**.
+2. Download the latest tested **Sephira-Studio-Test.zip** from this fork's test releases and extract its contents into
+   **Downloads/Sephira-Studio-Test** (the scripts and **App** folder should be directly inside that folder).
+3. Open **Konsole** and run:
+
+   `bash "$HOME/Downloads/Sephira-Studio-Test/Start Studio Test.sh"`
+
+The launcher creates a **Sephira Studio Test** desktop/menu shortcut. Use that shortcut afterward; it checks the
+same validated test channel as Windows on each launch, verifies the package's SHA-256 and embedded identity,
+and starts Studio through your installed Proton. An unavailable, interrupted or invalid update keeps the cached app.
+Close Studio before reopening the shortcut for an update. Keep the installation folder in place.
+
+Your units/settings/engine stay in **Studio Test Data/FFR Vision Studio**. Studio has its own **Proton** prefix beside
+that folder; the launcher's updates do not replace either directory or touch the game's Proton prefix. Native Steam
+and additional-library/SD-card Proton installations are detected. A saved selection is reused; an explicit
+alternative can be chosen with `--proton "/path/to/Proton folder"`.
+
+During first setup, if Studio does not find Resonance, use the game-folder path printed in Konsole. Windows sees
+Linux files through drive **Z:**; the usual internal-storage path is
+**Z:\home\deck\.local\share\Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO**. SD-card paths start with
+**Z:\run\media**. Close Resonance before installing mods. Studio's Windows process detection may not see a game
+running in another Proton prefix.
+
+The launcher uses the existing Windows app and engine. Live Steam Deck rendering, engine preparation and mod
+installation need testing on the Deck; CI tests updater transactions, package layout and Proton launch arguments,
+not actual Proton playback. If startup fails, collect **logs/proton-console.log** and **logs/steam-0.log** from the
+installation folder. No sudo, SteamOS read-only changes, Proton download, or Steam shortcut-database edits are made.
+
+
 ## Cloud builds
 
 Windows users can install the separate test copy from a `Sephira-Studio-Test.zip` package. Extract it and run
@@ -494,6 +529,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Custom IDs, capacity and configs.** Check reserved skill/unit/map/event/asset ranges against newly occupied IDs.
   Revalidate the 64-added-unit limit against engine/table constraints. Preserve old configs, separate appearance choices
   and selected cave snapshots.
+- [ ] **Steam Deck / Proton launcher.** Recheck stock/GE Proton selection, first engine setup, native game-folder paths,
+  Steam libraries/SD cards, update fallback, process detection across prefixes and mod installation. Test real Deck rendering
+  and controller use; preserve the separate Studio data and Proton prefix. Confirm full-game Pak paths and runtime-loader
+  compatibility on SteamOS independently of Windows CI.
 - [ ] **Installation, updater and release validation.** Verify full-game detection, engine/host compatibility,
   rebuild/install, restore and config migration with a separate test profile. Decide whether demo support remains and
   identify supported game builds. Run the batch animation audit and required Windows release gates, followed by

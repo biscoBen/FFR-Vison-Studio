@@ -21,6 +21,11 @@ class TestPackageTests(unittest.TestCase):
                 for name in ['Start Studio Test.cmd', 'Launch Studio Test.ps1', 'Update Studio Test.ps1', 'Import Official Visions.ps1', 'App/FFR Vision Studio.exe']:
                     self.assertIn(name, archive.namelist())
                 self.assertIn(b'\r\n', archive.read('Start Studio Test.cmd'))
+                self.assertIn("Start Studio Test.sh", archive.namelist())
+                self.assertIn("Studio Deck Launcher.py", archive.namelist())
+                self.assertNotIn(b"\r\n", archive.read("Start Studio Test.sh"))
+                self.assertEqual(archive.getinfo("Start Studio Test.sh").external_attr >> 16 & 0o777, 0o755)
+                compile(archive.read("Studio Deck Launcher.py"), "packaged_deck_launcher", "exec")
                 self.assertFalse(any(name.startswith('Studio Test Data/') for name in archive.namelist()))
             self.assertEqual(json.loads(output.with_suffix('.json').read_text()), metadata)
 
