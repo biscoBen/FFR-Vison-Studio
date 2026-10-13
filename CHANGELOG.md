@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published private PC-to-Deck mod sync — 2026-10-13
+
+Code: [`8ce9507`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8ce9507e6c3ce29e2820078ab9d43a23094abc71).
+[Verified Windows test release / run 38457270486](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38457270486).
+[Small Deck installer ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Resonance-Deck-Sync.zip).
+[Linux checks / run 38457270515](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/38457270515).
+
 - Add **Steam Deck sync** with local, opt-in private-repository setup and **Build & publish to Deck**.
   Ordinary installs/builds never upload. PC tokens use Windows Credential Manager; the Deck uses KWallet/Secret
   Service or prompts without saving. Validate that the destination is private and belongs to the publishing account.
@@ -25,6 +32,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Add transfer/privacy, checksum/channel, credential, rollback/recovery, runtime ownership and UI/API checks; exercise
   the managed extension and credential store in the genuine frozen Windows engine. Live private publishing with the
   user's token and actual Deck/UE4SS gameplay remain unverified. Add the workflow to the full-game checklist.
+
+- Validation: clean analysis; 241 Flutter tests plus the real frozen-engine Windows startup/credential check passed.
+  All 333 Python checks passed on Windows (five platform skips) and Linux (four platform skips). Windows passed
+  bundle checks, 12 launcher checks and 10 import checks; Linux also passed the launcher, package and transfer jobs.
+  Downloaded both published ZIPs and checked SHA-256, commit/run metadata, embedded helper bytes and executable LF
+  wrappers. The standalone downloaded helper passed launch/help and restore smoke checks. Master remains unchanged.
+- Final fixes include the bundle allowlist/material background found by the full suite and changing game folders only
+  after restoring the previous install. First recorded complete candidate to verified downloads: **18m38s**, including
+  local checks, dependency setup, corrections, waiting, both Windows push builds and download verification. Final Windows
+  CI took **5m08s** with **8m42s** runner time; the first Windows build used **10m18s** runner time. Both Linux jobs
+  used **6s** each. An early helper call raced push-run visibility and dispatched a duplicate, which was cancelled;
+  it used **2m54s** runner time and published nothing. The final helper reused the matching push run and verified its
+  download through the authenticated test-release fallback. Publication notes use the cheap docs-only checks.
 
 ## Published Steam Deck launcher (CI checked) — 2026-10-13
 

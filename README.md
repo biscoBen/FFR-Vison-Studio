@@ -55,6 +55,12 @@ exe next to the engine and the data packs.
 
 ### Build on PC, install on Deck (recommended)
 
+[Download the tested PC app](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Sephira-Studio-Test.zip)
+or update with your existing Windows test shortcut.
+[Download the small Deck installer](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Resonance-Deck-Sync.zip)
+(code `8ce9507`, run **38457270486**, published 2026-10-13). Automated Windows/Linux checks passed; first live
+private PC-to-Deck publishing/gameplay remains pending.
+
 Studio's **Steam Deck sync** panel publishes a finished mod to **your own private GitHub repository**.
 The Deck downloads and installs that package without running Studio, downloading the engine or rebuilding assets.
 Personal publishing starts **off**, with no destination or credentials shipped in the public fork. Ordinary builds
@@ -100,8 +106,8 @@ is a one-time local setup through the dialog's GitHub links.
 
 ### Optional: run Studio itself on Deck
 
-[Download the CI-checked launcher package / run 38446853083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38446853083/Sephira-Studio-Test.zip)
-(code `b520392`, published 2026-10-13). Linux and Windows checks passed; the first real Deck test is pending.
+[Download the CI-checked launcher package / run 38457270486](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Sephira-Studio-Test.zip)
+(code `8ce9507`, published 2026-10-13). Linux and Windows checks passed; the first real Deck test is pending.
 
 Use the Windows test package through Proton. Its Windows command launcher does not run natively on SteamOS;
 the package now includes **Start Studio Test.sh** and **Studio Deck Launcher.py** for Desktop Mode.
