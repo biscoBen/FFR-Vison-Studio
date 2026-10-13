@@ -636,8 +636,10 @@ def install(root, game, staging, manifest, repo, running=game_running):
     state_path = checked(root, 'installed-state.json')
     previous_raw = state_path.read_bytes() if state_path.exists() else None
     previous = read_json(state_path, {'schema': 1, 'game': str(game), 'files': {}, 'originals': {}})
-    if (previous.get('schema') != 1 or previous.get('game') != str(game)
-            or not isinstance(previous.get('files'), dict) or not isinstance(previous.get('originals'), dict)):
+    if (previous.get('schema') != 1 or not isinstance(previous.get('files'), dict)
+            or not isinstance(previous.get('originals'), dict)):
+        raise SyncError('Unsupported saved installation record.')
+    if previous.get('game') != str(game) and (previous['files'] or previous['originals']):
         raise SyncError('The saved install belongs to another game folder. Restore it before switching folders.')
     old, new = previous['files'], manifest['files']
     originals = dict(previous['originals'])
@@ -831,7 +833,8 @@ def deck_main():
                     return 0
                 if action == '3':
                     repo = repository(input('Private repository (owner/name): ').strip())
-                    cfg = {}
+                    choice = input('Resonance game folder (Enter to detect Steam libraries): ').strip().strip('"')
+                    cfg = {'game': choice} if choice else {}
                 elif action != '1':
                     raise SyncError('Choose one of the listed actions.')
             repo = repository(repo or input('Your private GitHub repository (owner/name): ').strip())

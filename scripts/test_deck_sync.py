@@ -261,6 +261,23 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(other.read_bytes(), b'other mod')
         self.assertFalse(sync.restore(state, running=lambda: False))
 
+    def test_changing_game_folder_requires_restore_then_allows_the_new_folder(self):
+        _, _, _, _, manifest, stage, first = fixture(self.base)
+        second = self.base / 'game-on-another-drive'
+        marker = second / sync.MARKER
+        marker.parent.mkdir(parents=True)
+        marker.write_bytes((first / sync.MARKER).read_bytes())
+        state = self.base / 'state'
+        sync.install(state, first, stage, manifest, 'tester/private-mods', running=lambda: False)
+        with self.assertRaisesRegex(sync.SyncError, 'Restore it before switching'):
+            sync.install(state, second, stage, manifest, 'tester/private-mods', running=lambda: False)
+        self.assertTrue(sync.restore(state, running=lambda: False))
+        sync.install(state, second, stage, manifest, 'tester/private-mods', running=lambda: False)
+        self.assertFalse((first / sync.PAKS[0]).exists())
+        self.assertTrue((second / sync.PAKS[0]).exists())
+        self.assertTrue(sync.restore(state, running=lambda: False))
+        self.assertFalse((second / sync.PAKS[0]).exists())
+
     def test_disabling_cycle_removes_owned_loader_scripts_and_keeps_other_mods(self):
         _, _, _, _, first, stage, game = fixture(self.base, cycling=True)
         state = self.base / 'state'
