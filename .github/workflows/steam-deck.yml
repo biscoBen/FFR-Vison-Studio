@@ -1,0 +1,31 @@
+name: Steam Deck launcher
+on:
+  push:
+    branches: ["Sephira's-Update"]
+    paths:
+      - "steam-deck/**"
+      - "scripts/package_test_studio.py"
+      - "scripts/test_package_test_studio.py"
+      - "scripts/test_steam_deck_launcher.py"
+      - ".github/workflows/steam-deck.yml"
+  pull_request:
+    paths:
+      - "steam-deck/**"
+      - "scripts/package_test_studio.py"
+      - "scripts/test_package_test_studio.py"
+      - "scripts/test_steam_deck_launcher.py"
+      - ".github/workflows/steam-deck.yml"
+permissions:
+  contents: read
+jobs:
+  linux-launcher:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate the Linux startup wrapper
+        run: bash -n "steam-deck/Start Studio Test.sh"
+      - name: Test Linux updater transactions and startup
+        run: python3 -m unittest discover -s scripts -p "test_steam_deck_launcher.py" -v
+      - name: Test Windows and Linux package layout
+        run: python3 -m unittest discover -s scripts -p "test_package_test_studio.py" -v

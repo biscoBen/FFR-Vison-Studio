@@ -223,10 +223,10 @@ def choose_proton(root, steam, libraries, explicit=None, home=None):
         except (OSError, ValueError):
             pass
     if not explicit:
-        for library in libraries:
-            choices.extend(sorted((library / "steamapps/common").glob("Proton*/proton"),
-                                  key=lambda p: ("Experimental" in p.parent.name,
-                                      [int(x) for x in re.findall(r"\d+", p.parent.name)]), reverse=True))
+        automatic = [p for library in libraries
+                     for p in (library / "steamapps/common").glob("Proton*/proton")]
+        choices.extend(sorted(automatic, key=lambda p: ("Experimental" in p.parent.name,
+                              [int(x) for x in re.findall(r"\d+", p.parent.name)]), reverse=True))
         if home:
             choices.extend(sorted((steam / "compatibilitytools.d").glob("*/proton"), reverse=True))
             choices.extend(sorted((home / ".local/share/Steam/compatibilitytools.d").glob("*/proton"), reverse=True))

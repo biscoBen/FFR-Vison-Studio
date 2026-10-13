@@ -75,8 +75,8 @@ alternative can be chosen with `--proton "/path/to/Proton folder"`.
 
 During first setup, if Studio does not find Resonance, use the game-folder path printed in Konsole. Windows sees
 Linux files through drive **Z:**; the usual internal-storage path is
-**Z:\home\deck\.local\share\Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO**. SD-card paths start with
-**Z:\run\media**. Close Resonance before installing mods. Studio's Windows process detection may not see a game
+`Z:\home\deck\.local\share\Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO`. SD-card paths start with
+`Z:\run\media`. Close Resonance before installing mods. Studio's Windows process detection may not see a game
 running in another Proton prefix.
 
 The launcher uses the existing Windows app and engine. Live Steam Deck rendering, engine preparation and mod

@@ -7,6 +7,8 @@ import os
 from pathlib import Path, PurePosixPath
 import shutil
 import stat
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -204,3 +206,50 @@ class DeckLauncherTests(unittest.TestCase):
             self.assertIn('" --root "', text)
             self.assertTrue((root / deck.LAUNCHER).is_file())
             self.assertTrue((home / ".local/share/applications/Sephira Studio Test.desktop").is_file())
+
+
+    @unittest.skipUnless(sys.platform == "linux", "Linux startup integration")
+    def test_linux_main_keeps_data_and_runs_proton_with_the_prepared_batch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory) / "home"; home.mkdir()
+            steam = home / ".local/share/Steam"
+            common = steam / "steamapps/common"; common.mkdir(parents=True)
+            game = common / "FINAL FANTASY RESONANCE DEMO"; game.mkdir()
+            proton = common / "Proton - Experimental/proton"; proton.parent.mkdir()
+            proton.write_text('#!/bin/sh\nprintf "%s\\n" "$STEAM_COMPAT_DATA_PATH" "$@"\n')
+            proton.chmod(0o755)
+            root = home / "Downloads/Studio test"; root.mkdir(parents=True)
+            update, _ = fixture(root, 1)
+            with zipfile.ZipFile(root / "fixture-1.zip") as bundle: bundle.extractall(root)
+            data = root / "Studio Test Data/FFR Vision Studio/settings.json"
+            data.parent.mkdir(parents=True); data.write_text("saved settings")
+            env = dict(os.environ)
+            with mock.patch.object(deck.Path, "home", return_value=home), mock.patch.object(
+                    deck, "update_or_cached", return_value={"build": update["build"], "folder": root}):
+                self.assertEqual(deck.main(["--root", str(root), "--no-shortcut"]), 0)
+            self.assertEqual(data.read_text(), "saved settings")
+            self.assertEqual(dict(os.environ), env)
+            self.assertEqual(deck.read_json(root / "deck-proton.json")["proton"], str(proton.resolve()))
+            output = (root / "logs/proton-console.log").read_text()
+            self.assertIn(str(root / "Proton"), output)
+            self.assertIn("cmd.exe", output)
+            batch = (root / "Launch Studio Deck.cmd").read_bytes()
+            self.assertIn(b"\r\n", batch)
+            self.assertIn(deck.wine_path(root / "App/FFR Vision Studio.exe").encode(), batch)
+
+    @unittest.skipUnless(sys.platform == "linux", "Linux file-lock integration")
+    def test_linux_lock_prevents_another_updater_until_studio_exits(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with deck.launch_lock(root):
+                with self.assertRaisesRegex(deck.LauncherError, "already running"):
+                    with deck.launch_lock(root):
+                        self.fail("A second updater entered the lock.")
+            with deck.launch_lock(root):
+                self.assertTrue((root / ".deck-launcher.lock").is_file())
+
+    @unittest.skipUnless(sys.platform == "linux", "Bash wrapper validation")
+    def test_linux_shell_wrapper_parses_and_requires_no_windows_command_interpreter(self):
+        wrapper = ROOT / "steam-deck/Start Studio Test.sh"
+        subprocess.run(["bash", "-n", str(wrapper)], check=True, capture_output=True)
+        self.assertIn('exec python3 "$studio_dir/Studio Deck Launcher.py"', wrapper.read_text())

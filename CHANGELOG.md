@@ -21,7 +21,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Add automated coverage for channel selection, package layout, checksum/metadata failures,
   interrupted updates, atomic state recovery, saved-data/prefix preservation, offline
   startup, ZIP traversal/symlinks, Steam/Proton detection and Windows launch arguments.
-  Live Deck rendering, engine preparation and game installation remain unverified.
+  A Linux CI job also checks real file locking, shell syntax and startup with a mock
+  Proton process. Live Deck rendering, engine preparation and game installation remain unverified.
 
 ## Published reversible Sephira skill visuals — 2026-10-07
 
