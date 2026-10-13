@@ -53,6 +53,9 @@ exe next to the engine and the data packs.
 
 ## Steam Deck / SteamOS
 
+[Download the CI-checked launcher package / run 38446853083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38446853083/Sephira-Studio-Test.zip)
+(code `b520392`, published 2026-10-13). Linux and Windows checks passed; the first real Deck test is pending.
+
 Use the Windows test package through Proton. Its Windows command launcher does not run natively on SteamOS;
 the package now includes **Start Studio Test.sh** and **Studio Deck Launcher.py** for Desktop Mode.
 

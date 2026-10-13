@@ -11,6 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Steam Deck launcher (CI checked) — 2026-10-13
+
+Code: [`b520392`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b520392bdb8a5df71f0b950669e3f66c7c862d48).
+[Windows test release / run 38446853083](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38446853083).
+[Linux launcher checks / run 38446853147](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/38446853147).
+
 - Add **Start Studio Test.sh** and a Python Steam Deck updater/launcher to test ZIPs.
   Run in Desktop Mode using an installed Proton, with separate persistent Studio data
   and Proton prefix. The desktop/menu shortcut checks the same tested branch releases
@@ -23,6 +29,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   startup, ZIP traversal/symlinks, Steam/Proton detection and Windows launch arguments.
   A Linux CI job also checks real file locking, shell syntax and startup with a mock
   Proton process. Live Deck rendering, engine preparation and game installation remain unverified.
+
+- Windows CI passed full Flutter analysis/tests, frozen-engine startup, bundle
+  verification, 304 Python tests (three Linux integration skips), 12 Windows launcher
+  checks, compilation and publication. Linux CI passed all 14 launcher tests and two
+  package tests, including shell syntax, real file locking and startup with a mock
+  Proton process. Test ZIPs include executable LF Deck scripts alongside CRLF Windows
+  launchers. Master remains unchanged.
+- Release commit/run, channel, asset URL and published SHA-256 metadata were checked.
+  The connected workspace failed to provision, so local checks and the usual download
+  helper could not run; CI supplied validation. No local ZIP checksum verification,
+  real Proton rendering, engine preparation or game installation is claimed. Use the
+  Deck logs for the first device test.
+- First recorded complete candidate to CI/release-identity verification: **16m00s**,
+  including the failed selector check, correction, Linux coverage and both automatic
+  Windows builds. Final Windows CI took **5m12s**, with **9m30s**
+  runner time; the earlier failed candidate used **7m35s** runner time.
+  Linux checks used **9s** runner time. Two code pushes, two automatic Windows
+  builds and one Linux run; no manual dispatch. Publication notes use the docs-only path.
 
 ## Published reversible Sephira skill visuals — 2026-10-07
 
