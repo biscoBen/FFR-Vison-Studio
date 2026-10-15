@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina Sanctum crystal test — 2026-10-15
+
+Code: [`fe46921`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fe4692168fc7916c3a3efec59df35ad1ac78c070).
+[Verified Windows test release / run 38771871918](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38771871918).
+
 - Add **Crystal Fina Test** beside the original cave switch. It uses the same entrance, portal, acquisition reward,
   ownership condition and stone-cave return, with Fina's native introductory `openarmidle2` pose inside private copies
   of the Sanctum crystal mesh and material. Retain the crystal's original glow/material parameters for this experiment;
@@ -18,6 +23,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Register the decorative shell on the acquisition actor, preserve its streamed mesh data and keep the existing NPC
   collision/interaction. Serializer checks use the supplied native assets; visibility through the unchanged material,
   component hiding and final framing still need an in-game test.
+- Validation: clean analysis; 243 Flutter checks and the separate real frozen-engine Windows startup check passed.
+  All 337 Python checks passed on Windows (five platform skips) and locally on Linux (four skips), along with the
+  bundle checks, 12 Windows launcher checks and 10 import checks. Native mesh/material/component serializer roundtrips
+  retained references, opaque data and effect parameters. Downloaded the published package, matched its commit/run
+  provenance and SHA-256, and compared all 25 managed extension files with the source candidate. Gameplay remains pending.
+- First complete candidate to verified download: **14m26s**, including dependency setup, corrections, checks, build
+  waiting and download verification. Windows CI took **7m49s** with **12m16s** runner time. The build helper reused the
+  automatic push run and its verified test-release download; no extra build was dispatched. Master stays unchanged.
 
 ## Published private PC-to-Deck mod sync — 2026-10-13
 

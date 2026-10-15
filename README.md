@@ -11,6 +11,14 @@ through the cave entrance or portal crystal. Scene placement and interaction rul
 [SCENE_PLACEMENT.md](SCENE_PLACEMENT.md). Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
 hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
 
+For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle,
+reuses the same vision/cave/reward, and displays Fina's native introductory floating pose inside private copies of the
+Sanctum crystal mesh and material. The crystal keeps its original glow and material effects; Fina's separate yellow
+introductory aura is omitted. Update Studio, rebuild/install and restart Resonance, then load a save without Crystal
+Fina already acquired. Her visibility inside the unchanged crystal material and final framing still need a gameplay test.
+[Verified test package / run 38771871918](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38771871918/Sephira-Studio-Test.zip)
+(code `fe46921`, published 2026-10-15).
+
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
 This repository is the app on its own: it needs nothing else on disk to build, and at runtime it talks only to the
