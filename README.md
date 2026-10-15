@@ -13,13 +13,14 @@ hides her afterward. The Windows package is verified; placement and the acquisit
 
 For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle,
 reuses the same vision/cave/reward, and displays Fina's native introductory floating pose inside private copies of the
-Sanctum crystal mesh and material. The test uses the game's native glass transmission material at low opacity,
-with reduced surface reflection and no normal-map/wave distortion. Both earlier opaque and masked materials hid her
-in live tests. The casing follows her sprite's billboard transform and measured pose center. Fina's separate yellow
-introductory aura is omitted. Update Studio, rebuild/install and restart Resonance, then load a save without Crystal
-Fina already acquired. Final transmission, sprite visibility and glass appearance still need an in-game test.
-[Verified test package / run 38785441302](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38785441302/Sephira-Studio-Test.zip)
-(code `1d2ad70`, published 2026-10-15).
+Sanctum crystal mesh and material. The test uses clearer native glass with reduced refraction, a smaller pose fitted
+against the casing's projected silhouette, and a slow turn applied only to the crystal. Fina stays steady. The earlier
+glass trial revealed her but heavily warped her image and removed the material's original turning; this update addresses
+both. The display center and acquisition route are retained, and Fina's separate yellow introductory aura is omitted.
+Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
+Final clarity, fit and turning still need an in-game comparison.
+[Verified test package / run 38795958251](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38795958251/Sephira-Studio-Test.zip)
+(code `20d27fc`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

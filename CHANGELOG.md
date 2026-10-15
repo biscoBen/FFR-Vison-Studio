@@ -11,13 +11,30 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina clarity, fit and turning test — 2026-10-15
+
+Code: [`20d27fc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/20d27fc0557b18849efc42670a920d499f54f688).
+[Verified Windows test release / run 38795958251](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38795958251).
+
 - Refine **Crystal Fina Test** after the glass trial: reduce image warping with the engine's refraction depth bias,
-  lower surface opacity and fit all three introductory idle frames within the rotating casing's projected silhouette.
-  Restore a slow casing-only turn with a private looping native sequence; keep Fina, interaction and collision steady.
-  Preserve the display center, original cave option and acquisition route. Record the engine controls and native component
-  serialization requirements in `SCENE_PLACEMENT.md`. Final clarity, fit and turning still need an in-game comparison.
+  lower surface opacity and reduce the introductory pose by about 23%. Check all three idle frames against the
+  casing's projected silhouette through a full turn. Preserve the display center and casing size.
+- Restore a slow casing-only turn with a private looping native sequence, bound to an owned pivot. Keep Fina,
+  interaction and collision steady, without camera cuts or movement-input restrictions. Preserve the original cave
+  option and acquisition route. Record engine controls, binding paths and native component serialization requirements
+  in `SCENE_PLACEMENT.md` and the full-game checklist. Final clarity, fit and turning still need an in-game comparison.
+- Validation: clean analysis, 243 Flutter checks and the separate fresh frozen-engine Windows startup check passed.
+  All 340 Python checks passed on Windows (five skips) and Linux (four skips), plus bundle verification, 12 launcher
+  checks and 10 import checks. Native mesh, material, rotation sequence and actor/component roundtrips passed.
+  Downloaded the published ZIP, matched SHA-256 and commit/run provenance, and compared all 25 manifest entries plus
+  the manifest with source. Bundled extension 1.2.8. These checks do not verify game rendering or runtime playback.
+- First complete candidate to verified download: **7m38s**, including checks, waiting and verification. Windows CI
+  took **5m46s**, with **9m59s** runner time. Reused the automatic push run; no additional build was dispatched.
 
 ## Published Crystal Fina glass material test — 2026-10-15
+
+Live follow-up: the glass revealed Fina, but strongly refracted her image and lost the original material-driven turn.
+Superseded by the clarity, fit and turning candidate above.
 
 Code: [`1d2ad70`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1d2ad70c286264f931c374c33d819c595ad93844).
 [Verified Windows test release / run 38785441302](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38785441302).
