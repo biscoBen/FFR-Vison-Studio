@@ -56,7 +56,7 @@ turn-track donor. The original solid material retains its own native effects. Wi
 Tick-driven turn on the same grounded casing. Both diagnostic preferences alone must not enable a mod or create
 a roster, and must survive changes to other settings.
 
-Start with Solid casing check on and Animate crystal casing off, rebuild/install, and restart. Subsequent material
+For a solid visibility check, start with Solid casing check on and Animate crystal casing off, rebuild/install, and restart. Subsequent material
 and animation comparisons require the same rebuild/restart. The install log prints material, grounded attachment
 and added rotation explicitly. Native roundtrips verify each graph; only a live test can establish visibility.
 
@@ -67,6 +67,12 @@ These checks support the existing ownership/registration setup, but do not prove
 
 ### Experimental glass
 
+Live follow-up to run 38815120120: the solid crystal renders (and retains its native material-driven turning),
+and with Solid casing check off / added animation off, the glass casing renders with Fina readable inside it.
+The user finds the glass almost completely transparent and requests refraction. This confirms that the grounded,
+sequence-free graph renders; it does not isolate whether attachment or sequence evaluation caused earlier failures.
+Keep that graph and its material/animation switches for this material-only revision.
+
 The private instance now inherits **`M_Env_Glass_Single_Layer_Water`**, whose explicit shading model is
 `MSM_SingleLayerWater` (field 1024), with its native opaque base blend mode. This shading model has a separate
 transmission pass; opaque base blending here is not equivalent to an ordinary opaque surface. Its native parameter
@@ -76,16 +82,22 @@ material-driven turn. Run 38795958251 suppressed distortion and made the pose re
 showed no perceptible casing. Run 38800014400 increased its surface cues but the user reported the same result;
 surface settings alone did not resolve the missing casing.
 Generated native readbacks contain the mesh, private material and scale, but also inherited a baked VisibilityId;
-they cannot establish that it was drawn at runtime. The revised instance uses **Opacity .12, Metallic .08, Roughness .14
-and Fresnel .65**, restoring moderate surface coverage and highlights independently of refraction. Keep zero
+they could not establish that it was drawn at runtime. After the successful live visibility check, the revised instance
+uses **Opacity .22, Metallic .08, Roughness .10 and Fresnel .80**, strengthening surface coverage and facet reflections
+from the live-tested .12/.08/.14/.65 values. Keep zero
 normal/wave intensity and wave speed, native white Base_Color and normal textures, and the shipped static permutation.
 No opaque-crystal vector, texture or glow overrides. Retain the fitted pose, display center and casing-only rotation.
 
 The glass root uses **RM_PixelNormalOffset**, with native distortion enabled. Unreal's `DistortionCommon.ush`
 computes that mode independently of the specular-derived IOR: lowering Fresnel alone cannot remove its warp.
-Set the reserved scalar **RefractionDepthBias=1000**. `UMaterialInstance::GetRefractionSettings` reads this built-in
+Use the reserved scalar **RefractionDepthBias=12**, down from the clarity check's 1000. `UMaterialInstance::GetRefractionSettings` reads this built-in
 instance scalar directly, without a declared parent parameter. `PostProcessUVDistortion` attenuates screen-space
-distortion by depth separation and this bias; 1000 suppresses distortion for Fina and the nearby room. Exclude this
+distortion by depth separation and this bias. Its multiplier is
+`saturate(depthSeparation / max(1, clamp(abs(bias * .5), 0, 50)) - bias)`.
+Bias 1000 suppresses warp at the scale of the casing. Bias 12 gates it over approximately 72–78 UU, admitting
+refraction of deeper parts/background while protecting surfaces close behind the front facets. This is a depth gate,
+not a uniform distortion-strength control; clarity at the sprite depends on view angle and still needs a live check.
+Keep normal/wave intensity and wave speed zero so the crystal does not acquire water ripples. Exclude this
 reserved name from the declared-parameter guard. This uses the shipped shader, not a new static permutation.
 Final transmission, clarity and fit still require a live render; serialization does not prove rendering.
 

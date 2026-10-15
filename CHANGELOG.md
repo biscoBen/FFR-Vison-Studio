@@ -11,7 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Strengthen Crystal Fina Test's glass after live testing confirmed the casing and Fina are visible with added
+  rotation off. Raise surface opacity from .12 to .22 and Fresnel from .65 to .80, and sharpen reflections with
+  roughness .10 instead of .14. Reduce RefractionDepthBias from 1000 to 12 to admit depth-gated refraction rather
+  than suppress it across the casing. Keep water ripples off. This uses the shipped glass shader and scalar overrides.
+- Keep the confirmed grounded attachment, fitted pose and independent solid/rotation switches. Test with Solid
+  casing check off and Animate crystal casing off, then rebuild/install and restart. Actual refraction and Fina's
+  readability still need an in-game check. Bundled extension 1.2.13.
+
 ## Published grounded Crystal Fina casing comparison — 2026-10-15
+
+Live follow-up: the solid casing renders and its own material makes it turn. Switching Solid casing check off with
+added rotation off also renders the glass and readable Fina. The user requests stronger glass presence and refraction.
 
 Code: [`29c5e6b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/29c5e6bbc84ec9cca236be1856c106eddce5e6af).
 [Verified Windows test release / run 38815120120](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38815120120).

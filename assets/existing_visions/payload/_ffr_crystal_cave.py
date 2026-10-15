@@ -53,12 +53,13 @@ TEST_CRYSTAL_SCALE = .12
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
 TEST_POSE_CENTER_X = .5
-# Keep the casing's surface visible independently of its screen-space warp.
-# These values are independent of the casing's culling and attachment setup.
-TEST_CRYSTAL_PARAMETERS = {'Opacity': .12, 'Metallic': .08, 'Roughness': .14,
-    'Fresnel_Intensity': .65, 'Normal_Intensity': 0.0,
+# Strengthen the glass surface and allow depth-gated refraction. The native
+# soft-depth formula with bias 12 admits warp beyond ~72-78 UU of separation;
+# the earlier 1000 suppressed it throughout this casing. Keep water ripples off.
+TEST_CRYSTAL_PARAMETERS = {'Opacity': .22, 'Metallic': .08, 'Roughness': .10,
+    'Fresnel_Intensity': .80, 'Normal_Intensity': 0.0,
     'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0,
-    'RefractionDepthBias': 1000.0}
+    'RefractionDepthBias': 12.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
 TEST_SPRITE_FLOAT = 183.5 - TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE

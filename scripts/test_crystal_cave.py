@@ -605,7 +605,7 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(set(values), set(cave.TEST_CRYSTAL_PARAMETERS))
         self.assertLess(values['Opacity'], .25)
         self.assertGreater(values['Fresnel_Intensity'], 0.0)
-        self.assertEqual(values['RefractionDepthBias'], 1000.0)
+        self.assertEqual(values['RefractionDepthBias'], 12.0)
         self.assertNotIn('Dither_Intensity', values)
         self.assertNotIn('Crystal_Emissive', values)
         mesh = copied[cave.TEST_MESH]
@@ -619,7 +619,7 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         material = cave.test_crystal_assets(source)[cave.TEST_MATERIAL]['Exports'][0]
         scalars = cave.property_data(material, 'ScalarParameterValues')['Value']
         bias, = [p for p in scalars if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
-        self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 1000)
+        self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 12)
 
     def test_solid_check_preserves_native_opaque_material_and_uses_identical_mesh(self):
         source = self.source(); before = copy.deepcopy(source)
