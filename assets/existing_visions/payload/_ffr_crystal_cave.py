@@ -38,6 +38,7 @@ PLACE_NAME = 'UI/Field/PlaceName/Data/DA_UI_PlaceNameProperty'
 TEST_BACKGROUND = 'Map/Com/00Com/00Com_200/BG/Com_00Com_200_01_BG'
 TEST_NATIVE_MESH = 'Env/Com/CommonAssets/StaticMesh/prop/SM_Env_Com_crystal008'
 TEST_NATIVE_MATERIAL = 'Env/Com/CommonAssets/Materials/MI_Env_Com_crystal008_neverstream'
+TEST_NATIVE_SHADER = 'Env/Com/MasterMaterial/M_Env_Crystal_DitherObject'
 TEST_SPRITE = '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01'
 TEST_MESH = 'Map/StudioCrystalCave/Test/SM_Studio_CrystalFinaTest'
 TEST_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTest'
@@ -48,6 +49,11 @@ TEST_CRYSTAL_SCALE = .12
 # Setup Y=51 plus pose Y=-29, minus the cell's one-pixel vertical pivot.
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
+TEST_POSE_CENTER_X = .5
+TEST_CRYSTAL_PARAMETERS = {'Dither_Intensity': .65, 'Crystal_Opacity': .35,
+    'Crystal_Emissive': .35, 'Crystal_Edge_Intensity': 2.0,
+    'Crystal_Normal_Intensity': 1.0, 'Fresnel_Intensity': .3,
+    'Fluctuation_Intensity': 0.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
 TEST_SPRITE_FLOAT = 110.0
@@ -1024,9 +1030,44 @@ def asset_import(view, template_index, package):
 
 
 def test_crystal_assets(source):
-    """Clone mesh/material only; retain all native crystal effect parameters."""
+    """Use the already cooked masked shader, without the old opaque permutation."""
+    _, shader = export(source[TEST_NATIVE_SHADER], Path(TEST_NATIVE_SHADER).name)
+    if (property_data(shader, 'BlendMode')['Value'] != 'BLEND_Masked'
+            or not set(TEST_CRYSTAL_PARAMETERS).issubset(source[TEST_NATIVE_SHADER]['NameMap'])):
+        raise ValueError('The native see-through crystal shader changed; no test crystal was built.')
     material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
                              '/Game/' + TEST_MATERIAL)
+    _, instance = export(material, Path(TEST_MATERIAL).name)
+    parent = property_data(instance, 'Parent')
+    parent['Value'] = asset_import(material, parent['Value'], '/Game/' + TEST_NATIVE_SHADER)
+    material['Imports'][-parent['Value'] - 1]['ClassName'] = 'Material'
+    parent['IsZero'] = False
+    # A scalar-only instance inherits the parent's existing shader map. Keeping
+    # the donor's static parameters/resources would keep its opaque shader, even
+    # after changing Parent. Never invent a new blend-mode/static permutation.
+    set_value(instance, 'bHasStaticPermutationResource', False)
+    instance['Data'] = [p for p in instance['Data']
+                        if p['Name'] not in ('StaticParametersRuntime', 'BasePropertyOverrides')]
+    # UE5.6 UMaterialInterface/UMaterialInstance each serialize a cached-data bool.
+    # Neither cache is present; bHasStaticPermutationResource=False means there
+    # are no inline shader maps after these two false (int32) booleans.
+    instance['Extras'] = base64.b64encode(struct.pack('<ii', 0, 0)).decode('ascii')
+    scalars = property_data(instance, 'ScalarParameterValues')['Value']
+    template = copy.deepcopy(scalars[0])
+    for name, value in TEST_CRYSTAL_PARAMETERS.items():
+        matches = [p for p in scalars if property_data(property_data(p, 'ParameterInfo'), 'Name')['Value'] == name]
+        if len(matches) > 1: raise ValueError('Duplicate native crystal scalar: ' + name)
+        if matches:
+            scalar = matches[0]
+        else:
+            scalar = copy.deepcopy(template); scalar['Name'] = str(len(scalars)); scalars.append(scalar)
+            set_value(property_data(scalar, 'ParameterInfo'), 'Name', name)
+            # A new override has no expression GUID of its own.
+            for guid in property_data(scalar, 'ExpressionGUID')['Value']:
+                guid['Value'] = '{00000000-0000-0000-0000-000000000000}'
+        set_value(scalar, 'ParameterValue', struct.unpack('<f', struct.pack('<f', value))[0])
+    if parent['Value'] not in instance['CreateBeforeSerializationDependencies']:
+        instance['CreateBeforeSerializationDependencies'].append(parent['Value'])
     mesh = private_level(source[TEST_NATIVE_MESH], '/Game/' + TEST_NATIVE_MESH, '/Game/' + TEST_MESH)
     _, owner = export(mesh, Path(TEST_MESH).name)
     slots = property_data(owner, 'StaticMaterials')['Value']
@@ -1034,11 +1075,11 @@ def test_crystal_assets(source):
     reference = property_data(slots[0], 'MaterialInterface')
     reference['Value'] = asset_import(mesh, reference['Value'], '/Game/' + TEST_MATERIAL)
     reference['IsZero'] = False
-    names(mesh, mesh['Exports']); names(material, material['Exports'])
+    names(mesh, mesh['Exports']); names(material, [material['Exports'], material['Imports']])
     return {TEST_MESH: mesh, TEST_MATERIAL: material}
 
 
-def attach_test_crystal(npc, source, owner_id=31, foot_id=110):
+def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     """Own the casing on the acquisition NPC so native visibility hides both."""
     background = source[TEST_BACKGROUND]
     candidates = [(i, e) for i, e in enumerate(background['Exports'], 1)
@@ -1063,7 +1104,7 @@ def attach_test_crystal(npc, source, owner_id=31, foot_id=110):
     # the only blocker. The decorative shell must not collide with its owner.
     component['Data'] = [p for p in component['Data']
                          if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance')]
-    component['Data'] += [prop('AttachParent', foot_id, 'ObjectPropertyData'),
+    component['Data'] += [prop('AttachParent', sprite_id, 'ObjectPropertyData'),
         prop('CreationMethod', 'Instance', 'EnumPropertyData', EnumType='EComponentCreationMethod', InnerType='ByteProperty'),
         prop('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty'),
         {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
@@ -1078,13 +1119,17 @@ def attach_test_crystal(npc, source, owner_id=31, foot_id=110):
     else:
         owner['Data'].append(instances)
     owner['CreateBeforeSerializationDependencies'].append(component_id)
-    if foot_id not in component['CreateBeforeSerializationDependencies']:
-        component['CreateBeforeSerializationDependencies'].append(foot_id)
+    if sprite_id not in component['CreateBeforeSerializationDependencies']:
+        component['CreateBeforeSerializationDependencies'].append(sprite_id)
     _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
     bounds = property_data(mesh, 'ExtendedBounds')
     origin = property_data(bounds, 'Origin')['Value'][0]['Value']
     vector(component, 'RelativeScale3D', (TEST_CRYSTAL_SCALE,) * 3)
-    center = (0.0, 0.0, TEST_SPRITE_FLOAT + TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
+    # SpriteStudio renders into local Y/Z (X is depth). Follow its complete
+    # billboard/penetration/shake transform rather than assuming world-up. The
+    # sprite lift is already inherited here and must not be added a second time.
+    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE,
+              TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
     vector(component, 'RelativeLocation', tuple(center[i] - float(origin[axis]) * TEST_CRYSTAL_SCALE
                                                for i, axis in enumerate(('X', 'Y', 'Z'))))
     names(npc, [component, owner, npc['Imports']])
@@ -1436,7 +1481,8 @@ def build(units, env):
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     has_test = any(spec.fina_test for entries in plans for _, spec in entries)
-    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_SPRITE.removeprefix('/Game/')) if has_test else ()
+    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_NATIVE_SHADER,
+                    TEST_SPRITE.removeprefix('/Game/')) if has_test else ()
     asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
         suffix = '.uasset' if rel in asset_sources else '.umap'
@@ -1485,7 +1531,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: native introductory openarmidle2 pose; private Sanctum crystal mesh/material; original crystal glow retained; casing owned by acquisition NPC.')
+        print('  Crystal Fina Test: native introductory pose; private masked crystal material with reduced glare; casing centered in sprite space and owned by acquisition NPC.')
 
 
 def make_caves(source, plans):

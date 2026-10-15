@@ -11,6 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Correct **Crystal Fina Test** visibility: the native Sanctum material is opaque. The private test instance now
+  inherits the game's cooked masked crystal shader, drops the incompatible opaque shader resources, and reduces
+  surface glare. Center the casing in the sprite's own coordinates so billboard transforms keep it around her.
+  Preserve the existing acquisition route and original cave option. Native mesh/material/component roundtrips, clean analysis, 243 Flutter checks and 338 Python checks pass locally;
+  Windows validation is pending. Final masked coverage and framing need an in-game test.
+
 ## Published Crystal Fina Sanctum crystal test — 2026-10-15
 
 Code: [`fe46921`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fe4692168fc7916c3a3efec59df35ad1ac78c070).

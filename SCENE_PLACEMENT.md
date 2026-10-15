@@ -10,17 +10,31 @@ The introductory aura/appearance Niagara systems and scene camera bloom are inde
 WoL map 10223 (`00Com_223`, `DT_MapData_02Lan`) streams shared `00Com_200_01_BG`. Its `StaticMeshActor_235`,
 component export 358, uses `SM_Env_Com_crystal008` and override `MI_Env_Com_crystal008_neverstream` at scale .25.
 Mesh bounds origin is (-.2887573,-2.0751038,1233.0002441), half extent (687.979126,694.907440,1476.134033).
-The test creates owned mesh/material packages under `Map/StudioCrystalCave/Test`, preserving native material settings,
-opaque render data and `.ubulk`/`.uptnl` companions. No original material/mesh package is overridden.
+The test creates owned mesh/material packages under `Map/StudioCrystalCave/Test`, preserving opaque mesh render data
+and `.ubulk`/`.uptnl` companions. No original material/mesh package is overridden.
 
-The casing is an instance component of the existing acquisition NPC, attached to its grounded foot, with NoCollision;
-the native NPC capsule and event-only trigger stay responsible for blocking and input. Register it through
-`InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing; correct its elevated pivot
-from the actual bounds. The pose's native setup Y=51, part Y=-29 and one-pixel cell pivot put its visual center 21
-pixels above its origin; use that measured offset, not half its height. The initial sprite lift is 110 units.
-The original crystal material's bright center, edge effects and motion controls are unchanged. This deliberately tests
-their interaction with the sprite: the root crystal shader's transparency and actual visibility/hiding need gameplay
-verification. Binary roundtrips prove serialization, not the in-game appearance.
+Live testing of run 38771871918 confirmed that the original material hides the body. The complete parent chain is
+`MI_Env_Com_crystal008_neverstream` → `MI_Env_Com_crystal000_NeverStream` → `M_Env_Crystal`. The uploaded root has
+no BlendMode override, so it uses Unreal's default **Opaque**. `Crystal_Opacity` in its parameter cache does not turn
+that compiled opaque shader into a translucent one. Reducing emission alone cannot correct the depth occlusion.
+
+The corrected private instance inherits the already cooked `M_Env_Crystal_DitherObject` (explicit `BLEND_Masked`).
+Its native parameter cache includes `Dither_Intensity` (default 0) and `Crystal_Opacity` (default .5). Use scalar-only
+overrides: dither .65, crystal opacity .35, emission .35, edge intensity 2, normal intensity 1, Fresnel .3, fluctuation 0.
+This uses masked coverage, not optical glass transmission. Preserve the parent's shipped shader permutation: clear
+`bHasStaticPermutationResource`, remove the donor's static parameters/base overrides, and discard its opaque shader maps.
+UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader resources.
+Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
+
+The casing is an instance component of the existing acquisition NPC, attached to **SsPlayerComponent (64)**, with
+NoCollision. The native NPC capsule and event-only trigger remain responsible for blocking and input. Register the
+casing through `InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing; correct its
+native pivot from the mesh bounds. SpriteStudio maps screen X to local Y and screen Y to local Z. The pose's native
+setup Y=51, part Y=-29 and one-pixel cell pivot put the visual center 21 pixels above its origin; the three cells'
+combined horizontal bounds have center .5 pixels. Set the casing center in sprite space to (0, .5*3.5, 21*3.5).
+This inherits the complete penetration/billboard/shake transform and the sprite's 110-unit lift exactly once. Do not
+assume the billboard's local up equals world Z or add that lift again. The masked crystal shader does not inherit the
+original variant's center-light/rotation switches. Final coverage and framing still require an in-game render.
 
 These rules come from the demo's decoded maps, Blueprint defaults and `Mappings.usmap`, rather than screen-space
 estimates. Implementation: `assets/existing_visions/payload/_ffr_crystal_cave.py`; regression checks:

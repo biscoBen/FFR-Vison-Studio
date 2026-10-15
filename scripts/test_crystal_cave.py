@@ -554,25 +554,54 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             'ObjectName': Path(cave.TEST_NATIVE_MESH).name, 'Data': [
                 p('StaticMaterials', [{'Value': [p('MaterialInterface', -4)]}], 'ArrayPropertyData'),
                 {'Name': 'ExtendedBounds', 'Value': [vec('Origin', (-.29, -2.08, 1233))]}]}]}
+        scalar = p('0', [p('ParameterInfo', [p('Name', 'Crystal_Emissive', 'NamePropertyData')], 'StructPropertyData'),
+                         p('ParameterValue', 10.0, 'FloatPropertyData'),
+                         p('ExpressionGUID', [p('ExpressionGUID', '{11111111-1111-1111-1111-111111111111}')], 'StructPropertyData')], 'StructPropertyData')
         material = {'NameMap': [Path(cave.TEST_NATIVE_MATERIAL).name, '/Game/' + cave.TEST_NATIVE_MATERIAL],
-                    'Imports': [], 'Exports': [{'ObjectName': Path(cave.TEST_NATIVE_MATERIAL).name,
-                        'Data': [p('Crystal_Emissive', 10.0, 'FloatPropertyData')], 'Extras': 'originalShaderData'}]}
-        return {cave.TEST_BACKGROUND: background, cave.TEST_NATIVE_MESH: mesh, cave.TEST_NATIVE_MATERIAL: material}
+                    'Imports': copy.deepcopy(imports), 'Exports': [{'ObjectName': Path(cave.TEST_NATIVE_MATERIAL).name,
+                        'CreateBeforeSerializationDependencies': [],
+                        'Data': [p('Parent', -4), p('bHasStaticPermutationResource', True, 'BoolPropertyData'),
+                                 p('ScalarParameterValues', [scalar], 'ArrayPropertyData'),
+                                 p('StaticParametersRuntime', [], 'StructPropertyData'),
+                                 p('BasePropertyOverrides', [], 'StructPropertyData')], 'Extras': 'originalShaderData'}]}
+        shader = {'NameMap': list(cave.TEST_CRYSTAL_PARAMETERS), 'Exports': [{
+            'ObjectName': Path(cave.TEST_NATIVE_SHADER).name,
+            'Data': [p('BlendMode', 'BLEND_Masked', 'EnumPropertyData')]}]}
+        return {cave.TEST_BACKGROUND: background, cave.TEST_NATIVE_MESH: mesh,
+                cave.TEST_NATIVE_MATERIAL: material, cave.TEST_NATIVE_SHADER: shader}
 
-    def test_private_asset_names_keep_original_effect_settings_and_sources_unchanged(self):
+    def test_private_material_inherits_cooked_masked_shader_without_opaque_resources(self):
         source = self.source(); before = copy.deepcopy(source)
         copied = cave.test_crystal_assets(source)
         self.assertEqual(source, before)
         material = copied[cave.TEST_MATERIAL]['Exports'][0]
-        self.assertEqual(material['Data'], source[cave.TEST_NATIVE_MATERIAL]['Exports'][0]['Data'])
-        self.assertEqual(material['Extras'], 'originalShaderData')
+        view = copied[cave.TEST_MATERIAL]
+        ref = cave.property_data(material, 'Parent')['Value']
+        self.assertEqual(view['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_NATIVE_SHADER).name)
+        self.assertEqual(view['Imports'][-ref - 1]['ClassName'], 'Material')
+        self.assertIn('Material', view['NameMap'])
+        self.assertFalse(cave.property_data(material, 'bHasStaticPermutationResource')['Value'])
+        self.assertEqual(base64.b64decode(material['Extras']), struct.pack('<ii', 0, 0))
+        self.assertFalse({'StaticParametersRuntime', 'BasePropertyOverrides'} & {p['Name'] for p in material['Data']})
+        scalars = cave.property_data(material, 'ScalarParameterValues')['Value']
+        values = {cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value']:
+                  cave.property_data(p, 'ParameterValue')['Value'] for p in scalars}
+        for name, value in cave.TEST_CRYSTAL_PARAMETERS.items(): self.assertAlmostEqual(values[name], value)
         mesh = copied[cave.TEST_MESH]
         ref = cave.property_data(cave.property_data(mesh['Exports'][0], 'StaticMaterials')['Value'][0], 'MaterialInterface')['Value']
         self.assertEqual(mesh['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_MATERIAL).name)
         self.assertIn('/Game/' + cave.TEST_MATERIAL, mesh['NameMap'])
         self.assertEqual(mesh['NamesReferencedFromExportDataCount'], len(mesh['NameMap']))
 
-    def test_shell_is_registered_on_same_owned_actor_follows_foot_and_has_no_physics(self):
+    def test_changed_native_shader_is_rejected_instead_of_inventing_a_blend_permutation(self):
+        for change in ('opaque', 'missing scalar'):
+            source = self.source(); shader = source[cave.TEST_NATIVE_SHADER]
+            if change == 'opaque': shader['Exports'][0]['Data'][0]['Value'] = 'BLEND_Opaque'
+            else: shader['NameMap'].remove('Dither_Intensity')
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'see-through crystal shader changed'):
+                cave.test_crystal_assets(source)
+
+    def test_shell_follows_sprite_billboard_center_without_duplicating_lift_or_physics(self):
         source = self.source(); before = copy.deepcopy(source)
         npc = {'NameMap': ['native'], 'Imports': [], 'Exports': [{'Data': [],
                'CreateBeforeSerializationDependencies': []} for _ in range(110)], 'DependsMap': [[] for _ in range(110)]}
@@ -584,12 +613,14 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
         self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], 111)
         self.assertEqual(shell['OuterIndex'], 31)
-        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 110)
+        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 64)
         self.assertEqual(cave.property_data(shell, 'CreationMethod')['Value'], 'Instance')
         self.assertEqual(cave.property_data(cave.property_data(shell, 'BodyInstance'), 'CollisionEnabled')['Value'], 'NoCollision')
         loc = cave.property_data(shell, 'RelativeLocation')['Value'][0]['Value']
         self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE,
-                               cave.TEST_SPRITE_FLOAT + 21.0 * cave.TEST_SPRITE_SCALE)
+                               21.0 * cave.TEST_SPRITE_SCALE)
+        self.assertAlmostEqual(loc['Y'] - 2.08 * cave.TEST_CRYSTAL_SCALE, .5 * cave.TEST_SPRITE_SCALE)
+        self.assertIn(64, shell['CreateBeforeSerializationDependencies'])
         self.assertEqual(shell['Extras'], 'opaqueLODData')
         self.assertIn(111, owner['CreateBeforeSerializationDependencies'])
 

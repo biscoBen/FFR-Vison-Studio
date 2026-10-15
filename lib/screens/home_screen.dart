@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
                   title: Text('Crystal Fina Test', style: Guide.text()),
-                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Keeps the crystal’s original glow and material effects. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
+                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Uses the game’s see-through crystal shader with reduced glare. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
                   value: app.crystalCaveTest,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }
