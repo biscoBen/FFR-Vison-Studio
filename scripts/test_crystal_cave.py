@@ -511,8 +511,14 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             self.assertEqual(spec.sprite, '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01')
             self.assertEqual(spec.sprite_scale, 2.7)
             self.assertAlmostEqual(spec.sprite_float + 21 * spec.sprite_scale, 183.5)
+            self.assertFalse(spec.test_rotate)
             self.assertTrue(spec.material.endswith('/M_Ss_Component_PBR'))
             operations = testing.prepare({}, [unit], root, rows)
+            path = Path(root) / testing.CONFIG
+            controls = json.loads(path.read_bytes()); controls['crystalCaveTestRotate'] = True
+            path.write_text(json.dumps(controls))
+            rotated, _ = cave.cave_plans([unit], root, rows)
+            self.assertTrue(rotated[0][0][1].test_rotate)
         self.assertEqual(original, before)
         grant, = [a for a in operations[testing.EVENT]['add'] if a['row'] == cave.EVENT]
         event = testing.apply_fields(original[testing.EVENT][grant['cloneFrom']], grant['set'])
@@ -523,9 +529,10 @@ class CrystalFinaTestModeTests(unittest.TestCase):
     def test_settings_keep_legacy_files_compatible_and_reject_two_overlapping_caves(self):
         self.assertTrue(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTestSolid'])
         self.assertFalse(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTest'])
+        self.assertFalse(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTestRotate'])
         self.assertTrue(testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCaveTest': True})['crystalCaveTest'])
         for value in (1, 'true', None):
-            for flag in ('crystalCaveTest', 'crystalCaveTestSolid'):
+            for flag in ('crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate'):
                 with self.assertRaises(ValueError):
                     testing.validate_settings({'schema': 1, 'maxMr': False, flag: value})
         with self.assertRaises(ValueError):
@@ -678,7 +685,7 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         channels = {(p['Name'], p.get('ArrayIndex', 0)): p['Value'][0]['Value'] for p in section['Data']
                     if p['Name'] in ('Translation', 'Rotation', 'Scale')}
         self.assertEqual(len(channels), 9)
-        for axis, expected in enumerate((.0348, 1.5996, -91.26)):
+        for axis, expected in enumerate((.0348, .2496, 35.54)):
             self.assertAlmostEqual(channels['Translation', axis]['DefaultValue'], expected)
             self.assertEqual(channels['Translation', axis]['Values'], [])
             self.assertEqual(channels['Scale', axis]['DefaultValue'], .12)
@@ -697,7 +704,7 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'glass transmission shader changed'):
                 cave.test_crystal_assets(source)
 
-    def test_shell_follows_sprite_billboard_center_without_duplicating_lift_or_physics(self):
+    def assert_shell_setup(self, rotate):
         source = self.source(); before = copy.deepcopy(source)
         npc = {'NameMap': ['native'], 'Imports': [], 'Exports': [{'ObjectName': 'Native_' + str(i), 'Data': [],
                'CreateBeforeSerializationDependencies': []} for i in range(110)], 'DependsMap': [[] for _ in range(110)]}
@@ -708,15 +715,17 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         npc['Exports'][30]['Data'].append(condition)
         npc['Exports'][30]['Data'].append({'Name': 'RootComponent', 'Value': 37})
         npc['Exports'][63]['Data'].append({'Name': 'AttachParent', 'Value': 77})
-        cave.attach_test_crystal(npc, source)
+        if rotate:
+            cave.attach_test_crystal(npc, source, rotate=True)
+        else:
+            cave.attach_test_crystal(npc, source)
         self.assertEqual(source, before)
         owner = npc['Exports'][30]
         _, shell = cave.export(npc, 'Studio_CrystalFinaTestCrystal')
-        turn_id, turn = cave.export(npc, 'Studio_CrystalFinaTestSpin')
         self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
         self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], 111)
         self.assertEqual(shell['OuterIndex'], 31)
-        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 64)
+        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 110)
         self.assertNotIn('Studio_CrystalFinaTestPivot', {e['ObjectName'] for e in npc['Exports']})
         self.assertEqual(cave.property_data(shell, 'VisibilityId')['Value'], -1)
         self.assertFalse(cave.property_data(shell, 'bIsValidTextureStreamingBuiltData')['Value'])
@@ -725,9 +734,27 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(cave.property_data(shell, 'CreationMethod')['Value'], 'Instance')
         self.assertEqual(cave.property_data(cave.property_data(shell, 'BodyInstance'), 'CollisionEnabled')['Value'], 'NoCollision')
         loc = cave.property_data(shell, 'RelativeLocation')['Value'][0]['Value']
-        self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE, 21.0 * cave.TEST_SPRITE_SCALE)
-        self.assertAlmostEqual(loc['Y'] - 2.08 * cave.TEST_CRYSTAL_SCALE, .5 * cave.TEST_SPRITE_SCALE)
-        self.assertIn(64, shell['CreateBeforeSerializationDependencies'])
+        self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE,
+                               cave.TEST_SPRITE_FLOAT + 21.0 * cave.TEST_SPRITE_SCALE)
+        self.assertAlmostEqual(loc['Y'] - 2.08 * cave.TEST_CRYSTAL_SCALE, 0.0)
+        self.assertIn(110, shell['CreateBeforeSerializationDependencies'])
+        registered = [p['Value'] for p in cave.property_data(owner, 'InstanceComponents')['Value']]
+        self.assertEqual(registered, [111])
+        self.assertEqual(cave.property_data(owner, 'RootComponent')['Value'], 37)
+        self.assertEqual(cave.property_data(npc['Exports'][63], 'AttachParent')['Value'], 77)
+        self.assertEqual(shell['Extras'], 'opaqueLODData')
+        self.assertIn(111, owner['CreateBeforeSerializationDependencies'])
+        return npc
+
+    def test_grounded_shell_default_has_no_sequence_or_billboard_attachment(self):
+        npc = self.assert_shell_setup(rotate=False)
+        self.assertEqual(npc['Exports'][94]['Actors'], [31])
+        self.assertNotIn('Studio_CrystalFinaTestSpin', {e['ObjectName'] for e in npc['Exports']})
+        self.assertNotIn('/Game/' + cave.TEST_SPIN_SEQUENCE, {e['ObjectName'] for e in npc['Imports']})
+
+    def test_optional_turn_targets_same_grounded_shell_without_player_restrictions(self):
+        npc = self.assert_shell_setup(rotate=True)
+        turn_id, turn = cave.export(npc, 'Studio_CrystalFinaTestSpin')
         playback = cave.property_data(turn, 'PlaybackSettings')
         self.assertEqual(cave.property_data(cave.property_data(playback, 'LoopCount'), 'Value')['Value'], -1)
         self.assertTrue(cave.property_data(playback, 'bAutoPlay')['Value'])
@@ -737,12 +764,6 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         binding = cave.property_data(overrides, 'BindingData')['Value'][0]
         self.assertTrue(cave.property_data(binding, 'Object')['Value']['SubPathString'].endswith('.Native_30.Studio_CrystalFinaTestCrystal'))
         self.assertIn(turn_id, npc['Exports'][94]['Actors'])
-        registered = [p['Value'] for p in cave.property_data(owner, 'InstanceComponents')['Value']]
-        self.assertEqual(registered, [111])
-        self.assertEqual(cave.property_data(owner, 'RootComponent')['Value'], 37)
-        self.assertEqual(cave.property_data(npc['Exports'][63], 'AttachParent')['Value'], 77)
-        self.assertEqual(shell['Extras'], 'opaqueLODData')
-        self.assertIn(111, owner['CreateBeforeSerializationDependencies'])
 
 
 if __name__ == '__main__': unittest.main()

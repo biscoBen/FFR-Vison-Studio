@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
                   title: Text('Crystal Fina Test', style: Guide.text()),
-                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Uses a fitted pose and a slowly turning crystal. Select the casing check below. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
+                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Select the material and optional rotation below. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
                   value: app.crystalCaveTest,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }
@@ -133,6 +133,17 @@ class HomeScreen extends StatelessWidget {
                   value: app.crystalCaveTestSolid,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCaveTestSolid(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                if (app.crystalCaveTest) SwitchListTile(
+                  key: const Key('crystal-fina-rotate'), contentPadding: EdgeInsets.zero,
+                  title: Text('Animate crystal casing', style: Guide.text()),
+                  subtitle: Text(app.crystalCaveTestRotate
+                      ? 'Adds a slow turning sequence. Rebuild/install to apply.'
+                      : 'Added rotation is off for the visibility check. The original solid material keeps its own effects. Rebuild/install to apply.', style: Guide.small()),
+                  value: app.crystalCaveTestRotate,
+                  onChanged: busy || app.api == null ? null : (value) async {
+                    try { await app.setCrystalCaveTestRotate(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

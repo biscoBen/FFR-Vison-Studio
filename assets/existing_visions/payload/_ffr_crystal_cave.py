@@ -113,6 +113,7 @@ class CaveSpec:
     ground_z: float | None = None
     return_direction: str = 'South'
     fina_test: bool = False
+    test_rotate: bool = False
 
     @property
     def stone_name(self): return self.name + '_Stone'
@@ -384,7 +385,8 @@ def cave_plans(units, root, rows=None):
             if fina and options['crystalCaveTest']:
                 entries[-1] = (unit, replace(entries[-1][1], fina_test=True, sprite=TEST_SPRITE,
                     material='/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBR',
-                    sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT))
+                    sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT,
+                    test_rotate=options['crystalCaveTestRotate']))
         plans.append(entries)
     return plans, registry
 
@@ -1016,7 +1018,7 @@ def make_npc(source, unit, spawn, spec):
     acquisition_interaction(npc, source[DONOR_GD],
                             export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], unit, spec)
     if spec.fina_test:
-        attach_test_crystal(npc, source)
+        attach_test_crystal(npc, source, rotate=spec.test_rotate)
 
     return npc
 
@@ -1141,10 +1143,10 @@ def native_object(view, prototype, outer_id, script, class_name, object_name, da
 
 
 def test_crystal_location(source):
-    """The casing's relative position on the existing sprite component."""
+    """Grounded foot-local position, independent of sprite billboard transforms."""
     _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
     origin = property_data(property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
-    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE, TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
+    center = (0.0, 0.0, TEST_SPRITE_FLOAT + TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
     return tuple(center[i] - float(origin[axis]) * TEST_CRYSTAL_SCALE
                  for i, axis in enumerate(('X', 'Y', 'Z')))
 
@@ -1215,7 +1217,7 @@ def test_spin_sequence(source):
     set_value(scene, 'Possessables', [possessable]); set_value(scene, 'ObjectBindings', [binding])
     for obj in (sequence, scene, track, section):
         property_data(obj, 'Signature')['Value'][0]['Value'] = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL,
-            TEST_SPIN_SEQUENCE + ':direct-casing-v2:' + obj['ObjectName'])).upper() + '}'
+            TEST_SPIN_SEQUENCE + ':foot-casing-v3:' + obj['ObjectName'])).upper() + '}'
     names(view, [view['Exports'], view['Imports']])
     return view
 
@@ -1260,7 +1262,7 @@ def attach_test_spin(npc, source, component_id, owner_id):
     names(npc, [spin, npc['Exports'][override_id - 1], npc['Imports']])
 
 
-def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
+def attach_test_crystal(npc, source, owner_id=31, foot_id=110, rotate=False):
     """Own the casing on the acquisition NPC so native visibility hides both."""
     background = source[TEST_BACKGROUND]
     candidates = [(i, e) for i, e in enumerate(background['Exports'], 1)
@@ -1288,7 +1290,7 @@ def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     component['Data'] = [p for p in component['Data']
                          if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance',
                              'VisibilityId', 'bIsValidTextureStreamingBuiltData', 'bVisible', 'bHiddenInGame')]
-    component['Data'] += [prop('AttachParent', sprite_id, 'ObjectPropertyData'), instance, movable,
+    component['Data'] += [prop('AttachParent', foot_id, 'ObjectPropertyData'), instance, movable,
         # This moved, dynamic copy must not use the donor level's baked culling ID.
         prop('VisibilityId', -1, 'IntPropertyData'),
         prop('bIsValidTextureStreamingBuiltData', False, 'BoolPropertyData'),
@@ -1306,14 +1308,15 @@ def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     else:
         owner['Data'].append(instances)
     owner['CreateBeforeSerializationDependencies'].append(component_id)
-    if sprite_id not in component['CreateBeforeSerializationDependencies']:
-        component['CreateBeforeSerializationDependencies'].append(sprite_id)
+    if foot_id not in component['CreateBeforeSerializationDependencies']:
+        component['CreateBeforeSerializationDependencies'].append(foot_id)
     vector(component, 'RelativeScale3D', (TEST_CRYSTAL_SCALE,) * 3)
-    # Restore the direct sprite attachment used by the visible glass candidate.
-    # Yaw does not alter the elevated Z pivot; horizontal orbit is under .51 UU.
+    # The first visible solid casing was attached to this grounded component.
+    # Keep the 3D mesh outside the SS renderer's billboard/shake hierarchy.
     vector(component, 'RelativeLocation', test_crystal_location(source))
     names(npc, [component, owner, npc['Imports']])
-    attach_test_spin(npc, source, component_id, owner_id)
+    if rotate:
+        attach_test_spin(npc, source, component_id, owner_id)
 
 
 def entrance_mesh(view, component, spec, source):
@@ -1663,9 +1666,11 @@ def build(units, env):
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     has_test = any(spec.fina_test for entries in plans for _, spec in entries)
+    has_rotation = any(spec.fina_test and spec.test_rotate for entries in plans for _, spec in entries)
     solid_test = has_test and testing.settings(root)['crystalCaveTestSolid']
-    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_SPIN_DONOR,
-                    TEST_SPRITE.removeprefix('/Game/'), *((TEST_NATIVE_SHADER,) if not solid_test else ())) if has_test else ()
+    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL,
+                    TEST_SPRITE.removeprefix('/Game/'), *((TEST_NATIVE_SHADER,) if not solid_test else ()),
+                    *((TEST_SPIN_DONOR,) if has_rotation else ())) if has_test else ()
     asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
         suffix = '.uasset' if rel in asset_sources else '.umap'
@@ -1689,7 +1694,8 @@ def build(units, env):
     expected = make_caves(source, plans)
     if has_test:
         expected.update(test_crystal_assets(source, solid=solid_test))
-        expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
+        if has_rotation:
+            expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
     expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
     mapping = blueprint_mappings(expected, env, work)
@@ -1717,7 +1723,8 @@ def build(units, env):
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
         mode = 'SOLID CHECK (original Sanctum material)' if solid_test else 'GLASS (experimental transparent material)'
-        print(f'  Crystal Fina Test material: {mode}; direct sprite attachment; baked visibility disabled; Tick-driven casing turn.')
+        turn = 'ON (Tick-driven)' if has_rotation else 'OFF (no added sequence)'
+        print(f'  Crystal Fina Test material: {mode}; grounded foot attachment; baked visibility disabled; added rotation: {turn}.')
 
 
 def make_caves(source, plans):

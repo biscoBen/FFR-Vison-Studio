@@ -16,10 +16,12 @@ reuses the same vision/cave/reward, and displays Fina's native introductory floa
 Sanctum crystal mesh and material. **Solid casing check** appears below the test switch and starts on, including
 with older settings. It uses the original opaque Sanctum material to check whether the casing is drawing; Fina may
 be obscured during this test. Turn it off to compare the current experimental transparent glass. The private mesh,
-size, placement, turning sequence and acquisition stay the same in both modes. The previous glass/setup revisions
-still left the casing missing in live testing, so this comparison is needed before further material changes.
+size, placement and acquisition stay the same in both modes. **Animate crystal casing** independently enables the
+added turning sequence and starts off for both new and older settings. The casing is attached to the grounded foot
+component, as in the first visible solid version. Start with Solid casing check on and Animate crystal casing off.
+The previous glass/setup revisions still left the casing missing in live testing; this isolates animation from material.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
-and restart when changing materials. The installer prints SOLID CHECK or GLASS. Runtime visibility remains unconfirmed.
+and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF. Runtime visibility remains unconfirmed.
 [Verified test package / run 38808095289](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38808095289/Sephira-Studio-Test.zip)
 (code `ff32f8a`, published 2026-10-15).
 

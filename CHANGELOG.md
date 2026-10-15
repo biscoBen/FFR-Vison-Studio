@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Restore the Crystal Fina Test casing's grounded FootComponent attachment from the first visible solid version.
+  Add **Animate crystal casing**, off by default for new and legacy settings, independently of Solid casing check.
+  Off removes the added LevelSequenceActor and turn-sequence asset entirely; the original solid material retains
+  its own effects. On enables the existing slow transform turn. Preserve both preferences when other switches
+  change; neither preference alone enables a mod or creates a roster. Log the attachment and rotation mode.
+- Keep the fitted Fina sprite, casing size, material choices, acquisition and collision. The disappearance was first
+  reported after adding the turn sequence, but its cause remains unconfirmed. Start with Solid casing check on and
+  Animate crystal casing off, rebuild/install and restart Resonance. Native serialization and settings checks cannot
+  establish actual in-game visibility. Bundled extension 1.2.12.
+
 ## Published Crystal Fina solid casing comparison — 2026-10-15
 
 Code: [`ff32f8a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ff32f8ae1c9224af6aa7815ef7d730ae94d0f3cb).

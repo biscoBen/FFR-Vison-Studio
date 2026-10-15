@@ -44,12 +44,14 @@ class Api {
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
   Future<bool> crystalCaveTest() async => (await get('/api/testing'))['crystalCaveTest'] == true;
   Future<bool> crystalCaveTestSolid() async => (await get('/api/testing'))['crystalCaveTestSolid'] != false;
+  Future<bool> crystalCaveTestRotate() async => (await get('/api/testing'))['crystalCaveTestRotate'] == true;
   Future<bool> fieldLeader() async => (await get('/api/testing'))['fieldLeader'] == true;
   Future<void> saveTestingMaxMr(bool value) => _saveTestingFlag('maxMr', value);
   Future<void> saveTestingPracticeBattle(bool value) => _saveTestingFlag('practiceBattle', value);
   Future<void> saveCrystalCave(bool value) => _saveTestingFlag('crystalCave', value);
   Future<void> saveCrystalCaveTest(bool value) => _saveTestingFlag('crystalCaveTest', value);
   Future<void> saveCrystalCaveTestSolid(bool value) => _saveTestingFlag('crystalCaveTestSolid', value);
+  Future<void> saveCrystalCaveTestRotate(bool value) => _saveTestingFlag('crystalCaveTestRotate', value);
   Future<void> saveFieldLeader(bool value) => _saveTestingFlag('fieldLeader', value);
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
       (await put('/api/abilities/settings', {
@@ -67,6 +69,7 @@ class Api {
       'crystalCave': current['crystalCave'] == true,
       'crystalCaveTest': current['crystalCaveTest'] == true,
       'crystalCaveTestSolid': current['crystalCaveTestSolid'] != false,
+      'crystalCaveTestRotate': current['crystalCaveTestRotate'] == true,
       'fieldLeader': current['fieldLeader'] == true, name: value,
     };
     if (value && name == 'crystalCave') flags['crystalCaveTest'] = false;

@@ -28,23 +28,25 @@ STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'crystalCaveTestSolid': True, 'fieldLeader': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'crystalCaveTestSolid': True, 'crystalCaveTestRotate': False, 'fieldLeader': False}
 
 
 def validate_settings(value):
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'fieldLeader'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
             or type(value.get('crystalCave', False)) is not bool
             or type(value.get('crystalCaveTest', False)) is not bool
             or type(value.get('crystalCaveTestSolid', True)) is not bool
+            or type(value.get('crystalCaveTestRotate', False)) is not bool
             or (value.get('crystalCave', False) and value.get('crystalCaveTest', False))
             or type(value.get('fieldLeader', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
             'crystalCave': value.get('crystalCave', False), 'crystalCaveTest': value.get('crystalCaveTest', False),
             'crystalCaveTestSolid': value.get('crystalCaveTestSolid', True),
+            'crystalCaveTestRotate': value.get('crystalCaveTestRotate', False),
             'fieldLeader': value.get('fieldLeader', False)}
 
 
@@ -262,7 +264,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'fieldLeader'):
+            for flag in ('practiceBattle', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)

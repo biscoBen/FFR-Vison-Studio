@@ -36,12 +36,34 @@ create a roster or activate any mod feature. UI/API changes to other switches mu
 Solid mode copies the original `MI_Env_Com_crystal008_neverstream` into the same private material package, preserving
 its original opaque parent, static parameters, overrides and native shader/cache bytes. It does not require the glass
 shader. Glass mode retains the current experimental transmission material. Both modes use the identical private mesh,
-streamed companions, attachment, scale, position, turning sequence, ownership and acquisition. Rebuild/install and
+streamed companions, attachment, scale, position, optional turning sequence, ownership and acquisition. Rebuild/install and
 restart between modes; inspect a save that does not own Fina. The installer prints SOLID CHECK or GLASS explicitly.
 
 A visible solid casing would point to the experimental material/render path; a missing solid casing would leave the
 runtime object/installation path to investigate. Fina being obscured by an opaque shell is expected for this check.
 Native roundtrips and UI/settings tests cannot answer the in-game visibility question.
+
+### Grounded attachment and optional transform animation
+
+The next live report still showed no casing; the supplied install log confirms SOLID CHECK with a Tick-driven
+turning sequence and successful packing. The added LevelSequence turn first appeared in run 38795958251,
+which is also the first reported disappearance. That timing identifies a useful comparison; it does not prove
+that the sequence caused the failure. The first visibly rendered opaque casing (run 38771871918) was attached
+to FootComponent (110), without the added sequence. Restore that attachment for both material modes and add
+independent `crystalCaveTestRotate`, default **false**, including legacy settings. The UI calls this **Animate crystal
+casing**. With it off, do not create/import a LevelSequenceActor or private turn sequence, and do not extract the
+turn-track donor. The original solid material retains its own native effects. With it on, generate the existing
+Tick-driven turn on the same grounded casing. Both diagnostic preferences alone must not enable a mod or create
+a roster, and must survive changes to other settings.
+
+Start with Solid casing check on and Animate crystal casing off, rebuild/install, and restart. Subsequent material
+and animation comparisons require the same rebuild/restart. The install log prints material, grounded attachment
+and added rotation explicitly. Native roundtrips verify each graph; only a live test can establish visibility.
+
+Unreal's ActorComponent constructor obtains OwnerPrivate from the actor outer. AActor::ResetOwnedComponents
+rebuilds OwnedComponents from subobjects during load, and InstanceComponents is an instanced runtime property.
+SceneComponent::OnRegister resolves a serialized AttachParent; it does not require inventing an attachment flag.
+These checks support the existing ownership/registration setup, but do not prove the component's live state.
 
 ### Experimental glass
 
@@ -71,14 +93,14 @@ Clear `bHasStaticPermutationResource`, remove the donor's static parameters/base
 shader maps. UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader
 resources. Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
 
-The casing is an instance component of the existing acquisition NPC, attached **directly to SsPlayerComponent (64)**,
-restoring the attachment used by the visible glass candidate. No intermediate pivot component. Keep NoCollision;
-the native NPC capsule and event-only trigger remain responsible for blocking/input. Register the casing through
-`InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing. SpriteStudio maps screen X
-to local Y and screen Y to local Z. The pose's visual center is (0, .5*2.7, 21*2.7); set the casing's relative location
-to that center minus the native mesh bounds origin times .12. Float 126.8 retains the sprite-space center height 183.5.
-This inherits penetration/billboard/shake transforms exactly once. Yaw leaves the elevated native Z pivot unchanged;
-the small X/Y origin offset gives less than .51 UU of orbit through a full turn (below one native sprite pixel).
+The casing is an instance component of the existing acquisition NPC, attached **directly to FootComponent (110)**.
+No intermediate pivot or parent in the SS renderer's billboard/shake hierarchy. Keep NoCollision; the native NPC
+capsule and event-only trigger remain responsible for blocking/input. Register through `InstanceComponents` and
+creation/preload dependencies. Scale .12 gives a 354-unit casing. Its foot-local visual center is (0, 0, 183.5):
+float 126.8 plus pose center 21 pixels times 2.7 units/pixel. Set relative location to that center minus native mesh
+bounds origin times .12, giving approximately (.03465, .24901, 35.53997). The fitted sprite keeps its own billboard
+lift once; the casing does not inherit that lift. Native Yaw leaves the elevated Z pivot unchanged; the small X/Y
+origin offset gives less than .51 UU of orbit through a full turn. Recheck alignment and visibility in-game.
 
 **Clear copied static visibility metadata.** The donor component has `VisibilityId=1`. Set the dynamic private copy
 explicitly to **-1 (INDEX_NONE)** and invalidate `bIsValidTextureStreamingBuiltData`. In Unreal's
@@ -92,7 +114,7 @@ Fit analysis projects native LOD0 geometry across all 360 whole-degree yaw angle
 alpha boundaries against its convex silhouette. The limiting scale is 3.1735 units/pixel; 2.7 leaves about 15% margin
 and reduces the previous pose by about 23%. This tests projected containment, not the complete irregular 3D volume.
 
-Turning uses private `SEQ_Studio_CrystalFinaTestTurn`, bound by `MovieSceneBindingOverrides` directly to the loaded
+Optional turning uses private `SEQ_Studio_CrystalFinaTestTurn`, bound by `MovieSceneBindingOverrides` directly to the loaded
 NPC's casing component. Its soft path names the private World, PersistentLevel, NPC actor and casing. A native
 `LevelSequenceActor` autoplays indefinitely, without spawnables, event/master tracks, director, camera cuts or
 input/HUD/player restrictions. The loop uses **ClockSource=Tick and CustomClock=null**. The acquisition donor's
