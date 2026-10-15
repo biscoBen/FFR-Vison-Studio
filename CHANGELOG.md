@@ -11,13 +11,33 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Correct **Crystal Fina Test** casing setup after surface-only adjustments left it invisible: clear the donor's static
-  visibility ID and built-streaming flag, restore direct sprite attachment, and bind the turn to the casing itself.
-  Replace the inherited cutscene clock with Tick and author every transform channel so no unrelated donor placement
-  or scale remains. Retain the current material, Fina's pose, acquisition and collision. Native asset checks cannot
-  confirm which inherited setting caused the live disappearance; visibility and turning still need an in-game test.
+## Published Crystal Fina casing setup correction — 2026-10-15
+
+Code: [`741e486`](https://github.com/biscoBen/FFR-Vison-Studio/commit/741e48609b46e5512b6402e132b8cc95daebfd84).
+[Verified Windows test release / run 38804043413](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38804043413).
+
+- Correct **Crystal Fina Test** casing setup after surface-only adjustments left it invisible: reset the copied
+  VisibilityId from 1 to -1 and invalidate donor texture-streaming build data. A nonnegative visibility ID can subject
+  a relocated mesh to the donor level's precomputed culling. Restore direct attachment to the sprite and bind the
+  turning sequence to the casing itself; remove the added intermediate pivot.
+- Use ClockSource=Tick and clear the acquisition donor's CustomClock. Explicitly author all nine transform channels
+  with the casing's position, .12 scale and zero roll/pitch; only yaw changes over time. No unrelated donor translation
+  or scale survives. Retain the current glass settings, fitted Fina pose, acquisition flow and collision. Record these
+  rules in `SCENE_PLACEMENT.md` and the full-game checklist. The live cause remains unconfirmed; visibility and turning
+  still require an in-game check.
+- Validation: clean analysis, 243 Flutter checks and the separate fresh frozen-engine Windows startup check passed.
+  All 340 Python checks passed on Windows (five skips) and Linux (four skips), alongside bundle verification,
+  12 launcher checks and 10 import checks. Native sequence and actor/component roundtrips retained Tick, the cleared
+  culling ID, direct attachment and explicit transforms. Verified the downloaded ZIP's SHA-256, commit/run provenance
+  and all 25 manifest entries plus the manifest against source. Bundled extension 1.2.10. These checks do not prove
+  runtime visibility or animation playback.
+- First complete candidate to verified download: **10m16s**, including checks, waiting and verification. Windows CI
+  took **8m19s**, with **12m42s** runner time. Reused the automatic push run without dispatching an additional build.
 
 ## Published Crystal Fina glass surface visibility test — 2026-10-15
+
+Live follow-up: the user reported the same appearance after the surface adjustment. Superseded by the casing setup
+correction above; surface parameters alone did not resolve the missing casing.
 
 Code: [`3097d47`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3097d4767711bb96d4c174a7de87d5333de155e3).
 [Verified Windows test release / run 38800014400](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38800014400).
