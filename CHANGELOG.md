@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published grounded Crystal Fina casing comparison — 2026-10-15
+
+Code: [`29c5e6b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/29c5e6bbc84ec9cca236be1856c106eddce5e6af).
+[Verified Windows test release / run 38815120120](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38815120120).
+
 - Restore the Crystal Fina Test casing's grounded FootComponent attachment from the first visible solid version.
   Add **Animate crystal casing**, off by default for new and legacy settings, independently of Solid casing check.
   Off removes the added LevelSequenceActor and turn-sequence asset entirely; the original solid material retains
@@ -20,8 +25,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   reported after adding the turn sequence, but its cause remains unconfirmed. Start with Solid casing check on and
   Animate crystal casing off, rebuild/install and restart Resonance. Native serialization and settings checks cannot
   establish actual in-game visibility. Bundled extension 1.2.12.
+- Validation: clean analysis, 244 Flutter checks (one skip), the separate fresh frozen-engine Windows startup check,
+  342 Python checks (Windows: five skips; Linux: four), bundle verification, 12 launcher checks and 10 import checks
+  passed. Native readbacks passed for the static and rotating component graphs, turn sequence, solid material and
+  mesh. Verified the downloaded ZIP's SHA-256, exact commit/run provenance and all 25 manifest entries plus the
+  manifest against source. Game visibility remains unverified; the complete user log for the preceding build
+  confirmed SOLID CHECK, its turning sequence and successful installation of all three mod files.
+- First complete candidate to verified download: **7m19s**, including local checks, waiting and verification.
+  Windows CI took **4m57s**, using **9m00s** of runner time. Reused the automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina solid casing comparison — 2026-10-15
+
+Live follow-up: the casing was still missing. The complete install log confirms this was the solid material with
+its added turning sequence and a successful install. The grounded/static comparison above isolates that setup.
 
 Code: [`ff32f8a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ff32f8ae1c9224af6aa7815ef7d730ae94d0f3cb).
 [Verified Windows test release / run 38808095289](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38808095289).
