@@ -35,6 +35,22 @@ TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
 PACKAGE = 'Map/StudioCrystalCave/' + NAME
 GRANT_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_014_03/SEQ_C01_014_03'
 PLACE_NAME = 'UI/Field/PlaceName/Data/DA_UI_PlaceNameProperty'
+TEST_BACKGROUND = 'Map/Com/00Com/00Com_200/BG/Com_00Com_200_01_BG'
+TEST_NATIVE_MESH = 'Env/Com/CommonAssets/StaticMesh/prop/SM_Env_Com_crystal008'
+TEST_NATIVE_MATERIAL = 'Env/Com/CommonAssets/Materials/MI_Env_Com_crystal008_neverstream'
+TEST_SPRITE = '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01'
+TEST_MESH = 'Map/StudioCrystalCave/Test/SM_Studio_CrystalFinaTest'
+TEST_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTest'
+TEST_ANIMATION = 'openarmidle2'
+TEST_ANIMATION_INDEX = 8
+TEST_SPRITE_SCALE = 3.5
+TEST_CRYSTAL_SCALE = .12
+# Setup Y=51 plus pose Y=-29, minus the cell's one-pixel vertical pivot.
+# All three openarmidle2 cells share this visual center, not half their height.
+TEST_POSE_CENTER_Y = 21.0
+# The native body is 50 pixels high. Float it in a casing centered on its
+# midpoint; the mesh's elevated native pivot is corrected using its bounds.
+TEST_SPRITE_FLOAT = 110.0
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -84,6 +100,7 @@ class CaveSpec:
     placement_scale: float = 1.0
     ground_z: float | None = None
     return_direction: str = 'South'
+    fina_test: bool = False
 
     @property
     def stone_name(self): return self.name + '_Stone'
@@ -271,7 +288,8 @@ def cave_plans(units, root, rows=None):
         if any(u['id'] == unit['id'] for u in previous['units']):
             raise ValueError('Duplicate cave vision identity.')
         previous['units'].append(unit)
-    legacy = testing.settings(root)['crystalCave']
+    options = testing.settings(root)
+    legacy = options['crystalCave'] or options['crystalCaveTest']
     if legacy:
         # An optional disabled pack keeps its saved cave preference, but emits
         # no acquisition actors. Preserve the missing-profile error otherwise.
@@ -351,6 +369,10 @@ def cave_plans(units, root, rows=None):
             entries.append((unit, replace(base, unit_id=uid, material=material, sprite=sprite,
                                            sprite_scale=FINA_SCALE if fina else VISION_SCALE,
                                            sprite_float=FINA_FLOAT if fina else 0.0, spawn_offset=offset)))
+            if fina and options['crystalCaveTest']:
+                entries[-1] = (unit, replace(entries[-1][1], fina_test=True, sprite=TEST_SPRITE,
+                    material='/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBR',
+                    sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT))
         plans.append(entries)
     return plans, registry
 
@@ -946,7 +968,7 @@ def make_npc(source, unit, spawn, spec):
     # Keep the complete original NPC/component graph and its opaque head-widget
     # export at the same indices. Do not copy/remap unknown widget bytes.
     for name, template_name, value in [('m_IsAnimationUseDirection', 'm_IsAnimationUseDirection', False),
-                                       ('m_AnimationName', 'm_AnimationName', 'idle')]:
+                                       ('m_AnimationName', 'm_AnimationName', TEST_ANIMATION if spec.fina_test else 'idle')]:
         donor = npc['Exports'][32] if value is False else npc['Exports'][31]
         prop = copy.deepcopy(property_data(donor, template_name)); prop['Value'] = value; prop['IsZero'] = False
         owner['Data'] = [p for p in owner['Data'] if p['Name'] != name] + [prop]
@@ -962,7 +984,8 @@ def make_npc(source, unit, spawn, spec):
     ss = npc['Exports'][63]
     sprite = spec.sprite or f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
     set_value(ss, 'AutoPlayAnimPackName', Path(sprite).name)
-    set_value(ss, 'AutoPlayAnimationName', 'idle'); set_value(ss, 'AutoPlayAnimationIndex', 0)
+    set_value(ss, 'AutoPlayAnimationName', TEST_ANIMATION if spec.fina_test else 'idle')
+    set_value(ss, 'AutoPlayAnimationIndex', TEST_ANIMATION_INDEX if spec.fina_test else 0)
     set_value(ss, 'UUPerPixel', sprite_scale)
     for imp in npc['Imports']:
         if imp['ObjectName'] == '/Game/Chara/Field_Unit/npc9020/npc9020':
@@ -980,8 +1003,91 @@ def make_npc(source, unit, spawn, spec):
     names(npc, [owner, ss, npc['Imports']])
     acquisition_interaction(npc, source[DONOR_GD],
                             export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], unit, spec)
+    if spec.fina_test:
+        attach_test_crystal(npc, source)
 
     return npc
+
+
+def asset_import(view, template_index, package):
+    """Append a private asset reference while retaining the native import map."""
+    if template_index >= 0:
+        raise ValueError('The native crystal asset reference changed.')
+    original = view['Imports'][-template_index - 1]
+    parent = copy.deepcopy(view['Imports'][-original['OuterIndex'] - 1])
+    parent['ObjectName'] = package
+    if parent not in view['Imports']: view['Imports'].append(parent)
+    item = dict(original, ObjectName=Path(package).name, OuterIndex=-(view['Imports'].index(parent) + 1))
+    if item not in view['Imports']: view['Imports'].append(item)
+    names(view, [parent, item])
+    return -(view['Imports'].index(item) + 1)
+
+
+def test_crystal_assets(source):
+    """Clone mesh/material only; retain all native crystal effect parameters."""
+    material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
+                             '/Game/' + TEST_MATERIAL)
+    mesh = private_level(source[TEST_NATIVE_MESH], '/Game/' + TEST_NATIVE_MESH, '/Game/' + TEST_MESH)
+    _, owner = export(mesh, Path(TEST_MESH).name)
+    slots = property_data(owner, 'StaticMaterials')['Value']
+    if len(slots) != 1: raise ValueError('The native Sanctum crystal material slots changed.')
+    reference = property_data(slots[0], 'MaterialInterface')
+    reference['Value'] = asset_import(mesh, reference['Value'], '/Game/' + TEST_MATERIAL)
+    reference['IsZero'] = False
+    names(mesh, mesh['Exports']); names(material, material['Exports'])
+    return {TEST_MESH: mesh, TEST_MATERIAL: material}
+
+
+def attach_test_crystal(npc, source, owner_id=31, foot_id=110):
+    """Own the casing on the acquisition NPC so native visibility hides both."""
+    background = source[TEST_BACKGROUND]
+    candidates = [(i, e) for i, e in enumerate(background['Exports'], 1)
+        if isinstance(e.get('Data'), list) and any(p['Name'] == 'StaticMesh' and p['Value'] < 0
+            and background['Imports'][-p['Value'] - 1]['ObjectName'] == Path(TEST_NATIVE_MESH).name
+            for p in e['Data'])]
+    if len(candidates) != 1: raise ValueError('The Sanctum floating crystal actor changed.')
+    old_id, donor = candidates[0]
+    mapping = clone_graph(npc, background, [old_id], {donor['OuterIndex']: owner_id})
+    component_id = mapping[old_id]; component = npc['Exports'][component_id - 1]
+    component['ObjectName'] = 'Studio_CrystalFinaTestCrystal'
+    component['ObjectFlags'] = 'RF_Transactional'
+    set_value(component, 'StaticMesh', asset_import(npc, property_data(component, 'StaticMesh')['Value'], '/Game/' + TEST_MESH))
+    materials = property_data(component, 'OverrideMaterials')['Value']
+    if len(materials) != 1: raise ValueError('The native Sanctum crystal override changed.')
+    materials[0]['Value'] = asset_import(npc, materials[0]['Value'], '/Game/' + TEST_MATERIAL)
+    materials[0]['IsZero'] = False
+    def prop(name, value, kind, **extra):
+        return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
+                'Name': name, 'Value': value, 'IsZero': False, **extra}
+    # Explicit instance ownership/registration; keep the existing capsule as
+    # the only blocker. The decorative shell must not collide with its owner.
+    component['Data'] = [p for p in component['Data']
+                         if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance')]
+    component['Data'] += [prop('AttachParent', foot_id, 'ObjectPropertyData'),
+        prop('CreationMethod', 'Instance', 'EnumPropertyData', EnumType='EComponentCreationMethod', InnerType='ByteProperty'),
+        prop('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty'),
+        {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
+         'Name': 'BodyInstance', 'StructType': 'BodyInstance', 'SerializeNone': True, 'IsZero': False,
+         'Value': [prop('CollisionEnabled', 'NoCollision', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty'),
+                   prop('CollisionProfileName', 'NoCollision', 'NamePropertyData')]}]
+    owner = npc['Exports'][owner_id - 1]
+    instances = prop('InstanceComponents', [prop('0', component_id, 'ObjectPropertyData')], 'ArrayPropertyData', ArrayType='ObjectProperty')
+    existing = [p for p in owner['Data'] if p['Name'] == 'InstanceComponents']
+    if existing:
+        existing[0]['Value'].extend(instances['Value']); existing[0]['IsZero'] = False
+    else:
+        owner['Data'].append(instances)
+    owner['CreateBeforeSerializationDependencies'].append(component_id)
+    if foot_id not in component['CreateBeforeSerializationDependencies']:
+        component['CreateBeforeSerializationDependencies'].append(foot_id)
+    _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
+    bounds = property_data(mesh, 'ExtendedBounds')
+    origin = property_data(bounds, 'Origin')['Value'][0]['Value']
+    vector(component, 'RelativeScale3D', (TEST_CRYSTAL_SCALE,) * 3)
+    center = (0.0, 0.0, TEST_SPRITE_FLOAT + TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
+    vector(component, 'RelativeLocation', tuple(center[i] - float(origin[axis]) * TEST_CRYSTAL_SCALE
+                                               for i, axis in enumerate(('X', 'Y', 'Z'))))
+    names(npc, [component, owner, npc['Imports']])
 
 
 def entrance_mesh(view, component, spec, source):
@@ -1329,33 +1435,57 @@ def build(units, env):
     source = {}
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
-    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes):
-        suffix = '.uasset' if rel in (GRANT_DONOR, PLACE_NAME) or rel in meshes else '.umap'
+    has_test = any(spec.fina_test for entries in plans for _, spec in entries)
+    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_SPRITE.removeprefix('/Game/')) if has_test else ()
+    asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
+    for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
+        suffix = '.uasset' if rel in asset_sources else '.umap'
         relative = rel.removeprefix('/Game/')
         path = legacy / ('FFRS/Content/' + relative + suffix)
-        if not path.is_file():
+        if not path.is_file() or (rel == TEST_NATIVE_MESH and not path.with_suffix('.ubulk').is_file()):
             env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', relative))
+        if rel == TEST_NATIVE_MESH and not path.with_suffix('.ubulk').is_file():
+            raise ValueError('The Sanctum crystal streamed mesh data is missing; its private copy was not built.')
         dump = work / (Path(rel).name + '-original.json')
         env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
         source[rel] = json.loads(dump.read_text(encoding='utf-8-sig'))
+    if has_test:
+        _, project = export(source[TEST_SPRITE.removeprefix('/Game/')], Path(TEST_SPRITE).name)
+        packs = property_data(project, 'AnimeList')['Value']
+        if len(packs) != 1: raise ValueError('The introductory Fina sprite pack changed.')
+        animations = property_data(packs[0], 'AnimeList')['Value']
+        if (len(animations) <= TEST_ANIMATION_INDEX
+                or property_data(animations[TEST_ANIMATION_INDEX], 'AnimationName')['Value'] != TEST_ANIMATION):
+            raise ValueError('The introductory Fina floating pose changed.')
     expected = make_caves(source, plans)
+    if has_test: expected.update(test_crystal_assets(source))
     expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
     mapping = blueprint_mappings(expected, env, work)
     for rel, view in expected.items():
         names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        suffix = '.uasset' if rel in sequence_paths or rel == PLACE_NAME else '.umap'
+        suffix = '.uasset' if rel in sequence_paths or rel in (PLACE_NAME, TEST_MESH, TEST_MATERIAL) else '.umap'
         destination = Path(env['OUT']) / ('FFRS/Content/' + rel + suffix)
         destination.parent.mkdir(parents=True, exist_ok=True)
         env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])
         decoded = work / (Path(rel).name + '-verified.json')
         env['run'](env['FFRDT'] + ['tojson', str(destination), str(decoded), '--usmap', mapping])
         check_level(view, json.loads(decoded.read_text(encoding='utf-8-sig')))
+    if has_test:
+        # The cooked static mesh has streamed render data outside its export.
+        # Retain those bytes under the private package name as well.
+        for suffix in ('.ubulk', '.uptnl'):
+            original = legacy / ('FFRS/Content/' + TEST_NATIVE_MESH + suffix)
+            if original.is_file():
+                destination = Path(env['OUT']) / ('FFRS/Content/' + TEST_MESH + suffix)
+                destination.write_bytes(original.read_bytes())
     for entries in plans:
         unit, spec = entries[0]
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
+    if has_test:
+        print('  Crystal Fina Test: native introductory openarmidle2 pose; private Sanctum crystal mesh/material; original crystal glow retained; casing owned by acquisition NPC.')
 
 
 def make_caves(source, plans):

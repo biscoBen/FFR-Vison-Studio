@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.fieldLeader;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.crystalCaveTest || app.fieldLeader;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -113,6 +113,15 @@ class HomeScreen extends StatelessWidget {
                   value: app.crystalCave,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCave(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
+                  title: Text('Crystal Fina Test', style: Guide.text()),
+                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Keeps the crystal’s original glow and material effects. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
+                  value: app.crystalCaveTest,
+                  onChanged: busy || app.api == null ? null : (value) async {
+                    try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

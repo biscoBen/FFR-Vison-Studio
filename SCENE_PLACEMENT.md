@@ -1,5 +1,27 @@
 # Cooked map placement and interaction
 
+## Crystal Fina Test display
+
+The opt-in `crystalCaveTest` setting selects the same cave/reward route as `crystalCave`; the UI saves these as
+mutually exclusive settings. It uses native `pc0030_01/openarmidle2` (animation index 8), confirmed in
+`SEQ_C01_005_01` and `SEQ_C01_005_02_B`, with the normal `M_Ss_Component_PBR` material at 3.5 units per pixel.
+The introductory aura/appearance Niagara systems and scene camera bloom are independent and are not spawned.
+
+WoL map 10223 (`00Com_223`, `DT_MapData_02Lan`) streams shared `00Com_200_01_BG`. Its `StaticMeshActor_235`,
+component export 358, uses `SM_Env_Com_crystal008` and override `MI_Env_Com_crystal008_neverstream` at scale .25.
+Mesh bounds origin is (-.2887573,-2.0751038,1233.0002441), half extent (687.979126,694.907440,1476.134033).
+The test creates owned mesh/material packages under `Map/StudioCrystalCave/Test`, preserving native material settings,
+opaque render data and `.ubulk`/`.uptnl` companions. No original material/mesh package is overridden.
+
+The casing is an instance component of the existing acquisition NPC, attached to its grounded foot, with NoCollision;
+the native NPC capsule and event-only trigger stay responsible for blocking and input. Register it through
+`InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing; correct its elevated pivot
+from the actual bounds. The pose's native setup Y=51, part Y=-29 and one-pixel cell pivot put its visual center 21
+pixels above its origin; use that measured offset, not half its height. The initial sprite lift is 110 units.
+The original crystal material's bright center, edge effects and motion controls are unchanged. This deliberately tests
+their interaction with the sprite: the root crystal shader's transparency and actual visibility/hiding need gameplay
+verification. Binary roundtrips prove serialization, not the in-game appearance.
+
 These rules come from the demo's decoded maps, Blueprint defaults and `Mappings.usmap`, rather than screen-space
 estimates. Implementation: `assets/existing_visions/payload/_ffr_crystal_cave.py`; regression checks:
 `scripts/test_crystal_cave.py`. Native SDK and IoStore roundtrips are also checked with the supplied reference assets.

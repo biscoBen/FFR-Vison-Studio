@@ -61,6 +61,7 @@ class AppState extends ChangeNotifier {
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
   bool crystalCave = false;
+  bool crystalCaveTest = false;
   bool fieldLeader = false;
   bool dark = false; // the night edition of the guide
   bool sephiraEnabled = false;
@@ -326,6 +327,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
     try { crystalCave = await api!.crystalCave(); }
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
+    try { crystalCaveTest = await api!.crystalCaveTest(); }
+    catch (e) { notice = 'Could not load Crystal Fina test settings: $e'; }
     try { fieldLeader = await api!.fieldLeader(); }
     catch (e) { notice = 'Could not load field leader settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
@@ -392,9 +395,10 @@ class AppState extends ChangeNotifier {
     if (acquisitionLocations.cave(id) == null) return;
     final catalog = await AcquisitionCatalog.bundled;
     await _savePending();
-    if (id == 'crystal_cave' && crystalCave) {
-      await api!.saveCrystalCave(false);
-      crystalCave = false;
+    if (id == 'crystal_cave' && (crystalCave || crystalCaveTest)) {
+      if (crystalCaveTest) { await api!.saveCrystalCaveTest(false); }
+      else { await api!.saveCrystalCave(false); }
+      crystalCave = false; crystalCaveTest = false;
       notifyListeners();
     }
     await acquisitionLocations.remove(id);
@@ -420,14 +424,15 @@ class AppState extends ChangeNotifier {
     final catalog = await AcquisitionCatalog.bundled;
     await acquisitionLocations.update(cave);
     // Move the old opt-in Fina assignment to an explicit snapshot before editing.
-    if (cave.id == 'crystal_cave' && crystalCave) {
+    if (cave.id == 'crystal_cave' && (crystalCave || crystalCaveTest)) {
       try {
-        await api!.saveCrystalCave(false);
+        if (crystalCaveTest) { await api!.saveCrystalCaveTest(false); }
+        else { await api!.saveCrystalCave(false); }
       } catch (_) {
         await acquisitionLocations.update(previous);
         rethrow;
       }
-      crystalCave = false;
+      crystalCave = false; crystalCaveTest = false;
       for (final unit in units.cast<JsonMap>().where((u) => CrystalFina.matches(u))) {
         final saved = unit[Acquisition.field];
         final preferences = Acquisition.valid(saved)
@@ -450,8 +455,8 @@ class AppState extends ChangeNotifier {
   Future<bool> removeUnit(String key) => _withRoster(() async {
     try {
       if (building) { throw StateError('Wait for the current build to finish.'); }
-      if (crystalCave && units.any((u) => u['key'] == key && CrystalFina.matches(u as Map))) {
-        throw StateError('Turn off Crystal Fina cave before removing her profile.');
+      if ((crystalCave || crystalCaveTest) && units.any((u) => u['key'] == key && CrystalFina.matches(u as Map))) {
+        throw StateError('Turn off Crystal Fina cave and Crystal Fina Test before removing her profile.');
       }
       await _savePending();
       await api!.deleteUnit(key);
@@ -925,15 +930,27 @@ class AppState extends ChangeNotifier {
     testingPracticeBattle = value; notifyListeners();
   });
 
-  Future<void> setCrystalCave(bool value) async {
+  Future<void> setCrystalCave(bool value) => _setCrystalCave(value);
+
+  Future<void> setCrystalCaveTest(bool value) => _setCrystalCave(value, test: true);
+
+  Future<void> _setCrystalCave(bool value, {bool test = false}) async {
     // The acquired item must refer to the real, currently allocated profile.
     // Use the existing roster allocator and preserve every current edit.
     if (value && !hasCrystalFina) { await addBundledUnit(); }
     await _withRoster(() async {
       if (api == null || engineDown) { throw StateError('The engine is not running.'); }
       if (building) { throw StateError('Wait for the current build to finish.'); }
-      await api!.saveCrystalCave(value);
-      crystalCave = value; notifyListeners();
+      if (test) {
+        await api!.saveCrystalCaveTest(value);
+        crystalCaveTest = value;
+        if (value) crystalCave = false;
+      } else {
+        await api!.saveCrystalCave(value);
+        crystalCave = value;
+        if (value) crystalCaveTest = false;
+      }
+      notifyListeners();
     });
   }
 

@@ -31,6 +31,7 @@ class RosterApi extends Api {
   List<dynamic> roster;
   final calls = <String>[];
   bool cave = false;
+  bool caveTest = false;
   Future<void> Function(List<dynamic>)? beforeSave;
   @override
   Future<List<dynamic>> spec() async => clone(roster) as List;
@@ -43,7 +44,9 @@ class RosterApi extends Api {
   @override
   Future<void> build({required bool install}) async { calls.add('build'); }
   @override
-  Future<void> saveCrystalCave(bool value) async { calls.add('cave:$value'); cave = value; }
+  Future<void> saveCrystalCave(bool value) async { calls.add('cave:$value'); cave = value; if (value) caveTest = false; }
+  @override
+  Future<void> saveCrystalCaveTest(bool value) async { calls.add('cave-test:$value'); caveTest = value; if (value) cave = false; }
   @override
   Future<void> deleteUnit(String key) async { calls.add('delete'); roster.removeWhere((u) => u['key'] == key); }
   @override
@@ -154,7 +157,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.4' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.5' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -190,7 +193,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.4' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.5' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
@@ -236,6 +239,28 @@ void main() {
     expect(api.calls, isNot(contains('delete')));
     await app.setCrystalCave(false);
     expect(api.cave, isFalse); expect(app.crystalCave, isFalse);
+    expect(await app.removeUnit(fina['key'] as String), isTrue);
+  });
+
+  test('test cave switches presentation without duplicating Fina or losing edits', () async {
+    final api = RosterApi([]);
+    final app = AppState(hostBase: 'http://unused', appPaths: paths,
+        bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api;
+    addTearDown(app.dispose);
+    await app.setCrystalCaveTest(true);
+    expect(app.crystalCaveTest, isTrue);
+    expect(app.crystalCave, isFalse);
+    expect(api.roster.length, 1);
+    final fina = api.roster.single as Map<String, dynamic>;
+    fina['stats']['MaxHitPoint'] = 987;
+    await app.setCrystalCave(true);
+    expect(app.crystalCaveTest, isFalse);
+    expect(api.caveTest, isFalse);
+    await app.setCrystalCaveTest(true);
+    expect(api.roster.length, 1);
+    expect(api.roster.single['stats']['MaxHitPoint'], 987);
+    expect(await app.removeUnit(fina['key'] as String), isFalse);
+    await app.setCrystalCaveTest(false);
     expect(await app.removeUnit(fina['key'] as String), isTrue);
   });
 

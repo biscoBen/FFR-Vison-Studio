@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add **Crystal Fina Test** beside the original cave switch. It uses the same entrance, portal, acquisition reward,
+  ownership condition and stone-cave return, with Fina's native introductory `openarmidle2` pose inside private copies
+  of the Sanctum crystal mesh and material. Retain the crystal's original glow/material parameters for this experiment;
+  omit Fina's separate yellow introductory aura. The switches are mutually exclusive and reuse the same editable vision.
+  Register the decorative shell on the acquisition actor, preserve its streamed mesh data and keep the existing NPC
+  collision/interaction. Serializer checks use the supplied native assets; visibility through the unchanged material,
+  component hiding and final framing still need an in-game test.
+
 ## Published private PC-to-Deck mod sync — 2026-10-13
 
 Code: [`8ce9507`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8ce9507e6c3ce29e2820078ab9d43a23094abc71).

@@ -497,4 +497,101 @@ class CrystalCaveTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'lose names'): cave.check_level(expected, broken)
 
 
+class CrystalFinaTestModeTests(unittest.TestCase):
+    def test_test_mode_uses_existing_identity_grant_and_native_intro_appearance(self):
+        original, rows, unit = cave_game(); before = copy.deepcopy(original)
+        with tempfile.TemporaryDirectory() as root:
+            enabled(root)
+            path = Path(root) / testing.CONFIG
+            path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'crystalCaveTest': True}))
+            plans, _ = cave.cave_plans([unit], root, rows)
+            selected, spec = plans[0][0]
+            self.assertTrue(spec.fina_test)
+            self.assertEqual((spec.map_id, spec.stone_id, spec.npc_id), (29991, 29990, 29991))
+            self.assertEqual(spec.sprite, '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01')
+            self.assertEqual(spec.sprite_scale, 3.5)
+            self.assertTrue(spec.material.endswith('/M_Ss_Component_PBR'))
+            operations = testing.prepare({}, [unit], root, rows)
+        self.assertEqual(original, before)
+        grant, = [a for a in operations[testing.EVENT]['add'] if a['row'] == cave.EVENT]
+        event = testing.apply_fields(original[testing.EVENT][grant['cloneFrom']], grant['set'])
+        self.assertEqual(event['ObtainItemList'], [{'Condition': '{item:13507}==0', 'ID': 13507, 'Num': 1, 'Text': ''}])
+        self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
+        self.assertEqual(selected, unit)
+
+    def test_settings_keep_legacy_files_compatible_and_reject_two_overlapping_caves(self):
+        self.assertFalse(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTest'])
+        self.assertTrue(testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCaveTest': True})['crystalCaveTest'])
+        for value in (1, 'true', None):
+            with self.assertRaises(ValueError):
+                testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCaveTest': value})
+        with self.assertRaises(ValueError):
+            testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCave': True, 'crystalCaveTest': True})
+
+    @staticmethod
+    def source():
+        def p(name, value, kind='ObjectPropertyData', **extra):
+            return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
+                    'Name': name, 'Value': value, 'IsZero': False, **extra}
+        def vec(name, values):
+            return p(name, [{'Value': dict(zip(('X', 'Y', 'Z'), values)), 'IsZero': False}], 'StructPropertyData')
+        imports = [
+            {'ObjectName': '/Game/' + cave.TEST_NATIVE_MESH, 'ClassName': 'Package', 'OuterIndex': 0},
+            {'ObjectName': Path(cave.TEST_NATIVE_MESH).name, 'ClassName': 'StaticMesh', 'OuterIndex': -1},
+            {'ObjectName': '/Game/' + cave.TEST_NATIVE_MATERIAL, 'ClassName': 'Package', 'OuterIndex': 0},
+            {'ObjectName': Path(cave.TEST_NATIVE_MATERIAL).name, 'ClassName': 'MaterialInstanceConstant', 'OuterIndex': -3},
+            {'ObjectName': '/Script/Engine', 'ClassName': 'Package', 'OuterIndex': 0},
+            {'ObjectName': 'StaticMeshComponent', 'ClassName': 'Class', 'OuterIndex': -5}]
+        component = {'$type': 'UAssetAPI.ExportTypes.NormalExport, UAssetAPI', 'ObjectName': 'StaticMeshComponent0',
+            'OuterIndex': 1, 'ClassIndex': -6, 'SuperIndex': 0, 'TemplateIndex': 0,
+            'ObjectFlags': 'RF_DefaultSubObject', 'Extras': 'opaqueLODData',
+            'SerializationBeforeSerializationDependencies': [], 'CreateBeforeSerializationDependencies': [-2, -4],
+            'SerializationBeforeCreateDependencies': [-6], 'CreateBeforeCreateDependencies': [1],
+            'Data': [p('StaticMesh', -2), p('OverrideMaterials', [p('0', -4)], 'ArrayPropertyData'),
+                     vec('RelativeLocation', (6111, -740, 481)), vec('RelativeScale3D', (.25, .25, .25))]}
+        background = {'NameMap': ['native'], 'Imports': imports, 'Exports': [{}, component], 'DependsMap': [[], []]}
+        mesh = {'NameMap': ['native'], 'Imports': copy.deepcopy(imports), 'Exports': [{
+            'ObjectName': Path(cave.TEST_NATIVE_MESH).name, 'Data': [
+                p('StaticMaterials', [{'Value': [p('MaterialInterface', -4)]}], 'ArrayPropertyData'),
+                {'Name': 'ExtendedBounds', 'Value': [vec('Origin', (-.29, -2.08, 1233))]}]}]}
+        material = {'NameMap': [Path(cave.TEST_NATIVE_MATERIAL).name, '/Game/' + cave.TEST_NATIVE_MATERIAL],
+                    'Imports': [], 'Exports': [{'ObjectName': Path(cave.TEST_NATIVE_MATERIAL).name,
+                        'Data': [p('Crystal_Emissive', 10.0, 'FloatPropertyData')], 'Extras': 'originalShaderData'}]}
+        return {cave.TEST_BACKGROUND: background, cave.TEST_NATIVE_MESH: mesh, cave.TEST_NATIVE_MATERIAL: material}
+
+    def test_private_asset_names_keep_original_effect_settings_and_sources_unchanged(self):
+        source = self.source(); before = copy.deepcopy(source)
+        copied = cave.test_crystal_assets(source)
+        self.assertEqual(source, before)
+        material = copied[cave.TEST_MATERIAL]['Exports'][0]
+        self.assertEqual(material['Data'], source[cave.TEST_NATIVE_MATERIAL]['Exports'][0]['Data'])
+        self.assertEqual(material['Extras'], 'originalShaderData')
+        mesh = copied[cave.TEST_MESH]
+        ref = cave.property_data(cave.property_data(mesh['Exports'][0], 'StaticMaterials')['Value'][0], 'MaterialInterface')['Value']
+        self.assertEqual(mesh['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_MATERIAL).name)
+        self.assertIn('/Game/' + cave.TEST_MATERIAL, mesh['NameMap'])
+        self.assertEqual(mesh['NamesReferencedFromExportDataCount'], len(mesh['NameMap']))
+
+    def test_shell_is_registered_on_same_owned_actor_follows_foot_and_has_no_physics(self):
+        source = self.source(); before = copy.deepcopy(source)
+        npc = {'NameMap': ['native'], 'Imports': [], 'Exports': [{'Data': [],
+               'CreateBeforeSerializationDependencies': []} for _ in range(110)], 'DependsMap': [[] for _ in range(110)]}
+        condition = {'Name': 'm_VisiblFlagCondition', 'Value': '{item:13507}==0'}
+        npc['Exports'][30]['Data'].append(condition)
+        cave.attach_test_crystal(npc, source)
+        self.assertEqual(source, before)
+        owner = npc['Exports'][30]; shell = npc['Exports'][-1]
+        self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
+        self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], 111)
+        self.assertEqual(shell['OuterIndex'], 31)
+        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 110)
+        self.assertEqual(cave.property_data(shell, 'CreationMethod')['Value'], 'Instance')
+        self.assertEqual(cave.property_data(cave.property_data(shell, 'BodyInstance'), 'CollisionEnabled')['Value'], 'NoCollision')
+        loc = cave.property_data(shell, 'RelativeLocation')['Value'][0]['Value']
+        self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE,
+                               cave.TEST_SPRITE_FLOAT + 21.0 * cave.TEST_SPRITE_SCALE)
+        self.assertEqual(shell['Extras'], 'opaqueLODData')
+        self.assertIn(111, owner['CreateBeforeSerializationDependencies'])
+
+
 if __name__ == '__main__': unittest.main()
