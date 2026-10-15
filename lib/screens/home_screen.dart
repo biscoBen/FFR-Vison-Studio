@@ -118,10 +118,21 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
                   title: Text('Crystal Fina Test', style: Guide.text()),
-                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Uses clearer glass, a fitted pose and a slowly turning crystal. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
+                  subtitle: Text('Same cave and acquisition, with Fina’s introductory pose inside a private Sanctum crystal. Uses a fitted pose and a slowly turning crystal. Select the casing check below. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
                   value: app.crystalCaveTest,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                if (app.crystalCaveTest) SwitchListTile(
+                  key: const Key('crystal-fina-solid-check'), contentPadding: EdgeInsets.zero,
+                  title: Text('Solid casing check', style: Guide.text()),
+                  subtitle: Text(app.crystalCaveTestSolid
+                      ? 'Uses the original solid Sanctum material to check crystal visibility. Fina may be obscured. Rebuild/install to apply.'
+                      : 'Uses the experimental transparent glass. Rebuild/install to apply.', style: Guide.small()),
+                  value: app.crystalCaveTestSolid,
+                  onChanged: busy || app.api == null ? null : (value) async {
+                    try { await app.setCrystalCaveTestSolid(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

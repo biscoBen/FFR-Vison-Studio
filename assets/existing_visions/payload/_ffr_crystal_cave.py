@@ -1035,8 +1035,15 @@ def asset_import(view, template_index, package):
     return -(view['Imports'].index(item) + 1)
 
 
-def test_crystal_assets(source):
-    """Use native glass transmission; masked crystal defaults still hide Fina."""
+def test_crystal_assets(source, solid=False):
+    """Swap only the private casing material to distinguish rendering from glass."""
+    if solid:
+        # Preserve the original opaque parent, static permutation and native
+        # shader bytes. This material was visible in the first Sanctum trial.
+        material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
+                                 '/Game/' + TEST_MATERIAL)
+        names(material, [material['Exports'], material['Imports']])
+        return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material}
     _, shader = export(source[TEST_NATIVE_SHADER], Path(TEST_NATIVE_SHADER).name)
     properties = {p['Name']: p['Value'] for p in shader.get('Data', [])}
     # SingleLayerWater implements transmission in its own render pass even
@@ -1077,6 +1084,11 @@ def test_crystal_assets(source):
         set_value(scalar, 'ParameterValue', struct.unpack('<f', struct.pack('<f', value))[0])
     if parent['Value'] not in instance['CreateBeforeSerializationDependencies']:
         instance['CreateBeforeSerializationDependencies'].append(parent['Value'])
+    names(material, [material['Exports'], material['Imports']])
+    return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material}
+
+
+def test_crystal_mesh(source):
     mesh = private_level(source[TEST_NATIVE_MESH], '/Game/' + TEST_NATIVE_MESH, '/Game/' + TEST_MESH)
     _, owner = export(mesh, Path(TEST_MESH).name)
     slots = property_data(owner, 'StaticMaterials')['Value']
@@ -1084,8 +1096,8 @@ def test_crystal_assets(source):
     reference = property_data(slots[0], 'MaterialInterface')
     reference['Value'] = asset_import(mesh, reference['Value'], '/Game/' + TEST_MATERIAL)
     reference['IsZero'] = False
-    names(mesh, mesh['Exports']); names(material, [material['Exports'], material['Imports']])
-    return {TEST_MESH: mesh, TEST_MATERIAL: material}
+    names(mesh, mesh['Exports'])
+    return mesh
 
 
 def native_prop(name, value, kind='ObjectPropertyData', **extra):
@@ -1639,6 +1651,7 @@ def world_destination_banner(original):
 
 
 def build(units, env):
+    import _ffr_testing as testing
     plans, _ = cave_plans(units, env['ROOT'], env.get('rows'))
     if not plans: return
     root = Path(env['ROOT']); legacy = Path(env['LEGACY'])
@@ -1650,8 +1663,9 @@ def build(units, env):
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     has_test = any(spec.fina_test for entries in plans for _, spec in entries)
-    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_NATIVE_SHADER, TEST_SPIN_DONOR,
-                    TEST_SPRITE.removeprefix('/Game/')) if has_test else ()
+    solid_test = has_test and testing.settings(root)['crystalCaveTestSolid']
+    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_SPIN_DONOR,
+                    TEST_SPRITE.removeprefix('/Game/'), *((TEST_NATIVE_SHADER,) if not solid_test else ())) if has_test else ()
     asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
         suffix = '.uasset' if rel in asset_sources else '.umap'
@@ -1674,7 +1688,7 @@ def build(units, env):
             raise ValueError('The introductory Fina floating pose changed.')
     expected = make_caves(source, plans)
     if has_test:
-        expected.update(test_crystal_assets(source))
+        expected.update(test_crystal_assets(source, solid=solid_test))
         expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
     expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
@@ -1702,7 +1716,8 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: fitted introductory pose; visible glass facets (opacity 0.12, Fresnel 0.65, refraction bias 1000); direct sprite attachment; baked visibility disabled; Tick-driven casing turn at 3.6 degrees/second.')
+        mode = 'SOLID CHECK (original Sanctum material)' if solid_test else 'GLASS (experimental transparent material)'
+        print(f'  Crystal Fina Test material: {mode}; direct sprite attachment; baked visibility disabled; Tick-driven casing turn.')
 
 
 def make_caves(source, plans):

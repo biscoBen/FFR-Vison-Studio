@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add **Solid casing check** below Crystal Fina Test, enabled by default for existing and new settings. It swaps the
+  private casing material between the original solid Sanctum material and the current experimental glass; the mesh,
+  placement, size, animation and acquisition remain identical. Preserve the solid material's native shader data and
+  print the selected mode during installation. Save the choice independently, preserving it when other switches change.
+  This is a diagnostic comparison after the previous setup correction left the casing missing in live testing.
+  A solid casing may hide Fina; runtime visibility still requires the user's test.
+
 ## Published Crystal Fina casing setup correction — 2026-10-15
 
 Code: [`741e486`](https://github.com/biscoBen/FFR-Vison-Studio/commit/741e48609b46e5512b6402e132b8cc95daebfd84).

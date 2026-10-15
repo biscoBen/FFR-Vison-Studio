@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/screens/add_unit_dialog.dart';
+import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/bundled_features.dart';
 import 'package:ffr_vision_studio/services/crystal_fina.dart';
@@ -32,6 +33,7 @@ class RosterApi extends Api {
   final calls = <String>[];
   bool cave = false;
   bool caveTest = false;
+  bool solidCheck = true;
   Future<void> Function(List<dynamic>)? beforeSave;
   @override
   Future<List<dynamic>> spec() async => clone(roster) as List;
@@ -47,6 +49,8 @@ class RosterApi extends Api {
   Future<void> saveCrystalCave(bool value) async { calls.add('cave:$value'); cave = value; if (value) caveTest = false; }
   @override
   Future<void> saveCrystalCaveTest(bool value) async { calls.add('cave-test:$value'); caveTest = value; if (value) cave = false; }
+  @override
+  Future<void> saveCrystalCaveTestSolid(bool value) async { solidCheck = value; }
   @override
   Future<void> deleteUnit(String key) async { calls.add('delete'); roster.removeWhere((u) => u['key'] == key); }
   @override
@@ -157,7 +161,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.10' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.11' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -193,7 +197,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.10' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.11' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
@@ -240,6 +244,28 @@ void main() {
     await app.setCrystalCave(false);
     expect(api.cave, isFalse); expect(app.crystalCave, isFalse);
     expect(await app.removeUnit(fina['key'] as String), isTrue);
+  });
+
+  testWidgets('solid casing check starts on and can change without altering the roster', (tester) async {
+    final api = RosterApi([]);
+    final app = AppState(hostBase: 'http://unused', appPaths: paths,
+        bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api..crystalCaveTest = true;
+    addTearDown(app.dispose);
+    tester.view.physicalSize = const Size(1920, 1080);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(value: app,
+      child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: HomeScreen()))));
+    final control = find.byKey(const Key('crystal-fina-solid-check'));
+    await tester.ensureVisible(control);
+    expect(tester.widget<SwitchListTile>(control).value, isTrue);
+    await tester.tap(control);
+    await tester.pumpAndSettle();
+    expect(app.crystalCaveTestSolid, isFalse);
+    expect(api.solidCheck, isFalse);
+    expect(app.crystalCaveTest, isTrue);
+    expect(api.roster, isEmpty);
   });
 
   test('test cave switches presentation without duplicating Fina or losing edits', () async {

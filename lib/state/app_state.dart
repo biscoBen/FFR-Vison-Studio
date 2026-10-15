@@ -62,6 +62,7 @@ class AppState extends ChangeNotifier {
   bool testingPracticeBattle = false;
   bool crystalCave = false;
   bool crystalCaveTest = false;
+  bool crystalCaveTestSolid = true;
   bool fieldLeader = false;
   bool dark = false; // the night edition of the guide
   bool sephiraEnabled = false;
@@ -329,6 +330,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { crystalCaveTest = await api!.crystalCaveTest(); }
     catch (e) { notice = 'Could not load Crystal Fina test settings: $e'; }
+    try { crystalCaveTestSolid = await api!.crystalCaveTestSolid(); }
+    catch (e) { notice = 'Could not load crystal casing test mode: $e'; }
     try { fieldLeader = await api!.fieldLeader(); }
     catch (e) { notice = 'Could not load field leader settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
@@ -933,6 +936,13 @@ class AppState extends ChangeNotifier {
   Future<void> setCrystalCave(bool value) => _setCrystalCave(value);
 
   Future<void> setCrystalCaveTest(bool value) => _setCrystalCave(value, test: true);
+
+  Future<void> setCrystalCaveTestSolid(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveCrystalCaveTestSolid(value);
+    crystalCaveTestSolid = value; notifyListeners();
+  });
 
   Future<void> _setCrystalCave(bool value, {bool test = false}) async {
     // The acquired item must refer to the real, currently allocated profile.

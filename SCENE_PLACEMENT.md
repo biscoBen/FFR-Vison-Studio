@@ -23,6 +23,28 @@ The root's cached `Switch_DitherMask` default is false. Its masked blend mode an
 / `Crystal_Opacity` names do not establish that those controls activate transparency in the shipped permutation.
 Do not repeat that assumption or enable a static switch without a matching cooked shader.
 
+### Solid-versus-glass diagnostic
+
+Live follow-up to run 38804043413: the user still reported the same missing casing. The culling/attachment/clock
+corrections are retained but have not established the live cause. Do not keep shipping surface parameter guesses
+without separating material visibility from object presence.
+
+**Solid casing check** appears below Crystal Fina Test. Persist `crystalCaveTestSolid` in testing.json; default true
+for new and legacy settings, independently of whether the test cave itself is enabled. The preference alone must not
+create a roster or activate any mod feature. UI/API changes to other switches must retain its saved false/true value.
+
+Solid mode copies the original `MI_Env_Com_crystal008_neverstream` into the same private material package, preserving
+its original opaque parent, static parameters, overrides and native shader/cache bytes. It does not require the glass
+shader. Glass mode retains the current experimental transmission material. Both modes use the identical private mesh,
+streamed companions, attachment, scale, position, turning sequence, ownership and acquisition. Rebuild/install and
+restart between modes; inspect a save that does not own Fina. The installer prints SOLID CHECK or GLASS explicitly.
+
+A visible solid casing would point to the experimental material/render path; a missing solid casing would leave the
+runtime object/installation path to investigate. Fina being obscured by an opaque shell is expected for this check.
+Native roundtrips and UI/settings tests cannot answer the in-game visibility question.
+
+### Experimental glass
+
 The private instance now inherits **`M_Env_Glass_Single_Layer_Water`**, whose explicit shading model is
 `MSM_SingleLayerWater` (field 1024), with its native opaque base blend mode. This shading model has a separate
 transmission pass; opaque base blending here is not equivalent to an ordinary opaque surface. Its native parameter

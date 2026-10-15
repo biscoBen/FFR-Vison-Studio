@@ -521,11 +521,13 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(selected, unit)
 
     def test_settings_keep_legacy_files_compatible_and_reject_two_overlapping_caves(self):
+        self.assertTrue(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTestSolid'])
         self.assertFalse(testing.validate_settings({'schema': 1, 'maxMr': False})['crystalCaveTest'])
         self.assertTrue(testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCaveTest': True})['crystalCaveTest'])
         for value in (1, 'true', None):
-            with self.assertRaises(ValueError):
-                testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCaveTest': value})
+            for flag in ('crystalCaveTest', 'crystalCaveTestSolid'):
+                with self.assertRaises(ValueError):
+                    testing.validate_settings({'schema': 1, 'maxMr': False, flag: value})
         with self.assertRaises(ValueError):
             testing.validate_settings({'schema': 1, 'maxMr': False, 'crystalCave': True, 'crystalCaveTest': True})
 
@@ -611,6 +613,17 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         scalars = cave.property_data(material, 'ScalarParameterValues')['Value']
         bias, = [p for p in scalars if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
         self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 1000)
+
+    def test_solid_check_preserves_native_opaque_material_and_uses_identical_mesh(self):
+        source = self.source(); before = copy.deepcopy(source)
+        source.pop(cave.TEST_NATIVE_SHADER)  # Solid mode must not need the glass shader.
+        solid = cave.test_crystal_assets(source, solid=True)
+        material = solid[cave.TEST_MATERIAL]['Exports'][0]
+        self.assertEqual(material['Data'], before[cave.TEST_NATIVE_MATERIAL]['Exports'][0]['Data'])
+        self.assertEqual(material['Extras'], 'originalShaderData')
+        self.assertEqual(solid[cave.TEST_MESH], cave.test_crystal_assets(before)[cave.TEST_MESH])
+        self.assertNotIn('/Game/' + cave.TEST_NATIVE_SHADER, solid[cave.TEST_MATERIAL]['NameMap'])
+        self.assertEqual(source[cave.TEST_NATIVE_MATERIAL], before[cave.TEST_NATIVE_MATERIAL])
 
     def test_turn_sequence_uses_tick_and_explicit_casing_transform_without_cutscene_controls(self):
         p, st, guid = cave.native_prop, cave.native_struct, cave.native_guid
