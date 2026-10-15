@@ -11,11 +11,25 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina test visibility fix — 2026-10-15
+
+Code: [`d31c5b6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d31c5b606462d7901898cd048589c9576a5a92a6).
+[Verified Windows test release / run 38779778666](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38779778666).
+
 - Correct **Crystal Fina Test** visibility: the native Sanctum material is opaque. The private test instance now
-  inherits the game's cooked masked crystal shader, drops the incompatible opaque shader resources, and reduces
+  inherits the game's cooked masked crystal shader, discards the incompatible opaque shader resources and reduces
   surface glare. Center the casing in the sprite's own coordinates so billboard transforms keep it around her.
-  Preserve the existing acquisition route and original cave option. Native mesh/material/component roundtrips, clean analysis, 243 Flutter checks and 338 Python checks pass locally;
-  Windows validation is pending. Final masked coverage and framing need an in-game test.
+  Retain the acquisition route and original cave option. This uses masked coverage rather than optical glass
+  transmission; final coverage and framing still need an in-game test. Record the native shader and sprite-space
+  placement rules in `SCENE_PLACEMENT.md` and the full-game release checklist.
+- Validation: clean analysis, 243 Flutter checks and the separate real frozen-engine Windows startup check passed.
+  All 338 Python checks passed on Windows (five skips) and Linux (four skips), along with the required bundle,
+  launcher and import checks. Native material/mesh/component binary roundtrips passed. Downloaded the published
+  archive, matched its SHA-256 and commit/run provenance, and verified all 25 manifest entries plus the manifest
+  against the source. The engine extension is 1.2.6. Gameplay appearance remains pending.
+- First complete candidate to verified download: **8m18s**, including checks, corrections, waiting and verification.
+  Windows CI took **5m26s** with **10m05s** runner time. Reused the matching automatic push run; no extra build
+  was dispatched. Master stays unchanged.
 
 ## Published Crystal Fina Sanctum crystal test — 2026-10-15
 

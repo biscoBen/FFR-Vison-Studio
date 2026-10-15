@@ -13,11 +13,12 @@ hides her afterward. The Windows package is verified; placement and the acquisit
 
 For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle,
 reuses the same vision/cave/reward, and displays Fina's native introductory floating pose inside private copies of the
-Sanctum crystal mesh and material. The crystal keeps its original glow and material effects; Fina's separate yellow
-introductory aura is omitted. Update Studio, rebuild/install and restart Resonance, then load a save without Crystal
-Fina already acquired. Her visibility inside the unchanged crystal material and final framing still need a gameplay test.
-[Verified test package / run 38771871918](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38771871918/Sephira-Studio-Test.zip)
-(code `fe46921`, published 2026-10-15).
+Sanctum crystal mesh and material. The test now uses the game's cooked masked crystal shader with reduced glare;
+the original opaque material hid her. The casing follows her sprite's billboard transform and measured pose center.
+Fina's separate yellow introductory aura is omitted. Update Studio, rebuild/install and restart Resonance, then load
+a save without Crystal Fina already acquired. Masked coverage and final framing still need an in-game test.
+[Verified test package / run 38779778666](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38779778666/Sephira-Studio-Test.zip)
+(code `d31c5b6`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
@@ -579,6 +580,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   exit banners' region/name and recommended-level metadata independently of their travel destinations. Refresh
   `DA_UI_PlaceNameProperty` and review map 1000's `bUseLandName` policy, preserving other destinations/visibility settings.
   Retest selected vendor inventories and combined-shop tabs, preserving native item conditions and purchase limits.
+  For **Crystal Fina Test**, revalidate the crystal root's blend mode, `M_Env_Crystal_DitherObject` and its scalar names,
+  the cooked material-instance cached-data format, and introductory pose/billboard transforms. Preserve both test modes
+  and avoid carrying demo-specific shader serialization into another engine version without checking it.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.
