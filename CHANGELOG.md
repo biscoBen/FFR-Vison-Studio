@@ -11,7 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Correct Crystal Fina Test's rotation package: the appended turn track reused an existing cutscene track's object
+  name under the same MovieScene. Give the new track and section unique names, revise signatures and reject duplicate
+  cooked object identities before writing/after readback. The retained donor contains off-stage/zero-scale transforms;
+  a property roundtrip alone did not detect that ambiguous runtime path. Live rotation still needs confirmation.
+- Preserve the approved central glass and add subtle native crystal normal detail (.04) only at the outer tips.
+  Partition all three native LODs into central/tip material sections, retaining every triangle, vertex, tangent, UV,
+  winding, bound, physics body and bulk companion. Align the depth-only triangles by oriented geometry and retain GPU
+  buffer sizes. Reject unrecognized layouts; record this dependency in the full-game checklist. The circled patch has
+  no open mesh edge; leave its central glass unchanged while assessing it in motion.
+- Keep Solid casing check off and enable Animate crystal casing for the next test; rebuild/install and restart.
+  Actual movement and the small tip refraction change require an in-game check. Bundled extension 1.2.14.
+
 ## Published Crystal Fina glass refraction — 2026-10-15
+
+Live follow-up: the user approves the transparency and requests only slightly stronger refraction above/below Fina.
+Enabling the optional turn makes the casing disappear; the duplicate track identity correction above addresses a
+concrete error in that generated sequence while preserving the approved central material.
 
 Code: [`68615bf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/68615bf44f3523d7bf8872fb1abc001e2de336ee).
 [Verified Windows test release / run 38819768798](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38819768798).

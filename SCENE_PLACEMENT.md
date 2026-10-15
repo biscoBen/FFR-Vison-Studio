@@ -65,6 +65,47 @@ rebuilds OwnedComponents from subobjects during load, and InstanceComponents is 
 SceneComponent::OnRegister resolves a serialized AttachParent; it does not require inventing an attachment flag.
 These checks support the existing ownership/registration setup, but do not prove the component's live state.
 
+### Rotation track object identity
+
+Live testing with Animate crystal casing on made the glass disappear again. The generated sequence contains
+an actual duplicate UObject identity: the grant donor's export 132 and appended export 363 are both named
+`MovieScene3DTransformTrack_0` under MovieScene export 119. Different export indices do not make these different
+runtime object paths. The retained cutscene tracks include off-stage translations and zero-scale defaults.
+Give the appended track/section private names `Studio_CrystalFinaTestTurnTrack` / `Studio_CrystalFinaTestTurnSection`,
+and revise their signatures. `check_object_names` rejects duplicate (OuterIndex, case-insensitive ObjectName)
+pairs before writing and after native readback. Regression fixtures retain a same-named donor track deliberately.
+This corrects the concrete package collision; only a live test can confirm the resulting turn/visibility.
+
+### Tip-only glass detail
+
+The user approved the .22 opacity / .80 Fresnel / .10 roughness / bias 12 central glass and requested only a small
+refraction increase above/below Fina. Preserve that material exactly. A second private instance
+`MI_Studio_CrystalFinaTestTips` inherits it, overriding `NormalMap` with the original Sanctum material's shipped
+`Crystal_Normal` texture and `Normal_Intensity=.04`. All coverage, bias, reflection and wave settings remain equal.
+Solid mode uses two identical original opaque instances. Both modes share the same partitioned geometry.
+
+`_ffr_crystal_mesh.py` partitions the native inline LOD index buffers into central material 0 and tip material 1.
+A triangle gets tip material only if **all** vertices are outside center Z ±120/.12 (native Z approximately
+233 to 2233), leaving the whole central band and crossing triangles unchanged. No vertices, tangents, UVs, triangles
+or winding are added/removed/changed. LOD0 is 1696 central +188 tip triangles; LOD1 856+86; LOD2 432+38.
+Only section descriptors and triangle order change. Native depth-only triangles have a different order and welded
+indices: match by oriented vertex-position triples, then use the same section grouping, rather than assuming
+its original order matches the main index buffer. Preserve the three GPU buffer-size fields (payload sizes do not
+change). Two empty section samplers plus one empty whole-mesh sampler replace the original one-plus-one entries.
+Retain source LWC bounds, Nanite/SDF tail, physics and external bulk data unchanged.
+
+The rewriter only accepts this checked UE5.6 layout: three inline LODs, one original material section, no ray-tracing
+payload, empty reversed index buffers and empty area samplers. Reject unsupported layouts before emitting a mesh.
+Format references: CUE4Parse's FStaticMeshLODResources, FStaticMeshSection, FRawStaticIndexBuffer and
+FWeightedRandomSampler. Independent binary fixtures check 16-/32-bit indices, vertex bytes, all oriented geometry,
+section ranges, depth correspondence, unchanged opaque tail and malformed/unsupported data. Native source/readback
+comparisons check all three actual LODs. Revalidate the guard/layout when the full game releases.
+
+The native mesh is closed after position welding (each edge belongs to two triangles). No open edge explains the
+circled central patch. Screen-space refraction can sample another facet/background there; do not alter its geometry
+or increase central distortion based on that screenshot. Judge it again while rotating; the tip detail and turn still
+need an in-game check.
+
 ### Experimental glass
 
 Live follow-up to run 38815120120: the solid crystal renders (and retains its native material-driven turning),

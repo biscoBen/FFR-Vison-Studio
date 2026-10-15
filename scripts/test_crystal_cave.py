@@ -540,6 +540,7 @@ class CrystalFinaTestModeTests(unittest.TestCase):
 
     @staticmethod
     def source():
+        from test_crystal_mesh import native_mesh_fixture
         def p(name, value, kind='ObjectPropertyData', **extra):
             return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
                     'Name': name, 'Value': value, 'IsZero': False, **extra}
@@ -562,10 +563,13 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                      p('VisibilityId', 1, 'IntPropertyData'), p('bIsValidTextureStreamingBuiltData', True, 'BoolPropertyData')]}
         background = {'NameMap': ['native'], 'Imports': imports, 'Exports': [{'ObjectName': 'StaticMeshActor_235',
             'Extras': 'nativeActorFooter'}, component], 'DependsMap': [[], []]}
+        imports += [{'ObjectName': '/Game/Test/Crystal_Normal', 'OuterIndex': 0, 'ClassName': 'Package', 'ClassPackage': '/Script/CoreUObject'},
+                    {'ObjectName': 'Crystal_Normal', 'OuterIndex': -7, 'ClassName': 'Texture2D', 'ClassPackage': '/Script/Engine'}]
         mesh = {'NameMap': ['native'], 'Imports': copy.deepcopy(imports), 'Exports': [{
             'ObjectName': Path(cave.TEST_NATIVE_MESH).name, 'Data': [
                 p('StaticMaterials', [{'Value': [p('MaterialInterface', -4)]}], 'ArrayPropertyData'),
-                {'Name': 'ExtendedBounds', 'Value': [vec('Origin', (-.29, -2.08, 1233))]}]}]}
+                {'Name': 'ExtendedBounds', 'Value': [vec('Origin', (-.29, -2.08, 1233))]}],
+                'CreateBeforeSerializationDependencies': [], 'Extras': base64.b64encode(native_mesh_fixture()).decode()}]}
         scalar = p('0', [p('ParameterInfo', [p('Name', 'Crystal_Emissive', 'NamePropertyData')], 'StructPropertyData'),
                          p('ParameterValue', 10.0, 'FloatPropertyData'),
                          p('ExpressionGUID', [p('ExpressionGUID', '{11111111-1111-1111-1111-111111111111}')], 'StructPropertyData')], 'StructPropertyData')
@@ -575,7 +579,10 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                         'Data': [p('Parent', -4), p('bHasStaticPermutationResource', True, 'BoolPropertyData'),
                                  p('ScalarParameterValues', [scalar], 'ArrayPropertyData'),
                                  p('VectorParameterValues', [], 'ArrayPropertyData'),
-                                 p('TextureParameterValues', [], 'ArrayPropertyData'),
+                                 p('TextureParameterValues', [p('0', [
+                                     p('ParameterInfo', [p('Name', 'Crystal_Normal', 'NamePropertyData')], 'StructPropertyData'),
+                                     p('ParameterValue', -8), p('ExpressionGUID', [p('ExpressionGUID', '{11111111-1111-1111-1111-111111111111}')], 'StructPropertyData')],
+                                     'StructPropertyData')], 'ArrayPropertyData'),
                                  p('StaticParametersRuntime', [], 'StructPropertyData'),
                                  p('BasePropertyOverrides', [], 'StructPropertyData')], 'Extras': 'originalShaderData'}]}
         shader = {'NameMap': list(cave.TEST_CRYSTAL_PARAMETERS), 'Exports': [{
@@ -621,6 +628,27 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         bias, = [p for p in scalars if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
         self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 12)
 
+    def test_tip_glass_keeps_central_coverage_and_only_adds_weak_native_normal_detail(self):
+        source = self.source(); before = copy.deepcopy(source)
+        assets = cave.test_crystal_assets(source)
+        base = assets[cave.TEST_MATERIAL]['Exports'][0]
+        tips = assets[cave.TEST_TIP_MATERIAL]['Exports'][0]
+        def values(owner):
+            return {cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value']:
+                    cave.property_data(p, 'ParameterValue')['Value'] for p in cave.property_data(owner, 'ScalarParameterValues')['Value']}
+        base_values, tip_values = values(base), values(tips)
+        self.assertEqual({k: v for k, v in tip_values.items() if k != 'Normal_Intensity'},
+                         {k: v for k, v in base_values.items() if k != 'Normal_Intensity'})
+        self.assertEqual(base_values['Normal_Intensity'], 0)
+        self.assertGreater(tip_values['Normal_Intensity'], 0)
+        self.assertLess(tip_values['Normal_Intensity'], .05)
+        normal, = cave.property_data(tips, 'TextureParameterValues')['Value']
+        self.assertEqual(cave.property_data(cave.property_data(normal, 'ParameterInfo'), 'Name')['Value'], 'NormalMap')
+        texture = cave.property_data(normal, 'ParameterValue')['Value']
+        self.assertEqual(assets[cave.TEST_TIP_MATERIAL]['Imports'][-texture - 1]['ObjectName'], 'Crystal_Normal')
+        self.assertEqual(base['Extras'], tips['Extras'])
+        self.assertEqual(source, before)
+
     def test_solid_check_preserves_native_opaque_material_and_uses_identical_mesh(self):
         source = self.source(); before = copy.deepcopy(source)
         source.pop(cave.TEST_NATIVE_SHADER)  # Solid mode must not need the glass shader.
@@ -654,6 +682,9 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         root = obj(Path(cave.GRANT_DONOR).name, 0, [p('MovieScene', 2), p('DirectorClass', -1), p('CompiledData', -1),
             st('BindingReferences', 'LevelSequenceBindingReferences', [p('SortedReferences', [], 'ArrayPropertyData')]), guid('Signature', zero)])
         base = {'NameMap': ['native', '/Game/' + cave.GRANT_DONOR], 'Imports': [], 'Exports': [root, base_scene], 'DependsMap': [[], []]}
+        # The actual acquisition donor already owns a TransformTrack under its
+        # MovieScene. Appending another export with that name aliases its path.
+        base['Exports'].append(obj('TransformTrack', 2, [])); base['DependsMap'].append([])
         donor_scene = scene('DonorScene', 0)
         cave.set_value(donor_scene, 'Possessables', [st('0', 'MovieScenePossessable', [guid('Guid', zero),
             guid('ParentGuid', zero), p('Name', 'Original', 'StrPropertyData')])])
@@ -670,6 +701,11 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         source = {**self.source(), cave.GRANT_DONOR: base, cave.TEST_SPIN_DONOR: donor}; before = copy.deepcopy(source)
         result = cave.test_spin_sequence(source)
         self.assertEqual(source, before)
+        self.assertNotEqual(result['Exports'][-2]['ObjectName'], 'TransformTrack')
+        cave.check_object_names(result)
+        collision = copy.deepcopy(result); collision['Exports'][-2]['ObjectName'] = 'transformtrack'
+        with self.assertRaisesRegex(ValueError, 'Duplicate cooked object path'):
+            cave.check_object_names(collision)
         scene = result['Exports'][1]
         for name in ('Spawnables', 'Tracks', 'BindingGroups'):
             self.assertEqual(cave.property_data(scene, name)['Value'], [])

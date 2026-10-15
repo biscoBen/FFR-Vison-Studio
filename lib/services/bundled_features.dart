@@ -254,6 +254,7 @@ class BundledFeatures {
           'payload/overworld_assets.zip',
           'payload/_ffr_testing.py',
           'payload/_ffr_crystal_cave.py',
+          'payload/_ffr_crystal_mesh.py',
           'payload/cave_terrain.json',
           'payload/_ffr_ability_modes.py',
           'payload/ability_hiding_review.json',
@@ -263,7 +264,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 25) {
+        (manifest['files'] as Map).length != 26) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -309,7 +310,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.13' ||
+    if (status['patchVersion'] != '1.2.14' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

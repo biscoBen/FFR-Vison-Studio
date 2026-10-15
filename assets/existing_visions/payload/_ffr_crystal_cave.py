@@ -42,6 +42,7 @@ TEST_NATIVE_SHADER = 'Env/Com/MasterMaterial/M_Env_Glass_Single_Layer_Water'
 TEST_SPRITE = '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01'
 TEST_MESH = 'Map/StudioCrystalCave/Test/SM_Studio_CrystalFinaTest'
 TEST_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTest'
+TEST_TIP_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTestTips'
 TEST_SPIN_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_005_01/SEQ_C01_005_01'
 TEST_SPIN_SEQUENCE = 'Map/StudioCrystalCave/Test/SEQ_Studio_CrystalFinaTestTurn'
 TEST_SPIN_GUID = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL, TEST_SPIN_SEQUENCE)).upper() + '}'
@@ -64,6 +65,8 @@ TEST_CRYSTAL_PARAMETERS = {'Opacity': .22, 'Metallic': .08, 'Roughness': .10,
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
 TEST_SPRITE_FLOAT = 183.5 - TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE
 TEST_CRYSTAL_TURN_RATE = 3.6  # Degrees/second, one slow revolution per 100 seconds.
+TEST_TIP_BAND = 120.0  # Preserve the central glass, with clearance around Fina.
+TEST_TIP_NORMAL = .04  # A small amount of the native crystal's normal detail.
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -1046,7 +1049,9 @@ def test_crystal_assets(source, solid=False):
         material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
                                  '/Game/' + TEST_MATERIAL)
         names(material, [material['Exports'], material['Imports']])
-        return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material}
+        tips = private_level(material, '/Game/' + TEST_MATERIAL, '/Game/' + TEST_TIP_MATERIAL)
+        names(tips, [tips['Exports'], tips['Imports']])
+        return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material, TEST_TIP_MATERIAL: tips}
     _, shader = export(source[TEST_NATIVE_SHADER], Path(TEST_NATIVE_SHADER).name)
     properties = {p['Name']: p['Value'] for p in shader.get('Data', [])}
     # SingleLayerWater implements transmission in its own render pass even
@@ -1088,10 +1093,39 @@ def test_crystal_assets(source, solid=False):
     if parent['Value'] not in instance['CreateBeforeSerializationDependencies']:
         instance['CreateBeforeSerializationDependencies'].append(parent['Value'])
     names(material, [material['Exports'], material['Imports']])
-    return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material}
+    return {TEST_MESH: test_crystal_mesh(source), TEST_MATERIAL: material,
+            TEST_TIP_MATERIAL: test_tip_material(source, material)}
+
+
+def test_tip_material(source, material):
+    """Same glass coverage, with subtle native normal detail on the tips only."""
+    tips = private_level(material, '/Game/' + TEST_MATERIAL, '/Game/' + TEST_TIP_MATERIAL)
+    _, owner = export(tips, Path(TEST_TIP_MATERIAL).name)
+    _, original = export(source[TEST_NATIVE_MATERIAL], Path(TEST_NATIVE_MATERIAL).name)
+    normals = [p for p in property_data(original, 'TextureParameterValues')['Value']
+        if property_data(property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'Crystal_Normal']
+    if len(normals) != 1: raise ValueError('The native crystal normal texture changed.')
+    normal = copy.deepcopy(normals[0]); normal['Name'] = '0'
+    set_value(property_data(normal, 'ParameterInfo'), 'Name', 'NormalMap')
+    for value in property_data(normal, 'ExpressionGUID')['Value']:
+        value['Value'] = '{00000000-0000-0000-0000-000000000000}'
+    # Both private instances retain the original import prefix. This reference
+    # uses the shipped crystal texture; no new texture or shader is generated.
+    texture = property_data(normal, 'ParameterValue')['Value']
+    if texture >= 0 or tips['Imports'][-texture - 1] != source[TEST_NATIVE_MATERIAL]['Imports'][-texture - 1]:
+        raise ValueError('The crystal tip texture import changed.')
+    owner['Data'].append(native_prop('TextureParameterValues', [normal], 'ArrayPropertyData', ArrayType='StructProperty'))
+    for parameter in property_data(owner, 'ScalarParameterValues')['Value']:
+        if property_data(property_data(parameter, 'ParameterInfo'), 'Name')['Value'] == 'Normal_Intensity':
+            set_value(parameter, 'ParameterValue', struct.unpack('<f', struct.pack('<f', TEST_TIP_NORMAL))[0])
+    if texture not in owner['CreateBeforeSerializationDependencies']:
+        owner['CreateBeforeSerializationDependencies'].append(texture)
+    names(tips, [tips['Exports'], tips['Imports']])
+    return tips
 
 
 def test_crystal_mesh(source):
+    import _ffr_crystal_mesh
     mesh = private_level(source[TEST_NATIVE_MESH], '/Game/' + TEST_NATIVE_MESH, '/Game/' + TEST_MESH)
     _, owner = export(mesh, Path(TEST_MESH).name)
     slots = property_data(owner, 'StaticMaterials')['Value']
@@ -1099,6 +1133,20 @@ def test_crystal_mesh(source):
     reference = property_data(slots[0], 'MaterialInterface')
     reference['Value'] = asset_import(mesh, reference['Value'], '/Game/' + TEST_MATERIAL)
     reference['IsZero'] = False
+    tip_slot = copy.deepcopy(slots[0]); tip_slot['Name'] = '1'
+    tip_ref = property_data(tip_slot, 'MaterialInterface')
+    tip_ref['Value'] = asset_import(mesh, tip_ref['Value'], '/Game/' + TEST_TIP_MATERIAL)
+    for prop in tip_slot['Value']:
+        if prop['Name'] in ('MaterialSlotName', 'ImportedMaterialSlotName'):
+            prop['Value'] = 'StudioCrystalTips'; prop['IsZero'] = False
+    slots.append(tip_slot)
+    for ref in (reference['Value'], tip_ref['Value']):
+        if ref not in owner['CreateBeforeSerializationDependencies']:
+            owner['CreateBeforeSerializationDependencies'].append(ref)
+    center = property_data(property_data(owner, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']['Z']
+    band = TEST_TIP_BAND / TEST_CRYSTAL_SCALE
+    raw = _ffr_crystal_mesh.split_tips(base64.b64decode(owner['Extras'], validate=True), center - band, center + band)
+    owner['Extras'] = base64.b64encode(raw).decode('ascii')
     names(mesh, mesh['Exports'])
     return mesh
 
@@ -1174,6 +1222,11 @@ def test_spin_sequence(source):
                           {donor['Exports'][old_track - 1]['OuterIndex']: scene_id})
     track_id = mapping[old_track]; track = view['Exports'][track_id - 1]
     section = view['Exports'][mapping[old_section] - 1]
+    # The grant donor retains an unrelated track with the same native name
+    # under this MovieScene. Export indices do not make UObject paths unique.
+    # Reusing that path can bind/evaluate the donor's off-stage/zero-scale track.
+    track['ObjectName'] = 'Studio_CrystalFinaTestTurnTrack'
+    section['ObjectName'] = 'Studio_CrystalFinaTestTurnSection'
     track['Data'] = [p for p in track['Data'] if p['Name'] not in ('EvaluationField', 'EvaluationFieldGuid')]
     template = copy.deepcopy(next(p for p in section['Data'] if p['Name'] == 'Rotation' and p.get('ArrayIndex', 0) == 2))
     section['Data'] = [p for p in section['Data'] if p['Name'] not in
@@ -1218,8 +1271,9 @@ def test_spin_sequence(source):
     set_value(scene, 'Possessables', [possessable]); set_value(scene, 'ObjectBindings', [binding])
     for obj in (sequence, scene, track, section):
         property_data(obj, 'Signature')['Value'][0]['Value'] = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL,
-            TEST_SPIN_SEQUENCE + ':foot-casing-v3:' + obj['ObjectName'])).upper() + '}'
+            TEST_SPIN_SEQUENCE + ':unique-track-v4:' + obj['ObjectName'])).upper() + '}'
     names(view, [view['Exports'], view['Imports']])
+    check_object_names(view)
     return view
 
 
@@ -1616,7 +1670,19 @@ def semantic(value):
     return 0.0 if value in ('+0', '-0') else value
 
 
+def check_object_names(view):
+    """Distinct export indices must not alias the same cooked UObject path."""
+    seen = set()
+    for obj in view['Exports']:
+        key = (obj.get('OuterIndex', 0), obj['ObjectName'].casefold())
+        if key in seen:
+            raise ValueError('Duplicate cooked object path: ' + obj['ObjectName'])
+        seen.add(key)
+
+
 def check_level(expected, built):
+    check_object_names(expected)
+    check_object_names(built)
     if (built['NameMap'] != expected['NameMap']
             or built['NamesReferencedFromExportDataCount'] != expected['NamesReferencedFromExportDataCount']
             or built['NamesReferencedFromExportDataCount'] < len(built['NameMap'])):
@@ -1703,7 +1769,7 @@ def build(units, env):
     for rel, view in expected.items():
         names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        suffix = '.uasset' if rel in sequence_paths or rel in (PLACE_NAME, TEST_MESH, TEST_MATERIAL, TEST_SPIN_SEQUENCE) else '.umap'
+        suffix = '.uasset' if rel in sequence_paths or rel in (PLACE_NAME, TEST_MESH, TEST_MATERIAL, TEST_TIP_MATERIAL, TEST_SPIN_SEQUENCE) else '.umap'
         destination = Path(env['OUT']) / ('FFRS/Content/' + rel + suffix)
         destination.parent.mkdir(parents=True, exist_ok=True)
         env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])

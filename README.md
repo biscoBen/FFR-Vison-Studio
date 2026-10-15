@@ -20,10 +20,12 @@ size, placement and acquisition stay the same in both modes. **Animate crystal c
 added turning sequence and starts off for both new and older settings. The casing is attached to the grounded foot
 component, as in the first visible solid version. Live testing now confirms both the solid casing and glass with Fina
 inside are visible when added rotation is off. The glass material uses stronger surface reflections and
-depth-gated refraction. For that test, leave **Solid casing check off** and **Animate crystal casing off**.
+depth-gated refraction, now with subtle extra normal detail only on the outer tips. The central glass retains the
+user-approved settings. For the rotation test, leave **Solid casing check off** and turn **Animate crystal casing on**.
+The turn track now has a unique runtime object name; its earlier collision with a retained cutscene track was corrected.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
 and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF.
-The latest optical tuning still needs an in-game check.
+The corrected turn and small tip detail adjustment still need an in-game check.
 [Verified test package / run 38819768798](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38819768798/Sephira-Studio-Test.zip)
 (code `68615bf`, published 2026-10-15).
 
@@ -590,7 +592,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   For **Crystal Fina Test**, revalidate `M_Env_Glass_Single_Layer_Water`, its `MSM_SingleLayerWater` transmission model and scalar names,
   the reserved RefractionDepthBias override, cooked material-instance cached-data format, introductory pose/billboard transforms,
   and copied static visibility IDs/streaming metadata. Recheck the solid-versus-glass diagnostic and original solid material baseline. Recheck the private casing sequence, Tick clock, explicit
-  transform channels, component soft-path binding and autoplay/input flags. Preserve both test modes
+  transform channels, unique cooked object identities, component soft-path binding and autoplay/input flags.
+  Revalidate the three inline crystal LODs, material-section partition, depth-only geometry matching, empty sampler
+  serialization and native normal texture used only at the tips; reject unsupported changed layouts. Preserve both test modes
   and avoid carrying demo-specific shader serialization into another engine version without checking it.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source

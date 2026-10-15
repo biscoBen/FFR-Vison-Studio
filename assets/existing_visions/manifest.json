@@ -1,11 +1,12 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "903d3169c6b66dfabc4589f6a7237415edcecbad7aea9dcd1ed88b4184904b1d",
+    "install_existing_visions.py": "d433355c8097f01ffff637e6ed3f276830a9be89e0f0ce76d3bef02d42d9c50a",
     "payload/_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "payload/_ffr_animation_repair.py": "969eb737c788c49e78b42dbac0cb4017862edc5a7ca0075761fdd86b15b38940",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_crystal_cave.py": "7d4df965b9b1ae55b534df5f1f5e531bba8eee52198604f29e5acd8079955f04",
+    "payload/_ffr_crystal_cave.py": "ba85d7d321169af942226c924512c23fb0e8f9337a634f085e566fa4a627677b",
+    "payload/_ffr_crystal_mesh.py": "dcb8b59410c23a25494cdcdce588d8d71070c81dfcc952d134c70feb4799348e",
     "payload/_ffr_deck_sync.py": "4e6532f3d47c522bd6cd4be5a9a49e2230af24d3ddac5d25139d2ccc603312fa",
     "payload/_ffr_existingvisions.py": "f0a74b90a7cbe4620f6020f35acc55a25030bd729d28a2f60e9e40eed42c998e",
     "payload/_ffr_field_leader.py": "a2b0b8a808b4b4f85030d70689d8cbfaea04469b133c2f10c7eb6fa6f9898fc0",
@@ -20,7 +21,7 @@
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
     "payload/field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
-    "payload/manifest.json": "41781fa3b13db03cd759159d95930997936f50fb30e89097f810d69a41c8e0c3",
+    "payload/manifest.json": "eeda7a7924dd73f60314b8fedc908b3a570608ff1204d43bc42901ac216b3a69",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",

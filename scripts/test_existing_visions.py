@@ -28,6 +28,7 @@ sys.modules['_ffr_overworld'] = module('_ffr_overworld', ROOT / 'assets/existing
 sys.modules['_ffr_field_leader'] = module('_ffr_field_leader', ROOT / 'assets/existing_visions/payload/_ffr_field_leader.py')
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
 sys.modules['_ffr_deck_sync'] = module('_ffr_deck_sync', ROOT / 'assets/existing_visions/payload/_ffr_deck_sync.py')
+sys.modules['_ffr_crystal_mesh'] = module('_ffr_crystal_mesh', ROOT / 'assets/existing_visions/payload/_ffr_crystal_mesh.py')
 sys.modules['_ffr_crystal_cave'] = module('_ffr_crystal_cave', ROOT / 'assets/existing_visions/payload/_ffr_crystal_cave.py')
 sys.modules['_ffr_ability_modes'] = module('_ffr_ability_modes', ROOT / 'assets/existing_visions/payload/_ffr_ability_modes.py')
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
