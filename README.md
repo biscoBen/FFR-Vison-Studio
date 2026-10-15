@@ -26,8 +26,8 @@ The turn track now has a unique runtime object name; its earlier collision with 
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
 and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF.
 The corrected turn and small tip detail adjustment still need an in-game check.
-[Verified test package / run 38819768798](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38819768798/Sephira-Studio-Test.zip)
-(code `68615bf`, published 2026-10-15).
+[Verified test package / run 38823829616](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38823829616/Sephira-Studio-Test.zip)
+(code `dc5a01d`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

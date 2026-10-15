@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina turn and tip detail correction — 2026-10-15
+
+Code: [`dc5a01d`](https://github.com/biscoBen/FFR-Vison-Studio/commit/dc5a01de36365d95f314a3404d3a43036a44146a).
+[Verified Windows test release / run 38823829616](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38823829616).
+
 - Correct Crystal Fina Test's rotation package: the appended turn track reused an existing cutscene track's object
   name under the same MovieScene. Give the new track and section unique names, revise signatures and reject duplicate
   cooked object identities before writing/after readback. The retained donor contains off-stage/zero-scale transforms;
@@ -22,6 +27,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   no open mesh edge; leave its central glass unchanged while assessing it in motion.
 - Keep Solid casing check off and enable Animate crystal casing for the next test; rebuild/install and restart.
   Actual movement and the small tip refraction change require an in-game check. Bundled extension 1.2.14.
+- Validation: clean analysis, 244 Flutter checks (one skip), the separate fresh frozen-engine Windows startup check,
+  346 Python checks (Windows: five skips; Linux: four), bundle verification, 12 launcher checks and 10 import checks
+  passed. Strict native roundtrips passed for both component graphs, the corrected sequence, mesh and both glass
+  instances. Independent native LOD comparisons retain every vertex byte, triangle/winding, GPU buffer size and opaque
+  tail, with central/tip triangle counts 1696/188, 856/86 and 432/38. All 364 sequence export identities are unique.
+  Verified the downloaded ZIP's SHA-256, commit/run provenance and all 26 manifest entries plus the manifest against
+  source. Native structure/package verification does not establish the live turn or optical appearance.
+- First complete candidate to verified download: **8m08s**, including focused/full checks, waiting and verification.
+  Windows CI took **5m01s**, using **8m58s** of runner time. Reused the automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina glass refraction — 2026-10-15
 
