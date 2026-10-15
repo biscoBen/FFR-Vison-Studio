@@ -42,20 +42,25 @@ TEST_NATIVE_SHADER = 'Env/Com/MasterMaterial/M_Env_Glass_Single_Layer_Water'
 TEST_SPRITE = '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01'
 TEST_MESH = 'Map/StudioCrystalCave/Test/SM_Studio_CrystalFinaTest'
 TEST_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTest'
+TEST_SPIN_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_005_01/SEQ_C01_005_01'
+TEST_SPIN_SEQUENCE = 'Map/StudioCrystalCave/Test/SEQ_Studio_CrystalFinaTestTurn'
+TEST_SPIN_GUID = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL, TEST_SPIN_SEQUENCE)).upper() + '}'
 TEST_ANIMATION = 'openarmidle2'
 TEST_ANIMATION_INDEX = 8
-TEST_SPRITE_SCALE = 3.5
+TEST_SPRITE_SCALE = 2.7
 TEST_CRYSTAL_SCALE = .12
 # Setup Y=51 plus pose Y=-29, minus the cell's one-pixel vertical pivot.
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
 TEST_POSE_CENTER_X = .5
-TEST_CRYSTAL_PARAMETERS = {'Opacity': .08, 'Metallic': 0.0, 'Roughness': .08,
-    'Fresnel_Intensity': .2, 'Normal_Intensity': 0.0,
-    'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0}
+TEST_CRYSTAL_PARAMETERS = {'Opacity': .025, 'Metallic': .025, 'Roughness': .08,
+    'Fresnel_Intensity': 0.0, 'Normal_Intensity': 0.0,
+    'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0,
+    'RefractionDepthBias': 1000.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
-TEST_SPRITE_FLOAT = 110.0
+TEST_SPRITE_FLOAT = 183.5 - TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE
+TEST_CRYSTAL_TURN_RATE = 3.6  # Degrees/second, one slow revolution per 100 seconds.
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -1037,7 +1042,7 @@ def test_crystal_assets(source):
     # BLEND_Masked alone does not prove that a cooked shader can show contents.
     if (properties.get('ShadingModel') != 'MSM_SingleLayerWater'
             or properties.get('BlendMode', 'BLEND_Opaque') != 'BLEND_Opaque'
-            or not set(TEST_CRYSTAL_PARAMETERS).issubset(source[TEST_NATIVE_SHADER]['NameMap'])):
+            or not (set(TEST_CRYSTAL_PARAMETERS) - {'RefractionDepthBias'}).issubset(source[TEST_NATIVE_SHADER]['NameMap'])):
         raise ValueError('The native glass transmission shader changed; no test crystal was built.')
     material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
                              '/Game/' + TEST_MATERIAL)
@@ -1081,6 +1086,141 @@ def test_crystal_assets(source):
     return {TEST_MESH: mesh, TEST_MATERIAL: material}
 
 
+def native_prop(name, value, kind='ObjectPropertyData', **extra):
+    return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
+            'Name': name, 'Value': value, 'IsZero': False, **extra}
+
+
+def native_struct(name, kind, children):
+    return {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
+            'Name': name, 'StructType': kind, 'Value': children, 'SerializeNone': True, 'IsZero': False}
+
+
+def native_guid(name, value):
+    return native_struct(name, 'Guid', [{'$type': 'UAssetAPI.PropertyTypes.Structs.GuidPropertyData, UAssetAPI',
+                                        'Name': name, 'Value': value, 'IsZero': False}])
+
+
+def script_import(view, script, name, kind='Class'):
+    package = {'$type': 'UAssetAPI.Import, UAssetAPI', 'ObjectName': '/Script/' + script, 'OuterIndex': 0,
+               'ClassPackage': '/Script/CoreUObject', 'ClassName': 'Package', 'PackageName': None, 'bImportOptional': False}
+    candidates = [i for i, item in enumerate(view['Imports'], 1)
+                  if item['ObjectName'] == package['ObjectName'] and item['OuterIndex'] == 0]
+    if not candidates: view['Imports'].append(package); candidates = [len(view['Imports'])]
+    value = dict(package, ObjectName=name, OuterIndex=-candidates[0], ClassName=kind,
+                 ClassPackage='/Script/CoreUObject' if kind == 'Class' else '/Script/' + script)
+    if value not in view['Imports']: view['Imports'].append(value)
+    return -(view['Imports'].index(value) + 1)
+
+
+def native_object(view, prototype, outer_id, script, class_name, object_name, data, extras='', flags='RF_Transactional'):
+    result = copy.deepcopy(prototype)
+    result.update(ObjectName=object_name, OuterIndex=outer_id, SuperIndex=0,
+        ClassIndex=script_import(view, script, class_name),
+        TemplateIndex=script_import(view, script, 'Default__' + class_name, class_name),
+        ObjectFlags=flags, Data=data, Extras=extras, SerializationBeforeSerializationDependencies=[],
+        CreateBeforeSerializationDependencies=[], CreateBeforeCreateDependencies=[outer_id])
+    result['SerializationBeforeCreateDependencies'] = [result['ClassIndex'], result['TemplateIndex']]
+    view['Exports'].append(result)
+    if view.get('DependsMap'): view['DependsMap'].append([])
+    return len(view['Exports'])
+
+
+def test_spin_sequence(source):
+    """A rotation-only loop: no camera, event, actor spawning or locator fragments."""
+    view = private_level(source[GRANT_DONOR], '/Game/' + GRANT_DONOR, '/Game/' + TEST_SPIN_SEQUENCE)
+    _, sequence = export(view, Path(TEST_SPIN_SEQUENCE).name)
+    scene_id = property_data(sequence, 'MovieScene')['Value']; scene = view['Exports'][scene_id - 1]
+    set_value(sequence, 'DirectorClass', 0); set_value(sequence, 'CompiledData', 0)
+    set_value(property_data(sequence, 'BindingReferences'), 'SortedReferences', [])
+    for key in ('Possessables', 'ObjectBindings', 'BindingGroups', 'Spawnables', 'Tracks'):
+        if any(p['Name'] == key for p in scene['Data']): set_value(scene, key, [])
+    set_value(scene, 'CameraCutTrack', 0)
+    donor = source[TEST_SPIN_DONOR]
+    sections = [(i, e) for i, e in enumerate(donor['Exports'], 1) if e.get('ClassIndex', 0) < 0
+                and donor['Imports'][-e['ClassIndex'] - 1]['ObjectName'] == 'MovieScene3DTransformSection']
+    if not sections: raise ValueError('The native crystal turning track donor changed.')
+    old_section, section = sections[0]; old_track = section['OuterIndex']
+    mapping = clone_graph(view, donor, [old_track, old_section],
+                          {donor['Exports'][old_track - 1]['OuterIndex']: scene_id})
+    track_id = mapping[old_track]; track = view['Exports'][track_id - 1]
+    section = view['Exports'][mapping[old_section] - 1]
+    track['Data'] = [p for p in track['Data'] if p['Name'] not in ('EvaluationField', 'EvaluationFieldGuid')]
+    section['Data'] = [p for p in section['Data'] if p['Name'] not in ('TransformMask', 'bUseQuaternionInterpolation', 'Easing')]
+    section['Data'] += [native_struct('TransformMask', 'MovieSceneTransformMask', [native_prop('Mask', 32, 'UInt32PropertyData')]),
+                        native_prop('bUseQuaternionInterpolation', False, 'BoolPropertyData')]
+    channel = next(p for p in section['Data'] if p['Name'] == 'Rotation' and p.get('ArrayIndex', 0) == 2)['Value'][0]['Value']
+    key = next(copy.deepcopy(p['Value'][0]['Value']['Values'][0]) for e in donor['Exports']
+               for p in e.get('Data', []) if isinstance(e.get('Data'), list)
+               and isinstance(p, dict) and p.get('StructType') == 'MovieSceneDoubleChannel'
+               and p['Value'][0]['Value']['Values'])
+    rate = property_data(scene, 'TickResolution')['Value']
+    numerator = next(p['Value'] for p in rate if p['Name'] == 'Numerator')
+    denominator = next((p['Value'] for p in rate if p['Name'] == 'Denominator'), 1)
+    end = round(numerator / denominator * 360 / TEST_CRYSTAL_TURN_RATE)
+    channel['Times'] = [{'$type': 'UAssetAPI.UnrealTypes.FFrameNumber, UAssetAPI', 'Value': t} for t in (0, end)]
+    channel['Values'] = [dict(copy.deepcopy(key), Value=value, InterpMode='RCIM_Linear') for value in (0.0, 360.0)]
+    channel['TickResolution'].update(Numerator=numerator, Denominator=denominator)
+    for owner, field in ((scene, 'PlaybackRange'), (section, 'SectionRange')):
+        bounds = property_data(owner, field)['Value'][0]['Value']
+        bounds['LowerBound']['Type'] = 'Inclusive'; bounds['LowerBound']['Value']['Value'] = 0
+        bounds['UpperBound']['Type'] = 'Exclusive'; bounds['UpperBound']['Value']['Value'] = end
+    source_scene = donor['Exports'][donor['Exports'][old_track - 1]['OuterIndex'] - 1]
+    possessable = copy.deepcopy(property_data(source_scene, 'Possessables')['Value'][0])
+    possessable['Name'] = '0'; possessable['Value'] = [p for p in possessable['Value'] if p['Name'] not in ('Guid', 'DynamicBinding')]
+    possessable['Value'].append(native_guid('Guid', TEST_SPIN_GUID)); set_value(possessable, 'Name', 'Crystal casing pivot')
+    binding = copy.deepcopy(property_data(source_scene, 'ObjectBindings')['Value'][0]); binding['Name'] = '0'
+    property_data(binding, 'ObjectGuid')['Value'][0]['Value'] = TEST_SPIN_GUID
+    set_value(binding, 'BindingName', 'Crystal casing pivot')
+    set_value(binding, 'Tracks', [native_prop('0', track_id)])
+    set_value(scene, 'Possessables', [possessable]); set_value(scene, 'ObjectBindings', [binding])
+    for obj in (sequence, scene, track, section):
+        property_data(obj, 'Signature')['Value'][0]['Value'] = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL,
+            TEST_SPIN_SEQUENCE + ':' + obj['ObjectName'])).upper() + '}'
+    names(view, [view['Exports'], view['Imports']])
+    return view
+
+
+def attach_test_spin(npc, source, pivot_id, owner_id):
+    """Override a possessable with the owned pivot; leave NPC input/cameras alone."""
+    level_id, level = export(npc, 'PersistentLevel')
+    _, original = next((i, e) for i, e in enumerate(source[TEST_BACKGROUND]['Exports'], 1)
+                       if e['ObjectName'] == 'StaticMeshActor_235')
+    spin_id = native_object(npc, original, level_id, 'LevelSequence', 'LevelSequenceActor',
+                            'Studio_CrystalFinaTestSpin', [], original['Extras'])
+    owner = npc['Exports'][owner_id - 1]; pivot = npc['Exports'][pivot_id - 1]
+    world = next(e for e in npc['Exports'] if e.get('ClassIndex', 0) < 0
+                 and npc['Imports'][-e['ClassIndex'] - 1]['ObjectName'] == 'World')
+    package = '/Game/' + TEST_SPIN_SEQUENCE
+    sequence_import = script_import(npc, 'LevelSequence', 'LevelSequence')
+    sequence_ref = asset_import(npc, sequence_import, package)
+    npc['Imports'][-sequence_ref - 1].update(ClassName='LevelSequence', ClassPackage='/Script/LevelSequence')
+    binding_id = native_struct('ObjectBindingID', 'MovieSceneObjectBindingID', [native_guid('Guid', TEST_SPIN_GUID),
+        native_prop('SequenceID', 0, 'IntPropertyData'), native_prop('ResolveParentIndex', -1, 'IntPropertyData')])
+    # The private World export's name is the package leaf; its full path is kept
+    # in NameMap by private_level. This avoids dependencies on original actors.
+    candidates = [name for name in npc['NameMap'] if name.startswith('/Game/') and Path(name).name == world['ObjectName']]
+    if len(candidates) != 1: raise ValueError('The private crystal room world path is ambiguous.')
+    path = {'$type': 'UAssetAPI.PropertyTypes.Objects.FSoftObjectPath, UAssetAPI',
+            'AssetPath': {'$type': 'UAssetAPI.PropertyTypes.Objects.FTopLevelAssetPath, UAssetAPI',
+                          'PackageName': candidates[0], 'AssetName': world['ObjectName']},
+            'SubPathString': 'PersistentLevel.' + owner['ObjectName'] + '.' + pivot['ObjectName']}
+    item = native_struct('0', 'MovieSceneBindingOverrideData', [binding_id,
+        native_prop('Object', path, 'SoftObjectPropertyData'), native_prop('bOverridesDefault', True, 'BoolPropertyData')])
+    override_id = native_object(npc, original, spin_id, 'MovieScene', 'MovieSceneBindingOverrides', 'BindingOverrides',
+        [native_prop('BindingData', [item], 'ArrayPropertyData', ArrayType='StructProperty')], flags='RF_Transactional, RF_DefaultSubObject')
+    settings = native_struct('PlaybackSettings', 'MovieSceneSequencePlaybackSettings', [
+        native_prop('bAutoPlay', True, 'BoolPropertyData'), native_struct('LoopCount', 'MovieSceneSequenceLoopCount', [native_prop('Value', -1, 'IntPropertyData')]),
+        native_prop('PlayRate', 1.0, 'FloatPropertyData'), native_prop('bDisableCameraCuts', True, 'BoolPropertyData'),
+        *[native_prop(n, False, 'BoolPropertyData') for n in ('bDisableMovementInput', 'bDisableLookAtInput', 'bHidePlayer', 'bHideHud', 'bPauseAtEnd')]])
+    spin = npc['Exports'][spin_id - 1]
+    spin['Data'] = [settings, native_prop('LevelSequenceAsset', sequence_ref), native_prop('BindingOverrides', override_id)]
+    spin['CreateBeforeSerializationDependencies'] = [override_id, sequence_ref]
+    npc['Exports'][override_id - 1]['CreateBeforeSerializationDependencies'] = [pivot_id]
+    level['Actors'].append(spin_id)
+    names(npc, [spin, npc['Exports'][override_id - 1], npc['Imports']])
+
+
 def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     """Own the casing on the acquisition NPC so native visibility hides both."""
     background = source[TEST_BACKGROUND]
@@ -1102,39 +1242,48 @@ def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     def prop(name, value, kind, **extra):
         return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
                 'Name': name, 'Value': value, 'IsZero': False, **extra}
+    def vec(name, xyz):
+        result = copy.deepcopy(property_data(component, 'RelativeLocation')); result['Name'] = name
+        result['Value'][0]['Name'] = name
+        vector({'Data': [result]}, name, xyz)
+        return result
+    instance = prop('CreationMethod', 'Instance', 'EnumPropertyData', EnumType='EComponentCreationMethod', InnerType='ByteProperty')
+    movable = prop('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty')
+    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE, TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
+    pivot_id = native_object(npc, component, owner_id, 'Engine', 'SceneComponent', 'Studio_CrystalFinaTestPivot',
+        [prop('AttachParent', sprite_id, 'ObjectPropertyData'), copy.deepcopy(instance), copy.deepcopy(movable),
+         vec('RelativeLocation', center)], extras=base64.b64encode(struct.pack('<i', 0)).decode())
+    npc['Exports'][pivot_id - 1]['CreateBeforeSerializationDependencies'] = [sprite_id]
     # Explicit instance ownership/registration; keep the existing capsule as
     # the only blocker. The decorative shell must not collide with its owner.
     component['Data'] = [p for p in component['Data']
                          if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance')]
-    component['Data'] += [prop('AttachParent', sprite_id, 'ObjectPropertyData'),
-        prop('CreationMethod', 'Instance', 'EnumPropertyData', EnumType='EComponentCreationMethod', InnerType='ByteProperty'),
-        prop('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty'),
+    component['Data'] += [prop('AttachParent', pivot_id, 'ObjectPropertyData'), instance, movable,
         {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
          'Name': 'BodyInstance', 'StructType': 'BodyInstance', 'SerializeNone': True, 'IsZero': False,
          'Value': [prop('CollisionEnabled', 'NoCollision', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty'),
                    prop('CollisionProfileName', 'NoCollision', 'NamePropertyData')]}]
     owner = npc['Exports'][owner_id - 1]
-    instances = prop('InstanceComponents', [prop('0', component_id, 'ObjectPropertyData')], 'ArrayPropertyData', ArrayType='ObjectProperty')
+    instances = prop('InstanceComponents', [prop(str(i), value, 'ObjectPropertyData')
+        for i, value in enumerate((component_id, pivot_id))], 'ArrayPropertyData', ArrayType='ObjectProperty')
     existing = [p for p in owner['Data'] if p['Name'] == 'InstanceComponents']
     if existing:
         existing[0]['Value'].extend(instances['Value']); existing[0]['IsZero'] = False
     else:
         owner['Data'].append(instances)
-    owner['CreateBeforeSerializationDependencies'].append(component_id)
-    if sprite_id not in component['CreateBeforeSerializationDependencies']:
-        component['CreateBeforeSerializationDependencies'].append(sprite_id)
+    owner['CreateBeforeSerializationDependencies'].extend((component_id, pivot_id))
+    if pivot_id not in component['CreateBeforeSerializationDependencies']:
+        component['CreateBeforeSerializationDependencies'].append(pivot_id)
     _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
     bounds = property_data(mesh, 'ExtendedBounds')
     origin = property_data(bounds, 'Origin')['Value'][0]['Value']
     vector(component, 'RelativeScale3D', (TEST_CRYSTAL_SCALE,) * 3)
-    # SpriteStudio renders into local Y/Z (X is depth). Follow its complete
-    # billboard/penetration/shake transform rather than assuming world-up. The
-    # sprite lift is already inherited here and must not be added a second time.
-    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE,
-              TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
-    vector(component, 'RelativeLocation', tuple(center[i] - float(origin[axis]) * TEST_CRYSTAL_SCALE
-                                               for i, axis in enumerate(('X', 'Y', 'Z'))))
-    names(npc, [component, owner, npc['Imports']])
+    # Rotate about the actual visual center, not the elevated mesh pivot. The
+    # separate parent keeps the casing centered and the sprite itself steady.
+    vector(component, 'RelativeLocation', tuple(-float(origin[axis]) * TEST_CRYSTAL_SCALE
+                                               for axis in ('X', 'Y', 'Z')))
+    names(npc, [npc['Exports'][pivot_id - 1], component, owner, npc['Imports']])
+    attach_test_spin(npc, source, pivot_id, owner_id)
 
 
 def entrance_mesh(view, component, spec, source):
@@ -1483,7 +1632,7 @@ def build(units, env):
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     has_test = any(spec.fina_test for entries in plans for _, spec in entries)
-    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_NATIVE_SHADER,
+    test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL, TEST_NATIVE_SHADER, TEST_SPIN_DONOR,
                     TEST_SPRITE.removeprefix('/Game/')) if has_test else ()
     asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
@@ -1506,14 +1655,16 @@ def build(units, env):
                 or property_data(animations[TEST_ANIMATION_INDEX], 'AnimationName')['Value'] != TEST_ANIMATION):
             raise ValueError('The introductory Fina floating pose changed.')
     expected = make_caves(source, plans)
-    if has_test: expected.update(test_crystal_assets(source))
+    if has_test:
+        expected.update(test_crystal_assets(source))
+        expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
     expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
     mapping = blueprint_mappings(expected, env, work)
     for rel, view in expected.items():
         names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        suffix = '.uasset' if rel in sequence_paths or rel in (PLACE_NAME, TEST_MESH, TEST_MATERIAL) else '.umap'
+        suffix = '.uasset' if rel in sequence_paths or rel in (PLACE_NAME, TEST_MESH, TEST_MATERIAL, TEST_SPIN_SEQUENCE) else '.umap'
         destination = Path(env['OUT']) / ('FFRS/Content/' + rel + suffix)
         destination.parent.mkdir(parents=True, exist_ok=True)
         env['run'](env['FFRDT'] + ['fromjson', str(dump), str(destination), '--usmap', mapping])
@@ -1533,7 +1684,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: native introductory pose; private glass transmission material (opacity 0.08); casing centered in sprite space and owned by acquisition NPC.')
+        print('  Crystal Fina Test: fitted introductory pose; clearer glass (opacity 0.025, refraction bias 1000); rotation-only sequence turns the casing at 3.6 degrees/second.')
 
 
 def make_caves(source, plans):

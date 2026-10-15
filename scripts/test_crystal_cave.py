@@ -509,7 +509,8 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             self.assertTrue(spec.fina_test)
             self.assertEqual((spec.map_id, spec.stone_id, spec.npc_id), (29991, 29990, 29991))
             self.assertEqual(spec.sprite, '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01')
-            self.assertEqual(spec.sprite_scale, 3.5)
+            self.assertEqual(spec.sprite_scale, 2.7)
+            self.assertAlmostEqual(spec.sprite_float + 21 * spec.sprite_scale, 183.5)
             self.assertTrue(spec.material.endswith('/M_Ss_Component_PBR'))
             operations = testing.prepare({}, [unit], root, rows)
         self.assertEqual(original, before)
@@ -549,7 +550,8 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             'SerializationBeforeCreateDependencies': [-6], 'CreateBeforeCreateDependencies': [1],
             'Data': [p('StaticMesh', -2), p('OverrideMaterials', [p('0', -4)], 'ArrayPropertyData'),
                      vec('RelativeLocation', (6111, -740, 481)), vec('RelativeScale3D', (.25, .25, .25))]}
-        background = {'NameMap': ['native'], 'Imports': imports, 'Exports': [{}, component], 'DependsMap': [[], []]}
+        background = {'NameMap': ['native'], 'Imports': imports, 'Exports': [{'ObjectName': 'StaticMeshActor_235',
+            'Extras': 'nativeActorFooter'}, component], 'DependsMap': [[], []]}
         mesh = {'NameMap': ['native'], 'Imports': copy.deepcopy(imports), 'Exports': [{
             'ObjectName': Path(cave.TEST_NATIVE_MESH).name, 'Data': [
                 p('StaticMaterials', [{'Value': [p('MaterialInterface', -4)]}], 'ArrayPropertyData'),
@@ -591,7 +593,9 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                   cave.property_data(p, 'ParameterValue')['Value'] for p in scalars}
         for name, value in cave.TEST_CRYSTAL_PARAMETERS.items(): self.assertAlmostEqual(values[name], value)
         self.assertEqual(set(values), set(cave.TEST_CRYSTAL_PARAMETERS))
-        self.assertLess(values['Opacity'], .1)
+        self.assertLess(values['Opacity'], .03)
+        self.assertEqual(values['Fresnel_Intensity'], 0.0)
+        self.assertEqual(values['RefractionDepthBias'], 1000.0)
         self.assertNotIn('Dither_Intensity', values)
         self.assertNotIn('Crystal_Emissive', values)
         mesh = copied[cave.TEST_MESH]
@@ -599,6 +603,65 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(mesh['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_MATERIAL).name)
         self.assertIn('/Game/' + cave.TEST_MATERIAL, mesh['NameMap'])
         self.assertEqual(mesh['NamesReferencedFromExportDataCount'], len(mesh['NameMap']))
+
+    def test_builtin_refraction_bias_does_not_require_a_declared_parent_parameter(self):
+        source = self.source(); source[cave.TEST_NATIVE_SHADER]['NameMap'].remove('RefractionDepthBias')
+        material = cave.test_crystal_assets(source)[cave.TEST_MATERIAL]['Exports'][0]
+        scalars = cave.property_data(material, 'ScalarParameterValues')['Value']
+        bias, = [p for p in scalars if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
+        self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 1000)
+
+    def test_turn_sequence_has_only_a_linear_yaw_binding_and_no_cameras_events_or_spawning(self):
+        p, st, guid = cave.native_prop, cave.native_struct, cave.native_guid
+        zero = '{00000000-0000-0000-0000-000000000000}'
+        def obj(name, outer, data, cls=0):
+            return {'$type': 'UAssetAPI.ExportTypes.NormalExport, UAssetAPI', 'ObjectName': name,
+                'OuterIndex': outer, 'ClassIndex': cls, 'SuperIndex': 0, 'TemplateIndex': 0, 'Data': data,
+                'Extras': '', **{k: [] for k in ('SerializationBeforeSerializationDependencies',
+                    'CreateBeforeSerializationDependencies', 'SerializationBeforeCreateDependencies', 'CreateBeforeCreateDependencies')}}
+        def bounds(name):
+            return st(name, 'MovieSceneFrameRange', [{'Name': name, 'Value': {
+                'LowerBound': {'Type': 'Inclusive', 'Value': {'Value': 12}},
+                'UpperBound': {'Type': 'Exclusive', 'Value': {'Value': 48}}}}])
+        def scene(name, outer):
+            return obj(name, outer, [p('Possessables', [], 'ArrayPropertyData'), p('ObjectBindings', [], 'ArrayPropertyData'),
+                p('BindingGroups', [], 'ArrayPropertyData'), p('Spawnables', [], 'ArrayPropertyData'),
+                p('Tracks', [p('0', 1)], 'ArrayPropertyData'), p('CameraCutTrack', 1), bounds('PlaybackRange'),
+                st('TickResolution', 'FrameRate', [p('Numerator', 24000, 'IntPropertyData')]), guid('Signature', zero)])
+        base_scene = scene('MovieScene', 1)
+        root = obj(Path(cave.GRANT_DONOR).name, 0, [p('MovieScene', 2), p('DirectorClass', -1), p('CompiledData', -1),
+            st('BindingReferences', 'LevelSequenceBindingReferences', [p('SortedReferences', [], 'ArrayPropertyData')]), guid('Signature', zero)])
+        base = {'NameMap': ['native', '/Game/' + cave.GRANT_DONOR], 'Imports': [], 'Exports': [root, base_scene], 'DependsMap': [[], []]}
+        donor_scene = scene('DonorScene', 0)
+        cave.set_value(donor_scene, 'Possessables', [st('0', 'MovieScenePossessable', [guid('Guid', zero),
+            guid('ParentGuid', zero), p('Name', 'Original', 'StrPropertyData')])])
+        cave.set_value(donor_scene, 'ObjectBindings', [st('0', 'MovieSceneBinding', [guid('ObjectGuid', zero),
+            p('BindingName', 'Original', 'StrPropertyData'), p('Tracks', [p('0', 2)], 'ArrayPropertyData')])])
+        track = obj('TransformTrack', 1, [p('Sections', [p('0', 3)], 'ArrayPropertyData'), guid('Signature', zero)])
+        channel = {'Times': [], 'Values': [{'Value': 27.0, 'InterpMode': 'RCIM_Cubic'}],
+                   'TickResolution': {'Numerator': 24000, 'Denominator': 1}}
+        rotation = st('Rotation', 'MovieSceneDoubleChannel', [{'Value': channel}]); rotation['ArrayIndex'] = 2
+        section = obj('TransformSection', 2, [rotation, bounds('SectionRange'), guid('Signature', zero)], -2)
+        donor = {'NameMap': ['native'], 'Imports': [{'ObjectName': '/Script/MovieSceneTracks', 'OuterIndex': 0},
+            {'ObjectName': 'MovieScene3DTransformSection', 'OuterIndex': -1}],
+            'Exports': [donor_scene, track, section], 'DependsMap': [[], [], []]}
+        source = {cave.GRANT_DONOR: base, cave.TEST_SPIN_DONOR: donor}; before = copy.deepcopy(source)
+        result = cave.test_spin_sequence(source)
+        self.assertEqual(source, before)
+        scene = result['Exports'][1]
+        for name in ('Spawnables', 'Tracks', 'BindingGroups'):
+            self.assertEqual(cave.property_data(scene, name)['Value'], [])
+        self.assertEqual(cave.property_data(scene, 'CameraCutTrack')['Value'], 0)
+        self.assertEqual(cave.property_data(result['Exports'][0], 'DirectorClass')['Value'], 0)
+        binding, = cave.property_data(scene, 'ObjectBindings')['Value']
+        self.assertEqual(cave.property_data(binding, 'ObjectGuid')['Value'][0]['Value'], cave.TEST_SPIN_GUID)
+        section = result['Exports'][-1]
+        self.assertEqual(cave.property_data(cave.property_data(section, 'TransformMask'), 'Mask')['Value'], 32)
+        self.assertFalse(cave.property_data(section, 'bUseQuaternionInterpolation')['Value'])
+        yaw = cave.property_data(section, 'Rotation')['Value'][0]['Value']
+        self.assertEqual([k['Value'] for k in yaw['Times']], [0, 2400000])
+        self.assertEqual([k['Value'] for k in yaw['Values']], [0, 360])
+        self.assertTrue(all(k['InterpMode'] == 'RCIM_Linear' for k in yaw['Values']))
 
     def test_changed_native_shader_is_rejected_instead_of_inventing_a_blend_permutation(self):
         for change in ('ordinary opaque', 'masked', 'missing scalar', 'missing shading model'):
@@ -612,24 +675,51 @@ class CrystalFinaTestModeTests(unittest.TestCase):
 
     def test_shell_follows_sprite_billboard_center_without_duplicating_lift_or_physics(self):
         source = self.source(); before = copy.deepcopy(source)
-        npc = {'NameMap': ['native'], 'Imports': [], 'Exports': [{'Data': [],
-               'CreateBeforeSerializationDependencies': []} for _ in range(110)], 'DependsMap': [[] for _ in range(110)]}
+        npc = {'NameMap': ['native'], 'Imports': [], 'Exports': [{'ObjectName': 'Native_' + str(i), 'Data': [],
+               'CreateBeforeSerializationDependencies': []} for i in range(110)], 'DependsMap': [[] for _ in range(110)]}
         condition = {'Name': 'm_VisiblFlagCondition', 'Value': '{item:13507}==0'}
+        npc['Exports'][0].update(ObjectName='Fixture_NPC', ClassIndex=cave.script_import(npc, 'Engine', 'World'), OuterIndex=0)
+        npc['NameMap'].append('/Game/Map/StudioCrystalCave/Fixture_NPC')
+        npc['Exports'][94].update(ObjectName='PersistentLevel', Actors=[31])
         npc['Exports'][30]['Data'].append(condition)
+        npc['Exports'][30]['Data'].append({'Name': 'RootComponent', 'Value': 37})
+        npc['Exports'][63]['Data'].append({'Name': 'AttachParent', 'Value': 77})
         cave.attach_test_crystal(npc, source)
         self.assertEqual(source, before)
-        owner = npc['Exports'][30]; shell = npc['Exports'][-1]
+        owner = npc['Exports'][30]
+        _, shell = cave.export(npc, 'Studio_CrystalFinaTestCrystal')
+        pivot_id, pivot = cave.export(npc, 'Studio_CrystalFinaTestPivot')
+        turn_id, turn = cave.export(npc, 'Studio_CrystalFinaTestSpin')
         self.assertEqual(cave.property_data(owner, 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
         self.assertEqual(cave.property_data(owner, 'InstanceComponents')['Value'][0]['Value'], 111)
         self.assertEqual(shell['OuterIndex'], 31)
-        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], 64)
+        self.assertEqual(cave.property_data(shell, 'AttachParent')['Value'], pivot_id)
+        self.assertEqual(cave.property_data(pivot, 'AttachParent')['Value'], 64)
         self.assertEqual(cave.property_data(shell, 'CreationMethod')['Value'], 'Instance')
         self.assertEqual(cave.property_data(cave.property_data(shell, 'BodyInstance'), 'CollisionEnabled')['Value'], 'NoCollision')
         loc = cave.property_data(shell, 'RelativeLocation')['Value'][0]['Value']
-        self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE,
-                               21.0 * cave.TEST_SPRITE_SCALE)
-        self.assertAlmostEqual(loc['Y'] - 2.08 * cave.TEST_CRYSTAL_SCALE, .5 * cave.TEST_SPRITE_SCALE)
-        self.assertIn(64, shell['CreateBeforeSerializationDependencies'])
+        center = cave.property_data(pivot, 'RelativeLocation')['Value'][0]['Value']
+        self.assertAlmostEqual(loc['Z'] + 1233 * cave.TEST_CRYSTAL_SCALE, 0.0)
+        self.assertAlmostEqual(center['Z'], 21.0 * cave.TEST_SPRITE_SCALE)
+        self.assertAlmostEqual(center['Y'], .5 * cave.TEST_SPRITE_SCALE)
+        self.assertIn(pivot_id, shell['CreateBeforeSerializationDependencies'])
+        playback = cave.property_data(turn, 'PlaybackSettings')
+        self.assertEqual(cave.property_data(cave.property_data(playback, 'LoopCount'), 'Value')['Value'], -1)
+        self.assertTrue(cave.property_data(playback, 'bAutoPlay')['Value'])
+        self.assertTrue(cave.property_data(playback, 'bDisableCameraCuts')['Value'])
+        self.assertFalse(cave.property_data(playback, 'bDisableMovementInput')['Value'])
+        overrides = npc['Exports'][cave.property_data(turn, 'BindingOverrides')['Value'] - 1]
+        binding = cave.property_data(overrides, 'BindingData')['Value'][0]
+        self.assertTrue(cave.property_data(binding, 'Object')['Value']['SubPathString'].endswith('.Native_30.Studio_CrystalFinaTestPivot'))
+        self.assertIn(turn_id, npc['Exports'][94]['Actors'])
+        registered = [p['Value'] for p in cave.property_data(owner, 'InstanceComponents')['Value']]
+        self.assertEqual(registered, [111, pivot_id])
+        for component in (pivot,):
+            self.assertEqual(component['OuterIndex'], 31)
+            self.assertIn(component['ClassIndex'], component['SerializationBeforeCreateDependencies'])
+            self.assertEqual(base64.b64decode(component['Extras']), struct.pack('<i', 0))
+        self.assertEqual(cave.property_data(owner, 'RootComponent')['Value'], 37)
+        self.assertEqual(cave.property_data(npc['Exports'][63], 'AttachParent')['Value'], 77)
         self.assertEqual(shell['Extras'], 'opaqueLODData')
         self.assertIn(111, owner['CreateBeforeSerializationDependencies'])
 

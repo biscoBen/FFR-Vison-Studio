@@ -11,6 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Refine **Crystal Fina Test** after the glass trial: reduce image warping with the engine's refraction depth bias,
+  lower surface opacity and fit all three introductory idle frames within the rotating casing's projected silhouette.
+  Restore a slow casing-only turn with a private looping native sequence; keep Fina, interaction and collision steady.
+  Preserve the display center, original cave option and acquisition route. Record the engine controls and native component
+  serialization requirements in `SCENE_PLACEMENT.md`. Final clarity, fit and turning still need an in-game comparison.
+
 ## Published Crystal Fina glass material test — 2026-10-15
 
 Code: [`1d2ad70`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1d2ad70c286264f931c374c33d819c595ad93844).

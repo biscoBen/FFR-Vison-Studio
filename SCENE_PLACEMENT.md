@@ -4,7 +4,7 @@
 
 The opt-in `crystalCaveTest` setting selects the same cave/reward route as `crystalCave`; the UI saves these as
 mutually exclusive settings. It uses native `pc0030_01/openarmidle2` (animation index 8), confirmed in
-`SEQ_C01_005_01` and `SEQ_C01_005_02_B`, with the normal `M_Ss_Component_PBR` material at 3.5 units per pixel.
+`SEQ_C01_005_01` and `SEQ_C01_005_02_B`, with the normal `M_Ss_Component_PBR` material at 2.7 units per pixel.
 The introductory aura/appearance Niagara systems and scene camera bloom are independent and are not spawned.
 
 WoL map 10223 (`00Com_223`, `DT_MapData_02Lan`) streams shared `00Com_200_01_BG`. Its `StaticMeshActor_235`,
@@ -27,25 +27,48 @@ The private instance now inherits **`M_Env_Glass_Single_Layer_Water`**, whose ex
 `MSM_SingleLayerWater` (field 1024), with its native opaque base blend mode. This shading model has a separate
 transmission pass; opaque base blending here is not equivalent to an ordinary opaque surface. Its native parameter
 cache exposes `Opacity` (default .4), Metallic (1), Roughness (.25), Fresnel_Intensity (1) and normal controls.
-Use Opacity .08, Metallic 0, Roughness .08, Fresnel .2, and zero normal/wave intensity and wave speed. Inherit its
-native white Base_Color and normal textures; discard all unrelated opaque-crystal vector, texture and glow overrides.
-The parent already has wave-normal and absorption static switches false; leave the shipped permutation unchanged.
-Final transmission, sprite visibility and glass appearance still need a live render; a serializer roundtrip does not
-prove them.
+Run 38785441302 revealed the pose in live testing but magnified/fragmented it heavily and lost the original
+material-driven turn. The revised private instance uses Opacity .025, Metallic .025, Roughness .08, Fresnel 0,
+and zero normal/wave intensity and wave speed. Inherit its native white Base_Color and normal textures; discard
+all unrelated opaque-crystal vector, texture and glow overrides. Leave the shipped static permutation unchanged.
+
+The glass root uses **RM_PixelNormalOffset**, with native distortion enabled. Unreal's `DistortionCommon.ush`
+computes that mode independently of the specular-derived IOR: lowering Fresnel alone cannot remove its warp.
+Set the reserved scalar **RefractionDepthBias=1000**. `UMaterialInstance::GetRefractionSettings` reads this built-in
+instance scalar directly, without a declared parent parameter. `PostProcessUVDistortion` attenuates screen-space
+distortion by depth separation and this bias; 1000 suppresses distortion for Fina and the nearby room. Exclude this
+reserved name from the declared-parameter guard. This uses the shipped shader, not a new static permutation.
+Final transmission, clarity and fit still require a live render; serialization does not prove rendering.
 
 Clear `bHasStaticPermutationResource`, remove the donor's static parameters/base overrides, and discard its opaque
 shader maps. UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader
 resources. Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
 
-The casing is an instance component of the existing acquisition NPC, attached to **SsPlayerComponent (64)**, with
-NoCollision. The native NPC capsule and event-only trigger remain responsible for blocking and input. Register the
-casing through `InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing; correct its
-native pivot from the mesh bounds. SpriteStudio maps screen X to local Y and screen Y to local Z. The pose's native
-setup Y=51, part Y=-29 and one-pixel cell pivot put the visual center 21 pixels above its origin; the three cells'
-combined horizontal bounds have center .5 pixels. Set the casing center in sprite space to (0, .5*3.5, 21*3.5).
-This inherits the complete penetration/billboard/shake transform and the sprite's 110-unit lift exactly once. Do not
-assume the billboard's local up equals world Z or add that lift again. The glass shader does not inherit the original
-variant's center-light/rotation switches. Final transmission and framing still require an in-game render.
+The casing and its private pivot are instance components of the existing acquisition NPC, attached below
+**SsPlayerComponent (64)**, with NoCollision. The native NPC capsule and event-only trigger remain responsible for
+blocking and input. Register both through `InstanceComponents` and creation/preload dependencies. Scale .12 gives
+a 354-unit casing; correct its elevated mesh pivot from bounds. SpriteStudio maps screen X to local Y and screen Y
+to local Z. The pose's native setup Y=51, part Y=-29 and one-pixel cell pivot put its visual center 21 pixels above
+its origin; the three cells' combined horizontal bounds have center .5 pixels. Center the pivot at
+(0, .5*2.7, 21*2.7) and the mesh at minus its native bounds origin times .12. Float 126.8 preserves the previous
+sprite-space center height of 183.5. This inherits penetration/billboard/shake transforms exactly once.
+
+Fit analysis projects native LOD0 geometry across all 360 whole-degree yaw angles and compares all three idle cells'
+alpha boundaries against its convex silhouette. The limiting scale is 3.1735 units/pixel; 2.7 leaves about 15% margin
+and reduces the previous pose by about 23%. This tests projected containment, not the complete irregular 3D volume.
+
+Restore turning with private `SEQ_Studio_CrystalFinaTestTurn`: one linear yaw-only transform track, 0–360 degrees
+in 100 seconds, bound by `MovieSceneBindingOverrides` to the loaded NPC's private pivot. A separate native
+`LevelSequenceActor` autoplays indefinitely. Its soft object path must name the private World, PersistentLevel,
+NPC actor and pivot. No spawnables, event/master tracks, director, camera cuts or input/HUD/player restrictions.
+Fina and her capsule stay steady; the owned casing follows her visibility and disappears on acquisition.
+
+Do not serialize `RotatingMovementComponent.UpdatedComponent` to target this child: `UMovementComponent::Serialize`
+restores its pre-load value and discards that serialized pointer. Automatic registration instead targets the NPC root.
+A new `SceneComponent` also needs the native ActorComponent footer: an empty `UCSModifiedProperties` array count,
+**four zero bytes**, after its tagged/unversioned properties. A JSON roundtrip alone cannot detect missing native
+class footer bytes. LevelSequenceActor adds no native Serialize footer beyond AActor; the native donor actor footer
+is retained. Recheck these layouts and sequence bindings against the full game's engine version.
 
 These rules come from the demo's decoded maps, Blueprint defaults and `Mappings.usmap`, rather than screen-space
 estimates. Implementation: `assets/existing_visions/payload/_ffr_crystal_cave.py`; regression checks:
