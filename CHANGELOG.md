@@ -11,12 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Restore visible surface facets in **Crystal Fina Test**. The previous distortion-free candidate made Fina readable
-  but left no perceptible casing. Increase glass surface coverage and highlights while retaining refraction suppression,
-  the fitted pose, display center and casing-only turn. Generated native assets still contain the casing and private
-  material with ordinary visibility settings; actual runtime draw/appearance still needs an in-game test.
+## Published Crystal Fina glass surface visibility test — 2026-10-15
+
+Code: [`3097d47`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3097d4767711bb96d4c174a7de87d5333de155e3).
+[Verified Windows test release / run 38800014400](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38800014400).
+
+- Restore surface cues in **Crystal Fina Test**: raise opacity to .12, Fresnel intensity to .65 and metallic response
+  to .08, with roughness .14. Keep refraction depth bias 1000 and zero normal/wave distortion. The previous live test
+  showed Fina clearly but no perceptible casing. Native assets still contain the mesh and private material with ordinary
+  visibility settings; restoring moderate highlights and coverage addresses the overly faint surface settings.
+  Retain the fitted pose, display center, casing-only rotation and acquisition flow. Final casing visibility and turning
+  still require an in-game test.
+- Validation: clean analysis, 243 Flutter checks, the separate fresh frozen-engine Windows startup check, and all
+  340 Python checks passed (Windows: five skips; Linux: four). Bundle checks, 12 launcher checks and 10 import checks
+  passed. The updated native material roundtrip retained the surface settings and distortion suppression. Downloaded
+  the published ZIP, verified SHA-256 and commit/run provenance, and matched all 25 manifest entries plus the manifest
+  against source. Bundled extension 1.2.9. Automated checks do not verify runtime rendering.
+- First complete candidate to verified download: **7m11s**, including checks, waiting and verification. Windows CI
+  took **5m25s**, with **9m51s** runner time. Reused the automatic push run without dispatching an extra build.
 
 ## Published Crystal Fina clarity, fit and turning test — 2026-10-15
+
+Live follow-up: Fina is clearly visible, but the casing has no perceptible surface. Rotation cannot be assessed from
+that screenshot. Superseded by the surface visibility candidate above.
 
 Code: [`20d27fc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/20d27fc0557b18849efc42670a920d499f54f688).
 [Verified Windows test release / run 38795958251](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38795958251).
