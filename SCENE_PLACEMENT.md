@@ -28,9 +28,13 @@ The private instance now inherits **`M_Env_Glass_Single_Layer_Water`**, whose ex
 transmission pass; opaque base blending here is not equivalent to an ordinary opaque surface. Its native parameter
 cache exposes `Opacity` (default .4), Metallic (1), Roughness (.25), Fresnel_Intensity (1) and normal controls.
 Run 38785441302 revealed the pose in live testing but magnified/fragmented it heavily and lost the original
-material-driven turn. The revised private instance uses Opacity .025, Metallic .025, Roughness .08, Fresnel 0,
-and zero normal/wave intensity and wave speed. Inherit its native white Base_Color and normal textures; discard
-all unrelated opaque-crystal vector, texture and glow overrides. Leave the shipped static permutation unchanged.
+material-driven turn. Run 38795958251 suppressed distortion and made the pose readable, but the next live screenshot
+showed no perceptible casing. Its Opacity .025, Metallic .025 and Fresnel 0 removed most surface cues as well as the warp.
+Generated native readbacks still contain the mesh, correct private material, scale and ordinary visibility defaults;
+they cannot establish that it was drawn at runtime. The revised instance uses **Opacity .12, Metallic .08, Roughness .14
+and Fresnel .65**, restoring moderate surface coverage and highlights independently of refraction. Keep zero
+normal/wave intensity and wave speed, native white Base_Color and normal textures, and the shipped static permutation.
+No opaque-crystal vector, texture or glow overrides. Retain the fitted pose, display center and casing-only rotation.
 
 The glass root uses **RM_PixelNormalOffset**, with native distortion enabled. Unreal's `DistortionCommon.ush`
 computes that mode independently of the specular-derived IOR: lowering Fresnel alone cannot remove its warp.

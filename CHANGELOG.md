@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Restore visible surface facets in **Crystal Fina Test**. The previous distortion-free candidate made Fina readable
+  but left no perceptible casing. Increase glass surface coverage and highlights while retaining refraction suppression,
+  the fitted pose, display center and casing-only turn. Generated native assets still contain the casing and private
+  material with ordinary visibility settings; actual runtime draw/appearance still needs an in-game test.
+
 ## Published Crystal Fina clarity, fit and turning test — 2026-10-15
 
 Code: [`20d27fc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/20d27fc0557b18849efc42670a920d499f54f688).

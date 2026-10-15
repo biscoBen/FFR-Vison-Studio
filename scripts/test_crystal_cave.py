@@ -593,8 +593,8 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                   cave.property_data(p, 'ParameterValue')['Value'] for p in scalars}
         for name, value in cave.TEST_CRYSTAL_PARAMETERS.items(): self.assertAlmostEqual(values[name], value)
         self.assertEqual(set(values), set(cave.TEST_CRYSTAL_PARAMETERS))
-        self.assertLess(values['Opacity'], .03)
-        self.assertEqual(values['Fresnel_Intensity'], 0.0)
+        self.assertLess(values['Opacity'], .25)
+        self.assertGreater(values['Fresnel_Intensity'], 0.0)
         self.assertEqual(values['RefractionDepthBias'], 1000.0)
         self.assertNotIn('Dither_Intensity', values)
         self.assertNotIn('Crystal_Emissive', values)

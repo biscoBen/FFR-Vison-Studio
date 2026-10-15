@@ -53,8 +53,10 @@ TEST_CRYSTAL_SCALE = .12
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
 TEST_POSE_CENTER_X = .5
-TEST_CRYSTAL_PARAMETERS = {'Opacity': .025, 'Metallic': .025, 'Roughness': .08,
-    'Fresnel_Intensity': 0.0, 'Normal_Intensity': 0.0,
+# Keep the casing's surface visible independently of its screen-space warp.
+# Zero Fresnel plus near-zero coverage made the distortion-free casing vanish.
+TEST_CRYSTAL_PARAMETERS = {'Opacity': .12, 'Metallic': .08, 'Roughness': .14,
+    'Fresnel_Intensity': .65, 'Normal_Intensity': 0.0,
     'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0,
     'RefractionDepthBias': 1000.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
@@ -1684,7 +1686,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: fitted introductory pose; clearer glass (opacity 0.025, refraction bias 1000); rotation-only sequence turns the casing at 3.6 degrees/second.')
+        print('  Crystal Fina Test: fitted introductory pose; visible glass facets (opacity 0.12, Fresnel 0.65, refraction bias 1000); rotation-only sequence turns the casing at 3.6 degrees/second.')
 
 
 def make_caves(source, plans):
