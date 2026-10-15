@@ -584,7 +584,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Retest selected vendor inventories and combined-shop tabs, preserving native item conditions and purchase limits.
   For **Crystal Fina Test**, revalidate `M_Env_Glass_Single_Layer_Water`, its `MSM_SingleLayerWater` transmission model and scalar names,
   the reserved RefractionDepthBias override, cooked material-instance cached-data format, introductory pose/billboard transforms,
-  and the private rotation-only sequence, component soft-path binding and autoplay/input flags. Preserve both test modes
+  and copied static visibility IDs/streaming metadata. Recheck the private casing sequence, Tick clock, explicit
+  transform channels, component soft-path binding and autoplay/input flags. Preserve both test modes
   and avoid carrying demo-specific shader serialization into another engine version without checking it.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source

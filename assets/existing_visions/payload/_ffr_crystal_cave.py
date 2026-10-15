@@ -54,7 +54,7 @@ TEST_CRYSTAL_SCALE = .12
 TEST_POSE_CENTER_Y = 21.0
 TEST_POSE_CENTER_X = .5
 # Keep the casing's surface visible independently of its screen-space warp.
-# Zero Fresnel plus near-zero coverage made the distortion-free casing vanish.
+# These values are independent of the casing's culling and attachment setup.
 TEST_CRYSTAL_PARAMETERS = {'Opacity': .12, 'Metallic': .08, 'Roughness': .14,
     'Fresnel_Intensity': .65, 'Normal_Intensity': 0.0,
     'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0,
@@ -1128,8 +1128,17 @@ def native_object(view, prototype, outer_id, script, class_name, object_name, da
     return len(view['Exports'])
 
 
+def test_crystal_location(source):
+    """The casing's relative position on the existing sprite component."""
+    _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
+    origin = property_data(property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
+    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE, TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
+    return tuple(center[i] - float(origin[axis]) * TEST_CRYSTAL_SCALE
+                 for i, axis in enumerate(('X', 'Y', 'Z')))
+
+
 def test_spin_sequence(source):
-    """A rotation-only loop: no camera, event, actor spawning or locator fragments."""
+    """Tick-driven casing turn with explicit placement; no cutscene clock/events."""
     view = private_level(source[GRANT_DONOR], '/Game/' + GRANT_DONOR, '/Game/' + TEST_SPIN_SEQUENCE)
     _, sequence = export(view, Path(TEST_SPIN_SEQUENCE).name)
     scene_id = property_data(sequence, 'MovieScene')['Value']; scene = view['Exports'][scene_id - 1]
@@ -1138,6 +1147,9 @@ def test_spin_sequence(source):
     for key in ('Possessables', 'ObjectBindings', 'BindingGroups', 'Spawnables', 'Tracks'):
         if any(p['Name'] == key for p in scene['Data']): set_value(scene, key, [])
     set_value(scene, 'CameraCutTrack', 0)
+    # The acquisition donor uses the game's event-controlled custom clock.
+    # A decorative loop must advance independently while the player walks.
+    set_value(scene, 'ClockSource', 'Tick'); set_value(scene, 'CustomClock', 0)
     donor = source[TEST_SPIN_DONOR]
     sections = [(i, e) for i, e in enumerate(donor['Exports'], 1) if e.get('ClassIndex', 0) < 0
                 and donor['Imports'][-e['ClassIndex'] - 1]['ObjectName'] == 'MovieScene3DTransformSection']
@@ -1148,10 +1160,11 @@ def test_spin_sequence(source):
     track_id = mapping[old_track]; track = view['Exports'][track_id - 1]
     section = view['Exports'][mapping[old_section] - 1]
     track['Data'] = [p for p in track['Data'] if p['Name'] not in ('EvaluationField', 'EvaluationFieldGuid')]
-    section['Data'] = [p for p in section['Data'] if p['Name'] not in ('TransformMask', 'bUseQuaternionInterpolation', 'Easing')]
-    section['Data'] += [native_struct('TransformMask', 'MovieSceneTransformMask', [native_prop('Mask', 32, 'UInt32PropertyData')]),
+    template = copy.deepcopy(next(p for p in section['Data'] if p['Name'] == 'Rotation' and p.get('ArrayIndex', 0) == 2))
+    section['Data'] = [p for p in section['Data'] if p['Name'] not in
+        ('Translation', 'Rotation', 'Scale', 'TransformMask', 'bUseQuaternionInterpolation', 'Easing')]
+    section['Data'] += [native_struct('TransformMask', 'MovieSceneTransformMask', [native_prop('Mask', 511, 'UInt32PropertyData')]),
                         native_prop('bUseQuaternionInterpolation', False, 'BoolPropertyData')]
-    channel = next(p for p in section['Data'] if p['Name'] == 'Rotation' and p.get('ArrayIndex', 0) == 2)['Value'][0]['Value']
     key = next(copy.deepcopy(p['Value'][0]['Value']['Values'][0]) for e in donor['Exports']
                for p in e.get('Data', []) if isinstance(e.get('Data'), list)
                and isinstance(p, dict) and p.get('StructType') == 'MovieSceneDoubleChannel'
@@ -1160,6 +1173,18 @@ def test_spin_sequence(source):
     numerator = next(p['Value'] for p in rate if p['Name'] == 'Numerator')
     denominator = next((p['Value'] for p in rate if p['Name'] == 'Denominator'), 1)
     end = round(numerator / denominator * 360 / TEST_CRYSTAL_TURN_RATE)
+    # Do not retain the donor's off-stage translation or its unrelated scale.
+    # All nine channels describe this component; only yaw changes over time.
+    for name, values in (('Translation', test_crystal_location(source)), ('Rotation', (0.0,) * 3),
+                         ('Scale', (TEST_CRYSTAL_SCALE,) * 3)):
+        for axis, value in enumerate(values):
+            prop = copy.deepcopy(template); prop.update(Name=name, ArrayIndex=axis)
+            prop['Value'][0]['Name'] = name
+            data = prop['Value'][0]['Value']
+            data.update(Times=[], Values=[], DefaultValue=value, bHasDefaultValue=True)
+            data['TickResolution'].update(Numerator=numerator, Denominator=denominator)
+            section['Data'].append(prop)
+    channel = next(p for p in section['Data'] if p['Name'] == 'Rotation' and p.get('ArrayIndex', 0) == 2)['Value'][0]['Value']
     channel['Times'] = [{'$type': 'UAssetAPI.UnrealTypes.FFrameNumber, UAssetAPI', 'Value': t} for t in (0, end)]
     channel['Values'] = [dict(copy.deepcopy(key), Value=value, InterpMode='RCIM_Linear') for value in (0.0, 360.0)]
     channel['TickResolution'].update(Numerator=numerator, Denominator=denominator)
@@ -1170,27 +1195,27 @@ def test_spin_sequence(source):
     source_scene = donor['Exports'][donor['Exports'][old_track - 1]['OuterIndex'] - 1]
     possessable = copy.deepcopy(property_data(source_scene, 'Possessables')['Value'][0])
     possessable['Name'] = '0'; possessable['Value'] = [p for p in possessable['Value'] if p['Name'] not in ('Guid', 'DynamicBinding')]
-    possessable['Value'].append(native_guid('Guid', TEST_SPIN_GUID)); set_value(possessable, 'Name', 'Crystal casing pivot')
+    possessable['Value'].append(native_guid('Guid', TEST_SPIN_GUID)); set_value(possessable, 'Name', 'Crystal casing')
     binding = copy.deepcopy(property_data(source_scene, 'ObjectBindings')['Value'][0]); binding['Name'] = '0'
     property_data(binding, 'ObjectGuid')['Value'][0]['Value'] = TEST_SPIN_GUID
-    set_value(binding, 'BindingName', 'Crystal casing pivot')
+    set_value(binding, 'BindingName', 'Crystal casing')
     set_value(binding, 'Tracks', [native_prop('0', track_id)])
     set_value(scene, 'Possessables', [possessable]); set_value(scene, 'ObjectBindings', [binding])
     for obj in (sequence, scene, track, section):
         property_data(obj, 'Signature')['Value'][0]['Value'] = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL,
-            TEST_SPIN_SEQUENCE + ':' + obj['ObjectName'])).upper() + '}'
+            TEST_SPIN_SEQUENCE + ':direct-casing-v2:' + obj['ObjectName'])).upper() + '}'
     names(view, [view['Exports'], view['Imports']])
     return view
 
 
-def attach_test_spin(npc, source, pivot_id, owner_id):
-    """Override a possessable with the owned pivot; leave NPC input/cameras alone."""
+def attach_test_spin(npc, source, component_id, owner_id):
+    """Bind the owned casing itself; leave NPC input/cameras alone."""
     level_id, level = export(npc, 'PersistentLevel')
     _, original = next((i, e) for i, e in enumerate(source[TEST_BACKGROUND]['Exports'], 1)
                        if e['ObjectName'] == 'StaticMeshActor_235')
     spin_id = native_object(npc, original, level_id, 'LevelSequence', 'LevelSequenceActor',
                             'Studio_CrystalFinaTestSpin', [], original['Extras'])
-    owner = npc['Exports'][owner_id - 1]; pivot = npc['Exports'][pivot_id - 1]
+    owner = npc['Exports'][owner_id - 1]; component = npc['Exports'][component_id - 1]
     world = next(e for e in npc['Exports'] if e.get('ClassIndex', 0) < 0
                  and npc['Imports'][-e['ClassIndex'] - 1]['ObjectName'] == 'World')
     package = '/Game/' + TEST_SPIN_SEQUENCE
@@ -1206,7 +1231,7 @@ def attach_test_spin(npc, source, pivot_id, owner_id):
     path = {'$type': 'UAssetAPI.PropertyTypes.Objects.FSoftObjectPath, UAssetAPI',
             'AssetPath': {'$type': 'UAssetAPI.PropertyTypes.Objects.FTopLevelAssetPath, UAssetAPI',
                           'PackageName': candidates[0], 'AssetName': world['ObjectName']},
-            'SubPathString': 'PersistentLevel.' + owner['ObjectName'] + '.' + pivot['ObjectName']}
+            'SubPathString': 'PersistentLevel.' + owner['ObjectName'] + '.' + component['ObjectName']}
     item = native_struct('0', 'MovieSceneBindingOverrideData', [binding_id,
         native_prop('Object', path, 'SoftObjectPropertyData'), native_prop('bOverridesDefault', True, 'BoolPropertyData')])
     override_id = native_object(npc, original, spin_id, 'MovieScene', 'MovieSceneBindingOverrides', 'BindingOverrides',
@@ -1218,7 +1243,7 @@ def attach_test_spin(npc, source, pivot_id, owner_id):
     spin = npc['Exports'][spin_id - 1]
     spin['Data'] = [settings, native_prop('LevelSequenceAsset', sequence_ref), native_prop('BindingOverrides', override_id)]
     spin['CreateBeforeSerializationDependencies'] = [override_id, sequence_ref]
-    npc['Exports'][override_id - 1]['CreateBeforeSerializationDependencies'] = [pivot_id]
+    npc['Exports'][override_id - 1]['CreateBeforeSerializationDependencies'] = [component_id]
     level['Actors'].append(spin_id)
     names(npc, [spin, npc['Exports'][override_id - 1], npc['Imports']])
 
@@ -1244,48 +1269,39 @@ def attach_test_crystal(npc, source, owner_id=31, sprite_id=64):
     def prop(name, value, kind, **extra):
         return {'$type': 'UAssetAPI.PropertyTypes.Objects.' + kind + ', UAssetAPI',
                 'Name': name, 'Value': value, 'IsZero': False, **extra}
-    def vec(name, xyz):
-        result = copy.deepcopy(property_data(component, 'RelativeLocation')); result['Name'] = name
-        result['Value'][0]['Name'] = name
-        vector({'Data': [result]}, name, xyz)
-        return result
     instance = prop('CreationMethod', 'Instance', 'EnumPropertyData', EnumType='EComponentCreationMethod', InnerType='ByteProperty')
     movable = prop('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty')
-    center = (0.0, TEST_POSE_CENTER_X * TEST_SPRITE_SCALE, TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE)
-    pivot_id = native_object(npc, component, owner_id, 'Engine', 'SceneComponent', 'Studio_CrystalFinaTestPivot',
-        [prop('AttachParent', sprite_id, 'ObjectPropertyData'), copy.deepcopy(instance), copy.deepcopy(movable),
-         vec('RelativeLocation', center)], extras=base64.b64encode(struct.pack('<i', 0)).decode())
-    npc['Exports'][pivot_id - 1]['CreateBeforeSerializationDependencies'] = [sprite_id]
     # Explicit instance ownership/registration; keep the existing capsule as
     # the only blocker. The decorative shell must not collide with its owner.
     component['Data'] = [p for p in component['Data']
-                         if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance')]
-    component['Data'] += [prop('AttachParent', pivot_id, 'ObjectPropertyData'), instance, movable,
+                         if p['Name'] not in ('AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance',
+                             'VisibilityId', 'bIsValidTextureStreamingBuiltData', 'bVisible', 'bHiddenInGame')]
+    component['Data'] += [prop('AttachParent', sprite_id, 'ObjectPropertyData'), instance, movable,
+        # This moved, dynamic copy must not use the donor level's baked culling ID.
+        prop('VisibilityId', -1, 'IntPropertyData'),
+        prop('bIsValidTextureStreamingBuiltData', False, 'BoolPropertyData'),
+        prop('bVisible', True, 'BoolPropertyData'), prop('bHiddenInGame', False, 'BoolPropertyData'),
         {'$type': 'UAssetAPI.PropertyTypes.Structs.StructPropertyData, UAssetAPI',
          'Name': 'BodyInstance', 'StructType': 'BodyInstance', 'SerializeNone': True, 'IsZero': False,
          'Value': [prop('CollisionEnabled', 'NoCollision', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty'),
                    prop('CollisionProfileName', 'NoCollision', 'NamePropertyData')]}]
     owner = npc['Exports'][owner_id - 1]
     instances = prop('InstanceComponents', [prop(str(i), value, 'ObjectPropertyData')
-        for i, value in enumerate((component_id, pivot_id))], 'ArrayPropertyData', ArrayType='ObjectProperty')
+        for i, value in enumerate((component_id,))], 'ArrayPropertyData', ArrayType='ObjectProperty')
     existing = [p for p in owner['Data'] if p['Name'] == 'InstanceComponents']
     if existing:
         existing[0]['Value'].extend(instances['Value']); existing[0]['IsZero'] = False
     else:
         owner['Data'].append(instances)
-    owner['CreateBeforeSerializationDependencies'].extend((component_id, pivot_id))
-    if pivot_id not in component['CreateBeforeSerializationDependencies']:
-        component['CreateBeforeSerializationDependencies'].append(pivot_id)
-    _, mesh = export(source[TEST_NATIVE_MESH], Path(TEST_NATIVE_MESH).name)
-    bounds = property_data(mesh, 'ExtendedBounds')
-    origin = property_data(bounds, 'Origin')['Value'][0]['Value']
+    owner['CreateBeforeSerializationDependencies'].append(component_id)
+    if sprite_id not in component['CreateBeforeSerializationDependencies']:
+        component['CreateBeforeSerializationDependencies'].append(sprite_id)
     vector(component, 'RelativeScale3D', (TEST_CRYSTAL_SCALE,) * 3)
-    # Rotate about the actual visual center, not the elevated mesh pivot. The
-    # separate parent keeps the casing centered and the sprite itself steady.
-    vector(component, 'RelativeLocation', tuple(-float(origin[axis]) * TEST_CRYSTAL_SCALE
-                                               for axis in ('X', 'Y', 'Z')))
-    names(npc, [npc['Exports'][pivot_id - 1], component, owner, npc['Imports']])
-    attach_test_spin(npc, source, pivot_id, owner_id)
+    # Restore the direct sprite attachment used by the visible glass candidate.
+    # Yaw does not alter the elevated Z pivot; horizontal orbit is under .51 UU.
+    vector(component, 'RelativeLocation', test_crystal_location(source))
+    names(npc, [component, owner, npc['Imports']])
+    attach_test_spin(npc, source, component_id, owner_id)
 
 
 def entrance_mesh(view, component, spec, source):
@@ -1686,7 +1702,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: fitted introductory pose; visible glass facets (opacity 0.12, Fresnel 0.65, refraction bias 1000); rotation-only sequence turns the casing at 3.6 degrees/second.')
+        print('  Crystal Fina Test: fitted introductory pose; visible glass facets (opacity 0.12, Fresnel 0.65, refraction bias 1000); direct sprite attachment; baked visibility disabled; Tick-driven casing turn at 3.6 degrees/second.')
 
 
 def make_caves(source, plans):

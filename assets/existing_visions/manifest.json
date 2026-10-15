@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "5a220a5cf2e19b3e90026d4302b340949c65b75324ade5e6d120850d200ec9a4",
+    "install_existing_visions.py": "13ff4f6aa177e7838ae87b14a778949365c4449eba3face97fb09cf232b68694",
     "payload/_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "payload/_ffr_animation_repair.py": "969eb737c788c49e78b42dbac0cb4017862edc5a7ca0075761fdd86b15b38940",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_crystal_cave.py": "9bbd7c08397f2a8610f5ba330978271f689efd100eb354fa096375c2f64d192a",
+    "payload/_ffr_crystal_cave.py": "7d68bd5092e5fc1ef2dfcb04fa2ce2c4b3f314cc9ea4c1622b10af66d8ae9463",
     "payload/_ffr_deck_sync.py": "4e6532f3d47c522bd6cd4be5a9a49e2230af24d3ddac5d25139d2ccc603312fa",
     "payload/_ffr_existingvisions.py": "f0a74b90a7cbe4620f6020f35acc55a25030bd729d28a2f60e9e40eed42c998e",
     "payload/_ffr_field_leader.py": "a2b0b8a808b4b4f85030d70689d8cbfaea04469b133c2f10c7eb6fa6f9898fc0",
@@ -20,7 +20,7 @@
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
     "payload/field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
-    "payload/manifest.json": "25346b6347773da40acf311514c7fec4cc488cc949147db851176571882caac4",
+    "payload/manifest.json": "52d2adea7023c56e25e36495c7c3a15498c49e124805f0751fcaf487e676d5b5",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",

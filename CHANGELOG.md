@@ -11,6 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Correct **Crystal Fina Test** casing setup after surface-only adjustments left it invisible: clear the donor's static
+  visibility ID and built-streaming flag, restore direct sprite attachment, and bind the turn to the casing itself.
+  Replace the inherited cutscene clock with Tick and author every transform channel so no unrelated donor placement
+  or scale remains. Retain the current material, Fina's pose, acquisition and collision. Native asset checks cannot
+  confirm which inherited setting caused the live disappearance; visibility and turning still need an in-game test.
+
 ## Published Crystal Fina glass surface visibility test — 2026-10-15
 
 Code: [`3097d47`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3097d4767711bb96d4c174a7de87d5333de155e3).

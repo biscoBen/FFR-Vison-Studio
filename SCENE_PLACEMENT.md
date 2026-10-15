@@ -29,8 +29,9 @@ transmission pass; opaque base blending here is not equivalent to an ordinary op
 cache exposes `Opacity` (default .4), Metallic (1), Roughness (.25), Fresnel_Intensity (1) and normal controls.
 Run 38785441302 revealed the pose in live testing but magnified/fragmented it heavily and lost the original
 material-driven turn. Run 38795958251 suppressed distortion and made the pose readable, but the next live screenshot
-showed no perceptible casing. Its Opacity .025, Metallic .025 and Fresnel 0 removed most surface cues as well as the warp.
-Generated native readbacks still contain the mesh, correct private material, scale and ordinary visibility defaults;
+showed no perceptible casing. Run 38800014400 increased its surface cues but the user reported the same result;
+surface settings alone did not resolve the missing casing.
+Generated native readbacks contain the mesh, private material and scale, but also inherited a baked VisibilityId;
 they cannot establish that it was drawn at runtime. The revised instance uses **Opacity .12, Metallic .08, Roughness .14
 and Fresnel .65**, restoring moderate surface coverage and highlights independently of refraction. Keep zero
 normal/wave intensity and wave speed, native white Base_Color and normal textures, and the shipped static permutation.
@@ -48,24 +49,38 @@ Clear `bHasStaticPermutationResource`, remove the donor's static parameters/base
 shader maps. UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader
 resources. Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
 
-The casing and its private pivot are instance components of the existing acquisition NPC, attached below
-**SsPlayerComponent (64)**, with NoCollision. The native NPC capsule and event-only trigger remain responsible for
-blocking and input. Register both through `InstanceComponents` and creation/preload dependencies. Scale .12 gives
-a 354-unit casing; correct its elevated mesh pivot from bounds. SpriteStudio maps screen X to local Y and screen Y
-to local Z. The pose's native setup Y=51, part Y=-29 and one-pixel cell pivot put its visual center 21 pixels above
-its origin; the three cells' combined horizontal bounds have center .5 pixels. Center the pivot at
-(0, .5*2.7, 21*2.7) and the mesh at minus its native bounds origin times .12. Float 126.8 preserves the previous
-sprite-space center height of 183.5. This inherits penetration/billboard/shake transforms exactly once.
+The casing is an instance component of the existing acquisition NPC, attached **directly to SsPlayerComponent (64)**,
+restoring the attachment used by the visible glass candidate. No intermediate pivot component. Keep NoCollision;
+the native NPC capsule and event-only trigger remain responsible for blocking/input. Register the casing through
+`InstanceComponents` and creation/preload dependencies. Scale .12 gives a 354-unit casing. SpriteStudio maps screen X
+to local Y and screen Y to local Z. The pose's visual center is (0, .5*2.7, 21*2.7); set the casing's relative location
+to that center minus the native mesh bounds origin times .12. Float 126.8 retains the sprite-space center height 183.5.
+This inherits penetration/billboard/shake transforms exactly once. Yaw leaves the elevated native Z pivot unchanged;
+the small X/Y origin offset gives less than .51 UU of orbit through a full turn (below one native sprite pixel).
+
+**Clear copied static visibility metadata.** The donor component has `VisibilityId=1`. Set the dynamic private copy
+explicitly to **-1 (INDEX_NONE)** and invalidate `bIsValidTextureStreamingBuiltData`. In Unreal's
+`PrimitiveSceneProxy.cpp`, the component's VisibilityId is copied to the proxy. `PrimitiveSceneInfo.cpp` marks every
+nonnegative ID as `HasPrecomputedVisibility`, independently of mobility. `SceneVisibility.cpp` can then cull that
+primitive using a different level's visibility bit. A valid mesh/material/transform and bVisible=true do not prevent
+that culling. The copied ID is invalid for this relocated instance; whether it caused this particular live disappearance
+still requires an in-game check. Author bVisible=true and bHiddenInGame=false, preserving native acquisition hiding.
 
 Fit analysis projects native LOD0 geometry across all 360 whole-degree yaw angles and compares all three idle cells'
 alpha boundaries against its convex silhouette. The limiting scale is 3.1735 units/pixel; 2.7 leaves about 15% margin
 and reduces the previous pose by about 23%. This tests projected containment, not the complete irregular 3D volume.
 
-Restore turning with private `SEQ_Studio_CrystalFinaTestTurn`: one linear yaw-only transform track, 0–360 degrees
-in 100 seconds, bound by `MovieSceneBindingOverrides` to the loaded NPC's private pivot. A separate native
-`LevelSequenceActor` autoplays indefinitely. Its soft object path must name the private World, PersistentLevel,
-NPC actor and pivot. No spawnables, event/master tracks, director, camera cuts or input/HUD/player restrictions.
-Fina and her capsule stay steady; the owned casing follows her visibility and disappears on acquisition.
+Turning uses private `SEQ_Studio_CrystalFinaTestTurn`, bound by `MovieSceneBindingOverrides` directly to the loaded
+NPC's casing component. Its soft path names the private World, PersistentLevel, NPC actor and casing. A native
+`LevelSequenceActor` autoplays indefinitely, without spawnables, event/master tracks, director, camera cuts or
+input/HUD/player restrictions. The loop uses **ClockSource=Tick and CustomClock=null**. The acquisition donor's
+`ClockSource=Custom` referenced the game's cutscene event clock; do not retain that clock for free-roaming decoration.
+
+Write all nine transform channels explicitly (mask 511): the same relative location as the component, scale .12 on
+all axes, roll/pitch zero and linear yaw 0–360 degrees in 100 seconds. No donor translation/default rotation/scale
+survives. Only yaw changes over time. Revise signatures to invalidate the earlier private sequence. Fina and her capsule
+stay steady; the owned casing follows acquisition visibility. Check native readbacks for the clock, culling ID,
+direct parent and complete transform, not just the presence of a mesh or rotation key.
 
 Do not serialize `RotatingMovementComponent.UpdatedComponent` to target this child: `UMovementComponent::Serialize`
 restores its pre-load value and discards that serialized pointer. Automatic registration instead targets the NPC root.
