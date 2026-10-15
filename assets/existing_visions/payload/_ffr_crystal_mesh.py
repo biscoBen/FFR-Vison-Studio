@@ -1,4 +1,7 @@
-"""Partition the known UE5.6 Sanctum crystal's inline LODs without reshaping it.
+"""Reference codec for the rejected tip-material experiment (not used in builds).
+
+The live test produced dark tips. Runtime caves use the unmodified native mesh;
+retain this checked codec as format evidence without applying its partition.
 
 Layout checked against FStaticMeshLODResources/FStaticMeshSection and
 FRawStaticIndexBuffer in CUE4Parse, and the demo's three native LODs. Reject

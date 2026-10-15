@@ -11,7 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Restore the approved Crystal Fina glass across the whole casing after the tip-only material experiment produced
+  dark end caps. Use the native single-section mesh with every original opaque render byte and bulk companion intact.
+  Generate only the main glass/solid material; remove the extra tip normal texture and material regions. Preserve
+  the approved .22 opacity, .80 Fresnel, .10 roughness and refraction bias 12.
+- Keep the unique rotation track/section names, fixed size and grounded attachment: live testing now confirms the
+  crystal spins correctly. The old tip codec remains unused for managed-file compatibility and format reference.
+  Rebuild/install with Solid casing check off and Animate crystal casing on. The restored tips need an in-game check.
+  Bundled extension 1.2.15.
+
 ## Published Crystal Fina turn and tip detail correction — 2026-10-15
+
+Live follow-up: the user confirms spinning works, but the tip-only regions render dark. The correction above removes
+that visual experiment and preserves the working turn. Native geometry/serialization checks did not predict this
+material/rendering failure.
 
 Code: [`dc5a01d`](https://github.com/biscoBen/FFR-Vison-Studio/commit/dc5a01de36365d95f314a3404d3a43036a44146a).
 [Verified Windows test release / run 38823829616](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38823829616).

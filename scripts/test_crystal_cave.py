@@ -628,25 +628,19 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         bias, = [p for p in scalars if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
         self.assertEqual(cave.property_data(bias, 'ParameterValue')['Value'], 12)
 
-    def test_tip_glass_keeps_central_coverage_and_only_adds_weak_native_normal_detail(self):
+    def test_uniform_glass_preserves_native_render_bytes_and_has_no_tip_material(self):
         source = self.source(); before = copy.deepcopy(source)
         assets = cave.test_crystal_assets(source)
-        base = assets[cave.TEST_MATERIAL]['Exports'][0]
-        tips = assets[cave.TEST_TIP_MATERIAL]['Exports'][0]
-        def values(owner):
-            return {cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value']:
-                    cave.property_data(p, 'ParameterValue')['Value'] for p in cave.property_data(owner, 'ScalarParameterValues')['Value']}
-        base_values, tip_values = values(base), values(tips)
-        self.assertEqual({k: v for k, v in tip_values.items() if k != 'Normal_Intensity'},
-                         {k: v for k, v in base_values.items() if k != 'Normal_Intensity'})
-        self.assertEqual(base_values['Normal_Intensity'], 0)
-        self.assertGreater(tip_values['Normal_Intensity'], 0)
-        self.assertLess(tip_values['Normal_Intensity'], .05)
-        normal, = cave.property_data(tips, 'TextureParameterValues')['Value']
-        self.assertEqual(cave.property_data(cave.property_data(normal, 'ParameterInfo'), 'Name')['Value'], 'NormalMap')
-        texture = cave.property_data(normal, 'ParameterValue')['Value']
-        self.assertEqual(assets[cave.TEST_TIP_MATERIAL]['Imports'][-texture - 1]['ObjectName'], 'Crystal_Normal')
-        self.assertEqual(base['Extras'], tips['Extras'])
+        self.assertEqual(set(assets), {cave.TEST_MESH, cave.TEST_MATERIAL})
+        original = source[cave.TEST_NATIVE_MESH]['Exports'][0]
+        mesh = assets[cave.TEST_MESH]['Exports'][0]
+        self.assertEqual(mesh['Extras'], original['Extras'])
+        slot, = cave.property_data(mesh, 'StaticMaterials')['Value']
+        ref = cave.property_data(slot, 'MaterialInterface')['Value']
+        self.assertEqual(assets[cave.TEST_MESH]['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_MATERIAL).name)
+        # Restore the approved single-material glass without a normal override.
+        material = assets[cave.TEST_MATERIAL]['Exports'][0]
+        self.assertNotIn('TextureParameterValues', {p['Name'] for p in material['Data']})
         self.assertEqual(source, before)
 
     def test_solid_check_preserves_native_opaque_material_and_uses_identical_mesh(self):

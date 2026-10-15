@@ -74,37 +74,27 @@ runtime object paths. The retained cutscene tracks include off-stage translation
 Give the appended track/section private names `Studio_CrystalFinaTestTurnTrack` / `Studio_CrystalFinaTestTurnSection`,
 and revise their signatures. `check_object_names` rejects duplicate (OuterIndex, case-insensitive ObjectName)
 pairs before writing and after native readback. Regression fixtures retain a same-named donor track deliberately.
-This corrects the concrete package collision; only a live test can confirm the resulting turn/visibility.
+The subsequent live test confirmed the crystal stays visible and turns. Keep these identities and the fixed scale
+when changing the casing material.
 
-### Tip-only glass detail
+### Rejected tip-only material experiment
 
-The user approved the .22 opacity / .80 Fresnel / .10 roughness / bias 12 central glass and requested only a small
-refraction increase above/below Fina. Preserve that material exactly. A second private instance
-`MI_Studio_CrystalFinaTestTips` inherits it, overriding `NormalMap` with the original Sanctum material's shipped
-`Crystal_Normal` texture and `Normal_Intensity=.04`. All coverage, bias, reflection and wave settings remain equal.
-Solid mode uses two identical original opaque instances. Both modes share the same partitioned geometry.
+Live follow-up to run 38823829616: **spinning works**, confirming the unique track names corrected the turn path.
+The separate upper/lower material regions render dark end caps. Restore the native mesh's original single material
+section and opaque render bytes; use the approved glass over its whole surface. Remove the tip instance and extra
+normal-texture override from generated assets. Preserve the working rotation sequence and all approved scalar
+values (.22 opacity, .80 Fresnel, .10 roughness, bias 12, no normal/wave overrides).
 
-`_ffr_crystal_mesh.py` partitions the native inline LOD index buffers into central material 0 and tip material 1.
-A triangle gets tip material only if **all** vertices are outside center Z ±120/.12 (native Z approximately
-233 to 2233), leaving the whole central band and crossing triangles unchanged. No vertices, tangents, UVs, triangles
-or winding are added/removed/changed. LOD0 is 1696 central +188 tip triangles; LOD1 856+86; LOD2 432+38.
-Only section descriptors and triangle order change. Native depth-only triangles have a different order and welded
-indices: match by oriented vertex-position triples, then use the same section grouping, rather than assuming
-its original order matches the main index buffer. Preserve the three GPU buffer-size fields (payload sizes do not
-change). Two empty section samplers plus one empty whole-mesh sampler replace the original one-plus-one entries.
-Retain source LWC bounds, Nanite/SDF tail, physics and external bulk data unchanged.
-
-The rewriter only accepts this checked UE5.6 layout: three inline LODs, one original material section, no ray-tracing
-payload, empty reversed index buffers and empty area samplers. Reject unsupported layouts before emitting a mesh.
-Format references: CUE4Parse's FStaticMeshLODResources, FStaticMeshSection, FRawStaticIndexBuffer and
-FWeightedRandomSampler. Independent binary fixtures check 16-/32-bit indices, vertex bytes, all oriented geometry,
-section ranges, depth correspondence, unchanged opaque tail and malformed/unsupported data. Native source/readback
-comparisons check all three actual LODs. Revalidate the guard/layout when the full game releases.
+The rejected experiment assigned a private .04-intensity native normal texture to triangles wholly beyond center
+Z ±120/.12. It retained all geometry but still failed the visual test: native roundtrips and unchanged vertices did
+not establish correct optical behavior for the extra material/draw region. Do not tune another normal intensity
+or partition while reporting it as a verified visual improvement. The reference codec and fixtures remain packaged
+for managed-file compatibility and format evidence; runtime cave generation does not call them. The implementation
+and earlier published commit retain the full checked three-LOD layout without using it for the corrected build.
 
 The native mesh is closed after position welding (each edge belongs to two triangles). No open edge explains the
-circled central patch. Screen-space refraction can sample another facet/background there; do not alter its geometry
-or increase central distortion based on that screenshot. Judge it again while rotating; the tip detail and turn still
-need an in-game check.
+earlier circled central patch. Screen-space refraction can sample another facet/background there; retain its approved
+material. Verify the restored tips while spinning in-game; serialization alone cannot prove their final appearance.
 
 ### Experimental glass
 
