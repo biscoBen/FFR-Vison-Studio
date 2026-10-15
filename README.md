@@ -19,13 +19,13 @@ be obscured during this test. Turn it off to compare the current experimental tr
 size, placement and acquisition stay the same in both modes. **Animate crystal casing** independently enables the
 added turning sequence and starts off for both new and older settings. The casing is attached to the grounded foot
 component, as in the first visible solid version. Live testing now confirms both the solid casing and glass with Fina
-inside are visible when added rotation is off. The glass material is being tuned for stronger surface reflections and
-some refraction. For that test, leave **Solid casing check off** and **Animate crystal casing off**.
+inside are visible when added rotation is off. The glass material uses stronger surface reflections and
+depth-gated refraction. For that test, leave **Solid casing check off** and **Animate crystal casing off**.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
 and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF.
 The latest optical tuning still needs an in-game check.
-[Verified test package / run 38815120120](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38815120120/Sephira-Studio-Test.zip)
-(code `29c5e6b`, published 2026-10-15).
+[Verified test package / run 38819768798](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38819768798/Sephira-Studio-Test.zip)
+(code `68615bf`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

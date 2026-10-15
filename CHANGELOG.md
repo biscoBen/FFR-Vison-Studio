@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina glass refraction — 2026-10-15
+
+Code: [`68615bf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/68615bf44f3523d7bf8872fb1abc001e2de336ee).
+[Verified Windows test release / run 38819768798](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38819768798).
+
 - Strengthen Crystal Fina Test's glass after live testing confirmed the casing and Fina are visible with added
   rotation off. Raise surface opacity from .12 to .22 and Fresnel from .65 to .80, and sharpen reflections with
   roughness .10 instead of .14. Reduce RefractionDepthBias from 1000 to 12 to admit depth-gated refraction rather
@@ -18,6 +23,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Keep the confirmed grounded attachment, fitted pose and independent solid/rotation switches. Test with Solid
   casing check off and Animate crystal casing off, then rebuild/install and restart. Actual refraction and Fina's
   readability still need an in-game check. Bundled extension 1.2.13.
+- Validation: clean analysis, 244 Flutter checks (one skip), the separate fresh frozen-engine Windows startup check,
+  342 Python checks (Windows: five skips; Linux: four), bundle verification, 12 launcher checks and 10 import checks
+  passed. Glass material and mesh passed strict native roundtrips. Verified the downloaded ZIP's SHA-256, exact
+  commit/run provenance and all 25 manifest entries plus the manifest against source. These checks establish the
+  packaged parameters, not the final in-game refraction or readability.
+- First complete candidate to verified download: **7m23s**, including local checks, waiting and verification.
+  Windows CI took **5m23s**, using **8m53s** of runner time. Reused the automatic push run; no extra build dispatched.
 
 ## Published grounded Crystal Fina casing comparison — 2026-10-15
 
