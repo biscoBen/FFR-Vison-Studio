@@ -11,14 +11,32 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Add **Solid casing check** below Crystal Fina Test, enabled by default for existing and new settings. It swaps the
-  private casing material between the original solid Sanctum material and the current experimental glass; the mesh,
-  placement, size, animation and acquisition remain identical. Preserve the solid material's native shader data and
-  print the selected mode during installation. Save the choice independently, preserving it when other switches change.
-  This is a diagnostic comparison after the previous setup correction left the casing missing in live testing.
-  A solid casing may hide Fina; runtime visibility still requires the user's test.
+## Published Crystal Fina solid casing comparison — 2026-10-15
+
+Code: [`ff32f8a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ff32f8ae1c9224af6aa7815ef7d730ae94d0f3cb).
+[Verified Windows test release / run 38808095289](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38808095289).
+
+- Add **Solid casing check** below Crystal Fina Test, enabled by default for existing and new settings. It switches
+  the private material between the original solid Sanctum material and the current experimental glass. Both modes
+  use the same mesh, placement, size, turning sequence and acquisition. The solid copy retains its native opaque
+  parent, parameters and 121,103 bytes of original shader/cache data; it does not require the glass shader.
+- Save the choice independently and preserve it when other switches change. A saved diagnostic preference alone
+  does not activate a mod feature or create a roster. Print SOLID CHECK or GLASS during installation. Rebuild/install
+  and restart between modes. A visible solid casing would point to the experimental material/render path; a missing
+  solid casing would leave runtime object presence/installation to investigate. Fina may be hidden by the solid shell.
+  This comparison follows another live report of the missing casing; it does not establish a rendering fix yet.
+- Validation: clean analysis, 244 Flutter checks, the separate fresh frozen-engine Windows startup check and all
+  341 Python checks passed (Windows: five skips; Linux: four), with bundle verification, 12 launcher checks and
+  10 import checks. Solid mesh/material native roundtrips passed; material data and native shader/cache bytes match
+  the source. Verified the downloaded ZIP's SHA-256, commit/run provenance and all 25 manifest entries plus the
+  manifest against source. Bundled extension 1.2.11. Actual casing visibility still needs an in-game test.
+- First complete candidate to verified download: **6m50s**, including checks, waiting and verification. Windows CI
+  took **5m02s**, with **9m18s** runner time. Reused the automatic push run without dispatching an additional build.
 
 ## Published Crystal Fina casing setup correction — 2026-10-15
+
+Live follow-up: the user still reported the same missing casing. The solid-versus-glass comparison above separates
+material behavior from runtime object presence; the earlier setup corrections have not established the live cause.
 
 Code: [`741e486`](https://github.com/biscoBen/FFR-Vison-Studio/commit/741e48609b46e5512b6402e132b8cc95daebfd84).
 [Verified Windows test release / run 38804043413](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38804043413).

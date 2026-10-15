@@ -13,15 +13,15 @@ hides her afterward. The Windows package is verified; placement and the acquisit
 
 For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle,
 reuses the same vision/cave/reward, and displays Fina's native introductory floating pose inside private copies of the
-Sanctum crystal mesh and material. The test uses native glass with suppressed refraction, a fitted introductory pose
-and a slow casing-only turn. This revision clears inherited static visibility data, restores direct attachment to the
-sprite and replaces the turning sequence's cutscene clock with normal Tick timing. All transform channels describe
-the casing explicitly. The previous surface-only adjustment left it invisible in live testing. The current glass
-settings, pose size, display center and acquisition route are retained; Fina's separate yellow introductory aura is omitted.
-Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
-Final casing visibility and turning still need an in-game comparison.
-[Verified test package / run 38804043413](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38804043413/Sephira-Studio-Test.zip)
-(code `741e486`, published 2026-10-15).
+Sanctum crystal mesh and material. **Solid casing check** appears below the test switch and starts on, including
+with older settings. It uses the original opaque Sanctum material to check whether the casing is drawing; Fina may
+be obscured during this test. Turn it off to compare the current experimental transparent glass. The private mesh,
+size, placement, turning sequence and acquisition stay the same in both modes. The previous glass/setup revisions
+still left the casing missing in live testing, so this comparison is needed before further material changes.
+Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
+and restart when changing materials. The installer prints SOLID CHECK or GLASS. Runtime visibility remains unconfirmed.
+[Verified test package / run 38808095289](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38808095289/Sephira-Studio-Test.zip)
+(code `ff32f8a`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
