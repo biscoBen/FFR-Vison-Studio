@@ -11,7 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Replace the unsuccessful masked material in **Crystal Fina Test** with the game's native glass transmission
+  shader. Use low opacity and reflection, remove unrelated opaque-crystal overrides, and disable surface normal/wave
+  distortion. Guard the actual transmission shading model rather than relying on a material name or masked blend mode.
+  Native mesh/material roundtrips, clean analysis, 243 Flutter checks and 338 Python checks pass locally. Windows
+  validation is pending; final visibility and glass appearance need an in-game test.
+
 ## Published Crystal Fina test visibility fix — 2026-10-15
+
+Live follow-up: this candidate still appeared solid. The shipped masked shader's dithering switch was disabled;
+its scalar settings did not reveal Fina. Superseded by the glass transmission candidate above.
 
 Code: [`d31c5b6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d31c5b606462d7901898cd048589c9576a5a92a6).
 [Verified Windows test release / run 38779778666](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38779778666).

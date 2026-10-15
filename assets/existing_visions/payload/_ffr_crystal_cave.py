@@ -38,7 +38,7 @@ PLACE_NAME = 'UI/Field/PlaceName/Data/DA_UI_PlaceNameProperty'
 TEST_BACKGROUND = 'Map/Com/00Com/00Com_200/BG/Com_00Com_200_01_BG'
 TEST_NATIVE_MESH = 'Env/Com/CommonAssets/StaticMesh/prop/SM_Env_Com_crystal008'
 TEST_NATIVE_MATERIAL = 'Env/Com/CommonAssets/Materials/MI_Env_Com_crystal008_neverstream'
-TEST_NATIVE_SHADER = 'Env/Com/MasterMaterial/M_Env_Crystal_DitherObject'
+TEST_NATIVE_SHADER = 'Env/Com/MasterMaterial/M_Env_Glass_Single_Layer_Water'
 TEST_SPRITE = '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01'
 TEST_MESH = 'Map/StudioCrystalCave/Test/SM_Studio_CrystalFinaTest'
 TEST_MATERIAL = 'Map/StudioCrystalCave/Test/MI_Studio_CrystalFinaTest'
@@ -50,10 +50,9 @@ TEST_CRYSTAL_SCALE = .12
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
 TEST_POSE_CENTER_X = .5
-TEST_CRYSTAL_PARAMETERS = {'Dither_Intensity': .65, 'Crystal_Opacity': .35,
-    'Crystal_Emissive': .35, 'Crystal_Edge_Intensity': 2.0,
-    'Crystal_Normal_Intensity': 1.0, 'Fresnel_Intensity': .3,
-    'Fluctuation_Intensity': 0.0}
+TEST_CRYSTAL_PARAMETERS = {'Opacity': .08, 'Metallic': 0.0, 'Roughness': .08,
+    'Fresnel_Intensity': .2, 'Normal_Intensity': 0.0,
+    'Wave_Normal_Intensity': 0.0, 'Wave_Speed_X': 0.0, 'Wave_Speed_Y': 0.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
 TEST_SPRITE_FLOAT = 110.0
@@ -1030,11 +1029,16 @@ def asset_import(view, template_index, package):
 
 
 def test_crystal_assets(source):
-    """Use the already cooked masked shader, without the old opaque permutation."""
+    """Use native glass transmission; masked crystal defaults still hide Fina."""
     _, shader = export(source[TEST_NATIVE_SHADER], Path(TEST_NATIVE_SHADER).name)
-    if (property_data(shader, 'BlendMode')['Value'] != 'BLEND_Masked'
+    properties = {p['Name']: p['Value'] for p in shader.get('Data', [])}
+    # SingleLayerWater implements transmission in its own render pass even
+    # though its base blend mode is Opaque. A material name/opacity parameter or
+    # BLEND_Masked alone does not prove that a cooked shader can show contents.
+    if (properties.get('ShadingModel') != 'MSM_SingleLayerWater'
+            or properties.get('BlendMode', 'BLEND_Opaque') != 'BLEND_Opaque'
             or not set(TEST_CRYSTAL_PARAMETERS).issubset(source[TEST_NATIVE_SHADER]['NameMap'])):
-        raise ValueError('The native see-through crystal shader changed; no test crystal was built.')
+        raise ValueError('The native glass transmission shader changed; no test crystal was built.')
     material = private_level(source[TEST_NATIVE_MATERIAL], '/Game/' + TEST_NATIVE_MATERIAL,
                              '/Game/' + TEST_MATERIAL)
     _, instance = export(material, Path(TEST_MATERIAL).name)
@@ -1046,25 +1050,23 @@ def test_crystal_assets(source):
     # the donor's static parameters/resources would keep its opaque shader, even
     # after changing Parent. Never invent a new blend-mode/static permutation.
     set_value(instance, 'bHasStaticPermutationResource', False)
-    instance['Data'] = [p for p in instance['Data']
-                        if p['Name'] not in ('StaticParametersRuntime', 'BasePropertyOverrides')]
+    # Inherit the glass shader's native color/normal defaults. The opaque crystal
+    # color, glow and texture overrides are unrelated to this parent's inputs.
+    instance['Data'] = [p for p in instance['Data'] if p['Name'] not in
+        ('StaticParametersRuntime', 'BasePropertyOverrides', 'VectorParameterValues',
+         'TextureParameterValues', 'TextureStreamingData')]
     # UE5.6 UMaterialInterface/UMaterialInstance each serialize a cached-data bool.
     # Neither cache is present; bHasStaticPermutationResource=False means there
     # are no inline shader maps after these two false (int32) booleans.
     instance['Extras'] = base64.b64encode(struct.pack('<ii', 0, 0)).decode('ascii')
-    scalars = property_data(instance, 'ScalarParameterValues')['Value']
-    template = copy.deepcopy(scalars[0])
+    parameter_list = property_data(instance, 'ScalarParameterValues')
+    template = copy.deepcopy(parameter_list['Value'][0])
+    scalars = []; parameter_list['Value'] = scalars; parameter_list['IsZero'] = False
     for name, value in TEST_CRYSTAL_PARAMETERS.items():
-        matches = [p for p in scalars if property_data(property_data(p, 'ParameterInfo'), 'Name')['Value'] == name]
-        if len(matches) > 1: raise ValueError('Duplicate native crystal scalar: ' + name)
-        if matches:
-            scalar = matches[0]
-        else:
-            scalar = copy.deepcopy(template); scalar['Name'] = str(len(scalars)); scalars.append(scalar)
-            set_value(property_data(scalar, 'ParameterInfo'), 'Name', name)
-            # A new override has no expression GUID of its own.
-            for guid in property_data(scalar, 'ExpressionGUID')['Value']:
-                guid['Value'] = '{00000000-0000-0000-0000-000000000000}'
+        scalar = copy.deepcopy(template); scalar['Name'] = str(len(scalars)); scalars.append(scalar)
+        set_value(property_data(scalar, 'ParameterInfo'), 'Name', name)
+        for guid in property_data(scalar, 'ExpressionGUID')['Value']:
+            guid['Value'] = '{00000000-0000-0000-0000-000000000000}'
         set_value(scalar, 'ParameterValue', struct.unpack('<f', struct.pack('<f', value))[0])
     if parent['Value'] not in instance['CreateBeforeSerializationDependencies']:
         instance['CreateBeforeSerializationDependencies'].append(parent['Value'])
@@ -1531,7 +1533,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: native introductory pose; private masked crystal material with reduced glare; casing centered in sprite space and owned by acquisition NPC.')
+        print('  Crystal Fina Test: native introductory pose; private glass transmission material (opacity 0.08); casing centered in sprite space and owned by acquisition NPC.')
 
 
 def make_caves(source, plans):

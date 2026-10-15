@@ -157,7 +157,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.6' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.7' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -193,7 +193,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.6' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.7' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));

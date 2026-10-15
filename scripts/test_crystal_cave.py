@@ -562,15 +562,17 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                         'CreateBeforeSerializationDependencies': [],
                         'Data': [p('Parent', -4), p('bHasStaticPermutationResource', True, 'BoolPropertyData'),
                                  p('ScalarParameterValues', [scalar], 'ArrayPropertyData'),
+                                 p('VectorParameterValues', [], 'ArrayPropertyData'),
+                                 p('TextureParameterValues', [], 'ArrayPropertyData'),
                                  p('StaticParametersRuntime', [], 'StructPropertyData'),
                                  p('BasePropertyOverrides', [], 'StructPropertyData')], 'Extras': 'originalShaderData'}]}
         shader = {'NameMap': list(cave.TEST_CRYSTAL_PARAMETERS), 'Exports': [{
             'ObjectName': Path(cave.TEST_NATIVE_SHADER).name,
-            'Data': [p('BlendMode', 'BLEND_Masked', 'EnumPropertyData')]}]}
+            'Data': [p('ShadingModel', 'MSM_SingleLayerWater', 'EnumPropertyData')]}]}
         return {cave.TEST_BACKGROUND: background, cave.TEST_NATIVE_MESH: mesh,
                 cave.TEST_NATIVE_MATERIAL: material, cave.TEST_NATIVE_SHADER: shader}
 
-    def test_private_material_inherits_cooked_masked_shader_without_opaque_resources(self):
+    def test_private_material_inherits_native_glass_transmission_without_crystal_overrides(self):
         source = self.source(); before = copy.deepcopy(source)
         copied = cave.test_crystal_assets(source)
         self.assertEqual(source, before)
@@ -582,11 +584,16 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertIn('Material', view['NameMap'])
         self.assertFalse(cave.property_data(material, 'bHasStaticPermutationResource')['Value'])
         self.assertEqual(base64.b64decode(material['Extras']), struct.pack('<ii', 0, 0))
-        self.assertFalse({'StaticParametersRuntime', 'BasePropertyOverrides'} & {p['Name'] for p in material['Data']})
+        self.assertFalse({'StaticParametersRuntime', 'BasePropertyOverrides', 'VectorParameterValues',
+                          'TextureParameterValues'} & {p['Name'] for p in material['Data']})
         scalars = cave.property_data(material, 'ScalarParameterValues')['Value']
         values = {cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value']:
                   cave.property_data(p, 'ParameterValue')['Value'] for p in scalars}
         for name, value in cave.TEST_CRYSTAL_PARAMETERS.items(): self.assertAlmostEqual(values[name], value)
+        self.assertEqual(set(values), set(cave.TEST_CRYSTAL_PARAMETERS))
+        self.assertLess(values['Opacity'], .1)
+        self.assertNotIn('Dither_Intensity', values)
+        self.assertNotIn('Crystal_Emissive', values)
         mesh = copied[cave.TEST_MESH]
         ref = cave.property_data(cave.property_data(mesh['Exports'][0], 'StaticMaterials')['Value'][0], 'MaterialInterface')['Value']
         self.assertEqual(mesh['Imports'][-ref - 1]['ObjectName'], Path(cave.TEST_MATERIAL).name)
@@ -594,11 +601,13 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(mesh['NamesReferencedFromExportDataCount'], len(mesh['NameMap']))
 
     def test_changed_native_shader_is_rejected_instead_of_inventing_a_blend_permutation(self):
-        for change in ('opaque', 'missing scalar'):
+        for change in ('ordinary opaque', 'masked', 'missing scalar', 'missing shading model'):
             source = self.source(); shader = source[cave.TEST_NATIVE_SHADER]
-            if change == 'opaque': shader['Exports'][0]['Data'][0]['Value'] = 'BLEND_Opaque'
-            else: shader['NameMap'].remove('Dither_Intensity')
-            with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'see-through crystal shader changed'):
+            if change == 'ordinary opaque': shader['Exports'][0]['Data'][0]['Value'] = 'MSM_DefaultLit'
+            elif change == 'masked': shader['Exports'][0]['Data'].append({'Name': 'BlendMode', 'Value': 'BLEND_Masked'})
+            elif change == 'missing scalar': shader['NameMap'].remove('Opacity')
+            else: shader['Exports'][0]['Data'] = []
+            with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'glass transmission shader changed'):
                 cave.test_crystal_assets(source)
 
     def test_shell_follows_sprite_billboard_center_without_duplicating_lift_or_physics(self):

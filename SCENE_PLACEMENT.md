@@ -18,13 +18,24 @@ Live testing of run 38771871918 confirmed that the original material hides the b
 no BlendMode override, so it uses Unreal's default **Opaque**. `Crystal_Opacity` in its parameter cache does not turn
 that compiled opaque shader into a translucent one. Reducing emission alone cannot correct the depth occlusion.
 
-The corrected private instance inherits the already cooked `M_Env_Crystal_DitherObject` (explicit `BLEND_Masked`).
-Its native parameter cache includes `Dither_Intensity` (default 0) and `Crystal_Opacity` (default .5). Use scalar-only
-overrides: dither .65, crystal opacity .35, emission .35, edge intensity 2, normal intensity 1, Fresnel .3, fluctuation 0.
-This uses masked coverage, not optical glass transmission. Preserve the parent's shipped shader permutation: clear
-`bHasStaticPermutationResource`, remove the donor's static parameters/base overrides, and discard its opaque shader maps.
-UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader resources.
-Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
+Run 38779778666 used `M_Env_Crystal_DitherObject`, but the next live test still showed a completely solid casing.
+The root's cached `Switch_DitherMask` default is false. Its masked blend mode and the presence of `Dither_Intensity`
+/ `Crystal_Opacity` names do not establish that those controls activate transparency in the shipped permutation.
+Do not repeat that assumption or enable a static switch without a matching cooked shader.
+
+The private instance now inherits **`M_Env_Glass_Single_Layer_Water`**, whose explicit shading model is
+`MSM_SingleLayerWater` (field 1024), with its native opaque base blend mode. This shading model has a separate
+transmission pass; opaque base blending here is not equivalent to an ordinary opaque surface. Its native parameter
+cache exposes `Opacity` (default .4), Metallic (1), Roughness (.25), Fresnel_Intensity (1) and normal controls.
+Use Opacity .08, Metallic 0, Roughness .08, Fresnel .2, and zero normal/wave intensity and wave speed. Inherit its
+native white Base_Color and normal textures; discard all unrelated opaque-crystal vector, texture and glow overrides.
+The parent already has wave-normal and absorption static switches false; leave the shipped permutation unchanged.
+Final transmission, sprite visibility and glass appearance still need a live render; a serializer roundtrip does not
+prove them.
+
+Clear `bHasStaticPermutationResource`, remove the donor's static parameters/base overrides, and discard its opaque
+shader maps. UE5.6 serializes two false int32 cached-data booleans for this scalar-only instance, with no inline shader
+resources. Never change a cooked material's blend mode or static switches and retain incompatible shader bytes.
 
 The casing is an instance component of the existing acquisition NPC, attached to **SsPlayerComponent (64)**, with
 NoCollision. The native NPC capsule and event-only trigger remain responsible for blocking and input. Register the
@@ -33,8 +44,8 @@ native pivot from the mesh bounds. SpriteStudio maps screen X to local Y and scr
 setup Y=51, part Y=-29 and one-pixel cell pivot put the visual center 21 pixels above its origin; the three cells'
 combined horizontal bounds have center .5 pixels. Set the casing center in sprite space to (0, .5*3.5, 21*3.5).
 This inherits the complete penetration/billboard/shake transform and the sprite's 110-unit lift exactly once. Do not
-assume the billboard's local up equals world Z or add that lift again. The masked crystal shader does not inherit the
-original variant's center-light/rotation switches. Final coverage and framing still require an in-game render.
+assume the billboard's local up equals world Z or add that lift again. The glass shader does not inherit the original
+variant's center-light/rotation switches. Final transmission and framing still require an in-game render.
 
 These rules come from the demo's decoded maps, Blueprint defaults and `Mappings.usmap`, rather than screen-space
 estimates. Implementation: `assets/existing_visions/payload/_ffr_crystal_cave.py`; regression checks:
