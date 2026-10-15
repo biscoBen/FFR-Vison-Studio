@@ -11,11 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina glass material test — 2026-10-15
+
+Code: [`1d2ad70`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1d2ad70c286264f931c374c33d819c595ad93844).
+[Verified Windows test release / run 38785441302](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38785441302).
+
 - Replace the unsuccessful masked material in **Crystal Fina Test** with the game's native glass transmission
-  shader. Use low opacity and reflection, remove unrelated opaque-crystal overrides, and disable surface normal/wave
-  distortion. Guard the actual transmission shading model rather than relying on a material name or masked blend mode.
-  Native mesh/material roundtrips, clean analysis, 243 Flutter checks and 338 Python checks pass locally. Windows
-  validation is pending; final visibility and glass appearance need an in-game test.
+  shader (`MSM_SingleLayerWater`). Use low opacity/reflection and no normal-map/wave distortion; inherit the glass
+  shader's defaults instead of the opaque crystal's color, glow and texture overrides. Validate the actual shading
+  model and its parameter names. Retain the current casing placement, Fina's introductory pose and acquisition route.
+  The earlier masked shader's static dithering switch was disabled, and live testing showed that candidate remained
+  solid. Final transmission, sprite visibility and glass appearance of this candidate still need an in-game test.
+- Validation: clean analysis, 243 Flutter checks and the real frozen-engine Windows startup check passed.
+  All 338 Python checks passed on Windows (five skips) and Linux (four skips), with the required bundle checks,
+  12 launcher checks and 10 import checks. Native mesh/material roundtrips retained the new glass parent and scalar
+  settings. Downloaded the published ZIP, matched SHA-256 and commit/run provenance, and compared all 25 manifest
+  entries plus the manifest with the source. The bundled extension is 1.2.7. These checks do not verify game rendering.
+- First complete candidate to verified download: **8m20s**, including checks, waiting and verification. Windows CI
+  took **5m34s** with **8m14s** runner time. Reused the automatic push run without dispatching an extra build.
 
 ## Published Crystal Fina test visibility fix — 2026-10-15
 
