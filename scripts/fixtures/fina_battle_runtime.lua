@@ -56,19 +56,25 @@ end
 local decoy=obj({SsProject=obj({GetFullName=function() return 'OtherVision' end})})
 function decoy:GetFullName() return 'OtherComponent' end
 function FindAllOf() return {sprite,decoy} end
-function LoadAsset(path) loaded=path end
+local loaded = {}
+function LoadAsset() error('Registry-only loader cannot resolve private mod assets') end
 function StaticFindObject(path)
     if path:sub(1,8)=='/Script/' then
         local kind=path:sub(9)
         local o=obj({kind=kind})
         function o:GetTimeSeconds() return time end
+        function o:MakeSoftObjectPath(path) return {path=path} end
+        function o:Conv_SoftObjPathToSoftObjRef(path) return {reference=path.path} end
+        function o:LoadAsset_Blocking(reference)
+            local asset=obj({path=reference.reference}); loaded[reference.reference]=asset; return asset
+        end
         function o:SpawnSystemAttached(asset,parent,socket,location,rotation,mode,autoDestroy,autoActivate,pool,cull)
             assert(asset.path==config.glow and parent==sprite and socket:ToString()=='NULL_Aura')
             assert(mode==0 and autoDestroy and not autoActivate and pool==0 and not cull)
             local g=component(); glows[#glows+1]=g; return g
         end
         return o
-    elseif loaded==path then return obj({path=path}) end
+    else return loaded[path] end
 end
 function ExecuteInGameThread(fn) fn() end
 function LoopAsync(ms,fn) assert(ms==33); tick=fn end
@@ -88,6 +94,7 @@ function run_fina_tests()
     assert(glows[1]['User.Alpha']==.5 and meshes[1].visible)
     sprite.frame=config.fall; tick(); assert(not meshes[1].visible and glows[1]['User.Alpha']==1)
     sprite.frame=164; tick(); assert(glows[1].invalid and not meshes[1].visible)
+    loaded[config.glow].invalid=true -- Reload a collected asset before its next use.
     sprite.frame=config.reform; tick(); assert(meshes[1].visible and #glows==2)
     sprite.frame=config.flashes[2][3]; tick(); assert(glows[2].invalid)
     actor.bHidden=true; tick(); assert(not meshes[1].visible)

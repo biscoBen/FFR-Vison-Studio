@@ -17,7 +17,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Observe actual SpriteStudio clips and keep the approved full 229-frame cast through native early recovery calls.
   Preparation only opens her eyes, eliminating the duplicated curled-up turn. Mirror attack/resonance body tracks;
   reduce the seated hold from 125 to 100 frames. Drive crystal visibility and body-centered glow alpha from LB1 frames.
-- Refresh native Studio previews/cache revision and bundled extension 1.2.20. Native asset and executable Lua fixture
+- Resolve private mesh/material/glow packages through Unreal soft-path loading rather than the original asset registry,
+  and reload collected glow assets before reuse.
+- Refresh native Studio previews/cache revision and bundled extension 1.2.21. Native asset and executable Lua fixture
   checks cover serialization, scope, interruption, pulse timing and cleanup; live Unreal rendering remains unverified.
 
 ## Published Crystal Fina cave and battle corrections — 2026-10-15

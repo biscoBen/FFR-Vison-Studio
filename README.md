@@ -17,7 +17,7 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.20 uses the existing
+Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.21 uses the existing
 UE4SS loader to attach the real crystal and native glow directly, independently of the walking-character toggle.
 The approved full cast plays through early native recovery calls; preparation no longer repeats the curled-up turn.
 Attack and resonance face the opposite direction, and the seated hold is 100 frames instead of 125. No gameplay

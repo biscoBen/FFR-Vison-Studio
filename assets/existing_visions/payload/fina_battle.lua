@@ -15,8 +15,12 @@ end
 local function asset(path)
     local o = StaticFindObject(path)
     if not valid(o) then
-        local loaded = LoadAsset(path)
-        o = valid(loaded) and loaded or StaticFindObject(path)
+        -- UE4SS LoadAsset queries AssetRegistry, which does not list private
+        -- mod packages. Resolve the mounted package through Unreal directly.
+        local kismet = native('Engine.Default__KismetSystemLibrary')
+        local softPath = kismet:MakeSoftObjectPath(path)
+        local reference = kismet:Conv_SoftObjPathToSoftObjRef(softPath)
+        o = kismet:LoadAsset_Blocking(reference)
     end
     assert(valid(o), 'Could not load ' .. path)
     return o
@@ -44,7 +48,7 @@ end
 local function create(sprite, actor, isUnit)
     -- A project can be assigned before its first animation is initialized.
     if not sprite:DoesSocketExist(FName('NULL_Crystal')) or not sprite:DoesSocketExist(FName('NULL_Aura')) then return end
-    if not assets then assets = {mesh=asset(config.mesh), material=asset(config.material), glow=asset(config.glow)} end
+    assets = {mesh=asset(config.mesh), material=asset(config.material), glow=asset(config.glow)}
     local identity = {Translation=vec(0,0,0), Rotation={X=0,Y=0,Z=0,W=1}, Scale3D=vec(1,1,1)}
     local mesh = actor:AddComponentByClass(native('Engine.StaticMeshComponent'), true, identity, false)
     assert(valid(mesh), 'Could not create the crystal mesh component')
@@ -78,6 +82,7 @@ local function glow(s, frame, visible)
     if pulse ~= s.pulse then
         destroy(s.glow, s.actor); s.glow = nil; s.pulse = pulse
         if pulse then
+            if not valid(assets.glow) then assets.glow = asset(config.glow) end
             s.glow = native('Niagara.Default__NiagaraFunctionLibrary'):SpawnSystemAttached(
                 assets.glow, s.sprite, FName('NULL_Aura'), vec(0,0,0), {Pitch=0,Yaw=0,Roll=0}, 0, true, false, 0, false)
             assert(valid(s.glow), 'Could not spawn the body glow')

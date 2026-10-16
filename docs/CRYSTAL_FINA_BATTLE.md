@@ -32,7 +32,7 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
 needs in-game confirmation.
 
-## Direct battle runtime (extension 1.2.20)
+## Direct battle runtime (extension 1.2.21)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -51,6 +51,12 @@ The source/API checks and Lua fixtures do not establish that the shipped game re
 owner is CPP_BtlUnit or CPP_BtlSequencerSsPlayerActor. UI renderers, map/cinematic actors and other models are excluded.
 If the actor/project disappears or changes, destroy only the components created by this module. Errors clean up
 owned components and log `[FFR Fina] Presentation stopped: ...` in the existing UE4SS log.
+
+Use KismetSystemLibrary.MakeSoftObjectPath → Conv_SoftObjPathToSoftObjRef → LoadAsset_Blocking for private
+packages. UE4SS LoadAsset uses AssetRegistry.GetAssetByObjectPath and can fail for injected assets absent from the
+original registry. Unreal's soft-path loader resolves mounted packages directly. Refresh references when components
+are created, and reload an invalid glow asset before later pulses; Lua wrappers do not establish GC ownership.
+The fixture deliberately rejects registry-only loading and simulates collection between glow pulses.
 
 The runtime loads the private approved StaticMesh/material, creates an ordinary **movable**, non-colliding
 StaticMeshComponent and attaches it directly to the SS6 `NULL_Crystal` socket. This uses the same ordinary mesh
