@@ -18,26 +18,30 @@ obsolete solid/animate settings are ignored. Update Studio, rebuild/install and 
 without Crystal Fina already acquired.
 
 Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. The user
-confirmed the body refraction and single resonance glow look right. Extension 1.2.27 adds a gentler normal attack:
-her body and linked native action clocks run at 80% speed (25% longer), moving the damage/effects and sound with
-the shot. Damage values, crystal settings, resonance and the **1.25-second seated hold** are preserved.
+confirmed the body refraction and single resonance glow look right. Extension 1.2.28 slows her attack another
+20% from the previous build, to 0.64× native speed. The body and linked hit/effect/sound clocks stay together;
+Studio's preview shows the roughly **1.56-second** cast. Damage values, crystal settings, resonance and the
+**1.25-second seated hold** are preserved. The exact new pace still needs an in-game test.
 
-Only jobs belonging to the private Fina actor are eligible. Native battle speed is retained as the base rate,
-repeated scans do not compound it, and original rates return on recovery/cleanup. When no supported linked clock
-is available, keep the native speed so the body cannot drift behind the hit. The supplied mapping and executable
-fixtures verify the API/scope contracts; live clock association and perceived hit timing still need an in-game test.
+With Sephira's Visions off, Add can now move the saved Crystal Fina into Added Visions without enabling the
+collection. It retains her identity, edited kit and cave/shop assignment; the preview shows her saved stats.
+An initialized collection's subsequent toggles leave this independent entry included. Explicit collection restore
+can still adopt her as before. An active Fina blocks a duplicate. Other FFBE units such as A2 keep their existing
+multiple-entry support, with an active-only “in mod” badge and an explicit “Add another” button.
+
+The rate controller still uses only the private Fina actor's linked action clocks, preserving native battle speed
+as its base and restoring rates on recovery/cleanup. If no supported clock is available, it keeps native speed.
 See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
 Windows validation, compilation and frozen-engine startup pass. Downloaded checksum/provenance and all 31 managed
 resources match source. The runtime uses the existing UE4SS loader independently of cycling; no new loader is
-installed. Studio's updated preview (native-fina-9) shows the 1.25-second normal cast; lighting is an approximation.
+installed. Studio's updated preview (native-fina-10) remains a lighting approximation.
 The [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
 and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1)
-collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game. Its log distinguishes
-an applied linked-clock slowdown from the native-speed fallback.
+collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
 
-[Verified Crystal Fina gentler-attack update / run 38964077148](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38964077148/Sephira-Studio-Test.zip)
-(code `7a97ee0`, published 2026-10-16; extension 1.2.27). Update Studio, rebuild/install the mod and restart Resonance.
+[Verified standalone Crystal Fina / slower-attack update / run 38968721767](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38968721767/Sephira-Studio-Test.zip)
+(code `bde5f38`, published 2026-10-16; extension 1.2.28). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published standalone Crystal Fina and gentler attacks — 2026-10-16
+
+Code: [`bde5f38`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bde5f3848bfa40d6720ed55ab3b813acab5c82a4).
+[Verified Windows test release / run 38968721767](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38968721767).
+
 - Slow Crystal Fina's normal attack another 20% from the accepted build (0.64× native speed). Keep the
   owning hit/effect/sound clocks aligned and preserve the approved crystal, resonance and seated hold.
   Render the 1.5625-second Studio cast with fractional timing rather than rounding the native SS6 frame rate.
@@ -20,6 +25,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   other active FFBE units use an explicit “Add another” button. Save failure retains the original entry and
   concurrent edits survive the transfer. The Add preview shows the saved stats it will retain.
   Extension 1.2.28, preview native-fina-10.
+- Local analysis, 66 focused Flutter tests, 377 Python checks and native build/readback/IoStore verification pass.
+  Tests cover active/off duplicate badges, standalone transfer, later collection toggles, cave activation, saved
+  stats, save failure and concurrent edits. Idle/resonance preview bytes match the accepted build. Windows
+  validation and compilation pass for the same commit, including full Flutter/Python suites and frozen-engine
+  startup. Downloaded checksum/provenance and all 31 managed resources match source. Live pace testing is pending.
+- First complete candidate to verified download: **11m06s**, including a saved-stat
+  preview correction, checks, waiting and verification. Windows CI took **7m05s**, using
+  **11m12s** of runner time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published Crystal Fina gentler attack and matching clocks — 2026-10-16
 
