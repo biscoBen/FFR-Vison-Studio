@@ -11,12 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published party replacement knockout motions — 2026-10-16
+
+Code: [`9275ab7`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9275ab78afd923afb3259bb2ac1b40e031637fb4).
+[Verified Windows test release / run 38973264709](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38973264709).
+
 - Fix party battle replacements staying upright after knockout: map the selected sprite's `dead` clip
   to the native `death` name used by all eight party members, including Lasswell's reverse stance.
   Keep the selected/base-form artwork, frame timing and offsets; native death/revival logic stays in control.
   Extension 1.2.29. Live knockout/revival testing remains pending.
 - Include the read-only party-knockout reference collector under Downloads/FFR Mod. The returned references
   confirmed the motion-name mismatch; no runtime loader is needed for this fix.
+- Local analysis, 41 focused Flutter tests and 380 Python checks pass. Native generation/readback covers all
+  eight party packs across four regular Cleome rarities, with separate standing/knockout cells and verified IoStore.
+  Regression checks cover complete fall/held clips, base-form cells/offsets and unchanged idle recovery. Windows
+  validation and compilation pass for the same commit, including full Flutter/Python suites, frozen-engine startup
+  and launcher/updater checks. Downloaded checksum/provenance and all 31 managed resources match source.
+  Accepted Crystal Fina gameplay, runtime and preview bytes match the previous release.
+- First complete candidate to verified download: **8m08s**, including checks,
+  waiting and verification. Windows CI took **6m02s**, using **10m32s** of runner
+  time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published standalone Crystal Fina and gentler attacks — 2026-10-16
 

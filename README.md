@@ -17,11 +17,22 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
+Party battle replacements now expose the native knockout motion names used by all eight party members,
+including Lasswell's reverse stance. They use the selected sprite's fallen pose (or its base form's), preserving
+its timing and offsets. Native death and revival remain in control. Cleome's four regular looks were checked
+through native asset build/readback; live knockout/revival still needs confirmation.
+See [party knockout evidence](docs/PARTY_KNOCKOUT_INVESTIGATION.md).
+
+[Verified party knockout update / run 38973264709](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38973264709/Sephira-Studio-Test.zip)
+(code `9275ab7`, published 2026-10-16; extension 1.2.29). Update Studio, rebuild/install the mod and restart Resonance.
+Windows validation and compilation pass for the same commit; downloaded checksum/provenance and all
+31 managed resources match source. Crystal Fina's accepted gameplay, crystal and preview bytes are unchanged.
+
 Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. The user
 confirmed the body refraction and single resonance glow look right. Extension 1.2.28 slows her attack another
 20% from the previous build, to 0.64× native speed. The body and linked hit/effect/sound clocks stay together;
 Studio's preview shows the roughly **1.56-second** cast. Damage values, crystal settings, resonance and the
-**1.25-second seated hold** are preserved. The exact new pace still needs an in-game test.
+**1.25-second seated hold** are preserved. The user confirmed the pace and standalone Add behavior in game.
 
 With Sephira's Visions off, Add can now move the saved Crystal Fina into Added Visions without enabling the
 collection. It retains her identity, edited kit and cave/shop assignment; the preview shows her saved stats.
@@ -613,7 +624,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   and avoid carrying demo-specific shader serialization into another engine version without checking it.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
-  changes or additional suitable sheets become available.
+  changes or additional suitable sheets become available. Recheck all eight native party knockout names (`death`, plus Lasswell's
+  `reverse_death`/`reverse_dying`) against updated SS6 projects. Retest replacement knockout, held fallen poses,
+  base-form borrowing and revival; a source look with no fallen artwork still needs a separate fallback decision.
   For native Crystal Fina battle presentation, revalidate the SS6 model names/parents, part sockets, UUPerPixel versus
   component-scale conversion, direct movable mesh attachment and native mesh/material/bulk data. Recheck the
   SpriteStudio playing-name out parameters, Play/SetPlayRate and Engine/Niagara component functions under UE4SS.
