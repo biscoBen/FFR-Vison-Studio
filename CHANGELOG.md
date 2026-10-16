@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add a missing ally timeline for Cling using its original all-target effects, hit timing and audio.
+  Enable only its audited caster track and map enemy `atk` to imported `attack_A`; keep original game
+  bindings and combat values. Requires Show unverified skills and Use our skill changes. Generic audited
+  group-skill reuse now creates a player route rather than confusing caster-side suffixes with target count.
+  Native roundtrip/readback and IoStore pass; the repaired Cling presentation needs a live multitarget test.
+- Mark the five user-confirmed monster animations (Whip, Tentacle, Sonic Boom, Bite and Incisors) as
+  **Verified; demo test**, tied to their exact catalog definitions. Cling remains unverified pending testing.
+- Give imported vision face/timeline/ability icons native game frames without the blue backing or FFBE
+  rarity badge. Preserve portrait layout controls and use the same renderer in the advanced preview.
+  Rebuild/install to update existing game icons. Extension 1.2.31.
+- Include the read-only monster-animation reference collector, writing only under Downloads/FFR Mod.
+
 ## Published automatic Crystal Fina cave presentation — 2026-10-16
 
 Code: [`2f9db41`](https://github.com/biscoBen/FFR-Vison-Studio/commit/2f9db41b5418b5c577e08893175084b908b010b5).

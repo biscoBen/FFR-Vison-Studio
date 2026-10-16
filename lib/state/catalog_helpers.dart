@@ -146,6 +146,11 @@ bool catalogEntryVerified(Map row, String kind) {
   if (kind == 'passives') {
     return name.isNotEmpty && !RegExp(r'[぀-ヿ一-鿿]').hasMatch(name);
   }
+  if (kind == 'skills' && row['studioLiveTest'] is Map &&
+      row['studioLiveTest']['schema'] == 1 &&
+      row['studioLiveTest']['result'] == 'visible_animation') {
+    return true;
+  }
   return (row['seq'] as List?)?.isNotEmpty == true &&
       row['hasUnit'] == 'All' &&
       ['Ability', 'Magic', 'MagicSword'].contains(row['attr']) &&
@@ -244,7 +249,9 @@ String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bo
       ? trialMetadata['source']
       : null;
   final trialLabel = ['FFR', 'FFBE', 'FFR mob'].contains(trial) ? '; $trial test' : '';
-  return '$label${trialLabel.isNotEmpty ? ' (Verified$trialLabel)' : hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
+  final liveVerified = kind == 'skills' && row['custom'] != true && row['studioLiveTest'] is Map &&
+      row['studioLiveTest']['schema'] == 1 && row['studioLiveTest']['result'] == 'visible_animation';
+  return '$label${liveVerified ? ' (Verified; demo test)' : trialLabel.isNotEmpty ? ' (Verified$trialLabel)' : hasMappedEffects ? ' (Verified)' : unverified ? ' (Unverified)' : ''}'
       '${enemyVersion ? ' (Enemy version)' : ''}'
       '${sources.isNotEmpty ? ' — Source: ${sourceLabels.join(', ')}' : ''}'
       '${awakening != null ? '; awakening=$awakening${sources.length > 1 ? ' (${reference!.owner})' : ''}' : ''}'

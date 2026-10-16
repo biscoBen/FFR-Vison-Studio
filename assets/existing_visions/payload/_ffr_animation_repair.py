@@ -177,6 +177,71 @@ def sequence_present(sid, rows, tables):
     return any(sid + off in ids for off in (0, 1, 2))
 
 
+def prepare_ally_cling(tables, clones, selected, root, rows, extract, support):
+    """Add the missing player route using the audited demo Cling timeline.
+
+    Sequence suffixes 1/2 select friendly/enemy casters, not target counts.
+    Cling has only 500912; its existing all-target effects/hit timing are kept.
+    Enable only the checked dormant atk/idle track on a private ally copy.
+    """
+    sid = 500910
+    if sid not in selected or not support: return None
+    if any((u.get('skills') or {}).get(str(sid), (u.get('skills') or {}).get(sid)) for u in selected[sid]):
+        return None  # Explicit custom presentations take priority.
+    rels = ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')
+    originals = {rel: rows(rel) for rel in rels}
+    for rel, data in originals.items():
+        ids = {r['ID'] for r in data.values()}
+        ids.update(r['set']['ID'] for r in tables.get(rel, {}).get('add', []))
+        if sid + 1 in ids: return None  # A future native player timeline wins.
+    raw = next((r for r in rows('Skill/DT_SkillData').values() if r['ID'] == sid), {})
+    expected = {'hasUnit': 'All', 'skillAttrType': 'Ability', 'DamageType': 'Physic',
+                'TargetType': 'Group', 'hitCount': 1}
+    if any(enum(raw.get(k)) != str(v) for k, v in expected.items()):
+        raise ValueError('The original Cling definition changed; its ally timeline was not built.')
+    source = '/Game/Sequencer/Battle/EnemySkill/500910/500912/SEQ_Battle_500912_Master'
+    donors = {}
+    for rel, data in originals.items():
+        matches = [(key, row) for key, row in data.items() if row['ID'] == sid + 2]
+        if len(matches) != 1 or matches[0][1].get('LevelSequence') != source:
+            raise ValueError('The original enemy Cling binding changed; no ally copy was built.')
+        donors[rel] = matches[0]
+    folder = Path(root) / 'extracted/legacy/FFRS/Content/Sequencer/Battle/EnemySkill/500910/500912'
+    cut = folder / 'Track/SEQ_Battle_500912_Cut_001.uasset'
+    if not cut.is_file(): extract('Sequencer/Battle/EnemySkill/500910/')
+    if not cut.is_file(): raise ValueError('The native Cling timeline is missing.')
+    view, dump = support['dumps'](str(cut))
+    if not view or not isinstance(dump, dict): raise ValueError('Could not audit Cling caster motion.')
+    funcs = {int(key.split(':', 1)[0]): value for key, value in dump.items()}
+    def prop(owner, name):
+        return next((p['Value'] for p in (owner.get('Data', owner.get('Value')) or []) if p.get('Name') == name), None)
+    tracks = []
+    for track in view['Exports']:
+        index = track.get('ClassIndex', 0)
+        if index >= 0 or view['Imports'][-index - 1]['ObjectName'] != 'MovieSceneEventTrack': continue
+        motions = []
+        for section in prop(track, 'Sections') or []:
+            channel = {'Value': prop(view['Exports'][section['Value'] - 1], 'EventChannel')}
+            for key in prop(channel, 'KeyValues') or []:
+                event = funcs.get(prop({'Value': prop(key, 'Ptrs')}, 'Function'), {})
+                if event.get('EventType') == 'UnitPlayAnimByName': motions.append(event)
+        if motions:
+            tracks.append((bool(prop(track, 'bIsEvalDisabled')), motions))
+    if (len(tracks) != 1 or not tracks[0][0] or
+            [e.get('Unit_PlayAnimByName_AnimationName') for e in tracks[0][1]] != ['atk', 'idle']):
+        raise ValueError('Cling caster track changed; no unsupported track was enabled.')
+    edits = {'cut': [{'match': {'EventType': 'UnitPlayAnimByName', 'Unit_PlayAnimByName_AnimationName': 'atk'},
+                      'set': {'Unit_PlayAnimByName_AnimationName': 'attack_A'}, 'enable_track': True}]}
+    binding = support['clone'](donors[rels[0]][1], sid + 2, sid, sid + 1, (), clones,
+                               support['objects'], (), edits, support['bytecode'])
+    for rel, (key, _) in donors.items():
+        table = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+        table['add'].append({'row': 'Studio_Ally_Cling', 'cloneFrom': key,
+                             'set': {'ID': sid + 1, **binding}})
+    return {'id': sid, 'status': 'native_ally_variant', 'sourceSequence': sid + 2,
+            'sequence': sid + 1, 'casterMotion': 'attack_A', 'inGameValidated': False}
+
+
 NORMAL_SKILLS = {'Ability', 'Magic', 'MagicSword', 'Fight'}
 # These affect numbers in the skill table, not the sequence's choreography.
 VISUAL_METADATA = {'ID', 'SortId', 'Name', 'Description', 'SkillIcon', 'hasUnit', 'Cost',
@@ -723,33 +788,35 @@ class NativeAnimations:
         if target not in {'Single', 'Group', 'Self'}: return None, 'Specialized targeting.'
         hits = int(skill.get('hitCount') or 1)
         if not 0 < hits <= 30: return None, 'Unsupported hit count.'
-        required = 2 if target == 'Group' else 1
         candidates = self.candidates(skill); reason = 'No compatible same-name native animation.'
         for donor in candidates:
             primary = self.assets['Asset/Skill/DT_SkillAsset']
-            offset = required if any(r['ID'] == donor + required for r in primary.values()) else 0
+            # Suffix 1/2 identifies the caster side, not single/group targets.
+            # An audited enemy-only donor can still be copied to a player route.
+            available = {r['ID'] for r in primary.values()}
+            offset = next((off for off in (1, 0, 2) if donor + off in available), 0)
             bindings = {}
             for rel, original in self.assets.items():
                 found = next(((k, r) for k, r in original.items() if r['ID'] == donor + offset), None)
                 occupied = {r['ID'] for r in original.values()}
                 occupied.update(r['set']['ID'] for r in tables.get(rel, {}).get('add', []) if 'ID' in r.get('set', {}))
-                if not found or sid + offset in occupied: break
+                if not found or sid + 1 in occupied: break
                 # Both lookup tables must agree on the actual timeline.
                 if bindings and found[1].get('LevelSequence') != next(iter(bindings.values()))[1].get('LevelSequence'): break
                 bindings[rel] = found
             if len(bindings) != len(self.assets):
-                reason = 'Missing or conflicting single/group sequence binding.'; continue
+                reason = 'Missing or conflicting caster sequence binding.'; continue
             verified = self.audit(bindings['Asset/Skill/DT_SkillAsset'][1], donor, hits)
             if not isinstance(verified, dict): reason = verified; continue
-            # Group/enemy spell rows can share a sequence whose embedded IDs
-            # belong to the single-target version rather than the donor row.
+            # Ally/enemy rows can share a sequence whose embedded IDs belong
+            # to a different variant rather than the donor row.
             edits = {kind: [{'match': {'EventType': 'OtherReaction', 'Other_Reaction_Id': verified['reactionId']},
                              'set': {'Other_Reaction_Id': sid}}] for kind in ('master', 'cut', 'effect', 'sound')}
             for rel, (key, asset) in bindings.items():
-                copied = self.support['clone'](asset, verified['sequenceId'], sid, sid + offset, (), clones,
+                copied = self.support['clone'](asset, verified['sequenceId'], sid, sid + 1, (), clones,
                                                self.support['objects'], (), edits, self.support['bytecode'])
                 tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append({
-                    'row': f'Studio_NativeAnimation_{sid}_{offset}', 'cloneFrom': key, 'set': {'ID': sid + offset, **copied}})
+                    'row': f'Studio_NativeAnimation_{sid}_1', 'cloneFrom': key, 'set': {'ID': sid + 1, **copied}})
             rel = 'Battle/Sequencer/DT_BtlHitEffectData'
             occupied = {r['ID'] for r in self.reactions.values()}
             occupied.update(r['set']['ID'] for r in tables.get(rel, {}).get('add', []) if 'ID' in r.get('set', {}))
@@ -1086,6 +1153,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
     """Add selected missing skill timelines; leave existing game rows untouched."""
     units = [retire_comparison_skills(u) for u in units]
     selected, preserved = repair_selection(units)
+    cling = prepare_ally_cling(tables, clones, selected, root, rows, extract, native_support)
     by_id = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     native = None
     if native_support and selected:
@@ -1111,8 +1179,10 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         details = '\n'.join(f'  {e["name"]} ({e["id"]}), donor {e["donorName"]} ({e["donor"]}): {e["reason"]}' for e in failures)
         raise ValueError(f'Could not prepare effects for {len(failures)} selected skills:\n{details}\n'
                          f'Full audit: {report}. Mod packing stopped; the installed mod is unchanged.')
-    repaired = []; reused = []; coverage = []
+    repaired = [cling['id']] if cling else []; reused = []; coverage = []
     for sid, owners in sorted(selected.items()):
+        if cling and sid == cling['id']:
+            coverage.append(cling); continue
         if sequence_present(sid, rows, tables):
             coverage.append({'id': sid, 'status': 'existing_sequence'}); continue
         recipes = [(u.get('skills') or {}).get(str(sid), (u.get('skills') or {}).get(sid)) for u in owners]
@@ -1205,7 +1275,9 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
                              **({'profileReason': profile_reason} if profile_reason else {})})
     for entry in coverage:
-        if entry['status'] == 'ffr_steal_motion_trial':
+        if entry['status'] == 'native_ally_variant':
+            print('  Cling: private ally timeline 500911 uses native group effects/hit timing and an enabled attack_A/idle caster track. In-game test pending.')
+        elif entry['status'] == 'ffr_steal_motion_trial':
             print('  Steal FFR test: recipient approaches, uses its ready pose, resolves one original item theft, then returns to idle/position. Not a recovered Zidane-specific sequence.')
         elif entry['status'] == 'ffbe_barrage_trial':
             print('  Barrage FFBE test: four imported attack cycles with FFBE impact timing; original FFR damage, random targets and four hits retained.')

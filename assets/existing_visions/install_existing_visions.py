@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.30'
+VERSION = '1.2.31'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -198,6 +198,14 @@ def hook_builder(raw):
     if argument.lineno != argument.end_lineno: raise RuntimeError('Unsupported sprite converter call layout.')
     lines[argument.lineno - 1] = lines[argument.lineno - 1].replace(ast.get_source_segment(text, argument),
                                                                                 'os.path.join(ROOT, "tools", "_ffr_build_sprites.py")')
+    icon_argument, = [n for n in ast.walk(tree) if isinstance(n, ast.Call)
+                      and ast.unparse(n.func) == 'os.path.join'
+                      and [a.value for a in n.args if isinstance(a, ast.Constant)] ==
+                          ['tools', 'ffbe2ss6', 'build_icons.py']]
+    if icon_argument.lineno != icon_argument.end_lineno:
+        raise RuntimeError('Unsupported icon converter call layout.')
+    lines[icon_argument.lineno - 1] = lines[icon_argument.lineno - 1].replace(
+        ast.get_source_segment(text, icon_argument), 'os.path.join(ROOT, "tools", "_ffr_build_icons.py")')
     stage_indent = ' ' * timeline_stage.col_offset
     lines[timeline_stage.lineno - 1] = stage_indent + 'stage("Writing skill motions and effects" if job.get("kind") in ("skill_motion", "skill_effect") else "Writing the FFBE limit-burst timeline")' + nl
     timeline_build, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)

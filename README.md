@@ -4,6 +4,13 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+Cling's missing ally timeline is repaired when **Show unverified skills** and **Use our skill changes** are on.
+Its original group effects and damage timing are retained; the disabled enemy caster motion is mapped to the imported
+vision's attack. The repaired presentation still needs a live test. Whip, Tentacle, Sonic Boom, Bite and Incisors
+are labeled **Verified; demo test** based on the user's successful tests. Imported vision portraits now use native
+game frames without the blue backing or FFBE rarity badge. Rebuild/install and restart to refresh the game icons.
+See [monster animation evidence and native icon details](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
+
 Crystal Fina's finished cave presentation is automatic. Add her normally (or enable Sephira's Visions), then open
 **Edit → Acquisition**. To choose a specific cave, turn off **Hide for spoilers** and **Random**, select **Cave**
 and choose your placement. Right-click the map to add a cave if needed. Build/install and restart Resonance;
@@ -590,11 +597,15 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   native timelines/effects, MR/awakening assignments and source ownership. Native timelines take precedence over our
   fallback repairs. Reassess the 304 reviewed hides and original picker filters while retaining the three modes and
   descriptions/source labels. Do not assume every missing demo skill will be implemented. `Verified` currently
-  tracks an applied visual mapping, rather than observation of every skill in a running game.
+  tracks an applied visual mapping, rather than observation of every skill in a running game. Recollect Cling's
+  missing ally route and disabled caster track before retaining its bridge. Refresh the five exact-definition
+  **Verified; demo test** records after full-game live testing, including group skills and party replacements;
+  see [monster compatibility evidence](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,
   portraits and acquisition rules. Review new characters/placeholders and preserve original identities when replacing models.
+  Recheck the native face/timeline/ability icon masks and frames used for imported portraits.
 - [ ] **Sephira’s Visions presets.** Re-audit the excluded-vision coverage, exact
   skill/passive IDs, command-specific bonus bindings, native power budgets,
   MR stat rewards and unlock ranks. Check recipes against the full game's

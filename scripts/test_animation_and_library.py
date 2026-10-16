@@ -213,7 +213,9 @@ class NativeAnimationTests(unittest.TestCase):
         for rel in ('Asset/Skill/DT_SkillAsset','Asset/Skill/CDT_SkillAsset_Demo'):
             self.game[rel]['donor_single']['ID']=215022
         self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.jobs,[])
-        self.assertEqual(self.files[0][:3],(210031,240030,240032))
+        self.assertEqual(self.files[0][:3],(210031,240030,240031))
+        for rel in ('Asset/Skill/DT_SkillAsset','Asset/Skill/CDT_SkillAsset_Demo'):
+            self.assertEqual(self.tables[rel]['add'][0]['set']['ID'],240031)
         edit=self.support['bytecode'][0]
         self.assertEqual(edit['match']['Other_Reaction_Id'],210030)
         self.assertEqual(edit['set']['Other_Reaction_Id'],240030)
@@ -238,10 +240,12 @@ class NativeAnimationTests(unittest.TestCase):
         self.assertEqual(self.run_repair(),[]);self.assertEqual(self.tables,{})
         self.assertEqual(self.report()[0]['status'],'existing_sequence')
         self.assertEqual(self.files,[])
-    def test_group_skill_requires_group_binding_and_secondary_collision_is_preserved(self):
+    def test_group_skill_uses_ally_binding_and_secondary_collision_is_preserved(self):
         self.skill['TargetType']='Group';self.game['Skill/DT_SkillData']['donor']['TargetType']='Group'
-        self.assertEqual(self.run_repair(),[240030]);self.assertEqual(self.files,[]) # single-only donor rejected
-        self.tables={};self.jobs=[];self.clones=[]
+        self.assertEqual(self.run_repair(),[240030])
+        self.assertEqual(self.files[0][:3],(210031,240030,240031))
+        self.assertNotIn('Skill/DT_SkillData',self.tables) # Group mechanics stay native.
+        self.tables={};self.jobs=[];self.clones=[];self.files=[]
         self.skill['TargetType']='Single';self.game['Skill/DT_SkillData']['donor']['TargetType']='Single'
         existing={'ID':240031,'LevelSequence':'/Game/OriginalSecondary'}
         self.game['Asset/Skill/CDT_SkillAsset_Demo']['existing']=existing

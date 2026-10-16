@@ -264,12 +264,14 @@ class BundledFeatures {
           'payload/_ffr_ability_modes.py',
           'payload/ability_hiding_review.json',
           'payload/_ffr_animation_repair.py',
+          'payload/_ffr_build_icons.py',
+          'payload/ability_live_tests.json',
           'payload/_ffr_build_sprites.py',
           'payload/_ffr_library.py',
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 31) {
+        (manifest['files'] as Map).length != 33) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -315,7 +317,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.30' ||
+    if (status['patchVersion'] != '1.2.31' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

@@ -25,6 +25,22 @@ def verified_skill(entry):
             and entry['id'] < 460000)
 
 
+def live_tests(catalog):
+    """Annotate exact demo entries; retain the original combat duplicate policy."""
+    report = json.loads(Path(__file__).with_name('ability_live_tests.json').read_bytes())
+    if report.get('schema') != 1: raise ValueError('Unsupported live skill test report.')
+    reviewed = {s['id']: s for s in report['skills']}
+    skills = []
+    for original in catalog.get('skills', []):
+        entry = dict(original); entry.pop('studioLiveTest', None)
+        test = reviewed.get(entry.get('id'))
+        if test and all(entry.get(k) == v for k, v in test['expected'].items()):
+            entry['studioLiveTest'] = {'schema': 1, 'game': report['game'], 'date': report['date'],
+                                       'result': test['result']}
+        skills.append(entry)
+    return {**catalog, 'skills': skills}
+
+
 def default_owners(catalog, rows, raw):
     """Read actual original vision grants, commands, levels and target twins.
 
@@ -315,7 +331,7 @@ def install(catalog_module, root):
     original = catalog_module.load
     def load(*args, **kwargs):
         global _cached
-        catalog = original(*args, **kwargs)
+        catalog = live_tests(original(*args, **kwargs))
         base = Path(root) / 'extracted/rows'
         files = sorted(base.rglob('*.json')) + [p for p in (
             Path(root) / 'extracted/locres_en.json', Path(root) / 'data/locres_en.json'

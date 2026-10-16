@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "game": "FINAL FANTASY RESONANCE DEMO",
+  "date": "2026-10-16",
+  "evidence": "User tested these skills on added units; Cling dealt damage without a visible animation. Specific recipient not recorded.",
+  "skills": [
+    {
+      "id": 500120,
+      "name": "Whip",
+      "result": "visible_animation",
+      "expected": {
+        "name": "Whip",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Single",
+        "dmgType": "Physic",
+        "hits": 2,
+        "seq": [
+          1,
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500120/500121/SEQ_Battle_500121_Master"
+      }
+    },
+    {
+      "id": 500580,
+      "name": "Tentacle",
+      "result": "visible_animation",
+      "expected": {
+        "name": "Tentacle",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Single",
+        "dmgType": "Physic",
+        "hits": 2,
+        "seq": [
+          1,
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500120/500121/SEQ_Battle_500121_Master"
+      }
+    },
+    {
+      "id": 500440,
+      "name": "Sonic Boom",
+      "result": "visible_animation",
+      "expected": {
+        "name": "Sonic Boom",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Single",
+        "dmgType": "Physic",
+        "hits": 1,
+        "seq": [
+          1,
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500440/500441/SEQ_Battle_500441_Master"
+      }
+    },
+    {
+      "id": 500140,
+      "name": "Bite",
+      "result": "visible_animation",
+      "expected": {
+        "name": "Bite",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Single",
+        "dmgType": "Physic",
+        "hits": 1,
+        "seq": [
+          1,
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500140/500141/SEQ_Battle_500141_Master"
+      }
+    },
+    {
+      "id": 500510,
+      "name": "Incisors",
+      "result": "visible_animation",
+      "expected": {
+        "name": "Incisors",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Single",
+        "dmgType": "Physic",
+        "hits": 1,
+        "seq": [
+          1,
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500020/500021/SEQ_Battle_500021_Master"
+      }
+    },
+    {
+      "id": 500910,
+      "name": "Cling",
+      "result": "damage_only_no_animation",
+      "expected": {
+        "name": "Cling",
+        "attr": "Ability",
+        "hasUnit": "All",
+        "target": "Group",
+        "dmgType": "Physic",
+        "hits": 1,
+        "seq": [
+          2
+        ],
+        "seqPath": "/Game/Sequencer/Battle/EnemySkill/500910/500912/SEQ_Battle_500912_Master"
+      }
+    }
+  ]
+}
