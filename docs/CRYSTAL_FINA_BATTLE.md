@@ -31,7 +31,7 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 `183.5/2.7` sprite pixels. `NULL_Aura` follows the body's center throughout descent and recovery. `NULL_Crystal`
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. The accepted runtime explicitly turns the real mesh; the SS6 socket alone does not supply world yaw.
 
-## Direct battle runtime (extension 1.2.25)
+## Direct battle runtime (extension 1.2.26)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -65,25 +65,33 @@ JSON-to-JSON readback cannot detect fields omitted on both sides. Use `clone-pac
 name-map renames. Require the complete `.uexp` to remain byte-identical (117,357 bytes for this demo source), which
 preserves native variables, curves, bindings and VM. Keep the original game package untouched.
 
-The private battle material retains the accepted cave's surface overrides and source shader. A fixed depth bias
-is insufficient when that same mesh is scaled in world units. The body/casing ratio is matched in sprite pixels,
-but battle UUPerPixel and inherited transforms affect physical thickness independently. The supplied screenshots
-confirm that identical fixed settings obscure the battle body more; they do not establish identical camera/lighting.
+The 12:13 runtime diagnostic proves extension 1.2.25 was installed and running. Its measured battle depth scale is
+**0.139999996**, versus the cave's **0.138**, producing bias **12.08664**. This rejects the explanation that a much
+larger inherited depth scale caused the difference. The adjustment was functional but almost identical to 12;
+it was not an effective body-clarity fix. Both native body materials are masked, so translucent sorting remains
+unproven. The screenshot shows severe bending across the deeper lower section of the casing.
 
-Create one **owned dynamic material instance** from the private battle material. `K2_GetComponentScale` supplies
-actual inherited scale; SS6's local X is its depth direction (the sprite renders on YZ). Preserve the cave's soft-gate
-onset at the same normalized depth. From Unreal's `DistortionCommon.ush`, for positive bias `b`:
-`gate = saturate(D / max(1, clamp(b/2, 0, 50)) - b)`. Its onset is
-`b * max(1, min(b/2, 50))`. The accepted cave has `b=12`, onset=72 UU at mesh scale `.138`.
-Multiply 72 by `abs(meshWorldScale.X)/.138`, then invert that piecewise equation for the battle bias. For example,
-a measured depth scale `.42` gives `20.9347`, while the accepted `.138` retains exactly 12. Include both native
-range caps; do not choose another fixed value between the former 12/24 experiments. Update only when scale changes
-and log the measured scale/reference/bias for live verification. Opacity, Fresnel, facet/wave settings, geometry,
-body scale and the cave itself stay intact. The model matches depth onset, not the entire camera-dependent shader;
-live confirmation of body clarity remains necessary. Battle and field lighting/reflection colors can differ.
+The battle-only control now targets **20% refraction at the deepest of five head-to-feet body probes**, instead
+of trying to infer clarity from component scale. Read the original native LOD0 positions/triangles with the same
+strict codec used by the preview. Precompute centered triangle edges into runtime metadata; retain original mesh,
+material and bulk bytes. With the actual player-camera location, transform each body probe/camera into mesh-local
+space, intersect its ray with the original triangles (Moller-Trumbore), transform the front hit back to world space
+and measure separation along the camera's view direction. Choose the last intersection before the camera,
+which is the surface nearest the camera even with overlapping/concave facets. Sample the deeper lower body as
+well as the center.
 
-Both native field and battle sprite materials use masked rendering, so translucent sprite sorting is not an
-established cause of the difference. Preserve the battle sprite material's blink/stone/dissolve behavior.
+The shader's soft gate is `saturate(D / max(1, min(b/2, 50)) - b)`. Solve it for `b` with desired gate `s=.20` and
+measured separation `D`: normally `b=(sqrt(s*s+8*D)-s)/2`, with the native minimum/maximum range branches. Apply it
+only to an owned MID on Fina's battle mesh. This reduces bending over the sampled body while distant background
+can still reach full refraction; foreground facets, opacity, roughness, Fresnel, geometry and rotation remain.
+The target is an artistic readability choice, **not a measured match to the cave shader/camera**. Probes use the
+physical sprite plane rather than reading GPU scene depth, so material pixel-depth offsets and unsampled pixels
+can differ. A live visual test is required; do not describe the model as proof of all body pixels being capped.
+
+The UE HLSL translator explicitly compiles `RefractionDepthBias` as a scalar parameter for SingleLayerWater as well
+as translucent blend modes; `MaterialTemplate.ush` supplies it to the refraction data. This validates the parameter
+path. Logs record measured view depth, target, applied bias, MID readback and camera FOV by phase, plus glow cleanup.
+Missing cameras keep the accepted cave bias and retry. Preserve the battle body material's status/flash behavior.
 
 The runtime loads the private approved StaticMesh/material, creates an ordinary **movable**, non-colliding
 StaticMeshComponent and attaches it directly to the SS6 `NULL_Crystal` socket. This uses the same ordinary mesh
@@ -150,28 +158,24 @@ The labeled Studio preview consumes the same supported track. The seated hold is
 | Resonance phase/frame | Presentation |
 | --- | --- |
 | `lb1_before` starts | Activate body-centered native gold effect immediately |
-| LB1 0–133 | Keep effect on so native particles build to full brightness before the fall |
+| LB1 0–133 | Build native particles to full brightness before the fall |
 | 134 | Hide mesh and begin descent; native reaction key unchanged |
-| 134–164 | Fade glow out |
-| 183–257 | Jacket-free seated pose; keep the same warm particle system at alpha zero |
-| 210–246 | Fade the warm system back in |
-| 246–258 | Hold full brightness through reformation |
-| 258 | Restore crystal and floating pose |
-| 258–282 | Fade glow out, then immediately destroy the aura and latch completion |
+| 134–164 | Fade the single glow out; hide/destroy it at 164 and latch completion |
+| 183–257 | Jacket-free seated pose, with **no glow** |
+| 258 | Restore crystal and floating pose, with **no second pulse** |
 
-Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
-activation off. Its attachment is valid during **preparation as well as LB1**; the former preparation track parked
-it at -10000 pixels, which would put an early effect offscreen. Activate with `User.NiagaraAlpha=1`, increase the
-owned component's `User.Alpha` to 2 for a brighter body glow, then follow the shared four-key envelope with the
-actual LB1 frame. The native intro's particle curves still provide the build-up; the effect now has more than two
-seconds before descent, instead of being cold-started only 12 frames before it. Keep one system alive across the
-seated interval to avoid a second cold start at reformation. Destroy it immediately when the last fade ends at frame 282, and latch completion until a genuine later
-resonance starts. Native cleanup lasts beyond the 432-frame body; a late reset/wrap must never replay the first
-flash. Temporary animation-name gaps retain the known phase/completion state. Create any replacement system with
-its **current** envelope alpha before activation, so an expired system recreated during the zero-alpha seated
-interval cannot emit a one-frame full-strength flash. Clear it on idle, interruption, hidden actors or model changes. `User.EffectPosition=0` replaces the source +80 UU offset; `User.LightPower=0` suppresses floor lighting.
-All native VM/particle bytes and source effects remain intact. The source Niagara's opaque metadata must still be
-preserved through native cloning, never a lossy JSON roundtrip.
+The remaining ground flash was an authored second pulse at frames 210–282. It started while the body/socket was
+seated, so moving destruction to frame 282 left it intact. The supplied trace has a single initial component spawn,
+consistent with reusing that warm component for the second pulse. Remove the second envelope entirely; merely
+blocking late frame resets does not address that scheduled flash. Keep early build-up, mirroring and 75 seated frames.
+
+Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, auto activation
+off. Set `User.Alpha=2`, `User.NiagaraAlpha` to the current envelope before activation, `User.EffectPosition=0` and
+`User.LightPower=0`. Keep the valid preparation/body attachment, then hide and destroy the owned effect as soon as
+its one fade ends. Use the component itself as the explicitly permitted K2_DestroyComponent context. Log cleanup.
+Retain the completion latch through frame resets/name gaps, and reset it for a genuine later resonance. Native
+Niagara creation allows destruction and uses the attachment owner's actor; an ownership failure was investigated
+but is not established as the cause. Preserve the native clone's opaque metadata/VM; never JSON-roundtrip it.
 
 The native Fina design row still receives explicit positive 2.7/1.0 presentation defaults only for nonpositive
 Scale/attachEffectSacle values; positive values and other rows remain unchanged. The cave pair stays at the user's
@@ -180,13 +184,13 @@ accepted 15% enlargement, with its approved glass and spin. No old comparison NP
 ## Studio and verification
 
 `scripts/render_crystal_fina_preview.py` shares battle tracks, flipping and timings, and renders supplied LOD0 mesh
-and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-7` to invalidate
+and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-8` to invalidate
 stale previews. Local native checks use the real asset writer, verify model parents/custom-value tails including
 Imgfliph and its bool cache, short preparation/release cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
 is confined to scratch. No user game data is replaced by fixtures.
 
 Executable Lua fixtures cover actual animation-name out tables, owned movable mesh creation, scale/pivot setup,
-native recovery without presentation overrides, short native attack windows, mirrored asset contracts, no idle glow, early/warm glow alpha,
+native recovery without presentation overrides, short native attack windows, mirrored asset contracts, single-pulse glow,
 crystal hide/return, hidden actors, project swaps and cleanup. They cannot prove this game's rendered behavior.
 Windows checks cover the frozen engine and managed runtime resource. Live use after the correction still needs checking the
 actual crystal, glow, shot direction and battle completion; use the automatic `[FFR Fina]` log if anything fails.

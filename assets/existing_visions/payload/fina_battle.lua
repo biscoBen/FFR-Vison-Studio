@@ -27,7 +27,11 @@ local function asset(path)
 end
 local function vec(x, y, z) return {X=x, Y=y, Z=z} end
 local function destroy(o, actor)
-    if valid(o) and valid(actor) then o:K2_DestroyComponent(actor) end
+    if valid(o) then
+        o:SetVisibility(false, true)
+        -- UActorComponent explicitly accepts itself as the destruction context.
+        o:K2_DestroyComponent(o)
+    end
 end
 local function clear(s)
     destroy(s.glow, s.actor); s.glow = nil
@@ -83,6 +87,7 @@ local function create(sprite, actor, isUnit)
     assert(mesh:SetStaticMesh(assets.mesh), 'Could not assign crystal mesh')
     s.material = mesh:CreateDynamicMaterialInstance(0, assets.material, FName('StudioFinaGlass'))
     assert(valid(s.material), 'Could not create private battle glass instance')
+    s.material:SetScalarParameterValue(FName('RefractionDepthBias'), config.glassFallbackBias)
     assert(mesh:K2_AttachToComponent(sprite, FName('NULL_Crystal'), 0, 0, 0, false), 'Could not attach crystal socket')
     -- Socket translations include UUPerPixel, but socket scales do not. Match
     -- the native body ratio independently of the actor/component world scale.
@@ -94,22 +99,76 @@ local function create(sprite, actor, isUnit)
     log('Attached real crystal to ' .. actor:GetFullName() .. '; UUPerPixel=' .. tostring(sprite.UUPerPixel))
     return s
 end
-local function glass(s)
-    -- SS6 renders on its local YZ plane; local X is the depth direction.
-    -- RefractionDepthBias is in world-depth units, not sprite pixels. Match
-    -- the accepted cave's soft-gate onset at the actual inherited depth scale.
-    local scale = s.mesh:K2_GetComponentScale()
-    local depthScale = math.abs(scale.X)
-    if depthScale <= 0 or depthScale ~= depthScale or depthScale == math.huge then return end
-    if not s.depthScale or math.abs(depthScale-s.depthScale) > .00001 then
-        local reference = config.glassReferenceBias
-        local onset = reference * math.max(1, math.min(reference*.5, 50))
-        local target = onset * depthScale / config.glassReferenceScale
-        -- Invert b * max(1, min(b/2, 50)), including the native range caps.
-        local bias = target <= 2 and target or target <= 5000 and math.sqrt(2*target) or target/50
-        s.material:SetScalarParameterValue(FName('RefractionDepthBias'), bias)
-        s.depthScale = depthScale
-        log('Glass depth scale=' .. depthScale .. '; cave reference=' .. config.glassReferenceScale .. '; bias=' .. bias)
+local function front_hit(triangles, dx, dy, dz, sx, sy, sz)
+    -- Camera ray from the centered body through the original native LOD0.
+    -- The LAST hit before the camera is its visible front surface, including
+    -- overlapping/concave facets. No collision changes or physics query.
+    local front = 0
+    for _, t in ipairs(triangles) do
+        local ax, ay, az, ex, ey, ez, fx, fy, fz = table.unpack(t)
+        local px, py, pz = dy*fz-dz*fy, dz*fx-dx*fz, dx*fy-dy*fx
+        local det = ex*px+ey*py+ez*pz
+        if math.abs(det) > .000000001 then
+            local inv = 1/det
+            local tx, ty, tz = sx-ax, sy-ay, sz-az
+            local u = (tx*px+ty*py+tz*pz)*inv
+            if u >= -.000001 and u <= 1.000001 then
+                local qx, qy, qz = ty*ez-tz*ey, tz*ex-tx*ez, tx*ey-ty*ex
+                local v = (dx*qx+dy*qy+dz*qz)*inv
+                if v >= -.000001 and u+v <= 1.000001 then
+                    local distance = (fx*qx+fy*qy+fz*qz)*inv
+                    if distance > front and distance < 1 then front = distance end
+                end
+            end
+        end
+    end
+    return front > 0 and front or nil
+end
+local function glass(s, visible)
+    if not visible then return end
+    local camera = native('Engine.Default__GameplayStatics'):GetPlayerCameraManager(s.sprite, 0)
+    if not valid(camera) then
+        if not s.noCamera then log('Waiting for battle camera; retaining cave glass fallback'); s.noCamera = true end
+        return
+    end
+    s.noCamera = nil
+    local mathlib = native('Engine.Default__KismetMathLibrary')
+    local transform = s.mesh:K2_GetComponentToWorld()
+    local cameraLocal = mathlib:InverseTransformLocation(transform, camera:GetCameraLocation())
+    local ox, oy, oz = config.origin.X, config.origin.Y, config.origin.Z
+    local rotation = camera:GetCameraRotation()
+    local pitch, yaw = math.rad(rotation.Pitch), math.rad(rotation.Yaw)
+    local vx, vy, vz = math.cos(pitch)*math.cos(yaw), math.cos(pitch)*math.sin(yaw), math.sin(pitch)
+    local depth = 0
+    -- Sample the center column from head to feet; the bulb below her center
+    -- is deeper than the middle and must not retain full-strength body warp.
+    for sample=-2,2 do
+        local z = sample*config.bodyHalfHeight/(2*config.meshRatio)
+        local dx, dy, dz = cameraLocal.X-ox, cameraLocal.Y-oy, cameraLocal.Z-oz-z
+        local hit = front_hit(config.glassTriangles, dx, dy, dz, 0, 0, z)
+        if hit then
+            local body = mathlib:TransformLocation(transform, vec(ox,oy,oz+z))
+            local surface = mathlib:TransformLocation(transform, vec(ox+dx*hit,oy+dy*hit,oz+z+dz*hit))
+            local distance = -((surface.X-body.X)*vx+(surface.Y-body.Y)*vy+(surface.Z-body.Z)*vz)
+            depth = math.max(depth, distance)
+        end
+    end
+    if depth <= 0 or depth ~= depth then return end
+    -- Solve D/max(1,min(b/2,50))-b = desired body distortion.
+    -- This explicitly attenuates bending at the body; distant background still
+    -- reaches full refraction. It is a visual target, not a measured cave FOV.
+    local amount = config.bodyRefraction
+    local bias = (math.sqrt(amount*amount+8*depth)-amount)/2
+    if bias < 2 then bias = math.max(0, depth-amount)
+    elseif bias > 100 then bias = depth/50-amount end
+    if not s.bias or math.abs(bias-s.bias) > .0001 then
+        s.material:SetScalarParameterValue(FName('RefractionDepthBias'), bias); s.bias = bias
+    end
+    if s.glassPhase ~= s.last then
+        s.glassPhase = s.last
+        log('Glass ray depth=' .. depth .. '; body refraction=' .. amount .. '; bias=' .. bias
+            .. '; readback=' .. s.material:K2_GetScalarParameterValue(FName('RefractionDepthBias'))
+            .. '; camera FOV=' .. camera:GetFOVAngle())
     end
 end
 local function glow(s, frame, visible)
@@ -119,6 +178,7 @@ local function glow(s, frame, visible)
     if s.last == 'lb1' and frame >= config.flashes[#config.flashes][4] then s.glowFinished = true end
     local active = visible and not s.glowFinished and (s.last == 'lb1_before' or s.last == 'lb1')
     if not active then
+        if valid(s.glow) then log('Glow ended at ' .. s.last .. ' frame ' .. frame .. '; removing ' .. s.glow:GetFullName()) end
         destroy(s.glow, s.actor); s.glow = nil
         return
     end
@@ -146,9 +206,8 @@ local function glow(s, frame, visible)
         s.glow:Activate(false)
         log('Resonance glow started with ' .. s.last .. '; native frame ' .. math.floor(frame))
     end
-    -- Keep one warm system throughout the seated interval; changing its alpha
-    -- avoids a cold-start delay when the crystal reforms. Native particle color
-    -- still supplies its original fade-in, now starting during preparation.
+    -- Only the initial fall has an aura. No second pulse while she is seated
+    -- or when the casing returns. Native curves provide the early build-up.
     s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), strength)
 end
 local function update(s)
@@ -165,13 +224,14 @@ local function update(s)
         end
         s.last = n
     end
-    glass(s)
     local frame = sprite:GetPlayFrame()
     local observed = n or s.last
-    s.mesh:SetVisibility(visible and not (observed == 'lb1' and frame >= config.fall and frame < config.reform), true)
+    local casing = visible and not (observed == 'lb1' and frame >= config.fall and frame < config.reform)
+    s.mesh:SetVisibility(casing, true)
     -- SpriteStudio sockets expose in-plane rotation, not a full 3D spin.
     -- Rotate the actual component about its own vertical axis explicitly.
     s.mesh:K2_SetRelativeRotation({Pitch=0,Yaw=(time*config.turnRate)%360,Roll=0}, false, {}, true)
+    glass(s, casing)
     glow(s, frame, visible)
 end
 local function tick()
@@ -215,4 +275,4 @@ LoopAsync(33, function()
     end
     return false
 end)
-log('Battle presentation ready (scaled battle glass; terminal glow cleanup); waiting for custom Crystal Fina')
+log('Battle presentation ready (body-ray refraction; single resonance glow); waiting for custom Crystal Fina')

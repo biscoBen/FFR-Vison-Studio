@@ -21,7 +21,7 @@ SEAT = 183
 REFORM = SEAT + 75
 # Four keys: begin, full brightness, end of plateau, faded out. The first
 # envelope is already on at frame zero; native particles provide the build-up.
-FLASHES = ((0, 0, FALL, FALL + 30), (REFORM - 48, REFORM - 12, REFORM, REFORM + 24))
+FLASHES = ((0, 0, FALL, FALL + 30),)
 PREP_FRAMES = 30
 RELEASE_FRAMES = 30
 ACTION_FRAMES = PREP_FRAMES + RELEASE_FRAMES

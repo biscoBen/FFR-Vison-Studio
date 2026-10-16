@@ -1,4 +1,5 @@
 """Private native Crystal Fina battle presentation; no skill or roster edits."""
+import base64
 import copy
 import json
 import math
@@ -188,7 +189,7 @@ def build(units, env):
                     '/Game/' + old + suffix, '/Game/' + rel + suffix, rename, '--usmap', usmap])
     _, mesh = cave.export(source[cave.TEST_NATIVE_MESH], Path(cave.TEST_NATIVE_MESH).name)
     origin = cave.property_data(cave.property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
-    (work / 'runtime.json').write_text(json.dumps(runtime_config(unit, origin)), encoding='utf-8')
+    (work / 'runtime.json').write_text(json.dumps(runtime_config(unit, origin, glass_triangles(source[cave.TEST_NATIVE_MESH], origin))), encoding='utf-8')
     print('  Crystal Fina battle: native body with short preparation/release; direct runtime crystal/glow attachments. Skills and hit events preserved.')
 
 
@@ -198,7 +199,17 @@ def prepare_job(job, units, lb_id):
     return job
 
 
-def runtime_config(unit, origin):
+def glass_triangles(view, origin):
+    from _ffr_crystal_mesh import lod0_geometry
+    _, mesh = cave.export(view, Path(cave.TEST_NATIVE_MESH).name)
+    vertices, indices = lod0_geometry(base64.b64decode(mesh['Extras'], validate=True))
+    vertices = [tuple(p[i] - float(origin[axis]) for i, axis in enumerate(('X', 'Y', 'Z'))) for p in vertices]
+    # Precompute edges for Moller-Trumbore; origin is the centered body/socket.
+    return [[*vertices[a], *[vertices[b][i]-vertices[a][i] for i in range(3)],
+                           *[vertices[c][i]-vertices[a][i] for i in range(3)]] for a, b, c in indices]
+
+
+def runtime_config(unit, origin, triangles):
     import _ffr_fina_motion as motion
     name = 'FinaNative' + str(unit['id'])
     asset = lambda rel: '/Game/' + rel + '.' + Path(rel).name
@@ -206,6 +217,6 @@ def runtime_config(unit, origin):
         'pack': name, 'mesh': asset(package(unit, 'SM_Studio_CrystalFina')),
         'material': asset(package(unit, 'MI_Studio_CrystalFina')), 'glow': asset(glow_package(unit)),
         'origin': origin, 'meshRatio': .12 / 2.7, 'turnRate': cave.TEST_CRYSTAL_TURN_RATE,
-        'glowAlpha': 2.0, 'glassReferenceBias': cave.TEST_CRYSTAL_PARAMETERS['RefractionDepthBias'],
-        'glassReferenceScale': cave.TEST_CRYSTAL_SCALE,
+        'glowAlpha': 2.0, 'glassFallbackBias': cave.TEST_CRYSTAL_PARAMETERS['RefractionDepthBias'],
+        'bodyRefraction': .20, 'bodyHalfHeight': 25.0, 'glassTriangles': triangles,
         'fall': motion.FALL, 'reform': motion.REFORM, 'flashes': list(motion.FLASHES)}

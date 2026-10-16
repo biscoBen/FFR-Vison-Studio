@@ -63,6 +63,15 @@ def decoded_lods(raw):
 
 
 class CrystalMeshPartitionTests(unittest.TestCase):
+    def test_read_only_lod0_matches_independent_geometry_and_rejects_truncation(self):
+        for wide in (False, True):
+            source = native_mesh_fixture(wide)
+            lods, _ = decoded_lods(source)
+            vertices, triangles = mesh.lod0_geometry(source)
+            self.assertEqual(vertices, lods[0]['vertices'])
+            self.assertEqual(triangles, lods[0]['indices'][0])
+            with self.assertRaises(ValueError): mesh.lod0_geometry(source[:100])
+
     def test_each_lod_preserves_geometry_winding_buffers_and_bulk_tail(self):
         for wide in (False, True):
             original = native_mesh_fixture(wide)

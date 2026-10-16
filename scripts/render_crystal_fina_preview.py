@@ -18,44 +18,14 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'assets/existing_visions/payload'))
 import _ffr_crystal_cave as cave
-from _ffr_crystal_mesh import Reader
+from _ffr_crystal_mesh import lod0_geometry
 import _ffr_fina_motion as motion
 
 
 def geometry(view):
     """Read the checked inline LOD0; leave all native render/bulk bytes alone."""
     _, mesh = cave.export(view, 'SM_Env_Com_crystal008')
-    reader = Reader(base64.b64decode(mesh['Extras'], validate=True))
-    reader.expect(bytes.fromhex('0500010000000100000002000000')); reader.take(20)
-    if reader.ints(1) != (3,): raise ValueError('The native crystal LOD count changed.')
-    reader.expect(b'\x05\x08')
-    if reader.ints(1) != (1,): raise ValueError('The native crystal material sections changed.')
-    section = reader.take(40); material, first, triangles, low, high = struct.unpack_from('<5I', section)
-    if material or first or not 0 < triangles <= 20000: raise ValueError('Invalid crystal section.')
-    header = reader.take(72)
-    if struct.unpack_from('<3I', header, 60) != (0, 1, 0): raise ValueError('Expected an inline crystal LOD.')
-    reader.expect(b'\x05\x08'); stride, count, size, items = reader.ints(4)
-    if stride != 12 or size != 12 or count != items or not 0 < count <= 20000: raise ValueError('Invalid crystal positions.')
-    positions = list(struct.iter_unpack('<3f', reader.take(count * 12)))
-    if not 0 <= low <= high < count or not all(math.isfinite(c) for p in positions for c in p):
-        raise ValueError('Invalid crystal bounds.')
-    reader.expect(b'\x05\x00'); coords, items, full_uv, high_tangent = reader.ints(4)
-    if items != count or not 0 < coords <= 4 or full_uv not in (0, 1) or high_tangent not in (0, 1):
-        raise ValueError('Invalid crystal vertex metadata.')
-    for expected in [(16 if high_tangent else 8, count), (8 if full_uv else 4, count * coords)]:
-        size, items = reader.ints(2)
-        if (size, items) != expected: raise ValueError('Invalid crystal tangent/UV buffer.')
-        reader.take(size * items)
-    reader.expect(b'\x05\x00'); stride, colors = reader.ints(2)
-    if colors:
-        size, items = reader.ints(2)
-        if (stride, colors, size, items) != (4, count, 4, count): raise ValueError('Invalid crystal color buffer.')
-        reader.take(size * items)
-    elif stride: raise ValueError('Invalid empty crystal color buffer.')
-    wide, size, items = reader.ints(3)
-    if wide not in (0, 1) or size != 1 or items != triangles * (12 if wide else 6): raise ValueError('Invalid crystal indices.')
-    indices = list(struct.iter_unpack('<3I' if wide else '<3H', reader.take(items)))
-    if reader.ints(1) != (0,) or any(v >= count for tri in indices for v in tri): raise ValueError('Invalid crystal triangles.')
+    positions, indices = lod0_geometry(base64.b64decode(mesh['Extras'], validate=True))
     origin = cave.property_data(cave.property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
     ratio = cave.TEST_CRYSTAL_SCALE / cave.TEST_SPRITE_SCALE
     return [[(p[i] - float(origin[axis])) * ratio for i, axis in enumerate(('X', 'Y', 'Z'))] for p in positions], indices
@@ -140,7 +110,7 @@ def main():
         name = public + '.webp'; files[name] = data
         animations[public] = {'file': name, 'seconds': length / 60, 'sha256': hashlib.sha256(data).hexdigest()}
         print(public, len(data), 'bytes', flush=True)
-    manifest = {'schema': 1, 'presentation': 'native-fina-7', 'description': 'Native battle preview; game lighting and refraction may differ.',
+    manifest = {'schema': 1, 'presentation': 'native-fina-8', 'description': 'Native battle preview; game lighting and refraction may differ.',
                 'animations': animations, 'sources': {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                     for name in ('project_json', 'texture_json', 'mesh_json', 'old_sheet', 'original_spec')}}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()

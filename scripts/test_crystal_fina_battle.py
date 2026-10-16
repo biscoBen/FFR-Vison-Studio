@@ -18,6 +18,16 @@ def table(rows): return {'NameMap': [], 'Exports': [{'Table': {'Data': rows}}]}
 UNIT = {'id': 13503, 'jp': 'FixtureFina', 'donor': 13108, 'ffbe': {'id': battle.SPRITE, 'source': 'CUSTOM'}}
 
 
+# Closed cube in native mesh coordinates; precomputed edges use the same ray
+# contract as the original crystal. Its center is the body/socket origin.
+def cube_triangles():
+    vertices = [(x, y, z) for x in (-700, 700) for y in (-700, 700) for z in (-700, 700)]
+    indices = [(0,1,3),(0,3,2),(4,6,7),(4,7,5),(0,4,5),(0,5,1),
+               (2,3,7),(2,7,6),(0,2,6),(0,6,4),(1,5,7),(1,7,3)]
+    return [[*vertices[a], *[vertices[b][i]-vertices[a][i] for i in range(3)],
+                           *[vertices[c][i]-vertices[a][i] for i in range(3)]] for a,b,c in indices]
+
+
 class FinaBattleTests(unittest.TestCase):
     def test_native_glow_clone_keeps_opaque_export_data_and_rejects_loss(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -50,7 +60,7 @@ class FinaBattleTests(unittest.TestCase):
         from lupa.lua54 import LuaRuntime
         import _ffr_field_leader as leader
         lua = LuaRuntime()
-        config = battle.runtime_config(UNIT, {'X': -.29, 'Y': -2.08, 'Z': 1233})
+        config = battle.runtime_config(UNIT, {'X': -.29, 'Y': -2.08, 'Z': 1233}, cube_triangles())
         lua.execute('package.preload.config = function() return ' + leader.lua({'schema': 1, 'actors': {}, 'fina': config}) + ' end')
         root = Path(__file__).resolve().parent.parent
         lua.execute((root / 'scripts/fixtures/fina_battle_runtime.lua').read_text())
@@ -74,43 +84,77 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute('sprite.namesUnavailable=true; tick(); assert(#meshes==1 and meshes[1].visible); '
                     'assert(not meshes[1].invalid); sprite.namesUnavailable=false; run_fina_tests()')
 
-    def test_expired_seated_glow_restarts_invisible_and_stays_gone_after_final_fade(self):
+    def test_no_glow_is_created_while_seated_or_reforming(self):
         lua = self.runtime()
         lua.execute("""
             tick(); sprite.playing='lb1_before'; tick()
-            sprite.playing='LB1'; sprite.frame=183; glows[1].invalid=true; tick()
-            assert(#glows==2 and glows[2].active and glows[2].activationAlpha==0)
-            sprite.frame=282; tick(); assert(glows[2].invalid)
-            sprite.frame=0; tick(); assert(#glows==2)
-            sprite.playing='Idle'; tick()
-            sprite.playing='lb1_before'; tick()
-            assert(#glows==3 and glows[3].activationAlpha==1)
+            sprite.playing='LB1'; sprite.frame=164; tick(); assert(glows[1].invalid)
+            for _, frame in ipairs({183,210,246,258,282,431,0}) do
+                sprite.frame=frame; tick(); assert(#glows==1)
+            end
+            sprite.playing='Idle'; tick(); sprite.playing='lb1_before'; tick()
+            assert(#glows==2 and glows[2].activationAlpha==1)
         """)
 
     def test_runtime_config_uses_the_current_private_assets_and_shortened_hold(self):
-        cfg = battle.runtime_config(UNIT, {'X': 1, 'Y': 2, 'Z': 3})
+        cfg = battle.runtime_config(UNIT, {'X': 1, 'Y': 2, 'Z': 3}, cube_triangles())
         self.assertEqual(cfg['id'], UNIT['id'])
         self.assertIn('/13503/', cfg['mesh'])
         self.assertNotIn('cast', cfg)
         self.assertNotIn('castFrames', cfg)
         self.assertEqual(cfg['glowAlpha'], 2.0)
-        self.assertEqual(cfg['glassReferenceBias'], 12.0)
-        self.assertAlmostEqual(cfg['glassReferenceScale'], .138)
+        self.assertEqual(cfg['glassFallbackBias'], 12.0)
+        self.assertEqual(cfg['bodyRefraction'], .2)
+        self.assertEqual(cfg['flashes'], [(0, 0, 134, 164)])
         self.assertEqual(cfg['reform'] - motion.SEAT, 75)
         job = {'asset': 'unchanged'}
         self.assertIs(battle.prepare_job(job, [UNIT], lambda _: 1), job)
 
-    def test_battle_glass_depth_gate_tracks_world_scale_without_touching_source_material(self):
+    def test_body_ray_measures_rotated_scaled_mesh_and_applies_reduced_warp(self):
         lua = self.runtime()
-        # Include small/large scales to exercise both native depth-range caps.
+        # Uniform and nonuniform scales; translated camera/mesh and the actual
+        # mesh rotation must not be mistaken for component depth scale alone.
         for scale in (.002, .138, .42, 20):
             with self.subTest(scale=scale):
-                lua.execute(f'sprite.parentScale={{X={scale}/.12,Y=99,Z=99}}; tick()')
+                lua.execute(f'sprite.parentScale={{X={scale}/.12,Y=2,Z=3}}; camera.location={{X=100000,Y=0,Z=0}}; time=0; tick()')
                 bias = lua.globals().materials[1]['RefractionDepthBias']
-                onset = bias * max(1, min(bias*.5, 50))
-                self.assertAlmostEqual(onset, 72 * scale / .138)
+                depth = scale * 700
+                strength = depth / max(1, min(bias*.5, 50)) - bias
+                self.assertAlmostEqual(strength, .2)
+        lua.execute('sprite.parentScale={X=1,Y=1,Z=1}; time=12.5; tick()')  # 45 degree turn.
+        bias = lua.globals().materials[1]['RefractionDepthBias']
+        self.assertAlmostEqual(84 * 2**.5 / (bias*.5)-bias, .2, delta=.0001)
         lua.execute('assert(#materials==1 and materials[1].source.path==require("config").fina.material)')
-        self.assertTrue(any('Glass depth scale=' in line for line in lua.globals().messages.values()))
+        self.assertTrue(any('Glass ray depth=' in line for line in lua.globals().messages.values()))
+
+    def test_overlapping_shells_use_front_surface_nearest_camera(self):
+        import _ffr_field_leader as leader
+        outer = cube_triangles()
+        inner = [[value*.5 for value in tri] for tri in outer]
+        lua = self.runtime()
+        lua.execute('require("config").fina.glassTriangles='+leader.lua(inner+outer))
+        lua.execute('tick()')
+        bias = lua.globals().materials[1]['RefractionDepthBias']
+        self.assertAlmostEqual(84/(bias*.5)-bias, .2)
+
+    def test_deeper_lower_body_drives_attenuation_rather_than_center_only(self):
+        import _ffr_field_leader as leader
+        # Shear the native cube so its lower bulb is deeper than its midpoint.
+        triangles = cube_triangles()
+        for t in triangles:
+            t[0] -= .25*t[2]; t[3] -= .25*t[5]; t[6] -= .25*t[8]
+        lua = self.runtime()
+        lua.execute('require("config").fina.glassTriangles='+leader.lua(triangles))
+        lua.execute('camera.location={X=100000,Y=0,Z=0}; tick()')
+        bias = lua.globals().materials[1]['RefractionDepthBias']
+        self.assertLess(84/(bias*.5)-bias, .2)
+        self.assertAlmostEqual(100.875/(bias*.5)-bias, .2, delta=.01)
+
+    def test_missing_camera_keeps_casing_and_accepted_fallback_then_recovers(self):
+        lua = self.runtime()
+        lua.execute('camera.invalid=true; tick(); assert(meshes[1].visible and not meshes[1].invalid); '
+                    'assert(materials[1].RefractionDepthBias==12); camera.invalid=false; tick(); '
+                    'assert(materials[1].RefractionDepthBias~=12)')
 
     def test_skill_motion_duration_uses_release_window_without_imported_csv(self):
         import _ffr_animation_repair as repair

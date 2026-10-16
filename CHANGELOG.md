@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Remove Crystal Fina's authored second resonance glow (frames 210–282), which lit the socket while she was seated.
+  Keep only the early pulse through frame 164, then hide/destroy it. Preserve attack timing, mirroring, rotation and
+  the accepted 1.25-second seated hold. Refresh Studio previews/cache (native-fina-8), extension 1.2.26.
+- Replace ineffective depth-scale normalization with camera-to-native-mesh ray measurements at five head-to-feet
+  probes. Target 20% refraction at the deepest probe using the shader's actual depth-gate equation, retaining
+  background refraction and the accepted surface settings. Record applied/read-back bias, view depth and camera FOV.
+  The supplied 12:13 trace confirms the old update ran but changed bias only to 12.08664 because world depth scale
+  was nearly the cave's. That disproves the prior large-scale explanation. Actual body clarity still needs live testing;
+  CPU probe geometry is not a GPU depth-buffer readback or an exact cave-camera match.
+
 ## Published Crystal Fina scaled glass and final glow cleanup — 2026-10-16
 
 Code: [`4e871bc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4e871bc9efd4709f35674527b201ef8347e16006).

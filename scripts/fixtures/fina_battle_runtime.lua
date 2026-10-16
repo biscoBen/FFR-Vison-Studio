@@ -7,14 +7,20 @@ local function obj(t)
 end
 function FName(s) return {ToString=function() return s end} end
 function print(s) messages[#messages+1]=s end
+camera=obj({location={X=10000,Y=0,Z=0}})
+function camera:GetCameraLocation() return self.location end
+function camera:GetCameraRotation() return {Pitch=0,Yaw=180,Roll=0} end
+function camera:GetFOVAngle() return 30 end
+
 actor=obj({m_IsVisible=true,m_Alpha=1})
 function actor:GetFullName() return 'BattleFina' end
 function actor:IsA(c) return c.kind=='mucha.CPP_BtlUnit' end
 function actor:IsHidden() return self.hidden or false end
 local function component()
     local o=obj({visible=true})
-    function o:K2_DestroyComponent(owner) assert(owner==actor); self.invalid=true end
+    function o:K2_DestroyComponent(owner) assert(owner==self); self.invalid=true; assert(not self.visible) end
     function o:SetVisibility(v) self.visible=v end
+    function o:GetFullName() return "OwnedFinaComponent" end
     function o:SetMobility(v) assert(v==2) end
     function o:SetCollisionEnabled(v) assert(v==0) end
     function o:SetGenerateOverlapEvents(v) assert(not v) end
@@ -24,7 +30,11 @@ local function component()
         assert(i==0 and a.path==config.material and label:ToString()=='StudioFinaGlass')
         local m=obj({source=a})
         function m:SetScalarParameterValue(key,value) self[key:ToString()]=value end
+        function m:K2_GetScalarParameterValue(key) return self[key:ToString()] end
         materials[#materials+1]=m; return m
+    end
+    function o:K2_GetComponentToWorld()
+        return {Translation=self.location,Scale3D=self:K2_GetComponentScale(),yaw=math.rad((time*config.turnRate)%360)}
     end
     function o:K2_GetComponentScale()
         local p=sprite.parentScale or {X=1,Y=1,Z=1}
@@ -78,6 +88,18 @@ function StaticFindObject(path)
         local kind=path:sub(9)
         local o=obj({kind=kind})
         function o:GetTimeSeconds() return time end
+        function o:GetPlayerCameraManager() return camera end
+        function o:TransformLocation(t,v)
+            local c,s=math.cos(t.yaw),math.sin(t.yaw)
+            return {X=t.Translation.X+c*v.X*t.Scale3D.X-s*v.Y*t.Scale3D.Y,
+                    Y=t.Translation.Y+s*v.X*t.Scale3D.X+c*v.Y*t.Scale3D.Y,
+                    Z=t.Translation.Z+v.Z*t.Scale3D.Z}
+        end
+        function o:InverseTransformLocation(t,v)
+            local c,s=math.cos(t.yaw),math.sin(t.yaw)
+            local x,y=v.X-t.Translation.X,v.Y-t.Translation.Y
+            return {X=(c*x+s*y)/t.Scale3D.X,Y=(-s*x+c*y)/t.Scale3D.Y,Z=(v.Z-t.Translation.Z)/t.Scale3D.Z}
+        end
         function o:MakeSoftObjectPath(path) return {path=path} end
         function o:Conv_SoftObjPathToSoftObjRef(path) return {reference=path.path} end
         function o:LoadAsset_Blocking(reference)
@@ -113,11 +135,10 @@ function run_fina_tests()
     assert(#glows==1 and glows[1]['User.NiagaraAlpha']==1 and meshes[1].visible, 'Fully bright before falling')
     sprite.frame=config.fall; tick(); assert(not meshes[1].visible and glows[1]['User.NiagaraAlpha']==1)
     sprite.frame=config.fall+15; tick(); assert(glows[1]['User.NiagaraAlpha']==.5)
-    sprite.frame=183; tick(); assert(not glows[1].invalid and glows[1]['User.NiagaraAlpha']==0)
-    sprite.frame=config.reform-30; tick()
-    assert(#glows==1 and glows[1]['User.NiagaraAlpha']==.5, 'Reuse warm particles for reformation')
-    sprite.frame=config.reform; tick(); assert(meshes[1].visible and glows[1]['User.NiagaraAlpha']==1)
-    sprite.frame=config.flashes[2][4]; tick(); assert(glows[1].invalid, 'Destroy immediately after final fade')
+    sprite.frame=164; tick(); assert(glows[1].invalid, 'Remove the only pulse before she sits')
+    sprite.frame=183; tick(); assert(#glows==1 and not meshes[1].visible)
+    sprite.frame=210; tick(); assert(#glows==1, 'No second glow on the seated body')
+    sprite.frame=config.reform; tick(); assert(meshes[1].visible and #glows==1)
     -- Native cleanup can reset the frame, or expose a stale/missing name.
     -- Neither may restart the first flash on the returning battle actor.
     sprite.frame=0; tick(); assert(#glows==1)
@@ -131,7 +152,7 @@ function run_fina_tests()
     sprite.playing='damage'; tick(); assert(glows[2].invalid)
     -- A later real preparation must reset the completion latch normally.
     sprite.playing='lb1_before'; sprite.frame=1; tick(); assert(#glows==3 and glows[3].active)
-    sprite.playing='LB1'; sprite.frame=config.flashes[2][4]; tick(); assert(glows[3].invalid)
+    sprite.playing='LB1'; sprite.frame=config.flashes[1][4]; tick(); assert(glows[3].invalid)
     sprite.frame=0; tick(); assert(#glows==3)
     sprite.SsProject=obj({GetFullName=function() return 'OtherVision' end}); tick()
     assert(meshes[1].invalid, 'Remove owned components when the model changes')
