@@ -18,11 +18,17 @@ reference has no acquisition prompt or separate reward; both displays follow the
 
 The test always uses the approved transparent glass with rotation on. **Solid casing check** and **Animate crystal
 casing** have been removed; their saved values are ignored. The user has confirmed the current glass, tips and rotation
-look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.16.
+look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.17.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
-The new side-by-side spacing still needs an in-game check.
-[Verified test package / run 38829455821](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38829455821/Sephira-Studio-Test.zip)
-(code `aee9e8c`, published 2026-10-15).
+Custom Crystal Fina now also builds with this native body and private glass in **battle**. Her attack opens her eyes,
+turns and casts. Resonance uses the intro aura, hides the casing, lowers her and holds the original jacket-free seated
+pose. Existing vision identity, skills, stats, gameplay event times and saved edits are preserved. Ordinary action
+body keys fit the current clip durations. The original cave comparison assets remain available.
+
+[Verified battle test package / run 38843855920](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38843855920/Sephira-Studio-Test.zip)
+(code `bb2a737`, published 2026-10-15). Rebuild/install the mod and restart Resonance to try it. Native asset readbacks,
+IoStore packing and Windows checks passed; battle crystal visibility/rotation, aura cleanup and visual timing still
+need an in-game test. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

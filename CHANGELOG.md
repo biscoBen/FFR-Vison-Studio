@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published native Crystal Fina battle test — 2026-10-15
+
+Code: [`bb2a737`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bb2a7372d24c62c2e15deadc5aa27deaf9c3a673).
+[Verified Windows test release / run 38843855920](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38843855920).
+
 - Replace custom Crystal Fina's battle body with the native introductory sprite inside a private copy of the approved
   Sanctum glass. Attack opens her eyes, turns and casts; resonance uses the native intro aura, hides the casing at
   frame 134, descends and holds the original jacket-free seated pose. Fit ordinary action bodies to their existing
@@ -23,6 +28,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Keep read-only battle-reference collectors and a shared native SsValue decoder/body-preview tool in the project.
   Collectors write to Downloads\FFR Mod. Evidence and runtime limits are recorded in `docs/CRYSTAL_FINA_BATTLE.md`;
   the full-game checklist includes the new per-unit attachments, shader/scale dependencies and seated fallback.
+
+- Validation: clean analysis, 244 Flutter tests (one skip), the separate fresh frozen-engine Windows startup check,
+  354 Python checks (Windows: five skips; Linux: four), managed bundles, 12 launcher and 10 import checks passed.
+  Native integration generated the private SS6 project/textures, component-renderer system, glass/mesh and battle tables;
+  strict readbacks and custom-value decoding confirm their contents. The supplied original assets remain untouched.
+  A checksum-verified upstream retoc 0.1.5 also packed the generated assets as UE5.6 IoStore and verified the container,
+  including its streamed mesh bulk data. This is an asset/build check, not a live battle-rendering test.
+  Verified the published ZIP's SHA-256, exact commit/run provenance and all 28 managed manifest entries against source.
+- First complete candidate to verified download: **10m08s**, including local checks, corrections, waiting and package
+  verification. Windows CI took **6m34s**, using **10m06s** of runner time. Joined the automatic push run; no extra build.
 
 ## Published Crystal Fina side-by-side comparison — 2026-10-15
 
