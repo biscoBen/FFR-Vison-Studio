@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Match Crystal Fina's battle refraction depth gate to the crystal's actual inherited world scale. Use an owned
+  dynamic material instance and the accepted cave's depth/scale reference; retain its surface settings and rotation.
+  Log the measured depth scale and calculated bias instead of selecting another fixed battle-only value.
+- Destroy the resonance aura as soon as its final fade finishes, and latch completion through native frame resets
+  and temporary animation-name gaps. A later genuine resonance can light normally. Preserve the accepted attack,
+  early glow, facing and 1.25-second seated hold. Extension 1.2.25; live battle clarity/flash confirmation is pending.
+
 ## Published Crystal Fina short attack and early resonance glow — 2026-10-16
 
 Code: [`1e679ba`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1e679baeca155bdd131852154f04f9017f18980c).

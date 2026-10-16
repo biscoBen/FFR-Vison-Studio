@@ -206,5 +206,6 @@ def runtime_config(unit, origin):
         'pack': name, 'mesh': asset(package(unit, 'SM_Studio_CrystalFina')),
         'material': asset(package(unit, 'MI_Studio_CrystalFina')), 'glow': asset(glow_package(unit)),
         'origin': origin, 'meshRatio': .12 / 2.7, 'turnRate': cave.TEST_CRYSTAL_TURN_RATE,
-        'glowAlpha': 2.0,
+        'glowAlpha': 2.0, 'glassReferenceBias': cave.TEST_CRYSTAL_PARAMETERS['RefractionDepthBias'],
+        'glassReferenceScale': cave.TEST_CRYSTAL_SCALE,
         'fall': motion.FALL, 'reform': motion.REFORM, 'flashes': list(motion.FLASHES)}

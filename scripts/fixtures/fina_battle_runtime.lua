@@ -1,7 +1,7 @@
 -- Executable contract fixture for documented Engine/SpriteStudio APIs.
 -- It validates scope, timing and cleanup, not actual Unreal rendering.
 local config = require('config').fina
-messages, meshes, glows, time = {}, {}, {}, 0
+messages, meshes, glows, materials, time = {}, {}, {}, {}, 0
 local function obj(t)
     t=t or {}; t.IsValid=function(s) return not s.invalid end; return t
 end
@@ -20,7 +20,16 @@ local function component()
     function o:SetGenerateOverlapEvents(v) assert(not v) end
     function o:SetCastShadow(v) assert(not v) end
     function o:SetStaticMesh(a) assert(a.path==config.mesh); return true end
-    function o:SetMaterial(i,a) assert(i==0 and a.path==config.material) end
+    function o:CreateDynamicMaterialInstance(i,a,label)
+        assert(i==0 and a.path==config.material and label:ToString()=='StudioFinaGlass')
+        local m=obj({source=a})
+        function m:SetScalarParameterValue(key,value) self[key:ToString()]=value end
+        materials[#materials+1]=m; return m
+    end
+    function o:K2_GetComponentScale()
+        local p=sprite.parentScale or {X=1,Y=1,Z=1}
+        return {X=self.scale.X*p.X,Y=self.scale.Y*p.Y,Z=self.scale.Z*p.Z}
+    end
     function o:K2_AttachToComponent(parent,socket) self.parent=parent; self.socket=socket:ToString(); return true end
     function o:K2_SetRelativeLocation(v) self.location=v end
     function o:SetRelativeScale3D(v) self.scale=v end
@@ -30,7 +39,7 @@ local function component()
     function o:SetWorldScale3D(v) self.worldScale=v end
     function o:SetVariableFloat(k,v) self[k:ToString()]=v end
     function o:SetVariableVec3(k,v) self[k:ToString()]=v end
-    function o:Activate(reset) assert(not reset); self.active=true end
+    function o:Activate(reset) assert(not reset); self.active=true; self.activationAlpha=self['User.NiagaraAlpha'] end
     return o
 end
 function actor:AddComponentByClass(class,manual,transform,deferred)
@@ -108,13 +117,22 @@ function run_fina_tests()
     sprite.frame=config.reform-30; tick()
     assert(#glows==1 and glows[1]['User.NiagaraAlpha']==.5, 'Reuse warm particles for reformation')
     sprite.frame=config.reform; tick(); assert(meshes[1].visible and glows[1]['User.NiagaraAlpha']==1)
-    sprite.frame=config.flashes[2][4]; tick(); assert(not glows[1].invalid and glows[1]['User.NiagaraAlpha']==0)
+    sprite.frame=config.flashes[2][4]; tick(); assert(glows[1].invalid, 'Destroy immediately after final fade')
+    -- Native cleanup can reset the frame, or expose a stale/missing name.
+    -- Neither may restart the first flash on the returning battle actor.
+    sprite.frame=0; tick(); assert(#glows==1)
+    sprite.namesUnavailable=true; tick(); sprite.namesUnavailable=false; tick(); assert(#glows==1)
+    sprite.frame=20; tick(); assert(#glows==1)
     actor.bHidden=true; tick(); assert(not meshes[1].visible and glows[1].invalid)
     actor.bHidden=false; sprite.playing='idle'; tick(); assert(meshes[1].visible)
     -- Direct entry (without preparation) must also light immediately, and an
     -- interrupted resonance must not leave its aura behind in idle/damage.
     sprite.playing='LB1'; sprite.frame=0; tick(); assert(#glows==2 and glows[2]['User.NiagaraAlpha']==1)
     sprite.playing='damage'; tick(); assert(glows[2].invalid)
+    -- A later real preparation must reset the completion latch normally.
+    sprite.playing='lb1_before'; sprite.frame=1; tick(); assert(#glows==3 and glows[3].active)
+    sprite.playing='LB1'; sprite.frame=config.flashes[2][4]; tick(); assert(glows[3].invalid)
+    sprite.frame=0; tick(); assert(#glows==3)
     sprite.SsProject=obj({GetFullName=function() return 'OtherVision' end}); tick()
     assert(meshes[1].invalid, 'Remove owned components when the model changes')
     assert(not table.concat(messages):find('Presentation stopped',1,true))

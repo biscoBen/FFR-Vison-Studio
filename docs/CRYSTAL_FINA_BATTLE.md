@@ -31,7 +31,7 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 `183.5/2.7` sprite pixels. `NULL_Aura` follows the body's center throughout descent and recovery. `NULL_Crystal`
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. The accepted runtime explicitly turns the real mesh; the SS6 socket alone does not supply world yaw.
 
-## Direct battle runtime (extension 1.2.24)
+## Direct battle runtime (extension 1.2.25)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -65,10 +65,23 @@ JSON-to-JSON readback cannot detect fields omitted on both sides. Use `clone-pac
 name-map renames. Require the complete `.uexp` to remain byte-identical (117,357 bytes for this demo source), which
 preserves native variables, curves, bindings and VM. Keep the original game package untouched.
 
-The private battle material uses the **same scalar overrides as the accepted cave**, including
-`RefractionDepthBias=12`. The extra battle-only value of 24 removed distortion of nearby body pixels and was
-reported to make the casing look behind her. Remove that override rather than moving the mesh away from its
-verified center. This restores the accepted material, not a claim that the battle camera/lighting are identical.
+The private battle material retains the accepted cave's surface overrides and source shader. A fixed depth bias
+is insufficient when that same mesh is scaled in world units. The body/casing ratio is matched in sprite pixels,
+but battle UUPerPixel and inherited transforms affect physical thickness independently. The supplied screenshots
+confirm that identical fixed settings obscure the battle body more; they do not establish identical camera/lighting.
+
+Create one **owned dynamic material instance** from the private battle material. `K2_GetComponentScale` supplies
+actual inherited scale; SS6's local X is its depth direction (the sprite renders on YZ). Preserve the cave's soft-gate
+onset at the same normalized depth. From Unreal's `DistortionCommon.ush`, for positive bias `b`:
+`gate = saturate(D / max(1, clamp(b/2, 0, 50)) - b)`. Its onset is
+`b * max(1, min(b/2, 50))`. The accepted cave has `b=12`, onset=72 UU at mesh scale `.138`.
+Multiply 72 by `abs(meshWorldScale.X)/.138`, then invert that piecewise equation for the battle bias. For example,
+a measured depth scale `.42` gives `20.9347`, while the accepted `.138` retains exactly 12. Include both native
+range caps; do not choose another fixed value between the former 12/24 experiments. Update only when scale changes
+and log the measured scale/reference/bias for live verification. Opacity, Fresnel, facet/wave settings, geometry,
+body scale and the cave itself stay intact. The model matches depth onset, not the entire camera-dependent shader;
+live confirmation of body clarity remains necessary. Battle and field lighting/reflection colors can differ.
+
 Both native field and battle sprite materials use masked rendering, so translucent sprite sorting is not an
 established cause of the difference. Preserve the battle sprite material's blink/stone/dissolve behavior.
 
@@ -90,6 +103,8 @@ Source inspected:
 - [SpriteStudio component implementation](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/Component/SsPlayerComponent.cpp)
 - [SS6 attribute decoder (legacy flips ignored; image flips supported)](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/SSSDK/ssplayer_animedecode.cpp)
 - [SpriteStudio reflected signatures](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Public/Component/SsPlayerComponent.h)
+- [PrimitiveComponent reflected MID API](https://github.com/chenyong2github/UnrealEngine/blob/5.3/Engine/Source/Runtime/Engine/Classes/Components/PrimitiveComponent.h): CreateDynamicMaterialInstance owns/applies the instance to its mesh.
+- [MaterialInstanceDynamic reflected scalar API](https://github.com/chenyong2github/UnrealEngine/blob/5.3/Engine/Source/Runtime/Engine/Classes/Materials/MaterialInstanceDynamic.h): SetScalarParameterValue updates only that instance.
 - [UE4SS LuaUObject.cpp at the installed e3ba1016 version](https://github.com/UE4SS-RE/RE-UE4SS/blob/e3ba1016/UE4SS/src/LuaType/LuaUObject.cpp): non-struct out parameters are written into caller-supplied tables under their reflected parameter names.
 
 The user's 2026-10-16 diagnostic log confirms the installed mod starts, matches the correct private Fina project,
@@ -142,7 +157,7 @@ The labeled Studio preview consumes the same supported track. The seated hold is
 | 210–246 | Fade the warm system back in |
 | 246–258 | Hold full brightness through reformation |
 | 258 | Restore crystal and floating pose |
-| 258–282 | Fade glow out; cleanup when resonance ends or is interrupted |
+| 258–282 | Fade glow out, then immediately destroy the aura and latch completion |
 
 Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
 activation off. Its attachment is valid during **preparation as well as LB1**; the former preparation track parked
@@ -150,8 +165,11 @@ it at -10000 pixels, which would put an early effect offscreen. Activate with `U
 owned component's `User.Alpha` to 2 for a brighter body glow, then follow the shared four-key envelope with the
 actual LB1 frame. The native intro's particle curves still provide the build-up; the effect now has more than two
 seconds before descent, instead of being cold-started only 12 frames before it. Keep one system alive across the
-seated interval to avoid a second cold start at reformation. Clear it on idle, interruption, hidden actors or model
-changes. `User.EffectPosition=0` replaces the source +80 UU offset; `User.LightPower=0` suppresses floor lighting.
+seated interval to avoid a second cold start at reformation. Destroy it immediately when the last fade ends at frame 282, and latch completion until a genuine later
+resonance starts. Native cleanup lasts beyond the 432-frame body; a late reset/wrap must never replay the first
+flash. Temporary animation-name gaps retain the known phase/completion state. Create any replacement system with
+its **current** envelope alpha before activation, so an expired system recreated during the zero-alpha seated
+interval cannot emit a one-frame full-strength flash. Clear it on idle, interruption, hidden actors or model changes. `User.EffectPosition=0` replaces the source +80 UU offset; `User.LightPower=0` suppresses floor lighting.
 All native VM/particle bytes and source effects remain intact. The source Niagara's opaque metadata must still be
 preserved through native cloning, never a lossy JSON roundtrip.
 

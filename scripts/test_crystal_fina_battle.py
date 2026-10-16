@@ -74,6 +74,19 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute('sprite.namesUnavailable=true; tick(); assert(#meshes==1 and meshes[1].visible); '
                     'assert(not meshes[1].invalid); sprite.namesUnavailable=false; run_fina_tests()')
 
+    def test_expired_seated_glow_restarts_invisible_and_stays_gone_after_final_fade(self):
+        lua = self.runtime()
+        lua.execute("""
+            tick(); sprite.playing='lb1_before'; tick()
+            sprite.playing='LB1'; sprite.frame=183; glows[1].invalid=true; tick()
+            assert(#glows==2 and glows[2].active and glows[2].activationAlpha==0)
+            sprite.frame=282; tick(); assert(glows[2].invalid)
+            sprite.frame=0; tick(); assert(#glows==2)
+            sprite.playing='Idle'; tick()
+            sprite.playing='lb1_before'; tick()
+            assert(#glows==3 and glows[3].activationAlpha==1)
+        """)
+
     def test_runtime_config_uses_the_current_private_assets_and_shortened_hold(self):
         cfg = battle.runtime_config(UNIT, {'X': 1, 'Y': 2, 'Z': 3})
         self.assertEqual(cfg['id'], UNIT['id'])
@@ -81,9 +94,23 @@ class FinaBattleTests(unittest.TestCase):
         self.assertNotIn('cast', cfg)
         self.assertNotIn('castFrames', cfg)
         self.assertEqual(cfg['glowAlpha'], 2.0)
+        self.assertEqual(cfg['glassReferenceBias'], 12.0)
+        self.assertAlmostEqual(cfg['glassReferenceScale'], .138)
         self.assertEqual(cfg['reform'] - motion.SEAT, 75)
         job = {'asset': 'unchanged'}
         self.assertIs(battle.prepare_job(job, [UNIT], lambda _: 1), job)
+
+    def test_battle_glass_depth_gate_tracks_world_scale_without_touching_source_material(self):
+        lua = self.runtime()
+        # Include small/large scales to exercise both native depth-range caps.
+        for scale in (.002, .138, .42, 20):
+            with self.subTest(scale=scale):
+                lua.execute(f'sprite.parentScale={{X={scale}/.12,Y=99,Z=99}}; tick()')
+                bias = lua.globals().materials[1]['RefractionDepthBias']
+                onset = bias * max(1, min(bias*.5, 50))
+                self.assertAlmostEqual(onset, 72 * scale / .138)
+        lua.execute('assert(#materials==1 and materials[1].source.path==require("config").fina.material)')
+        self.assertTrue(any('Glass depth scale=' in line for line in lua.globals().messages.values()))
 
     def test_skill_motion_duration_uses_release_window_without_imported_csv(self):
         import _ffr_animation_repair as repair
