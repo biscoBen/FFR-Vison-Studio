@@ -11,23 +11,18 @@ through the cave entrance or portal crystal. Scene placement and interaction rul
 [SCENE_PLACEMENT.md](SCENE_PLACEMENT.md). Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
 hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
 
-For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle,
-reuses the same vision/cave/reward, and displays Fina's native introductory floating pose inside private copies of the
-Sanctum crystal mesh and material. **Solid casing check** appears below the test switch and starts on, including
-with older settings. It uses the original opaque Sanctum material to check whether the casing is drawing; Fina may
-be obscured during this test. Turn it off to compare the current experimental transparent glass. The private mesh,
-size, placement and acquisition stay the same in both modes. **Animate crystal casing** independently enables the
-added turning sequence and starts off for both new and older settings. The casing is attached to the grounded foot
-component, as in the first visible solid version. Live testing now confirms both the solid casing and glass with Fina
-inside are visible when added rotation is off. The glass material uses stronger surface reflections and
-depth-gated refraction with the approved settings across the entire casing. The extra tip material was removed after
-it rendered dark end caps; the native single-section mesh is restored. Live testing confirms the corrected turn works.
-Leave **Solid casing check off** and turn **Animate crystal casing on**.
-Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
-and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF.
-The restored uniform tips still need an in-game check while spinning.
-[Verified test package / run 38826297629](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38826297629/Sephira-Studio-Test.zip)
-(code `9e70734`, published 2026-10-15).
+For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle
+and reuses the same vision, cave and reward. The original imported Crystal Fina appears beside her native introductory
+floating pose inside rotating Sanctum glass, at the original sprite's previous scale and floating height. The old
+reference has no acquisition prompt or separate reward; both displays follow the same ownership condition.
+
+The test always uses the approved transparent glass with rotation on. **Solid casing check** and **Animate crystal
+casing** have been removed; their saved values are ignored. The user has confirmed the current glass, tips and rotation
+look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.16.
+Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
+The new side-by-side spacing still needs an in-game check.
+[Verified test package / run 38829455821](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38829455821/Sephira-Studio-Test.zip)
+(code `aee9e8c`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

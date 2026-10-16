@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina side-by-side comparison — 2026-10-15
+
+Code: [`aee9e8c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aee9e8c6411a5516b11a31a93406bc64aeb4b0a8).
+[Verified Windows test release / run 38829455821](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38829455821).
+
 - Crystal Fina Test now shows the original imported Crystal Fina beside the native introductory Fina in rotating
   Sanctum glass, using the old sprite's original material, size and floating offset. The comparison has a separate
   streamed NPC level and asset identity, follows the same ownership condition and has no acquisition prompt or reward.
@@ -19,6 +24,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   uses the approved transparent glass and working rotation; accept/discard those old settings during migration.
   Keep the original cave and Test switches mutually exclusive. Bundled extension 1.2.16. Comparison spacing needs a
   live check; the current glass and rotation are user-approved and their asset generators are unchanged.
+- Validation: clean analysis, 244 Flutter checks (one skip), the separate fresh frozen-engine Windows startup check,
+  347 Python checks (Windows: five skips; Linux: four), bundle verification, 12 launcher checks and 10 import checks
+  passed. Tests cover distinct old/new sprite identities, original scale/pose/material, ownership visibility, a single
+  grant, fixed rotation and migration from the removed switches. Strict native roundtrips pass for the glass, mesh,
+  turn sequence and both casing attachment graphs; their asset binaries match the previous approved version exactly.
+  Verified the ZIP's SHA-256, commit/run provenance and all 26 manifest entries plus the manifest against source.
+  Side-by-side spacing still needs an in-game check.
+- First complete candidate to verified download: **7m18s**, including local checks, waiting and
+  verification. Windows CI took **5m37s**, using **9m12s** of runner time.
+  Reused the automatic push run; no extra build dispatched.
 
 ## Published uniform Crystal Fina glass restoration — 2026-10-15
 
