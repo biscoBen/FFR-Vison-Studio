@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Slow Crystal Fina's normal attack phases to 80% speed (25% more time) together with the linked native
+  action timelines, hit/effect sequence and sound player. Preserve damage values, accepted glass/refraction,
+  resonance, and the 1.25-second seated hold. Restore original rates on recovery, missing jobs or cleanup;
+  preserve native speed when no linked clock is available. Extension 1.2.27, preview native-fina-9.
+- Reflected job/owner fields are checked against the supplied game mapping. Executable runtime fixtures cover
+  matching event/body clocks, unrelated targets, linked owners, game speed, noncompounding updates, recovery,
+  missing clocks and API failure. Live native clock association and perceived timing still need an in-game test.
+
 ## Published Crystal Fina body refraction and single resonance glow — 2026-10-16
 
 Code: [`eba9b3c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/eba9b3c93457d1b7b709694505d8ae319f1366a1).

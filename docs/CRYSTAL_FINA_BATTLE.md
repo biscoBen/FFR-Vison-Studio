@@ -195,3 +195,28 @@ crystal hide/return, hidden actors, project swaps and cleanup. They cannot prove
 Windows checks cover the frozen engine and managed runtime resource. Live use after the correction still needs checking the
 actual crystal, glow, shot direction and battle completion; use the automatic `[FFR Fina]` log if anything fails.
 Collectors continue to write to `Downloads\FFR Mod`.
+
+
+## Gentler normal attack timing (2026-10-16)
+
+After accepting the glass and single glow, the user requested a slightly slower normal attack and matching damage.
+The private SS6 phases remain 30 frames each; the runtime applies **0.8×** to both the body and the owning action's
+clocks (25% longer). Studio's concatenated preview uses 48 fps to represent the same rate.
+
+The supplied mapping declares `CPP_BtlJobSkill.m_pActionUnit`, `m_pLinkUnit`, `m_TimelineList`, and inherited
+`CPP_BtlJob.m_ActionUnitList`, `m_pLevelSequenceActor`, `m_pSoundSequenceActor`. Match the private Fina actor
+through owner/link/action lists; never through targets. Retiming uses `UTimelineComponent.SetPlayRate` and
+`UMovieSceneSequencePlayer.SetPlayRate` via the level/sound actors' `GetSequencePlayer`. No damage event is
+removed, duplicated or synthesized, and no global speed or party data is changed.
+
+Clocks and the sprite retain their native base rate, including existing battle speed. Repeated scans do not
+multiply the slowdown. Restore only our own applied value on recovery, loss of association or cleanup. Without
+a linked native clock, keep the body at native speed; an unsupported timing API disables only timing and leaves
+the approved crystal/glow running. Logs distinguish a linked slowdown from that fallback. The mapping verifies
+property names, not live job relationships: the actual game's associations and perceived hit alignment remain
+an in-game validation requirement. Resonance is excluded by its animation names.
+
+Verification for this candidate: static analysis, 20 focused Flutter tests and 377 Python checks pass (four Linux
+skips). Real make-ss6/readback verifies native preparation/release at 60 fps and the preview concatenation at
+48 fps; emitted runtime configuration carries 0.8× and the unchanged single glow/258-frame reformation. Native
+mesh/material/glow construction and IoStore pack verification pass. These do not simulate live game scheduling.

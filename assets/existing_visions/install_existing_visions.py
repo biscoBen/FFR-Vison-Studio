@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.26'
+VERSION = '1.2.27'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -51,7 +51,7 @@ def validate_preview_archive(raw):
         if len(archive.namelist()) != len(expected) or set(archive.namelist()) != expected:
             raise RuntimeError('Native Fina preview archive contents differ from the manifest.')
         manifest = json.loads(archive.read('manifest.json'))
-        if (manifest.get('schema') != 1 or manifest.get('presentation') != 'native-fina-8'
+        if (manifest.get('schema') != 1 or manifest.get('presentation') != 'native-fina-9'
                 or set(manifest.get('animations', {})) != {'idle', 'atk', 'limitatk'}):
             raise RuntimeError('Unsupported native Fina preview archive.')
         for name, entry in manifest['animations'].items():

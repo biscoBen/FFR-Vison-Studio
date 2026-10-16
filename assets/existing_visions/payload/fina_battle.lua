@@ -1,6 +1,7 @@
 -- Direct battle-only presentation. SpriteStudio exposes named-part sockets;
 -- use an ordinary mesh component instead of an unverified Niagara renderer.
--- This changes no actor identity, party data, gameplay events or save state.
+-- This changes no actor identity, party data, damage values or save state.
+-- Normal action clocks and their body playback slow together, scoped to Fina.
 local config = require('config').fina
 if not config then return end
 local states, assets, queued, failed, scans = {}, nil, false, false, 0
@@ -33,7 +34,17 @@ local function destroy(o, actor)
         o:K2_DestroyComponent(o)
     end
 end
+local function restore_rates(s)
+    for _, entry in pairs(s.rates or {}) do
+        -- Restore only our own value; preserve a later native/other-mod change.
+        if valid(entry.object) and math.abs(entry.object:GetPlayRate()-entry.applied) < .00001 then
+            entry.object:SetPlayRate(entry.original)
+        end
+    end
+    s.rates = {}
+end
 local function clear(s)
+    restore_rates(s)
     destroy(s.glow, s.actor); s.glow = nil
     destroy(s.mesh, s.actor); s.mesh = nil; s.material = nil
 end
@@ -210,6 +221,96 @@ local function glow(s, frame, visible)
     -- or when the casing returns. Native curves provide the early build-up.
     s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), strength)
 end
+local action_motions = {command=true, magic_idle=true, magic_attack=true}
+local function is_action(n)
+    return n and (action_motions[n] or n:match('^attack_') or n:match('^m_attack') or n:match('^ffbe_'))
+end
+local function same_actor(a, b)
+    return valid(a) and a:GetFullName() == b:GetFullName()
+end
+local function each(array, callback)
+    array:ForEach(function(_, value) callback(value:get()) end)
+end
+local function action_job(job, actor)
+    -- These are reflected CPP_BtlJob/CPP_BtlJobSkill owner/link properties in
+    -- the supplied game mapping. Target lists are deliberately never owners.
+    if same_actor(job.m_pActionUnit, actor) or same_actor(job.m_pLinkUnit, actor) then return true end
+    local found = false
+    each(job.m_ActionUnitList, function(unit) if same_actor(unit, actor) then found = true end end)
+    return found
+end
+local function action_clocks(job)
+    local clocks = {}
+    each(job.m_TimelineList, function(clock)
+        if valid(clock) then
+            assert(clock:IsA(native('Engine.TimelineComponent')), 'Unsupported native action clock: ' .. clock:GetFullName())
+            clocks[#clocks+1] = clock
+        end
+    end)
+    -- Authored skill events (including damage) and their sound sequence must
+    -- share the slowdown. Native jobs may instead use only TimelineComponents.
+    for _, field in ipairs({'m_pLevelSequenceActor', 'm_pSoundSequenceActor'}) do
+        local actor = job[field]
+        if valid(actor) then
+            local player = actor:GetSequencePlayer()
+            if valid(player) then clocks[#clocks+1] = player end
+        end
+    end
+    return clocks
+end
+local function adjust_rate(s, object, active)
+    local key = object:GetFullName()
+    local previous = (s.rates or {})[key]
+    local current = object:GetPlayRate()
+    if type(current) ~= 'number' or current <= 0 or current ~= current then return false end
+    local original = previous and math.abs(current-previous.applied) < .00001 and previous.original or current
+    local applied = original * config.attackPlayRate
+    s.rates = s.rates or {}
+    s.rates[key] = {object=object, original=original, applied=applied}
+    active[key] = true
+    if math.abs(current-applied) >= .00001 then object:SetPlayRate(applied) end
+    return true
+end
+local function attack_timing(s, n, visible)
+    if not s.unit or not visible or not is_action(n) then restore_rates(s); s.timingLogged = false; return end
+    local clocks, seen = {}, {}
+    for _, job in ipairs(FindAllOf('CPP_BtlJobSkill') or {}) do
+        if valid(job) and action_job(job, s.actor) then
+            for _, clock in ipairs(action_clocks(job)) do
+                local key = clock:GetFullName()
+                if not seen[key] then seen[key] = true; clocks[#clocks+1] = clock end
+            end
+        end
+    end
+    -- Never slow just the picture when the actual hit clock is unavailable.
+    if #clocks == 0 then
+        restore_rates(s)
+        if not s.timingLogged then log('Attack timing: no linked native clock yet; preserving native speed'); s.timingLogged = true end
+        return
+    end
+    -- Pause/reverse or incomplete clocks must not create a partial slowdown.
+    for _, clock in ipairs(clocks) do
+        local rate = clock:GetPlayRate()
+        if type(rate) ~= 'number' or rate <= 0 or rate ~= rate then restore_rates(s); return end
+    end
+    local bodyRate = s.sprite:GetPlayRate()
+    if type(bodyRate) ~= 'number' or bodyRate <= 0 or bodyRate ~= bodyRate then restore_rates(s); return end
+    local active, count = {}, 0
+    for _, clock in ipairs(clocks) do if adjust_rate(s, clock, active) then count = count+1 end end
+    if count > 0 then
+        adjust_rate(s, s.sprite, active)
+        if s.timingLogged ~= 'slowed' then
+            log('Attack timing: ' .. count .. ' linked native clocks and body at ' .. config.attackPlayRate .. 'x')
+            s.timingLogged = 'slowed'
+        end
+    end
+    for key, entry in pairs(s.rates or {}) do
+        if not active[key] then
+            if valid(entry.object) and math.abs(entry.object:GetPlayRate()-entry.applied) < .00001 then entry.object:SetPlayRate(entry.original) end
+            s.rates[key] = nil
+        end
+    end
+end
 local function update(s)
     local sprite, actor = s.sprite, s.actor
     local n, time = motion(s), now(sprite)
@@ -223,6 +324,13 @@ local function update(s)
             s.glowFinished = false
         end
         s.last = n
+    end
+    if not s.timingFailed then
+        local ok, error = pcall(attack_timing, s, n, visible)
+        if not ok then
+            pcall(restore_rates, s); s.timingFailed = true
+            log('Attack timing unavailable; native speed retained: ' .. tostring(error))
+        end
     end
     local frame = sprite:GetPlayFrame()
     local observed = n or s.last
@@ -259,6 +367,7 @@ local function tick()
     end
 end
 assert(config.schema == 1, 'Unsupported Fina battle runtime config')
+assert(type(config.attackPlayRate) == 'number' and config.attackPlayRate >= .5 and config.attackPlayRate <= 1, 'Invalid Fina attack speed')
 LoopAsync(33, function()
     if failed then return true end
     if not queued then
@@ -275,4 +384,4 @@ LoopAsync(33, function()
     end
     return false
 end)
-log('Battle presentation ready (body-ray refraction; single resonance glow); waiting for custom Crystal Fina')
+log('Battle presentation ready (body-ray refraction; single resonance glow; linked attack timing); waiting for custom Crystal Fina')

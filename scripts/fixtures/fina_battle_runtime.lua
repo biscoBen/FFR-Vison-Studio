@@ -64,8 +64,8 @@ function sprite:GetOwner() return actor end
 function sprite:DoesSocketExist(n) return n:ToString()=='NULL_Crystal' or n:ToString()=='NULL_Aura' end
 function sprite:IsVisible() return true end
 function sprite:GetPlayFrame() return self.frame end
-function sprite:GetPlayRate() return 1 end
-function sprite:SetPlayRate(rate) assert(rate==1) end
+function sprite:GetPlayRate() return self.rate or 1 end
+function sprite:SetPlayRate(rate) self.rate=rate end
 function sprite:GetPlayingAnimationName(pack,animation)
     -- UE4SS names these fields from the game's UFunction, not upstream's
     -- header. The supplied log proves OutAnimationName was absent. These
@@ -80,7 +80,29 @@ function sprite:Play(pack,clip,frame,rate,loops,roundtrip)
 end
 local decoy=obj({SsProject=obj({GetFullName=function() return 'OtherVision' end})})
 function decoy:GetFullName() return 'OtherComponent' end
-function FindAllOf() return {sprite,decoy} end
+jobs = {}
+function FindAllOf(class)
+    if class=='CPP_BtlJobSkill' then return jobs end
+    return {sprite,decoy}
+end
+function array(values)
+    return {ForEach=function(_,fn) for i,v in ipairs(values) do fn(i,{get=function() return v end}) end end}
+end
+function clock(label,kind)
+    local o=obj({rate=1,kind=kind or 'Engine.TimelineComponent'})
+    function o:GetFullName() return label end
+    function o:GetPlayRate() return self.rate end
+    function o:SetPlayRate(v) self.rate=v end
+    function o:IsA(c) return c.kind==self.kind end
+    return o
+end
+function sequence(player)
+    return obj({GetSequencePlayer=function() return player end})
+end
+function job(owner,clocks,main,sound)
+    return obj({m_pActionUnit=owner,m_ActionUnitList=array({}),m_TimelineList=array(clocks or {}),
+                m_pLevelSequenceActor=main and sequence(main),m_pSoundSequenceActor=sound and sequence(sound)})
+end
 local loaded = {}
 function LoadAsset() error('Registry-only loader cannot resolve private mod assets') end
 function StaticFindObject(path)

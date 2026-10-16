@@ -71,6 +71,85 @@ class FinaBattleTests(unittest.TestCase):
         lua = self.runtime()
         lua.execute('run_fina_tests()')
 
+    def test_attack_slows_actual_event_clocks_and_body_together_without_compounding(self):
+        lua = self.runtime()
+        lua.execute("""
+            hit=clock('Hit'); effect=clock('Effect','sequence'); sound=clock('Sound','sequence')
+            other=clock('OtherActor'); targetJob=job(nil,{other}); targetJob.m_TargetUnitList=array({actor})
+            jobs={job(actor,{hit},effect,sound),targetJob}
+            sprite.playing='magic_idle'; tick()
+            for _,c in ipairs({hit,effect,sound,sprite}) do assert(math.abs(c:GetPlayRate()-.8)<.00001) end
+            assert(other:GetPlayRate()==1, 'Being a target must not slow another actor')
+            for _=1,20 do tick() end
+            assert(hit:GetPlayRate()==.8 and sprite:GetPlayRate()==.8, 'No repeated multiplication')
+            -- Integrate the actual event and body clocks: the 30-frame shot
+            -- boundary moves from .5s to .625s for both, not only the picture.
+            local body,events=0,0
+            for _=1,75 do body=body+sprite:GetPlayRate()/120; events=events+hit:GetPlayRate()/120 end
+            assert(math.abs(body-.5)<.000001 and math.abs(events-.5)<.000001)
+            sprite.playing='magic_attack'; sprite.rate=1; tick()
+            assert(sprite.rate==.8, 'Native release can assign a fresh play rate')
+            sprite.playing='Idle'; tick()
+            for _,c in ipairs({hit,effect,sound,sprite}) do assert(c:GetPlayRate()==1) end
+            sprite.playing='LB1_before'; tick(); sprite.playing='LB1'; tick()
+            assert(sprite:GetPlayRate()==1 and hit:GetPlayRate()==1, 'Resonance stays at its accepted speed')
+        """)
+
+    def test_attack_finds_linked_vision_and_preserves_existing_game_speed(self):
+        lua = self.runtime()
+        lua.execute("""
+            hit=clock('Hit'); hit.rate=2; sprite.rate=2
+            linked=job(nil,{hit}); linked.m_pLinkUnit=actor; jobs={linked}
+            sprite.playing='magic_idle'; tick(); assert(hit.rate==1.6 and sprite.rate==1.6)
+            hit.rate=3; tick(); assert(math.abs(hit.rate-2.4)<.00001)
+            sprite.playing='Idle'; tick(); assert(hit.rate==3 and sprite.rate==2)
+            linked.m_pLinkUnit=nil; linked.m_ActionUnitList=array({actor}); sprite.playing='magic_idle'; tick()
+            assert(math.abs(hit.rate-2.4)<.00001)
+            hit.rate=4; sprite.playing='Idle'; tick()
+            assert(hit.rate==4, 'Cleanup preserves a later native or other-mod rate')
+        """)
+
+    def test_missing_clock_never_slows_body_alone_and_dropped_jobs_restore_rates(self):
+        lua = self.runtime()
+        lua.execute("""
+            sprite.playing='magic_idle'; tick(); assert(sprite:GetPlayRate()==1)
+            hit=clock('Hit'); jobs={job(actor,{hit})}; tick()
+            assert(hit.rate==.8 and sprite.rate==.8)
+            jobs={}; tick(); assert(hit.rate==1 and sprite.rate==1)
+            jobs={job(actor,{hit})}; tick(); assert(hit.rate==.8)
+            sprite.SsProject.invalid=true; tick(); assert(hit.rate==1 and sprite.rate==1)
+        """)
+
+    def test_timing_api_failure_restores_clocks_and_keeps_accepted_presentation(self):
+        lua = self.runtime()
+        lua.execute("""
+            hit=clock('Hit'); bad=clock('Bad')
+            function bad:SetPlayRate(v) error('Unavailable API') end
+            jobs={job(actor,{hit,bad})}; sprite.playing='magic_idle'; tick()
+            assert(hit.rate==1 and sprite:GetPlayRate()==1)
+            assert(#meshes==1 and not meshes[1].invalid and meshes[1].visible)
+            sprite.playing='LB1_before'; tick(); assert(#glows==1 and glows[1].active)
+        """)
+
+    def test_paused_clock_never_leaves_a_partial_slowdown(self):
+        lua = self.runtime()
+        lua.execute("""
+            hit=clock('Hit'); paused=clock('Paused'); paused.rate=0
+            jobs={job(actor,{hit,paused})}; sprite.playing='magic_idle'; tick()
+            assert(hit.rate==1 and paused.rate==0 and sprite:GetPlayRate()==1)
+            paused.rate=1; tick(); assert(hit.rate==.8 and sprite.rate==.8)
+            paused.rate=0; tick(); assert(hit.rate==1 and sprite.rate==1 and paused.rate==0)
+        """)
+
+    def test_unknown_native_clock_prevents_partial_retiming(self):
+        lua = self.runtime()
+        lua.execute("""
+            unknown=clock('Unknown','UnsupportedClock'); effect=clock('Effect','sequence')
+            jobs={job(actor,{unknown},effect)}; sprite.playing='magic_idle'; tick()
+            assert(unknown.rate==1 and effect.rate==1 and sprite:GetPlayRate()==1)
+            assert(not meshes[1].invalid)
+        """)
+
     def test_runtime_reads_game_parameter_names_instead_of_assuming_upstream_spelling(self):
         for fields in (('OutAnimPackName', 'OutAnimationName'), ('AnimationPack', 'Animation'),
                        ('Second', 'First')):
@@ -103,6 +182,7 @@ class FinaBattleTests(unittest.TestCase):
         self.assertNotIn('cast', cfg)
         self.assertNotIn('castFrames', cfg)
         self.assertEqual(cfg['glowAlpha'], 2.0)
+        self.assertEqual(cfg['attackPlayRate'], .8)
         self.assertEqual(cfg['glassFallbackBias'], 12.0)
         self.assertEqual(cfg['bodyRefraction'], .2)
         self.assertEqual(cfg['flashes'], [(0, 0, 134, 164)])
@@ -251,6 +331,7 @@ class FinaBattleTests(unittest.TestCase):
                              ['openarmopeneye2', 'curlup2', 'magicattack6'])
         self.assertEqual(clips['Studio_FinaCast']['frameCount'], 60)
         self.assertIn([30, 'shot_start'], clips['Studio_FinaCast']['parts']['part_0']['Cell'])
+        self.assertEqual(clips['Studio_FinaCast']['fps'], 48)
         self.assertEqual(clips['LB1_before']['parts']['NULL_Aura']['Posy'], [[0, 183.5 / 2.7]])
         self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Imgfliph'], [[0, 1.0]])
         self.assertEqual(clips['LB1']['parts']['part_0']['Imgfliph'], [[0, 1.0], [258, 0.0]])
