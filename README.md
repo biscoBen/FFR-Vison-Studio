@@ -17,30 +17,27 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. Extension
-1.2.26 preserves the accepted short attack, early bright glow, mirrored actions and **1.25-second seated hold**.
+Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. The user
+confirmed the body refraction and single resonance glow look right. Extension 1.2.27 adds a gentler normal attack:
+her body and linked native action clocks run at 80% speed (25% longer), moving the damage/effects and sound with
+the shot. Damage values, crystal settings, resonance and the **1.25-second seated hold** are preserved.
 
-The extra floor flash was the authored return pulse, which started while she was seated. It is removed: only the
-initial glow runs through the fall, fading out and being hidden/destroyed at frame 164. The crystal returns without
-a second glow. The earlier cleanup-only change left that scheduled pulse intact.
-
-The uploaded diagnostic confirms the previous material code ran but changed bias only to 12.08664: its measured
-world-depth scale was nearly the cave's, disproving the large-depth-scale explanation. Battle refraction now uses
-camera rays against original native mesh triangles, sampling from head to feet and targeting 20% bending at the
-deepest probe. The original surface/geometry and background refraction remain. Logs include measured view depth,
-applied/read-back bias and camera FOV. This is a readability target using CPU geometry, not a GPU-depth measurement
-or an exact match to cave lighting. Live confirmation of its appearance remains pending.
+Only jobs belonging to the private Fina actor are eligible. Native battle speed is retained as the base rate,
+repeated scans do not compound it, and original rates return on recovery/cleanup. When no supported linked clock
+is available, keep the native speed so the body cannot drift behind the hit. The supplied mapping and executable
+fixtures verify the API/scope contracts; live clock association and perceived hit timing still need an in-game test.
 See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
-Windows validation, compilation and frozen-engine startup pass. The downloaded checksum/provenance and all 31
-managed resources match source. The runtime uses the existing UE4SS loader independently of cycling; no new loader
-is installed. Studio's refreshed preview (native-fina-8) remains a labeled lighting approximation.
+Windows validation, compilation and frozen-engine startup pass. Downloaded checksum/provenance and all 31 managed
+resources match source. The runtime uses the existing UE4SS loader independently of cycling; no new loader is
+installed. Studio's updated preview (native-fina-9) shows the 1.25-second normal cast; lighting is an approximation.
 The [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
 and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1)
-collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
+collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game. Its log distinguishes
+an applied linked-clock slowdown from the native-speed fallback.
 
-[Verified Crystal Fina body-refraction/single-glow update / run 38955704470](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38955704470/Sephira-Studio-Test.zip)
-(code `eba9b3c`, published 2026-10-16; extension 1.2.26). Update Studio, rebuild/install the mod and restart Resonance.
+[Verified Crystal Fina gentler-attack update / run 38964077148](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38964077148/Sephira-Studio-Test.zip)
+(code `7a97ee0`, published 2026-10-16; extension 1.2.27). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina gentler attack and matching clocks — 2026-10-16
+
+Code: [`7a97ee0`](https://github.com/biscoBen/FFR-Vison-Studio/commit/7a97ee07d7bfc3f1078d150be7f777b3c902f5f9).
+[Verified Windows test release / run 38964077148](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38964077148).
+
 - Slow Crystal Fina's normal attack phases to 80% speed (25% more time) together with the linked native
   action timelines, hit/effect sequence and sound player. Preserve damage values, accepted glass/refraction,
   resonance, and the 1.25-second seated hold. Restore original rates on recovery, missing jobs or cleanup;
@@ -18,6 +23,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Reflected job/owner fields are checked against the supplied game mapping. Executable runtime fixtures cover
   matching event/body clocks, unrelated targets, linked owners, game speed, noncompounding updates, recovery,
   missing clocks and API failure. Live native clock association and perceived timing still need an in-game test.
+- Local static analysis, 20 focused Flutter tests, 377 Python checks and native asset/readback/IoStore verification
+  pass. Windows validation and compilation pass for the same commit, including full Flutter/Python suites and
+  frozen-engine startup. Downloaded checksum, commit/run provenance and all 31 managed resources match source.
+- First complete candidate to verified download: **8m54s**, including a pause-clock
+  guard correction, checks, waiting and verification. Windows CI took **5m26s**, using
+  **8m57s** of runner time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published Crystal Fina body refraction and single resonance glow — 2026-10-16
 
