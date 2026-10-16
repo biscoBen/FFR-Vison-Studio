@@ -14,6 +14,10 @@ DESIGN_TABLE = 'Battle/Unit/DT_BtlUnitDesignParameter'
 AURA = 'Effect/07_EV/CMN/FinaCristalAuraParticle001/NS_EF_EV_CMN_FinaCristalAuraParticle'
 PREFIX = 'Chara/StudioCrystalFinaBattle/'
 BATTLE_SPRITE_SCALE = 2.7
+# Keep the approved cave surface, but protect the nearer battle body from
+# background distortion. Unreal's soft gate starts at bias * (bias/2): 288 UU
+# here, versus 72 UU for the cave's 12. Distant background still refracts.
+BATTLE_REFRACTION_DEPTH_BIAS = 24.0
 
 
 def selected(units):
@@ -34,22 +38,38 @@ def glow_package(unit):
     return 'Effect/StudioCrystalFinaBattle/' + str(unit['id']) + '/NS_Studio_CrystalFinaGlow'
 
 
-def glow_system(original, unit):
-    """Retain the native particle alpha curves, without lighting the floor."""
-    rel = glow_package(unit)
-    view = cave.private_level(original, '/Game/' + AURA, '/Game/' + rel)
-    for export in view['Exports']:
-        if export['ClassIndex'] < 0 and view['Imports'][-export['ClassIndex'] - 1]['ObjectName'] == 'NiagaraLightRendererProperties':
-            fields = [p for p in export['Data'] if p['Name'] == 'bIsEnabled']
-            if fields: fields[0].update(Value=False, IsZero=False)
-            else: export['Data'].append(cave.native_prop('bIsEnabled', False, 'BoolPropertyData'))
-    return rel, view
+def clone_glow(source, destination, unit, tool, usmap, run):
+    """Rename the native package without a lossy Niagara JSON roundtrip.
+
+    The JSON representation omits native NiagaraVariable names/offsets and
+    bindings. A native clone preserves their export bytes, curves and VM.
+    LightPower is suppressed on the owned component at runtime instead.
+    """
+    source, destination = Path(source), Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    run(tool + ['clone-package', str(source), str(destination), '/Game/' + AURA,
+                '/Game/' + glow_package(unit), Path(AURA).name + '=' + destination.stem, '--usmap', usmap])
+    original, built = source.with_suffix('.uexp'), destination.with_suffix('.uexp')
+    if not original.is_file() or not built.is_file() or original.read_bytes() != built.read_bytes():
+        raise ValueError('The native Crystal Fina glow export data changed during cloning.')
 
 
 def table_rows(view):
     exports = [e for e in view['Exports'] if isinstance(e.get('Table'), dict)]
     if len(exports) != 1: raise ValueError('Expected one native battle data table.')
     return exports[0]['Table']['Data']
+
+
+def soften_battle_glass(original, leaf):
+    """Change only the private battle depth gate; preserve cave/source assets."""
+    view = copy.deepcopy(original)
+    _, instance = cave.export(view, leaf)
+    parameters = cave.property_data(instance, 'ScalarParameterValues')['Value']
+    matches = [p for p in parameters if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
+    if len(matches) != 1:
+        raise ValueError('The approved glass refraction depth override is missing or ambiguous.')
+    cave.set_value(matches[0], 'ParameterValue', BATTLE_REFRACTION_DEPTH_BIAS)
+    return view
 
 
 def soft_path(owner, name, path):
@@ -130,8 +150,9 @@ def build(units, env):
     print(f'  Crystal Fina battle scales: sprite={scale:g}, attached effects={effect_scale:g} (explicit built row).')
     # Match the casing/body ratio approved in the field test. Battle sprite and
     # attachment scales are separate native design parameters.
-    glow_rel, glow = glow_system(source[AURA], unit)
-    assets = {glow_rel: glow, 'Datatable/' + DESIGN_TABLE: design}
+    assets = {'Datatable/' + DESIGN_TABLE: design}
+    clone_glow(legacy / ('FFRS/Content/' + AURA + '.uasset'), content / (glow_package(unit) + '.uasset'),
+               unit, tool, usmap, run)
     private_mesh, private_material = package(unit, 'SM_Studio_CrystalFina'), package(unit, 'MI_Studio_CrystalFina')
     for old, view in cave.test_crystal_assets(source).items():
         new = private_mesh if old == cave.TEST_MESH else private_material
@@ -142,6 +163,8 @@ def build(units, env):
             material = cave.property_data(slot, 'MaterialInterface')
             material['Value'] = cave.asset_import(result, material['Value'], '/Game/' + private_material)
             material['IsZero'] = False
+        else:
+            result = soften_battle_glass(result, Path(new).name)
         assets[new] = result
     unit_path = content / ('Datatable/' + UNIT_TABLE + '.uasset')
     assets['Datatable/' + UNIT_TABLE] = battle_table(decode(unit_path, 'built-battle-units'), unit)
@@ -174,7 +197,9 @@ def build(units, env):
     rename = 'summon' + str(unit['id']) + '=' + name
     run(tool + ['make-ss6', str(content / (old + '.uasset')), str(spec_path), str(dest),
                 '/Game/' + old, '/Game/' + rel, rename, '--usmap', usmap])
-    motion.verify_model(decode(dest, 'native-battle-model'), spec)
+    native_model = decode(dest, 'native-battle-model')
+    motion.verify_model(native_model, spec)
+    motion.verify_image_mirroring(native_model, spec)
     for suffix, payload in [('_tex', 'tex.bgra'), ('_normal', 'normal.bc5'), ('_mreo', 'mreo.bgra')]:
         run(tool + ['make-texture', str(content / (old + suffix + '.uasset')), str(work / payload),
                     str(w), str(h), str(content / (rel + suffix + '.uasset')),

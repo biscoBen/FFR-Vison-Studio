@@ -35,7 +35,7 @@ local function clear(s)
 end
 local function now(sprite) return native('Engine.Default__GameplayStatics'):GetTimeSeconds(sprite) end
 local function released(n)
-    return n == 'magic_attack' or n:match('^attack_') or n:match('^M_attack') or n:match('^FFBE_')
+    return n == 'magic_attack' or n:match('^attack_') or n:match('^m_attack') or n:match('^ffbe_')
 end
 local function motion(s)
     -- UE4SS puts out values under the game's reflected parameter names. The
@@ -48,16 +48,20 @@ local function motion(s)
     for field, value in pairs(outputs) do
         local text = name(value)
         fields[#fields + 1] = tostring(field) .. '=' .. text
-        if text == config.pack then pack = true
-        elseif playing and playing ~= text then ambiguous = true
-        else playing = text end
+        -- FName comparisons in Unreal are case-insensitive. The supplied
+        -- trace reports Idle, not idle; treating it as a new action cut the
+        -- full cast off at native recovery, before the turn/fire frames.
+        local canonical = text:lower()
+        if canonical == config.pack:lower() then pack = true
+        elseif playing and playing ~= canonical then ambiguous = true
+        else playing = canonical end
     end
     table.sort(fields)
     local signature = table.concat(fields, ', ')
     if #fields > 0 and not s.namesLogged then
         log('Animation output fields: ' .. signature); s.namesLogged = true
     end
-    if not pack or not playing or playing == '' or playing == 'None' or ambiguous then
+    if not pack or not playing or playing == '' or playing == 'none' or ambiguous then
         -- During initialization/model changes names may be unavailable. Keep
         -- the casing alive and retry; do not tear down every battle feature.
         if s.waiting ~= signature then log('Waiting for animation names: ' .. signature); s.waiting = signature end
@@ -66,7 +70,7 @@ local function motion(s)
     s.waiting = nil
     s.playing = playing
     -- Observe the renderer, not an actor's cached animation-name property.
-    return playing == config.cast and s.last or playing
+    return playing == config.cast:lower() and s.last or playing
 end
 local function create(sprite, actor, isUnit)
     -- A project can be assigned before its first animation is initialized.
@@ -94,7 +98,7 @@ local function create(sprite, actor, isUnit)
 end
 local function glow(s, frame, visible)
     local pulse, strength = nil, 0
-    if visible and s.last == 'LB1' then
+    if visible and s.last == 'lb1' then
         for i, interval in ipairs(config.flashes) do
             local first, peak, last = interval[1], interval[2], interval[3]
             if frame >= first and frame < last then
@@ -110,14 +114,18 @@ local function glow(s, frame, visible)
                 assets.glow, s.sprite, FName('NULL_Aura'), vec(0,0,0), {Pitch=0,Yaw=0,Roll=0}, 0, true, false, 0, false)
             assert(valid(s.glow), 'Could not spawn the body glow')
             s.glow:SetAbsolute(false, false, true); s.glow:SetWorldScale3D(vec(1,1,1))
-            s.glow:SetVariableFloat(FName('User.Alpha'), 0)
+            -- Native intro sequences animate NiagaraAlpha; Alpha stays at its
+            -- native baseline. Remove the intro's +80 UU position offset since
+            -- our socket already follows the body's center. Disable its lights.
+            s.glow:SetVariableVec3(FName('User.EffectPosition'), vec(0,0,0))
+            s.glow:SetVariableFloat(FName('User.LightPower'), 0)
+            s.glow:SetVariableFloat(FName('User.Alpha'), 1)
             s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), 0)
             s.glow:Activate(false)
             log('Resonance glow ' .. pulse .. ' at native frame ' .. math.floor(frame))
         end
     end
     if valid(s.glow) then
-        s.glow:SetVariableFloat(FName('User.Alpha'), strength)
         s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), strength)
     end
 end
@@ -148,7 +156,7 @@ local function update(s)
         else
             -- Native recovery/continuous-animation calls may restart a clip.
             -- Reapply the correct absolute frame, rather than its first pose.
-            if s.playing ~= config.cast then
+            if s.playing ~= config.cast:lower() then
                 assert(sprite:Play(FName(config.pack), FName(config.cast), frame, 1, 1, false), 'Native full cast unavailable')
             end
             sprite:SetPlayRate(1)
@@ -156,7 +164,7 @@ local function update(s)
     end
     local frame = sprite:GetPlayFrame()
     local observed = n or s.last
-    s.mesh:SetVisibility(visible and not (observed == 'LB1' and frame >= config.fall and frame < config.reform), true)
+    s.mesh:SetVisibility(visible and not (observed == 'lb1' and frame >= config.fall and frame < config.reform), true)
     -- SpriteStudio sockets expose in-plane rotation, not a full 3D spin.
     -- Rotate the actual component about its own vertical axis explicitly.
     s.mesh:K2_SetRelativeRotation({Pitch=0,Yaw=(time*config.turnRate)%360,Roll=0}, false, {}, true)

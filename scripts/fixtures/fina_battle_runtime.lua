@@ -29,6 +29,7 @@ local function component()
     function o:SetAbsolute(a,b,c) assert(not a and not b and c) end
     function o:SetWorldScale3D(v) self.worldScale=v end
     function o:SetVariableFloat(k,v) self[k:ToString()]=v end
+    function o:SetVariableVec3(k,v) self[k:ToString()]=v end
     function o:Activate(reset) assert(not reset); self.active=true end
     return o
 end
@@ -37,7 +38,7 @@ function actor:AddComponentByClass(class,manual,transform,deferred)
     assert(transform.Scale3D.X==1 and transform.Rotation.W==1)
     local mesh=component(); meshes[#meshes+1]=mesh; return mesh
 end
-sprite=obj({UUPerPixel=2.7,frame=0,playing='idle'})
+sprite=obj({UUPerPixel=2.7,frame=0,playing='Idle'})
 sprite.SsProject=obj({GetFullName=function() return 'Ss6Project '..config.project end})
 function sprite:GetFullName() return 'FinaComponent' end
 function sprite:GetOwner() return actor end
@@ -92,13 +93,16 @@ function run_fina_tests()
     sprite.playing='magic_attack'; time=1; tick()
     assert(sprite.playing==config.cast and sprite.frame==0)
     -- Native recovery cannot truncate the approved private clip.
-    sprite.playing='idle'; time=2.5; tick()
+    sprite.playing='Idle'; time=1.5; tick()
+    assert(sprite.playing==config.cast and sprite.frame==30)
+    sprite.playing='Idle'; time=2.5; tick()
     assert(sprite.playing==config.cast and sprite.frame==90)
     sprite.playing='idle'; time=4.9; tick(); assert(sprite.playing=='idle')
     sprite.playing='LB1'; sprite.frame=120; tick(); assert(#glows==0 and meshes[1].visible)
     sprite.frame=128; tick(); assert(#glows==1 and glows[1].active)
-    assert(glows[1]['User.Alpha']==.5 and meshes[1].visible)
-    sprite.frame=config.fall; tick(); assert(not meshes[1].visible and glows[1]['User.Alpha']==1)
+    assert(glows[1]['User.Alpha']==1 and glows[1]['User.NiagaraAlpha']==.5 and meshes[1].visible)
+    assert(glows[1]['User.EffectPosition'].Z==0 and glows[1]['User.LightPower']==0)
+    sprite.frame=config.fall; tick(); assert(not meshes[1].visible and glows[1]['User.NiagaraAlpha']==1)
     sprite.frame=164; tick(); assert(glows[1].invalid and not meshes[1].visible)
     loaded[config.glow].invalid=true -- Reload a collected asset before its next use.
     sprite.frame=config.reform; tick(); assert(meshes[1].visible and #glows==2)

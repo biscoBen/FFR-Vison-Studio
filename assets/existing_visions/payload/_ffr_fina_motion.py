@@ -254,8 +254,10 @@ def battle_spec(view, texture, old_sheet, original_spec):
     animations.append(cast)
     for clip in animations:
         active = clip['name'] in ('LB1', 'command', 'magic_idle', 'Studio_FinaCast', 'magic_attack') or clip['name'].startswith(('attack_', 'M_attack', 'FFBE_'))
-        clip['parts']['part_0']['Fliph'] = [[0, 1.0 if active else 0.0]]
-        if clip['name'] == 'LB1': clip['parts']['part_0']['Fliph'].append([REFORM, 0.0])
+        # SS6's decoder ignores the legacy Fliph/Flipv attributes. Imgfliph
+        # flips the cell image and leaves the body/socket origins intact.
+        clip['parts']['part_0']['Imgfliph'] = [[0, 1.0 if active else 0.0]]
+        if clip['name'] == 'LB1': clip['parts']['part_0']['Imgfliph'].append([REFORM, 0.0])
     if not {'idle', 'attack_A', 'LB1', 'Setup'} <= source_names:
         raise ValueError('The existing Fina battle motion set is incomplete.')
     names = list(animations[0]['parts'])
@@ -280,3 +282,20 @@ def verify_model(view, spec):
         raise ValueError('Fina model indices do not match its attachment tracks.')
     if prop({'Value': model}, 'MeshList') or prop({'Value': model}, 'BoneList'):
         raise ValueError('The private flat Fina model retained donor mesh/bone data.')
+
+
+def verify_image_mirroring(view, spec):
+    """Verify the SS6-supported attribute and its native bool fallback cache."""
+    decoded = decode(view)
+    pack, = prop(native_project(view), 'AnimeList')
+    native = {prop(a, 'AnimationName'): a for a in prop(pack, 'AnimeList')}
+    for clip in spec['animations']:
+        expected = clip['parts']['part_0']['Imgfliph']
+        body = decoded[clip['name']]['parts']['part_0']
+        if 'Fliph' in body or body.get('Imgfliph') != expected:
+            raise ValueError('Fina image mirroring did not survive native serialization.')
+        part, = [p for p in prop(native[clip['name']], 'PartAnimes') if prop(p, 'PartName') == 'part_0']
+        attribute, = [a for a in prop(part, 'Attributes') if prop(a, 'Tag') == 'Imgfliph']
+        actual = [[prop(k, 'Time'), prop({'Value': prop(k, 'Value')}, 'Bool_temp')] for k in prop(attribute, 'Key')]
+        if actual != [[tick, bool(value)] for tick, value in expected]:
+            raise ValueError('Fina image mirroring has an invalid native bool cache.')

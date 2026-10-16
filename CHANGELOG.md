@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Fix Crystal Fina's full cast being canceled by native `Idle` recovery after roughly half a second. Normalize
+  animation/pack names with Unreal's case-insensitive FName semantics; preserve the approved 229-frame turn/shot.
+- Replace ignored SS6 `Fliph` tracks with supported `Imgfliph` tracks for attack and resonance. Verify the native
+  attribute and boolean fallback cache, and refresh the Studio preview/cache revision (extension 1.2.23).
+- Preserve the real intro glow through native package cloning. The former JSON rebuild discarded Niagara variable
+  names/offsets and renderer bindings despite passing JSON readback. Require byte-identical source/cloned export
+  data. Fade `NiagaraAlpha` as the native intro does, center the effect without its +80 UU intro offset, and suppress
+  its native lights with the owned component's `LightPower` override.
+- Reduce distortion of the body inside the private battle glass by increasing its refraction depth bias from 12 to 24.
+  Preserve the accepted cave material, surface/facet settings and **1.25-second** seated hold. Source/API checks,
+  native readbacks and regression fixtures do not replace an in-game visual test.
+
 ## Published Crystal Fina animation-output crash fix — 2026-10-16
 
 Code: [`8fd2cb1`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8fd2cb195b56d571fcd6b59a028a21fc01215831).

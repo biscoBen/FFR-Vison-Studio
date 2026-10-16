@@ -32,7 +32,7 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
 needs in-game confirmation.
 
-## Direct battle runtime (extension 1.2.22)
+## Direct battle runtime (extension 1.2.23)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -58,6 +58,20 @@ original registry. Unreal's soft-path loader resolves mounted packages directly.
 are created, and reload an invalid glow asset before later pulses; Lua wrappers do not establish GC ownership.
 The fixture deliberately rejects registry-only loading and simulates collection between glow pulses.
 
+**Do not rebuild this Niagara system with `tojson` / `fromjson`.** Native `NiagaraVariableWithOffset` and renderer
+binding records contain fields omitted from that JSON representation. A direct native read found the source's
+`User.Alpha` at offset 0, `User.EffectPosition` at 8, `User.LightPower` at 48 and `User.NiagaraAlpha` at 52. The JSON
+copy had invalid names and every offset was zero; the game log nevertheless showed both components spawning.
+JSON-to-JSON readback cannot detect fields omitted on both sides. Use `clone-package` with only package/object
+name-map renames. Require the complete `.uexp` to remain byte-identical (117,357 bytes for this demo source), which
+preserves native variables, curves, bindings and VM. Keep the original game package untouched.
+
+The private battle material starts from the approved cave surface. Only `RefractionDepthBias` changes, from 12 to 24.
+Unreal's `DistortionCommon.ush` soft gate multiplies distortion by
+`saturate(separation / clamp(bias * 0.5, 0, 50) - bias)`. This moves the gate's 72–78 UU interval to 288–300 UU:
+nearby body pixels receive less distortion while distant background can still refract. Opacity, metallic, roughness,
+Fresnel, normal and wave overrides remain identical to the accepted cave. No global shader or cave material edit.
+
 The runtime loads the private approved StaticMesh/material, creates an ordinary **movable**, non-colliding
 StaticMeshComponent and attaches it directly to the SS6 `NULL_Crystal` socket. This uses the same ordinary mesh
 shader family as the working cave. `SetMobility(Movable)` precedes attachment, since a static component cannot be
@@ -74,6 +88,7 @@ assuming SS6 Roty becomes world yaw. Hide the owned mesh explicitly during the r
 
 Source inspected:
 - [SpriteStudio component implementation](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/Component/SsPlayerComponent.cpp)
+- [SS6 attribute decoder (legacy flips ignored; image flips supported)](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/SSSDK/ssplayer_animedecode.cpp)
 - [SpriteStudio reflected signatures](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Public/Component/SsPlayerComponent.h)
 - [UE4SS LuaUObject.cpp at the installed e3ba1016 version](https://github.com/UE4SS-RE/RE-UE4SS/blob/e3ba1016/UE4SS/src/LuaType/LuaUObject.cpp): non-struct out parameters are written into caller-supplied tables under their reflected parameter names.
 
@@ -99,14 +114,19 @@ for the observed failure; the corrected visuals still require a live game test.
 
 Preparation now only opens her eyes; it no longer repeats the curled-up turn. `Studio_FinaCast` contains the exact
 approved 229-frame body sequence: 65 eye-opening frames, 73 turning frames, 91 charge/fire frames. During an ordinary
-release, play this private clip at rate 1 and one loop. If native preparation/recovery calls replace it early,
+release, play this private clip at rate 1 and one loop. Normalize pack/clip comparisons to lowercase, matching
+Unreal's case-insensitive FName semantics. The supplied 10:01 trace returned `Idle` (capital I) after 0.516 seconds;
+the old lowercase-only recovery check canceled the cast before its turn/fire phase. If native preparation/recovery calls replace it early,
 resume the correct absolute frame from the world game clock. Leave it playing naturally between interruptions;
 do not restart at frame zero every tick. Death, damage and resonance motions cancel the cosmetic override.
 Once complete, restore the native current pose, using idle for an expired ordinary release. No hit/healing/movement
 keys are changed. An immediate later action can supersede this cosmetic presentation without changing game logic.
 
-Both attack and resonance use SS6 body `Fliph=1`, preserving native texture pixels; return to unflipped idle when
-she reforms. The seated hold is now exactly 75 frames (1.25 seconds), down from 100 in the preceding test.
+Both attack and resonance use SS6 body **`Imgfliph=1`**, preserving native texture pixels and socket origins;
+return to unflipped idle when she reforms. The public SS6 decoder comments out legacy `Fliph` handling as unsupported,
+but explicitly reads `Imgfliph` into `imageFlipH`. A serialized legacy flag is not evidence of a rendered mirror.
+Read back every native `Imgfliph` key and its `Bool_temp` fallback cache (the writer stores these as FloatType values).
+The labeled Studio preview consumes the same supported track. The seated hold is now exactly 75 frames (1.25 seconds), down from 100 in the preceding test.
 
 | Resonance frame | Presentation |
 | --- | --- |
@@ -120,10 +140,12 @@ she reforms. The seated hold is now exactly 75 frames (1.25 seconds), down from 
 | 258–282 | Fade second glow out and destroy its component |
 
 Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
-activation off. Set User.Alpha and User.NiagaraAlpha to zero before activating; update them from the actual LB1
-frame and the shared triangular fade envelope. Destroy the component at the end of each pulse or when hidden.
-Disable the private aura's light renderers to avoid lighting the floor. All native VM/particle bytes and original
-source effects remain intact. Runtime parameter setters avoid the asset writer's unsupported EX_ArrayConst arrays.
+activation off. Preserve native `User.Alpha=1`; animate `User.NiagaraAlpha` from zero with the actual LB1 frame and
+shared triangular fade envelope. The original intro's Niagara float tracks animate `NiagaraAlpha` and `LightPower`.
+Set `User.EffectPosition` to zero because the body-centered socket replaces the original +80 UU intro offset.
+Set `User.LightPower=0` before activating to suppress floor illumination without rebuilding renderer records.
+Destroy the component at the end of each pulse or when hidden. All native VM/particle bytes and original source
+effects remain intact. Runtime parameter setters avoid the asset writer's unsupported EX_ArrayConst arrays.
 
 The native Fina design row still receives explicit positive 2.7/1.0 presentation defaults only for nonpositive
 Scale/attachEffectSacle values; positive values and other rows remain unchanged. The cave pair stays at the user's
@@ -132,9 +154,9 @@ accepted 15% enlargement, with its approved glass and spin. No old comparison NP
 ## Studio and verification
 
 `scripts/render_crystal_fina_preview.py` shares battle tracks, flipping and timings, and renders supplied LOD0 mesh
-and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-5` to invalidate
+and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-6` to invalidate
 stale previews. Local native checks use the real asset writer, verify model parents/custom-value tails including
-Fliph, full-cast cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
+Imgfliph and its bool cache, full-cast cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
 is confined to scratch. No user game data is replaced by fixtures.
 
 Executable Lua fixtures cover actual animation-name out tables, owned movable mesh creation, scale/pivot setup,

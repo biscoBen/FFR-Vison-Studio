@@ -102,7 +102,7 @@ def render(atlas, spec, vertices, indices, name, length, step):
         body = parts['part_0']; cell, pivot = cells[current(body['Cell'], t)]
         scaled = cell.resize((round(cell.width * factor), round(cell.height * factor)), Image.Resampling.NEAREST)
         x, y = current(body['Posx'], t), current(body['Posy'], t)
-        if current(body.get('Fliph', [[0, 0.0]]), t): scaled = scaled.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        if current(body.get('Imgfliph', [[0, 0.0]]), t): scaled = scaled.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         location = (round(origin_x + x * factor - (.5 + pivot[0]) * scaled.width),
                     round(floor_y - y * factor - (.5 - pivot[1]) * scaled.height))
         strength = max((max(0.0, min((tick - begin) / (peak - begin),
@@ -136,7 +136,7 @@ def main():
         name = public + '.webp'; files[name] = data
         animations[public] = {'file': name, 'seconds': length / 60, 'sha256': hashlib.sha256(data).hexdigest()}
         print(public, len(data), 'bytes', flush=True)
-    manifest = {'schema': 1, 'presentation': 'native-fina-5', 'description': 'Native battle preview; game lighting and refraction may differ.',
+    manifest = {'schema': 1, 'presentation': 'native-fina-6', 'description': 'Native battle preview; game lighting and refraction may differ.',
                 'animations': animations, 'sources': {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                     for name in ('project_json', 'texture_json', 'mesh_json', 'old_sheet', 'original_spec')}}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()

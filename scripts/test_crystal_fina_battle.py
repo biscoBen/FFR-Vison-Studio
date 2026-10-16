@@ -19,6 +19,50 @@ UNIT = {'id': 13503, 'jp': 'FixtureFina', 'donor': 13108, 'ffbe': {'id': battle.
 
 
 class FinaBattleTests(unittest.TestCase):
+    def test_native_glow_clone_keeps_opaque_export_data_and_rejects_loss(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'Source.uasset'; source.write_bytes(b'header')
+            source.with_suffix('.uexp').write_bytes(b'native parameter names, offsets, curves and VM')
+            target = Path(tmp) / 'private/Glow.uasset'
+            def clone(command):
+                self.assertEqual(command[0], 'clone-package')
+                target.write_bytes(b'private header')
+                target.with_suffix('.uexp').write_bytes(source.with_suffix('.uexp').read_bytes())
+            battle.clone_glow(source, target, UNIT, [], 'mapping', clone)
+            def lossy(command):
+                clone(command); target.with_suffix('.uexp').write_bytes(b'JSON dropped native metadata')
+            with self.assertRaisesRegex(ValueError, 'export data changed'):
+                battle.clone_glow(source, target, UNIT, [], 'mapping', lossy)
+
+    def test_battle_glass_protects_near_body_depth_and_keeps_approved_cave_surface(self):
+        scalars = [p(str(i), [p('ParameterInfo', [p('Name', name)]), p('ParameterValue', value)])
+                   for i, (name, value) in enumerate(battle.cave.TEST_CRYSTAL_PARAMETERS.items())]
+        original = {'Exports': [{'ObjectName': 'PrivateGlass', 'Data': [p('ScalarParameterValues', scalars)]}]}
+        before = copy.deepcopy(original)
+        built = battle.soften_battle_glass(original, 'PrivateGlass')
+        self.assertEqual(original, before)
+        values = {battle.cave.property_data(battle.cave.property_data(x, 'ParameterInfo'), 'Name')['Value']:
+                  battle.cave.property_data(x, 'ParameterValue')['Value'] for x in built['Exports'][0]['Data'][0]['Value']}
+        self.assertEqual(values, dict(battle.cave.TEST_CRYSTAL_PARAMETERS, RefractionDepthBias=24.0))
+        self.assertEqual(battle.cave.TEST_CRYSTAL_PARAMETERS['RefractionDepthBias'], 12.0)
+        # Unreal DistortionCommon's soft gate: protect the nearby body while
+        # retaining distortion of distant background, without changing opacity.
+        gate = lambda depth, bias: max(0, min(1, depth / min(bias * .5, 50) - bias))
+        self.assertEqual(gate(170, 12), 1); self.assertEqual(gate(170, values['RefractionDepthBias']), 0)
+        self.assertEqual(gate(350, values['RefractionDepthBias']), 1)
+
+    def test_native_image_mirroring_requires_supported_tag_and_boolean_fallback(self):
+        key = p('0', [p('Time', 0), p('Value', [p('Bool_temp', True)])])
+        attr = p('0', [p('Tag', 'Imgfliph'), p('Key', [key])])
+        part = p('0', [p('PartName', 'part_0'), p('Attributes', [attr])])
+        clip = p('0', [p('AnimationName', 'attack_A'), p('PartAnimes', [part])])
+        view = {'Exports': [{'Data': [p('AnimeList', [p('0', [p('AnimeList', [clip])])])]}]}
+        spec = {'animations': [{'name': 'attack_A', 'parts': {'part_0': {'Imgfliph': [[0, 1.0]]}}}]}
+        with patch.object(motion, 'decode', return_value={'attack_A': {'parts': {'part_0': {'Imgfliph': [[0, 1.0]]}}}}):
+            motion.verify_image_mirroring(view, spec)
+            key['Value'][1]['Value'][0]['Value'] = False
+            with self.assertRaisesRegex(ValueError, 'bool cache'): motion.verify_image_mirroring(view, spec)
+
     def runtime(self):
         from lupa.lua54 import LuaRuntime
         import _ffr_field_leader as leader
@@ -134,8 +178,9 @@ class FinaBattleTests(unittest.TestCase):
         clips = {a['name']: a for a in spec['animations']}
         self.assertEqual(clips['attack_A']['frameCount'], 117); self.assertEqual(clips['magic_attack']['frameCount'], 80)
         self.assertEqual(clips['Studio_FinaCast']['frameCount'], 229)
-        self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Fliph'], [[0, 1.0]])
-        self.assertEqual(clips['LB1']['parts']['part_0']['Fliph'], [[0, 1.0], [258, 0.0]])
+        self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Imgfliph'], [[0, 1.0]])
+        self.assertEqual(clips['LB1']['parts']['part_0']['Imgfliph'], [[0, 1.0], [258, 0.0]])
+        self.assertTrue(all('Fliph' not in clip['parts']['part_0'] for clip in clips.values()))
         self.assertEqual(clips['idle']['frameCount'], 6000)
         self.assertAlmostEqual(clips['idle']['parts']['NULL_Crystal']['Roty'][-1][1], 359.94)
         self.assertEqual(clips['LB1']['parts']['NULL_Crystal']['Posy'][1:], [[134, -10000.0], [258, 183.5 / 2.7]])
