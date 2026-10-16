@@ -6,7 +6,7 @@ from pathlib import Path
 import zipfile
 
 SPRITE = '99887755552703'
-VERSION = 'native-fina-3'
+VERSION = 'native-fina-4'
 
 
 @lru_cache(maxsize=1)

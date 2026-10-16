@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Replace Crystal Fina's non-rendering battle casing/sequence-glow route with direct, battle-only mesh and Niagara
+  attachments through the existing UE4SS loader. Reuse Studio's owned runtime deployment/restore and Deck transfer;
+  walking-character cycling can stay off. Require the working loader before installing. Preserve the accepted cave.
+- Observe actual SpriteStudio clips and keep the approved full 229-frame cast through native early recovery calls.
+  Preparation only opens her eyes, eliminating the duplicated curled-up turn. Mirror attack/resonance body tracks;
+  reduce the seated hold from 125 to 100 frames. Drive crystal visibility and body-centered glow alpha from LB1 frames.
+- Refresh native Studio previews/cache revision and bundled extension 1.2.20. Native asset and executable Lua fixture
+  checks cover serialization, scope, interruption, pulse timing and cleanup; live Unreal rendering remains unverified.
+
 ## Published Crystal Fina cave and battle corrections — 2026-10-15
 
 Code: [`2976d53`](https://github.com/biscoBen/FFR-Vison-Studio/commit/2976d53b01edcd3809e0139903125fe25effdac0).

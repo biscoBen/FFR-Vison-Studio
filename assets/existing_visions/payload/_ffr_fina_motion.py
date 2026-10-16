@@ -17,11 +17,10 @@ NAME_HEADER = bytes.fromhex('80090e01')
 BODY_FLOAT = 183.5 / 2.7 - 21.0  # The approved cave's sprite float, in sprite pixels.
 FALL = 134
 SEAT = 183
-# Previously the body stayed seated from 183 until the old clip ended at 432.
-# Restore it after half that interval, without moving any gameplay event keys.
-REFORM = SEAT + math.ceil((432 - SEAT) / 2)
+# Shorten the seated hold from 125 to 100 frames. Native gameplay keys stay put.
+REFORM = SEAT + 100
 FLASHES = ((FALL - 12, FALL, FALL + 30), (REFORM - 12, REFORM, REFORM + 24))
-ACTION_FRAMES = 60
+ACTION_FRAMES = 229
 
 
 def prop(owner, name):
@@ -185,9 +184,8 @@ def battle_spec(view, texture, old_sheet, original_spec):
                   'pivot': [(60 - bounds[0]) / seat.width - .5, .5 - (100 - bounds[1]) / seat.height]})
     clips = decode(view); body = draft(view)
     idle = stitch(clips, 'idle', [('openarmidle2', 49)])
-    # Ordinary native spells can return to idle before the old FFBE animation's
-    # 5+ second window. Complete this presentation in one second, then hold;
-    # the game still owns all cast/release/hit/recovery event times.
+    # The runtime plays Studio_FinaCast independently of native preparation and
+    # early recovery calls, preserving the approved 229-frame motion in full.
     def fit(clip, length):
         result = copy.deepcopy(clip); old_length = result['frameCount']
         result['frameCount'] = length
@@ -219,7 +217,7 @@ def battle_spec(view, texture, old_sheet, original_spec):
         elif name.startswith(('attack_', 'M_attack', 'FFBE_')) or name == 'magic_attack':
             clip = fit(body['attack'], min(length, ACTION_FRAMES))
         elif name in ('command', 'magic_idle'):
-            clip = fit(stitch(clips, name, [('openarmopeneye2', 65), ('curlup2', 73)]), 30)
+            clip = fit(stitch(clips, name, [('openarmopeneye2', 65)]), 30)
         else:
             clip = copy.deepcopy(idle)
             if name == 'idle':
@@ -250,6 +248,14 @@ def battle_spec(view, texture, old_sheet, original_spec):
             parts['NULL_Aura'] = {'Posx': [[tick, x] for tick, x, y in xy],
                                   'Posy': [[tick, y] for tick, x, y in xy]}
         animations.append(clip)
+    cast = copy.deepcopy(next(a for a in animations if a['name'] == 'attack_A'))
+    cast['name'] = 'Studio_FinaCast'; cast['frameCount'] = ACTION_FRAMES
+    cast['parts']['part_0'].update(copy.deepcopy(body['attack']['parts']['part_0']))
+    animations.append(cast)
+    for clip in animations:
+        active = clip['name'] in ('LB1', 'command', 'magic_idle', 'Studio_FinaCast', 'magic_attack') or clip['name'].startswith(('attack_', 'M_attack', 'FFBE_'))
+        clip['parts']['part_0']['Fliph'] = [[0, 1.0 if active else 0.0]]
+        if clip['name'] == 'LB1': clip['parts']['part_0']['Fliph'].append([REFORM, 0.0])
     if not {'idle', 'attack_A', 'LB1', 'Setup'} <= source_names:
         raise ValueError('The existing Fina battle motion set is incomplete.')
     names = list(animations[0]['parts'])

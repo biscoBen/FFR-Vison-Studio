@@ -3,6 +3,7 @@ import base64
 import copy
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import struct
@@ -189,10 +190,21 @@ def field_aliases(view, mid):
 def build(units, env):
     root = Path(env['ROOT']); work = root / 'build/field-leader'; work.mkdir(parents=True, exist_ok=True)
     payload = {'schema': 1, 'files': {}}
-    if enabled(root):
-        _, config = bank(units, env['rows'])
-        payload['files'] = {'enabled.txt': '', 'Scripts/config.lua': 'return ' + lua(config) + '\n',
-                            'Scripts/main.lua': Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')}
+    import _ffr_fina_battle as fina
+    selected = fina.selected(units)
+    field = enabled(root)
+    if field or selected:
+        config = bank(units, env['rows'])[1] if field else {'schema': 1, 'actors': {}}
+        code = ''
+        if selected:
+            native = json.loads((root / 'build/crystal-fina-battle/runtime.json').read_bytes())
+            if native.get('schema') != 1 or native.get('id') != selected['id']:
+                raise ValueError('Rebuild Crystal Fina battle assets before staging her runtime.')
+            config['fina'] = native
+            code = '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)()\n'
+        if field: code += Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')
+        payload['files'] = {'enabled.txt': '', 'Scripts/config.lua': 'return ' + lua(config) + '\n', 'Scripts/main.lua': code}
+    if field:
         for mid in range(20, 81, 10):
             source = Path(env['LEGACY']) / f'FFRS/Content/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}.uasset'
             if not source.is_file():
@@ -207,8 +219,10 @@ def build(units, env):
 
 
 def lua(value):
+    if isinstance(value, (list, tuple)): return '{' + ','.join(lua(v) for v in value) + '}'
     if isinstance(value, dict): return '{' + ','.join('[' + json.dumps(k) + ']=' + lua(v) for k, v in value.items()) + '}'
-    if type(value) is int: return str(value)
+    if type(value) is str: return json.dumps(value, ensure_ascii=False)
+    if type(value) in (int, float) and math.isfinite(value): return repr(value)
     raise ValueError('Unsupported field leader runtime configuration.')
 
 
@@ -258,7 +272,7 @@ def install_plan(root, game, payload=None):
     if payload['files']:
         binary = checked(game, 'FFRS/Binaries/Win64')
         if not (binary / 'dwmapi.dll').is_file() or not (binary / 'ue4ss/UE4SS.dll').is_file():
-            raise RuntimeError('Field cycling requires the working UE4SS loader from the runtime-reference helper. Prepare it first, or turn cycling off.')
+            raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field cycling and native Crystal Fina battle effects. Prepare it before installing.')
     return {'root': root, 'game': game, 'before': before, 'changes': changes, 'state': state,
             'previous': state.read_bytes() if state.is_file() else None}
 

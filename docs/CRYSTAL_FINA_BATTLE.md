@@ -32,72 +32,94 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
 needs in-game confirmation.
 
-## Casing renderer and dependencies
+## Direct battle runtime (extension 1.2.20)
 
-`UNIT_ANIMATION_ASSET_DATA` has no ordinary mesh slot. Add Fina alone to the confirmed
-`Datatable/Asset/Battle/Effect/DT_BtlUnitEffectAsset`, attaching a private Niagara casing to `NULL_Crystal`.
-There is **no persistent aura bundle**. Private battle assets live under `Chara/StudioCrystalFinaBattle/<ID>`.
+The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
+Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
+They are retired from the builder. Do not describe a successful binary roundtrip as proof of rendered effects.
 
-Clone `NS_EF_EV_CMN_FinaCristalAuraParticle`. Preserve compiled scripts, handles/order and all opaque VM trailers.
-Use its CPU `BrightSting_0` emitter with an **appended** `NiagaraComponentRendererProperties` and one movable,
-non-colliding StaticMeshComponent template. Clear other emitters' renderer lists and disable their renderers;
-handle enable flags alone are insufficient evidence that a cooked renderer cannot draw.
+The current battle presentation uses the working UE4SS loader already needed for field cycling. It composes the
+Fina module into the same three owned runtime files, retaining installation preflight, backups, restore and Deck
+transfer. Cycling can remain off: its map hooks are not installed in a Fina-only payload. Removing Fina and turning
+cycling off stages an empty payload. A missing loader stops installation before game files change; no loader is
+silently installed. No save, gameplay, party identity or global Blueprint changes are made.
 
-Keep the original mesh renderer and class intact: `NiagaraDataInterfaceMeshRendererInfo.MeshRenderer` still points
-to it and the CPU VM depends on its data. Replacing that export's class with ComponentRendererProperties invalidates
-this dependency. The new renderer alone goes into BrightSting's renderer list. Preserve native mesh bulk/render
-bytes and the approved ordinary glass shader; do not claim a Niagara shader permutation can be added by a usage flag.
+Read Actor.bHidden through reflection; Actor.IsHidden is an inline C++ helper, not a callable UFunction.
+The source/API checks and Lua fixtures do not establish that the shipped game renders the result correctly.
 
-Public Unreal source inspected: `NiagaraRendererComponents.cpp` falls back to enabled when the particle's enabled
-attribute is absent. With empty PropertyBindings it does not overwrite the template transform. In
-`NiagaraSystemInstance.cpp` the duplicate template attaches to the Niagara component, retaining relative transform.
-These corroborate the intended attachment; they do not substitute for testing this game's cooked runtime.
+`fina_battle.lua` finds native SsPlayerComponents whose project matches the current private Fina project, and whose
+owner is CPP_BtlUnit or CPP_BtlSequencerSsPlayerActor. UI renderers, map/cinematic actors and other models are excluded.
+If the actor/project disappears or changes, destroy only the components created by this module. Errors clean up
+owned components and log `[FFR Fina] Presentation stopped: ...` in the existing UE4SS log.
 
-Use the fresh Fina design row's separate `Scale` and `attachEffectSacle` values. Set nonpositive fields explicitly
-to 2.7 and 1.0 respectively; preserve positive values and all unrelated fields/rows. Canonicalize authored floats to
-float32 before readback comparison. Casing/body ratio remains `.12/2.7`; correct the native mesh pivot from its bounds.
-The cave pair separately grows by 15% about its grounded origin, retaining that ratio and its approved glass/rotation.
-The old comparison NPC/table row/stream is no longer generated.
+The runtime loads the private approved StaticMesh/material, creates an ordinary **movable**, non-colliding
+StaticMeshComponent and attaches it directly to the SS6 `NULL_Crystal` socket. This uses the same ordinary mesh
+shader family as the working cave. `SetMobility(Movable)` precedes attachment, since a static component cannot be
+attached to a moving sprite component. Preserve native mesh/bulk bytes, bounds-origin correction and material.
 
-## Battle sequencing
+The public SpriteStudio plugin implementation establishes the relevant transform contract:
+`GetSocketTransform` resolves part names and composes their transform with the component transform.
+`GetPartAttachTransform` multiplies translations by UUPerPixel, but returns scale `(1, partScaleX, partScaleY)`;
+it does not multiply socket scale by UUPerPixel. Set the mesh's relative scale to `.12/2.7 * UUPerPixel` so both
+actor-scale and pixel-scale configurations retain the approved body/casing ratio. The native bounds origin is
+subtracted at that same local scale. The plugin calls UpdateChildTransforms while ticking. Its socket API exposes
+an in-plane angle, so rotate the real mesh component about its vertical axis at 3.6 degrees/second instead of
+assuming SS6 Roty becomes world yaw. Hide the owned mesh explicitly during the resonance's fall/seated interval.
 
-Ordinary release presentation completes in 60 frames instead of stretching to the imported 307/346-frame clips,
-which the game's shorter spell recovery can interrupt before the shot. Preparation opens eyes and turns in 30 frames.
-The normal-skill animation repair uses the replacement's one-second duration rather than accelerating it based on
-old FFBE CSV durations. No damage/healing keys are moved. Exact visual alignment with each spell needs live review.
+Source inspected:
+- [SpriteStudio component implementation](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/Component/SsPlayerComponent.cpp)
+- [SpriteStudio reflected signatures](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Public/Component/SsPlayerComponent.h)
+- UE4SS LuaUObject.cpp: non-struct out parameters are written into caller-supplied tables under their parameter names.
+
+Keep native actor identities and gameplay events intact. Read the **actual component animation** with
+`GetPlayingAnimationName(packOut, animationOut)` and its `OutAnimationName` field, rather than relying on an actor's
+cached motion-name property. The module logs initial native motion/frame/rate transitions for a useful live trace.
+
+## Full casting motion and resonance
+
+Preparation now only opens her eyes; it no longer repeats the curled-up turn. `Studio_FinaCast` contains the exact
+approved 229-frame body sequence: 65 eye-opening frames, 73 turning frames, 91 charge/fire frames. During an ordinary
+release, play this private clip at rate 1 and one loop. If native preparation/recovery calls replace it early,
+resume the correct absolute frame from the world game clock. Leave it playing naturally between interruptions;
+do not restart at frame zero every tick. Death, damage and resonance motions cancel the cosmetic override.
+Once complete, restore the native current pose, using idle for an expired ordinary release. No hit/healing/movement
+keys are changed. An immediate later action can supersede this cosmetic presentation without changing game logic.
+
+Both attack and resonance use SS6 body `Fliph=1`, preserving native texture pixels; return to unflipped idle when
+she reforms. The seated hold is now 100 frames (1.67 seconds), down from 125 in the preceding test.
 
 | Resonance frame | Presentation |
 | --- | --- |
-| 0–121 | Float in casing; no golden glow |
-| 122–134 | Native introductory glow fades in at body's center |
-| 134 | Hide crystal; begin 49-frame descent; original reaction frame unchanged |
-| 135–164 | Fade glow out, then destroy its Niagara instance |
-| 183–307 | Original jacket-free seated hold (125 frames, previously 249) |
-| 296–308 | Brief second body-centered glow ramps up |
-| 308 | Restore floating pose and crystal together |
-| 309–332 | Fade glow out and destroy instance |
-| Existing recovery | Return to idle without changing gameplay event timing |
+| 0–121 | Float in crystal; no gold glow |
+| 122–134 | Fade body-centered native glow in |
+| 134 | Hide mesh and begin descent; native reaction key unchanged |
+| 134–164 | Fade glow out, then destroy its component |
+| 183–282 | Jacket-free seated pose |
+| 271–283 | Fade second glow in at the current body socket |
+| 283 | Restore crystal and floating pose |
+| 283–307 | Fade second glow out and destroy its component |
 
-Author these on Fina's exact private resonance job only, using the builder's `lb_id` function and exact asset path.
-The confirmed native events are `EffectSpawnNiagaraAtRandom` (caster/vision attachment),
-`EffectDiactivateNiagaraToNiagaraID` and `EffectDestroyNiagaraToNiagaraID`. `BTL_SEQUENCER_NIAGARA_DATA` supports
-PartName, following and bPlayVisionUnit. The source system exposes User.Alpha, User.NiagaraAlpha and User.LightPower.
-The asset writer rejects EX_ArrayConst user-parameter arrays, so do not ship per-event alpha arrays.
-Use the original particle alpha curves and explicit deactivation/cleanup instead. A private glow copy disables native
-light renderers to avoid a floor-level light beam; source effects remain unchanged. Import the actual
-Niagara object/package into the cooked shell; preserve its bound battle actor and rebuild the event channel and
-compiled one-shot tree together. Verify spawned object references, attachment fields and lifecycle constants through seqdump.
-Exact fade appearance remains a live-rendering check, rather than a claim established by serialization.
+Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
+activation off. Set User.Alpha and User.NiagaraAlpha to zero before activating; update them from the actual LB1
+frame and the shared triangular fade envelope. Destroy the component at the end of each pulse or when hidden.
+Disable the private aura's light renderers to avoid lighting the floor. All native VM/particle bytes and original
+source effects remain intact. Runtime parameter setters avoid the asset writer's unsupported EX_ArrayConst arrays.
+
+The native Fina design row still receives explicit positive 2.7/1.0 presentation defaults only for nonpositive
+Scale/attachEffectSacle values; positive values and other rows remain unchanged. The cave pair stays at the user's
+accepted 15% enlargement, with its approved glass and spin. No old comparison NPC is generated.
 
 ## Studio and verification
 
-`scripts/render_crystal_fina_preview.py` shares battle body/attachment tracks and timings and renders the supplied
-LOD0 mesh/native sprite pixels. It approximates glow/glass and is labeled accordingly. The checked bundled WebPs use
-presentation revision `native-fina-3`; literal API routes and URL revision bypass old previews without deleting them.
+`scripts/render_crystal_fina_preview.py` shares battle tracks, flipping and timings, and renders supplied LOD0 mesh
+and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-4` to invalidate
+stale previews. Local native checks use the real asset writer, verify model parents/custom-value tails including
+Fliph, full-cast cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
+is confined to scratch. No user game data is replaced by fixtures.
 
-Local integration uses the real native asset writer on the supplied references and a clearly labeled synthetic
-zero-scale design-table fixture. Validate actual model parents, native renderer dependencies, all original VM bytes,
-SS6 trailer values and cooked glow lifecycle events, then pack/verify an IoStore container. Scratch fixtures never
-replace user game data. Windows CI checks the real frozen engine, Flutter suite, managed resources and package.
-Actual crystal visibility/rotation, attachment following, cast timing and glow appearance need an in-game test.
-Reference collectors continue to write to `Downloads\FFR Mod`.
+Executable Lua fixtures cover actual animation-name out tables, owned movable mesh creation, scale/pivot setup,
+early recovery without truncation, native full-rate playback, mirrored asset contracts, no idle glow, pulse alpha,
+crystal hide/return, hidden actors, project swaps and cleanup. They cannot prove this game's rendered behavior.
+Windows checks cover the frozen engine and managed runtime resource. First live use still needs checking the
+actual crystal, glow, shot direction and battle completion; use the automatic `[FFR Fina]` log if anything fails.
+Collectors continue to write to `Downloads\FFR Mod`.

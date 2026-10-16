@@ -871,7 +871,7 @@ class NativeAnimations:
 
 def motion_seconds(unit, root, magic):
     # This private body replaces the imported FFBE clip. Using the old CSV's
-    # five-second duration here would over-speed its new one-second release.
+    # imported duration here would over-speed the native replacement.
     import _ffr_fina_battle as fina
     if not unit.get('party') and (unit.get('ffbe') or {}).get('source') == 'CUSTOM' and str((unit.get('ffbe') or {}).get('id')) == fina.SPRITE:
         from _ffr_fina_motion import ACTION_FRAMES
@@ -1072,9 +1072,6 @@ def build_effect_sequence(job, out, work, command, usmap, run):
     run([*command, 'tojson', str(path), str(written), '--usmap', usmap])
     written_imports = json.loads(written.read_text(encoding='utf-8-sig'))['Imports']
     functions = {k.split(':', 1)[0]: v for k, v in actual.items()}
-    if job.get('nativeFina'):
-        import _ffr_fina_battle
-        _ffr_fina_battle.verify_glow_events(edits, functions)
     for edit in edits:
         if edit['set'].get('EventType') not in EFFECT_EVENTS: continue
         event = functions.get(str(edit['export']), {})

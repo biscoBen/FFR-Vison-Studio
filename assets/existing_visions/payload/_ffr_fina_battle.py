@@ -46,92 +46,6 @@ def glow_system(original, unit):
     return rel, view
 
 
-def casing_system(source, unit, relative_scale):
-    """A component renderer retains the approved ordinary static-mesh shader.
-
-    Keep the compiled Niagara emitter/script layout and opaque VM data intact.
-    Render one non-colliding component at the SS6 attachment, without particle
-    position/scale bindings moving or stretching the casing.
-    """
-    if not math.isfinite(relative_scale) or relative_scale <= 0:
-        raise ValueError('Invalid battle crystal scale.')
-    rel = package(unit, 'NS_Studio_CrystalFinaCasing')
-    view = cave.private_level(source[AURA], '/Game/' + AURA, '/Game/' + rel)
-    root_id, root = cave.export(view, Path(rel).name)
-    emitters = [(i, e) for i, e in enumerate(view['Exports'], 1) if e['ObjectName'] == 'BrightSting_0']
-    if len(emitters) != 1: raise ValueError('The native Fina CPU emitter changed.')
-    emitter_id, emitter = emitters[0]
-    version, = cave.property_data(emitter, 'VersionData')['Value']
-    if cave.property_data(version, 'SimTarget')['Value'] != 'CPUSim':
-        raise ValueError('The battle crystal requires a native CPU emitter.')
-    for handle in cave.property_data(root, 'EmitterHandles')['Value']:
-        instance = cave.property_data(handle, 'VersionedInstance')
-        cave.set_value(handle, 'bIsEnabled', cave.property_data(instance, 'Emitter')['Value'] == emitter_id)
-    renderers = cave.property_data(version, 'RendererProperties')['Value']
-    if len(renderers) != 1: raise ValueError('The native Fina emitter renderer layout changed.')
-    donor_renderer = view['Exports'][renderers[0]['Value'] - 1]
-    if donor_renderer['Extras']: raise ValueError('The native renderer gained opaque serialization.')
-    guid = copy.deepcopy(cave.property_data(donor_renderer, 'OuterEmitterVersion'))
-    # MeshRendererInfo and the compiled VM still depend on the original mesh
-    # renderer's class/data. Append a renderer instead of changing its class.
-    renderer_id = cave.native_object(view, donor_renderer, emitter_id, 'Niagara',
-        'NiagaraComponentRendererProperties', 'Studio_CrystalComponentRenderer', [])
-    renderer = view['Exports'][renderer_id - 1]
-    for export in view['Exports']:
-        if export['ClassIndex'] < 0 and view['Imports'][-export['ClassIndex'] - 1]['ObjectName'] == 'NiagaraEmitter':
-            data, = cave.property_data(export, 'VersionData')['Value']
-            for ref in cave.property_data(data, 'RendererProperties')['Value']:
-                native = view['Exports'][ref['Value'] - 1]
-                if native is not donor_renderer:
-                    found = [p for p in native['Data'] if p['Name'] == 'bIsEnabled']
-                    if found: found[0].update(Value=False, IsZero=False)
-                    else: native['Data'].append(cave.native_prop('bIsEnabled', False, 'BoolPropertyData'))
-            if export is not emitter:
-                cave.set_value(data, 'RendererProperties', [])
-    renderers[0]['Value'] = renderer_id
-    background = source[cave.TEST_BACKGROUND]
-    donors = [(i, e) for i, e in enumerate(background['Exports'], 1) if any(
-        p['Name'] == 'StaticMesh' and p['Value'] < 0
-        and background['Imports'][-p['Value'] - 1]['ObjectName'] == Path(cave.TEST_NATIVE_MESH).name
-        for p in e.get('Data', []) if isinstance(p, dict))]
-    if len(donors) != 1: raise ValueError('The Sanctum crystal component changed.')
-    old_id, donor = donors[0]
-    component_id = cave.clone_graph(view, background, [old_id], {donor['OuterIndex']: renderer_id})[old_id]
-    component = view['Exports'][component_id - 1]
-    component['ObjectName'] = 'Studio_CrystalTemplate'
-    component['ObjectFlags'] = 'RF_ArchetypeObject'
-    mesh = '/Game/' + package(unit, 'SM_Studio_CrystalFina')
-    material = '/Game/' + package(unit, 'MI_Studio_CrystalFina')
-    cave.set_value(component, 'StaticMesh', cave.asset_import(view, cave.property_data(component, 'StaticMesh')['Value'], mesh))
-    slot, = cave.property_data(component, 'OverrideMaterials')['Value']
-    slot['Value'] = cave.asset_import(view, slot['Value'], material); slot['IsZero'] = False
-    removed = {'AttachParent', 'CreationMethod', 'Mobility', 'BodyInstance', 'VisibilityId',
-               'bIsValidTextureStreamingBuiltData', 'bVisible', 'bHiddenInGame'}
-    component['Data'] = [p for p in component['Data'] if p['Name'] not in removed]
-    p = cave.native_prop
-    component['Data'] += [p('Mobility', 'Movable', 'EnumPropertyData', EnumType='EComponentMobility', InnerType='ByteProperty'),
-        p('VisibilityId', -1, 'IntPropertyData'), p('bIsValidTextureStreamingBuiltData', False, 'BoolPropertyData'),
-        p('bVisible', True, 'BoolPropertyData'), p('bHiddenInGame', False, 'BoolPropertyData'),
-        cave.native_struct('BodyInstance', 'BodyInstance', [
-            p('CollisionEnabled', 'NoCollision', 'EnumPropertyData', EnumType='ECollisionEnabled', InnerType='ByteProperty'),
-            p('CollisionProfileName', 'NoCollision', 'NamePropertyData')])]
-    _, native_mesh = cave.export(source[cave.TEST_NATIVE_MESH], Path(cave.TEST_NATIVE_MESH).name)
-    origin = cave.property_data(cave.property_data(native_mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
-    for name, values in [('RelativeScale3D', dict.fromkeys(('X', 'Y', 'Z'), relative_scale)),
-                         ('RelativeLocation', {axis: -float(origin[axis]) * relative_scale for axis in ('X', 'Y', 'Z')})]:
-        cave.property_data(component, name)['Value'][0]['Value'].update(values)
-    component['CreateBeforeSerializationDependencies'] = [cave.property_data(component, 'StaticMesh')['Value'], slot['Value']]
-    renderer['Data'] = [p('ComponentType', cave.script_import(view, 'Engine', 'StaticMeshComponent')),
-        p('ComponentCountLimit', 1, 'UInt32PropertyData'), p('bAssignComponentsOnParticleID', False, 'BoolPropertyData'),
-        p('bCreateComponentFirstParticleFrame', True, 'BoolPropertyData'),
-        p('bOnlyActivateNewlyAquiredComponents', False, 'BoolPropertyData'),
-        p('TemplateComponent', component_id), p('PropertyBindings', [], 'ArrayPropertyData', ArrayType='StructProperty'),
-        p('bIsEnabled', True, 'BoolPropertyData'), guid]
-    renderer['CreateBeforeSerializationDependencies'] = [component_id, cave.property_data(renderer, 'ComponentType')['Value']]
-    cave.names(view, [view['Imports'], view['Exports']])
-    return rel, view
-
-
 def table_rows(view):
     exports = [e for e in view['Exports'] if isinstance(e.get('Table'), dict)]
     if len(exports) != 1: raise ValueError('Expected one native battle data table.')
@@ -142,27 +56,6 @@ def soft_path(owner, name, path):
     value = cave.property_data(owner, name)
     value['Value']['AssetPath'].update(PackageName=path, AssetName=Path(path).name)
     value['Value']['SubPathString'] = None; value['IsZero'] = False
-
-
-def effect_table(original, unit):
-    """Add only this vision, retaining every other unit's native effect bundles."""
-    view = copy.deepcopy(original); rows = table_rows(view)
-    if any(cave.property_data(r, 'ID')['Value'] == unit['id'] or r['Name'] == unit['jp'] for r in rows):
-        raise ValueError('Crystal Fina battle effect identity conflicts with an existing row.')
-    donors = [r for r in rows if cave.property_data(r, 'ID')['Value'] == 400]
-    if len(donors) != 1: raise ValueError('The native battle effect donor changed.')
-    row = copy.deepcopy(donors[0]); row['Name'] = unit['jp']; cave.set_value(row, 'ID', unit['id'])
-    bundles = cave.property_data(row, 'effectBundleList')
-    template, = bundles['Value']; bundles['Value'] = []; bundles['IsZero'] = False
-    for part, rel in [('NULL_Crystal', package(unit, 'NS_Studio_CrystalFinaCasing'))]:
-        bundle = copy.deepcopy(template); bundle['Name'] = str(len(bundles['Value']))
-        soft_path(bundle, 'niagaraAsset', '/Game/' + rel)
-        cave.set_value(bundle, 'attachPartsName', part)
-        rotation = cave.property_data(bundle, 'additionalRotation')
-        rotation['Value'][0]['Value'].update(Pitch=0.0, Yaw=0.0, Roll=0.0); rotation['IsZero'] = False
-        bundles['Value'].append(bundle)
-    rows.append(row); cave.names(view, rows)
-    return view
 
 
 def battle_table(original, unit):
@@ -231,16 +124,14 @@ def build(units, env):
     source = {rel: native(rel, '.umap' if rel == cave.TEST_BACKGROUND else '.uasset') for rel in (
         AURA, cave.TEST_BACKGROUND, cave.TEST_NATIVE_MESH, cave.TEST_NATIVE_MATERIAL, cave.TEST_NATIVE_SHADER,
         cave.TEST_SPRITE.removeprefix('/Game/'), cave.TEST_SPRITE.removeprefix('/Game/') + '_tex')}
-    native_effects = native('Datatable/' + EFFECT_TABLE)
     content = out / 'FFRS/Content'
     design_path = content / ('Datatable/' + DESIGN_TABLE + '.uasset')
     design, (scale, effect_scale) = design_table(decode(design_path, 'built-battle-design'), unit)
     print(f'  Crystal Fina battle scales: sprite={scale:g}, attached effects={effect_scale:g} (explicit built row).')
     # Match the casing/body ratio approved in the field test. Battle sprite and
     # attachment scales are separate native design parameters.
-    rel, system = casing_system(source, unit, cave.TEST_CRYSTAL_SCALE / cave.TEST_SPRITE_SCALE * scale / effect_scale)
     glow_rel, glow = glow_system(source[AURA], unit)
-    assets = {rel: system, glow_rel: glow, 'Datatable/' + DESIGN_TABLE: design}
+    assets = {glow_rel: glow, 'Datatable/' + DESIGN_TABLE: design}
     private_mesh, private_material = package(unit, 'SM_Studio_CrystalFina'), package(unit, 'MI_Studio_CrystalFina')
     for old, view in cave.test_crystal_assets(source).items():
         new = private_mesh if old == cave.TEST_MESH else private_material
@@ -252,8 +143,6 @@ def build(units, env):
             material['Value'] = cave.asset_import(result, material['Value'], '/Game/' + private_material)
             material['IsZero'] = False
         assets[new] = result
-    effects_path = content / ('Datatable/' + EFFECT_TABLE + '.uasset')
-    assets['Datatable/' + EFFECT_TABLE] = effect_table(decode(effects_path, 'built-unit-effects') if effects_path.is_file() else native_effects, unit)
     unit_path = content / ('Datatable/' + UNIT_TABLE + '.uasset')
     assets['Datatable/' + UNIT_TABLE] = battle_table(decode(unit_path, 'built-battle-units'), unit)
     for rel, view in assets.items():
@@ -290,61 +179,25 @@ def build(units, env):
         run(tool + ['make-texture', str(content / (old + suffix + '.uasset')), str(work / payload),
                     str(w), str(h), str(content / (rel + suffix + '.uasset')),
                     '/Game/' + old + suffix, '/Game/' + rel + suffix, rename, '--usmap', usmap])
-    print('  Crystal Fina battle: explicit body/crystal model; rotating glass; timed body-centered aura; shortened seated hold and crystal return. Skills and hit events preserved.')
+    _, mesh = cave.export(source[cave.TEST_NATIVE_MESH], Path(cave.TEST_NATIVE_MESH).name)
+    origin = cave.property_data(cave.property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
+    (work / 'runtime.json').write_text(json.dumps(runtime_config(unit, origin)), encoding='utf-8')
+    print('  Crystal Fina battle: native body and full cast; direct runtime crystal/glow attachments. Skills and hit events preserved.')
 
 
 def prepare_job(job, units, lb_id):
-    """Add native caster-attached glow pulses to Fina's private resonance only."""
-    unit = selected(units)
-    if unit is None or not unit.get('lb_custom'): return job
-    sid = lb_id(unit['id'])
-    expected = f'FFRS/Content/Sequencer/Battle/Skill/{sid}/{sid + 1}/SEQ_Battle_{sid + 1}_Master'
-    if job.get('asset') != expected: return job
+    # Presentation effects are driven by the scoped runtime, not the battle
+    # sequencer's ambiguous owner-versus-vision selection.
+    return job
+
+
+def runtime_config(unit, origin):
     import _ffr_fina_motion as motion
-    result = copy.deepcopy(job); plan = result['plan']; events = plan['events']
-    starts = [e['time'] for e in events if e['set'].get('Unit_PlayAnimByName_AnimationName') == 'LB1']
-    if len(starts) != 1: raise ValueError('Fina resonance needs one native motion start.')
-    start = starts[0]
-    glow = glow_package(unit)
-    imports = [dict(ObjectName='/Game/' + glow, OuterIndex=0, ClassPackage='/Script/CoreUObject', ClassName='Package', PackageName=None),
-               dict(ObjectName=Path(glow).name, OuterIndex=-1, ClassPackage='/Script/Niagara', ClassName='NiagaraSystem', PackageName=None)]
-    result.setdefault('effectImports', []).append({'imports': imports, 'index': 1})
-    result['kind'] = 'skill_effect'
-    result['nativeFina'] = True
-    def at(frame, kind, **fields):
-        tick = start + frame * 400
-        if tick >= plan['duration']: raise ValueError('Fina glow exceeds its existing resonance window.')
-        events.append({'time': tick, 'set': dict(EventType=kind, **fields)})
-    for index, (begin, peak, end) in enumerate(motion.FLASHES):
-        name = f'StudioFinaGlow{index}'
-        at(begin, 'EffectSpawnNiagaraAtRandom', Effect_NiagaraData=dict(
-            NiagaraID=name, niagaraAsset={'path': '/Game/' + glow + '.' + Path(glow).name, 'class': 'NiagaraSystem'},
-            friendNiagaraAsset=None, enemyNiagaraAsset=None,
-            PartName='NULL_Aura', Scale=dict(x=1.0, y=1.0, z=1.0),
-            bDisableFollowing=False, bPlayOwnerUnit=False, bPlayVisionUnit=True),
-           Effect_SpawnNiagara_bAllFriends=False, Effect_SpawnNiagara_bAllEnemies=False,
-           Effect_SpawnNiagara_bDisableSummons=False, Effect_SpawnNiagara_bDisableActionUnit=False)
-        # Stop spawning; existing particles finish their native alpha curves.
-        # The tool cannot author EX_ArrayConst user-parameter arrays. Do not
-        # ship an apparently successful fade plan that fails at installation.
-        at(peak + 1, 'EffectDiactivateNiagaraToNiagaraID', Effect_DiactivateNiagaraID_ID=name)
-        at(end, 'EffectDestroyNiagaraToNiagaraID', Effect_DestroyNiagaraID_ID=name)
-    events.sort(key=lambda e: e['time'])
-    return result
-
-
-def verify_glow_events(edits, functions):
-    for edit in edits:
-        fields = edit['set']; actual = functions.get(str(edit['export']), {})
-        kind = fields.get('EventType')
-        if kind == 'EffectSpawnNiagaraAtRandom':
-            expected = fields['Effect_NiagaraData']; written = actual.get('Effect_NiagaraData', {})
-            for key in ('NiagaraID', 'PartName', 'bDisableFollowing', 'bPlayOwnerUnit', 'bPlayVisionUnit'):
-                # seqdump omits false/zero constants; absence is false only for
-                # these explicitly authored boolean fields, never part/ID names.
-                if written.get(key, False if type(expected[key]) is bool else None) != expected[key]:
-                    raise ValueError('Fina glow attachment did not survive native serialization: ' + key)
-        elif kind in ('EffectDiactivateNiagaraToNiagaraID', 'EffectDestroyNiagaraToNiagaraID'):
-            key = 'Effect_DiactivateNiagaraID_ID' if kind.startswith('EffectDiactivate') else 'Effect_DestroyNiagaraID_ID'
-            if fields[key] != actual.get(key):
-                raise ValueError('Fina glow lifecycle ID did not survive native serialization.')
+    name = 'FinaNative' + str(unit['id'])
+    asset = lambda rel: '/Game/' + rel + '.' + Path(rel).name
+    return {'schema': 1, 'id': unit['id'], 'project': '/Game/' + package(unit, name),
+        'pack': name, 'mesh': asset(package(unit, 'SM_Studio_CrystalFina')),
+        'material': asset(package(unit, 'MI_Studio_CrystalFina')), 'glow': asset(glow_package(unit)),
+        'origin': origin, 'meshRatio': .12 / 2.7, 'turnRate': cave.TEST_CRYSTAL_TURN_RATE,
+        'cast': 'Studio_FinaCast', 'castFrames': motion.ACTION_FRAMES,
+        'fall': motion.FALL, 'reform': motion.REFORM, 'flashes': list(motion.FLASHES)}

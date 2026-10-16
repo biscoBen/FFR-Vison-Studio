@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.19');
+      expect(state['version'], '1.2.20');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_deck_sync.py',
@@ -80,6 +80,7 @@ void main() {
         '_ffr_testing.py',
         '_ffr_crystal_cave.py',
         '_ffr_fina_battle.py',
+        'fina_battle.lua',
         '_ffr_fina_preview.py',
         'fina_battle_preview.zip',
         '_ffr_fina_motion.py',
@@ -124,7 +125,7 @@ preview_app = FastAPI()
 _ffr_fina_preview.register(preview_app, {'ROOT': str(root)})
 native_route = next(r for r in preview_app.routes if r.path == '/api/ffbe/anim/99887755552703/{anim}.webp')
 native_preview = native_route.endpoint('idle')
-assert native_preview.headers['x-fina-presentation'] == 'native-fina-3'
+assert native_preview.headers['x-fina-presentation'] == 'native-fina-4'
 assert native_preview.headers['cache-control'] == 'no-store'
 with Image.open(io.BytesIO(native_preview.body)) as image:
     assert image.size == (280, 360) and image.n_frames > 2

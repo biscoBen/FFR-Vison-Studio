@@ -17,13 +17,14 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.19 corrects missing
-attachment model parts and renderer dependencies, removes the continuous idle glow and completes the casting motion
-in a shorter presentation window. Resonance uses brief body-centered glow pulses as the crystal disappears and
-returns, with about half the former seated hold. Skills, stats, gameplay event timing and saved edits are preserved.
-Studio's native preview shares these motion tracks; its lighting is a labeled approximation.
-See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md). Windows validation and compilation passed on the same code commit. Native asset readbacks and IoStore
-verification passed; actual battle glass visibility/rotation and glow/cast timing still need an in-game check.
+Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.20 uses the existing
+UE4SS loader to attach the real crystal and native glow directly, independently of the walking-character toggle.
+The approved full cast plays through early native recovery calls; preparation no longer repeats the curled-up turn.
+Attack and resonance face the opposite direction, and the seated hold is 100 frames instead of 125. No gameplay
+hit/healing keys or saved kits change. Rebuild/install stages the owned runtime along with the assets; restart the
+game afterward. This requires the working loader already installed for field cycling, with no new loader download.
+Studio's refreshed preview is a labeled lighting approximation. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+The new code awaits Windows publication; the previous package below does not contain these runtime changes.
 
 [Verified Crystal Fina corrections / run 38855894137](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38855894137/Sephira-Studio-Test.zip)
 (code `2976d53`, published 2026-10-15). The download checksum, commit/run provenance and all 30 managed resources
@@ -529,7 +530,8 @@ only its owned `FFRStudioFieldLeader` Lua mod, with no further loader download. 
 minimap function. Cycling changes the walking sprite, preserves party order/save identity and battle choices,
 and restores the story appearance around events. All eight native party characters have movement sprites;
 Dark Fina uses her own cardinal poses for diagonal idle. Independent overworld replacements participate too.
-Turn the option off and rebuild/install, or restore the original game, to remove Studio's cycling scripts.
+Turn the option off and rebuild/install to remove cycling; native Crystal Fina keeps its own battle runtime if present.
+Removing her too, or restoring the original game, removes the owned runtime.
 Previous-build restoration also restores the corresponding scripts. Live controller/scene behavior needs testing.
 
 The original Resonance and its cinematic remain unchanged when replacing a model. Original visions can select another
@@ -599,13 +601,13 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.
-  For native Crystal Fina battle presentation, revalidate `DT_BtlUnitEffectAsset` and its part attachments,
-  actual SS6 Model.PartList names/indices/parents, CPU Niagara component-renderer/template serialization,
-  MeshRendererInfo dependencies, native sprite/effect scale parameters and SS6 rotation
-  axes. Recheck nonpositive design-scale fields and the explicit positive values authored only for Fina. Retest casing visibility/rotation, the absence of idle aura, timed caster-attached glow lifecycle/native fade curves, the frame-134 fall and
-  frame-308 reformation in real battles. Refresh the native
-  SsValue trailer/inline atlas decoder and retain the authorized jacket-free seated fallback without replacing saved kits.
-  Refresh the bundled native Studio preview geometry/body tracks and cache revision; keep it labeled separately from actual game lighting.
+  For native Crystal Fina battle presentation, revalidate the SS6 model names/parents, part sockets, UUPerPixel versus
+  component-scale conversion, direct movable mesh attachment and native mesh/material/bulk data. Recheck the
+  SpriteStudio playing-name out parameters, Play/SetPlayRate and Engine/Niagara component functions under UE4SS.
+  Preserve reflected bHidden access rather than calling the inline C++ IsHidden helper. Retest full-cast recovery,
+  no idle glow, direct parameter-driven aura fades, the frame-134 fall and frame-283 reformation in real battles.
+  Verify owned runtime staging/restoration and Deck transfer with cycling on and off. Keep the authorized seated
+  fallback, native source bytes and saved kits. Refresh the labeled Studio preview and cache revision separately.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
