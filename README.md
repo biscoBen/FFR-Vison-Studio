@@ -5,11 +5,23 @@ release history. Use the `Sephira's-Update` test packages to try these changes; 
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
 Cling's missing ally timeline is repaired when **Show unverified skills** and **Use our skill changes** are on.
-Its original group effects and damage timing are retained; the disabled enemy caster motion is mapped to the imported
-vision's attack. The repaired presentation still needs a live test. Whip, Tentacle, Sonic Boom, Bite and Incisors
-are labeled **Verified; demo test** based on the user's successful tests. Imported vision portraits now use native
-game frames without the blue backing or FFBE rarity badge. Rebuild/install and restart to refresh the game icons.
+Its original all-target effects, hit timing, sound and combat values are retained. The private copy enables only
+its checked caster track and maps enemy `atk` to imported `attack_A`. Generic audited group-skill reuse now
+creates a player route too; ally/enemy suffixes do not identify target count. Repaired Cling still needs a live
+multitarget test. Whip, Tentacle, Sonic Boom, Bite and Incisors are labeled **Verified; demo test** based on the
+user's successful tests, checked against their exact catalog definitions.
+
+Imported vision portraits now use native face/timeline/ability frames without the blue backing or FFBE rarity
+badge. Portrait layout controls remain available, and the advanced preview uses the same renderer.
+Update Studio, rebuild/install the mod and restart Resonance to refresh the game icons and Cling timeline.
 See [monster animation evidence and native icon details](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
+
+[Verified Cling and native icon update / run 38982081785](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38982081785/Sephira-Studio-Test.zip)
+(code `6aa315f`, published 2026-10-16; extension 1.2.31). Local analysis, 44 focused Flutter tests and
+389 Python checks pass. Cling's real native clone/readback and IoStore verification pass; Windows validation,
+compilation, frozen-engine startup and launcher/updater checks pass for the same commit. Downloaded
+checksum/provenance and all 33 managed resources match source. Accepted Fina battle/cave and party
+knockout assets remain byte-for-byte unchanged.
 
 Crystal Fina's finished cave presentation is automatic. Add her normally (or enable Sephira's Visions), then open
 **Edit → Acquisition**. To choose a specific cave, turn off **Hide for spoilers** and **Random**, select **Cave**
@@ -31,7 +43,7 @@ Windows validation and compilation pass for the same commit. Downloaded provenan
 Party battle replacements now expose the native knockout motion names used by all eight party members,
 including Lasswell's reverse stance. They use the selected sprite's fallen pose (or its base form's), preserving
 its timing and offsets. Native death and revival remain in control. Cleome's four regular looks were checked
-through native asset build/readback; live knockout/revival still needs confirmation.
+through native asset build/readback; the user confirmed the knockout fix looks good.
 See [party knockout evidence](docs/PARTY_KNOCKOUT_INVESTIGATION.md).
 
 [Verified party knockout update / run 38973264709](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38973264709/Sephira-Studio-Test.zip)

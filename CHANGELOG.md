@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Cling ally animation and native vision icons — 2026-10-16
+
+Code: [`6aa315f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/6aa315f93b773d7cc5dbb22e7b5792b270c1a1c1).
+[Verified Windows test release / run 38982081785](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38982081785).
+
 - Add a missing ally timeline for Cling using its original all-target effects, hit timing and audio.
   Enable only its audited caster track and map enemy `atk` to imported `attack_A`; keep original game
   bindings and combat values. Requires Show unverified skills and Use our skill changes. Generic audited
@@ -22,6 +27,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   rarity badge. Preserve portrait layout controls and use the same renderer in the advanced preview.
   Rebuild/install to update existing game icons. Extension 1.2.31.
 - Include the read-only monster-animation reference collector, writing only under Downloads/FFR Mod.
+- Local analysis, 44 focused Flutter tests and 389 Python checks pass. Tests cover ally-only additions,
+  future-native/custom precedence, changed-track rejection, group caster routes, exact live-test labels,
+  native icon frame preservation, clipping, converter output and startup resource staging. Native Cling
+  Master/Cut/Effect/Sound cloning, table readback and IoStore verification pass. Windows validation and
+  compilation pass for the same commit, including full suites, frozen-engine startup and launcher/updater.
+  Downloaded checksum/provenance and all 33 managed resources match source. Accepted Fina battle/cave
+  presentation and party replacement knockout assets remain unchanged. Cling's new presentation and native
+  icon appearance still need live confirmation.
+- First complete candidate to verified download: **8m22s**, including startup
+  resource-allowlist corrections, checks, waiting and verification. Windows CI took **5m55s**,
+  using **9m23s** of runner time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published automatic Crystal Fina cave presentation — 2026-10-16
 
