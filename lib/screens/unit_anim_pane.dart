@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../design/anim_viewer.dart';
 import '../state/app_state.dart';
+import '../services/crystal_fina.dart';
 
 /// The unit's Brave Exvius motions (its chosen look), fetched once per look from the engine.
 class UnitAnimPane extends StatefulWidget {
@@ -50,11 +51,14 @@ class _UnitAnimPaneState extends State<UnitAnimPane> {
   Widget build(BuildContext context) {
     final app = context.read<AppState>();
     final f = form;
+    final nativePreview = widget.unit['party'] == null;
     return AnimViewer(
       key: ValueKey('pane$f${widget.initial}'),
       anims: anims ?? const [],
-      url: (a) => f == null ? '' : app.api!.animUrl(f, a),
+      url: (a) => f == null ? '' : app.api!.animUrl(f, a, nativePreview: nativePreview),
       initial: widget.initial,
+      caption: f == CrystalFina.spriteId && nativePreview ? CrystalFina.previewCaption : null,
+      labels: f == CrystalFina.spriteId && nativePreview ? const {'limitatk': 'Resonance'} : const {},
       height: widget.height,
       loading: loading,
       loadingText: 'loading the motions',

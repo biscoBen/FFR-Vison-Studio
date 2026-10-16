@@ -2,6 +2,7 @@
 import copy
 from pathlib import Path
 import sys
+import struct
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -18,6 +19,27 @@ UNIT = {'id': 13503, 'jp': 'FixtureFina', 'donor': 13108, 'ffbe': {'id': battle.
 
 
 class FinaBattleTests(unittest.TestCase):
+    def test_nonpositive_scale_fields_are_explicitly_written_only_on_the_current_fina(self):
+        fallback = struct.unpack('<f', struct.pack('<f', 2.7))[0]
+        for sprite, effect, expected in [(0, 0, (fallback, 1.0)), (2.5, 0, (2.5, 1.0)),
+                                         ('+0', 1.4, (fallback, 1.4)), (-1, -1, (fallback, 1.0)), (3.0, 2.0, (3.0, 2.0))]:
+            row = {'Name': UNIT['jp'], 'Value': [p('ID', UNIT['id']), p('Scale', sprite),
+                p('attachEffectSacle', effect), p('attackOffsetLocation', {'keep': 42})]}
+            other = {'Name': 'Donor', 'Value': [p('ID', 13108), p('Scale', 0), p('attachEffectSacle', 0)]}
+            source = table([row, other]); before = copy.deepcopy(source)
+            with self.subTest(sprite=sprite, effect=effect):
+                built, scales = battle.design_table(source, UNIT)
+                self.assertEqual(scales, expected); self.assertEqual(source, before)
+                rows = battle.table_rows(built); self.assertEqual(rows[1], other)
+                self.assertEqual(rows[0]['Value'][3], row['Value'][3])
+                self.assertEqual(tuple(battle.cave.property_data(rows[0], name)['Value'] for name in ('Scale', 'attachEffectSacle')), expected)
+
+    def test_invalid_scale_data_and_ambiguous_owners_still_fail(self):
+        for value in (float('nan'), float('inf'), True, 'garbage'):
+            row = {'Name': UNIT['jp'], 'Value': [p('ID', UNIT['id']), p('Scale', value), p('attachEffectSacle', 1)]}
+            with self.subTest(value=value), self.assertRaises(ValueError): battle.design_table(table([row]), UNIT)
+        with self.assertRaises(ValueError): battle.design_table(table([]), UNIT)
+
     def test_only_selected_custom_fina_is_replaced(self):
         self.assertIsNone(battle.selected([{'id': 13108}]))
         self.assertEqual(battle.selected([UNIT]), UNIT)

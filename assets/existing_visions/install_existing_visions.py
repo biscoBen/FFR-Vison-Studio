@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.17'
+VERSION = '1.2.18'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -43,6 +43,23 @@ def validate_field_archive(raw, catalog):
                     raise RuntimeError('Directional field sprite checksum mismatch: ' + name)
     except zipfile.BadZipFile as error:
         raise RuntimeError('Invalid directional field archive.') from error
+
+
+def validate_preview_archive(raw):
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        expected = {'manifest.json', 'idle.webp', 'atk.webp', 'limitatk.webp'}
+        if len(archive.namelist()) != len(expected) or set(archive.namelist()) != expected:
+            raise RuntimeError('Native Fina preview archive contents differ from the manifest.')
+        manifest = json.loads(archive.read('manifest.json'))
+        if (manifest.get('schema') != 1 or manifest.get('presentation') != 'native-fina-2'
+                or set(manifest.get('animations', {})) != {'idle', 'atk', 'limitatk'}):
+            raise RuntimeError('Unsupported native Fina preview archive.')
+        for name, entry in manifest['animations'].items():
+            if entry.get('file') != name + '.webp' or not 0 < entry.get('seconds', 0) <= 100:
+                raise RuntimeError('Invalid native Fina preview entry.')
+            data = archive.read(entry['file'])
+            if not data.startswith(b'RIFF') or data[8:12] != b'WEBP' or sha(data) != entry.get('sha256'):
+                raise RuntimeError('Native Fina preview checksum mismatch.')
 
 
 def checked(root, relative):
@@ -327,6 +344,7 @@ def run(root, action):
                 raise RuntimeError('Existing vision field sheet is not a PNG.')
         elif name == 'overworld_assets.zip':
             validate_field_archive(raw, json.loads(resource_data['overworld_catalog.json']))
+        elif name == 'fina_battle_preview.zip': validate_preview_archive(raw)
         else: raise RuntimeError('Unsupported existing vision resource: ' + name)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}
     changes = {helper: module, **{resources[name]: raw for name, raw in resource_data.items()}}; records = {}

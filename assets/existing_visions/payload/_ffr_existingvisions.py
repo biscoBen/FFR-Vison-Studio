@@ -271,6 +271,8 @@ def register(app, env):
         import _ffr_library
         _ffr_animation_repair.install_preview_hooks(env)
         _ffr_library.install(env['ffr_catalog'], env['ROOT'])
+        import _ffr_fina_preview
+        _ffr_fina_preview.register(app, env)
     def locale():
         path = Path(env['ROOT']) / 'extracted/locres_en.json'
         return json.loads(path.read_bytes()) if path.is_file() else {}

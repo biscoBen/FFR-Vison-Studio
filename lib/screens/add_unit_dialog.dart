@@ -309,8 +309,10 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
       if (widget.overworld) OverworldAnimPane(key: ValueKey('field-viewer-${sel!['id']}'), model: sel!['id'] as String) else AnimViewer(
         key: ValueKey('viewer$form'),
         anims: hasPack ? ordered : const [],
-        url: (a) => app.api!.animUrl(form, a),
+        url: (a) => app.api!.animUrl(form, a, nativePreview: widget.replacePartyId == null),
         initial: 'idle',
+        caption: form == CrystalFina.spriteId && widget.replacePartyId == null ? CrystalFina.previewCaption : null,
+        labels: form == CrystalFina.spriteId && widget.replacePartyId == null ? const {'limitatk': 'Resonance'} : const {},
         height: 210,
         loading: loadingAssets,
         emptyText: hasPack ? 'No animations for this look.' : 'No sprite pack for this look is on the host yet.',

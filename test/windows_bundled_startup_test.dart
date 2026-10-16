@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.17');
+      expect(state['version'], '1.2.18');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_deck_sync.py',
@@ -80,6 +80,8 @@ void main() {
         '_ffr_testing.py',
         '_ffr_crystal_cave.py',
         '_ffr_fina_battle.py',
+        '_ffr_fina_preview.py',
+        'fina_battle_preview.zip',
         '_ffr_fina_motion.py',
         '_ffr_ability_modes.py',
         'ability_hiding_review.json',
@@ -117,6 +119,17 @@ _ffr_deck_sync.register(app, {'ROOT': str(root)})
 status = next(r for r in app.routes if r.path == '/api/deck/status').endpoint()
 assert status['enabled'] is False and status['repository'] == '' and status['hasToken'] is False
 from PIL import Image
+import _ffr_fina_preview
+preview_app = FastAPI()
+_ffr_fina_preview.register(preview_app, {'ROOT': str(root)})
+native_route = next(r for r in preview_app.routes if r.path == '/api/ffbe/anim/99887755552703/{anim}.webp')
+native_preview = native_route.endpoint('idle')
+assert native_preview.headers['x-fina-presentation'] == 'native-fina-2'
+assert native_preview.headers['cache-control'] == 'no-store'
+with Image.open(io.BytesIO(native_preview.body)) as image:
+    assert image.size == (280, 360) and image.n_frames > 2
+    image.seek(0)
+    image.load()
 _ffr_party.validate({'key':'party_1001', 'id':1001, 'jp':'レイン', 'en':'Rain',
     'party':{'version':1, 'id':1001}, 'overworld':{'version':1, 'model':'vagrant_knight_rain'}})
 assert 'idle9' in [a['name'] for a in _ffr_overworld.spec('pc0010')['animations']]

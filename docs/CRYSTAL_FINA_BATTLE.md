@@ -83,8 +83,16 @@ permutation can be made by changing a usage flag. The renderer and template surv
 The independent body/casing assets live under `Chara/StudioCrystalFinaBattle/<allocated ID>`. The original converted
 summon and menu assets remain for the old cave comparison and editor. Only the freshly built Fina battle row is
 retargeted; all other rows, sound data, skills, stats and sequence events remain. No roster file is written.
-Casing size compensates for the donor design's separate sprite Scale and attachEffectSacle fields, retaining the
-approved .12/2.7 casing/body ratio. The native bounds origin corrects the mesh pivot.
+Casing size uses the freshly built Fina design row's separate sprite Scale and attachEffectSacle fields, retaining
+the approved .12/2.7 casing/body ratio. The native bounds origin corrects the mesh pivot.
+
+The first live build log rejected a nonpositive native scale. The original positive-only donor check was too strict;
+its synthetic integration design row had not covered that case. The corrected build authors explicit positive values
+on Fina's current design row wherever the value is nonpositive: sprite Scale 2.7 (the approved native body scale) and effect scale
+1.0. Existing positive values remain unchanged. The casing calculation uses these same authored values, rather than
+guessing the game's C++ inheritance behavior or dividing by zero. Nonfinite/unsupported values still fail
+with the field and value. New float values are canonical float32 before strict serialization comparison. All other
+design rows and Fina's non-scale design fields remain unchanged.
 
 SS6 `NULL_Crystal` carries the slow 3.6-degree/second Y rotation. Its 6000-frame idle makes one complete 100-second
 turn. At resonance frame 134, the attachment moves below view; the body descends and holds original seated frame
@@ -101,9 +109,23 @@ This preserves mechanics; the perceived alignment of the cast with existing effe
 Local native integration generates the original converted sprites, then the complete private battle system, crystal,
 material, two data tables, SS6 project and all three textures using the real asset tool. Every generated graph/table
 passes strict native write/read checks. Decoding the newly generated custom-value trailer confirms the seated cell,
-frame-134 hide and the 6000-frame turning idle. A clearly labeled synthetic design row exercises scale compensation;
+frame-134 hide and the 6000-frame turning idle. A clearly labeled synthetic native-format design table now exercises both zero fields through the full builder;
 it is never substituted for a real game table. Native supplied source files are copied into a scratch engine and
 remain unchanged. The cave's approved glass/mesh/sequence generators are unchanged.
+
+## Studio preview
+
+`fina_battle_preview.zip` contains checked native idle, attack and resonance WebPs. The supplied native body pixels,
+original seated fallback and crystal LOD0 geometry are rendered by `scripts/render_crystal_fina_preview.py`, using
+the shared body tracks and current converted action durations. The native game assets are not repainted or changed.
+The software renderer shows the new shape/motion and a glow approximation; it does not execute Unreal's glass shader.
+Studio labels this preview so it is not mistaken for exact game lighting/refraction.
+
+Literal custom-Fina API routes register before the generic FFBE routes, cover both Studio and Advanced preview
+requests, and bypass old generated preview files without deleting them. Other forms keep their existing routes.
+Responses use no-store and the Flutter image URLs include a presentation revision, avoiding both disk and in-memory
+stale previews. The selector identifies the finishing motion as Resonance. Bundled extension 1.2.18 installs the
+preview module/archive along with the scale fix; it does not overwrite the old cave comparison sprites or saved kits.
 
 The read-only collection helpers remain under `scripts/reference/crystal-fina-battle`, outputting to
 `Downloads\FFR Mod`. `scripts/prepare_crystal_fina_battle.py` renders the shared motion draft without installing

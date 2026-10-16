@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Fix Crystal Fina builds failing with "The native sprite/effect battle scales are invalid." Read her fresh built
+  design row instead of requiring positive donor values. Fill only nonpositive scale fields with explicit native-presentation
+  values, preserve positive scales and other rows, and size the casing from the same values written to the game.
+  Reject nonfinite/unsupported data with field/value details; canonicalize authored floats for native readback checks.
+- Update Studio's Crystal Fina animation viewer and selector to show the native sprite inside crystal geometry, the
+  eye-opening/turn/cast attack and the glowing fall/seated resonance. Include verified previews offline, bypass old
+  FFBE preview files and revise Flutter's image-cache identity. Label the software preview's lighting difference.
+  Bundled extension 1.2.18; existing kits, menu portraits and the cave comparison remain intact.
+
 ## Published native Crystal Fina battle test — 2026-10-15
 
 Code: [`bb2a737`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bb2a7372d24c62c2e15deadc5aa27deaf9c3a673).

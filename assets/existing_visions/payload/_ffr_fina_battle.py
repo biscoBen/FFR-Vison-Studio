@@ -2,6 +2,7 @@
 import copy
 import json
 import math
+import struct
 from pathlib import Path
 
 import _ffr_crystal_cave as cave
@@ -155,6 +156,32 @@ def battle_table(original, unit):
     return view
 
 
+def design_table(original, unit):
+    """Make unset presentation scales explicit on Fina's fresh row only.
+
+    A nonpositive source value is not a usable presentation scale or divisor.
+    Rather than infer the C++ inheritance/default path, author positive values
+    for this private presentation and use them for its casing ratio.
+    """
+    view = copy.deepcopy(original)
+    matches = [r for r in table_rows(view) if cave.property_data(r, 'ID')['Value'] == unit['id']]
+    if len(matches) != 1 or matches[0]['Name'] != unit['jp']:
+        raise ValueError('The freshly built Crystal Fina design row is missing or ambiguous.')
+    row = matches[0]; resolved = []
+    for name, fallback in [('Scale', cave.TEST_SPRITE_SCALE), ('attachEffectSacle', 1.0)]:
+        field = cave.property_data(row, name); raw = field['Value']
+        if not (type(raw) in (int, float) or type(raw) is str and raw in ('+0', '-0')):
+            raise ValueError('Unsupported Crystal Fina design scale: ' + name + '=' + repr(raw))
+        value = float(raw)
+        if not math.isfinite(value):
+            raise ValueError('Invalid Crystal Fina design scale: ' + name + '=' + repr(raw))
+        if value <= 0:
+            value = struct.unpack('<f', struct.pack('<f', fallback))[0]
+            cave.set_value(row, name, value)
+        resolved.append(value)
+    return view, tuple(resolved)
+
+
 def build(units, env):
     unit = selected(units)
     if unit is None: return
@@ -176,16 +203,14 @@ def build(units, env):
         AURA, cave.TEST_BACKGROUND, cave.TEST_NATIVE_MESH, cave.TEST_NATIVE_MATERIAL, cave.TEST_NATIVE_SHADER,
         cave.TEST_SPRITE.removeprefix('/Game/'), cave.TEST_SPRITE.removeprefix('/Game/') + '_tex')}
     native_effects = native('Datatable/' + EFFECT_TABLE)
-    designs = env['rows'](DESIGN_TABLE)
-    donor = [r for r in designs.values() if r.get('ID') == unit['donor']]
-    if len(donor) != 1: raise ValueError('The Crystal Fina battle design donor is missing.')
-    scale = float(donor[0]['Scale']); effect_scale = float(donor[0]['attachEffectSacle'])
-    if not all(math.isfinite(s) and s > 0 for s in (scale, effect_scale)):
-        raise ValueError('The native sprite/effect battle scales are invalid.')
+    content = out / 'FFRS/Content'
+    design_path = content / ('Datatable/' + DESIGN_TABLE + '.uasset')
+    design, (scale, effect_scale) = design_table(decode(design_path, 'built-battle-design'), unit)
+    print(f'  Crystal Fina battle scales: sprite={scale:g}, attached effects={effect_scale:g} (explicit built row).')
     # Match the casing/body ratio approved in the field test. Battle sprite and
     # attachment scales are separate native design parameters.
     rel, system = casing_system(source, unit, cave.TEST_CRYSTAL_SCALE / cave.TEST_SPRITE_SCALE * scale / effect_scale)
-    assets = {rel: system}
+    assets = {rel: system, 'Datatable/' + DESIGN_TABLE: design}
     private_mesh, private_material = package(unit, 'SM_Studio_CrystalFina'), package(unit, 'MI_Studio_CrystalFina')
     for old, view in cave.test_crystal_assets(source).items():
         new = private_mesh if old == cave.TEST_MESH else private_material
@@ -197,7 +222,6 @@ def build(units, env):
             material['Value'] = cave.asset_import(result, material['Value'], '/Game/' + private_material)
             material['IsZero'] = False
         assets[new] = result
-    content = out / 'FFRS/Content'
     effects_path = content / ('Datatable/' + EFFECT_TABLE + '.uasset')
     assets['Datatable/' + EFFECT_TABLE] = effect_table(decode(effects_path, 'built-unit-effects') if effects_path.is_file() else native_effects, unit)
     unit_path = content / ('Datatable/' + UNIT_TABLE + '.uasset')
