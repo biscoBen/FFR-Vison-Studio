@@ -18,26 +18,26 @@ obsolete solid/animate settings are ignored. Update Studio, rebuild/install and 
 without Crystal Fina already acquired.
 
 Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. Bundled
-extension 1.2.24 follows the user's choice of the game's short attack timing: eye opening, turning and charge fit
-native preparation; her shot begins at native release. The runtime no longer plays a long cast across recovery.
-Damage and effect events keep their original timing.
+extension 1.2.25 preserves the accepted short native attack, early bright resonance glow, mirrored actions and
+**1.25-second seated hold**.
 
-Her brighter body-centered resonance glow starts during preparation, giving the native particles time to build
-before she falls. Its attachment stays on the body during preparation and descent, and the same warm effect fades
-back in before reformation. Battle glass uses the accepted cave parameters too. Preserve the accepted cave size,
-mirrored actions and **1.25-second seated hold**. The runtime uses the existing UE4SS loader independently of field
-cycling; no new loader is installed. Studio's refreshed preview is a labeled lighting approximation.
-See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+Battle refraction now accounts for actual inherited world-depth scale, using a private dynamic material instance
+and the accepted cave's reference. A fixed bias behaved differently on the physically larger battle casing.
+The runtime logs its measured scale and calculated bias. Cave assets and approved surface settings stay intact.
+The resonance aura is destroyed immediately after its final fade, with a completion latch preventing native frame
+resets from replaying the glow on the ground. Later resonances can start normally. No damage or effect hit events
+change. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
-Windows validation, compilation and frozen-engine startup pass. The downloaded package checksum, commit/run identity
-and all 31 managed resources match source. The resulting battle refraction, glow brightness and perceived impact
-alignment still need an in-game test. If needed, the
-[runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd) and
-[companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect
+The runtime uses the existing UE4SS loader independently of field cycling; no new loader is installed. Studio's
+preview remains a labeled lighting approximation. Windows validation, compilation and frozen-engine startup pass;
+the downloaded checksum/provenance and all 31 managed resources match source. Live confirmation of the resulting
+battle clarity and final flash cleanup remains pending. Battle and cave reflection colors vary with their scene.
+If needed, the [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
+and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect
 allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
 
-[Verified Crystal Fina timing/glow update / run 38946295996](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38946295996/Sephira-Studio-Test.zip)
-(code `1e679ba`, published 2026-10-16; extension 1.2.24). Update Studio, rebuild/install the mod and restart Resonance.
+[Verified Crystal Fina refraction/cleanup update / run 38950607802](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38950607802/Sephira-Studio-Test.zip)
+(code `4e871bc`, published 2026-10-16; extension 1.2.25). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

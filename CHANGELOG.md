@@ -11,12 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina scaled glass and final glow cleanup — 2026-10-16
+
+Code: [`4e871bc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4e871bc9efd4709f35674527b201ef8347e16006).
+[Verified Windows test release / run 38950607802](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38950607802).
+
 - Match Crystal Fina's battle refraction depth gate to the crystal's actual inherited world scale. Use an owned
   dynamic material instance and the accepted cave's depth/scale reference; retain its surface settings and rotation.
   Log the measured depth scale and calculated bias instead of selecting another fixed battle-only value.
 - Destroy the resonance aura as soon as its final fade finishes, and latch completion through native frame resets
   and temporary animation-name gaps. A later genuine resonance can light normally. Preserve the accepted attack,
   early glow, facing and 1.25-second seated hold. Extension 1.2.25; live battle clarity/flash confirmation is pending.
+- Windows validation and compilation pass for the same commit, including full Flutter/Python suites and real
+  frozen-engine startup. Local analysis, 20 focused Flutter tests, 367 Python tests and native build/readback/IoStore
+  checks pass. Regression fixtures cover scaled depth gating/range caps, late frame resets, animation-name gaps,
+  expired seated emitters and a later resonance. Downloaded checksum/provenance and all 31 managed resources match.
+- First complete candidate to verified download: **8m37s**, including checks,
+  waiting and verification. Windows CI took **5m55s**, using **9m47s** of
+  runner time. Joined the matching automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina short attack and early resonance glow — 2026-10-16
 
