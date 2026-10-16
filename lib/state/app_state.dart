@@ -329,6 +329,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { crystalCaveTest = await api!.crystalCaveTest(); }
     catch (e) { notice = 'Could not load Crystal Fina test settings: $e'; }
+    try { await migrateCrystalCaveOptions(); }
+    catch (e) { notice = 'Could not move the old Crystal Fina cave setup to Acquisition: $e'; }
     try { fieldLeader = await api!.fieldLeader(); }
     catch (e) { notice = 'Could not load field leader settings: $e'; }
     try { nativeVisions = await api!.nativeVisions(); }
@@ -455,9 +457,7 @@ class AppState extends ChangeNotifier {
   Future<bool> removeUnit(String key) => _withRoster(() async {
     try {
       if (building) { throw StateError('Wait for the current build to finish.'); }
-      if ((crystalCave || crystalCaveTest) && units.any((u) => u['key'] == key && CrystalFina.matches(u as Map))) {
-        throw StateError('Turn off Crystal Fina cave and Crystal Fina Test before removing her profile.');
-      }
+      await _migrateCrystalCaveOptions();
       await _savePending();
       await api!.deleteUnit(key);
       _pendingEdits.remove(key);
@@ -943,6 +943,45 @@ class AppState extends ChangeNotifier {
     testingPracticeBattle = value; notifyListeners();
   });
 
+  /// Convert retired switches into an editable per-vision cave assignment.
+  /// Save the roster before clearing the switches, so failed saves can retry.
+  Future<void> migrateCrystalCaveOptions() => _withRoster(_migrateCrystalCaveOptions);
+
+  Future<void> _migrateCrystalCaveOptions() async {
+    if (!crystalCave && !crystalCaveTest) return;
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel();
+    await _savePending();
+    for (final unit in units.cast<JsonMap>().toList()) {
+      if (unit['native'] != null || unit['party'] != null || !CrystalFina.matches(unit)) continue;
+      // A shop choice or edited cave snapshot takes priority over the former
+      // global override. Never recreate a deleted profile or enable a collection.
+      if (unit[Acquisition.field] != null) {
+        if (!Acquisition.valid(unit[Acquisition.field])) {
+          throw StateError('Crystal Fina has an unreadable Acquisition choice; it has been preserved.');
+        }
+        continue;
+      }
+      final cave = acquisitionLocations.cave('crystal_cave') ?? CaveLocation.original;
+      await acquisitionLocations.add(cave);
+      // Adding the shared placement writes a file. Retain edits made while it
+      // was saving, including a newly selected shop/cave.
+      final current = units.cast<JsonMap>().where((u) => u['key'] == unit['key']).firstOrNull;
+      if (current == null || current[Acquisition.field] != null) continue;
+      update({...current, Acquisition.field: Acquisition(
+        location: cave.id, random: false, cave: cave.toJson(),
+      ).toJson()});
+    }
+    _saveTimer?.cancel();
+    await _savePending();
+    if (crystalCaveTest) { await api!.saveCrystalCaveTest(false); }
+    else { await api!.saveCrystalCave(false); }
+    crystalCave = false; crystalCaveTest = false;
+    notifyListeners();
+  }
+
+  // Compatibility entry points for older integrations; no longer exposed in Studio.
   Future<void> setCrystalCave(bool value) => _setCrystalCave(value);
 
   Future<void> setCrystalCaveTest(bool value) => _setCrystalCave(value, test: true);
@@ -1152,6 +1191,7 @@ class AppState extends ChangeNotifier {
       if (publishToDeck && (deckSync['enabled'] != true || deckSync['hasToken'] != true)) {
         throw StateError('Set up and enable your private Deck sync first.');
       }
+      await _migrateCrystalCaveOptions();
       await _savePending();
       await api!.build(install: install);
     } catch (e) {

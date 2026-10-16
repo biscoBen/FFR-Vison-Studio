@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Remove the standalone Crystal Fina cave/Test switches from Studio. Assigning her to any cave through
+  Acquisition now automatically includes the finished introductory sprite, rotating transparent crystal,
+  approved size/material and normal cave acquisition/return flow. Other cave visions keep their appearance.
+- Migrate an enabled old switch to an explicit original-cave assignment when Fina has no saved choice,
+  then retire the switch. Preserve existing shops/caves, edited kits and disabled collections; do not
+  recreate removed profiles. Save failures keep a retryable state and stop the build. Extension 1.2.30.
+  Native serialization and automated checks are pending; the new assignment route needs a live game test.
+
 ## Published party replacement knockout motions — 2026-10-16
 
 Code: [`9275ab7`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9275ab78afd923afb3259bb2ac1b40e031637fb4).

@@ -341,7 +341,7 @@ void main() {
     expect(find.descendant(of: find.byKey(const Key('default-visions')), matching: find.text('CLOUD')), findsOneWidget);
   });
 
-  testWidgets('context removal is disabled during builds and preserves cave-required Fina', (tester) async {
+  testWidgets('context removal is disabled during builds and allows cave-assigned Fina', (tester) async {
     await show(tester);
     app.buildState = {'running': true};
     app.notifyListeners();
@@ -351,19 +351,17 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pump(const Duration(milliseconds: 300));
     app.buildState = null;
-    app.crystalCave = true;
-    String? removalNotice;
-    app.addListener(() { removalNotice ??= app.notice; });
+    app.update({...app.units.single as Map<String, dynamic>, 'studioAcquisition': {
+      'version': 1, 'random': false, 'hideSpoilers': true, 'location': 'crystal_cave',
+    }});
     app.notifyListeners();
     await tester.pumpAndSettle();
     await rightClickVision(tester, api.roster.first['en'] as String);
     await tester.tap(find.text('Remove vision'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove'));
-    await wait(tester, () => removalNotice != null);
-    expect(app.units, hasLength(1));
-    expect(api.roster, hasLength(1));
-    expect(removalNotice, contains('Turn off Crystal Fina cave'));
+    await wait(tester, () => app.units.isEmpty);
+    expect(api.roster, isEmpty);
     await tester.pump(const Duration(seconds: 6));
   });
 

@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "86dbfd76ea4e6aee3b4bc534757bb5a113cb87e4feed19fdd6263d12328bf4fb",
+    "install_existing_visions.py": "9f289141b56ec152a417b444e5d327aedf1f25fd83e64a509ac08d085e4e424d",
     "payload/_ffr_ability_modes.py": "973660f7b5a3846bd46b6c2b314733db7a57f9576f717b3204b38d062d066ee1",
     "payload/_ffr_animation_repair.py": "6fb0854f741dd2120b73346fd056b1e5ea71081dceadf88cb1b3b53c5b252dbf",
     "payload/_ffr_build_sprites.py": "303c0e7040752ebcb84ce2b6c7e9133af48fd85728e397d090b500a68c961ccb",
-    "payload/_ffr_crystal_cave.py": "261468ff9aa08fabb7542de72edba09fe85e50e8d816491a6cd9460dfd157aa3",
+    "payload/_ffr_crystal_cave.py": "3fb25d741075465bea1be5cb3dfea45c470a2bd133f12cc1257eb04008705e58",
     "payload/_ffr_crystal_mesh.py": "8ee7ccf20d35566ba0e9f4ecc11c150a3368e995801e07348d45bef0826b0ce9",
     "payload/_ffr_deck_sync.py": "4e6532f3d47c522bd6cd4be5a9a49e2230af24d3ddac5d25139d2ccc603312fa",
     "payload/_ffr_existingvisions.py": "996da3142e0505889110bfa5dc6a9f36ac650977126a1455197810ebf5c1283c",
@@ -26,7 +26,7 @@
     "payload/field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
     "payload/fina_battle.lua": "191264890de6cf2a62e5bf46a5b23bb6e1c39febe18163829de176ae57961534",
     "payload/fina_battle_preview.zip": "3d4d76ddf718ef30fc4343da2f61cc76a1a3b5fb571e5f786268174f7037696e",
-    "payload/manifest.json": "0eed8d2a0ab188530fde00fa1d25198ec9c8548175aab88d83c9c58033066231",
+    "payload/manifest.json": "86c417a90b1e51acd493c8c958f41cc6fd10e180339881599c226b13e07deedf",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",

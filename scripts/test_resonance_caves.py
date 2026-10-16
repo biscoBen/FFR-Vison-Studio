@@ -121,7 +121,34 @@ class ResonanceCavesTests(unittest.TestCase):
             plans, _ = cave.cave_plans([ordinary, fina], root, rows)
         by_id = {unit['id']: spec for group in plans for unit, spec in group}
         self.assertAlmostEqual(by_id[ordinary['id']].sprite_scale, 2.55 * 1.05)
-        self.assertEqual(by_id[fina['id']].sprite_scale, 4.25)
+        self.assertEqual(by_id[fina['id']].sprite_scale, cave.TEST_SPRITE_SCALE)
+
+    def test_assigned_fina_always_uses_finished_crystal_with_all_legacy_switches_off(self):
+        original, rows, fina = reference.cave_game()
+        companion = vision(13520, 'cave_shared', entrance='shrine', x=17400, y=21700)
+        fina['studioAcquisition'] = copy.deepcopy(companion['studioAcquisition'])
+        before = copy.deepcopy([fina, companion])
+        with tempfile.TemporaryDirectory() as root:
+            self.assertFalse(testing.settings(root)['crystalCaveTest'])
+            operations = testing.prepare({}, [fina, companion], root, rows)
+            built = applied(original, operations)
+            plans, _ = cave.cave_plans([fina, companion], root, rows)
+            self.assertEqual(len(plans), 1)  # No extra original test cave.
+            entries = {u['id']: spec for group in plans for u, spec in group}
+            spec = entries[fina['id']]
+            self.assertTrue(spec.fina_test)
+            self.assertEqual(spec.sprite, cave.TEST_SPRITE)
+            self.assertEqual(spec.sprite_scale, cave.TEST_SPRITE_SCALE)
+            self.assertEqual(spec.sprite_float, cave.TEST_SPRITE_FLOAT)
+            self.assertEqual(spec.mesh, cave.ENTRANCE_MESHES['shrine'])
+            self.assertFalse(entries[companion['id']].fina_test)
+            self.assertEqual(entries[companion['id']].sprite_scale, cave.VISION_SCALE)
+            self.assertEqual(len(operations[cave.MAP_UNIT]['add']), 2)
+            event = built[testing.COMPOSITE][spec.event]
+            self.assertEqual(event['ObtainItemList'][0]['ID'], fina['id'])
+            self.assertEqual(event['TransitionLocation']['mapId'], spec.stone_id)
+            self.assertEqual(built[cave.MAP_UNIT][spec.npc_name]['animationAssetList'][0]['Ss6Project'], cave.TEST_SPRITE)
+        self.assertEqual([fina, companion], before)
 
     def test_returns_follow_rotated_opening_and_ground_not_saved_entrance_height(self):
         for entrance, opening in [('rock_cave', (0, 1)), ('shrine', (0, -1)),

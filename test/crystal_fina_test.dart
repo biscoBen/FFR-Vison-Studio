@@ -35,6 +35,7 @@ class RosterApi extends Api {
   final calls = <String>[];
   bool cave = false;
   bool caveTest = false;
+  bool failCaveSettings = false;
   Future<void> Function(List<dynamic>)? beforeSave;
   @override
   Future<List<dynamic>> spec() async => clone(roster) as List;
@@ -47,9 +48,17 @@ class RosterApi extends Api {
   @override
   Future<void> build({required bool install}) async { calls.add('build'); }
   @override
-  Future<void> saveCrystalCave(bool value) async { calls.add('cave:$value'); cave = value; if (value) caveTest = false; }
+  Future<void> saveCrystalCave(bool value) async {
+    calls.add('cave:$value');
+    if (failCaveSettings) throw StateError('settings write failed');
+    cave = value; if (value) caveTest = false;
+  }
   @override
-  Future<void> saveCrystalCaveTest(bool value) async { calls.add('cave-test:$value'); caveTest = value; if (value) cave = false; }
+  Future<void> saveCrystalCaveTest(bool value) async {
+    calls.add('cave-test:$value');
+    if (failCaveSettings) throw StateError('settings write failed');
+    caveTest = value; if (value) cave = false;
+  }
   @override
   Future<void> deleteUnit(String key) async { calls.add('delete'); roster.removeWhere((u) => u['key'] == key); }
   @override
@@ -173,7 +182,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.29' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.30' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -209,7 +218,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.29' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.30' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
@@ -235,30 +244,35 @@ void main() {
     expect(api.roster.length, 3);
   });
 
-  test('cave activation uses the allocated Fina and preserves edits when enabled again', () async {
-    final other = {'key': 'other', 'id': 13503, 'stats': {'Attack': 88}};
-    final api = RosterApi([other]);
-    final app = AppState(hostBase: 'http://unused', appPaths: paths,
-        bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api..units = clone(api.roster) as List;
-    addTearDown(app.dispose);
-    app.update({...other, 'stats': {'Attack': 99}});
-    await app.setCrystalCave(true);
-    expect(api.cave, isTrue); expect(app.crystalCave, isTrue);
-    expect(api.roster.first['stats']['Attack'], 99);
-    final fina = api.roster.last as Map<String, dynamic>;
-    expect(fina['id'], 13504);
-    fina['stats']['MaxHitPoint'] = 987;
-    await app.setCrystalCave(true);
-    expect(api.roster.length, 2);
-    expect(api.roster.last['stats']['MaxHitPoint'], 987);
-    expect(await app.removeUnit(fina['key'] as String), isFalse);
-    expect(api.calls, isNot(contains('delete')));
-    await app.setCrystalCave(false);
-    expect(api.cave, isFalse); expect(app.crystalCave, isFalse);
-    expect(await app.removeUnit(fina['key'] as String), isTrue);
+  test('retired cave switches migrate to a normal assignment and preserve roster edits', () async {
+    for (final testMode in [false, true]) {
+      final other = {'key': 'other', 'id': 13503, 'stats': {'Attack': 88}};
+      final fina = CrystalFina.instantiate(suppliedProfile(), [other]);
+      fina['stats']['MaxHitPoint'] = 987;
+      final api = RosterApi([other, fina])..cave = !testMode..caveTest = testMode;
+      final app = PickerApp(paths)..api = api..units = clone(api.roster) as List
+        ..crystalCave = !testMode..crystalCaveTest = testMode;
+      addTearDown(app.dispose);
+      app.update({...other, 'stats': {'Attack': 99}});
+      await app.migrateCrystalCaveOptions();
+      expect(api.roster, hasLength(2));
+      expect(api.roster.first['stats']['Attack'], 99);
+      expect(api.roster.last['stats']['MaxHitPoint'], 987);
+      expect(api.roster.last['id'], 13504);
+      final acquisition = api.roster.last['studioAcquisition'] as Map;
+      expect(acquisition['location'], 'crystal_cave');
+      expect(acquisition['random'], isFalse);
+      expect(acquisition['cave']['worldX'], 17600);
+      expect(app.crystalCave || app.crystalCaveTest || api.cave || api.caveTest, isFalse);
+      final calls = api.calls.length;
+      await app.migrateCrystalCaveOptions();
+      expect(api.calls.length, calls);
+      expect(await app.removeUnit(fina['key'] as String), isTrue);
+      expect(api.roster, hasLength(1));
+    }
   });
 
-  testWidgets('Native Fina cave needs only the test switch', (tester) async {
+  testWidgets('home removes all standalone Fina cave and diagnostic controls', (tester) async {
     final api = RosterApi([]);
     final app = AppState(hostBase: 'http://unused', appPaths: paths,
         bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api..crystalCaveTest = true;
@@ -269,37 +283,77 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(value: app,
       child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: HomeScreen()))));
-    final control = find.byKey(const Key('crystal-fina-cave-test'));
-    await tester.ensureVisible(control);
-    expect(tester.widget<SwitchListTile>(control).value, isTrue);
+    expect(find.byKey(const Key('crystal-fina-cave')), findsNothing);
+    expect(find.byKey(const Key('crystal-fina-cave-test')), findsNothing);
     expect(find.byKey(const Key('crystal-fina-solid-check')), findsNothing);
     expect(find.byKey(const Key('crystal-fina-rotate')), findsNothing);
-    expect(find.textContaining('introductory pose inside rotating transparent glass'), findsOneWidget);
-    expect(find.textContaining('original imported Crystal Fina'), findsNothing);
-    expect(app.crystalCaveTest, isTrue);
+    expect(find.byKey(const Key('field-leader-cycle')), findsOneWidget);
+    expect(find.byKey(const Key('testing-practice-battle')), findsOneWidget);
+    expect(find.text('Crystal Fina cave'), findsNothing);
+    expect(find.text('Crystal Fina Test'), findsNothing);
     expect(api.roster, isEmpty);
   });
 
-  test('test cave switches presentation without duplicating Fina or losing edits', () async {
-    final api = RosterApi([]);
-    final app = AppState(hostBase: 'http://unused', appPaths: paths,
-        bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api;
+  test('migration preserves explicit cave or shop choices and disabled collection membership', () async {
+    for (final choice in ['shop_2001', 'cave_custom']) {
+      final fina = disabledFina();
+      fina['studioAcquisition'] = choice == 'shop_2001'
+          ? {'version': 2, 'random': false, 'hideSpoilers': false, 'location': choice, 'cave': null}
+          : {'version': 2, 'random': true, 'hideSpoilers': true, 'location': choice,
+              'cave': {'version': 2, 'id': choice, 'name': 'My cave', 'entrance': 'shrine',
+                'worldX': 17000.0, 'worldY': 21000.0, 'worldZ': 80.0, 'yaw': -90.0, 'scale': .75}};
+      final before = clone(fina);
+      final api = RosterApi([fina])..caveTest = true;
+      final app = PickerApp(paths)..api = api..units = clone(api.roster) as List..crystalCaveTest = true;
+      addTearDown(app.dispose);
+      await app.migrateCrystalCaveOptions();
+      expect(api.roster.single, before);
+      expect(app.hasCrystalFina, isFalse);
+      expect(api.caveTest, isFalse);
+      expect(api.calls, ['cave-test:false']);
+    }
+  });
+
+  test('failed migration retains the old switch and prevents a build until saved', () async {
+    final fina = suppliedProfile();
+    final api = RosterApi([fina])..caveTest = true;
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List..crystalCaveTest = true;
     addTearDown(app.dispose);
-    await app.setCrystalCaveTest(true);
-    expect(app.crystalCaveTest, isTrue);
-    expect(app.crystalCave, isFalse);
-    expect(api.roster.length, 1);
-    final fina = api.roster.single as Map<String, dynamic>;
-    fina['stats']['MaxHitPoint'] = 987;
-    await app.setCrystalCave(true);
-    expect(app.crystalCaveTest, isFalse);
+    api.beforeSave = (_) async => throw StateError('disk full');
+    await expectLater(app.migrateCrystalCaveOptions(), throwsStateError);
+    expect(api.roster.single['studioAcquisition'], isNull);
+    expect(api.caveTest, isTrue);
+    await app.startBuild(install: false);
+    expect(api.calls, isNot(contains('build')));
+    api.beforeSave = null;
+    await app.startBuild(install: false);
+    expect(api.roster.single['studioAcquisition']['location'], 'crystal_cave');
     expect(api.caveTest, isFalse);
-    await app.setCrystalCaveTest(true);
-    expect(api.roster.length, 1);
-    expect(api.roster.single['stats']['MaxHitPoint'], 987);
-    expect(await app.removeUnit(fina['key'] as String), isFalse);
-    await app.setCrystalCaveTest(false);
-    expect(await app.removeUnit(fina['key'] as String), isTrue);
+    expect(api.calls.last, 'build');
+  });
+
+  test('retiring a saved switch never recreates a removed Fina', () async {
+    final api = RosterApi([])..cave = true;
+    final app = PickerApp(paths)..api = api..crystalCave = true;
+    addTearDown(app.dispose);
+    await app.migrateCrystalCaveOptions();
+    expect(api.roster, isEmpty);
+    expect(api.cave, isFalse);
+    expect(api.calls, ['cave:false']);
+  });
+
+  test('a settings failure after migration saves the cave safely and can retry', () async {
+    final api = RosterApi([suppliedProfile()])..caveTest = true..failCaveSettings = true;
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List..crystalCaveTest = true;
+    addTearDown(app.dispose);
+    await expectLater(app.migrateCrystalCaveOptions(), throwsStateError);
+    final saved = clone(api.roster);
+    expect(api.roster.single['studioAcquisition']['location'], 'crystal_cave');
+    expect(api.caveTest && app.crystalCaveTest, isTrue);
+    api.failCaveSettings = false;
+    await app.migrateCrystalCaveOptions();
+    expect(api.roster, saved);
+    expect(api.caveTest || app.crystalCaveTest, isFalse);
   });
 
   test('Add moves disabled Crystal Fina to Added Visions with her identity and edits', () async {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../design/theme.dart';
 import '../../services/acquisition.dart';
 import '../../services/acquisition_locations.dart';
+import '../../services/crystal_fina.dart';
 import '../acquisition_map.dart';
 import '../cave_placement_dialog.dart';
 
@@ -294,6 +295,11 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
                   'Build/install to create assigned caves and acquire their visions. Vendor placement is still a preview.',
                   style: Guide.small(),
                 ),
+                if (CrystalFina.matches(widget.unit))
+                  Text(
+                    'In caves, Crystal Fina appears inside her rotating transparent crystal automatically.',
+                    style: Guide.small(),
+                  ),
                 if (_error != null || widget.locations.loadError != null)
                   Text(
                     _error ??

@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.crystalCave || app.crystalCaveTest || app.fieldLeader;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -106,24 +106,6 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 14),
-                SwitchListTile(
-                  key: const Key('crystal-fina-cave'), contentPadding: EdgeInsets.zero,
-                  title: Text('Crystal Fina cave', style: Guide.text()),
-                  subtitle: Text('Adds a cave north of the road between Earth Shrine and Mitra. A crystal portal leads to the glowing room. Crystal Fina grants her vision through the native acquisition screen, then disappears; you return to the stone cave. Adds her bundled profile if needed. Install after switching.', style: Guide.small()),
-                  value: app.crystalCave,
-                  onChanged: busy || app.api == null ? null : (value) async {
-                    try { await app.setCrystalCave(value); } catch (e) { app.showNotice('$e'); }
-                  },
-                ),
-                SwitchListTile(
-                  key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
-                  title: Text('Crystal Fina Test', style: Guide.text()),
-                  subtitle: Text('Find Crystal Fina in her introductory pose inside rotating transparent glass. Same cave and acquisition. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
-                  value: app.crystalCaveTest,
-                  onChanged: busy || app.api == null ? null : (value) async {
-                    try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }
-                  },
-                ),
                 SwitchListTile(
                   key: const Key('field-leader-cycle'), contentPadding: EdgeInsets.zero,
                   title: Text('Cycle walking character (LB / L1)', style: Guide.text()),

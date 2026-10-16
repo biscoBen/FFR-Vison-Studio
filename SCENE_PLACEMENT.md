@@ -1,6 +1,31 @@
 # Cooked map placement and interaction
 
-## Crystal Fina Test display
+## Crystal Fina in assigned caves — current behavior
+
+The Home screen no longer exposes **Crystal Fina cave** or **Crystal Fina Test**. Add
+Crystal Fina normally, then use her **Acquisition** tab to assign a cave (turn off
+**Hide for spoilers** and **Random** to select a specific one). Build/install and
+restart the game. The selected cave automatically displays native `pc0030_01/openarmidle2`
+inside the finished rotating transparent Sanctum casing. No test switch is required.
+
+`cave_plans` selects that presentation by the bundled FFBE sprite identity for every
+cave ID, including shared caves and old saved cave snapshots. Keep `TEST_SPRITE_SCALE`,
+`TEST_SPRITE_FLOAT`, `TEST_CRYSTAL_SCALE`, the uniform glass parameters and Tick-driven
+3.6-degree/second turning track as accepted. The old private package names and internal
+`fina_test` field remain stable for asset compatibility. No comparison sprite is spawned.
+Other visions retain their selected appearances and scale. Rewards still use each
+vision's allocated item ID; visibility hides the sprite and casing after acquisition,
+and the white transition returns to that cave's stone room.
+
+On Studio load (and before a build/removal), an enabled legacy switch moves a Fina
+with no explicit Acquisition choice to a normal saved snapshot of the original cave,
+then clears the old switch. Preserve explicit shop/cave choices, profile edits and disabled
+collection membership. Never recreate a deleted profile. Save the roster before clearing
+settings; either save failure retains a retryable state and prevents the build from starting.
+Legacy API/CLI flags remain readable for older integrations and now use the same finished
+presentation. The historical investigation below describes superseded diagnostic controls.
+
+## Crystal Fina Test display — historical tuning notes
 
 The opt-in `crystalCaveTest` setting selects the same cave/reward route as `crystalCave`; the UI saves these as
 mutually exclusive settings. It uses native `pc0030_01/openarmidle2` (animation index 8), confirmed in

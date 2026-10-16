@@ -383,7 +383,9 @@ def cave_plans(units, root, rows=None):
             entries.append((unit, replace(base, unit_id=uid, material=material, sprite=sprite,
                                            sprite_scale=FINA_SCALE if fina else VISION_SCALE,
                                            sprite_float=FINA_FLOAT if fina else 0.0, spawn_offset=offset)))
-            if fina and options['crystalCaveTest']:
+            # Crystal Fina's finished presentation belongs to the vision, not
+            # the retired standalone test switch or a particular cave identity.
+            if fina:
                 entries[-1] = (unit, replace(entries[-1][1], fina_test=True, sprite=TEST_SPRITE,
                     material='/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBR',
                     sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT))
@@ -1757,7 +1759,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        print('  Crystal Fina Test: transparent rotating glass; original imported sprite beside it for comparison.')
+        print('  Crystal Fina: introductory floating pose inside transparent rotating Sanctum glass.')
 
 
 def make_caves(source, plans):

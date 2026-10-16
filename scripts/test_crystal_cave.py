@@ -81,8 +81,8 @@ class CrystalCaveTests(unittest.TestCase):
                 self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
             elif rel == cave.MAP_UNIT:
                 sprite = built[cave.NAME]['animationAssetList'][0]
-                self.assertIn('summon13507', sprite['Ss6Project'])
-                self.assertTrue(sprite['Material'].endswith('_13507'))
+                self.assertEqual(sprite['Ss6Project'], cave.TEST_SPRITE)
+                self.assertTrue(sprite['Material'].endswith('/M_Ss_Component_PBR'))
             elif rel == cave.MAP:
                 self.assertEqual(built[cave.NAME]['ID'], 29991)
                 self.assertEqual(built[cave.NAME]['Level'], '/Game/' + cave.PACKAGE + '_PL')
@@ -101,7 +101,7 @@ class CrystalCaveTests(unittest.TestCase):
             self.assertFalse(event['FooterSettings']['IsApplyProgressis'])
         added, = operations[cave.MAP_UNIT]['add']
         sprite = testing.apply_fields(original[cave.MAP_UNIT][added['cloneFrom']], added['set'])
-        self.assertIn('summon13531', sprite['animationAssetList'][0]['Ss6Project'])
+        self.assertEqual(sprite['animationAssetList'][0]['Ss6Project'], cave.TEST_SPRITE)
 
     def test_conflicting_game_ids_or_wrong_room_are_rejected(self):
         for change in ('map', 'npc', 'placement', 'room'):
