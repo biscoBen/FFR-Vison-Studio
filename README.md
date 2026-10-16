@@ -22,11 +22,12 @@ attachment model parts and renderer dependencies, removes the continuous idle gl
 in a shorter presentation window. Resonance uses brief body-centered glow pulses as the crystal disappears and
 returns, with about half the former seated hold. Skills, stats, gameplay event timing and saved edits are preserved.
 Studio's native preview shares these motion tracks; its lighting is a labeled approximation.
-See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md). The previous verified package remains available
-below until the new code passes Windows validation and publication.
+See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md). Windows validation and compilation passed on the same code commit. Native asset readbacks and IoStore
+verification passed; actual battle glass visibility/rotation and glow/cast timing still need an in-game check.
 
-[Previous verified battle/preview package / run 38847946131](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38847946131/Sephira-Studio-Test.zip)
-(code `b3e9d0a`, published 2026-10-15). This earlier package does not contain the current attachment/timing corrections.
+[Verified Crystal Fina corrections / run 38855894137](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38855894137/Sephira-Studio-Test.zip)
+(code `2976d53`, published 2026-10-15). The download checksum, commit/run provenance and all 30 managed resources
+were checked against source. Update Studio, rebuild/install the mod and restart Resonance to test these changes.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

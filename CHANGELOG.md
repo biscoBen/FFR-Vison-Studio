@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina cave and battle corrections — 2026-10-15
+
+Code: [`2976d53`](https://github.com/biscoBen/FFR-Vison-Studio/commit/2976d53b01edcd3809e0139903125fe25effdac0).
+[Verified Windows test release / run 38855894137](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38855894137).
+
 - Remove the old side-by-side Crystal Fina cave comparison and enlarge the native Fina/glass pair by 15%, retaining
   the approved material and slow rotation. Update the cave toggle's description.
 - Fix missing battle attachment model parts and inherited body offsets. Author and verify the SS6 model hierarchy;
@@ -20,8 +25,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   repair, preserving native gameplay event timing. Resonance spawns/fades/destroys native body-centered glow pulses
   around crystal disappearance and reappearance; restore the floating crystal after a seated hold about half as long.
 - Refresh native Studio previews/cache revision and bundled extension 1.2.19. Native model/renderer/VM readbacks, cooked glow-event checks and
-  IoStore packing/verification pass. Local Python checks, Flutter analysis and focused UI tests pass; Windows CI
-  supplies the full suite/frozen-engine check before publication. Live battle rendering still needs an in-game test.
+  IoStore packing/verification pass. Local Python checks, Flutter analysis and focused UI tests pass. Windows validation and compilation
+  passed on the same commit, including the full Flutter suite, real frozen-engine startup/import, Python and launcher
+  checks. Verified the downloaded ZIP checksum, commit/run provenance and all 30 managed resources against source.
+  Live battle rendering still needs an in-game test.
+- First complete candidate to verified download: **13m17s**, including corrections, checks, waiting and verification.
+  Windows CI took **4m13s**, using **7m22s** of runner time. Joined the automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina scale fix and Studio previews — 2026-10-15
 
