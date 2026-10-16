@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina body refraction and single resonance glow — 2026-10-16
+
+Code: [`eba9b3c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/eba9b3c93457d1b7b709694505d8ae319f1366a1).
+[Verified Windows test release / run 38955704470](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38955704470).
+
 - Remove Crystal Fina's authored second resonance glow (frames 210–282), which lit the socket while she was seated.
   Keep only the early pulse through frame 164, then hide/destroy it. Preserve attack timing, mirroring, rotation and
   the accepted 1.25-second seated hold. Refresh Studio previews/cache (native-fina-8), extension 1.2.26.
@@ -20,6 +25,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   The supplied 12:13 trace confirms the old update ran but changed bias only to 12.08664 because world depth scale
   was nearly the cave's. That disproves the prior large-scale explanation. Actual body clarity still needs live testing;
   CPU probe geometry is not a GPU depth-buffer readback or an exact cave-camera match.
+- Local static analysis, 20 focused Flutter tests, 371 Python tests and the real native build/readback/IoStore
+  checks pass. Tests cover original LOD0 decoding, rotated/nonuniform transforms, overlapping shells, the deeper
+  lower body, camera fallback, range caps and no seated/reformation pulse. Windows validation and compilation pass
+  for the same commit, including full Flutter/Python suites and frozen-engine startup. Downloaded checksum,
+  commit/run provenance and all 31 managed resources match source.
+- First complete candidate to verified download: **9m09s**, including a front-hit
+  correction, checks, waiting and verification. Windows CI took **5m18s**, using
+  **9m14s** of runner time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published Crystal Fina scaled glass and final glow cleanup — 2026-10-16
 

@@ -17,27 +17,30 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. Bundled
-extension 1.2.25 preserves the accepted short native attack, early bright resonance glow, mirrored actions and
-**1.25-second seated hold**.
+Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. Extension
+1.2.26 preserves the accepted short attack, early bright glow, mirrored actions and **1.25-second seated hold**.
 
-Battle refraction now accounts for actual inherited world-depth scale, using a private dynamic material instance
-and the accepted cave's reference. A fixed bias behaved differently on the physically larger battle casing.
-The runtime logs its measured scale and calculated bias. Cave assets and approved surface settings stay intact.
-The resonance aura is destroyed immediately after its final fade, with a completion latch preventing native frame
-resets from replaying the glow on the ground. Later resonances can start normally. No damage or effect hit events
-change. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+The extra floor flash was the authored return pulse, which started while she was seated. It is removed: only the
+initial glow runs through the fall, fading out and being hidden/destroyed at frame 164. The crystal returns without
+a second glow. The earlier cleanup-only change left that scheduled pulse intact.
 
-The runtime uses the existing UE4SS loader independently of field cycling; no new loader is installed. Studio's
-preview remains a labeled lighting approximation. Windows validation, compilation and frozen-engine startup pass;
-the downloaded checksum/provenance and all 31 managed resources match source. Live confirmation of the resulting
-battle clarity and final flash cleanup remains pending. Battle and cave reflection colors vary with their scene.
-If needed, the [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
-and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect
-allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
+The uploaded diagnostic confirms the previous material code ran but changed bias only to 12.08664: its measured
+world-depth scale was nearly the cave's, disproving the large-depth-scale explanation. Battle refraction now uses
+camera rays against original native mesh triangles, sampling from head to feet and targeting 20% bending at the
+deepest probe. The original surface/geometry and background refraction remain. Logs include measured view depth,
+applied/read-back bias and camera FOV. This is a readability target using CPU geometry, not a GPU-depth measurement
+or an exact match to cave lighting. Live confirmation of its appearance remains pending.
+See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
-[Verified Crystal Fina refraction/cleanup update / run 38950607802](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38950607802/Sephira-Studio-Test.zip)
-(code `4e871bc`, published 2026-10-16; extension 1.2.25). Update Studio, rebuild/install the mod and restart Resonance.
+Windows validation, compilation and frozen-engine startup pass. The downloaded checksum/provenance and all 31
+managed resources match source. The runtime uses the existing UE4SS loader independently of cycling; no new loader
+is installed. Studio's refreshed preview (native-fina-8) remains a labeled lighting approximation.
+The [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
+and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1)
+collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
+
+[Verified Crystal Fina body-refraction/single-glow update / run 38955704470](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38955704470/Sephira-Studio-Test.zip)
+(code `eba9b3c`, published 2026-10-16; extension 1.2.26). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
