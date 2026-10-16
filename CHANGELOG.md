@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published uniform Crystal Fina glass restoration — 2026-10-15
+
+Code: [`9e70734`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9e70734080492100c04657afd97e633300ed4d5b).
+[Verified Windows test release / run 38826297629](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38826297629).
+
 - Restore the approved Crystal Fina glass across the whole casing after the tip-only material experiment produced
   dark end caps. Use the native single-section mesh with every original opaque render byte and bulk companion intact.
   Generate only the main glass/solid material; remove the extra tip normal texture and material regions. Preserve
@@ -19,6 +24,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   crystal spins correctly. The old tip codec remains unused for managed-file compatibility and format reference.
   Rebuild/install with Solid casing check off and Animate crystal casing on. The restored tips need an in-game check.
   Bundled extension 1.2.15.
+- Validation: clean analysis, 244 Flutter checks (one skip), the separate fresh frozen-engine Windows startup check,
+  346 Python checks (Windows: five skips; Linux: four), bundle verification, 12 launcher checks and 10 import checks
+  passed. Native material/mesh/sequence and both component graphs passed strict roundtrips. The glass material and
+  turn sequence (both .uasset/.uexp) are byte-identical to the respective live-approved references; the mesh's opaque
+  render data matches the native source exactly and has one material slot. Verified the ZIP's SHA-256, commit/run
+  provenance and all 26 manifest entries plus the manifest against source. Final appearance still needs a live check.
+- First complete candidate to verified download: **7m14s**, including local checks, waiting and verification.
+  Windows CI took **5m18s**, using **9m06s** of runner time. Reused the automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina turn and tip detail correction — 2026-10-15
 

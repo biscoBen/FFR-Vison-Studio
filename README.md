@@ -26,8 +26,8 @@ Leave **Solid casing check off** and turn **Animate crystal casing on**.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired. Rebuild
 and restart when changing materials or animation. The installer prints SOLID CHECK or GLASS and added rotation ON/OFF.
 The restored uniform tips still need an in-game check while spinning.
-[Verified test package / run 38823829616](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38823829616/Sephira-Studio-Test.zip)
-(code `dc5a01d`, published 2026-10-15).
+[Verified test package / run 38826297629](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38826297629/Sephira-Studio-Test.zip)
+(code `9e70734`, published 2026-10-15).
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
