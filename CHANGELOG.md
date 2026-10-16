@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina short attack and early resonance glow — 2026-10-16
+
+Code: [`1e679ba`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1e679baeca155bdd131852154f04f9017f18980c).
+[Verified Windows test release / run 38946295996](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38946295996).
+
 - Fit Crystal Fina's eye-opening, turn and charge into native attack preparation; start her shot with native
   release and return to idle on the game's existing schedule. Remove the long independent runtime cast, preserving
   damage/effect timing. Refresh the Studio preview (native-fina-7) and extension 1.2.24.
@@ -20,6 +25,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Use the accepted cave glass parameters for battle too, removing the battle-only refraction depth override that
   made the casing appear behind her. Native/API and regression checks cover authored timing and resource integrity;
   battle lighting/refraction and the exact perceived impact still require an in-game test.
+- Windows validation and compilation pass on the same commit, including full Flutter/Python checks and real
+  frozen-engine startup. Local analysis, 20 focused Flutter tests, 365 Python tests and native asset/readback/IoStore
+  checks pass. Confirmed 30-frame preparation/release, supported mirrored cells, the accepted seated hold and every
+  cave glass scalar in the native battle material. Downloaded checksum/provenance and all 31 managed resources match.
+- First complete candidate to verified download: **7m58s**, including a preview
+  version-check correction, checks, waiting and verification. Windows CI took **5m22s**, using
+  **9m11s** of runner time. Joined the matching automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina battle presentation fixes — 2026-10-16
 
