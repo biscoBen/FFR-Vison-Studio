@@ -30,13 +30,10 @@ local function destroy(o, actor)
     if valid(o) and valid(actor) then o:K2_DestroyComponent(actor) end
 end
 local function clear(s)
-    destroy(s.glow, s.actor); s.glow = nil; s.pulse = nil
+    destroy(s.glow, s.actor); s.glow = nil
     destroy(s.mesh, s.actor); s.mesh = nil
 end
 local function now(sprite) return native('Engine.Default__GameplayStatics'):GetTimeSeconds(sprite) end
-local function released(n)
-    return n == 'magic_attack' or n:match('^attack_') or n:match('^m_attack') or n:match('^ffbe_')
-end
 local function motion(s)
     -- UE4SS puts out values under the game's reflected parameter names. The
     -- supplied game/UE4SS call did not provide the assumed OutAnimationName key
@@ -70,7 +67,7 @@ local function motion(s)
     s.waiting = nil
     s.playing = playing
     -- Observe the renderer, not an actor's cached animation-name property.
-    return playing == config.cast:lower() and s.last or playing
+    return playing
 end
 local function create(sprite, actor, isUnit)
     -- A project can be assigned before its first animation is initialized.
@@ -97,37 +94,39 @@ local function create(sprite, actor, isUnit)
     return s
 end
 local function glow(s, frame, visible)
-    local pulse, strength = nil, 0
-    if visible and s.last == 'lb1' then
-        for i, interval in ipairs(config.flashes) do
-            local first, peak, last = interval[1], interval[2], interval[3]
+    local active = visible and (s.last == 'lb1_before' or s.last == 'lb1')
+    if not active then
+        destroy(s.glow, s.actor); s.glow = nil
+        return
+    end
+    if not valid(s.glow) then
+        if not valid(assets.glow) then assets.glow = asset(config.glow) end
+        s.glow = native('Niagara.Default__NiagaraFunctionLibrary'):SpawnSystemAttached(
+            assets.glow, s.sprite, FName('NULL_Aura'), vec(0,0,0), {Pitch=0,Yaw=0,Roll=0}, 0, true, false, 0, false)
+        assert(valid(s.glow), 'Could not spawn the body glow')
+        s.glow:SetAbsolute(false, false, true); s.glow:SetWorldScale3D(vec(1,1,1))
+        s.glow:SetVariableVec3(FName('User.EffectPosition'), vec(0,0,0))
+        s.glow:SetVariableFloat(FName('User.LightPower'), 0)
+        s.glow:SetVariableFloat(FName('User.Alpha'), config.glowAlpha)
+        s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), 1)
+        s.glow:Activate(false)
+        log('Resonance glow started with ' .. s.last .. '; native frame ' .. math.floor(frame))
+    end
+    local strength = s.last == 'lb1_before' and 1 or 0
+    if s.last == 'lb1' then
+        for _, interval in ipairs(config.flashes) do
+            local first, full, fade, last = interval[1], interval[2], interval[3], interval[4]
             if frame >= first and frame < last then
-                pulse = i; strength = math.min((frame-first)/(peak-first), (last-frame)/(last-peak)); break
+                strength = frame < full and (frame-first)/(full-first)
+                    or frame <= fade and 1 or (last-frame)/(last-fade)
+                break
             end
         end
     end
-    if pulse ~= s.pulse then
-        destroy(s.glow, s.actor); s.glow = nil; s.pulse = pulse
-        if pulse then
-            if not valid(assets.glow) then assets.glow = asset(config.glow) end
-            s.glow = native('Niagara.Default__NiagaraFunctionLibrary'):SpawnSystemAttached(
-                assets.glow, s.sprite, FName('NULL_Aura'), vec(0,0,0), {Pitch=0,Yaw=0,Roll=0}, 0, true, false, 0, false)
-            assert(valid(s.glow), 'Could not spawn the body glow')
-            s.glow:SetAbsolute(false, false, true); s.glow:SetWorldScale3D(vec(1,1,1))
-            -- Native intro sequences animate NiagaraAlpha; Alpha stays at its
-            -- native baseline. Remove the intro's +80 UU position offset since
-            -- our socket already follows the body's center. Disable its lights.
-            s.glow:SetVariableVec3(FName('User.EffectPosition'), vec(0,0,0))
-            s.glow:SetVariableFloat(FName('User.LightPower'), 0)
-            s.glow:SetVariableFloat(FName('User.Alpha'), 1)
-            s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), 0)
-            s.glow:Activate(false)
-            log('Resonance glow ' .. pulse .. ' at native frame ' .. math.floor(frame))
-        end
-    end
-    if valid(s.glow) then
-        s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), strength)
-    end
+    -- Keep one warm system throughout the seated interval; changing its alpha
+    -- avoids a cold-start delay when the crystal reforms. Native particle color
+    -- still supplies its original fade-in, now starting during preparation.
+    s.glow:SetVariableFloat(FName('User.NiagaraAlpha'), strength)
 end
 local function update(s)
     local sprite, actor = s.sprite, s.actor
@@ -138,29 +137,7 @@ local function update(s)
             log('Native motion ' .. n .. '; frame=' .. tostring(sprite:GetPlayFrame()) .. '; rate=' .. tostring(sprite:GetPlayRate()))
             s.logged = s.logged + 1
         end
-        if released(n) and not s.castStart then
-            s.castStart = time; log('Full cast started: ' .. config.castFrames .. ' frames')
-        elseif n ~= 'idle' and n ~= 'command' and n ~= 'magic_idle' and not released(n) then
-            s.castStart = nil
-        end
         s.last = n
-    end
-    if n and s.castStart then
-        local frame = math.floor((time-s.castStart)*60)
-        if frame >= config.castFrames or frame < 0 or not visible then
-            s.castStart = nil
-            -- Restore the native current pose after the presentation finishes.
-            local restore = released(n) and 'idle' or n
-            if visible then assert(sprite:Play(FName(config.pack), FName(restore), 0, 1, 0, false), 'Could not restore native pose') end
-            log('Full cast completed')
-        else
-            -- Native recovery/continuous-animation calls may restart a clip.
-            -- Reapply the correct absolute frame, rather than its first pose.
-            if s.playing ~= config.cast:lower() then
-                assert(sprite:Play(FName(config.pack), FName(config.cast), frame, 1, 1, false), 'Native full cast unavailable')
-            end
-            sprite:SetPlayRate(1)
-        end
     end
     local frame = sprite:GetPlayFrame()
     local observed = n or s.last
@@ -211,4 +188,4 @@ LoopAsync(33, function()
     end
     return false
 end)
-log('Battle presentation ready (parameter-independent animation names); waiting for custom Crystal Fina')
+log('Battle presentation ready (native short attack; early resonance glow); waiting for custom Crystal Fina')

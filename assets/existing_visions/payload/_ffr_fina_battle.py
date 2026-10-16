@@ -14,10 +14,6 @@ DESIGN_TABLE = 'Battle/Unit/DT_BtlUnitDesignParameter'
 AURA = 'Effect/07_EV/CMN/FinaCristalAuraParticle001/NS_EF_EV_CMN_FinaCristalAuraParticle'
 PREFIX = 'Chara/StudioCrystalFinaBattle/'
 BATTLE_SPRITE_SCALE = 2.7
-# Keep the approved cave surface, but protect the nearer battle body from
-# background distortion. Unreal's soft gate starts at bias * (bias/2): 288 UU
-# here, versus 72 UU for the cave's 12. Distant background still refracts.
-BATTLE_REFRACTION_DEPTH_BIAS = 24.0
 
 
 def selected(units):
@@ -58,18 +54,6 @@ def table_rows(view):
     exports = [e for e in view['Exports'] if isinstance(e.get('Table'), dict)]
     if len(exports) != 1: raise ValueError('Expected one native battle data table.')
     return exports[0]['Table']['Data']
-
-
-def soften_battle_glass(original, leaf):
-    """Change only the private battle depth gate; preserve cave/source assets."""
-    view = copy.deepcopy(original)
-    _, instance = cave.export(view, leaf)
-    parameters = cave.property_data(instance, 'ScalarParameterValues')['Value']
-    matches = [p for p in parameters if cave.property_data(cave.property_data(p, 'ParameterInfo'), 'Name')['Value'] == 'RefractionDepthBias']
-    if len(matches) != 1:
-        raise ValueError('The approved glass refraction depth override is missing or ambiguous.')
-    cave.set_value(matches[0], 'ParameterValue', BATTLE_REFRACTION_DEPTH_BIAS)
-    return view
 
 
 def soft_path(owner, name, path):
@@ -163,8 +147,6 @@ def build(units, env):
             material = cave.property_data(slot, 'MaterialInterface')
             material['Value'] = cave.asset_import(result, material['Value'], '/Game/' + private_material)
             material['IsZero'] = False
-        else:
-            result = soften_battle_glass(result, Path(new).name)
         assets[new] = result
     unit_path = content / ('Datatable/' + UNIT_TABLE + '.uasset')
     assets['Datatable/' + UNIT_TABLE] = battle_table(decode(unit_path, 'built-battle-units'), unit)
@@ -207,7 +189,7 @@ def build(units, env):
     _, mesh = cave.export(source[cave.TEST_NATIVE_MESH], Path(cave.TEST_NATIVE_MESH).name)
     origin = cave.property_data(cave.property_data(mesh, 'ExtendedBounds'), 'Origin')['Value'][0]['Value']
     (work / 'runtime.json').write_text(json.dumps(runtime_config(unit, origin)), encoding='utf-8')
-    print('  Crystal Fina battle: native body and full cast; direct runtime crystal/glow attachments. Skills and hit events preserved.')
+    print('  Crystal Fina battle: native body with short preparation/release; direct runtime crystal/glow attachments. Skills and hit events preserved.')
 
 
 def prepare_job(job, units, lb_id):
@@ -224,5 +206,5 @@ def runtime_config(unit, origin):
         'pack': name, 'mesh': asset(package(unit, 'SM_Studio_CrystalFina')),
         'material': asset(package(unit, 'MI_Studio_CrystalFina')), 'glow': asset(glow_package(unit)),
         'origin': origin, 'meshRatio': .12 / 2.7, 'turnRate': cave.TEST_CRYSTAL_TURN_RATE,
-        'cast': 'Studio_FinaCast', 'castFrames': motion.ACTION_FRAMES,
+        'glowAlpha': 2.0,
         'fall': motion.FALL, 'reform': motion.REFORM, 'flashes': list(motion.FLASHES)}

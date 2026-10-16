@@ -19,8 +19,15 @@ FALL = 134
 SEAT = 183
 # Hold the seated pose for 1.25 seconds at the native 60 fps. Gameplay keys stay put.
 REFORM = SEAT + 75
-FLASHES = ((FALL - 12, FALL, FALL + 30), (REFORM - 12, REFORM, REFORM + 24))
-ACTION_FRAMES = 229
+# Four keys: begin, full brightness, end of plateau, faded out. The first
+# envelope is already on at frame zero; native particles provide the build-up.
+FLASHES = ((0, 0, FALL, FALL + 30), (REFORM - 48, REFORM - 12, REFORM, REFORM + 24))
+PREP_FRAMES = 30
+RELEASE_FRAMES = 30
+ACTION_FRAMES = PREP_FRAMES + RELEASE_FRAMES
+# magicattack6 frame 66 is the first hands-forward shot pose (npc_0_15).
+# Move all earlier wind-up into native preparation, so release starts firing.
+SHOT_SOURCE_FRAME = 65 + 73 + 66
 
 
 def prop(owner, name):
@@ -184,8 +191,8 @@ def battle_spec(view, texture, old_sheet, original_spec):
                   'pivot': [(60 - bounds[0]) / seat.width - .5, .5 - (100 - bounds[1]) / seat.height]})
     clips = decode(view); body = draft(view)
     idle = stitch(clips, 'idle', [('openarmidle2', 49)])
-    # The runtime plays Studio_FinaCast independently of native preparation and
-    # early recovery calls, preserving the approved 229-frame motion in full.
+    # The supplied trace has 30-frame preparation and release windows. Fit the
+    # wind-up and shot separately; native release/impact/recovery stay in charge.
     def fit(clip, length):
         result = copy.deepcopy(clip); old_length = result['frameCount']
         result['frameCount'] = length
@@ -196,6 +203,14 @@ def battle_spec(view, texture, old_sheet, original_spec):
                     fitted[min(length - 1, round(tick * length / old_length))] = value
                 channels[tag] = [[tick, value] for tick, value in sorted(fitted.items())]
         return result
+    windup = copy.deepcopy(body['attack']); windup['frameCount'] = SHOT_SOURCE_FRAME
+    windup['parts']['part_0']['Cell'] = [key for key in windup['parts']['part_0']['Cell'] if key[0] < SHOT_SOURCE_FRAME]
+    shot = copy.deepcopy(body['attack']); shot['frameCount'] -= SHOT_SOURCE_FRAME
+    shot['parts']['part_0']['Cell'] = [[tick - SHOT_SOURCE_FRAME, cell]
+        for tick, cell in shot['parts']['part_0']['Cell'] if tick >= SHOT_SOURCE_FRAME]
+    if not shot['parts']['part_0']['Cell'] or shot['parts']['part_0']['Cell'][0][0] != 0:
+        raise ValueError('The native first shot pose changed.')
+    windup = fit(windup, PREP_FRAMES); shot = fit(shot, RELEASE_FRAMES)
     animations = []
     source_names = set()
     for original_clip in original_spec['animations']:
@@ -215,9 +230,9 @@ def battle_spec(view, texture, old_sheet, original_spec):
             clip['parts']['part_0']['Cell'] += restored
             clip['parts']['part_0']['Posy'].append([REFORM, 22.0 + BODY_FLOAT])
         elif name.startswith(('attack_', 'M_attack', 'FFBE_')) or name == 'magic_attack':
-            clip = fit(body['attack'], min(length, ACTION_FRAMES))
+            clip = copy.deepcopy(shot)
         elif name in ('command', 'magic_idle'):
-            clip = fit(stitch(clips, name, [('openarmopeneye2', 65)]), 30)
+            clip = copy.deepcopy(windup)
         else:
             clip = copy.deepcopy(idle)
             if name == 'idle':
@@ -232,7 +247,7 @@ def battle_spec(view, texture, old_sheet, original_spec):
             parts[anchor] = {'Posx': [[0, float(dx)]], 'Posy': [[0, float(dy)]]}
         parts['NULL_Crystal'] = {'Posx': [[0, 0.0]], 'Posy': [[0, center]],
             'Roty': [[t, t * .06] for t in range(frames)]}
-        parts['NULL_Aura'] = {'Posx': [[0, 0.0]], 'Posy': [[0, -10000.0]]}
+        parts['NULL_Aura'] = {'Posx': [[0, 0.0]], 'Posy': [[0, center]]}
         if name == 'LB1':
             parts['NULL_Crystal']['Posy'] += [[FALL, -10000.0], [REFORM, center]]
             # Cell pivots change during the fall and in the original seated
@@ -250,7 +265,10 @@ def battle_spec(view, texture, old_sheet, original_spec):
         animations.append(clip)
     cast = copy.deepcopy(next(a for a in animations if a['name'] == 'attack_A'))
     cast['name'] = 'Studio_FinaCast'; cast['frameCount'] = ACTION_FRAMES
-    cast['parts']['part_0'].update(copy.deepcopy(body['attack']['parts']['part_0']))
+    cast['parts']['part_0'].update(copy.deepcopy(windup['parts']['part_0']))
+    cast['parts']['part_0']['Cell'] += [[PREP_FRAMES + tick, cell] for tick, cell in shot['parts']['part_0']['Cell']]
+    # Preview-only concatenation. Runtime never overrides native action playback.
+    cast['parts']['NULL_Crystal']['Roty'] = [[t, t * .06] for t in range(ACTION_FRAMES)]
     animations.append(cast)
     for clip in animations:
         active = clip['name'] in ('LB1', 'command', 'magic_idle', 'Studio_FinaCast', 'magic_attack') or clip['name'].startswith(('attack_', 'M_attack', 'FFBE_'))

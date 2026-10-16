@@ -874,8 +874,8 @@ def motion_seconds(unit, root, magic):
     # imported duration here would over-speed the native replacement.
     import _ffr_fina_battle as fina
     if not unit.get('party') and (unit.get('ffbe') or {}).get('source') == 'CUSTOM' and str((unit.get('ffbe') or {}).get('id')) == fina.SPRITE:
-        from _ffr_fina_motion import ACTION_FRAMES
-        return ACTION_FRAMES / 60
+        from _ffr_fina_motion import RELEASE_FRAMES
+        return RELEASE_FRAMES / 60
     ff = unit.get('ffbe') or {}; motion = 'magicatk' if magic else 'atk'
     for directory, form in ((ff.get('dir'), ff.get('id')), (ff.get('baseDir'), ff.get('baseForm'))):
         if not directory or not form: continue

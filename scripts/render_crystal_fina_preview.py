@@ -105,9 +105,13 @@ def render(atlas, spec, vertices, indices, name, length, step):
         if current(body.get('Imgfliph', [[0, 0.0]]), t): scaled = scaled.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         location = (round(origin_x + x * factor - (.5 + pivot[0]) * scaled.width),
                     round(floor_y - y * factor - (.5 - pivot[1]) * scaled.height))
-        strength = max((max(0.0, min((tick - begin) / (peak - begin),
-                                    (end - tick) / (end - peak)))
-                        for begin, peak, end in motion.FLASHES), default=0.0) if name == 'LB1' else 0.0
+        strength = 0
+        if name == 'LB1':
+            for begin, full, fade, end in motion.FLASHES:
+                if begin <= tick < end:
+                    strength = ((tick - begin) / (full - begin) if tick < full
+                                else 1 if tick <= fade else (end - tick) / (end - fade))
+                    break
         if strength:
             glow = Image.new('RGBA', image.size); glow.paste((255, 218, 75, 0), (0, 0, *image.size))
             alpha = Image.new('L', image.size); alpha.paste(scaled.getchannel('A'), location)
@@ -131,12 +135,12 @@ def main():
     atlas, spec = motion.battle_spec(load(args.project_json), load(args.texture_json), args.old_sheet, original)
     vertices, indices = geometry(load(args.mesh_json)); files, animations = {}, {}
     lengths = {a['name']: a['frameCount'] for a in spec['animations']}
-    for public, native, length, step in [('idle', 'idle', 6000, 15), ('atk', 'Studio_FinaCast', lengths['Studio_FinaCast'], 2), ('limitatk', 'LB1', lengths['LB1'], 2)]:
+    for public, native, length, step in [('idle', 'idle', 6000, 15), ('atk', 'Studio_FinaCast', lengths['Studio_FinaCast'], 1), ('limitatk', 'LB1', lengths['LB1'], 2)]:
         data = render(atlas, spec, vertices, indices, native, length, step)
         name = public + '.webp'; files[name] = data
         animations[public] = {'file': name, 'seconds': length / 60, 'sha256': hashlib.sha256(data).hexdigest()}
         print(public, len(data), 'bytes', flush=True)
-    manifest = {'schema': 1, 'presentation': 'native-fina-6', 'description': 'Native battle preview; game lighting and refraction may differ.',
+    manifest = {'schema': 1, 'presentation': 'native-fina-7', 'description': 'Native battle preview; game lighting and refraction may differ.',
                 'animations': animations, 'sources': {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                     for name in ('project_json', 'texture_json', 'mesh_json', 'old_sheet', 'original_spec')}}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()

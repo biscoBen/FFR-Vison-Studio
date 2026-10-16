@@ -34,23 +34,6 @@ class FinaBattleTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'export data changed'):
                 battle.clone_glow(source, target, UNIT, [], 'mapping', lossy)
 
-    def test_battle_glass_protects_near_body_depth_and_keeps_approved_cave_surface(self):
-        scalars = [p(str(i), [p('ParameterInfo', [p('Name', name)]), p('ParameterValue', value)])
-                   for i, (name, value) in enumerate(battle.cave.TEST_CRYSTAL_PARAMETERS.items())]
-        original = {'Exports': [{'ObjectName': 'PrivateGlass', 'Data': [p('ScalarParameterValues', scalars)]}]}
-        before = copy.deepcopy(original)
-        built = battle.soften_battle_glass(original, 'PrivateGlass')
-        self.assertEqual(original, before)
-        values = {battle.cave.property_data(battle.cave.property_data(x, 'ParameterInfo'), 'Name')['Value']:
-                  battle.cave.property_data(x, 'ParameterValue')['Value'] for x in built['Exports'][0]['Data'][0]['Value']}
-        self.assertEqual(values, dict(battle.cave.TEST_CRYSTAL_PARAMETERS, RefractionDepthBias=24.0))
-        self.assertEqual(battle.cave.TEST_CRYSTAL_PARAMETERS['RefractionDepthBias'], 12.0)
-        # Unreal DistortionCommon's soft gate: protect the nearby body while
-        # retaining distortion of distant background, without changing opacity.
-        gate = lambda depth, bias: max(0, min(1, depth / min(bias * .5, 50) - bias))
-        self.assertEqual(gate(170, 12), 1); self.assertEqual(gate(170, values['RefractionDepthBias']), 0)
-        self.assertEqual(gate(350, values['RefractionDepthBias']), 1)
-
     def test_native_image_mirroring_requires_supported_tag_and_boolean_fallback(self):
         key = p('0', [p('Time', 0), p('Value', [p('Bool_temp', True)])])
         attr = p('0', [p('Tag', 'Imgfliph'), p('Key', [key])])
@@ -74,7 +57,7 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute((root / 'assets/existing_visions/payload/fina_battle.lua').read_text())
         return lua
 
-    def test_runtime_uses_direct_components_and_finishes_cast_through_native_recovery(self):
+    def test_runtime_uses_direct_components_and_preserves_native_attack_playback(self):
         lua = self.runtime()
         lua.execute('run_fina_tests()')
 
@@ -95,11 +78,17 @@ class FinaBattleTests(unittest.TestCase):
         cfg = battle.runtime_config(UNIT, {'X': 1, 'Y': 2, 'Z': 3})
         self.assertEqual(cfg['id'], UNIT['id'])
         self.assertIn('/13503/', cfg['mesh'])
-        self.assertEqual(cfg['cast'], 'Studio_FinaCast')
-        self.assertEqual(cfg['castFrames'], 229)
+        self.assertNotIn('cast', cfg)
+        self.assertNotIn('castFrames', cfg)
+        self.assertEqual(cfg['glowAlpha'], 2.0)
         self.assertEqual(cfg['reform'] - motion.SEAT, 75)
         job = {'asset': 'unchanged'}
         self.assertIs(battle.prepare_job(job, [UNIT], lambda _: 1), job)
+
+    def test_skill_motion_duration_uses_release_window_without_imported_csv(self):
+        import _ffr_animation_repair as repair
+        self.assertEqual(repair.motion_seconds(UNIT, '/no-source-needed', True), .5)
+        self.assertEqual(repair.motion_seconds(UNIT, '/no-source-needed', False), .5)
 
     def test_model_readback_rejects_orphan_attachments_and_inherited_body_offsets(self):
         parts = [{'name': 'root', 'parent': -1, 'type': 'Null'},
@@ -164,11 +153,14 @@ class FinaBattleTests(unittest.TestCase):
         names = [('openarmidle2', 49), ('openarmopeneye2', 65), ('curlup2', 73), ('magicattack6', 91), ('down6', 49)]
         clips = {name: {'fps': 60, 'frameCount': count, 'parts': {'part_0': {'Cell': [[0, {'mapId': 0, 'name': name}]]}}}
                  for name, count in names}
+        clips['magicattack6']['parts']['part_0']['Cell'] += [
+            [66, {'mapId': 0, 'name': 'shot_start'}], [74, {'mapId': 0, 'name': 'shot_end'}]]
         def vec(name, x, y): return p(name, [p(name, {'X': x, 'Y': y})])
+        cell_names = [name for name, _ in names] + ['shot_start', 'shot_end']
         cells = [{'Value': [p('CellName', name), vec('Pos', i * 10, 0), vec('Size', 8, 8), vec('Pivot', 0, 0)]}
-                 for i, (name, _) in enumerate(names)]
+                 for i, name in enumerate(cell_names)]
         view = {'Exports': [{'Data': [p('AnimeList', []), p('CellmapList', [{'Value': [p('Cells', cells)]}])]}]}
-        original = {'animations': [{'name': name, 'frameCount': count} for name, count in [('idle', 49), ('attack_A', 117), ('magic_attack', 80), ('LB1', 400), ('Setup', 1)]]}
+        original = {'animations': [{'name': name, 'frameCount': count} for name, count in [('idle', 49), ('command', 30), ('magic_idle', 30), ('LB1_before', 60), ('attack_A', 117), ('magic_attack', 80), ('LB1', 400), ('Setup', 1)]]}
         before = copy.deepcopy(original)
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'seat.png'; sheet = Image.new('RGBA', (1800, 1820)); sheet.paste((255, 0, 0, 255), (1122, 1497, 1158, 1534)); sheet.save(path)
@@ -176,8 +168,19 @@ class FinaBattleTests(unittest.TestCase):
                 atlas, spec = motion.battle_spec(view, {}, path, original)
         self.assertEqual(original, before); self.assertEqual(atlas.getpixel((0, 330)), (255, 0, 0, 255))
         clips = {a['name']: a for a in spec['animations']}
-        self.assertEqual(clips['attack_A']['frameCount'], 117); self.assertEqual(clips['magic_attack']['frameCount'], 80)
-        self.assertEqual(clips['Studio_FinaCast']['frameCount'], 229)
+        # Native release begins with the hands-forward shot; preparation has
+        # already shown eyes/turn/charge. No full cast survives into recovery.
+        for name in ('attack_A', 'magic_attack'):
+            self.assertEqual(clips[name]['frameCount'], 30)
+            self.assertEqual(clips[name]['parts']['part_0']['Cell'][0], [0, 'shot_start'])
+            self.assertEqual(clips[name]['parts']['part_0']['Cell'][-1][1], 'shot_end')
+        for name in ('command', 'magic_idle'):
+            self.assertEqual(clips[name]['frameCount'], 30)
+            self.assertEqual([value for _, value in clips[name]['parts']['part_0']['Cell']],
+                             ['openarmopeneye2', 'curlup2', 'magicattack6'])
+        self.assertEqual(clips['Studio_FinaCast']['frameCount'], 60)
+        self.assertIn([30, 'shot_start'], clips['Studio_FinaCast']['parts']['part_0']['Cell'])
+        self.assertEqual(clips['LB1_before']['parts']['NULL_Aura']['Posy'], [[0, 183.5 / 2.7]])
         self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Imgfliph'], [[0, 1.0]])
         self.assertEqual(clips['LB1']['parts']['part_0']['Imgfliph'], [[0, 1.0], [258, 0.0]])
         self.assertTrue(all('Fliph' not in clip['parts']['part_0'] for clip in clips.values()))

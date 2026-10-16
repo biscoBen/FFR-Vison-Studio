@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Fit Crystal Fina's eye-opening, turn and charge into native attack preparation; start her shot with native
+  release and return to idle on the game's existing schedule. Remove the long independent runtime cast, preserving
+  damage/effect timing. Refresh the Studio preview (native-fina-7) and extension 1.2.24.
+- Start her brighter, body-centered resonance glow immediately during preparation. Fix the preparation attachment
+  being parked offscreen; keep the native particles warm through the seated interval and glow before reformation.
+  Preserve the accepted **1.25-second** seated hold, facing and cave presentation.
+- Use the accepted cave glass parameters for battle too, removing the battle-only refraction depth override that
+  made the casing appear behind her. Native/API and regression checks cover authored timing and resource integrity;
+  battle lighting/refraction and the exact perceived impact still require an in-game test.
+
 ## Published Crystal Fina battle presentation fixes — 2026-10-16
 
 Code: [`d764d9b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d764d9baad0e2993c6ad77d5ddb0f417a53efb1c).

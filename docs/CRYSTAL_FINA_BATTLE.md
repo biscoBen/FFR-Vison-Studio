@@ -29,10 +29,9 @@ check names, parent/index assignments and empty mesh/bone lists. Trailer-only te
 
 The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel below that. The crystal center is
 `183.5/2.7` sprite pixels. `NULL_Aura` follows the body's center throughout descent and recovery. `NULL_Crystal`
-rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
-needs in-game confirmation.
+rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. The accepted runtime explicitly turns the real mesh; the SS6 socket alone does not supply world yaw.
 
-## Direct battle runtime (extension 1.2.23)
+## Direct battle runtime (extension 1.2.24)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -56,7 +55,7 @@ Use KismetSystemLibrary.MakeSoftObjectPath → Conv_SoftObjPathToSoftObjRef → 
 packages. UE4SS LoadAsset uses AssetRegistry.GetAssetByObjectPath and can fail for injected assets absent from the
 original registry. Unreal's soft-path loader resolves mounted packages directly. Refresh references when components
 are created, and reload an invalid glow asset before later pulses; Lua wrappers do not establish GC ownership.
-The fixture deliberately rejects registry-only loading and simulates collection between glow pulses.
+The fixture deliberately rejects registry-only loading and exercises cleanup/recreation on hidden actors and interruption.
 
 **Do not rebuild this Niagara system with `tojson` / `fromjson`.** Native `NiagaraVariableWithOffset` and renderer
 binding records contain fields omitted from that JSON representation. A direct native read found the source's
@@ -66,11 +65,12 @@ JSON-to-JSON readback cannot detect fields omitted on both sides. Use `clone-pac
 name-map renames. Require the complete `.uexp` to remain byte-identical (117,357 bytes for this demo source), which
 preserves native variables, curves, bindings and VM. Keep the original game package untouched.
 
-The private battle material starts from the approved cave surface. Only `RefractionDepthBias` changes, from 12 to 24.
-Unreal's `DistortionCommon.ush` soft gate multiplies distortion by
-`saturate(separation / clamp(bias * 0.5, 0, 50) - bias)`. This moves the gate's 72–78 UU interval to 288–300 UU:
-nearby body pixels receive less distortion while distant background can still refract. Opacity, metallic, roughness,
-Fresnel, normal and wave overrides remain identical to the accepted cave. No global shader or cave material edit.
+The private battle material uses the **same scalar overrides as the accepted cave**, including
+`RefractionDepthBias=12`. The extra battle-only value of 24 removed distortion of nearby body pixels and was
+reported to make the casing look behind her. Remove that override rather than moving the mesh away from its
+verified center. This restores the accepted material, not a claim that the battle camera/lighting are identical.
+Both native field and battle sprite materials use masked rendering, so translucent sprite sorting is not an
+established cause of the difference. Preserve the battle sprite material's blink/stone/dissolve behavior.
 
 The runtime loads the private approved StaticMesh/material, creates an ordinary **movable**, non-colliding
 StaticMeshComponent and attaches it directly to the SS6 `NULL_Crystal` socket. This uses the same ordinary mesh
@@ -107,20 +107,24 @@ new cast or aura. Log the first populated output fields, waits and initial motio
 
 A reproduction using renamed output parameters makes the previous runtime fail at the same nil dereference and
 remove its newly attached mesh. The corrected fixture tests renamed/reordered labels, upstream labels, startup
-output gaps and recovery, then exercises the full cast and both glow pulses. This establishes a regression fix
+output gaps and recovery, then exercises native attack recovery and the warm glow envelope. This establishes a regression fix
 for the observed failure; the corrected visuals still require a live game test.
 
-## Full casting motion and resonance
+## Short native attack and resonance
 
-Preparation now only opens her eyes; it no longer repeats the curled-up turn. `Studio_FinaCast` contains the exact
-approved 229-frame body sequence: 65 eye-opening frames, 73 turning frames, 91 charge/fire frames. During an ordinary
-release, play this private clip at rate 1 and one loop. Normalize pack/clip comparisons to lowercase, matching
-Unreal's case-insensitive FName semantics. The supplied 10:01 trace returned `Idle` (capital I) after 0.516 seconds;
-the old lowercase-only recovery check canceled the cast before its turn/fire phase. If native preparation/recovery calls replace it early,
-resume the correct absolute frame from the world game clock. Leave it playing naturally between interruptions;
-do not restart at frame zero every tick. Death, damage and resonance motions cancel the cosmetic override.
-Once complete, restore the native current pose, using idle for an expired ordinary release. No hit/healing/movement
-keys are changed. An immediate later action can supersede this cosmetic presentation without changing game logic.
+The supplied 11:01 trace finally shows the full cast completing, but also proves why damage appears first:
+`magic_idle` lasts 0.516 seconds, `magic_attack` lasts 0.516 seconds, while the former independent 229-frame cast
+continues for 3.817 seconds after release. The user chose the game's short timing. Remove all runtime `Play` /
+`SetPlayRate` overrides; native preparation, release, impact and recovery now own playback again.
+
+Split the native body at `magicattack6` frame 66, the first hands-forward shooting pose (`npc_0_15`): eye opening,
+turning and charge from the preceding 204 source frames fit the **30-frame preparation**; the remaining shot cells
+fit the **30-frame release**, beginning with the shot at release frame zero. The supported release aliases share
+that body. This aligns the shot to the observed native release cue rather than leaving it several seconds after
+impact. The diagnostic is a motion trace, not a timestamped damage-event trace; precise on-screen impact alignment
+still needs live confirmation. Skills, hit keys and damage remain unchanged. Skill-animation duration calculations
+use the 0.5-second release, not the preview's combined 1-second body. `Studio_FinaCast` is now only a preview
+concatenation of preparation and release, never an independently played runtime animation.
 
 Both attack and resonance use SS6 body **`Imgfliph=1`**, preserving native texture pixels and socket origins;
 return to unflipped idle when she reforms. The public SS6 decoder comments out legacy `Fliph` handling as unsupported,
@@ -128,24 +132,28 @@ but explicitly reads `Imgfliph` into `imageFlipH`. A serialized legacy flag is n
 Read back every native `Imgfliph` key and its `Bool_temp` fallback cache (the writer stores these as FloatType values).
 The labeled Studio preview consumes the same supported track. The seated hold is now exactly 75 frames (1.25 seconds), down from 100 in the preceding test.
 
-| Resonance frame | Presentation |
+| Resonance phase/frame | Presentation |
 | --- | --- |
-| 0–121 | Float in crystal; no gold glow |
-| 122–134 | Fade body-centered native glow in |
+| `lb1_before` starts | Activate body-centered native gold effect immediately |
+| LB1 0–133 | Keep effect on so native particles build to full brightness before the fall |
 | 134 | Hide mesh and begin descent; native reaction key unchanged |
-| 134–164 | Fade glow out, then destroy its component |
-| 183–257 | Jacket-free seated pose |
-| 246–258 | Fade second glow in at the current body socket |
+| 134–164 | Fade glow out |
+| 183–257 | Jacket-free seated pose; keep the same warm particle system at alpha zero |
+| 210–246 | Fade the warm system back in |
+| 246–258 | Hold full brightness through reformation |
 | 258 | Restore crystal and floating pose |
-| 258–282 | Fade second glow out and destroy its component |
+| 258–282 | Fade glow out; cleanup when resonance ends or is interrupted |
 
 Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
-activation off. Preserve native `User.Alpha=1`; animate `User.NiagaraAlpha` from zero with the actual LB1 frame and
-shared triangular fade envelope. The original intro's Niagara float tracks animate `NiagaraAlpha` and `LightPower`.
-Set `User.EffectPosition` to zero because the body-centered socket replaces the original +80 UU intro offset.
-Set `User.LightPower=0` before activating to suppress floor illumination without rebuilding renderer records.
-Destroy the component at the end of each pulse or when hidden. All native VM/particle bytes and original source
-effects remain intact. Runtime parameter setters avoid the asset writer's unsupported EX_ArrayConst arrays.
+activation off. Its attachment is valid during **preparation as well as LB1**; the former preparation track parked
+it at -10000 pixels, which would put an early effect offscreen. Activate with `User.NiagaraAlpha=1`, increase the
+owned component's `User.Alpha` to 2 for a brighter body glow, then follow the shared four-key envelope with the
+actual LB1 frame. The native intro's particle curves still provide the build-up; the effect now has more than two
+seconds before descent, instead of being cold-started only 12 frames before it. Keep one system alive across the
+seated interval to avoid a second cold start at reformation. Clear it on idle, interruption, hidden actors or model
+changes. `User.EffectPosition=0` replaces the source +80 UU offset; `User.LightPower=0` suppresses floor lighting.
+All native VM/particle bytes and source effects remain intact. The source Niagara's opaque metadata must still be
+preserved through native cloning, never a lossy JSON roundtrip.
 
 The native Fina design row still receives explicit positive 2.7/1.0 presentation defaults only for nonpositive
 Scale/attachEffectSacle values; positive values and other rows remain unchanged. The cave pair stays at the user's
@@ -154,13 +162,13 @@ accepted 15% enlargement, with its approved glass and spin. No old comparison NP
 ## Studio and verification
 
 `scripts/render_crystal_fina_preview.py` shares battle tracks, flipping and timings, and renders supplied LOD0 mesh
-and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-6` to invalidate
+and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-7` to invalidate
 stale previews. Local native checks use the real asset writer, verify model parents/custom-value tails including
-Imgfliph and its bool cache, full-cast cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
+Imgfliph and its bool cache, short preparation/release cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
 is confined to scratch. No user game data is replaced by fixtures.
 
 Executable Lua fixtures cover actual animation-name out tables, owned movable mesh creation, scale/pivot setup,
-early recovery without truncation, native full-rate playback, mirrored asset contracts, no idle glow, pulse alpha,
+native recovery without presentation overrides, short native attack windows, mirrored asset contracts, no idle glow, early/warm glow alpha,
 crystal hide/return, hidden actors, project swaps and cleanup. They cannot prove this game's rendered behavior.
 Windows checks cover the frozen engine and managed runtime resource. Live use after the correction still needs checking the
 actual crystal, glow, shot direction and battle completion; use the automatic `[FFR Fina]` log if anything fails.
