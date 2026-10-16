@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina scale fix and Studio previews — 2026-10-15
+
+Code: [`b3e9d0a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b3e9d0a30ca2a8b3d47ef439c3b4fe4f105e5bb7).
+[Verified Windows test release / run 38847946131](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38847946131).
+
 - Fix Crystal Fina builds failing with "The native sprite/effect battle scales are invalid." Read her fresh built
   design row instead of requiring positive donor values. Fill only nonpositive scale fields with explicit native-presentation
   values, preserve positive scales and other rows, and size the casing from the same values written to the game.
@@ -19,6 +24,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   eye-opening/turn/cast attack and the glowing fall/seated resonance. Include verified previews offline, bypass old
   FFBE preview files and revise Flutter's image-cache identity. Label the software preview's lighting difference.
   Bundled extension 1.2.18; existing kits, menu portraits and the cave comparison remain intact.
+
+- Validation: clean analysis, 246 Flutter tests (one skip), the separate fresh frozen-engine startup check,
+  358 Python checks (Windows: five skips; Linux: four), managed bundles, 12 launcher and 10 import checks passed.
+  The frozen runtime opens the bundled animated WebP and verifies its native-preview API/header. Regressions cover
+  nonpositive scales, preservation of unrelated rows/fields, invalid values, stale preview bypass, party-model fallback,
+  image cache revision, navigation, decoded durations and disappearance of the crystal before the seated ending.
+  Native integration builds and strictly reads back a zero-scale design-table fixture with the private battle assets;
+  IoStore packing/container verification also pass. The original user game data is not replaced by test fixtures.
+  Verified the package SHA-256, commit/run provenance and all 30 managed manifest entries against source. The software
+  Studio preview is labeled; actual battle rendering/rotation and glass lighting still need an in-game test.
+- First complete candidate to verified download: **10m29s**, including corrections, checks, waiting and verification.
+  Windows CI took **5m40s**, using **9m19s** of runner time. Joined the automatic push run; no extra build dispatched.
 
 ## Published native Crystal Fina battle test — 2026-10-15
 

@@ -18,15 +18,21 @@ reference has no acquisition prompt or separate reward; both displays follow the
 
 The test always uses the approved transparent glass with rotation on. **Solid casing check** and **Animate crystal
 casing** have been removed; their saved values are ignored. The user has confirmed the current glass, tips and rotation
-look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.17.
+look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.18.
 Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
 Custom Crystal Fina now also builds with this native body and private glass in **battle**. Her attack opens her eyes,
 turns and casts. Resonance uses the intro aura, hides the casing, lowers her and holds the original jacket-free seated
 pose. Existing vision identity, skills, stats, gameplay event times and saved edits are preserved. Ordinary action
 body keys fit the current clip durations. The original cave comparison assets remain available.
 
-[Verified battle test package / run 38843855920](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38843855920/Sephira-Studio-Test.zip)
-(code `bb2a737`, published 2026-10-15). Rebuild/install the mod and restart Resonance to try it. Native asset readbacks,
+This version fixes the build failure caused by requiring positive donor scales. It gives unset/nonpositive fields
+explicit presentation values on Fina's built row and computes the casing size from those same values. Studio's
+selector and unit viewer now show the new native idle/attack/resonance preview instead of the old cached sprites.
+The preview uses native geometry/pixels with simplified lighting; original imported party models retain their own
+preview. Saved kits, portraits and the old cave comparison remain intact.
+
+[Verified battle/preview test package / run 38847946131](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38847946131/Sephira-Studio-Test.zip)
+(code `b3e9d0a`, published 2026-10-15). Rebuild/install the mod and restart Resonance to try it. Native asset readbacks,
 IoStore packing and Windows checks passed; battle crystal visibility/rotation, aura cleanup and visual timing still
 need an in-game test. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
 
