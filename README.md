@@ -4,18 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-For the Crystal Fina cave trial, enable **Crystal Fina cave** on the main screen, build/install the mod, and restart
-Resonance. Look north of the road between Earth Shrine and Mitra. The stone cave's crystal portal leads to her glowing
-room. Both the overworld entrance and crystal portal require the interaction button; a blocking box prevents walking
-through the cave entrance or portal crystal. Scene placement and interaction rules are recorded in
-[SCENE_PLACEMENT.md](SCENE_PLACEMENT.md). Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
-hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
+Crystal Fina's finished cave presentation is automatic. Add her normally (or enable Sephira's Visions), then open
+**Edit → Acquisition**. To choose a specific cave, turn off **Hide for spoilers** and **Random**, select **Cave**
+and choose your placement. Right-click the map to add a cave if needed. Build/install and restart Resonance;
+use a save that has not acquired her to test the reward.
 
-For the Sanctum crystal version, enable **Crystal Fina Test** instead. It switches off the original cave toggle
-and reuses the same vision, cave and reward. Only her native introductory floating pose inside rotating transparent
-Sanctum glass is displayed. The pair is 15% larger than the previous test. The approved glass and rotation are fixed;
-obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
-without Crystal Fina already acquired.
+In any assigned cave, she uses her introductory floating pose inside the rotating transparent Sanctum crystal,
+with the accepted size, glass and alignment. Acquisition grants her allocated vision, hides both her and the crystal,
+and returns to that cave's stone room. The standalone **Crystal Fina cave** and **Crystal Fina Test** controls are removed.
+Existing enabled switches migrate to an editable Acquisition assignment if she has no saved choice, then turn off.
+Existing shop/cave choices, edits and disabled collection membership are preserved; removed profiles are not recreated.
+See [scene placement and migration details](SCENE_PLACEMENT.md).
+
+[Verified automatic Crystal Fina cave update / run 38978026068](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38978026068/Sephira-Studio-Test.zip)
+(code `2f9db41`, published 2026-10-16; extension 1.2.30). Update Studio, rebuild/install the mod and restart Resonance.
+Windows validation and compilation pass for the same commit. Downloaded provenance/checksum and all
+31 managed resources match source. Live confirmation of the new Acquisition route remains pending.
 
 Party battle replacements now expose the native knockout motion names used by all eight party members,
 including Lasswell's reverse stance. They use the selected sprite's fallen pose (or its base form's), preserving
@@ -615,13 +619,15 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   exit banners' region/name and recommended-level metadata independently of their travel destinations. Refresh
   `DA_UI_PlaceNameProperty` and review map 1000's `bUseLandName` policy, preserving other destinations/visibility settings.
   Retest selected vendor inventories and combined-shop tabs, preserving native item conditions and purchase limits.
-  For **Crystal Fina Test**, revalidate `M_Env_Glass_Single_Layer_Water`, its `MSM_SingleLayerWater` transmission model and scalar names,
+  For **Crystal Fina's assigned-cave presentation**, revalidate `M_Env_Glass_Single_Layer_Water`, its `MSM_SingleLayerWater` transmission model and scalar names,
   the reserved RefractionDepthBias override, cooked material-instance cached-data format, introductory pose/billboard transforms,
-  and copied static visibility IDs/streaming metadata. Recheck the solid-versus-glass diagnostic and original solid material baseline. Recheck the private casing sequence, Tick clock, explicit
+  and copied static visibility IDs/streaming metadata. Retest assignment to original, custom and shared caves with both
+  retired switches off, including reward IDs and ownership visibility. Recheck the private casing sequence, Tick clock, explicit
   transform channels, unique cooked object identities, component soft-path binding and autoplay/input flags.
   Preserve the native crystal render data/material section and verify the mesh/bulk copies. The previous tip-only
-  material partition produced dark end caps; do not revive it without a new visual test. Preserve both test modes
-  and avoid carrying demo-specific shader serialization into another engine version without checking it.
+  material partition produced dark end caps; do not revive it without a new visual test. Preserve the approved glass/rotation
+  and retryable legacy-switch migration; keep the standalone diagnostic controls retired. Recheck shader serialization
+  before carrying demo assets into another engine version.
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available. Recheck all eight native party knockout names (`death`, plus Lasswell's

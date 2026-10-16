@@ -11,13 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published automatic Crystal Fina cave presentation — 2026-10-16
+
+Code: [`2f9db41`](https://github.com/biscoBen/FFR-Vison-Studio/commit/2f9db41b5418b5c577e08893175084b908b010b5).
+[Verified Windows test release / run 38978026068](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38978026068).
+
 - Remove the standalone Crystal Fina cave/Test switches from Studio. Assigning her to any cave through
   Acquisition now automatically includes the finished introductory sprite, rotating transparent crystal,
   approved size/material and normal cave acquisition/return flow. Other cave visions keep their appearance.
 - Migrate an enabled old switch to an explicit original-cave assignment when Fina has no saved choice,
   then retire the switch. Preserve existing shops/caves, edited kits and disabled collections; do not
   recreate removed profiles. Save failures keep a retryable state and stop the build. Extension 1.2.30.
-  Native serialization and automated checks are pending; the new assignment route needs a live game test.
+  The new assignment route needs a live game test.
+- Local analysis, 75 focused Flutter tests and 381 Python checks pass. Coverage includes shared caves,
+  allocated reward IDs, original/shop/custom choices, disabled collections, removal, migration retries and save
+  failures that block builds. Native casing mesh/material, component binding and rotation sequence roundtrips
+  and IoStore verification pass. Full native NPC reconstruction is not exercised by that probe because the reference
+  omits its Blueprint parents; table routing is covered by regressions. Windows validation and compilation pass
+  for the same commit, including full Flutter/Python suites, frozen-engine startup and launcher/updater checks.
+  Downloaded checksum/provenance and all 31 managed resources match source. Battle appearance/timing bytes match
+  the accepted release. The user also confirmed the previous party-knockout update looks good.
+- First complete candidate to verified download: **8m53s**, including a migration
+  edit-preservation guard, checks, waiting and verification. Windows CI took **5m28s**, using
+  **9m00s** of runner time. Joined the matching automatic run; no extra build dispatched.
 
 ## Published party replacement knockout motions — 2026-10-16
 
