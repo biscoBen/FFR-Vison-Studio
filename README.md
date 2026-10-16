@@ -24,11 +24,11 @@ Attack and resonance face the opposite direction, and the seated hold is 100 fra
 hit/healing keys or saved kits change. Rebuild/install stages the owned runtime along with the assets; restart the
 game afterward. This requires the working loader already installed for field cycling, with no new loader download.
 Studio's refreshed preview is a labeled lighting approximation. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
-The new code awaits Windows publication; the previous package below does not contain these runtime changes.
+Windows validation, compilation and the frozen-engine startup passed on the final code. The package checksum,
+commit/run identity and all 31 managed resources match source; actual battle rendering remains an in-game check.
 
-[Verified Crystal Fina corrections / run 38855894137](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38855894137/Sephira-Studio-Test.zip)
-(code `2976d53`, published 2026-10-15). The download checksum, commit/run provenance and all 30 managed resources
-were checked against source. Update Studio, rebuild/install the mod and restart Resonance to test these changes.
+[Verified Crystal Fina runtime / run 38861705226](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38861705226/Sephira-Studio-Test.zip)
+(code `ff2cedd`, published 2026-10-15; extension 1.2.21). Update Studio, rebuild/install the mod and restart Resonance to test these changes.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.

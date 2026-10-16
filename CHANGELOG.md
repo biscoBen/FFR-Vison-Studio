@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published direct Crystal Fina battle runtime — 2026-10-15
+
+Code: [`ff2cedd`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ff2cedd52cc4aca99db87fb25739fa89401a7f3a).
+[Verified Windows test release / run 38861705226](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38861705226).
+
 - Replace Crystal Fina's non-rendering battle casing/sequence-glow route with direct, battle-only mesh and Niagara
   attachments through the existing UE4SS loader. Reuse Studio's owned runtime deployment/restore and Deck transfer;
   walking-character cycling can stay off. Require the working loader before installing. Preserve the accepted cave.
@@ -20,7 +25,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Resolve private mesh/material/glow packages through Unreal soft-path loading rather than the original asset registry,
   and reload collected glow assets before reuse.
 - Refresh native Studio previews/cache revision and bundled extension 1.2.21. Native asset and executable Lua fixture
-  checks cover serialization, scope, interruption, pulse timing and cleanup; live Unreal rendering remains unverified.
+  checks cover serialization, scope, interruption, pulse timing, private package loading, asset collection and cleanup.
+  Both Windows validation and compilation pass on the final commit, including the full suite and frozen-engine startup.
+  Download checksum, exact commit/run provenance and all 31 managed resources were checked against source. Live Unreal
+  rendering still needs an in-game test; binary and simulated runtime checks do not establish visual correctness.
+- First complete candidate to verified download: **26m47s**, including the loading correction, checks, both builds,
+  waiting and verification. Final Windows CI took **7m41s** and **11m25s** of runner time; both automatic runs combined
+  took **12m53s**, using **20m09s** of runner time. Joined matching push runs; no duplicate build dispatched.
 
 ## Published Crystal Fina cave and battle corrections — 2026-10-15
 
