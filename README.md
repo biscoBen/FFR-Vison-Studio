@@ -17,26 +17,29 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.22 fixes the runtime
-crash identified in the supplied game log: the mesh attached successfully, then a hardcoded animation-output field
-was nil and cleanup removed it, also stopping the glow and full cast. Read reflected output names independently of
-parameter labels; keep the casing and retry during startup gaps. The existing UE4SS loader attaches the real crystal
-and native glow, independently of the walking-character toggle; no new loader download is needed.
+Custom Crystal Fina uses the native introductory body and rotating private Sanctum glass in battle. Bundled
+extension 1.2.23 fixes three causes established by the game trace and native asset reads:
 
-The approved full cast plays through early native recovery calls; preparation only opens her eyes. Attack and
-resonance retain their mirrored body tracks. The seated hold is exactly **1.25 seconds** (75 native frames), with
-reformation and glow timings updated together. The accepted cave is preserved. Gameplay keys and saved kits stay
-intact. Studio's refreshed preview is a labeled lighting approximation. See
-[battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+- Native `Idle` recovery canceled the full cast after half a second because its comparison was case-sensitive.
+  Match Unreal FName behavior so the approved 229-frame eye-opening, turn and shot continue through early recovery.
+- SS6 ignores legacy `Fliph` tracks. Use supported `Imgfliph`, with native key/bool-cache verification and matching previews.
+- JSON rebuilding discarded the glow's native Niagara parameter names/offsets and bindings. Clone the native package
+  instead, requiring identical export bytes. Use the intro's `NiagaraAlpha` fade, center the effect at the body socket
+  and suppress its floor lights through the private component's `LightPower` override.
 
-Windows validation, compilation and frozen-engine startup pass. The package checksum, commit/run identity and all
-31 managed resources match source. The log establishes the previous failure; corrected battle rendering still
-needs an in-game test. If needed, the [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
-and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect the
+The battle glass also uses a stronger refraction depth gate to reduce body distortion, preserving the approved
+surface/facet settings. The accepted cave and **1.25-second seated hold** remain unchanged. No gameplay keys or saved
+kits change. The runtime uses the existing UE4SS loader independently of field cycling; no new loader is installed.
+Studio's refreshed preview is a labeled lighting approximation. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+
+Windows validation, compilation and frozen-engine startup pass. The downloaded package checksum, commit/run identity
+and all 31 managed resources match source. Corrected battle visuals still need an in-game test. If needed, the
+[runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd) and
+[companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect
 allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
 
-[Verified Crystal Fina runtime fix / run 38933124386](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38933124386/Sephira-Studio-Test.zip)
-(code `8fd2cb1`, published 2026-10-16; extension 1.2.22). Update Studio, rebuild/install the mod and restart Resonance.
+[Verified Crystal Fina presentation fixes / run 38938932251](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38938932251/Sephira-Studio-Test.zip)
+(code `d764d9b`, published 2026-10-16; extension 1.2.23). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
@@ -612,8 +615,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   For native Crystal Fina battle presentation, revalidate the SS6 model names/parents, part sockets, UUPerPixel versus
   component-scale conversion, direct movable mesh attachment and native mesh/material/bulk data. Recheck the
   SpriteStudio playing-name out parameters, Play/SetPlayRate and Engine/Niagara component functions under UE4SS.
+  Preserve native Niagara parameter names/offsets, renderer bindings and VM through native package cloning;
+  JSON readback omits these fields. Verify byte-identical export data. Use SS6-supported Imgfliph and check its bool cache.
   Treat output-table field names as game reflection data; identify the private animation pack by value rather than
-  assuming upstream parameter spelling. Retest temporarily unavailable outputs without tearing down the casing.
+  assuming upstream parameter spelling. Normalize case as Unreal FName does; retest native `Idle` recovery and
+  temporarily unavailable outputs without tearing down the casing.
   Preserve reflected bHidden access rather than calling the inline C++ IsHidden helper. Retest full-cast recovery,
   no idle glow, direct parameter-driven aura fades, the frame-134 fall and frame-258 reformation in real battles.
   Verify owned runtime staging/restoration and Deck transfer with cycling on and off. Keep the authorized seated

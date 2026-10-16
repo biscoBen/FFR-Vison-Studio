@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina battle presentation fixes — 2026-10-16
+
+Code: [`d764d9b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d764d9baad0e2993c6ad77d5ddb0f417a53efb1c).
+[Verified Windows test release / run 38938932251](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38938932251).
+
 - Fix Crystal Fina's full cast being canceled by native `Idle` recovery after roughly half a second. Normalize
   animation/pack names with Unreal's case-insensitive FName semantics; preserve the approved 229-frame turn/shot.
 - Replace ignored SS6 `Fliph` tracks with supported `Imgfliph` tracks for attack and resonance. Verify the native
@@ -22,6 +27,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Reduce distortion of the body inside the private battle glass by increasing its refraction depth bias from 12 to 24.
   Preserve the accepted cave material, surface/facet settings and **1.25-second** seated hold. Source/API checks,
   native readbacks and regression fixtures do not replace an in-game visual test.
+- Windows validation and compilation pass on the same code, including the full Flutter/Python suites and frozen-engine
+  startup. Local analysis, 20 focused Flutter tests, 365 Python tests and real native build/readback/IoStore checks pass.
+  Verified the private glow's 117,357 export bytes against the original, supported mirror keys/bool caches and battle
+  material depth bias. The downloaded ZIP checksum, commit/run provenance and all 31 managed resources match source.
+- First complete candidate to verified download: **7m28s**, including checks, waiting and verification. Windows CI took
+  **5m01s**, using **8m34s** of runner time. Joined the matching automatic push run; no extra build dispatched.
 
 ## Published Crystal Fina animation-output crash fix — 2026-10-16
 
