@@ -594,6 +594,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Battle and overworld replacements.** Recheck native asset tables, sprite layouts, portraits, directions,
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.
+  For native Crystal Fina battle presentation, revalidate `DT_BtlUnitEffectAsset` and its part attachments,
+  CPU Niagara component-renderer/template serialization, native sprite/effect scale parameters and SS6 rotation
+  axes. Retest casing visibility/rotation, aura cleanup and the frame-134 fall in real battles. Refresh the native
+  SsValue trailer/inline atlas decoder and retain the authorized jacket-free seated fallback without replacing saved kits.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table

@@ -11,6 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Replace custom Crystal Fina's battle body with the native introductory sprite inside a private copy of the approved
+  Sanctum glass. Attack opens her eyes, turns and casts; resonance uses the native intro aura, hides the casing at
+  frame 134, descends and holds the original jacket-free seated pose. Fit ordinary action bodies to their existing
+  clip durations; preserve skills, hit/healing events, stats, vision identity, menu assets and saved edits.
+- Attach the casing/aura through the actual per-unit battle effect table. A CPU Niagara component renderer owns one
+  non-colliding static-mesh casing and retains the approved cooked glass shader. SS6 attachment tracks carry turning
+  and resonance visibility. The original cave comparison and its approved glass/turn sequence remain unchanged.
+  Bundled extension 1.2.17. Native asset generation/readbacks pass; battle rendering, attachment rotation inheritance,
+  effect cleanup and perceived timing still need an in-game check.
+- Keep read-only battle-reference collectors and a shared native SsValue decoder/body-preview tool in the project.
+  Collectors write to Downloads\FFR Mod. Evidence and runtime limits are recorded in `docs/CRYSTAL_FINA_BATTLE.md`;
+  the full-game checklist includes the new per-unit attachments, shader/scale dependencies and seated fallback.
+
 ## Published Crystal Fina side-by-side comparison — 2026-10-15
 
 Code: [`aee9e8c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aee9e8c6411a5516b11a31a93406bc64aeb4b0a8).
