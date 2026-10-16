@@ -32,7 +32,7 @@ The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel belo
 rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
 needs in-game confirmation.
 
-## Direct battle runtime (extension 1.2.21)
+## Direct battle runtime (extension 1.2.22)
 
 The last asset-only attempt passed native serialization but the user still saw no casing or sequenced glow. Its
 Niagara ComponentRenderer route and owner-versus-vision effect selection are not established runtime behavior.
@@ -75,11 +75,25 @@ assuming SS6 Roty becomes world yaw. Hide the owned mesh explicitly during the r
 Source inspected:
 - [SpriteStudio component implementation](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Private/Component/SsPlayerComponent.cpp)
 - [SpriteStudio reflected signatures](https://github.com/SpriteStudio/SS6PlayerForUnrealEngine4/blob/master/Ss6PlayerExamples/Plugins/SpriteStudio6/Source/SpriteStudio6/Public/Component/SsPlayerComponent.h)
-- UE4SS LuaUObject.cpp: non-struct out parameters are written into caller-supplied tables under their parameter names.
+- [UE4SS LuaUObject.cpp at the installed e3ba1016 version](https://github.com/UE4SS-RE/RE-UE4SS/blob/e3ba1016/UE4SS/src/LuaType/LuaUObject.cpp): non-struct out parameters are written into caller-supplied tables under their reflected parameter names.
+
+The user's 2026-10-16 diagnostic log confirms the installed mod starts, matches the correct private Fina project,
+loads the real mesh/material/glow and successfully attaches the mesh to CPP_BtlUnit at UUPerPixel=3.5. The very next
+update fails at `name(animation.OutAnimationName)`: the assumed field is nil. Error cleanup immediately removes the
+mesh and disables both glow and full-cast playback. The previous fixture copied the upstream field spelling and
+therefore missed this game/UE4SS difference. The log does not reveal the game's actual parameter spelling.
 
 Keep native actor identities and gameplay events intact. Read the **actual component animation** with
-`GetPlayingAnimationName(packOut, animationOut)` and its `OutAnimationName` field, rather than relying on an actor's
-cached motion-name property. The module logs initial native motion/frame/rate transitions for a useful live trace.
+`GetPlayingAnimationName(outputs, outputs)`. Both caller arguments refer to one output table; identify the verified
+private pack by its exact value and take the other FName as the current clip. Reflected parameter labels and table
+iteration order are irrelevant. Do not assume an upstream header's parameter spelling or use an actor's cached
+motion-name property. Temporarily missing/ambiguous outputs keep the casing alive and retry without starting a
+new cast or aura. Log the first populated output fields, waits and initial motion/frame/rate transitions.
+
+A reproduction using renamed output parameters makes the previous runtime fail at the same nil dereference and
+remove its newly attached mesh. The corrected fixture tests renamed/reordered labels, upstream labels, startup
+output gaps and recovery, then exercises the full cast and both glow pulses. This establishes a regression fix
+for the observed failure; the corrected visuals still require a live game test.
 
 ## Full casting motion and resonance
 
@@ -92,7 +106,7 @@ Once complete, restore the native current pose, using idle for an expired ordina
 keys are changed. An immediate later action can supersede this cosmetic presentation without changing game logic.
 
 Both attack and resonance use SS6 body `Fliph=1`, preserving native texture pixels; return to unflipped idle when
-she reforms. The seated hold is now 100 frames (1.67 seconds), down from 125 in the preceding test.
+she reforms. The seated hold is now exactly 75 frames (1.25 seconds), down from 100 in the preceding test.
 
 | Resonance frame | Presentation |
 | --- | --- |
@@ -100,10 +114,10 @@ she reforms. The seated hold is now 100 frames (1.67 seconds), down from 125 in 
 | 122–134 | Fade body-centered native glow in |
 | 134 | Hide mesh and begin descent; native reaction key unchanged |
 | 134–164 | Fade glow out, then destroy its component |
-| 183–282 | Jacket-free seated pose |
-| 271–283 | Fade second glow in at the current body socket |
-| 283 | Restore crystal and floating pose |
-| 283–307 | Fade second glow out and destroy its component |
+| 183–257 | Jacket-free seated pose |
+| 246–258 | Fade second glow in at the current body socket |
+| 258 | Restore crystal and floating pose |
+| 258–282 | Fade second glow out and destroy its component |
 
 Spawn the private native aura directly with NiagaraFunctionLibrary.SpawnSystemAttached at `NULL_Aura`, with auto
 activation off. Set User.Alpha and User.NiagaraAlpha to zero before activating; update them from the actual LB1
@@ -118,7 +132,7 @@ accepted 15% enlargement, with its approved glass and spin. No old comparison NP
 ## Studio and verification
 
 `scripts/render_crystal_fina_preview.py` shares battle tracks, flipping and timings, and renders supplied LOD0 mesh
-and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-4` to invalidate
+and sprite pixels. Its lighting/glow is a labeled approximation. Bundled WebPs use `native-fina-5` to invalidate
 stale previews. Local native checks use the real asset writer, verify model parents/custom-value tails including
 Fliph, full-cast cells and the restored casing, then pack and verify IoStore. A synthetic zero-scale design fixture
 is confined to scratch. No user game data is replaced by fixtures.
@@ -126,6 +140,6 @@ is confined to scratch. No user game data is replaced by fixtures.
 Executable Lua fixtures cover actual animation-name out tables, owned movable mesh creation, scale/pivot setup,
 early recovery without truncation, native full-rate playback, mirrored asset contracts, no idle glow, pulse alpha,
 crystal hide/return, hidden actors, project swaps and cleanup. They cannot prove this game's rendered behavior.
-Windows checks cover the frozen engine and managed runtime resource. First live use still needs checking the
+Windows checks cover the frozen engine and managed runtime resource. Live use after the correction still needs checking the
 actual crystal, glow, shot direction and battle completion; use the automatic `[FFR Fina]` log if anything fails.
 Collectors continue to write to `Downloads\FFR Mod`.

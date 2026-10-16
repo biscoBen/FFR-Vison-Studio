@@ -19,7 +19,7 @@ UNIT = {'id': 13503, 'jp': 'FixtureFina', 'donor': 13108, 'ffbe': {'id': battle.
 
 
 class FinaBattleTests(unittest.TestCase):
-    def test_runtime_uses_direct_components_and_finishes_cast_through_native_recovery(self):
+    def runtime(self):
         from lupa.lua54 import LuaRuntime
         import _ffr_field_leader as leader
         lua = LuaRuntime()
@@ -28,7 +28,24 @@ class FinaBattleTests(unittest.TestCase):
         root = Path(__file__).resolve().parent.parent
         lua.execute((root / 'scripts/fixtures/fina_battle_runtime.lua').read_text())
         lua.execute((root / 'assets/existing_visions/payload/fina_battle.lua').read_text())
+        return lua
+
+    def test_runtime_uses_direct_components_and_finishes_cast_through_native_recovery(self):
+        lua = self.runtime()
         lua.execute('run_fina_tests()')
+
+    def test_runtime_reads_game_parameter_names_instead_of_assuming_upstream_spelling(self):
+        for fields in (('OutAnimPackName', 'OutAnimationName'), ('AnimationPack', 'Animation'),
+                       ('Second', 'First')):
+            with self.subTest(fields=fields):
+                lua = self.runtime()
+                lua.globals().sprite.outputFields = lua.table_from(fields)
+                lua.execute('run_fina_tests()')
+
+    def test_transient_missing_animation_outputs_keep_crystal_and_retry_without_aborting(self):
+        lua = self.runtime()
+        lua.execute('sprite.namesUnavailable=true; tick(); assert(#meshes==1 and meshes[1].visible); '
+                    'assert(not meshes[1].invalid); sprite.namesUnavailable=false; run_fina_tests()')
 
     def test_runtime_config_uses_the_current_private_assets_and_shortened_hold(self):
         cfg = battle.runtime_config(UNIT, {'X': 1, 'Y': 2, 'Z': 3})
@@ -36,7 +53,7 @@ class FinaBattleTests(unittest.TestCase):
         self.assertIn('/13503/', cfg['mesh'])
         self.assertEqual(cfg['cast'], 'Studio_FinaCast')
         self.assertEqual(cfg['castFrames'], 229)
-        self.assertEqual(cfg['reform'] - motion.SEAT, 100)
+        self.assertEqual(cfg['reform'] - motion.SEAT, 75)
         job = {'asset': 'unchanged'}
         self.assertIs(battle.prepare_job(job, [UNIT], lambda _: 1), job)
 
@@ -98,7 +115,7 @@ class FinaBattleTests(unittest.TestCase):
         changed = copy.deepcopy(source); changed['Exports'][0]['Table']['Data'][0]['Name'] = 'WrongOwner'
         with self.assertRaises(ValueError): battle.battle_table(changed, UNIT)
 
-    def test_motion_spec_completes_cast_and_restores_crystal_after_half_the_seated_hold(self):
+    def test_motion_spec_completes_cast_and_restores_crystal_after_exact_seated_hold(self):
         from PIL import Image
         names = [('openarmidle2', 49), ('openarmopeneye2', 65), ('curlup2', 73), ('magicattack6', 91), ('down6', 49)]
         clips = {name: {'fps': 60, 'frameCount': count, 'parts': {'part_0': {'Cell': [[0, {'mapId': 0, 'name': name}]]}}}
@@ -118,14 +135,14 @@ class FinaBattleTests(unittest.TestCase):
         self.assertEqual(clips['attack_A']['frameCount'], 117); self.assertEqual(clips['magic_attack']['frameCount'], 80)
         self.assertEqual(clips['Studio_FinaCast']['frameCount'], 229)
         self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Fliph'], [[0, 1.0]])
-        self.assertEqual(clips['LB1']['parts']['part_0']['Fliph'], [[0, 1.0], [283, 0.0]])
+        self.assertEqual(clips['LB1']['parts']['part_0']['Fliph'], [[0, 1.0], [258, 0.0]])
         self.assertEqual(clips['idle']['frameCount'], 6000)
         self.assertAlmostEqual(clips['idle']['parts']['NULL_Crystal']['Roty'][-1][1], 359.94)
-        self.assertEqual(clips['LB1']['parts']['NULL_Crystal']['Posy'][1:], [[134, -10000.0], [283, 183.5 / 2.7]])
+        self.assertEqual(clips['LB1']['parts']['NULL_Crystal']['Posy'][1:], [[134, -10000.0], [258, 183.5 / 2.7]])
         self.assertIn([183, 'original_jacket_free_seated'], clips['LB1']['parts']['part_0']['Cell'])
         self.assertEqual(clips['LB1']['parts']['part_0']['Cell'][-1][1], 'openarmidle2')
         self.assertIn([183, 0.0], clips['LB1']['parts']['part_0']['Posy'])
-        self.assertEqual(clips['LB1']['parts']['part_0']['Posy'][-1], [283, 22.0 + motion.BODY_FLOAT])
+        self.assertEqual(clips['LB1']['parts']['part_0']['Posy'][-1], [258, 22.0 + motion.BODY_FLOAT])
         self.assertIn([183, 14.5], clips['LB1']['parts']['NULL_Aura']['Posy'])
         model = spec['model']['parts']
         self.assertEqual({p['name'] for p in model}, set(clips['idle']['parts']))

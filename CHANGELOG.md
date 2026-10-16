@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Set Crystal Fina's seated resonance hold to exactly **1.25 seconds** (75 native frames), with reformation/glow
+  timing and Studio previews moved together. Preserve the accepted cave presentation. Bundled extension 1.2.22.
+- Fix the battle-runtime failure identified by the supplied UE4SS log: the real crystal attached successfully,
+  then reading a hardcoded animation-output field returned nil and cleanup removed the crystal and disabled the
+  glow/full cast. Read both reflected output names in one table and identify the verified private pack by its value,
+  independently of parameter spelling/order. Keep the casing and retry when names are temporarily unavailable.
+  Log the actual output fields once to make future runtime differences diagnosable.
+- Add a read-only **Collect Fina Runtime Diagnostics.cmd** helper. It collects only the allowlisted loader log/settings,
+  installed Studio Lua scripts and built runtime metadata, hashing DLLs without uploading them. Output stays in
+  **Downloads\FFR Mod**. Regression checks cover renamed/reordered outputs, startup gaps, full-cast recovery,
+  glow/casing timing and cleanup. Live rendering after the correction still needs the user's in-game test.
+
 ## Published direct Crystal Fina battle runtime — 2026-10-15
 
 Code: [`ff2cedd`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ff2cedd52cc4aca99db87fb25739fa89401a7f3a).

@@ -47,7 +47,13 @@ function sprite:GetPlayFrame() return self.frame end
 function sprite:GetPlayRate() return 1 end
 function sprite:SetPlayRate(rate) assert(rate==1) end
 function sprite:GetPlayingAnimationName(pack,animation)
-    pack.OutAnimPackName=FName(config.pack); animation.OutAnimationName=FName(self.playing)
+    -- UE4SS names these fields from the game's UFunction, not upstream's
+    -- header. The supplied log proves OutAnimationName was absent. These
+    -- synthetic renamed parameters reproduce that contract without claiming
+    -- to know the game's exact private spelling.
+    if self.namesUnavailable then return end
+    local fields = self.outputFields or {'GamePack', 'GameClip'}
+    pack[fields[1]]=FName(config.pack); animation[fields[2]]=FName(self.playing)
 end
 function sprite:Play(pack,clip,frame,rate,loops,roundtrip)
     assert(pack:ToString()==config.pack and rate==1 and not roundtrip)

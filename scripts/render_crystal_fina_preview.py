@@ -136,7 +136,7 @@ def main():
         name = public + '.webp'; files[name] = data
         animations[public] = {'file': name, 'seconds': length / 60, 'sha256': hashlib.sha256(data).hexdigest()}
         print(public, len(data), 'bytes', flush=True)
-    manifest = {'schema': 1, 'presentation': 'native-fina-4', 'description': 'Native battle preview; game lighting and refraction may differ.',
+    manifest = {'schema': 1, 'presentation': 'native-fina-5', 'description': 'Native battle preview; game lighting and refraction may differ.',
                 'animations': animations, 'sources': {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                     for name in ('project_json', 'texture_json', 'mesh_json', 'old_sheet', 'original_spec')}}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()

@@ -5,7 +5,7 @@ local config = require('config').fina
 if not config then return end
 local states, assets, queued, failed, scans = {}, nil, false, false, 0
 local function valid(o) return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid() end
-local function name(o) return o:ToString() end
+local function name(o) return type(o) == 'string' and o or o:ToString() end
 local function log(s) print('[FFR Fina] ' .. s .. '\n') end
 local function native(path)
     local o = StaticFindObject('/Script/' .. path)
@@ -38,9 +38,32 @@ local function released(n)
     return n == 'magic_attack' or n:match('^attack_') or n:match('^M_attack') or n:match('^FFBE_')
 end
 local function motion(s)
-    local pack, animation = {}, {}
-    s.sprite:GetPlayingAnimationName(pack, animation)
-    local playing = name(animation.OutAnimationName)
+    -- UE4SS puts out values under the game's reflected parameter names. The
+    -- supplied game/UE4SS call did not provide the assumed OutAnimationName key
+    -- (the log caught the resulting nil dereference). Collect both
+    -- names in one table and distinguish the verified private pack by VALUE.
+    local outputs = {}
+    s.sprite:GetPlayingAnimationName(outputs, outputs)
+    local pack, playing, fields, ambiguous = false, nil, {}, false
+    for field, value in pairs(outputs) do
+        local text = name(value)
+        fields[#fields + 1] = tostring(field) .. '=' .. text
+        if text == config.pack then pack = true
+        elseif playing and playing ~= text then ambiguous = true
+        else playing = text end
+    end
+    table.sort(fields)
+    local signature = table.concat(fields, ', ')
+    if #fields > 0 and not s.namesLogged then
+        log('Animation output fields: ' .. signature); s.namesLogged = true
+    end
+    if not pack or not playing or playing == '' or playing == 'None' or ambiguous then
+        -- During initialization/model changes names may be unavailable. Keep
+        -- the casing alive and retry; do not tear down every battle feature.
+        if s.waiting ~= signature then log('Waiting for animation names: ' .. signature); s.waiting = signature end
+        return nil
+    end
+    s.waiting = nil
     s.playing = playing
     -- Observe the renderer, not an actor's cached animation-name property.
     return playing == config.cast and s.last or playing
@@ -102,7 +125,7 @@ local function update(s)
     local sprite, actor = s.sprite, s.actor
     local n, time = motion(s), now(sprite)
     local visible = sprite:IsVisible() and not actor.bHidden
-    if n ~= s.last then
+    if n and n ~= s.last then
         if s.logged < 12 then
             log('Native motion ' .. n .. '; frame=' .. tostring(sprite:GetPlayFrame()) .. '; rate=' .. tostring(sprite:GetPlayRate()))
             s.logged = s.logged + 1
@@ -114,7 +137,7 @@ local function update(s)
         end
         s.last = n
     end
-    if s.castStart then
+    if n and s.castStart then
         local frame = math.floor((time-s.castStart)*60)
         if frame >= config.castFrames or frame < 0 or not visible then
             s.castStart = nil
@@ -132,11 +155,12 @@ local function update(s)
         end
     end
     local frame = sprite:GetPlayFrame()
-    s.mesh:SetVisibility(visible and not (n == 'LB1' and frame >= config.fall and frame < config.reform), true)
+    local observed = n or s.last
+    s.mesh:SetVisibility(visible and not (observed == 'LB1' and frame >= config.fall and frame < config.reform), true)
     -- SpriteStudio sockets expose in-plane rotation, not a full 3D spin.
     -- Rotate the actual component about its own vertical axis explicitly.
     s.mesh:K2_SetRelativeRotation({Pitch=0,Yaw=(time*config.turnRate)%360,Roll=0}, false, {}, true)
-    glow(s, frame, visible)
+    glow(s, frame, visible and n ~= nil)
 end
 local function tick()
     scans = scans + 1
@@ -179,4 +203,4 @@ LoopAsync(33, function()
     end
     return false
 end)
-log('Battle presentation ready; waiting for custom Crystal Fina')
+log('Battle presentation ready (parameter-independent animation names); waiting for custom Crystal Fina')

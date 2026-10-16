@@ -604,8 +604,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   For native Crystal Fina battle presentation, revalidate the SS6 model names/parents, part sockets, UUPerPixel versus
   component-scale conversion, direct movable mesh attachment and native mesh/material/bulk data. Recheck the
   SpriteStudio playing-name out parameters, Play/SetPlayRate and Engine/Niagara component functions under UE4SS.
+  Treat output-table field names as game reflection data; identify the private animation pack by value rather than
+  assuming upstream parameter spelling. Retest temporarily unavailable outputs without tearing down the casing.
   Preserve reflected bHidden access rather than calling the inline C++ IsHidden helper. Retest full-cast recovery,
-  no idle glow, direct parameter-driven aura fades, the frame-134 fall and frame-283 reformation in real battles.
+  no idle glow, direct parameter-driven aura fades, the frame-134 fall and frame-258 reformation in real battles.
   Verify owned runtime staging/restoration and Deck transfer with cycling on and off. Keep the authorized seated
   fallback, native source bytes and saved kits. Refresh the labeled Studio preview and cache revision separately.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,

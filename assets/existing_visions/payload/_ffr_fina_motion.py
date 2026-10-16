@@ -17,8 +17,8 @@ NAME_HEADER = bytes.fromhex('80090e01')
 BODY_FLOAT = 183.5 / 2.7 - 21.0  # The approved cave's sprite float, in sprite pixels.
 FALL = 134
 SEAT = 183
-# Shorten the seated hold from 125 to 100 frames. Native gameplay keys stay put.
-REFORM = SEAT + 100
+# Hold the seated pose for 1.25 seconds at the native 60 fps. Gameplay keys stay put.
+REFORM = SEAT + 75
 FLASHES = ((FALL - 12, FALL, FALL + 30), (REFORM - 12, REFORM, REFORM + 24))
 ACTION_FRAMES = 229
 
