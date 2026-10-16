@@ -11,30 +11,22 @@ through the cave entrance or portal crystal. Scene placement and interaction rul
 [SCENE_PLACEMENT.md](SCENE_PLACEMENT.md). Acquisition requests the native vision-obtain screen and returns outside the portal. Her ownership condition
 hides her afterward. The Windows package is verified; placement and the acquisition presentation still need an in-game check.
 
-For the Sanctum crystal comparison, enable **Crystal Fina Test** instead. It switches off the original cave toggle
-and reuses the same vision, cave and reward. The original imported Crystal Fina appears beside her native introductory
-floating pose inside rotating Sanctum glass, at the original sprite's previous scale and floating height. The old
-reference has no acquisition prompt or separate reward; both displays follow the same ownership condition.
+For the Sanctum crystal version, enable **Crystal Fina Test** instead. It switches off the original cave toggle
+and reuses the same vision, cave and reward. Only her native introductory floating pose inside rotating transparent
+Sanctum glass is displayed. The pair is 15% larger than the previous test. The approved glass and rotation are fixed;
+obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
+without Crystal Fina already acquired.
 
-The test always uses the approved transparent glass with rotation on. **Solid casing check** and **Animate crystal
-casing** have been removed; their saved values are ignored. The user has confirmed the current glass, tips and rotation
-look good. This comparison keeps the same material, mesh and turn sequence. Bundled extension 1.2.18.
-Update Studio, rebuild/install and restart Resonance, then load a save without Crystal Fina already acquired.
-Custom Crystal Fina now also builds with this native body and private glass in **battle**. Her attack opens her eyes,
-turns and casts. Resonance uses the intro aura, hides the casing, lowers her and holds the original jacket-free seated
-pose. Existing vision identity, skills, stats, gameplay event times and saved edits are preserved. Ordinary action
-body keys fit the current clip durations. The original cave comparison assets remain available.
+Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.19 corrects missing
+attachment model parts and renderer dependencies, removes the continuous idle glow and completes the casting motion
+in a shorter presentation window. Resonance uses brief body-centered glow pulses as the crystal disappears and
+returns, with about half the former seated hold. Skills, stats, gameplay event timing and saved edits are preserved.
+Studio's native preview shares these motion tracks; its lighting is a labeled approximation.
+See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md). The previous verified package remains available
+below until the new code passes Windows validation and publication.
 
-This version fixes the build failure caused by requiring positive donor scales. It gives unset/nonpositive fields
-explicit presentation values on Fina's built row and computes the casing size from those same values. Studio's
-selector and unit viewer now show the new native idle/attack/resonance preview instead of the old cached sprites.
-The preview uses native geometry/pixels with simplified lighting; original imported party models retain their own
-preview. Saved kits, portraits and the old cave comparison remain intact.
-
-[Verified battle/preview test package / run 38847946131](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38847946131/Sephira-Studio-Test.zip)
-(code `b3e9d0a`, published 2026-10-15). Rebuild/install the mod and restart Resonance to try it. Native asset readbacks,
-IoStore packing and Windows checks passed; battle crystal visibility/rotation, aura cleanup and visual timing still
-need an in-game test. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+[Previous verified battle/preview package / run 38847946131](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38847946131/Sephira-Studio-Test.zip)
+(code `b3e9d0a`, published 2026-10-15). This earlier package does not contain the current attachment/timing corrections.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
@@ -607,8 +599,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   restoration and special scenes. FFBE field sprites use separate source data; refresh that catalog when its source
   changes or additional suitable sheets become available.
   For native Crystal Fina battle presentation, revalidate `DT_BtlUnitEffectAsset` and its part attachments,
-  CPU Niagara component-renderer/template serialization, native sprite/effect scale parameters and SS6 rotation
-  axes. Recheck nonpositive design-scale fields and the explicit positive values authored only for Fina. Retest casing visibility/rotation, aura cleanup and the frame-134 fall in real battles. Refresh the native
+  actual SS6 Model.PartList names/indices/parents, CPU Niagara component-renderer/template serialization,
+  MeshRendererInfo dependencies, native sprite/effect scale parameters and SS6 rotation
+  axes. Recheck nonpositive design-scale fields and the explicit positive values authored only for Fina. Retest casing visibility/rotation, the absence of idle aura, timed caster-attached glow lifecycle/native fade curves, the frame-134 fall and
+  frame-308 reformation in real battles. Refresh the native
   SsValue trailer/inline atlas decoder and retain the authorized jacket-free seated fallback without replacing saved kits.
   Refresh the bundled native Studio preview geometry/body tracks and cache revision; keep it labeled separately from actual game lighting.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,

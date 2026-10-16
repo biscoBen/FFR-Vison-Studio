@@ -19,6 +19,48 @@ UNIT = {'id': 13503, 'jp': 'FixtureFina', 'donor': 13108, 'ffbe': {'id': battle.
 
 
 class FinaBattleTests(unittest.TestCase):
+    def test_glow_pulses_use_native_lifecycle_and_leave_gameplay_events_untouched(self):
+        unit = dict(UNIT, lb_custom={'resonance': True})
+        lb_id = lambda _: 444040
+        asset = 'FFRS/Content/Sequencer/Battle/Skill/444040/444041/SEQ_Battle_444041_Master'
+        events = [{'time': 12000, 'set': {'EventType': 'UnitPlayAnimByName', 'Unit_PlayAnimByName_AnimationName': 'LB1'}},
+                  {'time': 65600, 'set': {'EventType': 'OtherReaction', 'Other_Reaction_Id': 444040}}]
+        job = {'asset': asset, 'plan': {'duration': 220000, 'events': events}}
+        before = copy.deepcopy(job); built = battle.prepare_job(job, [unit], lb_id)
+        self.assertEqual(job, before)
+        self.assertTrue(all(e in built['plan']['events'] for e in events))
+        spawns = [e for e in built['plan']['events'] if e['set']['EventType'] == 'EffectSpawnNiagaraAtRandom']
+        self.assertEqual([e['time'] for e in spawns], [12000 + 122 * 400, 12000 + 296 * 400])
+        self.assertTrue(all(e['set']['Effect_NiagaraData']['PartName'] == 'NULL_Aura' for e in spawns))
+        self.assertTrue(all(e['set']['Effect_NiagaraData']['bPlayVisionUnit'] for e in spawns))
+        self.assertEqual(sum(e['set']['EventType'] == 'EffectDestroyNiagaraToNiagaraID' for e in built['plan']['events']), 2)
+        self.assertEqual(sum(e['set']['EventType'] == 'EffectDiactivateNiagaraToNiagaraID' for e in built['plan']['events']), 2)
+        self.assertIs(battle.prepare_job(dict(job, asset='AnotherSkill'), [unit], lb_id)['plan'], job['plan'])
+        self.assertIs(battle.prepare_job(job, [], lb_id), job)
+
+    def test_native_glow_readback_allows_omitted_false_but_rejects_missing_attachment(self):
+        expected = {'NiagaraID': 'Glow', 'PartName': 'NULL_Aura', 'bDisableFollowing': False,
+                    'bPlayOwnerUnit': False, 'bPlayVisionUnit': True}
+        edits = [{'export': '9', 'set': {'EventType': 'EffectSpawnNiagaraAtRandom', 'Effect_NiagaraData': expected}}]
+        actual = {'9': {'Effect_NiagaraData': {k: v for k, v in expected.items() if v is not False}}}
+        battle.verify_glow_events(edits, actual)
+        actual['9']['Effect_NiagaraData'].pop('PartName')
+        with self.assertRaisesRegex(ValueError, 'PartName'): battle.verify_glow_events(edits, actual)
+
+    def test_model_readback_rejects_orphan_attachments_and_inherited_body_offsets(self):
+        parts = [{'name': 'root', 'parent': -1, 'type': 'Null'},
+                 {'name': 'part_0', 'parent': 0, 'type': 'Normal'},
+                 {'name': 'NULL_Crystal', 'parent': 0, 'type': 'Null'}]
+        native = [{'Value': [p('PartName', x['name']), p('ParentIndex', x['parent']),
+                            p('Type', x['type']), p('ArrayIndex', i)]} for i, x in enumerate(parts)]
+        model = [p('PartList', native), p('MeshList', []), p('BoneList', [])]
+        view = {'Exports': [{'Data': [p('AnimeList', [{'Value': [p('Model', model)]}])]}]}
+        motion.verify_model(view, {'model': {'parts': parts}})
+        native[1]['Value'][1]['Value'] = 2
+        with self.assertRaisesRegex(ValueError, 'model parts/parents'): motion.verify_model(view, {'model': {'parts': parts}})
+        native[1]['Value'][1]['Value'] = 0; native.pop()
+        with self.assertRaisesRegex(ValueError, 'model parts/parents'): motion.verify_model(view, {'model': {'parts': parts}})
+
     def test_nonpositive_scale_fields_are_explicitly_written_only_on_the_current_fina(self):
         fallback = struct.unpack('<f', struct.pack('<f', 2.7))[0]
         for sprite, effect, expected in [(0, 0, (fallback, 1.0)), (2.5, 0, (2.5, 1.0)),
@@ -63,17 +105,17 @@ class FinaBattleTests(unittest.TestCase):
         changed = copy.deepcopy(source); changed['Exports'][0]['Table']['Data'][0]['Name'] = 'WrongOwner'
         with self.assertRaises(ValueError): battle.battle_table(changed, UNIT)
 
-    def test_effect_table_has_two_private_anchors_without_changing_native_effects(self):
+    def test_effect_table_has_only_casing_and_no_idle_aura_without_changing_native_effects(self):
         bundle = {'Name': '0', 'Value': [soft('niagaraAsset', '/Game/OriginalEffect'), p('attachPartsName', 'root'),
             p('offsetLocation', []), p('additionalRotation', [p('additionalRotation', {'Pitch': 0, 'Yaw': 180, 'Roll': 0})])]}
         source = table([{'Name': 'Donor', 'Value': [p('ID', 400), p('effectBundleList', [bundle])]}])
         before = copy.deepcopy(source); result = battle.effect_table(source, UNIT)
         self.assertEqual(source, before); self.assertEqual(battle.table_rows(result)[0], battle.table_rows(source)[0])
         effects = battle.cave.property_data(battle.table_rows(result)[1], 'effectBundleList')['Value']
-        self.assertEqual([battle.cave.property_data(e, 'attachPartsName')['Value'] for e in effects], ['NULL_Crystal', 'NULL_Aura'])
+        self.assertEqual([battle.cave.property_data(e, 'attachPartsName')['Value'] for e in effects], ['NULL_Crystal'])
         with self.assertRaises(ValueError): battle.effect_table(result, UNIT)
 
-    def test_motion_spec_retains_action_windows_and_resonance_hide_and_seated_origin(self):
+    def test_motion_spec_completes_cast_and_restores_crystal_after_half_the_seated_hold(self):
         from PIL import Image
         names = [('openarmidle2', 49), ('openarmopeneye2', 65), ('curlup2', 73), ('magicattack6', 91), ('down6', 49)]
         clips = {name: {'fps': 60, 'frameCount': count, 'parts': {'part_0': {'Cell': [[0, {'mapId': 0, 'name': name}]]}}}
@@ -90,12 +132,18 @@ class FinaBattleTests(unittest.TestCase):
                 atlas, spec = motion.battle_spec(view, {}, path, original)
         self.assertEqual(original, before); self.assertEqual(atlas.getpixel((0, 330)), (255, 0, 0, 255))
         clips = {a['name']: a for a in spec['animations']}
-        self.assertEqual(clips['attack_A']['frameCount'], 117); self.assertEqual(clips['magic_attack']['frameCount'], 80)
+        self.assertEqual(clips['attack_A']['frameCount'], 60); self.assertEqual(clips['magic_attack']['frameCount'], 60)
         self.assertEqual(clips['idle']['frameCount'], 6000)
         self.assertAlmostEqual(clips['idle']['parts']['NULL_Crystal']['Roty'][-1][1], 359.94)
-        self.assertEqual(clips['LB1']['parts']['NULL_Crystal']['Posy'][-1], [134, -10000.0])
-        self.assertEqual(clips['LB1']['parts']['part_0']['Cell'][-1], [183, 'original_jacket_free_seated'])
-        self.assertEqual(clips['LB1']['parts']['part_0']['Posy'][-1], [183, 0.0])
+        self.assertEqual(clips['LB1']['parts']['NULL_Crystal']['Posy'][1:], [[134, -10000.0], [308, 183.5 / 2.7]])
+        self.assertIn([183, 'original_jacket_free_seated'], clips['LB1']['parts']['part_0']['Cell'])
+        self.assertEqual(clips['LB1']['parts']['part_0']['Cell'][-1][1], 'openarmidle2')
+        self.assertIn([183, 0.0], clips['LB1']['parts']['part_0']['Posy'])
+        self.assertEqual(clips['LB1']['parts']['part_0']['Posy'][-1], [308, 22.0 + motion.BODY_FLOAT])
+        self.assertIn([183, 14.5], clips['LB1']['parts']['NULL_Aura']['Posy'])
+        model = spec['model']['parts']
+        self.assertEqual({p['name'] for p in model}, set(clips['idle']['parts']))
+        self.assertTrue(all(p['parent'] == ( -1 if p['name'] == 'root' else 0) for p in model))
 
 
 if __name__ == '__main__': unittest.main()

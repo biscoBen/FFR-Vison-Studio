@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Remove the old side-by-side Crystal Fina cave comparison and enlarge the native Fina/glass pair by 15%, retaining
+  the approved material and slow rotation. Update the cave toggle's description.
+- Fix missing battle attachment model parts and inherited body offsets. Author and verify the SS6 model hierarchy;
+  append the casing component renderer while retaining the native MeshRendererInfo dependency's original class/data.
+  Disable other casing-system renderers explicitly. Idle has only the crystal, with no persistent golden aura.
+- Complete normal casting/release motion in a shorter presentation window. Use the replacement duration in animation
+  repair, preserving native gameplay event timing. Resonance spawns/fades/destroys native body-centered glow pulses
+  around crystal disappearance and reappearance; restore the floating crystal after a seated hold about half as long.
+- Refresh native Studio previews/cache revision and bundled extension 1.2.19. Native model/renderer/VM readbacks, cooked glow-event checks and
+  IoStore packing/verification pass. Local Python checks, Flutter analysis and focused UI tests pass; Windows CI
+  supplies the full suite/frozen-engine check before publication. Live battle rendering still needs an in-game test.
+
 ## Published Crystal Fina scale fix and Studio previews — 2026-10-15
 
 Code: [`b3e9d0a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b3e9d0a30ca2a8b3d47ef439c3b4fe4f105e5bb7).

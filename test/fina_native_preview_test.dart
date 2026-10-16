@@ -7,8 +7,8 @@ import 'package:ffr_vision_studio/services/crystal_fina.dart';
 void main() {
   test('native Fina preview uses a new image cache identity', () {
     final api = Api('http://localhost:8765');
-    expect(api.animUrl(CrystalFina.spriteId, 'atk'), contains('?presentation=native-fina-2'));
-    expect(api.ffbePreview(CrystalFina.spriteId, 'limitatk'), contains('?presentation=native-fina-2'));
+    expect(api.animUrl(CrystalFina.spriteId, 'atk'), contains('?presentation=native-fina-3'));
+    expect(api.ffbePreview(CrystalFina.spriteId, 'limitatk'), contains('?presentation=native-fina-3'));
     expect(api.animUrl('401001207', 'atk'), 'http://localhost:8765/api/ffbe/anim/401001207/atk.webp');
     expect(api.animUrl(CrystalFina.spriteId, 'atk', nativePreview: false), endsWith('?original=1'));
   });

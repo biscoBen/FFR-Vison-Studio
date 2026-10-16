@@ -47,8 +47,9 @@ TEST_SPIN_SEQUENCE = 'Map/StudioCrystalCave/Test/SEQ_Studio_CrystalFinaTestTurn'
 TEST_SPIN_GUID = '{' + str(uuid.uuid5(uuid.NAMESPACE_URL, TEST_SPIN_SEQUENCE)).upper() + '}'
 TEST_ANIMATION = 'openarmidle2'
 TEST_ANIMATION_INDEX = 8
-TEST_SPRITE_SCALE = 2.7
-TEST_CRYSTAL_SCALE = .12
+TEST_SIZE = 1.15
+TEST_SPRITE_SCALE = 2.7 * TEST_SIZE
+TEST_CRYSTAL_SCALE = .12 * TEST_SIZE
 # Setup Y=51 plus pose Y=-29, minus the cell's one-pixel vertical pivot.
 # All three openarmidle2 cells share this visual center, not half their height.
 TEST_POSE_CENTER_Y = 21.0
@@ -62,9 +63,8 @@ TEST_CRYSTAL_PARAMETERS = {'Opacity': .22, 'Metallic': .08, 'Roughness': .10,
     'RefractionDepthBias': 12.0}
 # The native body is 50 pixels high. Float it in a casing centered on its
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
-TEST_SPRITE_FLOAT = 183.5 - TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE
+TEST_SPRITE_FLOAT = (183.5 - TEST_POSE_CENTER_Y * 2.7) * TEST_SIZE
 TEST_CRYSTAL_TURN_RATE = 3.6  # Degrees/second, one slow revolution per 100 seconds.
-TEST_COMPARISON_OFFSET_Y = -280.0
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -410,8 +410,6 @@ def prepare(tables, units, root, rows):
     for entries in plans:
         for index, (unit, spec) in enumerate(entries):
             _prepare_unit(staged, unit, rows, spec, include_maps=index == 0)
-            if spec.fina_test:
-                _prepare_npc_asset(staged, unit, rows, original_comparison(unit, spec))
     if registry is not None: save_identities(root, registry)
     tables.clear(); tables.update(staged)
 
@@ -500,20 +498,6 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
             table(rel)['add'].append({'row': spec.portal_event, 'cloneFrom': 'C01_014_03',
                                       'set': testing.field_delta(grant, portal)})
 
-
-
-def original_comparison(unit, spec):
-    """A display-only original sprite, beside the test without moving its casing.
-
-    Normal added-vision NPC rows use even IDs from 60000 + unit ID * 2.
-    Reserve the adjacent odd ID for this comparison; no new vision/map/grant.
-    """
-    offset = list(spec.spawn_offset); offset[1] += TEST_COMPARISON_OFFSET_Y
-    return replace(spec, name=spec.npc_name + '_OriginalComparison',
-                   package=spec.npc_package + '_OriginalComparison',
-                   map_id=60001 + unit['id'] * 2, unit_id=None,
-                   material='', sprite='', sprite_scale=FINA_SCALE, sprite_float=FINA_FLOAT,
-                   spawn_offset=tuple(offset), fina_test=False)
 
 
 def _prepare_npc_asset(tables, unit, rows, spec):
@@ -1793,11 +1777,6 @@ def make_caves(source, plans):
             add_collision_stream(room, spec.name + '_PL', source[WORLD_PL], extra_spec.npc_package)
         for _, grant in entries:
             views[grant.grant_sequence] = grant_sequence(source[GRANT_DONOR], grant)
-        for selected, test_spec in entries:
-            if test_spec.fina_test:
-                comparison = original_comparison(selected, test_spec)
-                views[comparison.npc_package] = make_npc(source, selected, spawn, comparison, visual_only=True)
-                add_collision_stream(room, spec.name + '_PL', source[WORLD_PL], comparison.npc_package)
         duplicate = (set(expected) & set(views)) - {WORLD, WORLD_PL}
         if duplicate: raise ValueError('Duplicate Resonance Cave packages: ' + ', '.join(sorted(duplicate)))
         expected.update(views)

@@ -509,8 +509,8 @@ class CrystalFinaTestModeTests(unittest.TestCase):
             self.assertTrue(spec.fina_test)
             self.assertEqual((spec.map_id, spec.stone_id, spec.npc_id), (29991, 29990, 29991))
             self.assertEqual(spec.sprite, '/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01')
-            self.assertEqual(spec.sprite_scale, 2.7)
-            self.assertAlmostEqual(spec.sprite_float + 21 * spec.sprite_scale, 183.5)
+            self.assertAlmostEqual(spec.sprite_scale, 2.7 * 1.15)
+            self.assertAlmostEqual(spec.sprite_float + 21 * spec.sprite_scale, 183.5 * 1.15)
             self.assertTrue(spec.material.endswith('/M_Ss_Component_PBR'))
             operations = testing.prepare({}, [unit], root, rows)
             path = Path(root) / testing.CONFIG
@@ -525,69 +525,18 @@ class CrystalFinaTestModeTests(unittest.TestCase):
         self.assertEqual(event['TransitionLocation'], {'mapId': 29990, 'pointId': 1, 'bDoAutoSave': False})
         self.assertEqual(selected, unit)
         npc_rows = operations[cave.MAP_UNIT]['add']
-        self.assertEqual(len(npc_rows), 2)
-        self.assertEqual(len({r['set']['ID'] for r in npc_rows}), 2)
-        old, = [r for r in npc_rows if 'OriginalComparison' in r['row']]
-        self.assertEqual(old['set']['animationAssetList[0].Ss6Project'], '/Game/Chara/summon/summon13507/summon13507')
-        self.assertEqual(old['set']['animationAssetList[0].Material'], '/Game/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_13507')
+        self.assertEqual(len(npc_rows), 1)
+        self.assertFalse(any('OriginalComparison' in r['row'] for r in npc_rows))
         self.assertEqual(len(operations[cave.MAP]['add']), 2)  # Still just the original two rooms.
         self.assertEqual(len(operations[testing.EVENT]['add']), 2)  # One acquisition plus the portal.
 
-    def test_original_comparison_retains_old_pose_and_ownership_without_a_second_grant(self):
-        from unittest.mock import patch
-        def p(name, value): return {'Name': name, 'Value': value, 'IsZero': False}
-        def vec(name, x=0, y=0, z=0): return p(name, [{'Value': dict(X=x, Y=y, Z=z), 'IsZero': False}])
-        # Retain the native component indices, including opaque widget exports.
-        world = {'NameMap': [], 'Imports': [
-            {'ObjectName': '/Game/Chara/Field_Unit/npc9020/npc9020', 'ClassName': 'Package'},
-            {'ObjectName': 'npc9020', 'ClassName': 'Ss6Project'}],
-            'Exports': [{'ObjectName': f'Object_{i}', 'OuterIndex': 31, 'Data': [],
-                         'CreateBeforeSerializationDependencies': []} for i in range(140)]}
-        world['Exports'][94].update(ObjectName='PersistentLevel', OuterIndex=137, Actors=[70, 0, 31])
-        world['Exports'][136].update(ObjectName=Path(cave.WORLD).name, OuterIndex=0)
-        owner = world['Exports'][30]
-        owner.update(ObjectName='BP_MapUnit_NPC_Field_C_2', OuterIndex=95, Data=[
-            p('m_MapUnitId', 9020), p('m_VisiblFlagCondition', ''), p('m_Direction', 'North'),
-            p('m_IsAnimationUseDirection', True), p('m_EventList', [p('EventId', 'native story')]),
-            p('m_EventSettings', [p('Condition', ''), p('EventId', 'native story')])])
-        world['Exports'][31]['Data'] = [p('m_AnimationName', 'idle')]
-        for i in (32, 56): world['Exports'][i]['Data'] = [p('m_IsAnimationUseDirection', True)]
-        world['Exports'][36]['Data'] = [vec('RelativeLocation')]
-        world['Exports'][63]['Data'] = [p('UUPerPixel', 1), p('AutoPlayAnimPackName', 'npc9020'),
-            p('AutoPlayAnimationName', 'idle'), p('AutoPlayAnimationIndex', 0)]
-        world['Exports'][109]['Data'] = [vec('RelativeLocation', z=-90)]
-        unit = {'id': 13507}
-        main = cave.replace(cave.CaveSpec(), fina_test=True, sprite=cave.TEST_SPRITE,
-                            sprite_scale=cave.TEST_SPRITE_SCALE, sprite_float=cave.TEST_SPRITE_FLOAT)
-        comparison = cave.original_comparison(unit, main)
-        before = copy.deepcopy(world)
-        with patch.object(cave, 'acquisition_interaction') as interaction, patch.object(cave, 'attach_test_crystal') as casing:
-            old = cave.make_npc({cave.WORLD: world}, unit, (10, 20, 300), comparison, visual_only=True)
-            interaction.assert_not_called(); casing.assert_not_called()
-            conditional = {'ObjectName': 'BP_MapTransitionTrigger_C_0'}
-            new = cave.make_npc({cave.WORLD: world, cave.DONOR_GD: {},
-                cave.TRANSITION_GD: {'Exports': [conditional]}}, unit, (10, 20, 300), main)
-            interaction.assert_called_once()
-            casing.assert_called_once_with(new, {cave.WORLD: world, cave.DONOR_GD: {},
-                cave.TRANSITION_GD: {'Exports': [conditional]}}, rotate=True)
-        self.assertEqual(world, before)
-        self.assertNotEqual(comparison.npc_package, main.npc_package)
-        self.assertNotEqual(comparison.npc_id, main.npc_id)
-        self.assertEqual(comparison.npc_id % 2, 1)
-        self.assertEqual(cave.property_data(old['Exports'][30], 'm_VisiblFlagCondition')['Value'], '{item:13507}==0')
-        self.assertEqual(cave.property_data(old['Exports'][30], 'm_EventList')['Value'], [])
-        settings = cave.property_data(old['Exports'][30], 'm_EventSettings')
-        self.assertEqual(cave.property_data(settings, 'Condition')['Value'], '{item:13507}<0')
-        self.assertEqual(cave.property_data(settings, 'EventId')['Value'], 'None')
-        self.assertEqual(cave.property_data(old['Exports'][63], 'UUPerPixel')['Value'], cave.FINA_SCALE)
-        self.assertEqual(cave.property_data(old['Exports'][63], 'AutoPlayAnimationName')['Value'], 'idle')
-        self.assertEqual(cave.property_data(old['Exports'][48], 'RelativeLocation')['Value'][0]['Value']['Z'], cave.FINA_FLOAT)
-        self.assertEqual(old['Imports'][0]['ObjectName'], '/Game/Chara/summon/summon13507/summon13507')
-        old_y = cave.property_data(old['Exports'][36], 'RelativeLocation')['Value'][0]['Value']['Y']
-        new_y = cave.property_data(new['Exports'][36], 'RelativeLocation')['Value'][0]['Value']['Y']
-        self.assertEqual(new_y, 20)
-        self.assertEqual(old_y - new_y, cave.TEST_COMPARISON_OFFSET_Y)
-        self.assertEqual(cave.export(old, 'PersistentLevel')[1]['Actors'], [70, 0, 31])
+    def test_native_pair_enlarges_together_without_changing_glass_or_rotation(self):
+        self.assertAlmostEqual(cave.TEST_SPRITE_SCALE / 2.7, 1.15)
+        self.assertAlmostEqual(cave.TEST_CRYSTAL_SCALE / .12, 1.15)
+        self.assertAlmostEqual(cave.TEST_SPRITE_FLOAT / 126.8, 1.15)
+        self.assertAlmostEqual(cave.TEST_CRYSTAL_SCALE / cave.TEST_SPRITE_SCALE, .12 / 2.7)
+        self.assertEqual(cave.TEST_CRYSTAL_TURN_RATE, 3.6)
+        self.assertFalse(hasattr(cave, 'original_comparison'))
 
     def test_settings_keep_legacy_files_compatible_and_reject_two_overlapping_caves(self):
         self.assertNotIn('crystalCaveTestSolid', testing.validate_settings({'schema': 1, 'maxMr': False}))
@@ -779,9 +728,9 @@ class CrystalFinaTestModeTests(unittest.TestCase):
                     if p['Name'] in ('Translation', 'Rotation', 'Scale')}
         self.assertEqual(len(channels), 9)
         for axis, expected in enumerate((.0348, .2496, 35.54)):
-            self.assertAlmostEqual(channels['Translation', axis]['DefaultValue'], expected)
+            self.assertAlmostEqual(channels['Translation', axis]['DefaultValue'], expected * 1.15)
             self.assertEqual(channels['Translation', axis]['Values'], [])
-            self.assertEqual(channels['Scale', axis]['DefaultValue'], .12)
+            self.assertAlmostEqual(channels['Scale', axis]['DefaultValue'], .12 * 1.15)
         yaw = channels['Rotation', 2]
         self.assertEqual([k['Value'] for k in yaw['Times']], [0, 2400000])
         self.assertEqual([k['Value'] for k in yaw['Values']], [0, 360])

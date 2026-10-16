@@ -28,8 +28,15 @@ class PreviewTests(unittest.TestCase):
         first = image.convert('RGBA').getbbox()
         image.seek(image.n_frames - 1); image.load(); last = image.convert('RGBA').getbbox()
         self.assertGreater(first[3] - first[1], 250)  # The crystal is visible before the fall.
-        self.assertLess(last[3] - last[1], 100)  # Grounded seated pose, without the casing.
-        self.assertGreater(last[1], 240)
+        self.assertGreater(last[3] - last[1], 250)  # Casing returns before cleanup.
+        elapsed = 0
+        for index in range(image.n_frames):
+            image.seek(index); image.load()
+            if elapsed + image.info['duration'] > 3333: break  # Frame 200: seated, casing absent.
+            elapsed += image.info['duration']
+        seated = image.convert('RGBA').getbbox()
+        self.assertLess(seated[3] - seated[1], 100)
+        self.assertGreater(seated[1], 240)
 
     def test_literal_fina_routes_bypass_old_files_and_leave_generic_routes_untouched(self):
         routes = {}

@@ -15,6 +15,13 @@ import struct
 MAP_HEADER = bytes.fromhex('80090e03')
 NAME_HEADER = bytes.fromhex('80090e01')
 BODY_FLOAT = 183.5 / 2.7 - 21.0  # The approved cave's sprite float, in sprite pixels.
+FALL = 134
+SEAT = 183
+# Previously the body stayed seated from 183 until the old clip ended at 432.
+# Restore it after half that interval, without moving any gameplay event keys.
+REFORM = SEAT + math.ceil((432 - SEAT) / 2)
+FLASHES = ((FALL - 12, FALL, FALL + 30), (REFORM - 12, REFORM, REFORM + 24))
+ACTION_FRAMES = 60
 
 
 def prop(owner, name):
@@ -178,8 +185,9 @@ def battle_spec(view, texture, old_sheet, original_spec):
                   'pivot': [(60 - bounds[0]) / seat.width - .5, .5 - (100 - bounds[1]) / seat.height]})
     clips = decode(view); body = draft(view)
     idle = stitch(clips, 'idle', [('openarmidle2', 49)])
-    # Native battle action sequences keep their own hit/effect keys. Only fit
-    # presentation keys into each original converted clip's existing window.
+    # Ordinary native spells can return to idle before the old FFBE animation's
+    # 5+ second window. Complete this presentation in one second, then hold;
+    # the game still owns all cast/release/hit/recovery event times.
     def fit(clip, length):
         result = copy.deepcopy(clip); old_length = result['frameCount']
         result['frameCount'] = length
@@ -199,9 +207,19 @@ def battle_spec(view, texture, old_sheet, original_spec):
         length = original_clip['frameCount']
         if type(length) is not int or not 1 <= length <= 36000:
             raise ValueError('Invalid existing battle animation window.')
-        if name == 'LB1': clip = copy.deepcopy(body['resonance'])
+        if name == 'LB1':
+            clip = copy.deepcopy(body['resonance'])
+            clip['frameCount'] = max(length, REFORM + 25)
+            restored = [[REFORM + repeat * 49 + tick, cell]
+                for repeat in range((clip['frameCount'] - REFORM) // 49 + 1)
+                for tick, cell in idle['parts']['part_0']['Cell']
+                if REFORM + repeat * 49 + tick < clip['frameCount']]
+            clip['parts']['part_0']['Cell'] += restored
+            clip['parts']['part_0']['Posy'].append([REFORM, 22.0 + BODY_FLOAT])
         elif name.startswith(('attack_', 'M_attack', 'FFBE_')) or name == 'magic_attack':
-            clip = fit(body['attack'], length)
+            clip = fit(body['attack'], min(length, ACTION_FRAMES))
+        elif name in ('command', 'magic_idle'):
+            clip = fit(stitch(clips, name, [('openarmopeneye2', 65), ('curlup2', 73)]), 30)
         else:
             clip = copy.deepcopy(idle)
             if name == 'idle':
@@ -218,10 +236,41 @@ def battle_spec(view, texture, old_sheet, original_spec):
             'Roty': [[t, t * .06] for t in range(frames)]}
         parts['NULL_Aura'] = {'Posx': [[0, 0.0]], 'Posy': [[0, -10000.0]]}
         if name == 'LB1':
-            parts['NULL_Crystal']['Posy'].append([134, -10000.0])
-            parts['NULL_Aura']['Posy'] = [[0, center], [134, center], [183, -10000.0]]
-        elif name == 'LB1_before': parts['NULL_Aura']['Posy'] = [[0, center]]
+            parts['NULL_Crystal']['Posy'] += [[FALL, -10000.0], [REFORM, center]]
+            # Cell pivots change during the fall and in the original seated
+            # fallback. Track the visual center, rather than the feet/pivot.
+            body_part = parts['part_0']; lookup = {c['name']: c for c in cells}
+            ticks = sorted({tick for tag in ('Cell', 'Posx', 'Posy') for tick, _ in body_part[tag]})
+            current = lambda keys, tick: next(value for time, value in reversed(keys) if time <= tick)
+            xy = []
+            for tick in ticks:
+                cell = lookup[current(body_part['Cell'], tick)]
+                xy.append((tick, *[current(body_part[tag], tick) - cell['pivot'][axis] * cell['size'][axis]
+                                   for axis, tag in enumerate(('Posx', 'Posy'))]))
+            parts['NULL_Aura'] = {'Posx': [[tick, x] for tick, x, y in xy],
+                                  'Posy': [[tick, y] for tick, x, y in xy]}
         animations.append(clip)
     if not {'idle', 'attack_A', 'LB1', 'Setup'} <= source_names:
         raise ValueError('The existing Fina battle motion set is incomplete.')
-    return atlas, {'pixelSize': list(atlas.size), 'cells': cells, 'animations': animations}
+    names = list(animations[0]['parts'])
+    if any(set(a['parts']) != set(names) for a in animations):
+        raise ValueError('Fina clips disagree about the model hierarchy.')
+    # make-ss6 supports an explicit model; animation tracks alone DO NOT create
+    # parts. Every attachment must exist here or native lookups fall to root.
+    model = {'parts': [{'name': name, 'parent': -1 if name == 'root' else 0,
+                       'type': 'Normal' if name == 'part_0' else 'Null'} for name in names]}
+    return atlas, {'pixelSize': list(atlas.size), 'model': model, 'cells': cells, 'animations': animations}
+
+
+def verify_model(view, spec):
+    pack, = prop(native_project(view), 'AnimeList')
+    model = prop(pack, 'Model')
+    parts = prop({'Value': model}, 'PartList')
+    actual = [{'name': prop(p, 'PartName'), 'parent': prop(p, 'ParentIndex'),
+               'type': prop(p, 'Type').split('::')[-1]} for p in parts]
+    if actual != spec['model']['parts']:
+        raise ValueError('Fina model parts/parents did not survive native serialization.')
+    if [prop(p, 'ArrayIndex') for p in parts] != list(range(len(parts))):
+        raise ValueError('Fina model indices do not match its attachment tracks.')
+    if prop({'Value': model}, 'MeshList') or prop({'Value': model}, 'BoneList'):
+        raise ValueError('The private flat Fina model retained donor mesh/bone data.')

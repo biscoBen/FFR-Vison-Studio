@@ -158,7 +158,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.18' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.19' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -194,7 +194,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.18' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.19' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
@@ -243,7 +243,7 @@ void main() {
     expect(await app.removeUnit(fina['key'] as String), isTrue);
   });
 
-  testWidgets('Fina comparison needs only the test switch', (tester) async {
+  testWidgets('Native Fina cave needs only the test switch', (tester) async {
     final api = RosterApi([]);
     final app = AppState(hostBase: 'http://unused', appPaths: paths,
         bundledFeatures: BundledFeatures(readAsset: diskAsset))..api = api..crystalCaveTest = true;
@@ -259,7 +259,8 @@ void main() {
     expect(tester.widget<SwitchListTile>(control).value, isTrue);
     expect(find.byKey(const Key('crystal-fina-solid-check')), findsNothing);
     expect(find.byKey(const Key('crystal-fina-rotate')), findsNothing);
-    expect(find.textContaining('original imported Crystal Fina'), findsOneWidget);
+    expect(find.textContaining('introductory pose inside rotating transparent glass'), findsOneWidget);
+    expect(find.textContaining('original imported Crystal Fina'), findsNothing);
     expect(app.crystalCaveTest, isTrue);
     expect(api.roster, isEmpty);
   });

@@ -5,7 +5,7 @@ typedef UnitMap = Map<String, dynamic>;
 class CrystalFina {
   static const presetId = 'custom.crystal_fina.v1';
   static const spriteId = '99887755552703';
-  static const previewVersion = 'native-fina-2';
+  static const previewVersion = 'native-fina-3';
   static const previewCaption = 'Native battle preview · game lighting may differ';
   static const assetRoot = 'assets/crystal_fina';
   static const iconAsset = '$assetRoot/units/custom/crystal_fina_2/sprites/$spriteId/unit_icon_$spriteId.png';

@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.18'
+VERSION = '1.2.19'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -51,7 +51,7 @@ def validate_preview_archive(raw):
         if len(archive.namelist()) != len(expected) or set(archive.namelist()) != expected:
             raise RuntimeError('Native Fina preview archive contents differ from the manifest.')
         manifest = json.loads(archive.read('manifest.json'))
-        if (manifest.get('schema') != 1 or manifest.get('presentation') != 'native-fina-2'
+        if (manifest.get('schema') != 1 or manifest.get('presentation') != 'native-fina-3'
                 or set(manifest.get('animations', {})) != {'idle', 'atk', 'limitatk'}):
             raise RuntimeError('Unsupported native Fina preview archive.')
         for name, entry in manifest['animations'].items():
@@ -141,7 +141,7 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
+    prelude = [MARKER, 'global UNITS', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_fina_battle', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
                'import _ffr_sephira', 'UNITS = _ffr_sephira.visual_units(_ffr_sephira.active_units(UNITS), ROOT, rows)',
                'UNITS = _ffr_sephira.bind_units(UNITS, rows)',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
@@ -202,7 +202,7 @@ def hook_builder(raw):
     lines[timeline_stage.lineno - 1] = stage_indent + 'stage("Writing skill motions and effects" if job.get("kind") in ("skill_motion", "skill_effect") else "Writing the FFBE limit-burst timeline")' + nl
     timeline_build, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'ffbe_resonance.build']
-    lines[timeline_build.lineno - 1] = stage_indent + '(_ffr_animation_repair.build_effect_sequence if job.get("kind") == "skill_effect" else ffbe_resonance.build)(job, OUT, BUILD, FFRDT, USMAP, run)' + nl
+    lines[timeline_build.lineno - 1] = stage_indent + 'job = _ffr_fina_battle.prepare_job(job, native_units + UNITS, lb_id)' + nl + stage_indent + '(_ffr_animation_repair.build_effect_sequence if job.get("kind") == "skill_effect" else ffbe_resonance.build)(job, OUT, BUILD, FFRDT, USMAP, run)' + nl
     indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
     lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
     for i in range(icon_loop.lineno - 1, icon_loop.end_lineno): lines[i] = '    ' + lines[i]

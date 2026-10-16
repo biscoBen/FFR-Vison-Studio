@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('crystal-fina-cave-test'), contentPadding: EdgeInsets.zero,
                   title: Text('Crystal Fina Test', style: Guide.text()),
-                  subtitle: Text('Compare the original imported Crystal Fina beside her introductory pose inside rotating transparent glass. Same cave and acquisition. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
+                  subtitle: Text('Find Crystal Fina in her introductory pose inside rotating transparent glass. Same cave and acquisition. Switches off Crystal Fina cave; rebuild/install, then test on a save that has not acquired her.', style: Guide.small()),
                   value: app.crystalCaveTest,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setCrystalCaveTest(value); } catch (e) { app.showNotice('$e'); }

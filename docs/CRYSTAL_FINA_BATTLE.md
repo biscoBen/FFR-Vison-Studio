@@ -1,132 +1,103 @@
-# Crystal Fina battle presentation work
+# Crystal Fina battle presentation
 
-Requested after comparison build aee9e8c (run 38829455821). Both battle reference uploads have been inspected. The body animation drafts were approved by the user.
-The managed build now generates a private battle presentation for the selected custom Crystal Fina, without changing her saved identity, kit, menu assets or the existing cave comparison.
+The selected custom vision (`99887755552703`, source `CUSTOM`) uses native introductory Fina inside the approved
+rotating Sanctum glass. Resolve her allocated game ID at build time. Preserve saved identity, kits, mechanics and
+native hit/healing/movement events. Original party models and other visions keep their own presentation.
 
-## Requested presentation
+## Native body and coordinates
 
-- Use the approved rotating Sanctum glass casing and native introductory Fina in battle.
-- Attack: open eyes, turn toward the target, gather energy and fire; keep the casing intact.
-- Resonance: apply her introductory golden glow, make the casing disappear, let her descend and finish seated.
-- Avoid the jacket in the native seated cells. The user authorized the old imported jacket-free sitting frame as a
-  fallback. An image-generation attempt was rejected; use the existing supplied pose rather than generating another.
-- Preserve current vision identity, kit, mechanics, hit timing and saved edits. Derive timing for the new presentation
-  from the actual selected motions and effect lifecycle; do not silently retime damage or healing.
+Source: `/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01`, 60 fps, native 256×512 atlas.
 
-## Confirmed evidence
-
-`/Game/Chara/Field_Unit/pc0030/pc0030_01/pc0030_01` contains these native motions at 60 fps:
-
-| Motion | Frames | Candidate use |
+| Motion | Frames | Use |
 | --- | ---: | --- |
-| openarmidle2 | 49 | Closed-eye floating idle already used in the cave |
-| openarmopeneye2 | 65 | Opening eyes |
-| openarmidleopeneye2 | 49 | Open-eye hold |
-| curlup2 | 73 | Front-to-side/body turn; inspect actual cells before sequencing |
-| curlup_pose6 | 6 | Side hold |
-| magicattack6 | 91 | Casting motion |
-| magicattack_pose6 | 6 | Cast hold |
-| down6 | 49 | Descent candidate; inspect placement before use |
-| sit_pose2 | 6 | Native pose includes Rain's jacket; do not use unchanged |
+| openarmidle2 | 49 | Closed-eye floating idle |
+| openarmopeneye2 | 65 | Eye opening |
+| curlup2 | 73 | Turn toward target |
+| magicattack6 | 91 | Charge and fire |
+| down6 | 49 | Descent |
+| sit_pose2 | 6 | Contains Rain's jacket; do not use |
 
-The yellow aura is separate: `NS_EF_EV_CMN_FinaCristalAuraParticle`, alongside
-`NS_EF_EV_CMN_FinaCristalAppearance_001` / `_002`. Those references already exist locally.
-The current custom vision is sprite ID `99887755552703`, with its allocated game ID resolved at build time.
-Its existing imported sheet includes the allowed jacket-free seated pose.
+Use supplied custom frame 174 for the authorized jacket-free seated fallback. Preserve native pixels and pivots.
+The inline BGRA decoder checks offset 84, a single mip and the 24-byte footer. SsValue cell/scalar values come from
+`Ss6Project.Extras`, in animation/part/attribute/key order; the reflected HashType fields are empty placeholders.
+Reject unknown headers, bad name references, truncated/nonfinite values and unconsumed payload bytes.
 
-The approved glass is a StaticMeshComponent in a streamed cave NPC level, with its own turn sequence. That setup
-cannot simply be assigned to `UNIT_ANIMATION_ASSET_DATA`, which exposes only Ss6Project/material/textures and a flag.
-`BTL_UNIT_EFFECT_ASSET_DATA` exposes per-unit `effectBundleList`; each bundle includes `niagaraAsset`,
-`attachPartsName`, `offsetLocation`, `additionalRotation`. The follow-up found the actual table at `Datatable/Asset/Battle/Effect/DT_BtlUnitEffectAsset`. Native monster rows attach effects to `root`; the special vision-aura row uses `null_center`. The implementation adds only Fina's allocated ID, with `NULL_Crystal` and `NULL_Aura` part attachments.
-Do not flatten the crystal to a sprite or apply a global battle Blueprint change as a substitute without discussing it.
-The ordinary JSON decoder does not expose SsValue cell hash contents. `scripts/prepare_crystal_fina_battle.py` now
-reads the native custom-value trailer in animation/part/attribute/key order, matching the installed Ss6Builder writer.
-It decodes 180 floats and 45 cell hashes, consuming all 2731 bytes. Cell map/name records use name-map references and
-native typed-value headers; scalars are float32. Reject changed headers, nonfinite/truncated values, invalid name
-references or extra bytes. Do not use the empty reflected HashType fields as the actual cell references.
+**Animation tracks do not create model parts.** `make-ss6` accepts a separate top-level `model.parts` array. Author
+root, body and every NULL attachment there with explicit indices/types/parents. Parent the flattened body and NULLs
+to root; retaining the native `position` parent adds inherited offsets. Strictly read back `Model.PartList` and
+check names, parent/index assignments and empty mesh/bone lists. Trailer-only tests missed this in the first build.
 
-The body draft joins `openarmopeneye2` (65), `curlup2` (73), `magicattack6` (91) for attack. Resonance uses a glowing
-floating hold (49), eye opening (65), the first 20 turn frames, `down6` (49) with descent, then original custom frame
-174 as the jacket-free seated hold. Crystal disappearance is planned at frame 134, matching the existing resonance
-reaction frame. These are presentation drafts, not an installed battle model or a verified attack-impact timeline.
-Native cell pivots and positions are preserved in the previews; original seated pixels are reused without repainting.
-The standard inline BGRA texture layout is checked before extracting its 256x512 mip (offset 84, 24-byte footer).
+The body pivot is at `Posy=22 + BODY_FLOAT`; its visual center is one pixel below that. The crystal center is
+`183.5/2.7` sprite pixels. `NULL_Aura` follows the body's center throughout descent and recovery. `NULL_Crystal`
+rotates on SS6 Y at 3.6 degrees/second, with a 6000-frame idle covering one turn. Runtime axis inheritance still
+needs in-game confirmation.
 
-## Received battle references
+## Casing renderer and dependencies
 
-`Crystal-Fina-Battle-Reference-20261015-190739-30e3dd-001.zip` contains 309 assets including `DT_BtlUnitAsset`, the
-440110 resonance shell and Fina effects. No battle-unit effect table was found under the requested unit folder. The
-broad Blueprint search yielded AI classes but no per-vision battle actor class/mesh slot. Searches for the guessed
-attack, 440280 and BP/Unit folders returned no assets; those guesses are not confirmed paths.
+`UNIT_ANIMATION_ASSET_DATA` has no ordinary mesh slot. Add Fina alone to the confirmed
+`Datatable/Asset/Battle/Effect/DT_BtlUnitEffectAsset`, attaching a private Niagara casing to `NULL_Crystal`.
+There is **no persistent aura bundle**. Private battle assets live under `Chara/StudioCrystalFinaBattle/<ID>`.
 
-The Fina aura has CPU mesh/sprite emitters and GPU sparkle emitters. Its mesh renderer uses `SM_EF_CMN_Plane_020`;
-it is not a pre-existing crystal mesh renderer. The approved SingleLayerWater glass material declares static-lighting
-usage, with no Niagara usage flag in the decoded source. Do not assume a Niagara mesh replacement can use its cooked
-shader permutations merely by setting a usage flag. A native component-based renderer/attachment may be needed.
-Its exact runtime binding and lifecycle still need evidence; do not edit global battle actors or invent a table path.
+Clone `NS_EF_EV_CMN_FinaCristalAuraParticle`. Preserve compiled scripts, handles/order and all opaque VM trailers.
+Use its CPU `BrightSting_0` emitter with an **appended** `NiagaraComponentRendererProperties` and one movable,
+non-colliding StaticMeshComponent template. Clear other emitters' renderer lists and disable their renderers;
+handle enable flags alone are insufficient evidence that a cooked renderer cannot draw.
 
-The follow-up helper searches attachment names across folders and runs the upstream-supported `retoc list --path`
-command to include a package index. It retains the index/report ZIP even when no attachment assets match, so an
-unused/missing demo table can be distinguished from another incorrect path. Tested successful and empty-result
-collections with paths containing spaces, input preservation, PowerShell parsing and readable ZIP contents.
+Keep the original mesh renderer and class intact: `NiagaraDataInterfaceMeshRendererInfo.MeshRenderer` still points
+to it and the CPU VM depends on its data. Replacing that export's class with ComponentRendererProperties invalidates
+this dependency. The new renderer alone goes into BrightSting's renderer list. Preserve native mesh bulk/render
+bytes and the approved ordinary glass shader; do not claim a Niagara shader permutation can be added by a usage flag.
 
+Public Unreal source inspected: `NiagaraRendererComponents.cpp` falls back to enabled when the particle's enabled
+attribute is absent. With empty PropertyBindings it does not overwrite the template transform. In
+`NiagaraSystemInstance.cpp` the duplicate template attaches to the Niagara component, retaining relative transform.
+These corroborate the intended attachment; they do not substitute for testing this game's cooked runtime.
 
-## Implemented attachment and validation
+Use the fresh Fina design row's separate `Scale` and `attachEffectSacle` values. Set nonpositive fields explicitly
+to 2.7 and 1.0 respectively; preserve positive values and all unrelated fields/rows. Canonicalize authored floats to
+float32 before readback comparison. Casing/body ratio remains `.12/2.7`; correct the native mesh pivot from its bounds.
+The cave pair separately grows by 15% about its grounded origin, retaining that ratio and its approved glass/rotation.
+The old comparison NPC/table row/stream is no longer generated.
 
-The casing is a private copy of the native Fina aura Niagara system. All compiled scripts, emitter handles/order,
-VM trailers and native source assets remain intact. Only its CPU `BrightSting_0` emitter is enabled; its renderer is
-replaced by `NiagaraComponentRendererProperties` with one ordinary movable, non-colliding StaticMeshComponent
-archetype. Empty property bindings retain its authored transform instead of the original plane particles' motion.
-This uses the approved ordinary static-mesh glass shader without claiming that a new cooked Niagara-mesh shader
-permutation can be made by changing a usage flag. The renderer and template survive strict native roundtrips.
+## Battle sequencing
 
-The independent body/casing assets live under `Chara/StudioCrystalFinaBattle/<allocated ID>`. The original converted
-summon and menu assets remain for the old cave comparison and editor. Only the freshly built Fina battle row is
-retargeted; all other rows, sound data, skills, stats and sequence events remain. No roster file is written.
-Casing size uses the freshly built Fina design row's separate sprite Scale and attachEffectSacle fields, retaining
-the approved .12/2.7 casing/body ratio. The native bounds origin corrects the mesh pivot.
+Ordinary release presentation completes in 60 frames instead of stretching to the imported 307/346-frame clips,
+which the game's shorter spell recovery can interrupt before the shot. Preparation opens eyes and turns in 30 frames.
+The normal-skill animation repair uses the replacement's one-second duration rather than accelerating it based on
+old FFBE CSV durations. No damage/healing keys are moved. Exact visual alignment with each spell needs live review.
 
-The first live build log rejected a nonpositive native scale. The original positive-only donor check was too strict;
-its synthetic integration design row had not covered that case. The corrected build authors explicit positive values
-on Fina's current design row wherever the value is nonpositive: sprite Scale 2.7 (the approved native body scale) and effect scale
-1.0. Existing positive values remain unchanged. The casing calculation uses these same authored values, rather than
-guessing the game's C++ inheritance behavior or dividing by zero. Nonfinite/unsupported values still fail
-with the field and value. New float values are canonical float32 before strict serialization comparison. All other
-design rows and Fina's non-scale design fields remain unchanged.
+| Resonance frame | Presentation |
+| --- | --- |
+| 0–121 | Float in casing; no golden glow |
+| 122–134 | Native introductory glow fades in at body's center |
+| 134 | Hide crystal; begin 49-frame descent; original reaction frame unchanged |
+| 135–164 | Fade glow out, then destroy its Niagara instance |
+| 183–307 | Original jacket-free seated hold (125 frames, previously 249) |
+| 296–308 | Brief second body-centered glow ramps up |
+| 308 | Restore floating pose and crystal together |
+| 309–332 | Fade glow out and destroy instance |
+| Existing recovery | Return to idle without changing gameplay event timing |
 
-SS6 `NULL_Crystal` carries the slow 3.6-degree/second Y rotation. Its 6000-frame idle makes one complete 100-second
-turn. At resonance frame 134, the attachment moves below view; the body descends and holds original seated frame
-174 at frame 183. `NULL_Aura` brings the native intro effect into view for preparation/resonance and moves it below
-view after landing. The unit's native effect lifecycle owns cleanup. Actual attachment rotation inheritance,
-component spawning and cleanup still require the user's in-game battle test; binary roundtrips cannot establish
-runtime rendering. There is no global actor or shader edit.
+Author these on Fina's exact private resonance job only, using the builder's `lb_id` function and exact asset path.
+The confirmed native events are `EffectSpawnNiagaraAtRandom` (caster/vision attachment),
+`EffectDiactivateNiagaraToNiagaraID` and `EffectDestroyNiagaraToNiagaraID`. `BTL_SEQUENCER_NIAGARA_DATA` supports
+PartName, following and bPlayVisionUnit. The source system exposes User.Alpha, User.NiagaraAlpha and User.LightPower.
+The asset writer rejects EX_ArrayConst user-parameter arrays, so do not ship per-event alpha arrays.
+Use the original particle alpha curves and explicit deactivation/cleanup instead. A private glow copy disables native
+light renderers to avoid a floor-level light beam; source effects remain unchanged. Import the actual
+Niagara object/package into the cooked shell; preserve its bound battle actor and rebuild the event channel and
+compiled one-shot tree together. Verify spawned object references, attachment fields and lifecycle constants through seqdump.
+Exact fade appearance remains a live-rendering check, rather than a claim established by serialization.
 
-Normal attack/cast body keys are fitted to the existing converted clip durations (Crystal Fina's attack is currently
-307 frames, casting fallback 346). The resonance is 273 frames and holds its seated endpoint until the existing
-432-frame presentation's recovery event. Native hit, healing, effect and movement event times are unchanged.
-This preserves mechanics; the perceived alignment of the cast with existing effects still needs live review.
+## Studio and verification
 
-Local native integration generates the original converted sprites, then the complete private battle system, crystal,
-material, two data tables, SS6 project and all three textures using the real asset tool. Every generated graph/table
-passes strict native write/read checks. Decoding the newly generated custom-value trailer confirms the seated cell,
-frame-134 hide and the 6000-frame turning idle. A clearly labeled synthetic native-format design table now exercises both zero fields through the full builder;
-it is never substituted for a real game table. Native supplied source files are copied into a scratch engine and
-remain unchanged. The cave's approved glass/mesh/sequence generators are unchanged.
+`scripts/render_crystal_fina_preview.py` shares battle body/attachment tracks and timings and renders the supplied
+LOD0 mesh/native sprite pixels. It approximates glow/glass and is labeled accordingly. The checked bundled WebPs use
+presentation revision `native-fina-3`; literal API routes and URL revision bypass old previews without deleting them.
 
-## Studio preview
-
-`fina_battle_preview.zip` contains checked native idle, attack and resonance WebPs. The supplied native body pixels,
-original seated fallback and crystal LOD0 geometry are rendered by `scripts/render_crystal_fina_preview.py`, using
-the shared body tracks and current converted action durations. The native game assets are not repainted or changed.
-The software renderer shows the new shape/motion and a glow approximation; it does not execute Unreal's glass shader.
-Studio labels this preview so it is not mistaken for exact game lighting/refraction.
-
-Literal custom-Fina API routes register before the generic FFBE routes, cover both Studio and Advanced preview
-requests, and bypass old generated preview files without deleting them. Other forms keep their existing routes.
-Responses use no-store and the Flutter image URLs include a presentation revision, avoiding both disk and in-memory
-stale previews. The selector identifies the finishing motion as Resonance. Bundled extension 1.2.18 installs the
-preview module/archive along with the scale fix; it does not overwrite the old cave comparison sprites or saved kits.
-
-The read-only collection helpers remain under `scripts/reference/crystal-fina-battle`, outputting to
-`Downloads\FFR Mod`. `scripts/prepare_crystal_fina_battle.py` renders the shared motion draft without installing
-assets. Runtime rendering, controller interaction and final visual timing must be checked in Resonance.
+Local integration uses the real native asset writer on the supplied references and a clearly labeled synthetic
+zero-scale design-table fixture. Validate actual model parents, native renderer dependencies, all original VM bytes,
+SS6 trailer values and cooked glow lifecycle events, then pack/verify an IoStore container. Scratch fixtures never
+replace user game data. Windows CI checks the real frozen engine, Flutter suite, managed resources and package.
+Actual crystal visibility/rotation, attachment following, cast timing and glow appearance need an in-game test.
+Reference collectors continue to write to `Downloads\FFR Mod`.
