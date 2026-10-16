@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published Crystal Fina animation-output crash fix — 2026-10-16
+
+Code: [`8fd2cb1`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8fd2cb195b56d571fcd6b59a028a21fc01215831).
+[Verified Windows test release / run 38933124386](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38933124386).
+
 - Set Crystal Fina's seated resonance hold to exactly **1.25 seconds** (75 native frames), with reformation/glow
   timing and Studio previews moved together. Preserve the accepted cave presentation. Bundled extension 1.2.22.
 - Fix the battle-runtime failure identified by the supplied UE4SS log: the real crystal attached successfully,
@@ -22,6 +27,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   installed Studio Lua scripts and built runtime metadata, hashing DLLs without uploading them. Output stays in
   **Downloads\FFR Mod**. Regression checks cover renamed/reordered outputs, startup gaps, full-cast recovery,
   glow/casing timing and cleanup. Live rendering after the correction still needs the user's in-game test.
+- Windows validation and compilation pass on the same code, including the full Flutter/Python suites and frozen-engine
+  startup. Local analysis, 20 focused Flutter tests, 362 Python tests, real native readback/IoStore checks and the
+  read-only collector fixture pass. The downloaded ZIP checksum, exact commit/run provenance and all 31 managed
+  resources were verified against source. The supplied installed script exactly matches the preceding release,
+  ruling out a stale install as the cause.
+- First complete candidate to verified download: **8m13s**, including corrections, checks, waiting and verification.
+  Windows CI took **5m48s**, using **9m21s** of runner time. Joined the matching automatic push run; no extra build dispatched.
 
 ## Published direct Crystal Fina battle runtime — 2026-10-15
 

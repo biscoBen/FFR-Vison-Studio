@@ -17,18 +17,26 @@ Sanctum glass is displayed. The pair is 15% larger than the previous test. The a
 obsolete solid/animate settings are ignored. Update Studio, rebuild/install and restart Resonance, then use a save
 without Crystal Fina already acquired.
 
-Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.21 uses the existing
-UE4SS loader to attach the real crystal and native glow directly, independently of the walking-character toggle.
-The approved full cast plays through early native recovery calls; preparation no longer repeats the curled-up turn.
-Attack and resonance face the opposite direction, and the seated hold is 100 frames instead of 125. No gameplay
-hit/healing keys or saved kits change. Rebuild/install stages the owned runtime along with the assets; restart the
-game afterward. This requires the working loader already installed for field cycling, with no new loader download.
-Studio's refreshed preview is a labeled lighting approximation. See [battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
-Windows validation, compilation and the frozen-engine startup passed on the final code. The package checksum,
-commit/run identity and all 31 managed resources match source; actual battle rendering remains an in-game check.
+Custom Crystal Fina uses this native body and private glass in battle. Bundled extension 1.2.22 fixes the runtime
+crash identified in the supplied game log: the mesh attached successfully, then a hardcoded animation-output field
+was nil and cleanup removed it, also stopping the glow and full cast. Read reflected output names independently of
+parameter labels; keep the casing and retry during startup gaps. The existing UE4SS loader attaches the real crystal
+and native glow, independently of the walking-character toggle; no new loader download is needed.
 
-[Verified Crystal Fina runtime / run 38861705226](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38861705226/Sephira-Studio-Test.zip)
-(code `ff2cedd`, published 2026-10-15; extension 1.2.21). Update Studio, rebuild/install the mod and restart Resonance to test these changes.
+The approved full cast plays through early native recovery calls; preparation only opens her eyes. Attack and
+resonance retain their mirrored body tracks. The seated hold is exactly **1.25 seconds** (75 native frames), with
+reformation and glow timings updated together. The accepted cave is preserved. Gameplay keys and saved kits stay
+intact. Studio's refreshed preview is a labeled lighting approximation. See
+[battle implementation evidence](docs/CRYSTAL_FINA_BATTLE.md).
+
+Windows validation, compilation and frozen-engine startup pass. The package checksum, commit/run identity and all
+31 managed resources match source. The log establishes the previous failure; corrected battle rendering still
+needs an in-game test. If needed, the [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
+and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1) collect the
+allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
+
+[Verified Crystal Fina runtime fix / run 38933124386](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38933124386/Sephira-Studio-Test.zip)
+(code `8fd2cb1`, published 2026-10-16; extension 1.2.22). Update Studio, rebuild/install the mod and restart Resonance.
 
 The native front of the studio: a Flutter desktop app that downloads and supervises the Python/.NET engine
 (`FFR Vision Studio Engine.exe`, fetched from the project's host on first start) and drives its Easy mode natively.
