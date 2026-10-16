@@ -4,6 +4,8 @@ import ast
 import hashlib
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import tempfile
 import unittest
 import sys
@@ -66,7 +68,73 @@ def unit(id=1001, form='401001207'):
             'party': {'version': 1, 'id': id}, 'ffbe': {'id': form, 'dir': 'units/ffbe/a2'}}
 
 
+def knockout_spec():
+    """Distinct standing, wounded and fallen cells, with an animated fall."""
+    return {'animations': [
+        {'name': 'idle', 'fps': 60, 'frameCount': 12,
+         'parts': {'part_0': {'Cell': [[0, 'standing']]}}},
+        {'name': 'dying', 'fps': 60, 'frameCount': 4,
+         'parts': {'part_0': {'Cell': [[0, 'kneeling']]}}},
+        {'name': 'dead', 'fps': 60, 'frameCount': 9,
+         'parts': {'part_0': {'Cell': [[0, 'falling'], [3, 'fallen']],
+                              'Posx': [[0, -2.0]], 'Posy': [[0, 5.0]], 'Hide': [[0, 0.0]]}}}]}
+
+
 class PartyCharacterTests(unittest.TestCase):
+    def test_native_knockout_names_keep_fall_and_final_pose_without_changing_recovery(self):
+        spec = knockout_spec(); original = copy.deepcopy(spec['animations'])
+        party.party_motions(spec)
+        motions = {a['name']: a for a in spec['animations']}
+        for name in ('death', 'reverse_death'):
+            clip = motions[name]
+            self.assertEqual(clip['parts']['part_0']['Cell'], [[0, 'falling'], [3, 'fallen']])
+            self.assertEqual(clip['parts']['part_0']['Posx'], [[0, -2.0]])
+            self.assertEqual(clip['parts']['part_0']['Posy'], [[0, 5.0]])
+            self.assertEqual((clip['fps'], clip['frameCount']), (60, 9))
+        self.assertEqual(motions['reverse_dying']['parts']['part_0']['Cell'], [[0, 'kneeling']])
+        self.assertEqual(spec['animations'][:3], original)  # idle still restores the standing pose.
+        before = copy.deepcopy(spec); party.party_motions(spec); self.assertEqual(spec, before)
+        motions['death']['parts']['part_0']['Cell'][-1][1] = 'edited'
+        self.assertEqual(motions['dead']['parts']['part_0']['Cell'][-1][1], 'fallen')
+        self.assertEqual(motions['reverse_death']['parts']['part_0']['Cell'][-1][1], 'fallen')
+
+    def test_missing_source_motion_stops_generation_instead_of_adding_an_invalid_alias(self):
+        for name in ('dead', 'dying'):
+            spec = knockout_spec(); spec['animations'] = [a for a in spec['animations'] if a['name'] != name]
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, name): party.party_motions(spec)
+
+    def test_converter_uses_selected_or_base_knockout_artwork_with_native_party_names(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); tools = root / 'tools'; frames = tools / 'ffbe2ss6'; frames.mkdir(parents=True)
+            for name in ('ffbe_frames.py', 'build_sprites.py'):
+                shutil.copyfile(ROOT / 'scripts/fixtures/engine_motion' / name, frames / name)
+            for name in ('_ffr_animation_repair.py', '_ffr_build_sprites.py'):
+                shutil.copyfile(ROOT / 'assets/existing_visions/payload' / name, tools / name)
+            main, base = root / 'main', root / 'base'
+            for folder, form in ((main, '100030727'), (base, '100030717')):
+                folder.mkdir(); Image.new('RGBA', (2, 1), (200, 0, 0, 255)).save(folder / f'unit_anime_{form}.png')
+                (folder / f'unit_cgg_{form}.csv').write_text('0,1,0,0,0,0,100,0,0,0,1,1,0\n0,1,0,0,0,0,100,0,1,0,1,1,0\n')
+                (folder / f'unit_idle_cgs_{form}.csv').write_text('0,0,0,12\n')
+                (folder / f'unit_dying_cgs_{form}.csv').write_text('0,0,0,4\n')
+                (folder / f'unit_dead_cgs_{form}.csv').write_text('1,-2,5,4\n')
+            for base_fallback in (False, True):
+                if base_fallback: (main / 'unit_dead_cgs_100030727.csv').unlink()
+                output = root / str(base_fallback)
+                args = [sys.executable, str(tools / '_ffr_build_sprites.py'), str(main), '100030727', '1002',
+                        str(output), '--battle-only', '--base', str(base), '100030717']
+                result = subprocess.run(args, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                spec = json.loads((output / 'battle/spec.json').read_bytes()); party.party_motions(spec)
+                motions = {a['name']: a for a in spec['animations']}
+                for name in ('death', 'reverse_death'):
+                    body = motions[name]['parts']['part_0']
+                    self.assertEqual(body['Cell'], [[0, 'summon1002_b1' if base_fallback else 'summon1002_1']])
+                    self.assertEqual(body['Posx'], [[0, -2.0]])
+                    self.assertEqual(body['Posy'], [[0, -5.0]])
+                    self.assertEqual(motions[name]['frameCount'], 4)
+                self.assertEqual(motions['idle']['parts']['part_0']['Cell'], [[0, 'summon1002_0']])
+
     def test_native_voice_selection_for_all_64_pairs_changes_only_battle_label(self):
         original = {jp: {'ID': id, 'SaveId': id, 'BattleVoiceLabel': party.voice_label(id),
                          'FaceIconId': id, 'stats': {'Attack': 50}} for id, jp, _, _ in party.CHARACTERS}
@@ -218,14 +286,16 @@ class PartyCharacterTests(unittest.TestCase):
         with self.assertRaises(ValueError): party.prepare({}, [chosen], lambda rel: wrong)
 
     def test_mixture_has_separate_hold_and_return_without_extra_hits(self):
-        spec = {'animations': [{'name': 'attack_B', 'frameCount': 6,
-                                'parts': {'part_0': {'Cell': [[0, 'a'], [2, 'b'], [5, 'c']]}}}]}
+        spec = knockout_spec()
+        spec['animations'].append({'name': 'attack_B', 'frameCount': 6,
+                                  'parts': {'part_0': {'Cell': [[0, 'a'], [2, 'b'], [5, 'c']]}}})
         party.party_motions(spec)
-        hold, reverse = spec['animations'][1:]
+        motions = {a['name']: a for a in spec['animations']}
+        hold, reverse = motions['attack_B_pose'], motions['attack_B_reverse']
         self.assertEqual(hold['parts']['part_0']['Cell'], [[0, 'c']])
         self.assertEqual(reverse['parts']['part_0']['Cell'], [[0, 'c'], [1, 'b'], [4, 'a']])
         self.assertEqual(hold['frameCount'], 1); self.assertEqual(reverse['frameCount'], 6)
-        party.party_motions(spec); self.assertEqual(len(spec['animations']), 3)
+        party.party_motions(spec); self.assertEqual(len(spec['animations']), 9)
 
     def test_generator_only_emits_private_battle_assets(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -238,7 +308,7 @@ class PartyCharacterTests(unittest.TestCase):
                 calls.append(args)
                 if '_ffr_build_sprites.py' in args[0]:
                     battle = root / 'build/sprites/party_1001/battle'; battle.mkdir(parents=True)
-                    (battle / 'spec.json').write_text(json.dumps({'pixelSize': [2048.0, 2048.0], 'animations': []}))
+                    (battle / 'spec.json').write_text(json.dumps({'pixelSize': [2048.0, 2048.0], **knockout_spec()}))
             env = {'ROOT': str(root), 'LEGACY': str(root / 'legacy'), 'OUT': str(root / 'out'),
                    'FFRDT': ['real-tool'], 'USMAP': 'fixture.usmap', 'run': run,
                    'ffrenv': SimpleNamespace(py=lambda *args: list(args))}
@@ -247,6 +317,7 @@ class PartyCharacterTests(unittest.TestCase):
             self.assertIn('--battle-only', calls[0]); self.assertEqual(len(calls), 5)
             spec = json.loads((root / 'build/sprites/party_1001/battle/spec.json').read_bytes())
             self.assertEqual(spec['animePackName'], 'unit0010')
+            self.assertIn('death', [a['name'] for a in spec['animations']])
             self.assertTrue(all('StudioParty/party1001' in str(args) for args in calls[1:]))
             self.assertTrue(all('/Chara/menu/' not in str(args) and '/Chara/unit/' not in str(args) for args in calls))
             textures = [args for args in calls if 'make-texture' in args]

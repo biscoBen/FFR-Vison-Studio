@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Fix party battle replacements staying upright after knockout: map the selected sprite's `dead` clip
+  to the native `death` name used by all eight party members, including Lasswell's reverse stance.
+  Keep the selected/base-form artwork, frame timing and offsets; native death/revival logic stays in control.
+  Extension 1.2.29. Live knockout/revival testing remains pending.
+- Include the read-only party-knockout reference collector under Downloads/FFR Mod. The returned references
+  confirmed the motion-name mismatch; no runtime loader is needed for this fix.
+
 ## Published standalone Crystal Fina and gentler attacks — 2026-10-16
 
 Code: [`bde5f38`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bde5f3848bfa40d6720ed55ab3b813acab5c82a4).

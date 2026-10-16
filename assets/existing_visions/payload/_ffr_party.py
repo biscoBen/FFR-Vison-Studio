@@ -161,7 +161,22 @@ def check_rows(original, built, units):
 
 
 def party_motions(spec):
-    """Nichol's original mixture sequence uses a held pose and a return phase."""
+    """Supply native party motion names without changing the selected artwork.
+
+    All eight native party projects use death, while the FFBE converter emits
+    dead. Lasswell also requests reverse_death/reverse_dying in his other stance.
+    Keep the complete source clips (including base-form cells and offsets), so
+    the native player holds/loops the KO pose and can return to idle on revival.
+    """
+    for source, names in (('dead', ('death', 'reverse_death')), ('dying', ('reverse_dying',))):
+        original = next((a for a in spec['animations'] if a['name'] == source), None)
+        if original is None:
+            raise ValueError('The generated party model is missing its ' + source + ' motion.')
+        for name in names:
+            if any(a['name'] == name for a in spec['animations']): continue
+            motion = copy.deepcopy(original); motion['name'] = name
+            spec['animations'].append(motion)
+    # Nichol's original mixture sequence uses a held pose and a return phase.
     attack = next((a for a in spec['animations'] if a['name'] == 'attack_B'), None)
     if not attack: return
     total = attack['frameCount']
