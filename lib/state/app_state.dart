@@ -693,7 +693,7 @@ class AppState extends ChangeNotifier {
     return u;
   });
 
-  bool get hasCrystalFina => units.any((u) => u['native'] == null && u['party'] == null && CrystalFina.matches(u as Map));
+  bool get hasCrystalFina => units.any((u) => u['native'] == null && u['party'] == null && CrystalFina.matches(u as Map) && SephiraVisions.included(u));
 
   Future<JsonMap> snapshotCharacter(String key) => _withRoster(() async {
     if (api != null && !engineDown) { await _savePending(); }
@@ -842,23 +842,36 @@ class AppState extends ChangeNotifier {
   Future<JsonMap> addBundledUnit({void Function(String)? onStep}) => _withRoster(() async {
     if (api == null) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
-    if (hasCrystalFina) { throw StateError('Crystal Fina is already in your roster.'); }
     _saveTimer?.cancel();
     await _savePending();
     onStep?.call('Preparing Crystal Fina');
     await features.ensureUnitAssets(paths);
     final current = _mergePending(await api!.spec());
-    final unit = CrystalFina.instantiate(await features.profile(), current);
-    final next = [...current, unit];
+    final existing = current.cast<JsonMap>().where((u) =>
+        u['native'] == null && u['party'] == null && CrystalFina.matches(u)).toList();
+    if (existing.length > 1) { throw StateError('More than one Crystal Fina is in the roster. Keep one before adding her.'); }
+    if (existing.any(SephiraVisions.included)) { throw StateError('Crystal Fina is already in your roster.'); }
+    // A disabled collection entry is saved, but is not in the built mod.
+    // Reuse her identity and edits as an independent Added Vision rather than
+    // creating a second Crystal Fina that conflicts when the collection returns.
+    final unit = existing.isEmpty
+        ? CrystalFina.instantiate(await features.profile(), current)
+        : (CharacterConfig.copy(existing.single)..remove(SephiraVisions.field));
+    final next = [for (final u in current) u['key'] == unit['key'] ? unit : u,
+      if (existing.isEmpty) unit];
     final revision = _rosterRevision;
     onStep?.call('Adding to the mod');
     await api!.saveSpec(json.decode(json.encode(next)) as List);
-    units = _mergePending(next);
+    units = _mergePending(next).map((u) => existing.isNotEmpty && u['key'] == unit['key']
+        ? (CharacterConfig.copy(u as JsonMap)..remove(SephiraVisions.field)) : u).toList();
+    if (_pendingEdits.containsKey(unit['key'])) {
+      _pendingEdits[unit['key'] as String] = units.cast<JsonMap>().singleWhere((u) => u['key'] == unit['key']);
+    }
     if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
     await _savePending();
     selectedKey = unit['key'] as String;
     notifyListeners();
-    return unit;
+    return units.cast<JsonMap>().singleWhere((u) => u['key'] == unit['key']);
   });
 
   /// Original visions keep their game identity. Merely opening the editor

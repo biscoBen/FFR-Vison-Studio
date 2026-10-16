@@ -39,6 +39,7 @@ def render(atlas, spec, vertices, indices, name, length, step):
     for cell in spec['cells']:
         x, y = map(int, cell['pos']); w, h = map(int, cell['size'])
         cells[cell['name']] = (atlas.crop((x, y, x + w, y + h)), cell['pivot'])
+    fps = clip['fps'] * (motion.ATTACK_PLAY_RATE if name == 'Studio_FinaCast' else 1)
     factor, origin_x, floor_y = 2.2, 140, 326
     frames, durations = [], []
     for tick in range(0, length, step):
@@ -89,7 +90,7 @@ def render(atlas, spec, vertices, indices, name, length, step):
             glow.putalpha(alpha); image.alpha_composite(glow)
         image.alpha_composite(scaled, location); glass(True)
         frames.append(image)
-        durations.append(round(min(tick + step, length) * 1000 / clip['fps']) - round(tick * 1000 / clip['fps']))
+        durations.append(round(min(tick + step, length) * 1000 / fps) - round(tick * 1000 / fps))
     output = io.BytesIO()
     frames[0].save(output, format='WEBP', save_all=True, append_images=frames[1:], duration=durations,
                    loop=0, lossless=True, method=4, minimize_size=False)
@@ -108,9 +109,9 @@ def main():
     for public, native, length, step in [('idle', 'idle', 6000, 15), ('atk', 'Studio_FinaCast', lengths['Studio_FinaCast'], 1), ('limitatk', 'LB1', lengths['LB1'], 2)]:
         data = render(atlas, spec, vertices, indices, native, length, step)
         name = public + '.webp'; files[name] = data
-        animations[public] = {'file': name, 'seconds': length / next(a['fps'] for a in spec['animations'] if a['name'] == native), 'sha256': hashlib.sha256(data).hexdigest()}
+        animations[public] = {'file': name, 'seconds': length / (60 * motion.ATTACK_PLAY_RATE if public == 'atk' else 60), 'sha256': hashlib.sha256(data).hexdigest()}
         print(public, len(data), 'bytes', flush=True)
-    manifest = {'schema': 1, 'presentation': 'native-fina-9', 'description': 'Native battle preview; game lighting and refraction may differ.',
+    manifest = {'schema': 1, 'presentation': 'native-fina-10', 'description': 'Native battle preview; game lighting and refraction may differ.',
                 'animations': animations, 'sources': {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                     for name in ('project_json', 'texture_json', 'mesh_json', 'old_sheet', 'original_spec')}}
     files['manifest.json'] = (json.dumps(manifest, indent=2) + '\n').encode()

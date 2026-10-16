@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Slow Crystal Fina's normal attack another 20% from the accepted build (0.64× native speed). Keep the
+  owning hit/effect/sound clocks aligned and preserve the approved crystal, resonance and seated hold.
+  Render the 1.5625-second Studio cast with fractional timing rather than rounding the native SS6 frame rate.
+- Disabled Sephira entries no longer count as active duplicates in the Add picker. Add can move saved Crystal
+  Fina into Added Visions, preserving her identity, edited kit and acquisition, without enabling the collection.
+  Re-enabling an initialized collection retains that independent entry. An already active Fina remains blocked;
+  other active FFBE units use an explicit “Add another” button. Save failure retains the original entry and
+  concurrent edits survive the transfer. The Add preview shows the saved stats it will retain.
+  Extension 1.2.28, preview native-fina-10.
+
 ## Published Crystal Fina gentler attack and matching clocks — 2026-10-16
 
 Code: [`7a97ee0`](https://github.com/biscoBen/FFR-Vison-Studio/commit/7a97ee07d7bfc3f1078d150be7f777b3c902f5f9).

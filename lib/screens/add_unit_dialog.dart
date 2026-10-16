@@ -8,6 +8,7 @@ import '../design/widgets.dart';
 import '../state/app_state.dart';
 import '../state/catalog_helpers.dart';
 import '../services/crystal_fina.dart';
+import '../services/sephira_visions.dart';
 import '../services/overworld_appearance.dart';
 import 'overworld_anim_pane.dart';
 
@@ -69,6 +70,13 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         await app.features.ensureUnitAssets(app.paths);
         final d = await app.features.detail();
         if (!mounted || seq != _pickSeq) { return; }
+        final saved = app.units.cast<Map<String, dynamic>>().where((unit) =>
+            unit['native'] == null && unit['party'] == null && CrystalFina.matches(unit) &&
+            !SephiraVisions.included(unit)).firstOrNull;
+        if (!widget.replacing && saved != null) {
+          d['name'] = saved['en'];
+          d['ffrStats'] = saved['stats'];
+        }
         setState(() { detail = d; form = CrystalFina.spriteId; name.text = d['name'] as String; });
         return;
       }
@@ -127,10 +135,11 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
     final app = context.watch<AppState>();
     final s = q.trim().toLowerCase();
     final shown = s.isEmpty ? list : list.where((u) => (u['name'] ?? '').toString().toLowerCase().contains(s) || (u['jpname'] ?? '').toString().contains(s) || (u['id'] ?? '').toString().startsWith(s) || (u['ffbeId'] ?? '').toString().startsWith(s)).toList();
-    final inMod = app.units.map((u) => (u as Map)['ffbe']?['base']?.toString()).toSet();
+    final inMod = app.units.cast<Map>().where(SephiraVisions.included).map((u) => u['ffbe']?['base']?.toString()).toSet();
     final packs = sel == null ? <String>{} : ((sel!['packs'] as List?) ?? []).map((e) => e.toString()).toSet();
     final hasPack = packs.contains(form);
     final bundled = sel?['bundledPreset'] == CrystalFina.presetId;
+    final alreadyIncluded = bundled ? app.hasCrystalFina : sel != null && inMod.contains(sel!['id']?.toString());
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(32),
@@ -208,7 +217,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
               if (err != null && detail != null) Expanded(child: Text(err!, style: Guide.small(Guide.red))) else if (step != null && busy) Expanded(child: Text(step!, style: Guide.small())) else const Spacer(),
               GuideButton('Cancel', onPressed: busy ? null : () => Navigator.of(context).pop()),
               const SizedBox(width: 8),
-              GoButton(widget.replacing ? (busy ? 'Applying' : 'Use this model') : bundled && app.hasCrystalFina ? 'Already in mod' : busy ? 'Adding' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets || (!widget.replacing && bundled && app.hasCrystalFina) ? null : () async {
+              GoButton(widget.replacing ? (busy ? 'Applying' : 'Use this model') : busy ? 'Adding' : bundled && alreadyIncluded ? 'Already in mod' : alreadyIncluded ? 'Add another' : 'Add unit', color: Guide.blue, busy: busy, onPressed: detail == null || !hasPack || busy || loadingAssets || (!widget.replacing && bundled && alreadyIncluded) ? null : () async {
                 setState(() { busy = true; err = null; });
                 try {
                   if (widget.replacing) {

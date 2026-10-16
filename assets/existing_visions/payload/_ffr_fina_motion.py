@@ -22,7 +22,7 @@ REFORM = SEAT + 75
 # Four keys: begin, full brightness, end of plateau, faded out. The first
 # envelope is already on at frame zero; native particles provide the build-up.
 FLASHES = ((0, 0, FALL, FALL + 30),)
-ATTACK_PLAY_RATE = .8  # 25% longer; native action clocks and body slow together.
+ATTACK_PLAY_RATE = .64  # Another 20% slower than .8; body and action clocks stay together.
 PREP_FRAMES = 30
 RELEASE_FRAMES = 30
 ACTION_FRAMES = PREP_FRAMES + RELEASE_FRAMES
@@ -266,7 +266,6 @@ def battle_spec(view, texture, old_sheet, original_spec):
         animations.append(clip)
     cast = copy.deepcopy(next(a for a in animations if a['name'] == 'attack_A'))
     cast['name'] = 'Studio_FinaCast'; cast['frameCount'] = ACTION_FRAMES
-    cast['fps'] = round(60 * ATTACK_PLAY_RATE)  # Preview matches the scoped runtime clock.
     cast['parts']['part_0'].update(copy.deepcopy(windup['parts']['part_0']))
     cast['parts']['part_0']['Cell'] += [[PREP_FRAMES + tick, cell] for tick, cell in shot['parts']['part_0']['Cell']]
     # Preview-only concatenation. Runtime never replaces native action playback.

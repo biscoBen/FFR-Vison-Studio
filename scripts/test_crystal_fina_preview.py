@@ -17,6 +17,7 @@ class PreviewTests(unittest.TestCase):
     def test_all_three_animations_decode_and_match_their_declared_duration(self):
         manifest, images = preview.bundle()
         self.assertEqual(set(images), {'idle', 'atk', 'limitatk'})
+        self.assertAlmostEqual(manifest['animations']['atk']['seconds'], 1.5625)
         for name, data in images.items():
             with self.subTest(name=name):
                 image = Image.open(io.BytesIO(data)); total = 0

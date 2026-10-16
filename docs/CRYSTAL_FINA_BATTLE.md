@@ -220,3 +220,24 @@ Verification for this candidate: static analysis, 20 focused Flutter tests and 3
 skips). Real make-ss6/readback verifies native preparation/release at 60 fps and the preview concatenation at
 48 fps; emitted runtime configuration carries 0.8× and the unchanged single glow/258-frame reformation. Native
 mesh/material/glow construction and IoStore pack verification pass. These do not simulate live game scheduling.
+
+
+## Additional slowdown and independent Add (2026-10-16)
+
+The user found the first slowdown better and requested another 20%. `ATTACK_PLAY_RATE` is now 0.64; the same
+linked-clock rate controller scales body, hit/effect and sound. All native SS6 clips retain integer 60 fps. The
+Studio-only concatenation is rendered at 60×0.64 effective fps, preserving its exact 1.5625-second duration
+without rounding to 38 fps. Glass and resonance remain unchanged.
+
+Studio's duplicate badge now considers included units, matching the builder's disabled-collection policy.
+Crystal Fina is a single-identity presentation: when her saved Sephira entry is disabled, Add moves that same
+entry to Added Visions by removing membership, retaining all IDs, settings and acquisition. An initialized
+collection's subsequent toggles leave that independent entry included. Existing explicit collection restore/reset
+can still adopt her as before. Active duplicates are rejected against the freshly fetched roster; updates during
+save retain their edits while the requested standalone membership wins. Other FFBE units still permit multiple
+looks/entries, with “Add another” making an active duplicate intentional.
+
+Local static analysis, 66 focused Flutter tests and 377 Python checks pass (four Linux skips). A final saved-stat
+preview correction also passes its two picker regressions. Native make-ss6/readback and IoStore checks verify
+60 fps clips, 0.64× emitted runtime timing and the unchanged resonance. Idle/resonance WebP bytes are identical
+to the accepted build. No live timing test is available in this environment.

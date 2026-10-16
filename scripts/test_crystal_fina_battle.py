@@ -78,17 +78,17 @@ class FinaBattleTests(unittest.TestCase):
             other=clock('OtherActor'); targetJob=job(nil,{other}); targetJob.m_TargetUnitList=array({actor})
             jobs={job(actor,{hit},effect,sound),targetJob}
             sprite.playing='magic_idle'; tick()
-            for _,c in ipairs({hit,effect,sound,sprite}) do assert(math.abs(c:GetPlayRate()-.8)<.00001) end
+            for _,c in ipairs({hit,effect,sound,sprite}) do assert(math.abs(c:GetPlayRate()-.64)<.00001) end
             assert(other:GetPlayRate()==1, 'Being a target must not slow another actor')
             for _=1,20 do tick() end
-            assert(hit:GetPlayRate()==.8 and sprite:GetPlayRate()==.8, 'No repeated multiplication')
+            assert(hit:GetPlayRate()==.64 and sprite:GetPlayRate()==.64, 'No repeated multiplication')
             -- Integrate the actual event and body clocks: the 30-frame shot
-            -- boundary moves from .5s to .625s for both, not only the picture.
+            -- boundary moves from .5s to .78125s for both, not only the picture.
             local body,events=0,0
-            for _=1,75 do body=body+sprite:GetPlayRate()/120; events=events+hit:GetPlayRate()/120 end
+            for _=1,125 do body=body+sprite:GetPlayRate()/160; events=events+hit:GetPlayRate()/160 end
             assert(math.abs(body-.5)<.000001 and math.abs(events-.5)<.000001)
             sprite.playing='magic_attack'; sprite.rate=1; tick()
-            assert(sprite.rate==.8, 'Native release can assign a fresh play rate')
+            assert(sprite.rate==.64, 'Native release can assign a fresh play rate')
             sprite.playing='Idle'; tick()
             for _,c in ipairs({hit,effect,sound,sprite}) do assert(c:GetPlayRate()==1) end
             sprite.playing='LB1_before'; tick(); sprite.playing='LB1'; tick()
@@ -100,11 +100,11 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute("""
             hit=clock('Hit'); hit.rate=2; sprite.rate=2
             linked=job(nil,{hit}); linked.m_pLinkUnit=actor; jobs={linked}
-            sprite.playing='magic_idle'; tick(); assert(hit.rate==1.6 and sprite.rate==1.6)
-            hit.rate=3; tick(); assert(math.abs(hit.rate-2.4)<.00001)
+            sprite.playing='magic_idle'; tick(); assert(hit.rate==1.28 and sprite.rate==1.28)
+            hit.rate=3; tick(); assert(math.abs(hit.rate-1.92)<.00001)
             sprite.playing='Idle'; tick(); assert(hit.rate==3 and sprite.rate==2)
             linked.m_pLinkUnit=nil; linked.m_ActionUnitList=array({actor}); sprite.playing='magic_idle'; tick()
-            assert(math.abs(hit.rate-2.4)<.00001)
+            assert(math.abs(hit.rate-1.92)<.00001)
             hit.rate=4; sprite.playing='Idle'; tick()
             assert(hit.rate==4, 'Cleanup preserves a later native or other-mod rate')
         """)
@@ -114,9 +114,9 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute("""
             sprite.playing='magic_idle'; tick(); assert(sprite:GetPlayRate()==1)
             hit=clock('Hit'); jobs={job(actor,{hit})}; tick()
-            assert(hit.rate==.8 and sprite.rate==.8)
+            assert(hit.rate==.64 and sprite.rate==.64)
             jobs={}; tick(); assert(hit.rate==1 and sprite.rate==1)
-            jobs={job(actor,{hit})}; tick(); assert(hit.rate==.8)
+            jobs={job(actor,{hit})}; tick(); assert(hit.rate==.64)
             sprite.SsProject.invalid=true; tick(); assert(hit.rate==1 and sprite.rate==1)
         """)
 
@@ -137,7 +137,7 @@ class FinaBattleTests(unittest.TestCase):
             hit=clock('Hit'); paused=clock('Paused'); paused.rate=0
             jobs={job(actor,{hit,paused})}; sprite.playing='magic_idle'; tick()
             assert(hit.rate==1 and paused.rate==0 and sprite:GetPlayRate()==1)
-            paused.rate=1; tick(); assert(hit.rate==.8 and sprite.rate==.8)
+            paused.rate=1; tick(); assert(hit.rate==.64 and sprite.rate==.64)
             paused.rate=0; tick(); assert(hit.rate==1 and sprite.rate==1 and paused.rate==0)
         """)
 
@@ -182,7 +182,7 @@ class FinaBattleTests(unittest.TestCase):
         self.assertNotIn('cast', cfg)
         self.assertNotIn('castFrames', cfg)
         self.assertEqual(cfg['glowAlpha'], 2.0)
-        self.assertEqual(cfg['attackPlayRate'], .8)
+        self.assertEqual(cfg['attackPlayRate'], .64)
         self.assertEqual(cfg['glassFallbackBias'], 12.0)
         self.assertEqual(cfg['bodyRefraction'], .2)
         self.assertEqual(cfg['flashes'], [(0, 0, 134, 164)])
@@ -331,7 +331,7 @@ class FinaBattleTests(unittest.TestCase):
                              ['openarmopeneye2', 'curlup2', 'magicattack6'])
         self.assertEqual(clips['Studio_FinaCast']['frameCount'], 60)
         self.assertIn([30, 'shot_start'], clips['Studio_FinaCast']['parts']['part_0']['Cell'])
-        self.assertEqual(clips['Studio_FinaCast']['fps'], 48)
+        self.assertEqual(clips['Studio_FinaCast']['fps'], 60)
         self.assertEqual(clips['LB1_before']['parts']['NULL_Aura']['Posy'], [[0, 183.5 / 2.7]])
         self.assertEqual(clips['Studio_FinaCast']['parts']['part_0']['Imgfliph'], [[0, 1.0]])
         self.assertEqual(clips['LB1']['parts']['part_0']['Imgfliph'], [[0, 1.0], [258, 0.0]])

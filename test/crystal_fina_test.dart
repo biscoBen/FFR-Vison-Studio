@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/design/theme.dart';
+import 'package:ffr_vision_studio/design/widgets.dart';
+import 'package:ffr_vision_studio/services/sephira_visions.dart';
 import 'package:ffr_vision_studio/screens/add_unit_dialog.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/services/api.dart';
@@ -53,8 +55,21 @@ class RosterApi extends Api {
   @override
   Future<List<dynamic>> ffbeUnits() async => throw StateError('host unavailable');
   @override
-  Future<Map<String, dynamic>> ffbeUnit(String id) async => throw StateError('Bundled Fina must not use the hosted template.');
+  Future<Map<String, dynamic>> ffbeUnit(String id) async {
+    if (id == '50') return {'name': 'A2', 'forms': {'51': {'rarity': 5, 'sprites': []}}};
+    throw StateError('Bundled Fina must not use the hosted template.');
+  }
 }
+
+class PickerApp extends AppState {
+  PickerApp(AppPaths paths) : super(hostBase: 'http://unused', appPaths: paths, bundledFeatures: PickerFeatures());
+  @override
+  Future<void> prepareUnitPreview(String ffbeId, String form, {void Function(String)? onStep}) async {}
+}
+
+Map<String, dynamic> disabledFina() => suppliedProfile()..['key'] = 'sephira_crystal_fina_saved'..[SephiraVisions.field] = {
+  'version': 1, 'preset': 'crystal_fina', 'enabled': false,
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -158,7 +173,7 @@ void main() {
       expect(directory, paths.engineDir);
       expect(File(args[1]).existsSync(), isTrue);
       expect(File(p.join(p.dirname(args[1]), 'payload/manifest.json')).existsSync(), isTrue);
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.27' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.28' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -194,7 +209,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.27' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.28' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));
@@ -287,6 +302,85 @@ void main() {
     expect(await app.removeUnit(fina['key'] as String), isTrue);
   });
 
+  test('Add moves disabled Crystal Fina to Added Visions with her identity and edits', () async {
+    final original = disabledFina();
+    original['stats']['Mind'] = 77;
+    original['studioAcquisition'] = {'version': 1, 'random': false, 'hideSpoilers': false, 'location': 'mitra_shop'};
+    final before = clone(original);
+    final api = RosterApi([original]);
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List..sephiraInitialized = true;
+    app.sephiraPresets = [{'id': 'crystal_fina', 'name': 'Crystal Fina', 'theme': 'Healing', 'profile': suppliedProfile()}];
+    addTearDown(app.dispose);
+    expect(app.hasCrystalFina, isFalse);
+    final added = await app.addBundledUnit();
+    expect(app.hasCrystalFina, isTrue);
+    expect(app.sephiraEnabled, isFalse);
+    expect(app.sephiraUnits, isEmpty);
+    expect(api.roster, hasLength(1));
+    expect(SephiraVisions.member(added), isFalse);
+    expect(added, (clone(before) as Map)..remove(SephiraVisions.field));
+    expect(original, before, reason: 'Do not mutate the saved source during preparation');
+    await app.setSephiraEnabled(true);
+    await app.setSephiraEnabled(false);
+    expect(api.roster, hasLength(1));
+    expect(app.hasCrystalFina, isTrue);
+    expect(app.includedUnitCount, 1);
+    await expectLater(app.addBundledUnit(), throwsStateError);
+  });
+
+  test('enabling the cave activates disabled saved Fina without duplicating her', () async {
+    final api = RosterApi([disabledFina()]);
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List;
+    addTearDown(app.dispose);
+    await app.setCrystalCaveTest(true);
+    expect(app.crystalCaveTest, isTrue);
+    expect(app.hasCrystalFina, isTrue);
+    expect(app.sephiraEnabled, isFalse);
+    expect(api.roster, hasLength(1));
+    expect(SephiraVisions.member(api.roster.single as Map), isFalse);
+  });
+
+  test('failed standalone promotion leaves the disabled saved entry intact', () async {
+    final api = RosterApi([disabledFina()]);
+    final before = clone(api.roster);
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List;
+    addTearDown(app.dispose);
+    api.beforeSave = (_) async => throw StateError('disk full');
+    await expectLater(app.addBundledUnit(), throwsStateError);
+    expect(app.units, before);
+    expect(api.roster, before);
+    expect(app.hasCrystalFina, isFalse);
+  });
+
+  test('standalone promotion preserves edits made during save and stays included', () async {
+    final api = RosterApi([disabledFina()]);
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List;
+    addTearDown(app.dispose);
+    var edited = false;
+    api.beforeSave = (_) async {
+      if (edited) return;
+      edited = true;
+      final unit = clone(app.units.single) as Map<String, dynamic>;
+      unit['stats']['Mind'] = 81;
+      app.update(unit);
+    };
+    final added = await app.addBundledUnit();
+    expect(added['stats']['Mind'], 81);
+    expect(api.roster.single['stats']['Mind'], 81);
+    expect(SephiraVisions.member(api.roster.single as Map), isFalse);
+    expect(app.hasCrystalFina, isTrue);
+    expect(app.dirty, isFalse);
+  });
+
+  test('Add checks the current saved roster before creating a second Fina', () async {
+    final api = RosterApi([suppliedProfile()]);
+    final app = PickerApp(paths)..api = api;
+    addTearDown(app.dispose);
+    await expectLater(app.addBundledUnit(), throwsStateError);
+    expect(api.roster, hasLength(1));
+    expect(api.calls, isEmpty);
+  });
+
   test('edits made while the add save is in flight survive its response', () async {
     final other = {'key': 'other', 'id': 13500, 'en': 'Old'};
     final api = RosterApi([other]);
@@ -349,5 +443,57 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('ALREADY IN MOD'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });  testWidgets('disabled collection Fina is available in Add and active Fina is blocked', (tester) async {
+    tester.view.physicalSize = const Size(1300, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final saved = disabledFina()..['stats']['Mind'] = 77;
+    final api = RosterApi([saved]);
+    final app = PickerApp(paths)..api = api..units = clone(api.roster) as List;
+    addTearDown(app.dispose);
+    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(value: app,
+      child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: AddUnitDialog()))));
+    await tester.pumpAndSettle();
+    expect(find.text('IN MOD'), findsNothing);
+    await tester.tap(find.text('Crystal Fina'));
+    await tester.pumpAndSettle();
+    expect(find.text('77'), findsOneWidget, reason: 'Show the saved kit that Add will preserve');
+    expect(tester.widget<GoButton>(find.byType(GoButton)).label, 'Add unit');
+    expect(tester.widget<GoButton>(find.byType(GoButton)).onPressed, isNotNull);
+    app.units = [suppliedProfile()]; app.select(null);
+    await tester.pumpAndSettle();
+    expect(find.text('IN MOD'), findsOneWidget);
+    expect(tester.widget<GoButton>(find.byType(GoButton)).label, 'Already in mod');
+    expect(tester.widget<GoButton>(find.byType(GoButton)).onPressed, isNull);
   });
+
+  testWidgets('A2 badge follows included entries and Add another makes duplicates explicit', (tester) async {
+    tester.view.physicalSize = const Size(1300, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final api = RosterApi([]);
+    final app = PickerApp(paths)..api = api..hostIndex = {'units': [
+      {'id': '50', 'name': 'A2', 'packs': ['51'], 'hasSprites': true},
+    ]}..units = [
+      {'ffbe': {'base': '50'}, SephiraVisions.field: {'version': 1, 'preset': 'a2', 'enabled': false}},
+    ];
+    addTearDown(app.dispose);
+    await tester.pumpWidget(ChangeNotifierProvider<AppState>.value(value: app,
+      child: MaterialApp(theme: Guide.theme(), home: const Scaffold(body: AddUnitDialog()))));
+    await tester.pumpAndSettle();
+    expect(find.text('IN MOD'), findsNothing);
+    await tester.tap(find.text('A2'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<GoButton>(find.byType(GoButton)).label, 'Add unit');
+    expect(tester.widget<GoButton>(find.byType(GoButton)).onPressed, isNotNull);
+    app.units = [{'ffbe': {'base': '50'}}]; app.select(null);
+    await tester.pumpAndSettle();
+    expect(find.text('IN MOD'), findsOneWidget);
+    expect(tester.widget<GoButton>(find.byType(GoButton)).label, 'Add another');
+    expect(tester.widget<GoButton>(find.byType(GoButton)).onPressed, isNotNull);
+    expect(tester.takeException(), isNull);
+  });
+
 }
