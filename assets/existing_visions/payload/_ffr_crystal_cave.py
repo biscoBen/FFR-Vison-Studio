@@ -64,6 +64,7 @@ TEST_CRYSTAL_PARAMETERS = {'Opacity': .22, 'Metallic': .08, 'Roughness': .10,
 # midpoint; the mesh's elevated native pivot is corrected using its bounds.
 TEST_SPRITE_FLOAT = 183.5 - TEST_POSE_CENTER_Y * TEST_SPRITE_SCALE
 TEST_CRYSTAL_TURN_RATE = 3.6  # Degrees/second, one slow revolution per 100 seconds.
+TEST_COMPARISON_OFFSET_Y = -280.0
 GRANT_SEQUENCE = PACKAGE + '_Grant'
 # Earth Shrine is (18040, 20920); Mitra is (16598, 21654).
 # The entrance sits north of their connecting road. Returning lands outside
@@ -114,7 +115,6 @@ class CaveSpec:
     ground_z: float | None = None
     return_direction: str = 'South'
     fina_test: bool = False
-    test_rotate: bool = False
 
     @property
     def stone_name(self): return self.name + '_Stone'
@@ -386,8 +386,7 @@ def cave_plans(units, root, rows=None):
             if fina and options['crystalCaveTest']:
                 entries[-1] = (unit, replace(entries[-1][1], fina_test=True, sprite=TEST_SPRITE,
                     material='/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBR',
-                    sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT,
-                    test_rotate=options['crystalCaveTestRotate']))
+                    sprite_scale=TEST_SPRITE_SCALE, sprite_float=TEST_SPRITE_FLOAT))
         plans.append(entries)
     return plans, registry
 
@@ -411,6 +410,8 @@ def prepare(tables, units, root, rows):
     for entries in plans:
         for index, (unit, spec) in enumerate(entries):
             _prepare_unit(staged, unit, rows, spec, include_maps=index == 0)
+            if spec.fina_test:
+                _prepare_npc_asset(staged, unit, rows, original_comparison(unit, spec))
     if registry is not None: save_identities(root, registry)
     tables.clear(); tables.update(staged)
 
@@ -427,9 +428,9 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
     import _ffr_testing as testing
     def table(rel):
         return tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
-    for rel in (MAP, COMPOSITE, MAP_UNIT):
+    for rel in (MAP, COMPOSITE):
         originals = rows(rel)
-        ids = (spec.npc_id,) if rel == MAP_UNIT else (spec.map_id, spec.stone_id)
+        ids = (spec.map_id, spec.stone_id)
         if spec.npc_name in originals or spec.name in originals or spec.stone_name in originals or any(v.get('ID') in ids for v in originals.values()):
             raise ValueError('The Resonance Cave identity conflicts with a native game entry.')
     room = rows(MAP).get('00Com_217')
@@ -450,17 +451,7 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
             table(rel)['add'].append({'row': spec.stone_name, 'cloneFrom': '01Gra_44', 'set': {
                 'ID': spec.stone_id, 'Name': spec.display_name, 'developmentName': spec.stone_name,
                 'Level': '/Game/' + spec.package + '_Stone_PL', 'bOverride_MapType': True}})
-    key, source = next((k, v) for k, v in rows(MAP_UNIT).items() if v.get('ID') == 9020)
-    if len(source.get('animationAssetList', [])) != 1:
-        raise ValueError('The stationary NPC sprite template changed.')
-    sprite = spec.sprite or f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
-    material = spec.material or f'/Game/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_{unit["id"]}'
-    table(MAP_UNIT)['add'].append({'row': spec.npc_name, 'cloneFrom': key, 'set': {
-        'ID': spec.npc_id, 'animationAssetList[0].Ss6Project': sprite,
-        'animationAssetList[0].Material': material, 'animationAssetList[0].isVisionCharacter': False,
-        'animationAssetList[0].textureBaseColor': sprite + '_tex',
-        'animationAssetList[0].textureNormal': sprite + '_normal',
-        'animationAssetList[0].textureMetallicRoughness': sprite + '_mreo'}})
+    _prepare_npc_asset(tables, unit, rows, spec)
     if include_maps:
         placements = rows(PLACEMENT)
         if spec.name in placements or spec.stone_name in placements or any(v.get('mapId') in (spec.map_id, spec.stone_id) for v in placements.values()):
@@ -509,6 +500,38 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
             table(rel)['add'].append({'row': spec.portal_event, 'cloneFrom': 'C01_014_03',
                                       'set': testing.field_delta(grant, portal)})
 
+
+
+def original_comparison(unit, spec):
+    """A display-only original sprite, beside the test without moving its casing.
+
+    Normal added-vision NPC rows use even IDs from 60000 + unit ID * 2.
+    Reserve the adjacent odd ID for this comparison; no new vision/map/grant.
+    """
+    offset = list(spec.spawn_offset); offset[1] += TEST_COMPARISON_OFFSET_Y
+    return replace(spec, name=spec.npc_name + '_OriginalComparison',
+                   package=spec.npc_package + '_OriginalComparison',
+                   map_id=60001 + unit['id'] * 2, unit_id=None,
+                   material='', sprite='', sprite_scale=FINA_SCALE, sprite_float=FINA_FLOAT,
+                   spawn_offset=tuple(offset), fina_test=False)
+
+
+def _prepare_npc_asset(tables, unit, rows, spec):
+    originals = rows(MAP_UNIT)
+    if spec.npc_name in originals or any(v.get('ID') == spec.npc_id for v in originals.values()):
+        raise ValueError('The Resonance Cave NPC identity conflicts with a native game entry.')
+    key, source = next((k, v) for k, v in originals.items() if v.get('ID') == 9020)
+    if len(source.get('animationAssetList', [])) != 1:
+        raise ValueError('The stationary NPC sprite template changed.')
+    sprite = spec.sprite or f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
+    material = spec.material or f'/Game/BP/Map/Unit/Material/M_CrystalFina_AlphaTest_{unit["id"]}'
+    table = tables.setdefault(MAP_UNIT, {'asset': 'FFRS/Content/Datatable/' + MAP_UNIT, 'add': [], 'set': []})
+    table['add'].append({'row': spec.npc_name, 'cloneFrom': key, 'set': {
+        'ID': spec.npc_id, 'animationAssetList[0].Ss6Project': sprite,
+        'animationAssetList[0].Material': material, 'animationAssetList[0].isVisionCharacter': False,
+        'animationAssetList[0].textureBaseColor': sprite + '_tex',
+        'animationAssetList[0].textureNormal': sprite + '_normal',
+        'animationAssetList[0].textureMetallicRoughness': sprite + '_mreo'}})
 
 
 def export(view, name):
@@ -972,14 +995,23 @@ def overworld_exit(actor, conditional_template, spec):
     set_value(actor, 'm_TransitionMovementType', 'Walking')
 
 
-def make_npc(source, unit, spawn, spec):
+def make_npc(source, unit, spawn, spec, visual_only=False):
     npc = private_level(source[WORLD], '/Game/' + WORLD, '/Game/' + spec.npc_package)
     actors(npc, [70, 0, 31])
     owner = npc['Exports'][30]
     set_value(owner, 'm_MapUnitId', spec.npc_id)
     set_value(owner, 'm_VisiblFlagCondition', f'{{item:{unit["id"]}}}==0')
     set_value(owner, 'm_Direction', 'South')
-    npc_grant(owner, unit, spec)
+    if visual_only:
+        # Keep native ownership visibility and grounding, but no tutorial/talk
+        # event or second acquisition prompt on the reference sprite.
+        for p in named_properties(property_data(owner, 'm_EventSettings')):
+            if p['Name'] == 'Condition': p['Value'] = f'{{item:{unit["id"]}}}<0'; p['IsZero'] = False
+            if p['Name'] == 'EventId': p['Value'] = 'None'; p['IsZero'] = False
+        for p in owner['Data']:
+            if p['Name'] == 'm_EventList': p['Value'] = []; p['IsZero'] = False
+    else:
+        npc_grant(owner, unit, spec)
     # Keep the complete original NPC/component graph and its opaque head-widget
     # export at the same indices. Do not copy/remap unknown widget bytes.
     for name, template_name, value in [('m_IsAnimationUseDirection', 'm_IsAnimationUseDirection', False),
@@ -1016,10 +1048,11 @@ def make_npc(source, unit, spawn, spec):
     template = copy.deepcopy(property_data(npc['Exports'][109], 'RelativeLocation'))
     billboard['Data'].append(template); vector(billboard, 'RelativeLocation', (0.0, 0.0, spec.sprite_float))
     names(npc, [owner, ss, npc['Imports']])
-    acquisition_interaction(npc, source[DONOR_GD],
-                            export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], unit, spec)
+    if not visual_only:
+        acquisition_interaction(npc, source[DONOR_GD],
+                                export(source[TRANSITION_GD], 'BP_MapTransitionTrigger_C_0')[1], unit, spec)
     if spec.fina_test:
-        attach_test_crystal(npc, source, rotate=spec.test_rotate)
+        attach_test_crystal(npc, source, rotate=True)
 
     return npc
 
@@ -1677,7 +1710,6 @@ def world_destination_banner(original):
 
 
 def build(units, env):
-    import _ffr_testing as testing
     plans, _ = cave_plans(units, env['ROOT'], env.get('rows'))
     if not plans: return
     root = Path(env['ROOT']); legacy = Path(env['LEGACY'])
@@ -1689,11 +1721,8 @@ def build(units, env):
     meshes = sorted({spec.mesh for entries in plans for _, spec in entries
                      if spec.mesh != ENTRANCE_MESHES['rock_cave'] or spec.ground_z is not None})
     has_test = any(spec.fina_test for entries in plans for _, spec in entries)
-    has_rotation = any(spec.fina_test and spec.test_rotate for entries in plans for _, spec in entries)
-    solid_test = has_test and testing.settings(root)['crystalCaveTestSolid']
     test_sources = (TEST_BACKGROUND, TEST_NATIVE_MESH, TEST_NATIVE_MATERIAL,
-                    TEST_SPRITE.removeprefix('/Game/'), *((TEST_NATIVE_SHADER,) if not solid_test else ()),
-                    *((TEST_SPIN_DONOR,) if has_rotation else ())) if has_test else ()
+                    TEST_SPRITE.removeprefix('/Game/'), TEST_NATIVE_SHADER, TEST_SPIN_DONOR) if has_test else ()
     asset_sources = {GRANT_DONOR, PLACE_NAME, *meshes, *(r for r in test_sources if r != TEST_BACKGROUND)}
     for rel in (WORLD, WORLD_PL, ROOM, ROOM_BG, STONE, STONE_NAV, DONOR_GD, WORLD_BG, TRANSITION_GD, GRANT_DONOR, PLACE_NAME, *meshes, *test_sources):
         suffix = '.uasset' if rel in asset_sources else '.umap'
@@ -1716,9 +1745,8 @@ def build(units, env):
             raise ValueError('The introductory Fina floating pose changed.')
     expected = make_caves(source, plans)
     if has_test:
-        expected.update(test_crystal_assets(source, solid=solid_test))
-        if has_rotation:
-            expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
+        expected.update(test_crystal_assets(source))
+        expected[TEST_SPIN_SEQUENCE] = test_spin_sequence(source)
     expected[PLACE_NAME] = world_destination_banner(source[PLACE_NAME])
     sequence_paths = {spec.grant_sequence for entries in plans for _, spec in entries}
     mapping = blueprint_mappings(expected, env, work)
@@ -1745,9 +1773,7 @@ def build(units, env):
         print(f'  Resonance Cave ({spec.stone_id}/{spec.map_id}): ' + ', '.join(u.get('en', str(u['id'])) for u, _ in entries))
     print('  Resonance caves: event-only grants; cave return point 1 in persistent levels; private navigation links; button-confirmed cave exits; World Map destination banners.')
     if has_test:
-        mode = 'SOLID CHECK (original Sanctum material)' if solid_test else 'GLASS (experimental transparent material)'
-        turn = 'ON (Tick-driven)' if has_rotation else 'OFF (no added sequence)'
-        print(f'  Crystal Fina Test material: {mode}; grounded foot attachment; baked visibility disabled; added rotation: {turn}.')
+        print('  Crystal Fina Test: transparent rotating glass; original imported sprite beside it for comparison.')
 
 
 def make_caves(source, plans):
@@ -1767,6 +1793,11 @@ def make_caves(source, plans):
             add_collision_stream(room, spec.name + '_PL', source[WORLD_PL], extra_spec.npc_package)
         for _, grant in entries:
             views[grant.grant_sequence] = grant_sequence(source[GRANT_DONOR], grant)
+        for selected, test_spec in entries:
+            if test_spec.fina_test:
+                comparison = original_comparison(selected, test_spec)
+                views[comparison.npc_package] = make_npc(source, selected, spawn, comparison, visual_only=True)
+                add_collision_stream(room, spec.name + '_PL', source[WORLD_PL], comparison.npc_package)
         duplicate = (set(expected) & set(views)) - {WORLD, WORLD_PL}
         if duplicate: raise ValueError('Duplicate Resonance Cave packages: ' + ', '.join(sorted(duplicate)))
         expected.update(views)

@@ -70,7 +70,7 @@ def practice_game():
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'crystalCaveTestSolid': True, 'crystalCaveTestRotate': False, 'fieldLeader': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -146,15 +146,15 @@ class NativeTestingTests(unittest.TestCase):
             testing.register(App(), env)
             get = routes['get', '/api/testing']; put = routes['put', '/api/testing']
             self.assertFalse(get()['maxMr'])
-            self.assertTrue(get()['crystalCaveTestSolid'])
-            self.assertFalse(get()['crystalCaveTestRotate'])
+            self.assertNotIn('crystalCaveTestSolid', get())
+            self.assertNotIn('crystalCaveTestRotate', get())
             put({'schema': 1, 'maxMr': False, 'crystalCaveTestRotate': True})
             self.assertFalse((Path(root) / 'mods/EstherTsukiko/units.json').exists())
             put({'schema': 1, 'maxMr': False, 'crystalCaveTestSolid': False})
             self.assertFalse((Path(root) / 'mods/EstherTsukiko/units.json').exists())
             put({'schema': 1, 'maxMr': True}); self.assertTrue(get()['maxMr'])
-            self.assertFalse(get()['crystalCaveTestSolid'])
-            self.assertTrue(get()['crystalCaveTestRotate'])
+            self.assertNotIn('crystalCaveTestSolid', get())
+            self.assertNotIn('crystalCaveTestRotate', get())
             spec = Path(root) / 'mods/EstherTsukiko/units.json'
             self.assertEqual(json.loads(spec.read_bytes()), [])
             spec.write_text(json.dumps([{'existing': True}]))

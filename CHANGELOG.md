@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Crystal Fina Test now shows the original imported Crystal Fina beside the native introductory Fina in rotating
+  Sanctum glass, using the old sprite's original material, size and floating offset. The comparison has a separate
+  streamed NPC level and asset identity, follows the same ownership condition and has no acquisition prompt or reward.
+  The existing vision, acquisition and cave return remain shared; the new crystal stays at its approved location.
+- Remove Solid casing check and Animate crystal casing from the home screen and saved settings. Test mode always
+  uses the approved transparent glass and working rotation; accept/discard those old settings during migration.
+  Keep the original cave and Test switches mutually exclusive. Bundled extension 1.2.16. Comparison spacing needs a
+  live check; the current glass and rotation are user-approved and their asset generators are unchanged.
+
 ## Published uniform Crystal Fina glass restoration — 2026-10-15
 
 Code: [`9e70734`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9e70734080492100c04657afd97e633300ed4d5b).
