@@ -11,6 +11,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Consolidated original-enemy missing visuals — 2026-10-17
+
+- Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
+  user's eight new failed names: Malboro Marquis's Flatten; Sheratan's Octostrike, Branch Spear, Stonega and
+  Aeroga; Alpherg's Reflectga, Waterga and Flare. Other attacks the user actually received showed animations;
+  do not infer that every skill in the enemies' AI was tested.
+- Consolidate 19 failed skill names across all eleven named practice opponents, carrying forward Watcher's
+  Megavolt/Atomic Ray and Malbodoom's Bad Breath/Pollen where the exact IDs recur. Flag additional shared
+  Pollen on Marquis/Sheratan and Aeroga on Alpherg as native-AI references without inventing separate cast
+  observations. Preserve earlier successful Watcher/Malbodoom casts and the working optional FFBE Needles import.
+- Match enemy-specific spell variants instead of names alone: Sheratan's Stonega 255170/Aeroga 250190,
+  Alpherg's Flare 250330, and two possible Waterga IDs (250150 single-target, 255110 group). Pollen 500690
+  and Alluring Pollen 503770 remain separate. Blighted Gloom/Carmine Inferno retain their earlier imported-vision
+  failure status without a new original-enemy observation. No new trace, asset repair, substitute or package is
+  implied. Verify the recorded ID associations against the collected native AI/skill tables; documentation only.
+
 ### Original Watcher and Malbodoom test results — 2026-10-17
 
 - Record the user's original-enemy tests: Watcher's Missile, Laser, Machine Gun and Poison Gas show visuals;
@@ -19,24 +35,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   from Alluring Pollen (503770). Atomic Ray/Bad Breath now have native enemy-side blank reports too; an
   imported-vision-only binding fix is insufficient to explain these observations. No new trace or visual fix
   is implied by this documentation update.
-
-
-## Published read-only intermittent crash collector — 2026-10-17
-
-Code: [`31c2d35`](https://github.com/biscoBen/FFR-Vison-Studio/commit/31c2d35dd2bc7dee12f1fa8c240d3eb6ffe6119a).
-[Successful Windows validation / run 39069211497](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39069211497).
-[Collector source and instructions](scripts/reference/game-crash/).
-
-- Add a standalone Windows helper that collects recent Unreal crash contexts, bounded game/UE4SS logs,
-  runtime hashes, installed-mod inventory and available testing/repair-version reports. Run after the crash
-  before restarting. No game mutation, installation, tracer or Studio rebuild is needed; saves, assets,
-  DLL contents, rosters and memory dumps are excluded.
-- Record live confirmation: the practice picker works, revised FFBE 1,000 Needles placement and successful-hit
-  sound work. A separate generic fatal error occurs while walking in Mitra and on a repeat practice interaction.
-  This helper collects evidence; it does not claim a fix or identify the crash's cause without the report.
-- Update the original-enemy test instructions to match the twelve installed practice choices. Keep native
-  baseline tests separate from borrowed skill visuals and the optional FFBE Needles import.
-
 
 ### Original-enemy animation comparison candidates — 2026-10-17
 
@@ -56,6 +54,22 @@ Code: [`31c2d35`](https://github.com/biscoBen/FFR-Vison-Studio/commit/31c2d35dd2
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published read-only intermittent crash collector — 2026-10-17
+
+Code: [`31c2d35`](https://github.com/biscoBen/FFR-Vison-Studio/commit/31c2d35dd2bc7dee12f1fa8c240d3eb6ffe6119a).
+[Successful Windows validation / run 39069211497](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39069211497).
+[Collector source and instructions](scripts/reference/game-crash/).
+
+- Add a standalone Windows helper that collects recent Unreal crash contexts, bounded game/UE4SS logs,
+  runtime hashes, installed-mod inventory and available testing/repair-version reports. Run after the crash
+  before restarting. No game mutation, installation, tracer or Studio rebuild is needed; saves, assets,
+  DLL contents, rosters and memory dumps are excluded.
+- Record live confirmation: the practice picker works, revised FFBE 1,000 Needles placement and successful-hit
+  sound work. A separate generic fatal error occurs while walking in Mitra and on a repeat practice interaction.
+  This helper collects evidence; it does not claim a fix or identify the crash's cause without the report.
+- Update the original-enemy test instructions to match the twelve installed practice choices. Keep native
+  baseline tests separate from borrowed skill visuals and the optional FFBE Needles import.
 
 Validation: 445 Python checks pass locally and on Windows (seven skips on each platform), including actual
 helper execution against fake game/Saved trees. Windows analysis, 263 Flutter tests (one skipped), fresh frozen-engine

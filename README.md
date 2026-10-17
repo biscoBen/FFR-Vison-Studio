@@ -209,22 +209,45 @@ All twelve choices use private story-free encounters, original enemy units/AI, t
 guaranteed escape and the usual practice reward (or the MR test override). Original encounter rewards are unchanged.
 This picker supplies comparisons; it does not repair missing native skill animations.
 
-### Original Watcher and Malbodoom visual tests — 2026-10-17
+### Consolidated original-enemy visual tests — 2026-10-17
 
-The user reports the following original-enemy casts in the practice battles. No new runtime trace accompanies
-this report. These observations extend the original Cactuar baseline; they do not verify imported-vision
-playback or prove that another native route/source visual cannot exist.
+The user reports that every skill targeted by the practice comparison list has no visible animation on its
+original enemies, and adds the specific failures below. Carry the earlier Watcher/Malbodoom failures forward
+when the exact same skill ID occurs on another tested unit. Other attacks the user actually received did show
+animations; this does not mark every skill in each enemy's AI as tested. No new runtime trace accompanies this
+report. These are visual observations, not proof that another source asset or native route cannot exist.
 
-| Original enemy | Visible animations reported | No visible animation reported |
+| Original enemy | Reported missing visuals, including the primary comparison target | Additional previously failed skills referenced by this enemy's AI |
 | --- | --- | --- |
-| Watcher (188) | Missile, Laser, Machine Gun, Poison Gas | Megavolt (500180), Atomic Ray (500380) |
-| Malbodoom (257) | Whip, Digestive Fluid | Bad Breath (505020), Pollen (500690) |
+| Cactuar (38) | 1,000 Needles (500270), original demo version | — |
+| Watcher (188) | Megavolt (500180), Atomic Ray (500380) | — |
+| Ganymede (196) | Atomic Ray (500380) | — |
+| Malbodoom (257) | Bad Breath (505020), Pollen (500690) | — |
+| Malboro Marquis (258) | Bad Breath (505020), Flatten (500190) | Pollen (500690), previously blank on Malbodoom |
+| Gigantuar (352) | 10,000 Needles (505110) | — |
+| Sheratan (641) | Alluring Pollen (503770), Octostrike (501070), Branch Spear (503780), Stonega (255170), Aeroga (250190) | Pollen (500690), previously blank on Malbodoom |
+| Alpherg (651) | Bubble Breath (501680), Reflectga (503800), Waterga (250150 or 255110), Flare (250330) | Aeroga (250190), same ID as Sheratan's failed cast |
+| Bomb (24) | Self-Destruct (500720) | — |
+| Wood Eyes (23) | Constrict (500590) | — |
+| White Peak (283) | White Wind (500810) | — |
 
-The failures' exact IDs occur in these units' collected `DT_BtlUnitAIParameter` rows. **Pollen (500690)** is
-separate from **Alluring Pollen (503770)**; do not combine their test status. Native enemy-side Atomic Ray and
-Bad Breath now also have blank visual reports, so an imported-vision-only binding problem cannot explain all
-observations. Investigate their own source routes before adding an FFBE import or substitute. Retain the working
-original presentations and keep these native findings separate from the successful optional FFBE Needles import.
+This tracks **19 distinct failed skill names**. Checking every practice enemy's collected
+`DT_BtlUnitAIParameter` row finds **20 candidate skill IDs**, because Alpherg has both single-target Waterga
+(250150) and group Waterga (255110); its reported cast does not identify which variant played. Sheratan's Stonega
+is the enemy group version (255170), its Aeroga is enemy 250190, and Alpherg's Flare is enemy 250330. Do not
+transfer these failures to working vision versions with the same display name. Pollen (500690) remains separate
+from Alluring Pollen (503770). Additional shared AI references in the last column are investigation flags;
+the report does not independently establish another observed cast for each of them.
+
+Previously reported working original casts remain recorded: Watcher's **Missile, Laser, Machine Gun and Poison
+Gas**, and Malbodoom's **Whip and Digestive Fluid**. Preserve those presentations. The native Cactuar baseline
+also stays separate from the optional imported FFBE 1,000 Needles visual, which now has user-confirmed correct
+playback and successful-hit sound. **Blighted Gloom** and **Carmine Inferno** remain earlier imported-vision
+failures; no matching cast by these practice enemies has been established.
+
+Enemy-side blanks show that imported-vision-only binding changes cannot explain all these failures. Investigate
+each exact variant's own routing and source assets before adding an import or substitute. This record changes
+no skills, visual substitutions, verification badges or game assets, and requires no Studio update or rebuild.
 
 ### Original-enemy comparisons for missing skills — 2026-10-17
 
@@ -245,11 +268,10 @@ must never be treated as proof that the normal demo can reach the encounter.
 | Constrict (500590) | Wood Eyes | 23 |
 | White Wind (500810) | White Peak | 283 |
 
-**Watcher and Malbodoom are the best next practice-fight candidates:** they use ordinary enemy AI and directly
-cover two of the user's failed skills. Sheratan and Alpherg have boss/phase behavior requiring additional setup
-checks. All enemies in this table are now in the practice picker. Observe each original enemy casting the named
-skill with **Use our skill changes**, **Use borrowed Sephira skill visuals** and **Test FFBE 1,000 Needles visual**
-OFF. The native binding/track repair option may stay ON. Keep **Survive at 1 HP for testing** ON if needed.
+All enemies in this table are now in the practice picker, and the user has reported the blank comparisons above;
+no repeat of the same casts is needed just to reconfirm those observations. Sheratan and Alpherg use conditional
+boss AI, so a skill listed in their AI is not automatically an observed cast. For further native comparisons, set
+**Use our skill changes**, **Use borrowed Sephira skill visuals** and **Test FFBE 1,000 Needles visual** OFF. The native binding/track repair option may stay ON. Keep **Survive at 1 HP for testing** ON if needed.
 These pairings establish AI usage, not that their native visuals work. Allow enemy turns and report the actual
 skill name, visible effect, direction and sound; a skill it never casts is untested, not a failed visual.
 Existing native-only fixes also permit comparisons against Belmodar's Thwack and Dark Skeleton's Throat Strike;
