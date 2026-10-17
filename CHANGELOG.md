@@ -25,6 +25,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
   choices' native encounter/stage serialization, exact readback and IoStore verification pass. Windows package
   validation is pending; the existing trace helper is unchanged.
+- Correct Studio's required extension version and fresh-engine test to 1.2.36 after the first Windows startup
+  check rejected the newly installed extension. No failed package was published.
 
 ### Native-only runtime findings — 2026-10-16
 
