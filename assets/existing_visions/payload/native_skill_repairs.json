@@ -35,6 +35,19 @@
             "Unit_PlayAnimByName_AnimationName": "attack_A"
           }
         }
+      ],
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      },
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_500562_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500562_Effect_001_DirectorBP",
+          "set": {
+            "Effect_SpawnTarget_ID": 18
+          }
+        }
       ]
     },
     "500250": {
@@ -464,7 +477,20 @@
           "export": "MovieSceneEventTrack_0"
         }
       ],
-      "motionEdits": []
+      "motionEdits": [],
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      },
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_225192_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_225192_Effect_001_DirectorBP",
+          "set": {
+            "Effect_SpawnTarget_ID": 18
+          }
+        }
+      ]
     },
     "245290": {
       "name": "Banish",
@@ -502,7 +528,20 @@
         "Track/SEQ_Battle_225302_Sound_001.uexp": "f885c1ea67d519c9dfca3a5163dcd2c264224e44f3ae63adea991daac94f0277"
       },
       "enableTracks": [],
-      "motionEdits": []
+      "motionEdits": [],
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      },
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_225302_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_225302_Effect_001_DirectorBP",
+          "set": {
+            "Effect_SpawnTarget_ID": 18
+          }
+        }
+      ]
     },
     "500230": {
       "name": "Absolute Zero",
@@ -552,6 +591,59 @@
         "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
         "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
       }
+    },
+    "501010": {
+      "name": "El Ni\u00f1o",
+      "folder": "Sequencer/Battle/EnemySkill/500800/500802",
+      "sourceSequence": 500802,
+      "sourceBinding": 501010,
+      "retainEnemyRoute": true,
+      "definitionSha256": "3bcaa07d17751e4a56cbc516ec83d4b292d0af9c68fdb331cf9e759a70cd7786",
+      "bindingSha256": "2051b3ea28e2eca0c82bf74dd65c22d75e933ea56f687bcb9dd8231eca3e47c6",
+      "files": {
+        "SEQ_Battle_500802_Master.uasset": "eeafa4925a4a1c6cc9594c441d03421345b9e7644858fab1df17edddf4203634",
+        "SEQ_Battle_500802_Master.uexp": "265d220ea61336b764d2403aa0151e7af85c83005025e02229116eeb9b03bf56",
+        "Track/SEQ_Battle_500802_Cut_001.uasset": "ddc74629957f619d0756dc400716a00d8ca5d3383a5d55014f309011156503ca",
+        "Track/SEQ_Battle_500802_Cut_001.uexp": "6b2f2f037036107a2163e71454ccca91d63e87b51a3852f9d7fe7c1a98762c80",
+        "Track/SEQ_Battle_500802_Effect_001.uasset": "f65860a9836534bb9c52a7f008d6b411f21ee8e92d39d5f71f38f5bf8a1bcdac",
+        "Track/SEQ_Battle_500802_Effect_001.uexp": "7a3f892a7e9bd3b4bba90e77677f3a68ae9cabba5f7e544fd8cbd6baaebcbcc5",
+        "Track/SEQ_Battle_500802_Sound_001.uasset": "b1c6ee4e0f437d5043d758baeee3eb834fac99c56c320395616e90f52e49b73c",
+        "Track/SEQ_Battle_500802_Sound_001.uexp": "24815e9c3e37429c56eae3531ab28fc1e701a6f28aa6a7a76c185cb96b332724"
+      },
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500802_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_1"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500802_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500802_Cut_001_DirectorBP_21",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ],
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_500802_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500802_Effect_001_DirectorBP_26",
+          "set": {
+            "Effect_NiagaraData": {
+              "LookAtTargetID": 18,
+              "LookAtTargetOffset": {
+                "z": 200.0
+              }
+            }
+          }
+        }
+      ]
     }
-  }
+  },
+  "supplementalReference": "Skill-Routing-Reference-20261016-213210-7ca510; all 89 parts validated, 7130 native packages"
 }

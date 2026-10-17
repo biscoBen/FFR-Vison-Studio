@@ -11,6 +11,31 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Extension 1.2.35: correct the private player effect point for Thwack, Bio and Banishra. Give El Niño
+  a private player route using its original shared presentation, with the native friendly aiming point/height
+  and the exact complete caster track enabled. Its new enemy route keeps the exact original shared package
+  and sound; the original shared binding remains intact. Definition/binding/package/point fingerprints guard
+  every repair. These changes preserve original combat values, hit schedules and sound.
+- With Show unverified and either repair mode enabled, generated battle models expose native `atk` as an
+  alias of that character's own `attack_A`. This fixes a concrete missing motion requested by Escape and
+  makes the name available to other native callers. It adds no timeline or replacement effect and does not
+  establish that unbound skills now play. Existing clips, atlas pixels, menus and explicit aliases stay intact.
+  Crystal Fina's optional alias uses her accepted shot/mirroring; her existing clips and runtime effects are unchanged.
+- Validate all 89 returned routing ZIPs: all 7,130 assets are present, including four restored large files.
+  All 2,819 overlapping native reference files and the mapping are byte-identical. Decode 233 tables,
+  two sequence-event blueprints, 258 AI blueprints and ten original monster projects without failures.
+  The secondary table does not supply visual links for the twelve blank skills in the alphabetical test batch.
+  Native AI assignments exist for several; they are not evidence of a usable presentation on an imported vision.
+  Record this distinction and the reused ownership of all twelve matching-number master candidates in the
+  [routing findings](docs/native-skill-routing-findings.json). No unsupported entry is silently assigned another visual.
+- Force UTF-8 native-output decoding in the routing collector. Windows console decoding had misreported
+  17 Unicode paths as missing; every original file was present, so the returned collection needs no rerun.
+- Local analysis and the full Flutter suite pass (260 passed, one Windows-only skip). The Python suite
+  completes 404 tests (four skipped). Real converter checks preserve atlas pixels/menu data and existing
+  clips; actual SS6 serialization/readback confirms the recipient attack clip under the native name.
+  All 23 player routes, both retained enemy routes, 25 added bindings per lookup and exact event/track
+  changes pass native serialization/readback and IoStore verification. New in-game appearance remains untested.
+
 - Add a standalone read-only skill-routing collector covering secondary links/callers, demo table selection,
   native battle timelines, complete effect libraries, shared materials/textures, battle sprite-animation
   projects, camera/postprocess support, cue metadata and relevant engine/plugin assets. The current inventory

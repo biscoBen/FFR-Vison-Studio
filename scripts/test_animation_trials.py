@@ -130,7 +130,7 @@ class AnimationTrialTests(unittest.TestCase):
         engine = self.root / 'engine'; tools = engine / 'tools'; frames = tools / 'ffbe2ss6'
         frames.mkdir(parents=True)
         for name in ('ffbe_frames.py', 'build_sprites.py'): shutil.copyfile(ROOT / 'scripts/fixtures/engine_motion' / name, frames / name)
-        for name in ('_ffr_animation_repair.py', '_ffr_build_sprites.py'): shutil.copyfile(PAYLOAD / name, tools / name)
+        for name in ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_ability_modes.py'): shutil.copyfile(PAYLOAD / name, tools / name)
         sprites = engine / 'sprites'; sprites.mkdir(); shutil.copyfile(self.attack, sprites / self.attack.name)
         Image.new('RGBA', (3, 1), (255, 0, 0, 255)).save(sprites / 'unit_anime_401001207.png')
         (sprites / 'unit_cgg_401001207.csv').write_text(''.join(f'0,1,0,0,0,0,100,0,{i},0,1,1,0\n' for i in range(3)))

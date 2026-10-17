@@ -57,6 +57,31 @@ class NativeSkillRepairTests(unittest.TestCase):
                 support['clone'].assert_not_called();self.assertEqual(tables,{})
                 if case not in ('future','custom'):self.assertEqual(report[505040]['status'],'native_repair_unresolved')
 
+    def test_shared_enemy_source_gets_player_and_enemy_routes_without_changing_shared_row(self):
+        with tempfile.TemporaryDirectory() as root:
+            game, rule, _ = self.fixture(root)
+            raw = game['Skill/DT_SkillData']['Thwack']; raw['ID'] = 501010
+            for rel in native.RELS: game[rel]['enemy']['ID'] = 501010
+            binding = game[native.RELS[0]]['enemy']
+            rule.update(sourceBinding=501010, retainEnemyRoute=True,
+                        definitionSha256=native.digest(raw), bindingSha256=native.digest(binding),
+                        effectEdits=[{'file': next(iter(rule['files'])), 'function': 'EffectSEQ_Battle_500562',
+                                      'set': {'Effect_NiagaraData': {'LookAtTargetID': 18}}}])
+            before = copy.deepcopy(game); tables = {}
+            support = {'clone': mock.Mock(return_value={'LevelSequence': '/Game/private/501010/501011/SEQ_Battle_501011_Master',
+                                                        'soundSequence': 'None'}), 'objects': [], 'bytecode': []}
+            original = Path.read_bytes
+            with mock.patch.object(Path, 'read_bytes', lambda p: json.dumps({'schema': 1, 'skills': {'501010': rule}}).encode()
+                                   if p.name == 'native_skill_repairs.json' else original(p)):
+                report = native.prepare(tables, [], {501010: [{}]}, root, lambda r: copy.deepcopy(game[r]), mock.Mock(), support)
+            self.assertEqual(report[501010]['enemySequence'], 501012)
+            for rel in native.RELS:
+                self.assertEqual(tables[rel]['set'], [])
+                self.assertEqual([r['set']['ID'] for r in tables[rel]['add']], [501011, 501012])
+                self.assertEqual(tables[rel]['add'][1]['set'], {'ID': 501012})
+            self.assertNotIn('Skill/DT_SkillData', tables)
+            self.assertEqual(game, before)
+
     def explicit_fixture(self, root):
         game, rule, path = self.fixture(root)
         raw = game['Skill/DT_SkillData']['Thwack']
@@ -129,6 +154,37 @@ class NativeSkillRepairTests(unittest.TestCase):
                 self.assertEqual(expected, {})
                 if case in ('points', 'bytes', 'stagedPointer'):
                     self.assertEqual(report[500230]['status'], 'native_repair_unresolved')
+
+class NativeCasterMotionTests(unittest.TestCase):
+    def spec(self):
+        return {'pixelSize': [16, 16], 'cells': [{'name': 'own_frame'}],
+                'animations': [{'name': 'idle', 'frameCount': 2, 'parts': {}},
+                               {'name': 'attack_A', 'frameCount': 17, 'parts': {'part_0': {'Cell': [[0, 'own_frame']], 'Posy': [[0, 3]]}}}]}
+
+    def test_mode_gating_and_exact_recipient_clip(self):
+        from test_existing_visions import animation
+        for show, full, native_only in ((False, True, True), (True, False, False), (True, True, False), (True, False, True)):
+            with self.subTest(show=show, full=full, native=native_only):
+                spec = self.spec(); before = copy.deepcopy(spec)
+                added = animation.native_caster_motions(spec, {'showUnverified': show, 'useChanges': full, 'useNativeRepairs': native_only})
+                self.assertEqual(spec['cells'], before['cells'])
+                self.assertEqual(spec['animations'][:2], before['animations'])
+                if show and (full or native_only):
+                    self.assertEqual(added, ['atk'])
+                    self.assertEqual(spec['animations'][-1], dict(before['animations'][1], name='atk'))
+                    spec['animations'][-1]['parts']['part_0']['Posy'][0][1] = 999
+                    self.assertEqual(spec['animations'][1], before['animations'][1])
+                else:
+                    self.assertEqual(added, []); self.assertEqual(spec, before)
+
+    def test_explicit_native_clip_wins_and_repeat_is_idempotent(self):
+        from test_existing_visions import animation
+        spec = self.spec(); modes = {'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True}
+        animation.native_caster_motions(spec, modes)
+        spec['animations'][-1]['frameCount'] = 50
+        before = copy.deepcopy(spec)
+        self.assertEqual(animation.native_caster_motions(spec, modes), [])
+        self.assertEqual(spec, before)
 
 
 if __name__=='__main__':unittest.main()

@@ -109,7 +109,7 @@ class PartyCharacterTests(unittest.TestCase):
             root = Path(directory); tools = root / 'tools'; frames = tools / 'ffbe2ss6'; frames.mkdir(parents=True)
             for name in ('ffbe_frames.py', 'build_sprites.py'):
                 shutil.copyfile(ROOT / 'scripts/fixtures/engine_motion' / name, frames / name)
-            for name in ('_ffr_animation_repair.py', '_ffr_build_sprites.py'):
+            for name in ('_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_ability_modes.py'):
                 shutil.copyfile(ROOT / 'assets/existing_visions/payload' / name, tools / name)
             main, base = root / 'main', root / 'base'
             for folder, form in ((main, '100030727'), (base, '100030717')):

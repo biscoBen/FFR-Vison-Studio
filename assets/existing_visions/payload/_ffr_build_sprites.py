@@ -9,6 +9,7 @@ sys.path.insert(0, str(tools / 'ffbe2ss6'))
 sys.path.insert(0, str(tools))
 import ffbe_frames
 import _ffr_animation_repair
+import _ffr_ability_modes
 _ffr_animation_repair.extend_frames(ffbe_frames)
 converter = runpy.run_path(str(tools / 'ffbe2ss6/build_sprites.py'))
 sheets = converter['Sheets']
@@ -36,7 +37,10 @@ motions[:] = [(name, {'attack_B': 'atk2', 'attack_C': 'atk3'}.get(name, motion))
 converter['main']()
 trial = tools.parent / 'build/barrage-trial.json'
 spec_file = Path(sys.argv[4]) / 'battle/spec.json'
-if trial.is_file() and spec_file.is_file() and '--menu-only' not in sys.argv:
+if spec_file.is_file() and '--menu-only' not in sys.argv:
     spec = json.loads(spec_file.read_bytes())
-    _ffr_animation_repair.add_barrage_animation(spec, json.loads(trial.read_bytes()), sys.argv[3])
-    spec_file.write_text(json.dumps(spec, indent=1), encoding='utf-8')
+    aliases = _ffr_animation_repair.native_caster_motions(spec, _ffr_ability_modes.settings(tools.parent))
+    if aliases: print('  Native caster motion: atk uses this character\'s attack_A clip; no substitute effects.')
+    if trial.is_file():
+        _ffr_animation_repair.add_barrage_animation(spec, json.loads(trial.read_bytes()), sys.argv[3])
+    if aliases or trial.is_file(): spec_file.write_text(json.dumps(spec, indent=1), encoding='utf-8')

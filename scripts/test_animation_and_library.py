@@ -98,7 +98,7 @@ class MotionTests(unittest.TestCase):
         motion.repair_form(self.root, self.form, self.source, self.download)
         engine=self.root/'engine'; tools=engine/'tools'; frames=tools/'ffbe2ss6'; frames.mkdir(parents=True)
         for name in ('ffbe_frames.py','build_sprites.py'):shutil.copyfile(ROOT/'scripts/fixtures/engine_motion'/name,frames/name)
-        for name in ('_ffr_animation_repair.py','_ffr_build_sprites.py'):shutil.copyfile(PAYLOAD/name,tools/name)
+        for name in ('_ffr_animation_repair.py','_ffr_build_sprites.py','_ffr_ability_modes.py'):shutil.copyfile(PAYLOAD/name,tools/name)
         out=self.root/'converted'
         result=subprocess.run([sys.executable,str(tools/'_ffr_build_sprites.py'),str(self.root),self.form,'13520',str(out)],capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stderr)
@@ -111,6 +111,18 @@ class MotionTests(unittest.TestCase):
         self.assertEqual(result.returncode,0,result.stderr)
         anims={a['name']:a for a in json.loads((out/'battle/spec.json').read_text())['animations']}
         self.assertEqual(anims['attack_A']['frameCount'],7) # A valid existing primary attack keeps its own motion.
+        before = json.loads((out/'battle/spec.json').read_bytes())
+        atlas = (out/'battle/atlas.png').read_bytes(); menu = (out/'menu/spec.json').read_bytes()
+        flags = engine/'mods/EstherTsukiko/ability-modes.json'; flags.parent.mkdir(parents=True)
+        flags.write_text(json.dumps({'schema': 1, 'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True}))
+        result = subprocess.run([sys.executable, str(tools/'_ffr_build_sprites.py'), str(self.root), self.form, '13520', str(out), '--battle-only'], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        native = json.loads((out/'battle/spec.json').read_bytes())
+        self.assertEqual(native['animations'][:-1], before['animations'])
+        self.assertEqual(native['animations'][-1], dict(anims['attack_A'], name='atk'))
+        self.assertEqual(native['cells'], before['cells'])
+        self.assertEqual((out/'battle/atlas.png').read_bytes(), atlas)
+        self.assertEqual((out/'menu/spec.json').read_bytes(), menu)
 
 
 class SequenceTests(unittest.TestCase):

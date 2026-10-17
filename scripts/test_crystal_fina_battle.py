@@ -317,6 +317,12 @@ class FinaBattleTests(unittest.TestCase):
             path = Path(tmp) / 'seat.png'; sheet = Image.new('RGBA', (1800, 1820)); sheet.paste((255, 0, 0, 255), (1122, 1497, 1158, 1534)); sheet.save(path)
             with patch.object(motion, 'decode', return_value=clips), patch.object(motion, 'extract_atlas', return_value=Image.new('RGBA', (256, 512))):
                 atlas, spec = motion.battle_spec(view, {}, path, original)
+                with_alias = copy.deepcopy(original)
+                with_alias['animations'].append({'name': 'atk', 'frameCount': 117})
+                _, alias_spec = motion.battle_spec(view, {}, path, with_alias)
+                aliases = {a['name']: a for a in alias_spec['animations']}
+                self.assertEqual(aliases['atk'], dict(aliases['attack_A'], name='atk'))
+                self.assertEqual([a for a in alias_spec['animations'] if a['name'] != 'atk'], spec['animations'])
         self.assertEqual(original, before); self.assertEqual(atlas.getpixel((0, 330)), (255, 0, 0, 255))
         clips = {a['name']: a for a in spec['animations']}
         # Native release begins with the hands-forward shot; preparation has

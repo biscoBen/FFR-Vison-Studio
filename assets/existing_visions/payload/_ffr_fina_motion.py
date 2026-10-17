@@ -230,7 +230,7 @@ def battle_spec(view, texture, old_sheet, original_spec):
                 if REFORM + repeat * 49 + tick < clip['frameCount']]
             clip['parts']['part_0']['Cell'] += restored
             clip['parts']['part_0']['Posy'].append([REFORM, 22.0 + BODY_FLOAT])
-        elif name.startswith(('attack_', 'M_attack', 'FFBE_')) or name == 'magic_attack':
+        elif name.startswith(('attack_', 'M_attack', 'FFBE_')) or name in ('magic_attack', 'atk'):
             clip = copy.deepcopy(shot)
         elif name in ('command', 'magic_idle'):
             clip = copy.deepcopy(windup)
@@ -272,7 +272,7 @@ def battle_spec(view, texture, old_sheet, original_spec):
     cast['parts']['NULL_Crystal']['Roty'] = [[t, t * .06 / ATTACK_PLAY_RATE] for t in range(ACTION_FRAMES)]
     animations.append(cast)
     for clip in animations:
-        active = clip['name'] in ('LB1', 'command', 'magic_idle', 'Studio_FinaCast', 'magic_attack') or clip['name'].startswith(('attack_', 'M_attack', 'FFBE_'))
+        active = clip['name'] in ('LB1', 'command', 'magic_idle', 'Studio_FinaCast', 'magic_attack', 'atk') or clip['name'].startswith(('attack_', 'M_attack', 'FFBE_'))
         # SS6's decoder ignores the legacy Fliph/Flipv attributes. Imgfliph
         # flips the cell image and leaves the body/socket origins intact.
         clip['parts']['part_0']['Imgfliph'] = [[0, 1.0 if active else 0.0]]

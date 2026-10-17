@@ -280,6 +280,60 @@ These are static findings awaiting implementation and live tests, not new repair
 The aiming audit must consider the selected effect function and target relation; a global rotation or a global
 replacement of positive-Y points would also change correctly placed friendly effects.
 
+## Returned comprehensive collection and extension 1.2.35
+
+All **89** `Skill-Routing-Reference-20261016-213210-7ca510` ZIP parts pass extraction/CRC checks.
+The four split large files restore with their original lengths and SHA256. All **7,130** expected packages
+are present. The 17 reported missing names are Windows console decoding artifacts: CP437-decoded UTF-8
+turned degree signs and a zero-width space into other characters. Each original Unicode path is present.
+The collector now selects UTF-8 before invoking retoc. This collection does not need to be repeated.
+All 2,819 overlapping files from the earlier full native reference, plus the mapping, match byte-for-byte.
+
+Decode/readback succeeds for **233 tables, two sequence-event blueprints, 258 AI blueprints and ten
+original monster projects**. The sequence-event blueprints contain no additional attack schedules.
+`DT_SkillLinkSequencerData` has seven rows: five reference skill IDs absent from current skill definitions;
+the two current rows are Physical Counter and Magic Counter, selecting party-specific attack sequences.
+The twelve blank tested skills have no entry in this table. The ordinary-skill audit distinguishes 218
+directly bound entries, 21 with explicit presentation pointers, two with character links, thirteen with
+normal-attack dispatch, and 771 with none of those direct/secondary routes. Pointer presence alone does
+not establish that its referenced binding exists. These counts do not classify every unbound skill as broken.
+See the [returned-reference evidence](native-skill-routing-findings.json).
+
+The AI tables do assign 1,000 Needles, 10,000 Needles, Atomic Ray, Bad Breath and several other blank
+skills to native enemies. Some assignments have zero random weight or belong to later encounters, so
+assignment alone does not establish demo availability or live playback. Inspected AI blueprints schedule
+skills and targets; they expose no separate animation/sequence/effect dispatch for this batch. Ten original
+enemy projects mainly contain `Setup`, `idle` and `atk`, rather than an independent named animation for
+each assigned skill. This static inspection cannot exclude behavior implemented in compiled native code.
+
+Every matching-number master candidate is already bound to a different current skill ID. For example,
+the 400311/400312 files serve Grand Slash; 500241/500242 serve Poison Gas; and 220041/220042 serve Fire.
+They are not automatically reclaimed for Bladeblitz, Scorch or Inferno Sphere. Nor do same-ID effect folders
+prove current ownership when packages are reused. No recovered secondary link currently resolves the
+twelve blank test entries, and no new donor visuals or generic hit schedules are enabled for them.
+
+The supported repairs added in extension 1.2.35 are:
+
+- Thwack, Bio and Banishra: change only the audited private player effect's fixed target point 2 to 18.
+  Their native particles, event keys, sound and combat definitions stay intact.
+- El Niño: its shared binding 501010 selects native 500802. Add private player 501011 with enemy-side
+  look-at point 18 and native friendly look-at height 200, and enable only its complete `atk`/`idle` caster
+  track with the supported `attack_A` name. New enemy 501012 retains the original shared package/sound.
+  Original shared/native rows are preserved. Future explicit routes, custom presentations, changed source
+  bytes/definitions/bindings/target points still prevent the repair.
+- Native `atk` compatibility: generated imported battle models expose a deep copy of their own `attack_A`
+  clip under `atk` when Show unverified and either repair flag are on. Escape's existing friendly timeline
+  explicitly requests this name. This is motion compatibility only; it creates no skill route or substitute
+  effect, and does not claim that the twelve blank skills are fixed. Existing aliases win. Atlas/cell/menu
+  data and existing animations are preserved. Crystal Fina maps the optional name to her accepted shot and
+  mirroring without changing any of her existing clips, glow, crystal, impact timing or seated hold.
+
+All **23** private player routes (92 packages), plus both retained enemy routes and **25** new bindings
+per lookup table, pass actual native serialization/readback. Every original binding remains identical;
+every skill field remains original except the previously accepted Absolute Zero presentation pointer.
+Only the exact audited events/tracks change, including intact Niagara import references. IoStore packing
+and verification pass. These asset checks do not establish in-game appearance; the new changes need live tests.
+
 ## Imported vision icon framing
 
 Face, timeline and ability icons now use the game's existing Cloud frame and supplied portrait mask.

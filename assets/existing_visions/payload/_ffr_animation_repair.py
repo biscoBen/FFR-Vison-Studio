@@ -138,6 +138,23 @@ def extend_frames(module):
     module.load_unit = load
 
 
+def native_caster_motions(spec, modes):
+    """Expose the native monster attack name using the recipient's own clip.
+
+    This supplies a motion name, not a skill timeline or substitute particle.
+    Existing clips, cells, timing and any explicitly supplied atk remain intact.
+    """
+    if not (modes['showUnverified'] and (modes['useChanges'] or modes.get('useNativeRepairs'))):
+        return []
+    animations = spec['animations']
+    if any(a['name'] == 'atk' for a in animations): return []
+    source = next((a for a in animations if a['name'] == 'attack_A'), None)
+    if source is None: raise ValueError('The imported battle model has no attack_A motion for native atk requests.')
+    alias = copy.deepcopy(source); alias['name'] = 'atk'
+    animations.append(alias)
+    return ['atk']
+
+
 def install_preview_hooks(env):
     catalog = env.get('ffbe_catalog'); downloads = env.get('unit_downloads')
     if catalog is None or downloads is None: return
@@ -1170,6 +1187,7 @@ def prepare_native_sequences(tables, clones, jobs, units, root, rows, extract, n
     report = Path(root) / 'build/animation-repair-report.json'
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({'schema': 1, 'mode': 'native_repairs', 'inGameValidated': False,
+        'casterMotionAliases': {'atk': 'attack_A'},
         'skills': [repairs.get(sid, original_status(sid))
                    for sid in sorted(selected)], 'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
     print('  Native binding/aiming/motion repairs only: original skill effects retained; donor effects and fallback timelines are off.')

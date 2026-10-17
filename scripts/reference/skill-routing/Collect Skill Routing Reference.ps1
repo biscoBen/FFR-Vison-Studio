@@ -67,6 +67,10 @@ function New-UploadZip([string]$Destination, [object[]]$Segments) {
 }
 
 try {
+    # retoc writes UTF-8. Windows PowerShell otherwise decodes native stdout
+    # using the console OEM code page, corrupting non-ASCII inventory names.
+    [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding -ArgumentList $false
+    $OutputEncoding = [Console]::OutputEncoding
     Add-Type -AssemblyName System.IO.Compression
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     Write-Host 'Collect native skill routing references' -ForegroundColor Cyan
