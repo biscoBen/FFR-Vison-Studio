@@ -32,6 +32,14 @@ and no substitute visuals are silently assigned. See [findings and limits](docs/
 and the [machine-readable evidence](docs/native-skill-routing-findings.json). The collection already includes native
 reflection data for further runtime investigation; there is no need to repeat the asset extraction at this stage.
 
+The follow-up test still has eight blank entries, including newly reported Blighted Gloom, Bubble Breath and
+Carmine Inferno. They are recorded in the [test findings](docs/MONSTER_ANIMATION_COMPATIBILITY.md#follow-up-blank-skills-and-sampled-runtime-trace).
+Use the optional [Skill Runtime Trace helper](scripts/reference/skill-runtime/) to compare one failed skill with a
+working one and observe original enemy actions. It samples through the existing UE4SS loader and makes no playback
+changes. Close the game, choose **1** to enable, relaunch/test, then choose **2** to collect the small ZIP in
+Downloads\FFR Mod. Close the game and choose **3** to remove it. No Studio update or mod rebuild is required.
+Missing sampled records do not prove an effect never played; short events can fall between samples.
+
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
 393 Python checks pass. All 21 native routes pass actual asset build/readback and IoStore verification;
@@ -661,7 +669,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   see [monster compatibility evidence](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
   Preserve the independent native-repair mode and audit all returned native battle tracks before expanding its rules.
   Revisit the [secondary-route findings](docs/native-skill-routing-findings.json), including normal-attack/character
-  dispatch and the twelve unresolved blank test cases; do not equate AI assignments with tested visual playback.
+  dispatch, the original twelve unresolved blank test cases and the three additional reports. Compare original
+  enemy/runtime playback before inventing bindings; do not equate AI assignments with tested visuals. Recheck the
+  optional observer's reflected fields against the new build and remove it after diagnosis.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,

@@ -979,5 +979,259 @@
       ]
     }
   ],
-  "caution": "AI table assignment is not proof of demo encounter availability or a visual route. Zero-weight slots can be conditionally selected by AI. No alternate visual dispatch was found in the secondary tables or inspected AI presentation imports. This static audit cannot exclude compiled native-code behavior. Matching-number masters are already bound to other skill IDs and are not automatically reassigned. Missing direct routes are not all broken; normal-attack/character dispatch is separate. No substitute visuals were added by this audit."
+  "caution": "AI table assignment is not proof of demo encounter availability or a visual route. Zero-weight slots can be conditionally selected by AI. No alternate visual dispatch was found in the secondary tables or inspected AI presentation imports. This static audit cannot exclude compiled native-code behavior. Matching-number masters are already bound to other skill IDs and are not automatically reassigned. Missing direct routes are not all broken; normal-attack/character dispatch is separate. No substitute visuals were added by this audit.",
+  "followUpTest": {
+    "reportedAfterExtension": "1.2.35",
+    "installedVersionVerified": false,
+    "recipientEstablished": false,
+    "observation": "User reports no visible animations for all eight entries. Original enemy playback not established.",
+    "skills": [
+      {
+        "id": 407050,
+        "name": "Blighted Gloom",
+        "newReport": true
+      },
+      {
+        "id": 500270,
+        "name": "1,000 Needles",
+        "newReport": false
+      },
+      {
+        "id": 500380,
+        "name": "Atomic Ray",
+        "newReport": false
+      },
+      {
+        "id": 505020,
+        "name": "Bad Breath",
+        "newReport": false
+      },
+      {
+        "id": 505110,
+        "name": "10,000 Needles",
+        "newReport": false
+      },
+      {
+        "id": 505340,
+        "name": "Carmine Inferno",
+        "newReport": true
+      },
+      {
+        "id": 501680,
+        "name": "Bubble Breath",
+        "newReport": true
+      },
+      {
+        "id": 503770,
+        "name": "Alluring Pollen",
+        "newReport": false
+      }
+    ],
+    "additionalStaticAudit": [
+      {
+        "id": 407050,
+        "name": "Blighted Gloom",
+        "status": "no_direct_or_secondary_route",
+        "bindingIds": [],
+        "explicitPointers": {},
+        "secondaryLink": null,
+        "normalAttackDispatch": false,
+        "sameNumberMasterCandidates": [],
+        "sameIdEffectAssetCount": 0,
+        "sameIdNiagaraAssets": [],
+        "nativeHitData": {
+          "ID": 407050,
+          "NormalEffectID": -1,
+          "NormalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "CriticalEffectID": 1,
+          "CriticalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "WeaknessEffectID": 2,
+          "WeaknessEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "MissEffectID": -1,
+          "MissEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "AdditionalEffectID": 31,
+          "AdditionalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": true
+          },
+          "IsAdditionalEffect": true,
+          "DeathEffectID": -1,
+          "DeathEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "PlayShakeID": 1,
+          "bMissPlayShake": false
+        },
+        "aiCallers": []
+      },
+      {
+        "id": 505340,
+        "name": "Carmine Inferno",
+        "status": "no_direct_or_secondary_route",
+        "bindingIds": [],
+        "explicitPointers": {},
+        "secondaryLink": null,
+        "normalAttackDispatch": false,
+        "sameNumberMasterCandidates": [],
+        "sameIdEffectAssetCount": 0,
+        "sameIdNiagaraAssets": [],
+        "nativeHitData": {
+          "ID": 505340,
+          "NormalEffectID": -1,
+          "NormalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "CriticalEffectID": 1,
+          "CriticalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "WeaknessEffectID": -1,
+          "WeaknessEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "MissEffectID": -1,
+          "MissEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "AdditionalEffectID": 30,
+          "AdditionalEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": true
+          },
+          "IsAdditionalEffect": true,
+          "DeathEffectID": -1,
+          "DeathEffectSetting": {
+            "EffectRotate": {},
+            "EffectLocation": {},
+            "PartName": "NULL_Center",
+            "bDisableEnemyReverse": false
+          },
+          "PlayShakeID": 0,
+          "bMissPlayShake": false
+        },
+        "aiCallers": [
+          {
+            "id": 413,
+            "unitRow": "劫火のヴェリアス",
+            "aiId": 413,
+            "fields": [],
+            "randomSlots": [
+              {
+                "field": "skillRandData2",
+                "weight": 0.0
+              }
+            ],
+            "highRisk": false
+          },
+          {
+            "id": 2064,
+            "unitRow": "劫火のヴェリアス（7章）",
+            "aiId": 413,
+            "fields": [],
+            "randomSlots": [
+              {
+                "field": "skillRandData2",
+                "weight": 0.0
+              }
+            ],
+            "highRisk": false
+          }
+        ]
+      },
+      {
+        "id": 501680,
+        "name": "Bubble Breath",
+        "status": "no_direct_or_secondary_route",
+        "bindingIds": [],
+        "explicitPointers": {},
+        "secondaryLink": null,
+        "normalAttackDispatch": false,
+        "sameNumberMasterCandidates": [],
+        "sameIdEffectAssetCount": 0,
+        "sameIdNiagaraAssets": [],
+        "nativeHitData": null,
+        "aiCallers": [
+          {
+            "id": 651,
+            "unitRow": "アルフェーグ第一形態",
+            "aiId": 651,
+            "fields": [],
+            "randomSlots": [
+              {
+                "field": "skillRandData2",
+                "weight": 50.0
+              }
+            ],
+            "highRisk": false
+          },
+          {
+            "id": 901,
+            "unitRow": "アルフェーグ改第一形態",
+            "aiId": 651,
+            "fields": [],
+            "randomSlots": [
+              {
+                "field": "skillRandData2",
+                "weight": 30.0
+              }
+            ],
+            "highRisk": false
+          },
+          {
+            "id": 2012,
+            "unitRow": "水竜",
+            "aiId": 2012,
+            "fields": [],
+            "randomSlots": [
+              {
+                "field": "skillRandData2",
+                "weight": 0.0
+              }
+            ],
+            "highRisk": true
+          }
+        ]
+      }
+    ],
+    "nextEvidence": "Optional read-only sampled runtime observer; missing samples do not prove no playback."
+  }
 }

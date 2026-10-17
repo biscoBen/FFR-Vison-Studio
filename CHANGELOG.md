@@ -11,6 +11,24 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Record the follow-up failures for 1,000 Needles, 10,000 Needles, Alluring Pollen, Atomic Ray, Bad Breath,
+  Blighted Gloom, Bubble Breath and Carmine Inferno. Audit the three new IDs against the complete returned tables;
+  no direct/secondary route is recovered. The native `atk` alias has not resolved this reported batch. Static AI
+  assignments do not prove demo availability or portable visuals. No new animation substitute or verified label is added.
+- Add the optional Skill Runtime Trace `.cmd`/PowerShell/Lua helper. Through the existing UE4SS installation, sample
+  working/waiting jobs, sprite motions, original sequences and active effects on the game thread. Keep job-linked
+  effects distinct from global components, record unavailable fields once, support F8 bookmarks/F9 stop, and cap
+  the capture. No hooks, native offsets, setters, asset loads or playback changes. Missing samples cannot establish
+  absence of playback. Actual Unreal/UE4SS observation still needs the user's live capture.
+- Enable/remove only the helper's owned files and reject edited/unknown/linked content. Preserve the loader,
+  other mods and Studio runtime. Collect only tagged trace/own-mod startup lines, observer files, DLL hashes and optional engine
+  presentation/version hashes into Downloads\FFR Mod. No Studio update or mod rebuild is needed for this helper.
+  Existing application/engine resources, settings and accepted gameplay fixes are unchanged.
+- All 11 focused observer/lifecycle checks pass, including missing runtime fields, game-thread queueing, capture
+  limits, ownership/path guards, private-log filtering and repeat enable/collect/remove. The full local Python suite
+  completes 415 tests (four skipped), and both managed resource manifests verify without changes. Lua fixtures and
+  PowerShell lifecycle tests do not verify live UE4SS startup, original enemy playback or Unreal rendering.
+
 ## Published native skill routing audit and motion compatibility — 2026-10-16
 
 Code: [`56a9d39`](https://github.com/biscoBen/FFR-Vison-Studio/commit/56a9d39be53f4400a9df88c9adfa50ab0e985286).

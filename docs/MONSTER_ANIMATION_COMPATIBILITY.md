@@ -334,6 +334,50 @@ every skill field remains original except the previously accepted Absolute Zero 
 Only the exact audited events/tracks change, including intact Niagara import references. IoStore packing
 and verification pass. These asset checks do not establish in-game appearance; the new changes need live tests.
 
+## Follow-up blank skills and sampled runtime trace
+
+The user's next report still shows no visible animations for these eight entries. This report followed the
+1.2.35 delivery; the exact installed version and test recipient are not established by the screenshot.
+It does not establish whether the original enemy presentation also fails.
+
+| Skill | Catalog ID | Follow-up observation |
+| --- | --- | --- |
+| 1,000 Needles | 500270 | Still no visible animation |
+| 10,000 Needles | 505110 | Still no visible animation |
+| Alluring Pollen | 503770 | Still no visible animation |
+| Atomic Ray | 500380 | Still no visible animation |
+| Bad Breath | 505020 | Still no visible animation |
+| Blighted Gloom | 407050 | No visible animation; newly reported |
+| Bubble Breath | 501680 | No visible animation; newly reported |
+| Carmine Inferno | 505340 | No visible animation; newly reported |
+
+The three newly reported skills have no direct binding, explicit sequence pointer, character link or normal-attack
+dispatch entry in the supplied demo tables. No same-ID master/effect folder was found. Bubble Breath is assigned
+to Alpheg variants and Water Dragon; Carmine Inferno to Veritas of the Flame variants. Blighted Gloom has no AI
+caller in this table. These are static references, not proof of encounter availability, original effect ownership
+or the absence of compiled native dispatch. No substitute animation or new verified label follows from this result.
+The `atk` alias creates no missing timeline; it has not resolved this reported batch.
+
+The optional [runtime trace helper](../scripts/reference/skill-runtime/) observes an **existing** UE4SS installation.
+It does not install/update a loader, modify its configuration or touch Studio's Fina/field runtime. Close the game,
+run `Skill Runtime Trace.cmd`, choose **1**, then relaunch. Reproduce one failed skill and one known working skill;
+let enemies act too. An original enemy using a failed skill is particularly useful when available. F8 adds a bookmark
+and F9 stops sampling. Run the helper again and choose **2** to collect, then close the game and choose **3** to remove.
+The ZIP goes to **Downloads\FFR Mod**. No Studio update or mod rebuild is needed for this observer.
+
+It samples reflected battle units, sprite names, working/waiting jobs, original sequence assets and active Niagara
+components every 100 ms, with a 6,000-battle-sample/10,000-line cap. Job-generated effects are logged as explicit
+relationships separately from globally active components. Skill IDs are read only where the runtime exposes its
+getter; unavailable fields are logged once. Native timestamps and optional bookmarks support comparison. Reads
+are queued on the game thread; no native hooks, offsets, playback calls, setters or asset loading are used.
+Very short events can fall between samples, so absence in this trace does **not** establish that playback never occurred.
+Executable Lua fixtures establish observation/queue/cap behavior, not actual UE4SS startup or Unreal rendering.
+
+Enable/remove manage only the observer's two known files and ownership marker, reject linked/unknown/edited content,
+and preserve the loader and other mods. Collection includes only tagged trace/own-mod startup lines, observer files, loader hashes,
+and optional engine presentation-report/version hashes. It excludes full UE4SS logs, DLL payloads, game assets,
+Studio config/roster, credentials and saves. Game/engine paths and observed actor/asset names are included.
+
 ## Imported vision icon framing
 
 Face, timeline and ability icons now use the game's existing Cloud frame and supplied portrait mask.

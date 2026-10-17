@@ -1,0 +1,37 @@
+Extract all four helper files together, then run Skill Runtime Trace.cmd.
+This uses the UE4SS loader already used for Studio's Crystal Fina/field runtime.
+It does not download, install or replace a loader or change its settings.
+No Studio update or mod rebuild is needed.
+
+1. Close Resonance. Choose 1 to enable the temporary observer in your game.
+2. Launch the game, keeping native-only repair settings as in your current test.
+   Use a failed skill (for example 1,000 Needles or Atomic Ray), then a known
+   working one (for example Cling or Aqua Breath). Let enemies take some turns.
+   An original enemy using one of the failed skills is especially useful if
+   you can find one; do not spend time hunting all of them for this first trace.
+   F8 adds a log bookmark, and F9 stops sampling. Both keys are optional.
+3. Run the helper again and choose 2 to collect. The game can stay open.
+   Attach the Skill-Runtime-Trace-*.zip from Downloads\FFR Mod.
+   Tell us which skills you used and whether you saw any effects.
+4. Close the game and choose 3 to remove only this observer.
+
+The observer samples reflected battle units, active/waiting jobs, original
+sequence assets, sprite animation names and active Niagara components at 100 ms.
+Job-linked effect lists are logged separately from global active components.
+Where the runtime exposes the skill interface, its ID is recorded; missing
+fields/getters are recorded once rather than filled with guessed values.
+It observes only. It installs no hooks and calls no setters, animation playback,
+asset loads, damage, targeting, material, camera or save-changing functions.
+Sampling ends after 6,000 battle samples or 10,000 lines, or on F9. Relaunch the
+game for a new capture. Very short effects can occur between samples; missing
+log records do not prove an effect never played. Logs have native timestamps.
+
+Collection includes only tagged trace/own-mod startup lines, this observer's files, DLL hashes
+(not DLLs), and the current animation repair report/extension version and resource
+hashes if Studio is found. No full
+UE4SS logs, game assets, saves, credentials or Studio config/roster are copied.
+Game/engine paths and active actor/asset names are included in the report.
+
+Enable/remove only touch ue4ss\Mods\FFRStudioSkillTrace. They preserve unrelated
+mods/settings and refuse unknown or edited files in that folder. If an existing
+loader is not detected, send the message in chat instead of installing another.
