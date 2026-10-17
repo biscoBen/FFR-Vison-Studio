@@ -11,47 +11,48 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-- Extension 1.2.35: correct the private player effect point for Thwack, Bio and Banishra. Give El Niño
-  a private player route using its original shared presentation, with the native friendly aiming point/height
-  and the exact complete caster track enabled. Its new enemy route keeps the exact original shared package
-  and sound; the original shared binding remains intact. Definition/binding/package/point fingerprints guard
-  every repair. These changes preserve original combat values, hit schedules and sound.
-- With Show unverified and either repair mode enabled, generated battle models expose native `atk` as an
-  alias of that character's own `attack_A`. This fixes a concrete missing motion requested by Escape and
-  makes the name available to other native callers. It adds no timeline or replacement effect and does not
-  establish that unbound skills now play. Existing clips, atlas pixels, menus and explicit aliases stay intact.
-  Crystal Fina's optional alias uses her accepted shot/mirroring; her existing clips and runtime effects are unchanged.
-- Validate all 89 returned routing ZIPs: all 7,130 assets are present, including four restored large files.
-  All 2,819 overlapping native reference files and the mapping are byte-identical. Decode 233 tables,
-  two sequence-event blueprints, 258 AI blueprints and ten original monster projects without failures.
-  The secondary table does not supply visual links for the twelve blank skills in the alphabetical test batch.
-  Native AI assignments exist for several; they are not evidence of a usable presentation on an imported vision.
-  Record this distinction and the reused ownership of all twelve matching-number master candidates in the
-  [routing findings](docs/native-skill-routing-findings.json). No unsupported entry is silently assigned another visual.
-- Force UTF-8 native-output decoding in the routing collector. Windows console decoding had misreported
-  17 Unicode paths as missing; every original file was present, so the returned collection needs no rerun.
-- Local analysis and the full Flutter suite pass (260 passed, one Windows-only skip). The Python suite
-  completes 404 tests (four skipped). Real converter checks preserve atlas pixels/menu data and existing
-  clips; actual SS6 serialization/readback confirms the recipient attack clip under the native name.
-  All 23 player routes, both retained enemy routes, 25 added bindings per lookup and exact event/track
-  changes pass native serialization/readback and IoStore verification. New in-game appearance remains untested.
+## Published native skill routing audit and motion compatibility — 2026-10-16
 
-- Add a standalone read-only skill-routing collector covering secondary links/callers, demo table selection,
-  native battle timelines, complete effect libraries, shared materials/textures, battle sprite-animation
-  projects, camera/postprocess support, cue metadata and relevant engine/plugin assets. The current inventory
-  predicts 7,130 packages and covers all 2,048 game-package references found in the earlier sequence audit.
-  Report native container header hashes and compare extraction coverage against the asset inventory.
-  Write ordinary upload ZIPs to Downloads/FFR Mod, streaming large individual assets into chunks with a
-  length/SHA256 restoration ledger. No Studio update, game test or runtime loader is needed.
-- Collector fixture checks cover the full scope, partial collections, source immutability, output guards,
-  multipart ZIPs and exact restoration of oversized assets. A real retoc/PowerShell collection of 91
-  native-derived packages also passes. Six restoration regression tests cover integrity failures, missing
-  chunks, conflicting files and path traversal. The full Python suite completes 401 tests (four skipped).
-  Actual Windows PowerShell 5.1 extraction and the secondary
-  table contents still need the returned reference; no new app package is published for this helper.
-- Record the user's successful Absolute Zero/Bioblaster direction retest and the follow-up catalog audit in
-  the animation compatibility report. Missing direct routes remain unresolved while secondary links are traced;
-  this diagnostic update changes no game timelines, skill mechanics or verification labels.
+Code: [`56a9d39`](https://github.com/biscoBen/FFR-Vison-Studio/commit/56a9d39be53f4400a9df88c9adfa50ab0e985286).
+[Verified Windows test release / run 39004444107](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39004444107).
+
+- Extension 1.2.35 corrects the private player effect point for Thwack, Bio and Banishra. El Niño receives a
+  private player route using its original shared effect/timing with native friendly aiming/height, and only
+  its complete caster track enabled with the supported motion name. Its new enemy route retains the exact
+  original shared package/sound; all original shared/native bindings stay intact. Definition, binding,
+  package-byte and target-point fingerprints remain mandatory. Combat values and hit/sound schedules are unchanged.
+- With Show unverified and either repair mode enabled, generated battle models expose native `atk` as a deep
+  copy of that character's own `attack_A`. Escape's existing friendly timeline requests this name. This supplies
+  motion compatibility and adds no timeline or substitute effect; it does not establish that unbound skills play.
+  Existing clips, atlas/cell/menu data and explicit aliases stay intact. Crystal Fina's optional alias uses her
+  accepted shot/mirroring; her existing clips, crystal, glow, seated hold and action timing stay unchanged.
+- Add the comprehensive read-only routing collector: timelines, secondary links/callers, battle/skill/unit/encounter
+  tables, complete effect libraries and shared materials/textures, battle character projects, camera/postprocess,
+  cue metadata and relevant engine/plugin assets. Compare inventory coverage and record native container header
+  hashes. Write ordinary upload ZIPs to Downloads/FFR Mod; stream oversized individual files into chunks with
+  original length/SHA256 and a restoration ledger. No Studio update or runtime loader is needed for collection.
+- All 89 returned ZIPs validate, with all 7,130 expected assets and four exactly restored large files. Every one
+  of the 2,819 overlapping native files and the mapping matches the prior reference. Decode 233 tables, two
+  sequence-event blueprints, 258 AI blueprints and ten original monster projects with no failures. Correct UTF-8
+  native-output decoding in the collector: 17 Unicode names had been misreported missing; all files were present.
+  No rerun is required. Record the [routing evidence](docs/native-skill-routing-findings.json) and full-game follow-ups.
+- Secondary links do not supply visual routes for the twelve blank skills in the Agrias/Alaya test batch.
+  Some are assigned to native enemies, but assignment is not proof of demo availability or portable presentation.
+  All twelve matching-number master candidates are already bound to other current skills and are not blindly
+  reclaimed. Record the user's successful Absolute Zero/Bioblaster retest and unchanged correct Aqua Breath.
+  No new skill is automatically labeled verified, and borrowed visuals remain a separate option.
+- Local analysis and the full Flutter suite pass (260 passed, one Windows-only skip); the Python suite completes
+  404 tests (four skipped). Real converter tests preserve existing clips, atlas pixels and menus. Native SS6
+  serialization/readback confirms the exact recipient attack alias. All 23 private player routes (92 packages),
+  both retained enemy routes, 25 added bindings per lookup, and exact event/track edits pass actual native
+  serialization/readback and IoStore verification. New in-game appearance still needs live tests.
+- Windows validation and compilation pass for the same commit, including full suites, frozen-engine startup
+  and launcher/updater checks. Downloaded provenance/checksum and all 35 managed resources match source.
+  Accepted Fina runtime/material/preview, cave, party knockout and icon renderer bytes are unchanged; the
+  Fina motion adapter only recognizes the optional new alias, with all prior clips preserved by regression checks.
+- First complete candidate to verified download: **10m48s**, including local
+  verification, converter-fixture corrections, waiting and package verification. Windows CI: **5m24s**;
+  runner usage: **9m42s**. One matching automatic run was reused; no duplicate build was dispatched.
 
 ## Published native skill facing and diagnostics — 2026-10-16
 

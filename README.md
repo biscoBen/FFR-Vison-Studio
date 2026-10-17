@@ -4,33 +4,33 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-[Verified native aiming/routing corrections / run 38996274544](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38996274544/Sephira-Studio-Test.zip)
-(code `e3f73bf`, published 2026-10-16; extension 1.2.34). Correct Bioblaster's player aim and Absolute Zero's
-caster-side routing/native placement; preserve combat values and enemy presentation. Aqua Breath is user-confirmed
-correct and stays unchanged. Both corrections need live confirmation after rebuilding/installing. Native-only mode
-reports missing direct routes without adding substitute visuals. Also cancel notice expiry when Studio is disposed.
+[Verified native aiming and motion compatibility / run 39004444107](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39004444107/Sephira-Studio-Test.zip)
+(code `56a9d39`, published 2026-10-16; extension 1.2.35). Correct the private player effect point for Thwack,
+Bio and Banishra. Add El Niño's private player route with its original effect/timing, correct native aiming and
+complete caster track; retain its original shared binding and enemy presentation. Imported battle models also expose
+native `atk` as their own `attack_A` clip when a repair mode is enabled. Existing clips, atlas pixels and menus are
+preserved; Crystal Fina's optional alias uses her accepted shot/mirroring without changing her existing presentation.
 
-Local analysis, the full Flutter suite (260 passed, one Windows-only skip), 395 Python checks (four skipped), all
-22 native player-route serialization/readback checks and IoStore verification pass. Windows validation and compilation
+Local analysis, 260 Flutter tests (one Windows-only skip), 404 Python tests (four skipped), all 23 native player
+routes (92 packages), both retained enemy routes and 25 additions per lookup pass serialization/readback and
+IoStore verification. Native SS6 readback confirms the exact attack alias. Windows validation and compilation
 pass for the same commit, including frozen-engine startup and updater/launcher checks. Downloaded provenance/checksum
-and all 35 managed resources match source; accepted Fina, cave, knockout, sprite conversion and icon assets are unchanged.
+and all 35 managed resources match source. The new changes need live tests; earlier Absolute Zero, Bioblaster,
+Aqua Breath and repaired Cling have user confirmation.
 
-Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
-**Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode repairs
-22 audited demo entries, including Cling, using their own effects/timing. New direction repairs for Bioblaster
-and Absolute Zero need live tests. Aqua Breath is user-confirmed correct and keeps its native route.
-For Sephira preset units, also turn **Use borrowed Sephira skill visuals** off to test without those preset substitutions.
-Rebuild/install and restart after changing modes. Existing saved kits and explicit custom presentations are retained.
-The read-only [native skill reference helper](scripts/reference/native-skill-animations/) collects all battle timelines
-and routing tables into separate ZIPs under Downloads/FFR Mod. The returned five-part collection was audited; see
-[the native repair cases and limits](docs/MONSTER_ANIMATION_COMPATIBILITY.md#full-native-reference-audit).
+For isolated animation testing, turn on **Show unverified skills** and **Repair native skill bindings / motions**,
+and leave **Use our skill changes** and **Use borrowed Sephira skill visuals** off. Rebuild/install and restart
+Resonance after updating. Saved kits and explicit custom presentations retain their precedence. The `atk` name
+makes the recipient's attack available to native callers; it does not itself create a missing timeline/effect.
 
-The next [native-only test batch](docs/MONSTER_ANIMATION_COMPATIBILITY.md#native-only-test-batch-on-agrias-and-alaya-rundall)
-records blank visuals and party-side effects on Agrias/Alaya Rundall, with native direction corrections for
-Bioblaster and Absolute Zero. These corrections still need in-game confirmation. The standalone
-[skill-effect reference helper](scripts/reference/skill-effects/) gathers the missing particle/mesh and installed-route
-references under Downloads/FFR Mod. It collects diagnostics without applying fixes; rebuild/install Studio
-changes separately before testing them.
+All 89 returned comprehensive reference ZIPs are valid: 7,130 assets, four restored large files, and no missing
+packages. Windows console decoding caused 17 false missing-name reports; the [routing collector](scripts/reference/skill-routing/)
+now forces UTF-8. The current collection needs no rerun. All 233 tables, two sequence-event blueprints, 258 AI
+blueprints and ten original monster projects decode successfully. Secondary links do not resolve the twelve blank
+skills in the test batch. Their AI assignments and matching-number files do not establish portable visual routes,
+and no substitute visuals are silently assigned. See [findings and limits](docs/MONSTER_ANIMATION_COMPATIBILITY.md#returned-comprehensive-collection-and-extension-1235)
+and the [machine-readable evidence](docs/native-skill-routing-findings.json). The collection already includes native
+reflection data for further runtime investigation; there is no need to repeat the asset extraction at this stage.
 
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
@@ -653,11 +653,15 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   native timelines/effects, MR/awakening assignments and source ownership. Native timelines take precedence over our
   fallback repairs. Reassess the 304 reviewed hides and original picker filters while retaining the three modes and
   descriptions/source labels. Do not assume every missing demo skill will be implemented. `Verified` currently
-  tracks an applied visual mapping, rather than observation of every skill in a running game. Recollect the 21 audited
-  native player routes and caster tracks before retaining their bridges; refresh the exact source fingerprints. Refresh the five exact-definition
+  tracks an applied visual mapping, rather than observation of every skill in a running game. Recollect the 23 audited
+  native player routes and caster tracks before retaining their bridges; refresh the exact source fingerprints
+  and both aiming-point guards. Recheck the two retained enemy routes and shared bindings. Reassess the optional
+  native `atk` motion alias against full-game requests without substituting other artwork or schedules. Refresh the five exact-definition
   **Verified; demo test** records after full-game live testing, including group skills and party replacements;
   see [monster compatibility evidence](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
   Preserve the independent native-repair mode and audit all returned native battle tracks before expanding its rules.
+  Revisit the [secondary-route findings](docs/native-skill-routing-findings.json), including normal-attack/character
+  dispatch and the twelve unresolved blank test cases; do not equate AI assignments with tested visual playback.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,
