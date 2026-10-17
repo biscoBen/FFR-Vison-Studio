@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published native skill facing and diagnostics — 2026-10-16
+
+Code: [`e3f73bf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e3f73bf1e667f3ef66732d4877bd897b0e4a8675).
+[Verified Windows test release / run 38996274544](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38996274544).
+
 - Correct native Bioblaster's private player timeline to aim at the enemy-side point. Give Absolute Zero
   player/enemy routes and remove its forced enemy-sequence pointer; correct only the private player effect's
   location, using native player placement. Its enemy route retains the original enemy package and sound.
@@ -41,6 +46,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Checks cover exact pointer authorization, mechanical-field rejection, future/custom/changed-source guards,
   native-only report distinctions and existing mode isolation. Collector fixture checks include PowerShell 5.1
   array behavior, temporary-copy fallback, partial failures, ZIP splitting, output guards and source immutability.
+
+- Windows validation and compilation pass for the same commit, including all Flutter/Python tests,
+  frozen-engine setup and launcher/updater checks. Downloaded provenance/checksum and all 35 managed resources
+  match source. Accepted Fina, cave, party knockout, sprite converter and icon renderer bytes are unchanged.
+- First complete candidate to verified download: **21m24s**, including
+  native asset checks, the Windows-discovered notice timer fix, extra/cancelled runs, waiting and verification.
+  Final Windows CI: **5m38s**; final runner usage: **8m15s**.
+  Total runner usage across all attempts: **26m05s**. The build helper briefly
+  dispatched a duplicate before the automatic run became visible; that run was cancelled. Its automatic retry
+  of the validation failure was cancelled after the corrected commit superseded it. The final matching
+  automatic run was reused and its original package identity retained.
 
 ## Published native-only testing and audited skill bindings — 2026-10-16
 

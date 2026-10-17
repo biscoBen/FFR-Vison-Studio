@@ -4,6 +4,17 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified native aiming/routing corrections / run 38996274544](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38996274544/Sephira-Studio-Test.zip)
+(code `e3f73bf`, published 2026-10-16; extension 1.2.34). Correct Bioblaster's player aim and Absolute Zero's
+caster-side routing/native placement; preserve combat values and enemy presentation. Aqua Breath is user-confirmed
+correct and stays unchanged. Both corrections need live confirmation after rebuilding/installing. Native-only mode
+reports missing direct routes without adding substitute visuals. Also cancel notice expiry when Studio is disposed.
+
+Local analysis, the full Flutter suite (260 passed, one Windows-only skip), 395 Python checks (four skipped), all
+22 native player-route serialization/readback checks and IoStore verification pass. Windows validation and compilation
+pass for the same commit, including frozen-engine startup and updater/launcher checks. Downloaded provenance/checksum
+and all 35 managed resources match source; accepted Fina, cave, knockout, sprite conversion and icon assets are unchanged.
+
 Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
 **Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode repairs
 22 audited demo entries, including Cling, using their own effects/timing. New direction repairs for Bioblaster
