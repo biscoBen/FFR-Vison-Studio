@@ -69,6 +69,7 @@ jobs:
         run: |
           python scripts/verify_existing_visions_bundle.py
           python scripts/verify_crystal_fina_bundle.py
+          python scripts/verify_ffbe_animation_library.py
       - name: Test Windows shortcut and updater
         shell: powershell
         run: |

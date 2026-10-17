@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FFBE Animation Library · Sephira Studio</title>
+    <style>
+      [hidden] {
+        display: none !important;
+      }
+      #totals {
+        max-width: 380px;
+        white-space: pre-line;
+      }
+      :root {
+        color-scheme: light;
+        --ink: #252729;
+        --paper: #fffef8;
+        --desk: #deded6;
+        --blue: #155fa0;
+        --gold: #e1af32;
+        --muted: #62645f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--desk);
+        color: var(--ink);
+        font:
+          15px/1.45 system-ui,
+          sans-serif;
+      }
+      header {
+        background: var(--paper);
+        border-bottom: 3px solid var(--ink);
+        padding: 18px 26px;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 25px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        border: 2px solid var(--ink);
+        border-radius: 0;
+        background: var(--paper);
+        padding: 7px 10px;
+        color: var(--ink);
+      }
+      button {
+        cursor: pointer;
+        font-weight: 650;
+      }
+      button:hover {
+        background: #f0ead8;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        vertical-align: middle;
+      }
+      input[type="range"] {
+        border: 0;
+        padding: 0;
+        vertical-align: middle;
+      }
+      main {
+        display: grid;
+        grid-template-columns: minmax(280px, 390px) minmax(450px, 1fr);
+        gap: 18px;
+        max-width: 1600px;
+        padding: 18px;
+        margin: auto;
+        height: calc(100vh - 100px);
+      }
+      aside,
+      article {
+        background: var(--paper);
+        border: 2px solid var(--ink);
+        min-height: 0;
+      }
+      aside {
+        display: flex;
+        flex-direction: column;
+      }
+      .band {
+        background: var(--blue);
+        color: white;
+        padding: 9px 14px;
+        font-weight: 750;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .filters {
+        padding: 12px;
+        display: grid;
+        gap: 9px;
+        border-bottom: 2px solid var(--ink);
+      }
+      .filters input[type="search"] {
+        width: 100%;
+      }
+      .pair {
+        display: flex;
+        gap: 8px;
+      }
+      .pair > * {
+        min-width: 0;
+        flex: 1;
+      }
+      label {
+        font-size: 13px;
+      }
+      #list {
+        overflow: auto;
+        flex: 1;
+        min-height: 140px;
+      }
+      .entry {
+        width: 100%;
+        text-align: left;
+        display: block;
+        border: 0;
+        border-bottom: 1px solid #ddd9cc;
+        padding: 11px 14px;
+        font-weight: 600;
+        background: transparent;
+      }
+      .entry:nth-child(even) {
+        background: #f2f2e8;
+      }
+      .entry[aria-selected="true"] {
+        background: #fff0bc;
+        border-left: 5px solid var(--gold);
+        padding-left: 9px;
+      }
+      .entry small {
+        display: block;
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .pager {
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        border-top: 2px solid var(--ink);
+        font-size: 12px;
+      }
+      article {
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      #empty {
+        margin: auto;
+        text-align: center;
+        padding: 30px;
+        color: var(--muted);
+      }
+      #detail {
+        display: none;
+        padding: 18px;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.2;
+        margin: 0 0 5px;
+      }
+      .meta {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      #stage {
+        width: 100%;
+        aspect-ratio: 16/10;
+        max-height: 48vh;
+        object-fit: contain;
+        display: block;
+        border: 2px solid var(--ink);
+        margin: 14px 0 8px;
+        background: #152a34;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .controls .primary {
+        background: #b63127;
+        color: white;
+      }
+      #seek {
+        width: 100%;
+      }
+      #warnings {
+        white-space: pre-line;
+        background: #fff3d8;
+        border-left: 4px solid var(--gold);
+        padding: 10px 12px;
+        margin-top: 12px;
+        font-size: 13px;
+        display: none;
+      }
+      #status {
+        min-height: 22px;
+        font-size: 13px;
+      }
+      #sources {
+        font-size: 13px;
+        margin-top: 14px;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+      }
+      #sources summary {
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .sourceRow {
+        padding: 6px 0;
+        border-bottom: 1px solid #e4e1d7;
+        overflow-wrap: anywhere;
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 10px;
+      }
+      .error {
+        color: #a12420;
+      }
+      .spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #bbb;
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 6px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 850px) {
+        main {
+          display: block;
+          height: auto;
+          padding: 10px;
+        }
+        aside {
+          height: 400px;
+          margin-bottom: 14px;
+        }
+        article {
+          min-height: 500px;
+        }
+        header {
+          padding: 14px;
+          display: block;
+        }
+        h1 {
+          font-size: 21px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>FFBE Animation Library</h1>
+        <p>
+          Browse the original Memorial skill effects and their sounds. Nothing
+          here changes your mod.
+        </p>
+      </div>
+      <div class="meta">
+        <div id="totals">Loading the library…</div>
+        <details>
+          <summary>Source coverage</summary>
+          <p id="coverage"></p>
+        </details>
+      </div>
+    </header>
+    <main>
+      <aside>
+        <div class="band">Find an animation</div>
+        <div class="filters">
+          <input
+            id="query"
+            type="search"
+            placeholder="Search names, IDs or effect filenames"
+            aria-label="Search animations"
+          />
+          <div class="pair">
+            <select id="scope" aria-label="Library view">
+              <option value="skills">Skills</option>
+              <option value="groups">Effect groups</option>
+              <option value="effects">Individual effects</option>
+              <option value="movies">Cinematics</option></select
+            ><select id="kind" aria-label="Skill type">
+              <option value="all">All types</option>
+              <option value="magic">Magic</option>
+              <option value="ability">Abilities</option>
+              <option value="monster">Monster skills</option>
+              <option value="lb">Limit Bursts</option>
+              <option value="summon">Summons</option>
+            </select>
+          </div>
+          <label
+            ><input id="includeEmpty" type="checkbox" /> Include records without
+            an animation reference</label
+          >
+        </div>
+        <div id="list" role="listbox" aria-label="FFBE animations"></div>
+        <div class="pager">
+          <button id="previous">Previous</button><span id="pageCount"></span
+          ><button id="next">Next</button>
+        </div>
+      </aside>
+      <article>
+        <div class="band" style="background: var(--gold); color: var(--ink)">
+          Preview
+        </div>
+        <div id="empty">
+          Select a skill or effect to inspect its animation and sound.
+        </div>
+        <div id="detail">
+          <h2 id="title"></h2>
+          <div id="metadata" class="meta"></div>
+          <canvas
+            id="stage"
+            width="960"
+            height="600"
+            aria-label="Skill effect preview"
+          ></canvas>
+          <div id="status" aria-live="polite"></div>
+          <div class="controls">
+            <button id="play" class="primary" disabled>Play preview</button
+            ><button id="stop" disabled>Stop</button
+            ><label><input id="sound" type="checkbox" checked /> Sound</label
+            ><label><input id="loop" type="checkbox" /> Loop</label
+            ><label
+              >Speed
+              <select id="speed">
+                <option value="0.5">½×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.5">1½×</option>
+                <option value="2">2×</option>
+              </select></label
+            ><label
+              >Targets
+              <select id="targets">
+                <option value="1">1</option>
+                <option value="3">3</option>
+              </select></label
+            ><label
+              >Variant
+              <select id="variant"></select
+            ></label>
+          </div>
+          <input
+            id="seek"
+            type="range"
+            min="0"
+            max="1"
+            value="0"
+            step="0.016667"
+            aria-label="Preview position"
+            disabled
+          />
+          <div class="controls">
+            <label
+              >Zoom
+              <input
+                id="zoom"
+                type="range"
+                min="0.4"
+                max="2.5"
+                step="0.05"
+                value="1" /></label
+            ><span id="time" class="meta">0:00</span>
+          </div>
+          <div class="note">
+            Approximate particle preview; motion, camera and some special
+            effects may differ from FFBE. The full original files and sound
+            banks are retained for later use.
+          </div>
+          <div id="warnings"></div>
+          <section id="cinematic" hidden>
+            <h3>Source cinematic</h3>
+            <select id="movie-choice" aria-label="Cinematic clip"></select>
+            <video
+              id="movie"
+              controls
+              preload="metadata"
+              style="
+                width: 100%;
+                max-height: 360px;
+                background: #152a34;
+                display: block;
+                margin-top: 10px;
+              "
+            ></video>
+            <p id="movie-note" class="note"></p>
+          </section>
+          <details id="sources">
+            <summary>Effects and sound cues</summary>
+            <div id="sourceList"></div>
+          </details>
+        </div>
+      </article>
+    </main>
+    <script>
+      "use strict";
+      const $ = (id) => document.getElementById(id),
+        labels = {
+          magic: "Magic",
+          ability: "Ability",
+          monster: "Monster skill",
+          lb: "Limit Burst",
+          summon: "Summon",
+          group: "Effect group",
+          effect: "Effect",
+          movie: "Cinematic",
+        };
+      const state = {
+        offset: 0,
+        searchToken: 0,
+        total: 0,
+        key: null,
+        detail: null,
+        token: 0,
+        effects: {},
+        images: new Map(),
+        audioBuffers: new Map(),
+        audio: null,
+        playing: false,
+        start: 0,
+        position: 0,
+        duration: 1,
+        nodes: [],
+        scheduled: [],
+        bounds: null,
+      };
+      async function api(path) {
+        const r = await fetch(path);
+        if (!r.ok) {
+          let message;
+          try {
+            message = (await r.json()).detail;
+          } catch {}
+          throw Error(message || "Could not read the library.");
+        }
+        return r.json();
+      }
+      function text(id, value) {
+        $(id).textContent = value;
+      }
+      function status(value, busy = false) {
+        $("status").replaceChildren();
+        if (busy) {
+          const s = document.createElement("span");
+          s.className = "spinner";
+          $("status").append(s);
+        }
+        $("status").append(document.createTextNode(value));
+      }
+      function warnings(items) {
+        const values = [...new Set(items.filter(Boolean))];
+        $("warnings").style.display = values.length ? "block" : "none";
+        text("warnings", values.join("\n"));
+      }
+      async function search(reset = true) {
+        if (reset) state.offset = 0;
+        const searchToken = ++state.searchToken;
+        const params = new URLSearchParams({
+          q: $("query").value,
+          scope: $("scope").value,
+          kind: $("kind").value,
+          offset: state.offset,
+          limit: 60,
+          animated: !$("includeEmpty").checked,
+        });
+        try {
+          const result = await api("/api/ffbe-library/catalog?" + params);
+          if (searchToken !== state.searchToken) return;
+          state.total = result.total;
+          $("list").replaceChildren();
+          for (const entry of result.items) {
+            const button = document.createElement("button");
+            button.className = "entry";
+            button.dataset.key = entry.key;
+            button.setAttribute("role", "option");
+            button.setAttribute(
+              "aria-selected",
+              String(entry.key === state.key),
+            );
+            button.append(document.createTextNode(entry.name));
+            const info = document.createElement("small");
+            info.textContent =
+              (labels[entry.kind] || entry.kind) +
+              " · " +
+              entry.id +
+              (entry.hasAnimation ? "" : " · No animation reference");
+            button.append(info);
+            button.onclick = () => select(entry);
+            $("list").append(button);
+          }
+          text(
+            "pageCount",
+            result.total
+              ? `${state.offset + 1}–${Math.min(state.offset + 60, result.total)} of ${result.total.toLocaleString()}`
+              : "No matches",
+          );
+          $("previous").disabled = !state.offset;
+          $("next").disabled = state.offset + 60 >= result.total;
+          const s = result.summary;
+          text(
+            "totals",
+            `${s.skills.toLocaleString()} skill records · ${s.groups.toLocaleString()} effect groups\n${s.soundCues.toLocaleString()} sound cues · Saved locally`,
+          );
+          text(
+            "coverage",
+            `${s.cinematicClips} cinematic clips. All skill records are saved, including records with no effect reference. This delivery omits ${s.missingBmbFiles.length} particle file, ${s.missingSpriteFiles.length} sprite files, ${s.missingGroupIds.length} effect groups and ${s.missingCinematicFiles.length} referenced cinematic filenames. Unavailable entries remain listed. Previews approximate the original particle engine; all available source files and sound banks are preserved.`,
+          );
+        } catch (e) {
+          text("list", e.message);
+        }
+      }
+      let searchTimer;
+      $("query").oninput = () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => search(), 220);
+      };
+      $("scope").onchange = () => {
+        const skills = $("scope").value === "skills";
+        $("kind").disabled = !skills;
+        if (!skills) $("kind").value = "all";
+        search();
+      };
+      $("kind").onchange = () => search();
+      $("includeEmpty").onchange = () => search();
+      $("previous").onclick = () => {
+        state.offset = Math.max(0, state.offset - 60);
+        search(false);
+      };
+      $("next").onclick = () => {
+        state.offset += 60;
+        search(false);
+      };
+      async function texture(record) {
+        if (!record) return null;
+        if (state.images.has(record.url)) return state.images.get(record.url);
+        const image = new Image();
+        const result = new Promise((resolve) => {
+          image.onload = () => resolve(image);
+          image.onerror = () => resolve(null);
+        });
+        image.src = record.url;
+        state.images.set(record.url, result);
+        return result;
+      }
+      async function select(entry) {
+        stop();
+        const token = ++state.token;
+        state.key = entry.key;
+        state.detail = null;
+        state.effects = {};
+        state.images.clear();
+        imageCache.clear();
+        tintedTextures.clear();
+        state.audioBuffers.clear();
+        $("empty").style.display = "none";
+        $("detail").style.display = "block";
+        text("title", entry.name);
+        text("metadata", `${labels[entry.kind]} · FFBE ID ${entry.id}`);
+        warnings([]);
+        $("play").disabled = true;
+        $("seek").disabled = true;
+        status("Reading the original effect and sound references…", true);
+        for (const b of $("list").children)
+          b.setAttribute("aria-selected", String(b.dataset.key === entry.key));
+        try {
+          const detail = await api(
+            `/api/ffbe-library/entry/${encodeURIComponent(entry.kind)}/${encodeURIComponent(entry.id)}`,
+          );
+          if (token !== state.token) return;
+          state.detail = detail;
+          const movieChoices = detail.movies || [];
+          $("cinematic").hidden = !movieChoices.length;
+          $("movie-choice").replaceChildren();
+          movieChoices.forEach((movie, i) => {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent =
+              movie.name + (movie.available ? "" : " · Not in this delivery");
+            $("movie-choice").append(option);
+          });
+          showMovie();
+
+          $("variant").replaceChildren();
+          detail.variants.forEach((v, i) => {
+            const o = document.createElement("option");
+            o.value = i;
+            o.textContent = i ? `Conditional ${i}` : "Primary";
+            $("variant").append(o);
+          });
+          if (!detail.variants.length) {
+            const o = document.createElement("option");
+            o.value = 0;
+            o.textContent = "Primary";
+            $("variant").append(o);
+          }
+          await prepare(token);
+        } catch (e) {
+          if (token === state.token) {
+            status(e.message);
+            warnings([
+              "The entry remains in the source library even when its preview is unavailable.",
+            ]);
+          }
+        }
+      }
+      async function prepare(token = state.token) {
+        stop();
+        $("play").disabled = true;
+        const d = state.detail;
+        if (!d) return;
+        const variant = d.variants[Number($("variant").value)] || [];
+        const ids = [
+          ...new Set(variant.flatMap((g) => g.effects.map((e) => e.effectId))),
+        ];
+        const problems = [];
+        let index = 0,
+          done = 0;
+        status(`Preparing effects 0/${ids.length}…`, true);
+        await Promise.all(
+          Array.from({ length: Math.min(3, ids.length) }, async () => {
+            while (index < ids.length) {
+              const id = ids[index++];
+              try {
+                if (!state.effects[id]) {
+                  const result = await api("/api/ffbe-library/effect/" + id);
+                  await Promise.all(result.textures.map(texture));
+                  if (token !== state.token) return;
+                  state.effects[id] = result;
+                }
+                problems.push(...(state.effects[id].warnings || []));
+              } catch (e) {
+                problems.push(`${d.effects[id]?.name || id}: ${e.message}`);
+              }
+              done++;
+              if (token === state.token)
+                status(`Preparing effects ${done}/${ids.length}…`, true);
+            }
+          }),
+        );
+        if (token !== state.token) return;
+        state.bounds = null;
+        state.position = 0;
+        state.duration = duration();
+        $("seek").max = state.duration;
+        $("seek").value = 0;
+        $("seek").disabled = false;
+        $("play").disabled =
+          !Object.keys(state.effects).length &&
+          !variant.some((g) => g.sounds.length);
+        status(
+          ids.length
+            ? `${Object.keys(state.effects).length} effects ready · ${state.duration.toFixed(1)} seconds`
+            : "This record has no visual effect reference.",
+        );
+        if (d.missingGroups.length)
+          problems.push(
+            "Some effect-group references are absent from this source delivery.",
+          );
+        if (Object.values(d.cues).some((c) => !c))
+          problems.push(
+            "Some referenced sound cues are absent from this source bank.",
+          );
+        warnings(problems);
+        sourceList();
+        draw(0);
+      }
+      function showMovie() {
+        const entry = (state.detail?.movies || [])[
+          Number($("movie-choice").value)
+        ];
+        $("movie").pause();
+        $("movie").removeAttribute("src");
+        if (entry?.available) {
+          $("movie").src = "/api/ffbe-library/file/movies/" + entry.file;
+          $("movie").hidden = false;
+          text(
+            "movie-note",
+            "The cinematic includes its embedded audio. Particle effects can be previewed separately above.",
+          );
+        } else {
+          $("movie").load();
+          $("movie").hidden = true;
+          text(
+            "movie-note",
+            "This cinematic is referenced by the skill, but its file is not present in the supplied APK delivery.",
+          );
+        }
+      }
+      $("movie-choice").onchange = showMovie;
+      function variant() {
+        return state.detail?.variants[Number($("variant").value)] || [];
+      }
+      function duration() {
+        let end = 0;
+        for (const g of variant()) {
+          for (const e of g.effects) {
+            const sim = state.effects[e.effectId];
+            if (sim)
+              end = Math.max(end, (g.frame + e.frame + sim.frameCount) / 60);
+          }
+          for (const s of g.sounds) {
+            const cue = state.detail.cues[s.cueId];
+            if (cue)
+              for (const alt of cue.variants)
+                for (const sound of alt) {
+                  const w = state.detail.waves[sound.wave];
+                  end = Math.max(
+                    end,
+                    (g.frame + s.frame) / 60 +
+                      sound.at +
+                      w.samples / w.sampleRate,
+                  );
+                }
+          }
+        }
+        return Math.max(1, Math.min(180, end));
+      }
+      function anchors(group) {
+        const mode = Number(group.flags[1] || 1);
+        if (mode === 3) return [[220, -30]];
+        if (mode === 4) return [[0, 100]];
+        if (mode === 2) return [[-220, -30]];
+        return Number($("targets").value) === 3
+          ? [
+              [-220, -110],
+              [-270, -20],
+              [-170, 50],
+            ]
+          : [[-220, -30]];
+      }
+      function spritesAt(time) {
+        const result = [];
+        for (const group of variant()) {
+          for (const e of group.effects) {
+            const sim = state.effects[e.effectId],
+              effect = state.detail.effects[e.effectId];
+            if (!sim || !effect) continue;
+            const frame = Math.floor(time * 60) - group.frame - e.frame;
+            if (frame < 0 || frame >= sim.frames.length) continue;
+            const scale = effect.scale || 1,
+              dx = Number(e.flags[4] || 0),
+              dy = -Number(e.flags[5] || 0);
+            for (const [ax, ay] of anchors(group)) {
+              for (const part of sim.frames[frame]) {
+                if (!part || !Number.isFinite(part.pos[0])) continue;
+                result.push({
+                  part,
+                  texture: sim.textures[part.tex],
+                  x: ax + dx + part.pos[0] * scale,
+                  y: ay + dy + part.pos[1] * scale,
+                  sx: part.scale[0] * scale,
+                  sy: part.scale[1] * scale,
+                });
+              }
+            }
+          }
+        }
+        return result;
+      }
+      function bounds() {
+        if (state.bounds) return state.bounds;
+        let x0 = -400,
+          x1 = 400,
+          y0 = -180,
+          y1 = 330;
+        for (let t = 0; t < state.duration; t += 0.18) {
+          for (const s of spritesAt(t)) {
+            if (Math.abs(s.sx) > 5000 || Math.abs(s.sy) > 5000) continue;
+            x0 = Math.min(x0, s.x - Math.abs(s.sx) / 2);
+            x1 = Math.max(x1, s.x + Math.abs(s.sx) / 2);
+            y0 = Math.min(y0, s.y - Math.abs(s.sy) / 2);
+            y1 = Math.max(y1, s.y + Math.abs(s.sy) / 2);
+          }
+        }
+        return (state.bounds = {
+          x: (x0 + x1) / 2,
+          y: (y0 + y1) / 2,
+          scale: Math.min(860 / (x1 - x0), 500 / (y1 - y0)),
+        });
+      }
+      const ctx = $("stage").getContext("2d");
+      const imageCache = new Map();
+      const tintedTextures = new Map();
+      function tinted(image, textureUrl, color) {
+        if (!color || color.slice(0, 3).every((c) => Math.abs(c - 1) < 0.005))
+          return image;
+        const rgb = color
+          .slice(0, 3)
+          .map((c) => Math.max(0, Math.min(255, Math.round(c * 255))));
+        const key = textureUrl + ":" + rgb.join(",");
+        if (tintedTextures.has(key)) return tintedTextures.get(key);
+        const tile = document.createElement("canvas");
+        tile.width = image.width;
+        tile.height = image.height;
+        const c = tile.getContext("2d");
+        c.drawImage(image, 0, 0);
+        c.globalCompositeOperation = "multiply";
+        c.fillStyle = `rgb(${rgb.join(",")})`;
+        c.fillRect(0, 0, tile.width, tile.height);
+        c.globalCompositeOperation = "destination-in";
+        c.drawImage(image, 0, 0);
+        if (tintedTextures.size > 128)
+          tintedTextures.delete(tintedTextures.keys().next().value);
+        tintedTextures.set(key, tile);
+        return tile;
+      }
+      function draw(time) {
+        ctx.fillStyle = "#152a34";
+        ctx.fillRect(0, 0, 960, 600);
+        if (!state.detail) return;
+        const b = bounds(),
+          ppu = b.scale * Number($("zoom").value);
+        function point(x, y) {
+          return [480 + (x - b.x) * ppu, 300 - (y - b.y) * ppu];
+        }
+        ctx.strokeStyle = "#29424a";
+        ctx.lineWidth = 1;
+        for (let x = 0; x < 960; x += 40) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, 600);
+          ctx.stroke();
+        }
+        for (let y = 0; y < 600; y += 40) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(960, y);
+          ctx.stroke();
+        }
+        ctx.font = "15px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#9aaeb4";
+        for (const [x, y, label] of [
+          [220, -30, "Caster"],
+          [-220, -30, "Target"],
+        ]) {
+          const [p, q] = point(x, y);
+          ctx.beginPath();
+          ctx.arc(p, q, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillText(label, p, q + 25);
+        }
+        for (const s of spritesAt(time)) {
+          if (!s.texture) continue;
+          const cached = state.images.get(s.texture.url);
+          if (!imageCache.has(s.texture.url) && cached)
+            cached.then((img) => imageCache.set(s.texture.url, img));
+          const image = imageCache.get(s.texture.url);
+          if (!image) continue;
+          const [x, y] = point(s.x, s.y),
+            w = Math.abs(s.sx) * ppu,
+            h = Math.abs(s.sy) * ppu;
+          if (w < 0.2 || h < 0.2 || w > 12000 || h > 12000) continue;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate((-(s.part.rot || 0) * Math.PI) / 180);
+          ctx.scale(
+            (s.part.flipX ? -1 : 1) * Math.sign(s.sx || 1),
+            (s.part.flipY ? -1 : 1) * Math.sign(s.sy || 1),
+          );
+          ctx.globalAlpha = Math.max(0, Math.min(1, s.part.alpha ?? 1));
+          ctx.globalCompositeOperation =
+            s.part.blend === "add" ? "lighter" : "source-over";
+          ctx.drawImage(
+            tinted(image, s.texture.url, s.part.color),
+            -w / 2,
+            -h / 2,
+            w,
+            h,
+          );
+          ctx.restore();
+        }
+        text("time", `${time.toFixed(2)} / ${state.duration.toFixed(2)} s`);
+      }
+      function sourceList() {
+        const list = $("sourceList");
+        list.replaceChildren();
+        for (const [id, e] of Object.entries(state.detail.effects)) {
+          const row = document.createElement("div");
+          row.className = "sourceRow";
+          row.textContent = `Effect ${id}: ${e ? e.name + " · " + e.file : "not in this source delivery"}`;
+          list.append(row);
+        }
+        for (const [id, cue] of Object.entries(state.detail.cues)) {
+          const row = document.createElement("div");
+          row.className = "sourceRow";
+          row.textContent = `Sound ${id}: ${cue ? cue.name : "not in this source bank"}`;
+          list.append(row);
+        }
+      }
+      async function audioBuffer(wave) {
+        if (state.audioBuffers.has(wave)) return state.audioBuffers.get(wave);
+        const entry = state.detail.waves[wave];
+        const response = await fetch(
+          "/api/ffbe-library/file/audio/" + entry.file,
+        );
+        if (!response.ok) throw Error("A sound recording could not be read.");
+        const decoded = await state.audio.decodeAudioData(
+          await response.arrayBuffer(),
+        );
+        state.audioBuffers.set(wave, decoded);
+        return decoded;
+      }
+      function stop() {
+        state.playing = false;
+        $("movie").pause();
+        for (const node of state.nodes) {
+          try {
+            node.stop();
+          } catch {}
+        }
+        state.nodes = [];
+        $("play").textContent = "Play preview";
+        $("stop").disabled = true;
+      }
+      async function play(from = state.position) {
+        stop();
+        const token = state.token;
+        const speed = Number($("speed").value);
+        if ($("sound").checked) {
+          try {
+            state.audio ??= new (window.AudioContext ||
+              window.webkitAudioContext)();
+            await state.audio.resume();
+            status("Loading sound recordings…", true);
+            const waves = [
+              ...new Set(
+                variant().flatMap((g) =>
+                  g.sounds.flatMap((s) =>
+                    (state.detail.cues[s.cueId]?.variants || []).flatMap((a) =>
+                      a.map((e) => e.wave),
+                    ),
+                  ),
+                ),
+              ),
+            ];
+            await Promise.all(waves.map(audioBuffer));
+          } catch (e) {
+            status("Sound preview unavailable: " + e.message);
+          }
+        }
+        if (token !== state.token) return;
+        const audioStart = state.audio ? state.audio.currentTime + 0.08 : 0;
+        if ($("sound").checked && state.audio) {
+          const byCue = new Map();
+          for (const g of variant()) {
+            for (const sound of g.sounds) {
+              const cue = state.detail.cues[sound.cueId];
+              if (!cue || !cue.variants.length) continue;
+              const at = (g.frame + sound.frame) / 60;
+              if (sound.flags[0] === "2") {
+                for (const n of byCue.get(sound.cueId) || []) {
+                  try {
+                    n.stop(audioStart + Math.max(0, (at - from) / speed));
+                  } catch {}
+                }
+                continue;
+              }
+              const alternative =
+                cue.variants[Math.floor(Math.random() * cue.variants.length)];
+              for (const event of alternative) {
+                const time = at + event.at,
+                  buffer = state.audioBuffers.get(event.wave);
+                if (!buffer || time + buffer.duration < from) continue;
+                const source = state.audio.createBufferSource();
+                source.buffer = buffer;
+                source.playbackRate.value = speed;
+                const gain = state.audio.createGain();
+                gain.gain.value = 0.55;
+                source.connect(gain);
+                gain.connect(state.audio.destination);
+                source.start(
+                  audioStart + Math.max(0, (time - from) / speed),
+                  Math.max(0, from - time),
+                );
+                state.nodes.push(source);
+                if (!byCue.has(sound.cueId)) byCue.set(sound.cueId, []);
+                byCue.get(sound.cueId).push(source);
+              }
+            }
+          }
+        }
+        state.position = from;
+        state.start = performance.now() + 80 - (from * 1000) / speed;
+        state.playing = true;
+        $("play").textContent = "Restart";
+        $("stop").disabled = false;
+        status("Playing original effect and sound timing");
+      }
+      function tick() {
+        if (state.playing) {
+          const speed = Number($("speed").value);
+          let t = Math.max(
+            0,
+            ((performance.now() - state.start) * speed) / 1000,
+          );
+          if (t >= state.duration) {
+            stop();
+            state.position = 0;
+            if ($("loop").checked) play(0);
+            else {
+              draw(state.duration);
+              $("seek").value = state.duration;
+            }
+          } else {
+            state.position = t;
+            $("seek").value = t;
+            draw(t);
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+      $("play").onclick = () => play(0);
+      $("stop").onclick = () => {
+        stop();
+        state.position = 0;
+        $("seek").value = 0;
+        draw(0);
+        status("Stopped");
+      };
+      $("seek").oninput = () => {
+        stop();
+        state.position = Number($("seek").value);
+        draw(state.position);
+      };
+      $("zoom").oninput = () => draw(state.position);
+      $("speed").onchange = () => {
+        if (state.playing) play(state.position);
+      };
+      $("sound").onchange = () => {
+        if (state.playing) play(state.position);
+      };
+      $("targets").onchange = () => {
+        state.bounds = null;
+        draw(state.position);
+      };
+      $("variant").onchange = () => prepare(++state.token);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+      });
+      window.addEventListener("beforeunload", stop);
+      search();
+      tick();
+    </script>
+  </body>
+</html>

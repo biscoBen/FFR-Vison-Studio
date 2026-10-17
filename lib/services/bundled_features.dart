@@ -240,6 +240,12 @@ class BundledFeatures {
           'install_existing_visions.py',
           'payload/manifest.json',
           'payload/_ffr_existingvisions.py',
+          'payload/_ffr_ffbe_library.py',
+          'payload/_ffr_ffbe_placement.py',
+          'payload/_ffr_ffbe_renderer.py',
+          'payload/_ffr_ffbe_texture.py',
+          'payload/_ffr_ffbe_uv.py',
+          'payload/ffbe_library.html',
           'payload/_ffr_deck_sync.py',
           'payload/_ffr_sephira.py',
           'payload/sephira_visuals.json',
@@ -275,7 +281,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 37) {
+        (manifest['files'] as Map).length != 43) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -321,7 +327,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.42' ||
+    if (status['patchVersion'] != '1.2.43' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

@@ -261,6 +261,8 @@ def register(app, env):
     if env.get('build_icons') is not None:
         import _ffr_build_icons
         _ffr_build_icons.install_preview(env)
+    import _ffr_ffbe_library
+    _ffr_ffbe_library.register(app, env)
     import _ffr_deck_sync
     _ffr_deck_sync.register(app, env)
     import _ffr_party

@@ -1,0 +1,266 @@
+"""Read-only Memorial animation/sound library. Never participates in mod building."""
+from functools import lru_cache
+import gzip
+import hashlib
+import io
+import json
+import math
+from pathlib import Path
+import re
+import sys
+import struct
+import threading
+import zipfile
+
+REVISION = 'memorial-en-v208-1'
+MAX_FRAMES = 1800
+_LOCK = threading.Lock()
+
+
+def safe_name(value):
+    return (isinstance(value, str) and value and '\\' not in value and ':' not in value
+            and not value.startswith('/') and all(x not in ('', '.', '..') for x in value.split('/')))
+
+
+class Library:
+    def __init__(self, root):
+        self.root = Path(root) / 'library/ffbe'
+        self.manifest = json.loads((self.root/'manifest.json').read_bytes())
+        if self.manifest.get('schema') != 1 or self.manifest.get('revision') != REVISION:
+            raise ValueError('Unsupported FFBE animation library. Restart the updated Studio to prepare its assets.')
+        self.directory = self.root / REVISION
+        self.files = self.manifest['files']
+        self.packs = {p['name']: p for p in self.manifest['packs']}
+        for name, record in self.files.items():
+            if not safe_name(name) or record['pack'] not in self.packs or not 0 <= record['bytes'] <= 128*1024*1024:
+                raise ValueError('Invalid FFBE library member.')
+        for name in self.packs:
+            if not re.fullmatch(r'library-\d{2}\.zip', name): raise ValueError('Invalid library pack name.')
+        self._verified = set()
+        self.cache = Path(root) / 'build/ffbelib1'
+
+    def read(self, name):
+        record = self.files.get(name)
+        if record is None: raise ValueError('This file is not in the FFBE animation library.')
+        path = self.directory / record['pack']
+        if path.is_symlink() or self.directory.is_symlink(): raise ValueError('Linked FFBE library path.')
+        stat = path.stat(); fingerprint = (path.name, stat.st_size, stat.st_mtime_ns)
+        if fingerprint not in self._verified:
+            expected = self.packs[path.name]
+            if stat.st_size != expected['bytes']:
+                raise ValueError('FFBE library pack has changed; restart Studio to restore it.')
+            with path.open('rb') as stream: digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+            if digest != expected['sha256']: raise ValueError('FFBE library pack checksum mismatch.')
+            self._verified.add(fingerprint)
+        with zipfile.ZipFile(path) as archive:
+            info = archive.getinfo(name)
+            if info.file_size != record['bytes']: raise ValueError('FFBE library file size mismatch.')
+            raw = archive.read(info)
+        if hashlib.sha256(raw).hexdigest() != record['sha256']:
+            raise ValueError('FFBE library file checksum mismatch.')
+        return raw
+
+    @lru_cache(maxsize=8)
+    def document(self, name): return json.loads(self.read(name))
+
+    @property
+    def catalog(self): return self.document('catalog.json')
+
+    def search(self, query='', kind='all', scope='skills', offset=0, limit=60, animated=True):
+        if scope not in ('skills', 'groups', 'effects', 'movies'): raise ValueError('Unknown library view.')
+        if not 0 <= offset <= 200000 or not 1 <= limit <= 100: raise ValueError('Invalid library page.')
+        rows = self.catalog[scope]
+        query = query.casefold().strip()
+        result = [r for r in rows if (kind == 'all' or r['kind'] == kind)
+                  and (not animated or r.get('hasAnimation', True))
+                  and (not query or query in (r['name']+' '+r['id']+' '+r.get('file','')).casefold())]
+        return {'total': len(result), 'offset': offset, 'items': result[offset:offset+limit],
+                'summary': self.manifest['summary'], 'revision': REVISION}
+
+    def detail(self, kind, identity):
+        key = kind+':'+str(identity)
+        for scope in ('skills', 'groups', 'effects', 'movies'):
+            row = next((r for r in self.catalog.get(scope,[]) if r['key'] == key), None)
+            if row is not None: break
+        if row is None: raise ValueError('No such FFBE animation entry.')
+        groups = self.document('groups.json'); effects = self.document('effects.json')
+        variants = []
+        if kind == 'effect':
+            variants = [[{'frame':0,'groupId':'single','flags':['1','1','0'], 'effects':[
+                {'frame':0,'effectId':str(identity),'flags':['99999999','1','2','2','0','0']}], 'sounds':[]}]]
+        elif kind == 'group':
+            variants = [[{'frame':0,'groupId':str(identity),'flags':['1','1','0'],
+                          'effects':groups[str(identity)]['effects'], 'sounds':groups[str(identity)]['sounds']}]]
+        else:
+            for text in row.get('timeline','').split('@'):
+                entries = []
+                for fields in split_frames(text):
+                    if len(fields)<2 or not integer(fields[0]) or fields[1] not in groups: continue
+                    group=groups[fields[1]]
+                    entries.append({'frame':int(fields[0]), 'groupId':fields[1], 'flags':fields[2:],
+                                    'effects':group['effects'], 'sounds':group['sounds']})
+                variants.append(entries)
+        audio = self.document('audio.json')
+        if kind == 'lb':
+            opening=next((k for k,c in audio['cues'].items() if c['bank']=='System' and c['name']=='se_battle_limitopen_1'),None)
+            if opening:
+                for variant in variants:
+                    variant.append({'frame':0,'groupId':'lb-opening','flags':['1','3','0'],'effects':[],
+                        'sounds':[{'frame':0,'cueId':opening,'flags':['1']}]})
+        used = {e['effectId'] for v in variants for g in v for e in g['effects']}
+        sound_ids = {s['cueId'] for v in variants for g in v for s in g['sounds']}
+        audio = self.document('audio.json')
+        cues = {cid:audio['cues'].get(cid if ':' in cid else 'SE:'+cid) for cid in sound_ids}
+        movies=self.document('movies.json') if 'movies.json' in self.files else {}
+        return {'entry':row, 'variants':variants, 'effects':{eid:effects.get(eid) for eid in used},
+                'cues':cues, 'movies':[{**movies.get(name,{}),'name':name,'available':name in movies} for name in row.get('movies',[])],
+                'waves':{e['wave']:audio['waves'][e['wave']]
+                    for cue in cues.values() if cue for alt in cue['variants'] for e in alt},
+                'previewNote':'Approximate FFBE effect preview. Original source files and audio are retained.',
+                'missingGroups':[f[1] for f in split_frames(row.get('timeline','').replace('@','&'))
+                    if len(f)>1 and f[1] and f[1] not in groups] if kind not in ('group','effect') else []}
+
+    def materialize(self, name):
+        if name not in self.files: return None
+        path = self.cache/'source'/name
+        if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest()!=self.files[name]['sha256']:
+            path.parent.mkdir(parents=True, exist_ok=True); raw=self.read(name)
+            temporary=path.with_suffix(path.suffix+'.part'); temporary.write_bytes(raw);temporary.replace(path)
+        return path
+
+    def simulation(self, identity):
+        if not str(identity).isdigit(): raise ValueError('Invalid effect ID.')
+        effects=self.document('effects.json'); effect=effects.get(str(identity))
+        if not effect: raise ValueError('No such FFBE effect.')
+        output=self.cache/(str(identity)+'.json.gz')
+        if output.exists():return output.read_bytes()
+        with _LOCK:
+            if output.exists():return output.read_bytes()
+            if effect['type'] == '1': result=self.sprite_simulation(effect)
+            elif effect['type'] == '5': result=self.particle_simulation(effect)
+            else: result={'frames':[],'textures':[],'warnings':['This source effect is a control command.'],'fps':60,'durationDeclared':0}
+            raw=json.dumps(result,allow_nan=False,separators=(',',':')).encode()
+            data=gzip.compress(raw,compresslevel=5)
+            self.cache.mkdir(parents=True,exist_ok=True);temporary=output.with_suffix('.part');temporary.write_bytes(data);temporary.replace(output)
+            return data
+
+    def particle_simulation(self, effect):
+        ibmb = renderer()
+        path=self.materialize('raw/'+effect.get('asset',effect['file'].split(':')[0]))
+        if path is None: raise ValueError('The source APK delivery has no file for this effect.')
+        # Keep every source dependency; hydrate only files required by this preview.
+        original=ibmb._library_raw_parse(path)
+        assets=[*(x+'.png' for x in original.textures),*(x+'.m3r' for x in original.models)]
+        # Positioning meshes are referenced by null emitters, outside models[].
+        assets.extend(self.document('bmb-dependencies.json').get(path.name,[]))
+        for name in assets: self.materialize('raw/'+name)
+        warnings=[]
+        try: original=ibmb.parse(path)
+        except (ValueError,FileNotFoundError) as e: warnings.append(str(e)+'; preview uses the base particle model.')
+        baked=ibmb.bake(original,max_frames=MAX_FRAMES,max_particles=256,model_dirs=[str(path.parent)])
+        if original.duration>MAX_FRAMES: warnings.append('Preview shows the first 30 seconds; the full original effect is retained.')
+        import _ffr_ffbe_texture as textures
+        textures.MESH_SPRITE_DIR = str(self.cache/'virtual-textures')
+        cache=textures.TextureCache([str(path.parent)])
+        baked['textures']=[self.texture(name,path.parent,warnings,cache) for name in baked['textures']]
+        if not any(baked['frames']):warnings.append('The original file is saved, but this renderer produced no visible particles.')
+        baked['warnings']=warnings
+        return baked
+
+    def texture(self,name,directory,warnings,cache):
+        if name.startswith(('nativeuv:', 'quadcolor:', 'mesh:', 'solid:')):
+            from PIL import Image
+            import numpy as np
+            try:
+                pixels=cache.get(name)
+                if pixels is None:raise ValueError('A required source texture is unavailable.')
+                buffer=io.BytesIO();Image.fromarray((np.clip(pixels,0,1)*255).astype(np.uint8),'RGBA').save(buffer,format='PNG')
+                raw=buffer.getvalue();key=hashlib.sha256(raw).hexdigest()+'.png';(self.cache/key).write_bytes(raw)
+                return {'url':'/api/ffbe-library/preview-texture/'+key}
+            except (ValueError,OSError) as e:
+                warnings.append(str(e));return None
+        key=next((x for x in ('raw/'+name,'raw/'+name+'.png','raw/'+name+'.jpg') if x in self.files),None)
+        if key is None: warnings.append('Missing texture: '+name); return None
+        return {'url':'/api/ffbe-library/file/'+key}
+
+    def sprite_simulation(self,effect):
+        sys.path.insert(0,str(Path(__file__).parent/'ffbe2ss6'))
+        from ffbe_frames import read_cgg,read_cgs
+        files=effect['file'].split(':')
+        if len(files)!=3: raise ValueError('Unsupported source sprite effect.')
+        paths=[self.materialize('raw/'+x) for x in files]
+        if any(p is None for p in paths):raise ValueError('The source APK delivery is missing this sprite effect’s files.')
+        cgg=read_cgg(str(paths[1]));steps=read_cgs(str(paths[2]));frames=[]
+        from PIL import Image
+        with Image.open(paths[0]) as source:atlas=source.convert('RGBA')
+        for step in steps:
+            # CGG conversion uses the engine's existing sprite renderer without
+            # baking this preview into a unit or any Resonance asset.
+            from ffbe_frames import compose_frame
+            from PIL import Image
+            image=compose_frame(atlas,cgg[step['frame']])
+            box=image.getbbox()
+            if box:
+                image=image.crop(box);buf=io.BytesIO();image.save(buf,format='PNG');raw=buf.getvalue()
+                key=hashlib.sha256(raw).hexdigest()+'.png';self.cache.mkdir(parents=True,exist_ok=True);(self.cache/key).write_bytes(raw)
+                texture={'url':'/api/ffbe-library/preview-texture/'+key}
+                part={'tex':len(frames),'pos':[box[0]-512+image.width/2+step['x'],512-box[1]-image.height/2-step['y'],0],
+                      'scale':[image.width,image.height],'rot':0,'alpha':1,'color':[1,1,1],'blend':'normal'}
+            else:texture=None;part=None
+            # Return compact run-length frames to avoid duplicate PNGs.
+            frames.append({'texture':texture,'part':part,'delay':max(1,step['delay'])})
+        textures=[];flat=[]
+        for frame in frames:
+            index=len(textures);textures.append(frame['texture'])
+            part={**frame['part'],'tex':index} if frame['part'] else None
+            flat.extend([[part] if part else []]*frame['delay'])
+        return {'fps':60,'frameCount':len(flat),'durationDeclared':len(flat),'textures':textures,'frames':flat,'warnings':[]}
+
+
+@lru_cache(maxsize=1)
+def renderer():
+    # Private copy: library inspection cannot alter the engine's unit converter.
+    import _ffr_ffbe_renderer as ibmb
+    import _ffr_ffbe_placement
+    ibmb._library_raw_parse = ibmb.parse
+    _ffr_ffbe_placement.install(ibmb)
+    return ibmb
+
+
+def integer(value): return bool(re.fullmatch(r'-?\d+',value))
+def split_frames(text): return [x.split(':') for x in re.split(r'[&,]',text or '') if x]
+
+
+def register(app, env):
+    from fastapi import HTTPException
+    @lru_cache(maxsize=1)
+    def library(): return Library(env['ROOT'])
+    def checked(fn,*args,**kwargs):
+        try:return fn(*args,**kwargs)
+        except (ValueError,OSError,KeyError,IndexError,struct.error,zipfile.BadZipFile) as e:raise HTTPException(422,str(e)) from e
+    @app.get('/ffbe-animation-library')
+    def page():
+        from fastapi.responses import HTMLResponse
+        return HTMLResponse(Path(__file__).with_name('ffbe_library.html').read_text(encoding='utf-8'),headers={'Cache-Control':'no-store'})
+    @app.get('/api/ffbe-library/catalog')
+    def catalog(q:str='',kind:str='all',scope:str='skills',offset:int=0,limit:int=60,animated:bool=True):
+        return checked(lambda:library().search(q,kind,scope,offset,limit,animated))
+    @app.get('/api/ffbe-library/entry/{kind}/{identity}')
+    def entry(kind:str,identity:str):return checked(lambda:library().detail(kind,identity))
+    @app.get('/api/ffbe-library/effect/{identity}')
+    def effect(identity:str):
+        from fastapi.responses import Response
+        return Response(checked(lambda:library().simulation(identity)),media_type='application/json',headers={'Content-Encoding':'gzip','Cache-Control':'no-cache'})
+    @app.get('/api/ffbe-library/file/{name:path}')
+    def file(name:str):
+        from fastapi.responses import Response
+        if not name.endswith(('.png','.jpg','.flac','.webm')):raise HTTPException(404,'No preview media at this path.')
+        media='video/webm' if name.endswith('.webm') else 'audio/flac' if name.endswith('.flac') else 'image/png' if name.endswith('.png') else 'image/jpeg'
+        return Response(checked(lambda:library().read(name)),media_type=media)
+    @app.get('/api/ffbe-library/preview-texture/{name}')
+    def texture(name:str):
+        from fastapi.responses import FileResponse
+        if not re.fullmatch('[a-f0-9]{64}\\.png',name):raise HTTPException(404,'No preview texture.')
+        path=checked(lambda:library().cache/name)
+        if not path.is_file():raise HTTPException(404,'No preview texture.')
+        return FileResponse(path,media_type='image/png')

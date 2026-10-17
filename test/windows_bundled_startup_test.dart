@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/services/bundled_features.dart';
+import 'package:ffr_vision_studio/services/ffbe_animation_library.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -60,13 +61,24 @@ void main() {
       await features.prepareEngine(paths, engineRunning: false);
       expect(material.existsSync(), isTrue);
       expect(roster.readAsBytesSync(), before);
+      await FfbeAnimationLibrary().prepare(
+        paths,
+        readAsset: (path) => File(path).readAsBytes(),
+      );
+      expect(roster.readAsBytesSync(), before);
       final state = json.decode(
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.42');
+      expect(state['version'], '1.2.43');
       for (final name in [
         '_ffr_existingvisions.py',
+        '_ffr_ffbe_library.py',
+        '_ffr_ffbe_renderer.py',
+        '_ffr_ffbe_texture.py',
+        '_ffr_ffbe_placement.py',
+        '_ffr_ffbe_uv.py',
+        'ffbe_library.html',
         '_ffr_ffbe_needles.py',
         'ffbe_needles.zip',
         '_ffr_deck_sync.py',
@@ -155,6 +167,27 @@ for model, entry in _ffr_overworld.catalog()['models'].items():
         assert list(image.size) == entry['size']
     with Image.open(io.BytesIO(_ffr_overworld.asset_bytes(entry, 'icon'))) as image:
         assert image.width > 0
+import gzip, json
+import _ffr_ffbe_library
+library_app = FastAPI()
+_ffr_ffbe_library.register(library_app, {'ROOT': str(root)})
+route = {r.path:r.endpoint for r in library_app.routes if hasattr(r, 'endpoint')}
+summary = route['/api/ffbe-library/catalog'](q='1,000 Needles')
+assert summary['summary']['skills'] == 65428 and summary['total'] > 0
+library = _ffr_ffbe_library.Library(root)
+effect = json.loads(gzip.decompress(library.simulation('1002460')))
+assert effect['warnings'] == [] and len(effect['textures']) == 3
+assert any(len({tuple(p['pos']) for p in frame}) >= 4 for frame in effect['frames'])
+sprite = next(e for e in library.document('effects.json').values() if e['type'] == '1' and all('raw/' + n in library.files for n in e['file'].split(':')))
+assert library.sprite_simulation(sprite)['frames']
+audio = library.document('audio.json')
+wave = next(iter(audio['waves'].values()))
+assert route['/api/ffbe-library/file/{name:path}']('audio/' + wave['file']).body[:4] == b'fLaC'
+movies = library.document('movies.json')
+assert len(movies) == 86
+movie = next(iter(movies.values()))
+assert route['/api/ffbe-library/file/{name:path}']('movies/' + movie['file']).body[:4] == bytes.fromhex('1a45dfa3')
+print('FFBE library, source particles, sound and cinematic ready')
 print('Overworld module and field sheet ready')
 ''');
       final fieldResult = await Process.run(paths.engineExe, [
@@ -172,6 +205,6 @@ print('Overworld module and field sheet ready')
       );
     },
     skip: !Platform.isWindows || fixture == null,
-    timeout: const Timeout(Duration(minutes: 3)),
+    timeout: const Timeout(Duration(minutes: 6)),
   );
 }

@@ -4,6 +4,52 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### FFBE animation library — in development
+
+Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
+Retest the recorded original-enemy failures then before adding further demo-specific repairs.
+
+Home's **FFBE animation library** button opens a local browser page. Browse all **65,428** Memorial skill
+records, their separate IDs and conditional timelines, **15,674** effect groups, **8,779** effect definitions,
+and **86** available skill/summon cinematics. Search by name, ID or effect filename; filter magic, abilities,
+monster skills, limit bursts or summons. Enable **Include records without animation references** to see passive
+and other records without visual timelines. Use the original sound, speed, target-count and conditional controls
+for previews; cinematic clips have their own playback controls and embedded sound. Everything stays in this
+separate source library: browsing makes no changes to units, saved kits, mod inputs or installed game files.
+
+The APK and its delivery catalogs are SHA-pinned; original master rows, BMB/PNG/M3R/CGG/CGS dependencies,
+source variants, USM cinematics and SE/System sound banks are retained. The page includes **1,011** cue records
+and **990** distinct recordings, decoded losslessly and trimmed to their declared sample lengths. Original
+cue variants, delays and play/stop instructions remain associated with the effects. The one unsupported System
+block-sequence cue is retained in the bank; every referenced skill-group SE cue resolves.
+
+Some master references have no matching file in this delivery: one BMB, 26 sprite dependencies, six group IDs
+and 110 exact cinematic filenames. These remain visible and unavailable rather than receiving substitutes;
+available regional cinematic variants can be browsed independently. The **Source coverage** disclosure and entry
+warnings explain gaps. Browser particle rendering is approximate, shows at most 30 seconds/256 particles per
+effect and does not prove exact FFBE rendering or later Resonance conversion. Original files are not truncated.
+
+The offline library adds **1.88 GB** to the package. Studio stages verified packs under `engine/library/ffbe/`
+on first launch and caches previews under `engine/build/ffbelib1/`; expect extra first-start time and a second
+local copy of the packs. Subsequent starts reuse valid packs. The normal engine remains checksum-pinned and
+unchanged; library inspection uses a private renderer based on the
+[pinned upstream effect tools](https://github.com/FFBE-JP-Translation/FFR-Vison-Studio/tree/990f2ccab25a6132b0bb3b217420899f6d0e38d9/mod-tools/tools/ffbe_effects),
+with ordered placement/native UV support. No external converter is required for browsing.
+
+To reproduce the source library as a developer (Python 3.12+, Pillow, NumPy, PyCryptodome and FFmpeg/FFprobe
+with HCA/USM, VP9 alpha and Opus support), use the supplied APK and supported engine tools:
+
+```sh
+python scripts/prepare_ffbe_memorial_sources.py --apk <v208.apk> --output <source>
+python scripts/prepare_ffbe_library_audio.py --source <source> --work <work> --engine-tools <engine/tools>
+python scripts/prepare_ffbe_library_movies.py --source <source> --work <work>
+python scripts/build_ffbe_animation_library.py --source <source> --work <work> --extract
+python scripts/verify_ffbe_animation_library.py
+```
+
+The APK is inspected rather than executed; source downloads use only its verified delivery URLs/ranges. Normal
+Studio use needs none of these developer dependencies. Game assets retain their original ownership.
+
 ### Intermittent Mitra crash diagnostics — 2026-10-17
 
 The user confirms that the in-game practice picker opens and the revised FFBE **1,000 Needles** visual and hit
@@ -1005,6 +1051,7 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   independently of library repairs without removing MP, power or other kit edits.
   Explicit custom donor edits and authored sequences remain as saved; compare both
   modes and retain the toggle for sources still missing or unsuitable in the full game.
+- [ ] **FFBE source library.** Recheck source delivery updates, missing dependencies, source IDs, conditional/audio routing, particle/camera fidelity and cinematic regional variants before assigning any imported visuals. The archival library currently assigns nothing. Native missing-animation repair is on hold until the full-game retest.
 - [ ] **Espers and summons.** Inspect full-game sprites, effects and timelines. Reassess esper-owned hiding separately
   from ordinary summon commands; check whether assets absent from the demo are now available.
 - [ ] **Crystal Fina cave and acquisition locations.** Refresh donor interiors, entry actors, navigation, collision,

@@ -171,6 +171,7 @@ class HomeScreen extends StatelessWidget {
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   GuideButton('Build without installing', onPressed: !canBuild || busy || app.sephiraWorking ? null : () => app.startBuild(install: false)),
                   GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : app.installLast),
+                  GuideButton('FFBE animation library', key: const Key('ffbe-animation-library'), icon: Icons.movie_outlined, onPressed: app.api == null ? null : () => launchUrl(Uri.parse('${app.api!.base}/ffbe-animation-library'))),
                   GuideButton('Advanced studio', icon: Icons.open_in_new, onPressed: app.api == null ? null : () => launchUrl(Uri.parse(app.api!.advancedUrl()))),
                 ]),
                 const SizedBox(height: 6),
