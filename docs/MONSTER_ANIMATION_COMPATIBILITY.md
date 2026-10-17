@@ -51,7 +51,7 @@ The user confirmed the repaired Cling presentation works. The expanded batch is 
 
 For testing, turn Show unverified skills on, Repair native skill bindings / motions on, and Use our skill changes off.
 The isolated build route never creates the donor resolver, fallback schedules, Barrage trials or reviewed hides.
-It includes the 21 audited native routes below and leaves other original bindings intact. An old three-field settings file
+It includes the 22 audited native routes below and leaves other original bindings intact. An old three-field settings file
 defaults the new boolean off without rewriting the file. Both repair flags are remembered while visibility is off;
 the existing full-repair path wins when both are enabled. Explicit custom presentations and inherited native kits
 retain their precedence. No new skills are marked verified merely by enabling this mode.
@@ -76,7 +76,7 @@ hidden variants. 277 have direct bindings: 256 have a shared/player route and 21
 All directly bound packages are present. The remaining 890 have no direct binding; this does not establish
 whether they are broken because some skills use other runtime routing. See [audit counts](native-skill-audit-summary.json).
 
-Native-only mode now covers all 21 enemy-only entries. Each private route clones that skill's own native source;
+Native-only mode covers all 21 enemy-only entries, plus the explicit Absolute Zero pointer described below. Each private route clones that skill's own native source;
 no other skill's visual is substituted. Group targeting, particles, audio and hit timing remain original.
 
 | Native skill entry | ID | Additional change to own timeline |
@@ -86,7 +86,7 @@ no other skill's visual is substituted. Group targeting, particles, audio and hi
 | Throat Strike | 500250 | Enable complete caster track; exact atk → attack_A |
 | Needle | 500260 | Enable complete caster track; exact atk → attack_A |
 | Steal | 500530 | Enable complete caster track; exact atk → attack_A |
-| Bioblaster | 500970 | Binding only |
+| Bioblaster | 500970 | Player binding; look-at point 2 → 18 (pending live confirmation) |
 | Thunder Beam | 501000 | Enable complete caster track; exact atk → attack_A |
 | Libra | 506090 | Enable complete caster track; exact atk → attack_A |
 | Gimme an ether! | 580060 | Binding only |
@@ -103,7 +103,7 @@ no other skill's visual is substituted. Group targeting, particles, audio and hi
 | Banish | 245290 | Binding only |
 | Banishra | 245300 | Binding only |
 
-The 20 new routes require live testing. Import conversion already supplies the native weapon/magic attachment
+The additional routes require live testing. Import conversion already supplies the native weapon/magic attachment
 points used by these effects. Thwack has an extra disabled attack-only template; only its complete attack/idle
 track is enabled. Existing routes with `atk` events are recorded separately as investigation candidates, without
 changing their original bindings. Disabled native tracks alone are not enough evidence to enable every track.
@@ -114,6 +114,98 @@ or an explicit custom presentation takes precedence. Only exact audited function
 Native build/readback confirms all 21 new rows in both tables with every original row unchanged, identical
 hit/effect/audio event constants, and only approved motion names/track flags changed. IoStore verification passes.
 No newly repaired entry is automatically labeled verified. Re-audit these rules against full-release assets.
+
+## Native-only test batch on Agrias and Alaya Rundall
+
+User reports from 2026-10-16/17: two added test visions, Agrias and Alaya Rundall, with no party replacements.
+Show unverified and native repairs are on; Use our skill changes and borrowed Sephira visuals are off.
+For usable skills, damage/status effects resolve. Most entries below have no visible presentation.
+These are user observations plus static reference findings, not new verified-animation labels.
+
+| Skill | Catalog ID | Live observation / test limit |
+| --- | --- | --- |
+| 1,000 Needles | 500270 | No visible animation |
+| 10,000 Needles | 505110 | No visible animation |
+| Absolute Zero | 500230 | Visible ice effect over the party |
+| Absolving Hailstorm | 402050 / 505840 | Not tested: the selected version costs too much MP; exact version not collected |
+| Abyss Graviton | 408040 | Not tested: Limit Burst restriction |
+| Alluring Pollen | 503770 | No visible animation |
+| Aqua Blast | 405050 | No visible animation |
+| Aqua Breath | 500800 | Visible effect points toward the party |
+| Aquatic Pulse | 405130 | No visible animation |
+| Aquatic Synergy | 414410 | No visible animation |
+| Array: Brilliance | 503630 | No visible animation |
+| Array: Light of Destruction | 503620 | No visible animation |
+| Array: Shock Shell | 503610 | No visible animation |
+| Assassin's Needle | 501180 | No visible animation |
+| Atomic Ray | 500380 | No visible animation |
+| Bad Breath | 505020 | No visible animation |
+| Bioblaster | 500970 | Reported separately: visible effect points toward the party |
+
+IDs are matched by catalog names. The next collection includes installed skill definitions/grants to verify the
+exact variants used. The only member of this batch covered by the initial 21-route repair was Bioblaster.
+The repair switch does not promise an animation for every unverified entry.
+
+Confirmed static findings from the complete native reference:
+
+- Absolute Zero has no direct route, but its `playSequencerId` explicitly selects **225042**, whose asset is
+  `Magic/225030/225032/SEQ_Battle_225032_Master`. Its effect spawns at fixed target **2**, the party-side point.
+  The friendly counterpart 225041 uses target **18**, the enemy-side point. A repair must account for this
+  explicit pointer and preserve enemy use of the skill; adding 500231 alone is insufficient.
+- Bioblaster's native 500972 effect uses `NS_EF_SKL500970_Gas_001_Weapon_AtoB` and fixed look-at target **2**.
+  The current private 500971 copy preserves that constant. This explains a concrete party-side aiming problem
+  in the copied presentation; the correction still needs a live check of its placement/offset.
+- Aqua Breath already has a native friendly route **500801** with look-at target **18**, while 500802 uses **2**.
+  Its reported direction cannot be explained by a missing player binding alone. Check installed routes and the
+  Niagara system's local orientation before choosing a correction; do not rotate every effect indiscriminately.
+- The twelve blank entries have no direct native sequence binding and no explicit `playSequencerId`.
+  No same-ID effect folders appear in the supplied asset index. This does **not** prove the effects are absent:
+  aliases or character-specific runtime paths may supply them. It does explain why a binding-only audit of the
+  21 existing enemy routes did not restore these entries. Native-only mode deliberately leaves borrowed
+  effects and generic fallback schedules off.
+
+The focused read-only helper in [scripts/reference/skill-effects](../scripts/reference/skill-effects/) collects
+matching native effect systems/meshes for the reported batch, fresh native tables, installed Studio lookup tables
+and battle timelines, allowlisted mode flags/skill grants, and the latest build repair report. Output is split into
+ordinary ZIPs under Downloads/FFR Mod. It does not install a runtime loader, modify game/Studio files or include
+save files, sync settings, credentials, unrelated mods, or entire mod containers. This is a static collection and
+cannot establish which sequence actually played live; a runtime trace may still be needed after asset inspection.
+
+The returned `Skill-Effect-Reference-20261016-192530-573511` collection contains 63 native assets,
+five installed assets and all required global/mapping data. All 80 table/view/event decode operations pass.
+The 15 overlapping native reference files match the earlier collection byte-for-byte. Aqua Breath and
+Bioblaster use local-space Niagara emitters; their particle references are intact. The report from this computer
+is `original_game`, and its installed pack has no native Bioblaster player route. The user confirmed switching
+computers, so this cannot establish which route the original Agrias/Alaya battle used.
+
+Version 1.2.34 prepares two native presentation corrections, without borrowing other skills' visuals:
+
+- Bioblaster's private 500971 timeline changes only its Niagara look-at target from 2 (party) to 18 (enemy).
+- Absolute Zero keeps its original 500230 skill definition except `playSequencerId = -1`, allowing normal
+  caster-side routing. New 500231 points at a private copy of the original 225032 sequence, with effect point
+  18 and native player placement offsets from its existing 225031 counterpart. New 500232 points at the
+  exact original 225032 package/sound, preserving enemy use. Every original lookup row remains intact.
+- Source definition/binding/package fingerprints remain mandatory. Both point-table entries are also checked;
+  changed points skip the repair. Future player/enemy bindings or explicit custom presentation fields win.
+  Verification derives only the intended presentation-pointer change from those inputs and requires the
+  successful bridge record. Skipped repairs cannot authorize it; changing MP/damage or other fields still fails.
+- All 22 player copies (88 packages) and 23 added routes per lookup table pass actual serialization/readback.
+  Every original skill field except the one presentation pointer is unchanged, along with every original binding;
+  the private copies change only approved motion flags/names and the two effect placements. IoStore verifies.
+  These checks do not establish in-game appearance; both direction corrections still need live confirmation.
+
+Aqua Breath is intentionally unchanged pending a same-computer test of its existing player route. Native-only
+reports now label skills with no direct binding or explicit pointer `no_direct_native_route`, without calling
+all such skills broken or substituting another visual. The twelve blank skills still need further evidence.
+The collector now assigns JSON before enumerating it, handling PowerShell 5.1 empty/single/multiple rosters,
+and records engine/game paths. Its readback smoke checks also cover copy fallback, temporary cleanup and
+multipart ZIP integrity.
+
+The diagnostic helper itself applies no aiming or blank-skill repairs. Keep the current test modes
+unchanged when collecting. The helper's fixture checks cover quoted paths, exact installed-pack scope, flag/grant
+allowlists, source immutability, missing installed packs, partial failures and output guards. Real retoc/PowerShell
+collection of native tables and private installed timelines is also checked. Windows PowerShell 5.1 on the user's
+PC remains the final environment check; local execution uses PowerShell 7 with 5.1-compatible syntax.
 
 ## Imported vision icon framing
 

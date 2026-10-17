@@ -150,7 +150,22 @@
         "Track/SEQ_Battle_500972_Sound_001.uexp": "0d58d7fa10f723a1bce201f0aa169165e8dec134d59376fd13ea286477eb7d27"
       },
       "enableTracks": [],
-      "motionEdits": []
+      "motionEdits": [],
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      },
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_500972_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500972_Effect_001_DirectorBP_2",
+          "set": {
+            "Effect_NiagaraData": {
+              "LookAtTargetID": 18
+            }
+          }
+        }
+      ]
     },
     "501000": {
       "name": "Thunder Beam",
@@ -488,6 +503,55 @@
       },
       "enableTracks": [],
       "motionEdits": []
+    },
+    "500230": {
+      "name": "Absolute Zero",
+      "sourceBinding": 225042,
+      "folder": "Sequencer/Battle/Magic/225030/225032",
+      "sourceSequence": 225032,
+      "definitionSha256": "7a25a4a2b9f03892e98d3d282b2e0a6e2d07cb4cc30181aef3c3d0b157a691da",
+      "bindingSha256": "53a9d7ca8a4a282c2f78dc41b2b8e30a660f5dd62dde9c0858ca1342829077d0",
+      "files": {
+        "SEQ_Battle_225032_Master.uasset": "24b5a1162e51ebfe26d66875749983cc412cf9d0020016bedd06727068716530",
+        "SEQ_Battle_225032_Master.uexp": "da8730bd46dc503879b108697e5cfe0f8a60851a1d8d7aa93b5d9395e64f6570",
+        "Track/SEQ_Battle_225032_Cut_001.uexp": "9c5eb36c055804bf4151968e638cfd270f017bba9e4a69d191978406cd5cfaf5",
+        "Track/SEQ_Battle_225032_Effect_001.uexp": "dac7721c619e8d8ca528c3863db7e758c17cf1ac4d680234990d0a9dca10fd23",
+        "Track/SEQ_Battle_225032_Sound_001.uasset": "d84e50b20e8c549368c5dd011a0c354e262b0430e5b249873b3c2b7249fd52af",
+        "Track/SEQ_Battle_225032_Sound_001.uexp": "6a536dc029344df1aba7f7fff3e41f79ac7a8dcba48b095592e907f25337ef0d",
+        "Track/SEQ_Battle_225032_Cut_001.uasset": "ad90e385cae823566b97f31867c53f9850e05d2a5396a3ac0831961b854e590c",
+        "Track/SEQ_Battle_225032_Effect_001.uasset": "4ddd4c28e064b721b0aec1a01bbf4a13346048aace9deccdda273e6b1e1916f3"
+      },
+      "enableTracks": [],
+      "motionEdits": [],
+      "effectEdits": [
+        {
+          "file": "Track/SEQ_Battle_225032_Effect_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_225032_Effect_001_DirectorBP",
+          "set": {
+            "Effect_SpawnTarget_ID": 18,
+            "Effect_SpawnTarget_NiagaraData": {
+              "minLocation": {
+                "x": -200.0,
+                "y": 0.0,
+                "z": 70.0
+              },
+              "maxLocation": {
+                "x": -200.0,
+                "y": 0.0,
+                "z": 70.0
+              }
+            }
+          }
+        }
+      ],
+      "definitionSet": {
+        "playSequencerId": -1
+      },
+      "retainEnemyRoute": true,
+      "pointTargets": {
+        "2": "bc04a7280a9e90fdb8b9ce23054cf28db18719e23687dd1cfff69a8c34e33193",
+        "18": "51071849cc4bdabef12599c0d8291fbf8deeacfd5fbef60edf2441bede52b2a5"
+      }
     }
   }
 }

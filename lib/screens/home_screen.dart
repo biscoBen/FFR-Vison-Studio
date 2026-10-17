@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                 CheckboxListTile(
                   key: const Key('native-skill-repairs'), contentPadding: EdgeInsets.zero,
                   title: Text('Repair native skill bindings / motions', style: Guide.text()),
-                  subtitle: Text('Uses the skill’s own effects and timing. Repairs audited player bindings and caster motions without borrowing effects.', style: Guide.small()),
+                  subtitle: Text('Uses the skill’s own effects and timing. Repairs audited player bindings, aiming and caster motions without borrowing effects.', style: Guide.small()),
                   value: app.useNativeSkillRepairs,
                   onChanged: !app.showUnverifiedSkills || busy || app.api == null ? null : (value) async {
                     try { await app.setAbilityModes(useNativeRepairs: value == true); } catch (e) { app.showNotice('$e'); }
@@ -102,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                     : app.useAbilityChanges
                         ? 'Studio skill repairs and reviewed hiding rules are on. Existing game animations take priority.'
                         : app.useNativeSkillRepairs
-                            ? 'Native binding/motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'
+                            ? 'Native binding, aiming and motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'
                         : 'Unverified library skills use original game animations. Library repairs and reviewed hides are off.', style: Guide.small()),
                 Text('Rebuild/install after changing modes to replace the previous mod. Equipped skills and saved configs are retained.', style: Guide.small()),
                 SwitchListTile(

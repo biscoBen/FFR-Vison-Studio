@@ -53,6 +53,8 @@ class AbilityModeTests(unittest.TestCase):
     def test_native_only_repairs_cling_without_loading_donors_or_running_other_fixes(self):
         from test_monster_ally_animation import fixture
         game, view, dump = fixture()
+        game['Skill/DT_SkillData']['Unbound'] = {'ID': 250020}
+        game['Skill/DT_SkillData']['Explicit pointer'] = {'ID': 400300, 'playSequencerId': 500912}
         unit = {'id':13503, 'awakening':[[['ActiveSkill',500910], ['ActiveSkill',250020], ['ActiveSkill',400300]]]}
         before = copy.deepcopy((game, unit))
         with tempfile.TemporaryDirectory() as directory, mock.patch.dict(sys.modules, {'_ffr_animation_repair': motion}):
@@ -71,7 +73,7 @@ class AbilityModeTests(unittest.TestCase):
             report = json.loads((root/'build/animation-repair-report.json').read_text())
             self.assertEqual(report['mode'],'native_repairs')
             statuses = {r['id']:r['status'] for r in report['skills']}
-            self.assertEqual(statuses,{500910:'native_ally_variant',250020:'original_game_bindings',400300:'original_game_bindings'})
+            self.assertEqual(statuses,{500910:'native_ally_variant',250020:'no_direct_native_route',400300:'original_game_bindings'})
             self.assertEqual(modes.prepare_barrage_trial([unit],root,lambda r:game[r])['owners'],{})
             self.assertFalse(modes.settings(root)['useChanges'])
             self.assertEqual((game,unit),before)

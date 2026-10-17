@@ -6,12 +6,20 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 
 Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
 **Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode repairs
-21 audited demo entries, including Cling, using their own effects/timing. The additional 20 entries need live tests.
+22 audited demo entries, including Cling, using their own effects/timing. New direction repairs for Bioblaster
+and Absolute Zero need live tests; Aqua Breath remains under investigation.
 For Sephira preset units, also turn **Use borrowed Sephira skill visuals** off to test without those preset substitutions.
 Rebuild/install and restart after changing modes. Existing saved kits and explicit custom presentations are retained.
 The read-only [native skill reference helper](scripts/reference/native-skill-animations/) collects all battle timelines
 and routing tables into separate ZIPs under Downloads/FFR Mod. The returned five-part collection was audited; see
 [the native repair cases and limits](docs/MONSTER_ANIMATION_COMPATIBILITY.md#full-native-reference-audit).
+
+The next [native-only test batch](docs/MONSTER_ANIMATION_COMPATIBILITY.md#native-only-test-batch-on-agrias-and-alaya-rundall)
+records blank visuals and party-side effects on Agrias/Alaya Rundall, with native direction corrections for
+Bioblaster and Absolute Zero. These corrections still need in-game confirmation. The standalone
+[skill-effect reference helper](scripts/reference/skill-effects/) gathers the missing particle/mesh and installed-route
+references under Downloads/FFR Mod. It collects diagnostics without applying fixes; rebuild/install Studio
+changes separately before testing them.
 
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
@@ -369,11 +377,12 @@ controls. All default off and are saved with the engine's mod settings. The mode
 | --- | --- | --- | --- |
 | Off | Any | Any | Original picker filter; both library repair paths are inactive. |
 | On | Off | Off | Expanded library with original game bindings; no automatic repairs or reviewed hides. |
-| On | Off | On | Audited same-skill binding/motion repairs only, currently Cling; original effects and timing. |
+| On | Off | On | Audited same-skill binding/aiming/motion repairs; original effects and timing. |
 | On | On | Either | Full Studio skill repairs and 304 reviewed picker hides; includes native repairs. Ordinary summon commands remain available. |
 
 With Show unverified on and Use our changes off, the native-repair checkbox selects a fourth mode: apply only audited
-repairs to each skill's own timeline/binding/motion. It includes 21 audited demo entries. Donor effects, generic fallback
+repairs to each skill's own timeline/binding/motion. It includes 22 audited demo entries. Bioblaster's copied effect aims at enemies, and Absolute Zero uses
+separate caster routes with native player placement and the original enemy animation. Donor effects, generic fallback
 timelines, Barrage trials and reviewed hides remain off. Both repair checkboxes remember their state while Show
 unverified is off. If both are checked, the existing full-repair path applies, including its native repairs.
 Borrowed Sephira preset visuals are controlled separately; turn that switch off for a clean native-only test.

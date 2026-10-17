@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from unittest import mock
 from test_existing_visions import ROOT, module
+import sys
 native=module('native_skill_cases',ROOT/'assets/existing_visions/payload/_ffr_native_skills.py')
 
 
@@ -55,6 +56,79 @@ class NativeSkillRepairTests(unittest.TestCase):
                     report=native.prepare(tables,[],selected,root,lambda r:copy.deepcopy(game[r]),mock.Mock(),support)
                 support['clone'].assert_not_called();self.assertEqual(tables,{})
                 if case not in ('future','custom'):self.assertEqual(report[505040]['status'],'native_repair_unresolved')
+
+    def explicit_fixture(self, root):
+        game, rule, path = self.fixture(root)
+        raw = game['Skill/DT_SkillData']['Thwack']
+        raw.update(ID=500230, playSequencerId=225042, Cost=15, magnification=24)
+        binding = next(iter(game['Asset/Skill/DT_SkillAsset'].values()))
+        binding['ID'] = 225042
+        game['Asset/Skill/CDT_SkillAsset_Demo']['enemy'] = copy.deepcopy(binding)
+        points = {'party': {'ID': 2, 'Position': [0, 500, 0]}, 'enemy': {'ID': 18, 'Position': [0, -500, 0]}}
+        game['Battle/Sequencer/DT_BtlSkillPointTargetData'] = points
+        rule.update(name='Absolute Zero', sourceBinding=225042, definitionSha256=native.digest(raw),
+                    bindingSha256=native.digest(binding), retainEnemyRoute=True, definitionSet={'playSequencerId': -1},
+                    pointTargets={str(r['ID']): native.digest(r) for r in points.values()},
+                    effectEdits=[{'file': next(iter(rule['files'])), 'function': 'EffectSEQ_Battle_500562',
+                                  'set': {'Effect_SpawnTarget_ID': 18}}])
+        return game, rule, path
+
+    def invoke_explicit(self, root, game, rule, tables=None, owners=None):
+        tables = {} if tables is None else tables
+        support = {'clone': mock.Mock(return_value={'LevelSequence': '/Game/private/500230/500231/SEQ_Battle_500231_Master',
+                                                    'soundSequence': 'None'}), 'objects': [], 'bytecode': []}
+        original = Path.read_bytes
+        units = [{'awakening': [[['ActiveSkill', 500230]]]}] if owners is None else owners
+        policy = {'schema': 1, 'skills': {'500230': rule}}
+        with mock.patch.object(Path, 'read_bytes', lambda p: json.dumps(policy).encode()
+                               if p.name == 'native_skill_repairs.json' else original(p)):
+            report = native.prepare(tables, [], {500230: units}, root, lambda r: copy.deepcopy(game[r]), mock.Mock(), support)
+            destination = Path(root) / 'build/animation-repair-report.json'
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(json.dumps({'schema': 1, 'skills': list(report.values())}))
+            with mock.patch.dict(sys.modules, {'_ffr_animation_repair': module('motion_native_test', ROOT/'assets/existing_visions/payload/_ffr_animation_repair.py')}):
+                expected = native.expected_definition_edits(root, units, lambda r: copy.deepcopy(game[r]))
+        return report, tables, support, expected
+
+    def test_explicit_enemy_pointer_becomes_two_routes_with_enemy_presentation_retained(self):
+        with tempfile.TemporaryDirectory() as root:
+            game, rule, _ = self.explicit_fixture(root); before = copy.deepcopy(game)
+            report, tables, support, expected = self.invoke_explicit(root, game, rule)
+            self.assertEqual(report[500230]['enemySequence'], 500232)
+            for rel in native.RELS:
+                additions = tables[rel]['add']
+                self.assertEqual([r['set']['ID'] for r in additions], [500231, 500232])
+                self.assertEqual(additions[1]['set'], {'ID': 500232})
+                self.assertEqual(additions[1]['cloneFrom'], 'enemy')
+                self.assertEqual(tables[rel]['set'], [])
+            edits = tables['Skill/DT_SkillData']['set']
+            self.assertEqual(edits, [{'row': 'Thwack', 'set': {'playSequencerId': -1}}])
+            self.assertEqual(expected, {('Skill/DT_SkillData', 'Thwack'): {'playSequencerId': -1}})
+            from test_existing_visions import native as verifier
+            original = game['Skill/DT_SkillData']['Thwack']
+            built = dict(original, playSequencerId=-1)
+            self.assertTrue(verifier.expected_row_change('Skill/DT_SkillData', 'Thwack', original, built, expected, lambda a,b: a==b))
+            self.assertFalse(verifier.expected_row_change('Skill/DT_SkillData', 'Thwack', original, dict(built, Cost=0), expected, lambda a,b: a==b))
+            event = support['bytecode'][-1]
+            self.assertEqual(event['export'], 'EffectSEQ_Battle_500231')
+            self.assertEqual(event['set'], {'Effect_SpawnTarget_ID': 18})
+            self.assertEqual(game, before)  # MP, damage, hit count, and original bindings stay intact.
+
+    def test_changed_points_future_enemy_route_and_custom_presentation_prevent_pointer_repair(self):
+        for case in ('points', 'futureEnemy', 'custom', 'stagedPointer', 'bytes'):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as root:
+                game, rule, path = self.explicit_fixture(root); tables = {}; owners = None
+                if case == 'points': game['Battle/Sequencer/DT_BtlSkillPointTargetData']['enemy']['Position'] = [0, 500, 0]
+                if case == 'futureEnemy': game[native.RELS[1]]['future'] = {'ID': 500232}
+                if case == 'custom': owners = [{'skills': {'500230': {'from': 500230}}, 'awakening': [[['ActiveSkill', 500230]]]}]
+                if case == 'stagedPointer': tables = {'Skill/DT_SkillData': {'set': [{'row': 'Thwack', 'set': {'playSequencerId': 999}}]}}
+                if case == 'bytes': path.write_bytes(b'Changed source')
+                before = copy.deepcopy(tables)
+                report, tables, support, expected = self.invoke_explicit(root, game, rule, tables, owners)
+                support['clone'].assert_not_called(); self.assertEqual(tables, before)
+                self.assertEqual(expected, {})
+                if case in ('points', 'bytes', 'stagedPointer'):
+                    self.assertEqual(report[500230]['status'], 'native_repair_unresolved')
 
 
 if __name__=='__main__':unittest.main()

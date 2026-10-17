@@ -223,6 +223,10 @@ def expected_edits(root):
     _ffr_crystal_cave.prepare_shops(tables, units, rows)
     expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
     import _ffr_ability_modes
+    modes = _ffr_ability_modes.settings(root)
+    if modes['showUnverified'] and (modes['useChanges'] or modes['useNativeRepairs']):
+        import _ffr_native_skills
+        expected.update(_ffr_native_skills.expected_definition_edits(root, units, rows))
     if _ffr_ability_modes.enabled(root) and (root / 'build/animation-repair-report.json').is_file():
         expected.update(_ffr_animation_repair.expected_reaction_edits(root, units, rows))
     import _ffr_party

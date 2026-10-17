@@ -11,6 +11,32 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Correct native Bioblaster's private player timeline to aim at the enemy-side point. Give Absolute Zero
+  player/enemy routes and remove its forced enemy-sequence pointer; correct only the private player effect's
+  location, using native player placement. Its enemy route retains the original enemy package and sound.
+  The same native effects and timings are used; MP, damage, status effects, targeting and hit counts are unchanged.
+  These repairs run with either repair checkbox, when Show unverified is on and the skill is selected.
+  Existing custom presentations and future native routes take precedence. Extension 1.2.34.
+- Fingerprint both native battle target points as well as definitions, bindings and package bytes. The normal
+  verifier accepts only the exact audited presentation-pointer edit after a successful repair; changed source
+  data, skipped repairs and unrelated mechanical changes remain rejected. All 22 player routes and the retained
+  enemy route pass actual native serialization/readback and IoStore verification; both facing fixes need live tests.
+- Native-only reports distinguish entries with no direct binding or explicit sequence pointer from existing
+  routes. They add no substitute effects. Record the alphabetical test batch on Agrias/Alaya Rundall, including
+  MP/LB skips and direction problems, in the [animation compatibility report](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
+  Aqua Breath and the remaining blank skills still need investigation.
+- Add the standalone read-only skill-effect collector. It gathers native particle/mesh assets and installed
+  Studio routes, allowlisted flags/grants and the latest repair report under Downloads/FFR Mod. Temporary
+  container links/copies supply the native global index and are removed before upload ZIP creation. Fix
+  PowerShell 5.1 array enumeration for empty/single/multiple rosters; record the selected engine/game paths.
+  The returned two-part collection has 63 native assets and no extraction failures. The installed mod is from
+  a different computer than the original test and cannot identify the route used in that battle.
+
+- Local analysis and 58 focused Flutter tests pass. The full Python suite completes 395 checks (four skipped).
+  Checks cover exact pointer authorization, mechanical-field rejection, future/custom/changed-source guards,
+  native-only report distinctions and existing mode isolation. Collector fixture checks include PowerShell 5.1
+  array behavior, temporary-copy fallback, partial failures, ZIP splitting, output guards and source immutability.
+
 ## Published native-only testing and audited skill bindings — 2026-10-16
 
 Code: [`aa0452b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aa0452bae51eaf2e757f6e8c180f2a95e238ad16).

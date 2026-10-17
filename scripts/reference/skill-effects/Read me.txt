@@ -1,0 +1,10 @@
+Close Resonance. Extract both helper files together, then run Collect Skill Effect Reference.cmd.
+Choose your Studio folder and game folder when prompted.
+This reads native effect systems/meshes and skill tables, plus installed Studio skill routes and battle timelines.
+It also copies allowlisted ability-mode flags, skill grants and the most recent animation repair report.
+It writes only under Downloads\FFR Mod, without changing your installation or installing a runtime loader.
+Installed-pack extraction uses temporary links/copies alongside the native global index. These are removed before zipping.
+No save files, sync settings, credentials, or complete mod containers are uploaded.
+Upload ALL Skill-Effect-Reference-*.zip parts. These are separate ordinary ZIPs.
+A Partial report still produces ZIPs; send those too so missing files can be checked.
+This is a static reference extractor, not an animation fix. It cannot show which timeline played live in battle.

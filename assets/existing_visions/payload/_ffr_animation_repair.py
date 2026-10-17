@@ -1156,12 +1156,23 @@ def prepare_native_sequences(tables, clones, jobs, units, root, rows, extract, n
     import _ffr_native_skills
     repairs = _ffr_native_skills.prepare(tables, clones, selected, root, rows, extract, native_support)
     if cling: repairs[cling['id']] = cling
+    bindings = {r['ID'] for r in rows('Asset/Skill/DT_SkillAsset').values()}
+    bindings.update(r['ID'] for r in rows('Asset/Skill/CDT_SkillAsset_Demo').values())
+    definitions = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
+    def original_status(sid):
+        pointers = {key: definitions.get(sid, {}).get(key, -1)
+                    for key in ('playSequencerId', 'sequencerIdWhenTargetFriendlies')}
+        if any(sid + offset in bindings for offset in (0, 1, 2)) or any(v != -1 for v in pointers.values()):
+            return {'id': sid, 'status': 'original_game_bindings'}
+        return {'id': sid, 'status': 'no_direct_native_route',
+                'reason': 'No direct binding or explicit sequence pointer in the supplied demo data. '
+                          'Other runtime presentation paths may exist; no substitute visual was added.'}
     report = Path(root) / 'build/animation-repair-report.json'
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({'schema': 1, 'mode': 'native_repairs', 'inGameValidated': False,
-        'skills': [repairs.get(sid, {'id': sid, 'status': 'original_game_bindings'})
+        'skills': [repairs.get(sid, original_status(sid))
                    for sid in sorted(selected)], 'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
-    print('  Native binding/motion repairs only: original skill effects retained; donor effects and fallback timelines are off.')
+    print('  Native binding/aiming/motion repairs only: original skill effects retained; donor effects and fallback timelines are off.')
     if cling: print('  Cling: private ally timeline 500911; native group effects/hit timing, attack_A/idle caster track.')
     return [sid for sid, entry in sorted(repairs.items()) if entry['status'] == 'native_ally_variant']
 

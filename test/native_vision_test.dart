@@ -458,7 +458,7 @@ void main() {
     await wait(tester, () => app.useNativeSkillRepairs);
     expect(app.useAbilityChanges, isFalse);
     expect(app.useSephiraBorrowedVisuals, isTrue);
-    expect(find.text('Native binding/motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'), findsOneWidget);
+    expect(find.text('Native binding, aiming and motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'), findsOneWidget);
     final borrowed = find.byKey(const Key('sephira-borrowed-skill-visuals'));
     await tester.ensureVisible(borrowed); await tester.tap(borrowed);
     await wait(tester, () => !app.useSephiraBorrowedVisuals);
