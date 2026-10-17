@@ -11,18 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### FFBE animation and sound library
-
-- Preload all **65,428** skill records from the supplied, SHA-pinned Memorial EN Global Events v208 APK delivery: 486 magic, 43,536 abilities, 17,926 monster skills, 3,417 limit bursts and 63 summons. Preserve distinct IDs, conditional timelines, raw master rows, 15,674 effect groups, 8,779 effect definitions, original particle/texture/model/sprite files and differing source-file variants.
-- Add **FFBE animation library** on Home. Search/filter by name, ID or filename; browse source groups, individual effects and 90 cinematics. Preview particles/sprites with original cue timing, play/stop, seeking, sound, speed, zoom, target count and conditional variants. Cinematics retain transparency and embedded sound in browser previews, alongside their original USM sources.
-- Preserve the original SE/System sound banks, all 1,011 cue records and 990 distinct lossless preview recordings. Preserve random cue alternatives and play/stop instructions; trim decoded HCA padding to the source's declared sample length. Keep the original bank for the one unsupported System block-sequence cue; no skill-group SE cue is missing.
-- Keep the entire library separate from mod inputs and personal rosters: browsing assigns nothing, edits no skills and requires no mod rebuild. Bundle 56 independently verified packs (1.99 GB); stage locally in bounded memory and reuse verified copies. No library download, APK, FFmpeg or developer Python is required on the user's PC.
-- Include four standalone first/second-part limit-burst clips found in the base delivery catalog. Preserve their original filenames independently of complete-film references; incremental archival updates retain all existing source bytes and skill identities.
-- Preserve references absent from the supplied delivery and label unavailable previews: one particle filename, 26 sprite dependencies, six effect-group IDs and 110 exact cinematic filenames. Available regional cinematic variants remain independently browsable, without silently equating different filenames. Particle rendering approximates FFBE's engine, caps previews at 30 seconds/256 particles per emitter and does not establish exact playback parity or Resonance compatibility. Full original files remain available for later conversion.
-- Defer further missing-native-animation investigation until the full game launches on Thursday, as requested. Preserve the reported failures for comparison and leave all existing game skill assignments and visual-testing toggles unchanged.
-
-Validation/publication pending. The source library is archival and read-only; none of these entries is installed as a new game skill.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -66,6 +54,25 @@ Validation/publication pending. The source library is archival and read-only; no
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published FFBE animation and sound library — 2026-10-17
+
+Code: [`a8bec63`](https://github.com/biscoBen/FFR-Vison-Studio/commit/a8bec63f8840ac44089e20018a5e057f84595968), extension **1.2.43**.
+[Verified Windows download / run 39076528651](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39076528651/Sephira-Studio-Test.zip).
+
+- Preload all **65,428** skill records from the supplied, SHA-pinned Memorial EN Global Events v208 APK delivery: 486 magic, 43,536 abilities, 17,926 monster skills, 3,417 limit bursts and 63 summons. Preserve distinct IDs, conditional timelines, raw master rows, 15,674 effect groups, 8,779 effect definitions, original particle/texture/model/sprite files and differing source-file variants.
+- Add **FFBE animation library** on Home. Search/filter by name, ID or filename; browse source groups, individual effects and 90 cinematics. Preview particles/sprites with original cue timing, play/stop, seeking, sound, speed, zoom, target count and conditional variants. Cinematics retain transparency and embedded sound in browser previews, alongside their original USM sources.
+- Preserve the original SE/System sound banks, all 1,011 cue records and 990 distinct lossless preview recordings. Preserve random cue alternatives and play/stop instructions; trim decoded HCA padding to the source's declared sample length. Keep the original bank for the one unsupported System block-sequence cue; no skill-group SE cue is missing.
+- Keep the entire library separate from mod inputs and personal rosters: browsing assigns nothing, edits no skills and requires no mod rebuild. Bundle 56 independently verified packs (1.99 GB); stage locally in bounded memory and reuse verified copies. No library download, APK, FFmpeg or developer Python is required on the user's PC.
+- Include four standalone first/second-part limit-burst clips found in the base delivery catalog. Preserve their original filenames independently of complete-film references; incremental archival updates retain all existing source bytes and skill identities.
+- Preserve references absent from the supplied delivery and label unavailable previews: one particle filename, 26 sprite dependencies, six effect-group IDs and 110 exact cinematic filenames. Available regional cinematic variants remain independently browsable, without silently equating different filenames. These counts cover master-file links; archival BMB editor/template dependencies and unsupported formats can cause further per-entry preview warnings. Particle rendering approximates FFBE's engine, caps previews at 30 seconds/256 particles per emitter and does not establish exact playback parity or Resonance compatibility. Full original files remain available for later conversion.
+- Defer further missing-native-animation investigation until the full game launches on Thursday, as requested. Preserve the reported failures for comparison and leave all existing game skill assignments and visual-testing toggles unchanged.
+
+Validation: local analysis, 31 focused Flutter checks, **454 Python checks** (seven skipped), complete source-table/cue/member integrity checks and browser playback pass. Chromium checks cover Needles' four ordered streaks and 20 sound pulses, Fire, Cure, Bad Breath, Flame Sword, cinematic playback, all four supplemental clips, search/pagination, mute, speed and first-seek rendering. The archived library contains **13,634** verified files. This does not establish rendering parity for every FFBE emitter, caller motion or camera command.
+
+Windows analysis, the full Flutter suite, **454 Python checks** (seven skipped), fresh frozen-engine installation, actual particle/sprite rendering, sound/cinematic reads, launcher/updater checks and compilation pass. The downloaded ZIP's provenance and SHA256 match the selected workflow. All **56** library pack digests and **43** extension/**16** Crystal Fina resource hashes match source. The library manifest is identical after Windows newline normalization. Crystal Fina assets, original engine checksum, personal rosters and game skill assignments remain unchanged. No mod rebuild is required to browse.
+
+First complete code candidate **22:25:37.707 UTC** to verified download **23:08:01.813 UTC**: **42m 24s**, including local checks, the first-seek correction, the final base-delivery audit/four additional clips, uploads, build waits and verification. The final matching push run took **18m 07s** of CI elapsed time. Three automatic code workflows ran: one superseded/cancelled run, one successful 86-clip candidate and the final 90-clip package; no manual duplicate was dispatched. Summed runner job time across them: **43m 04s** (**28m 15s Windows**, **14m 49s Linux**), separate from local elapsed time. GitHub's log-storage download was unavailable; required step outcomes are confirmed through the Jobs API. Package/artifact storage used the helper's authenticated, checksum-verified test-release fallback.
 
 ## Published read-only intermittent crash collector — 2026-10-17
 

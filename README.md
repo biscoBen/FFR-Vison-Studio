@@ -4,7 +4,15 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-### FFBE animation library — in development
+### FFBE animation library — 2026-10-17
+
+[Verified Windows download / run 39076528651](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39076528651/Sephira-Studio-Test.zip)
+(code `a8bec63`, extension 1.2.43; about **2.03 GB**). Update Studio and use **Home → FFBE animation library**.
+No mod rebuild or game installation is needed for browsing. The full Windows Flutter suite, analysis, **454 Python
+checks** (seven skipped), fresh frozen-engine setup and launcher/updater checks pass. Download provenance/checksum,
+all **56** library packs and all **43** extension/**16** Crystal Fina resources are verified against source; Crystal
+Fina assets remain unchanged. The library manifest differs only in Windows newlines; its JSON and member hashes match.
+Original particle rendering/game conversion parity remains unverified. Full validation and timings are in the changelog.
 
 Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
 Retest the recorded original-enemy failures then before adding further demo-specific repairs.
@@ -25,7 +33,8 @@ block-sequence cue is retained in the bank; every referenced skill-group SE cue 
 
 Some master references have no matching file in this delivery: one BMB, 26 sprite dependencies, six group IDs
 and 110 exact cinematic filenames. These remain visible and unavailable rather than receiving substitutes;
-available regional cinematic variants can be browsed independently. The **Source coverage** disclosure and entry
+available regional cinematic variants can be browsed independently. These counts cover master-file references; some
+archival BMBs also name editor/template resources absent from delivery or use unsupported preview formats. The **Source coverage** disclosure and entry
 warnings explain gaps. Browser particle rendering is approximate, shows at most 30 seconds/256 particles per
 emitter and does not prove exact FFBE rendering or later Resonance conversion. Original files are not truncated.
 
