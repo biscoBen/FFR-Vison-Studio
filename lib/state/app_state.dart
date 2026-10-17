@@ -60,6 +60,7 @@ class AppState extends ChangeNotifier {
   bool modInstalled = false;
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
+  String testingPracticeEncounter = 'standard';
   bool crystalCave = false;
   bool crystalCaveTest = false;
   bool fieldLeader = false;
@@ -325,6 +326,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load vision testing settings: $e'; }
     try { testingPracticeBattle = await api!.testingPracticeBattle(); }
     catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
+    try { testingPracticeEncounter = await api!.testingPracticeEncounter(); }
+    catch (e) { notice = 'Could not load shop battle opponents: $e'; }
     try { crystalCave = await api!.crystalCave(); }
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { crystalCaveTest = await api!.crystalCaveTest(); }
@@ -943,6 +946,14 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveTestingPracticeBattle(value);
     testingPracticeBattle = value; notifyListeners();
+  });
+
+  Future<void> setTestingPracticeEncounter(String value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    if (!const ['standard', 'cactuar'].contains(value)) { throw ArgumentError.value(value, 'encounter'); }
+    await api!.saveTestingPracticeEncounter(value);
+    testingPracticeEncounter = value; notifyListeners();
   });
 
   /// Convert retired switches into an editable per-vision cave assignment.

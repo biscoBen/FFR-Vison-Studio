@@ -129,12 +129,33 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),
-                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle with three level 7–8 enemies after her dialogue. Install after switching.', style: Guide.small()),
+                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle after her dialogue. Install after changing the switch or opponents.', style: Guide.small()),
                   value: app.testingPracticeBattle,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
+                if (app.testingPracticeBattle) ...[
+                  InputDecorator(
+                    decoration: const InputDecoration(labelText: 'Practice opponents'),
+                    child: DropdownButtonHideUnderline(child: DropdownButton<String>(
+                      key: const Key('testing-practice-encounter'),
+                      value: app.testingPracticeEncounter,
+                      isExpanded: true,
+                      items: const [
+                        DropdownMenuItem(value: 'standard', child: Text('Usual enemies (levels 7–8)')),
+                        DropdownMenuItem(value: 'cactuar', child: Text('Cactuar (level 30, original AI)')),
+                      ],
+                      onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                        if (value == null) return;
+                        try { await app.setTestingPracticeEncounter(value); } catch (e) { app.showNotice('$e'); }
+                      },
+                    )),
+                  ),
+                  if (app.testingPracticeEncounter == 'cactuar')
+                    Text('Defend and let Cactuar act to test its original 1,000 Needles. Its normal AI may flee; repeat the battle if needed. F8 bookmarks the runtime trace.', style: Guide.small()),
+                  const SizedBox(height: 10),
+                ],
                 SwitchListTile(
                   key: const Key('testing-max-mr'), contentPadding: EdgeInsets.zero,
                   title: Text('One-battle MR for testing', style: Guide.text()),

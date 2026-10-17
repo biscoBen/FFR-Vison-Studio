@@ -69,11 +69,26 @@ while the imported vision stays idle. The working Aqua Breath cast provides a po
 
 This identifies the immediate cause for these **two tested casts**; it does not establish that every unbound
 skill is broken or that the original effects cannot exist through another native enemy path. The other six
-recently reported blank skills were not cast in this capture. A binding/track repair cannot recover skill-specific
-art from the empty fallback. An original sequence/effect must be located, or a new presentation must be authored.
-Existing donor-based substitutes remain under their existing options; this finding adds no substitute and changes
-no gameplay or verification labels. No further asset extraction or repeat of these two imported-vision casts is
-needed to establish this fallback behavior. Recheck their own assets/routes at full release.
+recently reported blank skills were not cast in this capture. There are no skill-specific tracks to restore inside
+this fallback, but another original enemy path remains possible. Existing donor-based substitutes remain under
+their existing options; this finding adds no substitute or verified label. No repeat of these two imported-vision
+casts or comprehensive asset extraction is needed to establish the fallback behavior.
+
+Cactuar's native unit (38) and AI do select the same **500270** ID, distinct from ordinary **Needle (500260)**.
+Its collected AI blueprint hands scheduled actions to a native method; the original enemy's live presentation
+has not been traced. The user has seen Cactuar fights in videos, not encountered it in this demo save. Neither
+that video report nor the imported-vision fallback proves whether a separate original effect plays.
+
+For that comparison, **Shop practice battle → Practice opponents → Cactuar (level 30, original AI)** selects a
+private clone of the game's solo encounter (4035), on the existing practice stage in Mitra. Rebuild/install and
+restart, enable the existing [runtime trace helper](scripts/reference/skill-runtime/), then talk to the Young Woman
+in Mitra's item shop. Defend and let Cactuar use **1,000 Needles**, press **F8**, and collect the trace with option 2.
+Record the actual action name and what appears; **Needle** is a different skill. Cactuar's normal AI may flee,
+so retry if needed. Its level, stats, AI, skill IDs and presentation assets remain original. The private encounter
+retains its native rewards (or the existing MR test override) and allows guaranteed player escape. Choose **Usual
+enemies (levels 7–8)** and rebuild/install to restore the previous practice opponents. Disabling the battle retains
+the selected opponents for later. This diagnostic option still needs an original-enemy live capture; it is not a
+native skill animation repair.
 
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and

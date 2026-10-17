@@ -64,13 +64,17 @@ def practice_game():
         'battleFinishLoseEventId': '', 'battleFinishTransition': {'mapId': -1, 'bDoAutoSave': False}}
     tables[native.UNIT]['Evil Plant'] = {'ID': 20, 'Level': 7, 'Category': 'Enemy', 'MaxHitPoint': 300}
     tables[native.UNIT]['Wild Rat'] = {'ID': 22, 'Level': 8, 'Category': 'Enemy', 'MaxHitPoint': 320}
+    tables[testing.GROUP]['Cactuar solo'] = {
+        **copy.deepcopy(tables[testing.GROUP]['plant and rats']),
+        'ID': 4035, 'UnitIdList': [38], 'locationIdList': [10], 'ap': 220}
+    tables[native.UNIT]['Cactuar'] = {'ID': 38, 'Level': 30, 'Category': 'Enemy', 'MaxHitPoint': 1111}
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -227,6 +231,43 @@ class NativeTestingTests(unittest.TestCase):
         self.assertEqual(ops[testing.COMPOSITE]['add'][0]['row'], testing.NAME)
         self.assertEqual(ops[testing.COMPOSITE]['set'][0]['row'], testing.SHOP_WOMAN)
 
+    def test_cactuar_uses_original_solo_group_without_rewriting_enemy_ai_or_skills(self):
+        original, rows, _ = practice_game(); before = copy.deepcopy(original)
+        for max_mr in (False, True):
+            with self.subTest(max_mr=max_mr), tempfile.TemporaryDirectory() as root:
+                path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
+                path.write_text(json.dumps({'schema': 1, 'maxMr': max_mr,
+                                           'practiceBattle': True, 'practiceEncounter': 'cactuar'}))
+                ops = testing.prepare({}, [], root, rows)
+                group_op = ops[testing.GROUP]
+                add, = group_op['add']
+                group = testing.apply_fields(original[testing.GROUP][add['cloneFrom']], add['set'])
+                self.assertEqual(group['UnitIdList'], [38])
+                self.assertEqual(group['locationIdList'], [10])
+                self.assertEqual(group['ap'], 4995 if max_mr else 220)
+                self.assertEqual(group['ID'], testing.PRACTICE_ID)
+                self.assertEqual(group['probabilityOfSuccessfulEscape'], 100.0)
+                self.assertEqual(group['battleFinishTransition']['mapId'], -1)
+                self.assertFalse(group['battleFinishTransition']['bDoAutoSave'])
+                self.assertEqual(original, before)
+                self.assertFalse(any('Skill' in rel or 'Unit' in rel for rel in ops))
+
+    def test_cactuar_choice_defaults_and_rejects_changed_or_unknown_encounters(self):
+        for bad in (None, True, 38, [], {}, 'unknown'):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                testing.validate_settings({'schema': 1, 'maxMr': False, 'practiceEncounter': bad})
+        for change in ('missing', 'duplicate', 'monster', 'story'):
+            tables, rows, _ = practice_game()
+            if change == 'missing': del tables[testing.GROUP]['Cactuar solo']
+            elif change == 'duplicate': tables[testing.GROUP]['duplicate'] = copy.deepcopy(tables[testing.GROUP]['Cactuar solo'])
+            elif change == 'monster': tables[native.UNIT]['Cactuar']['Level'] = 99
+            else: tables[testing.GROUP]['Cactuar solo']['battleFinishEventId'] = 'story'
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as root:
+                path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
+                path.write_text(json.dumps({'schema': 1, 'maxMr': False,
+                                           'practiceBattle': True, 'practiceEncounter': 'cactuar'}))
+                with self.assertRaises(ValueError): testing.prepare({}, [], root, rows)
+
     def test_practice_battle_rejects_changed_story_identity_and_incompatible_assets(self):
         for change in ('story', 'map', 'stage', 'stage-parent', 'stage-levels',
                        'stage-collision', 'collision', 'monster', 'return'):
@@ -261,13 +302,15 @@ class NativeTestingTests(unittest.TestCase):
             def __init__(self, code, detail): super().__init__(detail)
         with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {'fastapi': SimpleNamespace(HTTPException=Error)}):
             testing.register(App(), {'ROOT': root})
-            routes['put']({'schema': 1, 'maxMr': False, 'practiceBattle': True})
+            routes['put']({'schema': 1, 'maxMr': False, 'practiceBattle': True, 'practiceEncounter': 'cactuar'})
             self.assertEqual(json.loads((Path(root) / 'mods/EstherTsukiko/units.json').read_bytes()), [])
             routes['put']({'schema': 1, 'maxMr': True})
             self.assertTrue(routes['get']()['practiceBattle'])
             self.assertTrue(routes['get']()['maxMr'])
+            self.assertEqual(routes['get']()['practiceEncounter'], 'cactuar')
             routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': False})
             self.assertFalse(routes['get']()['practiceBattle'])
+            self.assertEqual(routes['get']()['practiceEncounter'], 'cactuar')
             with self.assertRaises(Error): routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': 'true'})
 
 

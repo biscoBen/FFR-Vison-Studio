@@ -63,6 +63,8 @@ class NativeApi extends ConfigApi {
   NativeApi(super.roster);
   bool maxMr = false;
   bool practiceBattle = false;
+  String practiceEncounter = 'standard';
+  bool failPracticeEncounter = false;
   @override
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges, bool useNativeRepairs = false}) async =>
       {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs};
@@ -82,6 +84,13 @@ class NativeApi extends ConfigApi {
   Future<bool> testingPracticeBattle() async => practiceBattle;
   @override
   Future<void> saveTestingPracticeBattle(bool value) async { practiceBattle = value; }
+  @override
+  Future<String> testingPracticeEncounter() async => practiceEncounter;
+  @override
+  Future<void> saveTestingPracticeEncounter(String value) async {
+    if (failPracticeEncounter) throw StateError('Settings write failed.');
+    practiceEncounter = value;
+  }
   @override
   Future<bool> fieldLeader() async => fieldLeaderValue;
   bool fieldLeaderValue = false;
@@ -494,6 +503,40 @@ void main() {
     await wait(tester, () => !app.testingPracticeBattle);
     expect(api.practiceBattle, isFalse);
     expect(api.maxMr, isTrue);
+  });
+
+  testWidgets('practice opponents persist and cannot change during a build', (tester) async {
+    final before = clone(api.roster);
+    await show(tester);
+    expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
+    final battle = find.byKey(const Key('testing-practice-battle'));
+    await tester.ensureVisible(battle); await tester.tap(battle);
+    await wait(tester, () => app.testingPracticeBattle);
+    final control = find.byKey(const Key('testing-practice-encounter'));
+    api.failPracticeEncounter = true;
+    await tester.ensureVisible(control); await tester.tap(control); await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Cactuar (level 30, original AI)').last);
+    await wait(tester, () => app.notice?.contains('Settings write failed') == true);
+    expect(tester.widget<DropdownButton<String>>(control).value, 'standard');
+    expect(api.practiceEncounter, 'standard');
+    api.failPracticeEncounter = false;
+    await tester.ensureVisible(control); await tester.tap(control); await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Cactuar (level 30, original AI)').last);
+    await wait(tester, () => app.testingPracticeEncounter == 'cactuar');
+    expect(api.practiceEncounter, 'cactuar');
+    expect(find.textContaining('Defend and let Cactuar act'), findsOneWidget);
+    await tester.ensureVisible(battle); await tester.tap(battle);
+    await wait(tester, () => !app.testingPracticeBattle);
+    expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
+    await tester.tap(battle);
+    await wait(tester, () => app.testingPracticeBattle);
+    expect(app.testingPracticeEncounter, 'cactuar');
+    expect(api.roster, before);
+    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
+    expect(tester.widget<DropdownButton<String>>(control).onChanged, isNull);
+    await expectLater(app.setTestingPracticeEncounter('standard'), throwsStateError);
+    expect(api.practiceEncounter, 'cactuar');
+    await tester.pump(const Duration(seconds: 6));
   });
 
   testWidgets('Sephira visuals switch independently without resetting saved kits', (tester) async {

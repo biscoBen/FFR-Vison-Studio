@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Original Cactuar practice encounter
+
+- Add a **Practice opponents** dropdown below the enabled **Shop practice battle** switch: the existing three
+  level 7–8 enemies or the game's solo level-30 Cactuar encounter. Rebuild/install after selecting. This makes
+  the original 1,000 Needles dispatch reachable for runtime comparison without finding Cactuar in the story.
+- Clone the native encounter into the existing private practice group/stage, retain Cactuar's own unit/AI/skills
+  and preserve normal encounters. Keep guaranteed player escape, native encounter rewards (or the existing MR
+  override), no story transition/autosave, and the previous shop dialogue/party. Persist opponents across other
+  testing switches, disable/re-enable and older clients' updates. Default to the existing opponents for old configs.
+- Cactuar's AI uses the same 500270 ID tested on imported visions; its original enemy presentation remains
+  unobserved. This adds a diagnostic encounter, not a new effect or verified animation claim.
+- Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
+  choices' native encounter/stage serialization, exact readback and IoStore verification pass. Windows package
+  validation is pending; the existing trace helper is unchanged.
+
 ### Native-only runtime findings — 2026-10-16
 
 - Analyze the returned three-bookmark battle capture, with the user confirming 1,000 Needles, Aqua Breath,

@@ -28,16 +28,17 @@ STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False}
 
 
 def validate_settings(value):
     # Accept and discard the removed diagnostic switches in older configs.
     # Crystal Fina Test now always uses transparent glass with rotation.
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
+            or value.get('practiceEncounter', 'standard') not in ('standard', 'cactuar')
             or type(value.get('crystalCave', False)) is not bool
             or type(value.get('crystalCaveTest', False)) is not bool
             or type(value.get('crystalCaveTestSolid', True)) is not bool
@@ -46,6 +47,7 @@ def validate_settings(value):
             or type(value.get('fieldLeader', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
+            'practiceEncounter': value.get('practiceEncounter', 'standard'),
             'crystalCave': value.get('crystalCave', False), 'crystalCaveTest': value.get('crystalCaveTest', False),
             'fieldLeader': value.get('fieldLeader', False)}
 
@@ -122,7 +124,7 @@ def prepare(tables, units, root, rows):
                 raise ValueError('A native battle MR reward is missing.')
             table(GROUP)['set'].append({'row': key, 'set': {'ap': value}})
     if controls['practiceBattle']:
-        prepare_practice(table, rows, value)
+        prepare_practice(table, rows, value, controls['practiceEncounter'])
     import _ffr_crystal_cave
     _ffr_crystal_cave.prepare(tables, units, root, rows)
     import _ffr_field_leader
@@ -130,7 +132,7 @@ def prepare(tables, units, root, rows):
     return tables
 
 
-def prepare_practice(table, rows, ap):
+def prepare_practice(table, rows, ap, encounter='standard'):
     """Keep the woman's dialogue and party; launch a private, story-free encounter."""
     parent = rows(SHOP_EVENT); combined = rows(COMPOSITE)
     woman = parent.get(SHOP_WOMAN)
@@ -157,20 +159,27 @@ def prepare_practice(table, rows, ap):
             or any(PRACTICE in t or any(v.get('ID') == PRACTICE_ID for v in t.values())
                    for t in (stages, stage_combined))):
         raise ValueError('The native plains battle stage is unavailable or its practice identity conflicts.')
+    # Use the original solo encounter to observe Cactuar's native dispatch.
+    # Do not rewrite its unit, AI, selected skills, animation or skill assets.
+    group_id, unit_ids, locations, unit_levels = {
+        'standard': (1026, [20, 22, 22], [20, 6, 15], ((20, 7), (22, 8))),
+        'cactuar': (4035, [38], [10], ((38, 30),)),
+    }[encounter]
     groups = rows(GROUP)
-    donor = next(((k, v) for k, v in groups.items() if v.get('ID') == 1026), None)
+    donors = [(k, v) for k, v in groups.items() if v.get('ID') == group_id]
+    donor = donors[0] if len(donors) == 1 else None
     if (PRACTICE in groups or any(v.get('ID') == PRACTICE_ID for v in groups.values()) or not donor
-            or donor[1].get('UnitIdList') != [20, 22, 22] or len(donor[1].get('locationIdList', [])) != 3
+            or donor[1].get('UnitIdList') != unit_ids or donor[1].get('locationIdList') != locations
             or donor[1].get('battleEventId') != -1 or donor[1].get('battleFinishEventId')
             or donor[1].get('battleFinishEscapeEventId') or donor[1].get('battleFinishLoseEventId')
             or donor[1]['battleFinishTransition']['mapId'] != -1
             or donor[1]['battleFinishTransition'].get('bDoAutoSave')):
-        raise ValueError('The native three-enemy encounter template changed.')
+        raise ValueError('The selected native practice encounter changed.')
     units = rows('Unit/DT_UnitParameter')
-    for uid, level in ((20, 7), (22, 8)):
+    for uid, level in unit_levels:
         enemies = [v for v in units.values() if v.get('ID') == uid]
         if len(enemies) != 1 or enemies[0].get('Category') != 'Enemy' or enemies[0].get('Level') != level:
-            raise ValueError('The native level 7–8 practice enemies are unavailable.')
+            raise ValueError('The selected native practice enemies are unavailable.')
     for rel in (SHOP_EVENT, COMPOSITE):
         table(rel)['set'].append({'row': SHOP_WOMAN, 'set': {'encountGroupId': PRACTICE_ID}})
     # The ordinary plains stage uses preloaded streaming levels. Mitra has no
@@ -264,7 +273,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'crystalCave', 'crystalCaveTest', 'fieldLeader'):
+            for flag in ('practiceBattle', 'practiceEncounter', 'crystalCave', 'crystalCaveTest', 'fieldLeader'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)

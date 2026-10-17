@@ -42,11 +42,13 @@ class Api {
       (await get('/api/native/model/${Uri.encodeComponent(id)}/${Uri.encodeComponent(form)}')) as Map<String, dynamic>;
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
+  Future<String> testingPracticeEncounter() async => (await get('/api/testing'))['practiceEncounter'] as String? ?? 'standard';
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
   Future<bool> crystalCaveTest() async => (await get('/api/testing'))['crystalCaveTest'] == true;
   Future<bool> fieldLeader() async => (await get('/api/testing'))['fieldLeader'] == true;
   Future<void> saveTestingMaxMr(bool value) => _saveTestingFlag('maxMr', value);
   Future<void> saveTestingPracticeBattle(bool value) => _saveTestingFlag('practiceBattle', value);
+  Future<void> saveTestingPracticeEncounter(String value) => _saveTestingFlag('practiceEncounter', value);
   Future<void> saveCrystalCave(bool value) => _saveTestingFlag('crystalCave', value);
   Future<void> saveCrystalCaveTest(bool value) => _saveTestingFlag('crystalCaveTest', value);
   Future<void> saveFieldLeader(bool value) => _saveTestingFlag('fieldLeader', value);
@@ -58,17 +60,18 @@ class Api {
       (await put('/api/sephira/settings', {
         'schema': 1, 'useBorrowedSkillVisuals': useBorrowedSkillVisuals,
       })) as Map<String, dynamic>;
-  Future<void> _saveTestingFlag(String name, bool value) async {
+  Future<void> _saveTestingFlag(String name, Object value) async {
     final current = await get('/api/testing');
     final flags = {
       'schema': 1, 'maxMr': current['maxMr'] == true,
       'practiceBattle': current['practiceBattle'] == true,
+      'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
       'crystalCave': current['crystalCave'] == true,
       'crystalCaveTest': current['crystalCaveTest'] == true,
       'fieldLeader': current['fieldLeader'] == true, name: value,
     };
-    if (value && name == 'crystalCave') flags['crystalCaveTest'] = false;
-    if (value && name == 'crystalCaveTest') flags['crystalCave'] = false;
+    if (value == true && name == 'crystalCave') flags['crystalCaveTest'] = false;
+    if (value == true && name == 'crystalCaveTest') flags['crystalCave'] = false;
     await put('/api/testing', flags);
   }
   Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);
