@@ -21,13 +21,15 @@ class AbilityModeTests(unittest.TestCase):
 
     def test_defaults_and_both_flags_are_required_with_strict_validation(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(modes.settings(root), {'schema': 1, 'showUnverified': False, 'useChanges': False})
+            self.assertEqual(modes.settings(root), {'schema': 1, 'showUnverified': False, 'useChanges': False, 'useNativeRepairs': False})
             for show in (False, True):
                 for changes in (False, True):
                     self.write(root, show, changes)
                     self.assertEqual(modes.enabled(root), show and changes)
             for invalid in ({}, {'schema': True, 'showUnverified': True, 'useChanges': False},
-                            {'schema': 1, 'showUnverified': 1, 'useChanges': False}):
+                            {'schema': 1, 'showUnverified': 1, 'useChanges': False},
+                            {'schema': 1, 'showUnverified': True, 'useChanges': False, 'useNativeRepairs': 1},
+                            {'schema': 1, 'showUnverified': True, 'useChanges': False, 'unknown': False}):
                 with self.assertRaises(ValueError): modes.validate(invalid)
 
     def test_original_modes_do_not_read_animation_assets_or_mutate_jobs_and_clear_stale_trials(self):
@@ -47,6 +49,46 @@ class AbilityModeTests(unittest.TestCase):
                 self.assertEqual(modes.prepare_sequences(tables, clones, jobs, [unit], root, rows, extract), [])
                 self.assertEqual((tables, clones, jobs, unit), before)
                 self.assertEqual(json.loads(report.read_text())['mode'], 'original_game')
+
+    def test_native_only_repairs_cling_without_loading_donors_or_running_other_fixes(self):
+        from test_monster_ally_animation import fixture
+        game, view, dump = fixture()
+        unit = {'id':13503, 'awakening':[[['ActiveSkill',500910], ['ActiveSkill',250020], ['ActiveSkill',400300]]]}
+        before = copy.deepcopy((game, unit))
+        with tempfile.TemporaryDirectory() as directory, mock.patch.dict(sys.modules, {'_ffr_animation_repair': motion}):
+            root = Path(directory); self.write(root, True, False)
+            path = root / modes.CONFIG
+            path.write_text(json.dumps({**json.loads(path.read_text()), 'useNativeRepairs':True}))
+            cut = root / 'extracted/legacy/FFRS/Content/Sequencer/Battle/EnemySkill/500910/500912/Track/SEQ_Battle_500912_Cut_001.uasset'
+            cut.parent.mkdir(parents=True); cut.touch()
+            tables = {}; clones = [{'existing':'custom'}]; jobs = [{'kind':'user_LB'}]
+            support = {'dumps':lambda p:(view,dump), 'clone':mock.Mock(return_value={'LevelSequence':'/Game/private/ClingAlly'}), 'objects':[], 'bytecode':[]}
+            with mock.patch.object(motion, 'NativeAnimations', side_effect=AssertionError('No borrowed-effect resolver in native-only mode')):
+                self.assertEqual(modes.prepare_sequences(tables, clones, jobs, [unit], root,
+                                 lambda r:copy.deepcopy(game[r]), mock.Mock(), support), [500910])
+            self.assertEqual(set(tables), {'Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo'})
+            self.assertEqual(clones,[{'existing':'custom'}]); self.assertEqual(jobs,[{'kind':'user_LB'}])
+            report = json.loads((root/'build/animation-repair-report.json').read_text())
+            self.assertEqual(report['mode'],'native_repairs')
+            statuses = {r['id']:r['status'] for r in report['skills']}
+            self.assertEqual(statuses,{500910:'native_ally_variant',250020:'original_game_bindings',400300:'original_game_bindings'})
+            self.assertEqual(modes.prepare_barrage_trial([unit],root,lambda r:game[r])['owners'],{})
+            self.assertFalse(modes.settings(root)['useChanges'])
+            self.assertEqual((game,unit),before)
+
+    def test_native_setting_is_remembered_while_hidden_and_enhanced_mode_keeps_its_existing_route(self):
+        with tempfile.TemporaryDirectory() as directory, mock.patch.dict(sys.modules, {'_ffr_animation_repair': motion}):
+            root=Path(directory); self.write(root, False, False); path=root/modes.CONFIG
+            path.write_text(json.dumps({**json.loads(path.read_text()),'useNativeRepairs':True}))
+            with mock.patch.object(motion,'prepare_native_sequences') as native, mock.patch.object(motion,'prepare_sequences') as enhanced:
+                self.assertEqual(modes.prepare_sequences({},[],[],[],root,mock.Mock(),mock.Mock()),[])
+                native.assert_not_called(); enhanced.assert_not_called()
+                path.write_text(json.dumps({**json.loads(path.read_text()),'showUnverified':True}))
+                modes.prepare_sequences({},[],[],[],root,mock.Mock(),mock.Mock())
+                native.assert_called_once(); enhanced.assert_not_called()
+                path.write_text(json.dumps({**json.loads(path.read_text()),'useChanges':True}))
+                modes.prepare_sequences({},[],[],[],root,mock.Mock(),mock.Mock())
+                enhanced.assert_called_once(); self.assertEqual(native.call_count,1)
 
     def test_enhanced_mode_reuses_native_timelines_added_by_a_later_game(self):
         unit = {'id': 13500, 'awakening': [[['ActiveSkill', 250020]]]}
@@ -90,7 +132,7 @@ class AbilityModeTests(unittest.TestCase):
             testing = roster.with_name('testing.json'); testing.write_text('{"schema":1,"maxMr":true}')
             state = {'running': False}; modes.register(App(), {'ROOT': root, 'state': state})
             put = routes[('PUT', '/api/abilities/settings')]
-            settings = {'schema': 1, 'showUnverified': True, 'useChanges': False}
+            settings = {'schema': 1, 'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True}
             self.assertEqual(put(settings), settings)
             modes.register(App(), {'ROOT': root, 'state': state})
             self.assertEqual(routes[('GET', '/api/abilities/settings')](), settings)

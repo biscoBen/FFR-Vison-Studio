@@ -1149,6 +1149,20 @@ def build_effect_sequence(job, out, work, command, usmap, run):
             raise ValueError(f'The written skill timeline did not retain particle references: {error} Mod packing stopped.') from error
 
 
+def prepare_native_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
+    """Apply audited same-skill repairs only; never enter donor/fallback code."""
+    selected, preserved = repair_selection(units)
+    cling = prepare_ally_cling(tables, clones, selected, root, rows, extract, native_support)
+    report = Path(root) / 'build/animation-repair-report.json'
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report.write_text(json.dumps({'schema': 1, 'mode': 'native_repairs', 'inGameValidated': False,
+        'skills': [cling if cling and sid == cling['id'] else {'id': sid, 'status': 'original_game_bindings'}
+                   for sid in sorted(selected)], 'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
+    print('  Native binding/motion repairs only: original skill effects retained; donor effects and fallback timelines are off.')
+    if cling: print('  Cling: private ally timeline 500911; native group effects/hit timing, attack_A/idle caster track.')
+    return [cling['id']] if cling else []
+
+
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
     """Add selected missing skill timelines; leave existing game rows untouched."""
     units = [retire_comparison_skills(u) for u in units]

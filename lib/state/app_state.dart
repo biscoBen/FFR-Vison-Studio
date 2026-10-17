@@ -915,6 +915,7 @@ class AppState extends ChangeNotifier {
 
   bool get showUnverifiedSkills => catalogShowsUnverified(catalog ?? {});
   bool get useAbilityChanges => (catalog?['abilityModes'] as Map?)?['useChanges'] == true;
+  bool get useNativeSkillRepairs => (catalog?['abilityModes'] as Map?)?['useNativeRepairs'] == true;
   bool get useSephiraBorrowedVisuals => (catalog?['sephiraSettings'] as Map?)?['useBorrowedSkillVisuals'] != false;
 
   Future<void> setSephiraBorrowedVisuals(bool enabled) => _withRoster(() async {
@@ -925,12 +926,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   });
 
-  Future<void> setAbilityModes({bool? showUnverified, bool? useChanges}) => _withRoster(() async {
+  Future<void> setAbilityModes({bool? showUnverified, bool? useChanges, bool? useNativeRepairs}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     final value = await api!.saveAbilityModes(
       showUnverified: showUnverified ?? showUnverifiedSkills,
       useChanges: useChanges ?? useAbilityChanges,
+      useNativeRepairs: useNativeRepairs ?? useNativeSkillRepairs,
     );
     catalog = {...?catalog, 'abilityModes': value};
     notifyListeners();

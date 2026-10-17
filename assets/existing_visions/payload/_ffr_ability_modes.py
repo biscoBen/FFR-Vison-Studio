@@ -8,17 +8,19 @@ CONFIG = 'mods/EstherTsukiko/ability-modes.json'
 
 
 def validate(value):
-    if (not isinstance(value, dict) or set(value) != {'schema', 'showUnverified', 'useChanges'}
+    required = {'schema', 'showUnverified', 'useChanges'}
+    if (not isinstance(value, dict) or not required <= set(value) or set(value) - required - {'useNativeRepairs'}
             or type(value['schema']) is not int or value['schema'] != 1
-            or any(type(value[k]) is not bool for k in ('showUnverified', 'useChanges'))):
+            or any(type(value[k]) is not bool for k in ('showUnverified', 'useChanges'))
+            or ('useNativeRepairs' in value and type(value['useNativeRepairs']) is not bool)):
         raise ValueError('Invalid ability visibility settings.')
-    return dict(value)
+    return {**value, 'useNativeRepairs': value.get('useNativeRepairs', False)}
 
 
 def settings(root):
     path = Path(root) / CONFIG
     return validate(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'showUnverified': False, 'useChanges': False}
+        'schema': 1, 'showUnverified': False, 'useChanges': False, 'useNativeRepairs': False}
 
 
 def enabled(root):
@@ -44,8 +46,11 @@ def prepare_barrage_trial(units, root, rows):
 
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
     import _ffr_animation_repair as motion
-    if enabled(root):
+    value = settings(root)
+    if value['showUnverified'] and value['useChanges']:
         return motion.prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support)
+    if value['showUnverified'] and value['useNativeRepairs']:
+        return motion.prepare_native_sequences(tables, clones, jobs, units, root, rows, extract, native_support)
     # Keep explicit custom/LB jobs and all native bindings. Clear the prior
     # coverage report so verification cannot accept stale donor-row changes.
     report = Path(root) / 'build/animation-repair-report.json'

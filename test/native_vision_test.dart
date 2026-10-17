@@ -64,8 +64,8 @@ class NativeApi extends ConfigApi {
   bool maxMr = false;
   bool practiceBattle = false;
   @override
-  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
-      {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges};
+  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges, bool useNativeRepairs = false}) async =>
+      {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs};
   bool borrowedVisuals = true;
   bool failVisualSettings = false;
   @override
@@ -437,12 +437,44 @@ void main() {
     await wait(tester, () => !app.showUnverifiedSkills);
     expect(app.useAbilityChanges, isTrue);
     expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
-    expect(app.catalog!['abilityModes'], {'schema': 1, 'showUnverified': false, 'useChanges': true});
+    expect(app.catalog!['abilityModes'], {'schema': 1, 'showUnverified': false, 'useChanges': true, 'useNativeRepairs': false});
     expect(api.roster, before);
     app.buildState = {'running': true};
     app.notifyListeners();
     await tester.pump();
     expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
+  });
+
+  testWidgets('native-only toggle preserves other modes and saved kit and is remembered while hidden', (tester) async {
+    final before = clone(api.roster);
+    await show(tester);
+    final native = find.byKey(const Key('native-skill-repairs'));
+    final showSkills = find.byKey(const Key('show-unverified-skills'));
+    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+    await tester.ensureVisible(showSkills); await tester.tap(showSkills);
+    await wait(tester, () => app.showUnverifiedSkills);
+    await tester.ensureVisible(native);
+    await tester.tap(native);
+    await wait(tester, () => app.useNativeSkillRepairs);
+    expect(app.useAbilityChanges, isFalse);
+    expect(app.useSephiraBorrowedVisuals, isTrue);
+    expect(find.text('Native binding/motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'), findsOneWidget);
+    final borrowed = find.byKey(const Key('sephira-borrowed-skill-visuals'));
+    await tester.ensureVisible(borrowed); await tester.tap(borrowed);
+    await wait(tester, () => !app.useSephiraBorrowedVisuals);
+    await tester.ensureVisible(showSkills); await tester.tap(showSkills);
+    await wait(tester, () => !app.showUnverifiedSkills);
+    expect(app.useNativeSkillRepairs, isTrue);
+    expect(app.useAbilityChanges, isFalse);
+    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+    await tester.tap(showSkills);
+    await wait(tester, () => app.showUnverifiedSkills);
+    expect(app.useNativeSkillRepairs, isTrue);
+    expect(app.useSephiraBorrowedVisuals, isFalse);
+    expect(api.roster, before);
+    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
+    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+    await expectLater(app.setAbilityModes(useNativeRepairs: false), throwsStateError);
   });
 
   testWidgets('shop battle works without a roster and preserves MR testing', (tester) async {

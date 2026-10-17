@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add an independent **Repair native skill bindings / motions** testing checkbox. With Show unverified skills
+  on and Use our skill changes off, apply only audited same-skill repairs, starting with confirmed Cling.
+  Keep donor effects, generic fallback timelines, Barrage trials and reviewed hiding rules off in this mode.
+  Remember all three flags across restarts; old settings default the new checkbox off. Extension 1.2.32.
+- Include a read-only collector for all native battle timelines, skill routing tables, game mapping and asset
+  inventory. Separate upload ZIPs go to Downloads/FFR Mod; no runtime loader or installation changes.
+  Broader native repairs await the returned reference audit. Borrowed Sephira preset visuals remain a separate
+  switch and should also be off for a clean native-only test; saved kits and explicit custom presentations stay intact.
+
 ## Published Cling ally animation and native vision icons — 2026-10-16
 
 Code: [`6aa315f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/6aa315f93b773d7cc5dbb22e7b5792b270c1a1c1).

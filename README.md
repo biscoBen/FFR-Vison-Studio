@@ -4,11 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-Cling's missing ally timeline is repaired when **Show unverified skills** and **Use our skill changes** are on.
+Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
+**Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode currently
+repairs Cling using its own effects/timing; other skills retain their native bindings pending the full reference audit.
+For Sephira preset units, also turn **Use borrowed Sephira skill visuals** off to test without those preset substitutions.
+Rebuild/install and restart after changing modes. Existing saved kits and explicit custom presentations are retained.
+The read-only [native skill reference helper](scripts/reference/native-skill-animations/) collects all battle timelines
+and routing tables into separate ZIPs under Downloads/FFR Mod. Upload every part for the broader audit.
+
+Cling's missing ally timeline is repaired when **Show unverified skills** and either repair checkbox are on.
 Its original all-target effects, hit timing, sound and combat values are retained. The private copy enables only
 its checked caster track and maps enemy `atk` to imported `attack_A`. Generic audited group-skill reuse now
-creates a player route too; ally/enemy suffixes do not identify target count. Repaired Cling still needs a live
-multitarget test. Whip, Tentacle, Sonic Boom, Bite and Incisors are labeled **Verified; demo test** based on the
+creates a player route too; ally/enemy suffixes do not identify target count. The user confirmed repaired Cling works.
+Whip, Tentacle, Sonic Boom, Bite and Incisors are labeled **Verified; demo test** based on the
 user's successful tests, checked against their exact catalog definitions.
 
 Imported vision portraits now use native face/timeline/ability frames without the blue backing or FFBE rarity
@@ -346,19 +354,27 @@ and automated checks are verified; acquisition timing and MR progression still n
 
 ## Automatic animation repair
 
-The main page has **Show unverified skills** and **Use our skill changes** controls. Both default off and are saved
-with the engine's mod settings. The three modes are:
+The main page has **Show unverified skills**, **Use our skill changes**, and **Repair native skill bindings / motions**
+controls. All default off and are saved with the engine's mod settings. The modes are:
 
-| Show unverified | Use our changes | Ability behavior |
-| --- | --- | --- |
-| Off | Inactive | Use master's original sequence/compatibility selection filter; automatic skill repairs are off. |
-| On | Off | Show the expanded library with original game ability bindings; Studio's automatic timelines/effects and reviewed hides are off. |
-| On | On | Enable Studio's skill repairs and the 304 reviewed picker hides for summons of monsters, duplicate monster skills, weaker Explodes, follow-ups, item effects, party skills, Ultima Weapon, dismiss commands and esper-owned skills. Ordinary summon commands remain available. |
+| Show unverified | Use our changes | Native repairs | Ability behavior |
+| --- | --- | --- | --- |
+| Off | Any | Any | Original picker filter; both library repair paths are inactive. |
+| On | Off | Off | Expanded library with original game bindings; no automatic repairs or reviewed hides. |
+| On | Off | On | Audited same-skill binding/motion repairs only, currently Cling; original effects and timing. |
+| On | On | Either | Full Studio skill repairs and 304 reviewed picker hides; includes native repairs. Ordinary summon commands remain available. |
+
+With Show unverified on and Use our changes off, the native-repair checkbox selects a fourth mode: apply only audited
+repairs to each skill's own timeline/binding/motion. It currently includes Cling. Donor effects, generic fallback
+timelines, Barrage trials and reviewed hides remain off. Both repair checkboxes remember their state while Show
+unverified is off. If both are checked, the existing full-repair path applies, including its native repairs.
+Borrowed Sephira preset visuals are controlled separately; turn that switch off for a clean native-only test.
 
 Short descriptions, selected stats, full click descriptions, source/MR/awakening labels and all other Studio features
 remain available in every mode. Existing language/Attack/Resonance and duplicate filters still apply. Equipped skill IDs,
-original game rows and saved character configs are retained when their picker entries are hidden. The checkbox remembers
-its value while the visibility switch is off; both controls must be enabled for repairs and reviewed hides to apply.
+original game rows and saved character configs are retained when their picker entries are hidden. The full-repair checkbox remembers
+its value while the visibility switch is off; Show unverified and Use our changes must both be enabled for full repairs
+and reviewed hides. The native-repair checkbox does not enable those features.
 Rebuild/install after switching to replace the previous mod. Automatic repairs keep any existing game timeline first,
 including timelines supplied by a later game version; full-game compatibility still needs validation when available.
 The reviewed IDs, names and reasons are preserved in `assets/existing_visions/payload/ability_hiding_review.json`.
@@ -613,6 +629,7 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   missing ally route and disabled caster track before retaining its bridge. Refresh the five exact-definition
   **Verified; demo test** records after full-game live testing, including group skills and party replacements;
   see [monster compatibility evidence](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
+  Preserve the independent native-repair mode and audit all returned native battle tracks before expanding its rules.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,

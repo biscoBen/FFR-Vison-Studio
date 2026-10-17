@@ -1,0 +1,6 @@
+Close Resonance. Extract both helper files together, then run Collect Native Skill Animation Reference.cmd.
+Choose your Studio folder and game folder when prompted.
+The helper reads all native battle timelines, skill tables, asset inventory and the game mapping.
+It does not install a loader or change game/Studio files. Only the four allowlisted ability-mode flags are copied.
+Outputs are separate ordinary ZIPs under Downloads\FFR Mod. Upload ALL Native-Skill-Animation-Reference-*.zip parts.
+A Partial report still produces ZIPs for inspection. Keep the extraction log if an error occurs.

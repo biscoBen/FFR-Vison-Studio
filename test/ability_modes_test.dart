@@ -54,12 +54,12 @@ void main() {
     final client = MockClient((request) async {
       expect(request.url.path, '/api/abilities/settings');
       expect(request.method, 'PUT');
-      expect(jsonDecode(request.body), {'schema': 1, 'showUnverified': true, 'useChanges': false});
+      expect(jsonDecode(request.body), {'schema': 1, 'showUnverified': true, 'useChanges': false, 'useNativeRepairs': true});
       return http.Response(request.body, 200);
     });
     await http.runWithClient(() async {
-      expect(await Api('http://studio').saveAbilityModes(showUnverified: true, useChanges: false),
-          {'schema': 1, 'showUnverified': true, 'useChanges': false});
+      expect(await Api('http://studio').saveAbilityModes(showUnverified: true, useChanges: false, useNativeRepairs: true),
+          {'schema': 1, 'showUnverified': true, 'useChanges': false, 'useNativeRepairs': true});
     }, () => client);
   });
 

@@ -50,9 +50,9 @@ class Api {
   Future<void> saveCrystalCave(bool value) => _saveTestingFlag('crystalCave', value);
   Future<void> saveCrystalCaveTest(bool value) => _saveTestingFlag('crystalCaveTest', value);
   Future<void> saveFieldLeader(bool value) => _saveTestingFlag('fieldLeader', value);
-  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges}) async =>
+  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges, bool useNativeRepairs = false}) async =>
       (await put('/api/abilities/settings', {
-        'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges,
+        'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs,
       })) as Map<String, dynamic>;
   Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async =>
       (await put('/api/sephira/settings', {
