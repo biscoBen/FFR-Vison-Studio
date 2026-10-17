@@ -11,7 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### FFBE 1,000 Needles visual-import prototype — 2026-10-17
+### Cactuar visual baseline — 2026-10-17
+
+- Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
+  No tracer was run. This adds an original-enemy visual observation, while its exact runtime route and whether
+  another original presentation exists remain unconfirmed. Do not generalize it to other failed skills or Cactuar variants.
+- Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
+  under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
+  no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published FFBE 1,000 Needles visual-import prototype — 2026-10-17
+
+Code: [`deb8139`](https://github.com/biscoBen/FFR-Vison-Studio/commit/deb8139972651c3bc32502c030aeaf3c1b24d8ca).
+[Verified Windows test release / run 39016148168](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39016148168).
 
 - Recover the original `atk_nail1_white.bmb`, both textures and its mesh from the supplied Memorial APK's
   checksum-verified delivery packs. Retain source rows/checksums and a reproducible conversion script.
@@ -25,14 +37,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   appearance, placement and repeated casts remain unverified. BMB simulation, deterministic placement without
   native jitter and build-15 Mix/Add materials may differ from FFBE; no replacement is claimed pixel-perfect.
 
-### Cactuar visual baseline — 2026-10-17
-
-- Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
-  No tracer was run. This adds an original-enemy visual observation, while its exact runtime route and whether
-  another original presentation exists remain unconfirmed. Do not generalize it to other failed skills or Cactuar variants.
-- Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
-  under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
-  no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+Validation: local analysis, 263 Flutter tests (one Windows-only skip), 423 Python checks (five skips), actual
+cooked project/texture/timeline/binding readback, all 8,540 keys/atlas pixels and IoStore verification pass. Windows
+validation, compilation, fresh frozen-engine startup and updater/launcher checks pass (423 Python checks, six skips).
+Downloaded provenance/checksum and 37 extension resources match; 16 Crystal Fina resources are unchanged.
+Preserve extracted source bytes on Windows after its checksum test exposed Git line-ending conversion.
+First complete candidate to verified package/source download: **17m 15s**, including corrections and waiting;
+successful CI **5m 27s**; all three runs **24m 22s** runner time (23m 33s Windows, 49s Linux), including one stopped retry.
 
 ## Published original Cactuar practice encounter — 2026-10-16
 
