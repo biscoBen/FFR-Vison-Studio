@@ -11,6 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published native-only testing and audited skill bindings — 2026-10-16
+
+Code: [`aa0452b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aa0452bae51eaf2e757f6e8c180f2a95e238ad16).
+[Verified Windows test release / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-38986188584).
+
 - Add an independent **Repair native skill bindings / motions** testing checkbox. With Show unverified skills
   on and Use our skill changes off, apply only audited same-skill repairs: Cling plus 20 additional demo entries.
   Keep donor effects, generic fallback timelines, Barrage trials and reviewed hiding rules off in this mode.
@@ -26,6 +31,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   both source bindings and all package bytes; changed inputs skip the repair and report why. Future native routes
   and explicit custom presentations take precedence. Existing routes and entries without direct bindings stay intact.
   Only Cling has live confirmation; the additional 20 entries need game testing.
+- Local analysis, 58 focused Flutter tests and 393 Python checks pass. Tests cover native-only isolation,
+  settings migration/persistence, independent UI flags, build guards, exact motion exports/track selection,
+  future native/custom precedence and changed definition/binding/package rejection. All 21 routes pass
+  real native serialization/readback and IoStore verification, retaining original lookup rows and hit/effect/audio
+  constants. The collector's quoted-path, output-guard, partial-failure and source-immutability smoke checks pass.
+  Independently extracted references match across all 87 overlapping files. Windows validation and compilation
+  pass for the same commit, including full suites, frozen-engine startup and launcher/updater. Downloaded
+  provenance/checksum and all 35 managed resources match source. Accepted Fina, cave, party knockout,
+  sprite converter and icon renderer bytes remain unchanged.
+- First complete candidate to verified final download: **21m22s**, including the
+  full reference upload/audit, expanded repairs, checks, both builds, waiting and verification. The initial isolated-mode
+  run took **5m11s**; final Windows CI took **5m42s**.
+  Combined runner usage: **17m52s** across the two runs. Joined each matching automatic
+  run; no duplicate workflows dispatched. The final package adds the audited batch to the initial toggle build.
 
 ## Published Cling ally animation and native vision icons — 2026-10-16
 

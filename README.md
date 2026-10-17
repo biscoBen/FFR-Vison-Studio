@@ -13,6 +13,13 @@ The read-only [native skill reference helper](scripts/reference/native-skill-ani
 and routing tables into separate ZIPs under Downloads/FFR Mod. The returned five-part collection was audited; see
 [the native repair cases and limits](docs/MONSTER_ANIMATION_COMPATIBILITY.md#full-native-reference-audit).
 
+[Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
+(code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
+393 Python checks pass. All 21 native routes pass actual asset build/readback and IoStore verification;
+only Cling has live confirmation. Windows validation and compilation pass for the same commit, including
+full suites, frozen-engine startup and launcher/updater. Downloaded provenance/checksum and all
+35 managed resources match source. Accepted Fina, cave, party knockout and native icon renderer bytes remain unchanged.
+
 Cling's missing ally timeline is repaired when **Show unverified skills** and either repair checkbox are on.
 Its original all-target effects, hit timing, sound and combat values are retained. The private copy enables only
 its checked caster track and maps enemy `atk` to imported `attack_A`. Generic audited group-skill reuse now
