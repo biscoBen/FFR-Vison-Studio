@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -156,6 +156,15 @@ class HomeScreen extends StatelessWidget {
                     Text('Defend and let Cactuar act to test its original 1,000 Needles. Its normal AI may flee; repeat the battle if needed. F8 bookmarks the runtime trace.', style: Guide.small()),
                   const SizedBox(height: 10),
                 ],
+                SwitchListTile(
+                  key: const Key('testing-ffbe-needles'), contentPadding: EdgeInsets.zero,
+                  title: Text('Test FFBE 1,000 Needles visual', style: Guide.text()),
+                  subtitle: Text('Imports the original FFBE needle flashes for this skill on either side. Keeps native damage and MP. Independent of the other visual switches; rebuild/install after changing. Experimental: appearance and placement need in-game testing.', style: Guide.small()),
+                  value: app.ffbeNeedles,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setFfbeNeedles(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
                 SwitchListTile(
                   key: const Key('testing-max-mr'), contentPadding: EdgeInsets.zero,
                   title: Text('One-battle MR for testing', style: Guide.text()),

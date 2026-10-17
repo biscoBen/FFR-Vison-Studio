@@ -113,37 +113,47 @@ the reported blank appearance is already recorded. This option is not a native s
 
 ### FFBE 1,000 Needles import investigation — 2026-10-17
 
-The next requested experiment is a genuine **FFBE visual import**, independent of the native Resonance binding
-repairs and the ordinary-Needle substitute. It is not yet an extracted preview or an in-game import.
+The supplied [Memorial v208 APK](https://github.com/luminest-llc/ffbe-memorial-downloads/releases/tag/production-v208-9d21fc8b61c9900e)
+resolved the missing art. Its SHA256 is `9d21fc8b61c9900eaacb1c2ddef2cabcad1e97d2dc720be16ac09b06fc0086b4`.
+The APK was inspected statically, never executed. Its embedded delivery catalog points to public range-packed
+files; each selected CPK/master download was verified against the catalog's SHA256.
 
-FFBE's published [JP master snapshot](https://github.com/DaddyRaegen/FFBE-JP-Decrypted/tree/fe537f811fcabfb9e5d492aaa289fb96e47ab923)
-contains magic **40050**, `はりせんぼん`, in `Ver293_6J8jwSDW.dat`. Its visual schedule is
-`40:5002490:1:1:0`; the attack resolves at source frame 92. Group **5002490**, `harisenbon1`, in
-`Ver918_ZM06fUem.dat` spawns effect **1002460** eleven times at frames 0, 4, …, 40, using vertical offsets
-40, 0, −40 repeatedly (the final spawn is at 0). These are source 60-fps frames. This recovers the original
-schedule, not the effect's artwork. Do not import FFBE magic mechanics: Resonance skill 500270 retains its own
-MP/targeting and single 1,000-fixed-damage hit.
+Memorial magic **40050**, **1,000 Needles**, confirms `40:5002490:1:1:0` and source hit frame **92**.
+Group **5002490**, `harisenbon1`, spawns effect **1002460** eleven times at frames 0, 4, …, 40,
+with vertical offsets 40, 0, −40 repeatedly (last offset 0). These are 60-fps source frames.
+The recovered `F_EFFECT_MST` maps that effect to type-5 **`atk_nail1_white.bmb`**, scale 100%.
+`battleEffect1.cpk` supplies that 10,256-byte BMB; the `effectResource` packs supply its two PNG textures
+and `position_model_circle12.m3r`. The exact source files, selected master rows, per-file checksums and
+[provenance](scripts/fixtures/ffbe_needles/provenance.json) are retained in the project.
+The earlier published JP masters/public unit host did not contain this complete payload; no more Resonance
+extraction is needed to recover this particular FFBE effect.
 
-The published master archive has 104 `.dat` files and no matching `F_EFFECT_MST` visual definition for 1002460.
-The checked asset dump's `abilities` folder contains 31 UI BMB files; its `ui_effect` folder has 46 images, and
-no complete visual payload for this skill was identified in those folders. The current Studio host index has 3,806 unit bundles and no
-`effectBaseUrl` entries. This describes the checked sources, not proof that the original asset is unavailable elsewhere.
+**Test FFBE 1,000 Needles visual** is a separate, default-off home switch. Enable it and rebuild/install to
+add private ally/enemy routes **500271/500272** for Resonance skill **500270**. Keep **Use our skill changes**
+and **Use borrowed Sephira skill visuals** off for an isolated comparison. The native bindings/motions repair
+switch may remain on. This test takes priority over the ordinary-Needle substitute for this skill. It does not
+teach the skill, edit kits, or change native MP, damage, targeting, AI or rewards. Turn it off and rebuild/install
+to restore prior routing. Cactuar practice can exercise the enemy side; a vision equipped with the original
+1,000 Needles can exercise the ally side.
 
-The bundled build-15 engine already includes `tools/ffbe_effects/catalog.py`, `ibmb.py`, `to_ss6.py` and the
-builder's `build_effect_project`/`ffbe_effects` sequence-layer support. Current
-[upstream source](https://github.com/FFBE-JP-Translation/FFR-Vison-Studio/tree/990f2ccab25a6132b0bb3b217420899f6d0e38d9/mod-tools/tools/ffbe_effects)
-also has newer source-placement and prepared-effect tooling. The converters expect separate local source media;
-their presence does not demonstrate that every FFBE effect converts accurately. Some original effects use CGG/CGS
-instead of BMB; the missing definition is needed to identify this one's actual format.
+The imported project retains all **1,760 particle-frame instances** (no drops/shrinks), eleven source spawns,
+source-timed start at frame 40 and one native damage reaction at frame 92. The effect attaches to the selected
+target's `Null_center`, rather than a hard-coded party-side point. Explicit destruction follows the visual tail;
+hidden padding prevents looping before cleanup. No camera, grading, game-speed, FFBE mechanics or FFBE audio
+is imported. Its private sequence, project/texture and both binding tables pass actual cooked serialization,
+readback and IoStore verification; the build checks event constants, project import, target, one hit, cleanup,
+event-channel times and compiled playback times before packing.
 
-**Required source input:** resolve effect **1002460** in the matching regional `F_EFFECT_MST`, then provide its
-referenced visual file(s) and dependencies: BMB plus textures/meshes, or the corresponding CGG/CGS/PNG data.
-The creator's converter expects particle media under `build/ffbe_cpk/effects_dec`; client exports commonly
-separate `battleEffect` and `effectResource`. With those assets, decode and preview the original effect, convert
-it to a private SpriteStudio project/texture, add its source-timed target spawns to a private Resonance skill
-sequence, and verify targeting, timing and cleanup in battle. Preserve all native-only mode behavior. No substitute
-is presented as an extracted FFBE effect, no new test toggle is added before the payload exists, and no repeated
-Resonance extraction is needed for this missing FFBE input.
+This is a **visual-import prototype requiring live testing**, not a claim that all FFBE effects now work or
+that its offline preview exactly matches FFBE's renderer. The converter simulates BMB particles; source random
+placement jitter is omitted deterministically, and the build-15 writer uses its standard Mix/Add materials
+instead of newer identity PartsColor keys. Brightness, size, target placement and repeated casts need in-game
+confirmation. Other failed native skills remain a separate investigation.
+
+Reproduce the shipped payload with `python scripts/build_ffbe_needles.py --converter <tools/ffbe_effects>
+--work <temporary-directory>`, using the [pinned upstream converter](https://github.com/FFBE-JP-Translation/FFR-Vison-Studio/tree/990f2ccab25a6132b0bb3b217420899f6d0e38d9/mod-tools/tools/ffbe_effects)
+and Pillow/NumPy. Studio uses the checked output ZIP and its existing asset writer; it does not download or
+execute the APK or require the converter on the player's computer.
 
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
@@ -781,6 +791,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   (500380) selected the native damage/reaction-only 900000 placeholder on imported visions in the demo. Find their
   own full-release presentation assets/routes and retest them, rather than treating a restored caster alias as
   recovery of their original visuals. The other six blank follow-up entries still lack this runtime attribution.
+  Recheck the optional FFBE 1,000 Needles import against the full game's own effect route before retaining it.
+  The Memorial source and isolated prototype are documented above; never enable the import automatically or
+  treat its live appearance as verified from offline conversion alone.
   Retest 1,000 Needles on the original enemy too: the 2026-10-17 visual test reports no visible animation from
   the tested Cactuar, without a trace. Preserve this observation separately from proof of a missing asset or route.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.

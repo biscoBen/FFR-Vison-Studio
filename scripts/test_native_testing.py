@@ -74,7 +74,7 @@ def practice_game():
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'ffbeNeedles': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -302,15 +302,17 @@ class NativeTestingTests(unittest.TestCase):
             def __init__(self, code, detail): super().__init__(detail)
         with tempfile.TemporaryDirectory() as root, mock.patch.dict('sys.modules', {'fastapi': SimpleNamespace(HTTPException=Error)}):
             testing.register(App(), {'ROOT': root})
-            routes['put']({'schema': 1, 'maxMr': False, 'practiceBattle': True, 'practiceEncounter': 'cactuar'})
+            routes['put']({'schema': 1, 'maxMr': False, 'practiceBattle': True, 'practiceEncounter': 'cactuar', 'ffbeNeedles': True})
             self.assertEqual(json.loads((Path(root) / 'mods/EstherTsukiko/units.json').read_bytes()), [])
             routes['put']({'schema': 1, 'maxMr': True})
             self.assertTrue(routes['get']()['practiceBattle'])
             self.assertTrue(routes['get']()['maxMr'])
             self.assertEqual(routes['get']()['practiceEncounter'], 'cactuar')
+            self.assertTrue(routes['get']()['ffbeNeedles'])
             routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': False})
             self.assertFalse(routes['get']()['practiceBattle'])
             self.assertEqual(routes['get']()['practiceEncounter'], 'cactuar')
+            self.assertTrue(routes['get']()['ffbeNeedles'])
             with self.assertRaises(Error): routes['put']({'schema': 1, 'maxMr': True, 'practiceBattle': 'true'})
 
 

@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "source": "FFBE Memorial EN Global Events v208",
+  "apkUrl": "https://github.com/luminest-llc/ffbe-memorial-downloads/releases/download/production-v208-9d21fc8b61c9900e/FFBE-Memorial-EN-Global-Events-v208.apk",
+  "apkSha256": "9d21fc8b61c9900eaacb1c2ddef2cabcad1e97d2dc720be16ac09b06fc0086b4",
+  "converterRepository": "https://github.com/FFBE-JP-Translation/FFR-Vison-Studio",
+  "converterCommit": "990f2ccab25a6132b0bb3b217420899f6d0e38d9",
+  "effectId": 1002460,
+  "effectGroup": 5002490,
+  "magicId": 40050,
+  "sourceFps": 60,
+  "effectStartFrame": 40,
+  "hitFrame": 92,
+  "sourceFiles": {
+    "atk_nail1_white.bmb": {
+      "archive": "battleEffect1.cpk",
+      "sha256": "56e28561301716b22884bfa8b2899af891cae78bff3d88a81329e8fb797fb140",
+      "bytes": 10256
+    },
+    "lapis_eff_material_003_0036_light2.png": {
+      "archive": "effectResource1_kc5D4s3g.cpk",
+      "sha256": "192e6d497972be344a42828f25bd9e1298f75a36244a0197bf4067c51de6d0e6",
+      "bytes": 6670
+    },
+    "lapis_eff_material_019_common_0008_ball1.png": {
+      "archive": "effectResource3_6Zak2Ov0.cpk",
+      "sha256": "bb9f9ed08d2382d00b2fdce3cbe54fe12d5e28af1e272b09043632204f6476af",
+      "bytes": 9790
+    },
+    "position_model_circle12.m3r": {
+      "archive": "effectResource1_kc5D4s3g.cpk",
+      "sha256": "b867e521229abf33689a817cfd3a8d1ede2444245f0774388d6c54bb9d29ab78",
+      "bytes": 696
+    }
+  },
+  "files": {
+    "atk_nail1_white.bmb": "56e28561301716b22884bfa8b2899af891cae78bff3d88a81329e8fb797fb140",
+    "lapis_eff_material_003_0036_light2.png": "192e6d497972be344a42828f25bd9e1298f75a36244a0197bf4067c51de6d0e6",
+    "lapis_eff_material_019_common_0008_ball1.png": "bb9f9ed08d2382d00b2fdce3cbe54fe12d5e28af1e272b09043632204f6476af",
+    "position_model_circle12.m3r": "b867e521229abf33689a817cfd3a8d1ede2444245f0774388d6c54bb9d29ab78",
+    "source-rows.json": "a64de7532359ac6b70ad022ae751c05ff1669661b2fb26fd30fa6b9e85aae2ac"
+  },
+  "limits": [
+    "Offline BMB particle simulation; live FFBE render parity is unverified.",
+    "Group alignment modes 2/2 center each spawn on its target. Native random jitter is omitted for this deterministic prototype.",
+    "Visual import only: no FFBE mechanical definition or audio is imported.",
+    "Build-15 writer uses standard SpriteStudio Mix/Add; newer identity PartsColor keys are omitted."
+  ]
+}

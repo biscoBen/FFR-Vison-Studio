@@ -11,15 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### FFBE 1,000 Needles visual-import investigation — 2026-10-17
+### FFBE 1,000 Needles visual-import prototype — 2026-10-17
 
-- Locate FFBE magic 40050's original `harisenbon1` schedule: group 5002490 spawns effect 1002460 eleven times
-  at four-frame intervals. Record pinned master-table and upstream-converter sources in the
-  [project findings](README.md#ffbe-1000-needles-import-investigation--2026-10-17).
-- Inspect the existing BMB-to-SpriteStudio pipeline and newer upstream source-placement tools. The referenced
-  effect definition/artwork is absent from the checked published masters and packs, so no real extracted preview
-  or game import is claimed. Save the exact missing dependency request and planned private import, retaining
-  Resonance's own mechanics and native-only mode. Documentation only; no new package or visual substitution.
+- Recover the original `atk_nail1_white.bmb`, both textures and its mesh from the supplied Memorial APK's
+  checksum-verified delivery packs. Retain source rows/checksums and a reproducible conversion script.
+- Add default-off **Test FFBE 1,000 Needles visual**, independent of the other visual switches. Rebuild/install
+  to give skill 500270 private ally/enemy routes with its eleven source-timed needle flashes and one native
+  damage reaction. Preserve MP, mechanics, kits, AI and rewards; disabling/rebuilding restores prior behavior.
+- Attach the effect to the selected target, destroy it after its tail and pad its clip to prevent loops. Check
+  cooked references, event constants and compiled timing before packing. Persist the test setting across other
+  switches and old clients; permit an empty-roster test build. Extension 1.2.37 keeps host/install checks aligned.
+- Local effect/project/texture/timeline serialization, binding readback and IoStore validation pass. Live
+  appearance, placement and repeated casts remain unverified. BMB simulation, deterministic placement without
+  native jitter and build-15 Mix/Add materials may differ from FFBE; no replacement is claimed pixel-perfect.
 
 ### Cactuar visual baseline — 2026-10-17
 

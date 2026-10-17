@@ -43,6 +43,8 @@ class Api {
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
   Future<String> testingPracticeEncounter() async => (await get('/api/testing'))['practiceEncounter'] as String? ?? 'standard';
+  Future<bool> ffbeNeedles() async => (await get('/api/testing'))['ffbeNeedles'] == true;
+  Future<void> saveFfbeNeedles(bool value) => _saveTestingFlag('ffbeNeedles', value);
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
   Future<bool> crystalCaveTest() async => (await get('/api/testing'))['crystalCaveTest'] == true;
   Future<bool> fieldLeader() async => (await get('/api/testing'))['fieldLeader'] == true;
@@ -66,6 +68,7 @@ class Api {
       'schema': 1, 'maxMr': current['maxMr'] == true,
       'practiceBattle': current['practiceBattle'] == true,
       'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
+      'ffbeNeedles': current['ffbeNeedles'] == true,
       'crystalCave': current['crystalCave'] == true,
       'crystalCaveTest': current['crystalCaveTest'] == true,
       'fieldLeader': current['fieldLeader'] == true, name: value,

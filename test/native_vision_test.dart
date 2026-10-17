@@ -63,6 +63,15 @@ class NativeApi extends ConfigApi {
   NativeApi(super.roster);
   bool maxMr = false;
   bool practiceBattle = false;
+  bool ffbeNeedlesValue = false;
+  bool failNeedles = false;
+  @override
+  Future<bool> ffbeNeedles() async => ffbeNeedlesValue;
+  @override
+  Future<void> saveFfbeNeedles(bool value) async {
+    if (failNeedles) throw StateError('Settings write failed.');
+    ffbeNeedlesValue = value;
+  }
   String practiceEncounter = 'standard';
   bool failPracticeEncounter = false;
   @override
@@ -503,6 +512,28 @@ void main() {
     await wait(tester, () => !app.testingPracticeBattle);
     expect(api.practiceBattle, isFalse);
     expect(api.maxMr, isTrue);
+  });
+
+  testWidgets('FFBE visual test saves independently and waits for successful saves', (tester) async {
+    api.roster.clear(); app.units.clear();
+    await show(tester);
+    final control = find.byKey(const Key('testing-ffbe-needles'));
+    await tester.ensureVisible(control); await tester.tap(control);
+    await wait(tester, () => app.ffbeNeedles);
+    expect(api.ffbeNeedlesValue, isTrue);
+    expect(api.roster, isEmpty);
+    expect(app.useAbilityChanges, isFalse);
+    final build = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
+    expect(tester.widget<GuideButton>(build).onPressed, isNotNull);
+    api.failNeedles = true;
+    await tester.tap(control);
+    await wait(tester, () => app.notice?.contains('Settings write failed') == true);
+    expect(app.ffbeNeedles, isTrue);
+    expect(tester.widget<SwitchListTile>(control).value, isTrue);
+    await tester.pump(const Duration(seconds: 6));
+    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
+    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+    await expectLater(app.setFfbeNeedles(false), throwsStateError);
   });
 
   testWidgets('practice opponents persist and cannot change during a build', (tester) async {

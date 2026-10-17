@@ -28,16 +28,17 @@ STAGE_COMPOSITE = 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo'
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'ffbeNeedles': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False}
 
 
 def validate_settings(value):
     # Accept and discard the removed diagnostic switches in older configs.
     # Crystal Fina Test now always uses transparent glass with rotation.
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
+            or type(value.get('ffbeNeedles', False)) is not bool
             or value.get('practiceEncounter', 'standard') not in ('standard', 'cactuar')
             or type(value.get('crystalCave', False)) is not bool
             or type(value.get('crystalCaveTest', False)) is not bool
@@ -47,7 +48,7 @@ def validate_settings(value):
             or type(value.get('fieldLeader', False)) is not bool):
         raise ValueError('Invalid vision testing settings.')
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
-            'practiceEncounter': value.get('practiceEncounter', 'standard'),
+            'practiceEncounter': value.get('practiceEncounter', 'standard'), 'ffbeNeedles': value.get('ffbeNeedles', False),
             'crystalCave': value.get('crystalCave', False), 'crystalCaveTest': value.get('crystalCaveTest', False),
             'fieldLeader': value.get('fieldLeader', False)}
 
@@ -273,7 +274,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'practiceEncounter', 'crystalCave', 'crystalCaveTest', 'fieldLeader'):
+            for flag in ('practiceBattle', 'practiceEncounter', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)
@@ -281,7 +282,7 @@ def register(app, env):
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'crystalCave', 'crystalCaveTest', 'fieldLeader')):
+            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader')):
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'

@@ -61,6 +61,7 @@ class AppState extends ChangeNotifier {
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
   String testingPracticeEncounter = 'standard';
+  bool ffbeNeedles = false;
   bool crystalCave = false;
   bool crystalCaveTest = false;
   bool fieldLeader = false;
@@ -328,6 +329,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load shop battle testing settings: $e'; }
     try { testingPracticeEncounter = await api!.testingPracticeEncounter(); }
     catch (e) { notice = 'Could not load shop battle opponents: $e'; }
+    try { ffbeNeedles = await api!.ffbeNeedles(); }
+    catch (e) { notice = 'Could not load the FFBE animation test setting: $e'; }
     try { crystalCave = await api!.crystalCave(); }
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { crystalCaveTest = await api!.crystalCaveTest(); }
@@ -954,6 +957,13 @@ class AppState extends ChangeNotifier {
     if (!const ['standard', 'cactuar'].contains(value)) { throw ArgumentError.value(value, 'encounter'); }
     await api!.saveTestingPracticeEncounter(value);
     testingPracticeEncounter = value; notifyListeners();
+  });
+
+  Future<void> setFfbeNeedles(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveFfbeNeedles(value);
+    ffbeNeedles = value; notifyListeners();
   });
 
   /// Convert retired switches into an editable per-vision cave assignment.
