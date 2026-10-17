@@ -279,6 +279,11 @@ def expected_edits(root, units, rows):
     tables = verification_operations(root, units, rows)
     expected = {}
     for rel, table in tables.items():
+        original = rows(rel)
+        for e in table['add']:
+            if e['row'] in original:
+                desired = apply_fields(original[e['cloneFrom']], e['set'])
+                expected[(rel, e['row'])] = field_delta(original[e['row']], desired)
         for e in table['set']: expected.setdefault((rel, e['row']), {}).update(e['set'])
     return expected
 
@@ -290,6 +295,10 @@ def prepare_practice_dialog(table, rows, woman):
     inn = parent.get(inn_key)
     if not inn or composite.get(inn_key) != inn or not inn.get('ChoicesBranchEventList'):
         raise ValueError('The native choice branch template is unavailable.')
+    link_key = 'DT_Town_010Gra_20_0930_1'
+    link = parent.get(link_key)
+    if not link or composite.get(link_key) != link or not link.get('ContinuousEventList'):
+        raise ValueError('The native continuous-event template is unavailable.')
     templates = [(k, v) for k, v in choices.items() if v.get('ChoiceTextList')]
     if not templates:
         raise ValueError('The native choice dialog template is unavailable.')
@@ -297,7 +306,7 @@ def prepare_practice_dialog(table, rows, woman):
     def event(name, updates):
         if name in parent or name in composite: raise ValueError('Practice dialog identity conflict.')
         desired = apply_fields(woman, {'TalkEventDataTable': 'None', 'EventSequence': 'None',
-            'ArgList': {}, 'ChoicesBranchEventList': [], 'ContinuousEventList': [], **updates})
+            'ChoicesBranchEventList': [], 'ContinuousEventList': [], **updates})
         edits = field_delta(inn, desired)
         for rel in (SHOP_EVENT, COMPOSITE):
             table(rel)['add'].append({'row': name, 'cloneFrom': inn_key, 'set': copy.deepcopy(edits)})
@@ -317,9 +326,15 @@ def prepare_practice_dialog(table, rows, woman):
                                        for i, target in enumerate(targets)]})
     for index, (key, _, _, _) in enumerate(OPPONENTS):
         event(PRACTICE + '_' + key, {'encountGroupId': PRACTICE_ID + index})
+    # ffr-dt cannot create structs in an empty array. Replace this existing
+    # row from a populated continuous-event donor, then restore EVERY field
+    # of the original woman except our unconditional menu link. In particular,
+    # none of the donor's quest flags, progress or request changes may survive.
+    desired = apply_fields(woman, {
+        'ContinuousEventList': [{'Condition': '', 'EventId': PRACTICE + '_Menu_A'}]})
     for rel in (SHOP_EVENT, COMPOSITE):
-        table(rel)['set'].append({'row': SHOP_WOMAN, 'set': {
-            'ContinuousEventList': [{'Condition': '', 'EventId': PRACTICE + '_Menu_A'}]}})
+        table(rel)['add'].append({'row': SHOP_WOMAN, 'cloneFrom': link_key,
+                                 'set': field_delta(link, desired)})
 
 
 def author_practice_choice(asset, tag):
@@ -470,7 +485,10 @@ def field_delta(original, desired, prefix=''):
     for key, value in desired.items():
         path = prefix + key
         if original[key] == value: continue
-        if isinstance(value, dict): changes.update(field_delta(original[key], value, path + '.'))
+        # Talk-event ArgList is a native map, not a struct. ffr-dt updates
+        # existing map keys through the whole property, never dotted paths.
+        if isinstance(value, dict) and key != 'ArgList':
+            changes.update(field_delta(original[key], value, path + '.'))
         else: changes[path] = copy.deepcopy(value)
     return changes
 
@@ -488,8 +506,8 @@ def apply_fields(row, fields):
 
 def check_rows(original, built, operation):
     expected = copy.deepcopy(original)
-    for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     for e in operation['add']: expected[e['row']] = apply_fields(original[e['cloneFrom']], e['set'])
+    for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     if built != expected:
         raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings.')
 

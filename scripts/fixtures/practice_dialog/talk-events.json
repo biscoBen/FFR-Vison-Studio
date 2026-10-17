@@ -1,0 +1,556 @@
+{
+  "schema": 1,
+  "source": "Supplied Sanctum/Fina demo reference 20261015",
+  "sourceTable": "Event/TalkEvent/FreeTalk/01Gra/DT_TalkEventData_Town_01Gra_20",
+  "rows": {
+    "DT_Town_010Gra_20_0920_8": {
+      "Category": {
+        "TagName": "Event.Category.AtcRestartTalk"
+      },
+      "Description": "",
+      "EventType": "Sequence",
+      "TalkEventDataTable": "/Game/Datatable/Event/Text/FreeTalk/01Gra/Town_010Gra_20/DT_Town_01Gra_20",
+      "EventSequence": "/Game/Sequencer/Event/FreeTalk/SEQ_CcommonFreeTalk",
+      "EventBlueprint": "None",
+      "CueSheetName": "",
+      "EventSECueSheetName": "",
+      "ArgList": {
+        "id": "6"
+      },
+      "CustomChoiceDialogDataList": [],
+      "TransformOrigin": "None",
+      "IsSkipConfirm": false,
+      "IsSetCanSystemMenu": false,
+      "CanSystemMenu": true,
+      "IsGameOver": false,
+      "IsSetAutoSave": false,
+      "IsAutoSave": false,
+      "IsSetForceAutoSave": false,
+      "IsForceAutoSave": false,
+      "IsEnableBackLogVoiceCheck": false,
+      "ContinuousEventList": [],
+      "ChoicesBranchEventList": [],
+      "encountGroupId": -1,
+      "OverwriteBattleParty": [],
+      "TransitionLocation": {
+        "isEventOnly": false,
+        "mapId": -1,
+        "oldMapId": -1,
+        "pointId": -1,
+        "underworld": -1,
+        "cameraSettingId": -1,
+        "landingAirShipPointId": -1,
+        "transitionEventList": [],
+        "transitionEventList2": [],
+        "afterTransitionEventList": [],
+        "transitionLoadLevelId": -1,
+        "transitionPlayBGM": "",
+        "isTransitionChangeMovementMethod": false,
+        "transitionMovementType": "Walking",
+        "isDisplayMapName": true,
+        "pOpenDoor": null,
+        "overrideIslandType": "None",
+        "bDoAutoSave": false,
+        "isPlayTransitionFootStepSE": true,
+        "overrideTransitionCueName": "",
+        "afterWorldWarpData": {
+          "Type": "None",
+          "ID": -1
+        },
+        "fadeSE_FLD_VOL": true
+      },
+      "TransitionLocationOnTestPlayStart": -1,
+      "OnFlagList": [],
+      "OffFlagList": [],
+      "FlagList": [],
+      "IsForceUpdateProgress": false,
+      "ProgressList": [],
+      "AchievementData": {
+        "bOverride_AchievementId": false,
+        "AchievementId": "Achievement0000",
+        "bCheckBeastAchievement": false
+      },
+      "KnownMapIdList": [],
+      "ClearedMapIdList": [],
+      "ObtainItemList": [],
+      "ConsumeItemList": [],
+      "TransferItemList": [],
+      "CollectMedalRewardDatatable": null,
+      "IsOpenDialogByFinishEvent": false,
+      "RequestStateSettings": [],
+      "bUpdateAllQuest": false,
+      "ChatSettings": {
+        "BehaviourSettings": {
+          "IsOverride": false,
+          "Bahaviour": "None"
+        }
+      },
+      "Airship": {
+        "IsTransferAirship": false,
+        "TransferMapId": 0
+      },
+      "IsGetOffVehicle": false,
+      "IsHiddenFieldUI": true,
+      "LoadingScreenSetting": "",
+      "DOFSetting": "Keep",
+      "MapStartupSettings": {
+        "ChangeBGM": "Stop"
+      },
+      "RestoreBGMSettings": {
+        "IsOverride": false,
+        "Type": "PrevBGM",
+        "OverrideBGM": {
+          "CueName": "",
+          "selectorName": "",
+          "selectorLabel": ""
+        }
+      },
+      "RestoreSoundVolumeSettings": {
+        "IsRevertValume": true,
+        "FadeTime": 1.0
+      },
+      "IsSetNormalFlatIntensityDegree": false,
+      "normalFlatIntensityDegree": "None",
+      "IsDisableAisacControl": false,
+      "IsRecover": false,
+      "InitUnitDataList": [],
+      "ChangeUnitJoinStatusList": [],
+      "GuestUnitSettings": {
+        "Type": "None",
+        "UnitId": 0
+      },
+      "UnitInheritanceList": [],
+      "UnitAddParamList": [],
+      "AbilitySettings": {
+        "UnitSettings": []
+      },
+      "UnitEqueipmentSettings": {
+        "UnitSettings": []
+      },
+      "LimitBurstSettings": {
+        "UnitSettings": []
+      },
+      "EnableMaxDamageSettings": [],
+      "BattleSpawnUnitGroupSettings": [],
+      "IsEndBattle": false,
+      "MinigameData": {
+        "nawatobiData": {
+          "ChallengeId": -1
+        }
+      },
+      "HeaderSettings": {
+        "IsVisibleNPC": false,
+        "IsVisiblesPice": false,
+        "IsVisibleSavePoint": false,
+        "IsVisiblesAirShip": true,
+        "bOverride_AntiAliasingMethod": false,
+        "AntiAliasingMethod": "AAM_FXAA",
+        "bOverride_SSAO": false,
+        "SSAOData": {
+          "AmbientocclusionlevelsMap": {}
+        },
+        "bOverride_SSR": false,
+        "SSRData": {
+          "SSRQualityMap": {}
+        },
+        "bOverride_DynamicResolution": false,
+        "DynamicResolutionData": {
+          "MinDynamicResolutionMap": {}
+        },
+        "bDisableAllowOcclusionQueries": false,
+        "bDemoClearSpecialSave": false
+      },
+      "FooterSettings": {
+        "IsVisibleNPC": true,
+        "IsVisiblesPice": true,
+        "IsVisibleSavePoint": true,
+        "IsVisiblesAirShip": true,
+        "IsApplyProgressis": false,
+        "IsEnableRevertAntiAliasingMethod": true,
+        "IsEnableRevertSSAO": true,
+        "IsEnableRevertSSR": true,
+        "IsEnableRevertDynamicRes": true,
+        "bDisableRevertAllowOcclusionQueries": false
+      },
+      "UnitIds": [],
+      "IsReturnTitle": false
+    },
+    "DT_Town_010Gra_20_0920_5": {
+      "Category": {
+        "TagName": "Event.Category.Default"
+      },
+      "Description": "",
+      "EventType": "Sequence",
+      "TalkEventDataTable": "/Game/Datatable/Event/Text/FreeTalk/01Gra/Town_010Gra_20/DT_Town_01Gra_20",
+      "EventSequence": "/Game/Sequencer/Event/FreeTalk/SEQ_CcommonFreeTalk",
+      "EventBlueprint": "None",
+      "CueSheetName": "",
+      "EventSECueSheetName": "",
+      "ArgList": {
+        "id": "3"
+      },
+      "CustomChoiceDialogDataList": [],
+      "TransformOrigin": "None",
+      "IsSkipConfirm": false,
+      "IsSetCanSystemMenu": false,
+      "CanSystemMenu": true,
+      "IsGameOver": false,
+      "IsSetAutoSave": false,
+      "IsAutoSave": false,
+      "IsSetForceAutoSave": false,
+      "IsForceAutoSave": false,
+      "IsEnableBackLogVoiceCheck": false,
+      "ContinuousEventList": [],
+      "ChoicesBranchEventList": [
+        {
+          "Index": 0,
+          "EventList": [
+            {
+              "Condition": "{money}>=1000",
+              "EventId": "INN_Accept"
+            },
+            {
+              "Condition": "{money}<1000",
+              "EventId": "Arena_RankOrdersQuit"
+            }
+          ]
+        }
+      ],
+      "encountGroupId": -1,
+      "OverwriteBattleParty": [],
+      "TransitionLocation": {
+        "isEventOnly": false,
+        "mapId": -1,
+        "oldMapId": -1,
+        "pointId": -1,
+        "underworld": -1,
+        "cameraSettingId": -1,
+        "landingAirShipPointId": -1,
+        "transitionEventList": [],
+        "transitionEventList2": [],
+        "afterTransitionEventList": [],
+        "transitionLoadLevelId": -1,
+        "transitionPlayBGM": "",
+        "isTransitionChangeMovementMethod": false,
+        "transitionMovementType": "Walking",
+        "isDisplayMapName": true,
+        "pOpenDoor": null,
+        "overrideIslandType": "None",
+        "bDoAutoSave": false,
+        "isPlayTransitionFootStepSE": true,
+        "overrideTransitionCueName": "",
+        "afterWorldWarpData": {
+          "Type": "None",
+          "ID": -1
+        },
+        "fadeSE_FLD_VOL": true
+      },
+      "TransitionLocationOnTestPlayStart": -1,
+      "OnFlagList": [],
+      "OffFlagList": [],
+      "FlagList": [],
+      "IsForceUpdateProgress": false,
+      "ProgressList": [],
+      "AchievementData": {
+        "bOverride_AchievementId": false,
+        "AchievementId": "Achievement0000",
+        "bCheckBeastAchievement": false
+      },
+      "KnownMapIdList": [],
+      "ClearedMapIdList": [],
+      "ObtainItemList": [],
+      "ConsumeItemList": [],
+      "TransferItemList": [],
+      "CollectMedalRewardDatatable": null,
+      "IsOpenDialogByFinishEvent": false,
+      "RequestStateSettings": [],
+      "bUpdateAllQuest": false,
+      "ChatSettings": {
+        "BehaviourSettings": {
+          "IsOverride": false,
+          "Bahaviour": "None"
+        }
+      },
+      "Airship": {
+        "IsTransferAirship": false,
+        "TransferMapId": 0
+      },
+      "IsGetOffVehicle": false,
+      "IsHiddenFieldUI": true,
+      "LoadingScreenSetting": "",
+      "DOFSetting": "Keep",
+      "MapStartupSettings": {
+        "ChangeBGM": "Stop"
+      },
+      "RestoreBGMSettings": {
+        "IsOverride": false,
+        "Type": "PrevBGM",
+        "OverrideBGM": {
+          "CueName": "",
+          "selectorName": "",
+          "selectorLabel": ""
+        }
+      },
+      "RestoreSoundVolumeSettings": {
+        "IsRevertValume": true,
+        "FadeTime": 1.0
+      },
+      "IsSetNormalFlatIntensityDegree": false,
+      "normalFlatIntensityDegree": "None",
+      "IsDisableAisacControl": false,
+      "IsRecover": false,
+      "InitUnitDataList": [],
+      "ChangeUnitJoinStatusList": [],
+      "GuestUnitSettings": {
+        "Type": "None",
+        "UnitId": 0
+      },
+      "UnitInheritanceList": [],
+      "UnitAddParamList": [],
+      "AbilitySettings": {
+        "UnitSettings": []
+      },
+      "UnitEqueipmentSettings": {
+        "UnitSettings": []
+      },
+      "LimitBurstSettings": {
+        "UnitSettings": []
+      },
+      "EnableMaxDamageSettings": [],
+      "BattleSpawnUnitGroupSettings": [],
+      "IsEndBattle": false,
+      "MinigameData": {
+        "nawatobiData": {
+          "ChallengeId": -1
+        }
+      },
+      "HeaderSettings": {
+        "IsVisibleNPC": false,
+        "IsVisiblesPice": false,
+        "IsVisibleSavePoint": false,
+        "IsVisiblesAirShip": true,
+        "bOverride_AntiAliasingMethod": false,
+        "AntiAliasingMethod": "AAM_FXAA",
+        "bOverride_SSAO": false,
+        "SSAOData": {
+          "AmbientocclusionlevelsMap": {}
+        },
+        "bOverride_SSR": false,
+        "SSRData": {
+          "SSRQualityMap": {}
+        },
+        "bOverride_DynamicResolution": false,
+        "DynamicResolutionData": {
+          "MinDynamicResolutionMap": {}
+        },
+        "bDisableAllowOcclusionQueries": false,
+        "bDemoClearSpecialSave": false
+      },
+      "FooterSettings": {
+        "IsVisibleNPC": true,
+        "IsVisiblesPice": true,
+        "IsVisibleSavePoint": true,
+        "IsVisiblesAirShip": true,
+        "IsApplyProgressis": false,
+        "IsEnableRevertAntiAliasingMethod": true,
+        "IsEnableRevertSSAO": true,
+        "IsEnableRevertSSR": true,
+        "IsEnableRevertDynamicRes": true,
+        "bDisableRevertAllowOcclusionQueries": false
+      },
+      "UnitIds": [],
+      "IsReturnTitle": false
+    },
+    "DT_Town_010Gra_20_0930_1": {
+      "Category": {
+        "TagName": "Event.Category.Default"
+      },
+      "Description": "",
+      "EventType": "Sequence",
+      "TalkEventDataTable": "/Game/Datatable/Event/Text/FreeTalk/01Gra/Town_010Gra_20/DT_Town_01Gra_20",
+      "EventSequence": "/Game/Sequencer/Event/FreeTalk/SEQ_CcommonFreeTalk",
+      "EventBlueprint": "None",
+      "CueSheetName": "",
+      "EventSECueSheetName": "",
+      "ArgList": {
+        "id": "31"
+      },
+      "CustomChoiceDialogDataList": [],
+      "TransformOrigin": "None",
+      "IsSkipConfirm": false,
+      "IsSetCanSystemMenu": false,
+      "CanSystemMenu": true,
+      "IsGameOver": false,
+      "IsSetAutoSave": false,
+      "IsAutoSave": false,
+      "IsSetForceAutoSave": false,
+      "IsForceAutoSave": false,
+      "IsEnableBackLogVoiceCheck": false,
+      "ContinuousEventList": [
+        {
+          "Condition": "{flag:138}",
+          "EventId": "DT_Town_010Gra_20_0930_3"
+        }
+      ],
+      "ChoicesBranchEventList": [],
+      "encountGroupId": -1,
+      "OverwriteBattleParty": [],
+      "TransitionLocation": {
+        "isEventOnly": false,
+        "mapId": -1,
+        "oldMapId": -1,
+        "pointId": -1,
+        "underworld": -1,
+        "cameraSettingId": -1,
+        "landingAirShipPointId": -1,
+        "transitionEventList": [],
+        "transitionEventList2": [],
+        "afterTransitionEventList": [],
+        "transitionLoadLevelId": -1,
+        "transitionPlayBGM": "",
+        "isTransitionChangeMovementMethod": false,
+        "transitionMovementType": "Walking",
+        "isDisplayMapName": true,
+        "pOpenDoor": null,
+        "overrideIslandType": "None",
+        "bDoAutoSave": false,
+        "isPlayTransitionFootStepSE": true,
+        "overrideTransitionCueName": "",
+        "afterWorldWarpData": {
+          "Type": "None",
+          "ID": -1
+        },
+        "fadeSE_FLD_VOL": true
+      },
+      "TransitionLocationOnTestPlayStart": -1,
+      "OnFlagList": [
+        137
+      ],
+      "OffFlagList": [],
+      "FlagList": [],
+      "IsForceUpdateProgress": false,
+      "ProgressList": [
+        {
+          "Condition": "",
+          "ID": 25,
+          "Value": 10
+        }
+      ],
+      "AchievementData": {
+        "bOverride_AchievementId": false,
+        "AchievementId": "Achievement0000",
+        "bCheckBeastAchievement": false
+      },
+      "KnownMapIdList": [],
+      "ClearedMapIdList": [],
+      "ObtainItemList": [],
+      "ConsumeItemList": [],
+      "TransferItemList": [],
+      "CollectMedalRewardDatatable": null,
+      "IsOpenDialogByFinishEvent": false,
+      "RequestStateSettings": [
+        {
+          "RequestID": 11,
+          "Type": "Accept",
+          "ProgressIndex": 0
+        }
+      ],
+      "bUpdateAllQuest": false,
+      "ChatSettings": {
+        "BehaviourSettings": {
+          "IsOverride": false,
+          "Bahaviour": "None"
+        }
+      },
+      "Airship": {
+        "IsTransferAirship": false,
+        "TransferMapId": 0
+      },
+      "IsGetOffVehicle": false,
+      "IsHiddenFieldUI": true,
+      "LoadingScreenSetting": "",
+      "DOFSetting": "Keep",
+      "MapStartupSettings": {
+        "ChangeBGM": "Stop"
+      },
+      "RestoreBGMSettings": {
+        "IsOverride": false,
+        "Type": "PrevBGM",
+        "OverrideBGM": {
+          "CueName": "",
+          "selectorName": "",
+          "selectorLabel": ""
+        }
+      },
+      "RestoreSoundVolumeSettings": {
+        "IsRevertValume": true,
+        "FadeTime": 1.0
+      },
+      "IsSetNormalFlatIntensityDegree": false,
+      "normalFlatIntensityDegree": "None",
+      "IsDisableAisacControl": false,
+      "IsRecover": false,
+      "InitUnitDataList": [],
+      "ChangeUnitJoinStatusList": [],
+      "GuestUnitSettings": {
+        "Type": "None",
+        "UnitId": 0
+      },
+      "UnitInheritanceList": [],
+      "UnitAddParamList": [],
+      "AbilitySettings": {
+        "UnitSettings": []
+      },
+      "UnitEqueipmentSettings": {
+        "UnitSettings": []
+      },
+      "LimitBurstSettings": {
+        "UnitSettings": []
+      },
+      "EnableMaxDamageSettings": [],
+      "BattleSpawnUnitGroupSettings": [],
+      "IsEndBattle": false,
+      "MinigameData": {
+        "nawatobiData": {
+          "ChallengeId": -1
+        }
+      },
+      "HeaderSettings": {
+        "IsVisibleNPC": false,
+        "IsVisiblesPice": false,
+        "IsVisibleSavePoint": false,
+        "IsVisiblesAirShip": true,
+        "bOverride_AntiAliasingMethod": false,
+        "AntiAliasingMethod": "AAM_FXAA",
+        "bOverride_SSAO": false,
+        "SSAOData": {
+          "AmbientocclusionlevelsMap": {}
+        },
+        "bOverride_SSR": false,
+        "SSRData": {
+          "SSRQualityMap": {}
+        },
+        "bOverride_DynamicResolution": false,
+        "DynamicResolutionData": {
+          "MinDynamicResolutionMap": {}
+        },
+        "bDisableAllowOcclusionQueries": false,
+        "bDemoClearSpecialSave": false
+      },
+      "FooterSettings": {
+        "IsVisibleNPC": true,
+        "IsVisiblesPice": true,
+        "IsVisibleSavePoint": true,
+        "IsVisiblesAirShip": true,
+        "IsApplyProgressis": false,
+        "IsEnableRevertAntiAliasingMethod": true,
+        "IsEnableRevertSSAO": true,
+        "IsEnableRevertSSR": true,
+        "IsEnableRevertDynamicRes": true,
+        "bDisableRevertAllowOcclusionQueries": false
+      },
+      "UnitIds": [],
+      "IsReturnTitle": false
+    }
+  }
+}

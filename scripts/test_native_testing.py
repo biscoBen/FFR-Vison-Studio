@@ -37,16 +37,14 @@ def game():
 
 def practice_game():
     tables, _, unit = game()
-    woman = copy.deepcopy(tables[testing.COMPOSITE]['C01_ArijigokuEncount'])
-    woman.update(ArgList={'id': '6'}, encountGroupId=-1, OverwriteBattleParty=[],
-                 TransitionLocation={'mapId': -1}, ChoicesBranchEventList=[],
-                 ConsumeItemList=[], ChangeUnitJoinStatusList=[], IsForceUpdateProgress=False,
-                 IsSetForceAutoSave=False, EventSequence='native free-talk timeline')
+    source_events = json.loads((ROOT/'scripts/fixtures/practice_dialog/talk-events.json').read_bytes())['rows']
+    woman = copy.deepcopy(source_events['DT_Town_010Gra_20_0920_8'])
     # Explicit identities from the observed conversation: do not derive the
     # fixture key from the implementation's selected NPC constant.
     other_woman = copy.deepcopy(woman); other_woman['ArgList'] = {'id': '39'}
     tables[testing.SHOP_EVENT] = {'DT_Town_010Gra_20_0920_8': woman,
                                 'DT_Town_010Gra_20_1170_1': other_woman, 'shopkeeper': {'shop': 1}}
+    tables[testing.SHOP_EVENT].update(copy.deepcopy(source_events))
     tables[testing.COMPOSITE].update(copy.deepcopy(tables[testing.SHOP_EVENT]))
     town = {'ID': 2000, 'battleStage': -1, 'doMovementEncount': False, 'startupEventList': ['story']}
     tables[testing.MAP] = {'01Gra_20': town, 'other town': {'ID': 2001, 'battleStage': -1}}
@@ -68,9 +66,6 @@ def practice_game():
         **copy.deepcopy(tables[testing.GROUP]['plant and rats']),
         'ID': 4035, 'UnitIdList': [38], 'locationIdList': [10], 'ap': 220}
     tables[native.UNIT]['Cactuar'] = {'ID': 38, 'Level': 30, 'Category': 'Enemy', 'MaxHitPoint': 1111}
-    inn = copy.deepcopy(woman)
-    inn['ChoicesBranchEventList'] = [{'Index': 0, 'EventList': [{'Condition': '{money}>=1000', 'EventId': 'INN_Accept'}]}]
-    for rel in (testing.SHOP_EVENT, testing.COMPOSITE): tables[rel]['DT_Town_010Gra_20_0920_5'] = copy.deepcopy(inn)
     tables[testing.CHOICES] = {'native choice': {'ChoiceTag': {'TagName': 'native'}, 'ChoiceTextList': ['Yes', 'No'],
         'DefaultIndex': 0, 'CancelIndex': 1, 'ChoiceDialogType': 'Normal'}}
     # Independent supplied-game rows: do not manufacture categories/levels
@@ -201,13 +196,13 @@ class NativeTestingTests(unittest.TestCase):
             for edit in op['add']: built[edit['row']] = testing.apply_fields(original[rel][edit['cloneFrom']], edit['set'])
             testing.check_rows(original[rel], built, op)
             if rel in (testing.SHOP_EVENT, testing.COMPOSITE):
-                self.assertEqual([e['row'] for e in op['set']], ['DT_Town_010Gra_20_0920_8'])
+                self.assertEqual(op['set'], [])
                 self.assertEqual(built[testing.SHOP_WOMAN]['encountGroupId'], -1)
                 self.assertEqual(built[testing.SHOP_WOMAN]['ContinuousEventList'][0]['EventId'], testing.PRACTICE + '_Menu_A')
                 self.assertEqual(built[testing.SHOP_WOMAN]['ArgList'], {'id': '6'})
                 self.assertEqual(built['DT_Town_010Gra_20_1170_1'], original[rel]['DT_Town_010Gra_20_1170_1'])
                 self.assertEqual(built['shopkeeper'], original[rel]['shopkeeper'])
-                self.assertEqual(built[testing.SHOP_WOMAN]['EventSequence'], 'native free-talk timeline')
+                self.assertEqual(built[testing.SHOP_WOMAN]['EventSequence'], original[rel][testing.SHOP_WOMAN]['EventSequence'])
                 self.assertEqual(built[testing.SHOP_WOMAN]['OverwriteBattleParty'], [])
             elif rel in (testing.MAP, testing.MAP_COMPOSITE):
                 self.assertFalse(built['01Gra_20']['doMovementEncount'])
@@ -258,6 +253,34 @@ class NativeTestingTests(unittest.TestCase):
             self.assertEqual(event['OnFlagList'], [])
             self.assertFalse(event['OverwriteBattleParty'])
             self.assertFalse(event['IsSetAutoSave'])
+
+    def test_menu_link_uses_populated_struct_donor_and_restores_all_original_npc_fields(self):
+        original, rows, _ = practice_game()
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)/testing.CONFIG; path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({'schema':1,'maxMr':False,'practiceBattle':True}))
+            ops = testing.prepare({}, [], root, rows)
+            expected = testing.expected_edits(root, [], rows)
+        for rel in (testing.SHOP_EVENT, testing.COMPOSITE):
+            woman = original[rel][testing.SHOP_WOMAN]
+            self.assertEqual(woman['ContinuousEventList'], [])
+            replacement, = [e for e in ops[rel]['add'] if e['row'] == testing.SHOP_WOMAN]
+            donor = original[rel][replacement['cloneFrom']]
+            self.assertTrue(donor['ContinuousEventList'])
+            self.assertTrue(donor['OnFlagList'])
+            self.assertTrue(donor['ProgressList'])
+            self.assertTrue(donor['RequestStateSettings'])
+            built = testing.apply_fields(donor, replacement['set'])
+            delta = {'ContinuousEventList': [{'Condition':'','EventId':testing.PRACTICE+'_Menu_A'}]}
+            self.assertEqual(built, testing.apply_fields(woman, delta))
+            self.assertEqual(expected[(rel, testing.SHOP_WOMAN)], delta)
+            # Every populated struct array must have native elements to clone.
+            # An empty synthetic donor would let Python pass while ffr-dt fails.
+            for edit in ops[rel]['add']:
+                template = original[rel][edit['cloneFrom']]
+                for field, value in edit['set'].items():
+                    if isinstance(value, list) and value and isinstance(value[0], dict):
+                        self.assertTrue(template[field], (edit['row'], field))
 
     def test_source_enemy_and_boss_rows_are_accepted_without_reclassifying_them(self):
         original, rows, _ = practice_game()
@@ -335,7 +358,7 @@ class NativeTestingTests(unittest.TestCase):
         self.assertEqual(len(ops[testing.GROUP]['set']), len(original[testing.GROUP]))
         self.assertEqual(ops[testing.COMMON]['add'][0]['row'], testing.NAME)
         self.assertEqual(ops[testing.COMPOSITE]['add'][0]['row'], testing.NAME)
-        self.assertEqual(ops[testing.COMPOSITE]['set'][0]['row'], testing.SHOP_WOMAN)
+        self.assertEqual(ops[testing.COMPOSITE]['add'][-1]['row'], testing.SHOP_WOMAN)
 
     def test_cactuar_uses_original_solo_group_without_rewriting_enemy_ai_or_skills(self):
         original, rows, _ = practice_game(); before = copy.deepcopy(original)
@@ -362,11 +385,12 @@ class NativeTestingTests(unittest.TestCase):
         for bad in (None, True, 38, [], {}, 'unknown'):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 testing.validate_settings({'schema': 1, 'maxMr': False, 'practiceEncounter': bad})
-        for change in ('monster', 'choice-template', 'branch-template'):
+        for change in ('monster', 'choice-template', 'branch-template', 'continuous-template'):
             tables, rows, _ = practice_game()
             if change == 'monster': tables[native.UNIT]['Cactuar']['Level'] = 99
             elif change == 'choice-template': tables[testing.CHOICES].clear()
-            else: del tables[testing.SHOP_EVENT]['DT_Town_010Gra_20_0920_5']
+            elif change == 'branch-template': del tables[testing.SHOP_EVENT]['DT_Town_010Gra_20_0920_5']
+            else: del tables[testing.SHOP_EVENT]['DT_Town_010Gra_20_0930_1']
             with self.subTest(change=change), tempfile.TemporaryDirectory() as root:
                 path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
                 path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))

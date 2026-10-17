@@ -11,6 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Practice menu link writes populated native event arrays
+
+- Fix the next build failure when writing the shop woman's empty `ContinuousEventList`. Replace her row
+  using a populated native continuous-event template, restoring every original field except the menu link.
+  Clear the template's quest flags, progress and request changes; retain the original dialogue and arguments.
+- Write `ArgList` as its native map property rather than an unsupported dotted struct path. Use independently
+  retained native talk rows in regression tests, and exercise all nineteen dialogue edits with the pinned
+  engine patcher in Windows CI, including a negative control that reproduces the reported empty-array error.
+- Extension 1.2.40 aligns startup/install checks. Native talk/composite/map/encounter/stage table serialization,
+  exact readback, six choice-sequence readbacks and IoStore verification pass. The reference omits the map
+  composite and UI choice table; those remain covered by logical/schema checks and the user's successful
+  choice-table write. Live menu operation still needs confirmation after installing this fix.
+
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
