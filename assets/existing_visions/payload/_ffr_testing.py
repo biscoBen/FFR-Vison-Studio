@@ -409,6 +409,10 @@ def author_practice_choice(asset, tag):
     for name in ('CPP_TalkEventSequenceDirector', 'Default__CPP_TalkEventSequenceDirector',
                  '/Script/mucha', '/Script/GameplayTags', 'Class', 'ScriptStruct', 'OpenChoiceDialog', 'DialogWait', 'GameplayTag', tag):
         if name not in asset['NameMap']: asset['NameMap'].append(name)
+    # IoStore preserves only this prefix, leaving script FName indices intact.
+    # The inherited shell retained 36 names; our choice tag is appended at 79.
+    # Keep every name, in its original order, so the runtime can load the call.
+    asset['NamesReferencedFromExportDataCount'] = len(asset['NameMap'])
     return asset
 
 
@@ -441,6 +445,10 @@ def build_practice(env):
 
 def verify_practice_choice(asset, tag):
     import ffbe_resonance as seq
+    count = asset.get('NamesReferencedFromExportDataCount')
+    if (type(count) is not int or not 0 < count <= len(asset['NameMap'])
+            or tag not in asset['NameMap'][:count]):
+        raise ValueError('Practice choices would lose script names during IoStore packing.')
     exports, imports = asset['Exports'], asset['Imports']
     def cls(e): return imports[-e['ClassIndex']-1]['ObjectName'] if e['ClassIndex'] < 0 else ''
     director, = [e for e in exports if cls(e) == 'BlueprintGeneratedClass']

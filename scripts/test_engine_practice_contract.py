@@ -1,4 +1,5 @@
 """Exercise practice dialogue edits with the pinned engine's actual patcher."""
+import copy
 import gzip
 import hashlib
 import json
@@ -7,6 +8,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest import mock
 import zipfile
 
 from test_engine_particle_contract import ENGINE_SHA, bundled_assembly
@@ -16,6 +19,30 @@ from test_native_testing import ROOT, practice_game, testing
 @unittest.skipUnless(os.name == 'nt' and os.environ.get('GITHUB_ACTIONS') == 'true',
                      'Requires Windows CI and its checksum-verified engine cache.')
 class EnginePracticeContractTests(unittest.TestCase):
+    def test_real_serializer_retains_each_choice_tag_within_the_iostore_name_prefix(self):
+        from test_existing_visions import module
+        archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
+        with archive.open('rb') as stream:
+            self.assertEqual(hashlib.file_digest(stream,'sha256').hexdigest(),ENGINE_SHA)
+        with zipfile.ZipFile(archive) as bundle: executable = bundle.read('bin/ffr-dt.exe')
+        shell = json.loads(gzip.decompress((ROOT/'scripts/fixtures/practice_dialog/shell.json.gz').read_bytes()))
+        with mock.patch.dict('sys.modules',{'ffbe_lb':SimpleNamespace(NEUTRAL_COLOR='#808080')}):
+            seq = module('practice_engine_name_fixture',ROOT/'scripts/fixtures/engine_motion/ffbe_resonance.py')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('Newtonsoft.Json.dll','UAssetAPI.dll'):
+                (root/name).write_bytes(bundled_assembly(executable,name))
+            with mock.patch.dict('sys.modules',{'ffbe_resonance':seq}):
+                for page in 'ABCDEF':
+                    asset = testing.author_practice_choice(copy.deepcopy(shell),
+                        'UI.Dialog.Choice.Studio_PracticeBattle_Menu_'+page)
+                    (root/(page+'.json')).write_text(json.dumps(asset),encoding='utf-8')
+            script = root/'check-names.ps1'; script.write_text(NAME_CHECK_SCRIPT,encoding='utf-8')
+            result = subprocess.run(['pwsh','-NoProfile','-File',str(script),'-Root',str(root)],
+                                    capture_output=True,text=True,timeout=60)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn('Real engine practice script-name contracts passed.',result.stdout)
+
     def test_real_patcher_accepts_menu_branches_and_existing_npc_replacement(self):
         archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
         with archive.open('rb') as stream:
@@ -38,6 +65,27 @@ class EnginePracticeContractTests(unittest.TestCase):
                                     capture_output=True,text=True,timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
             self.assertIn('Real engine practice dialogue contracts passed.', result.stdout)
+
+
+NAME_CHECK_SCRIPT = r'''param([string]$Root)
+$ErrorActionPreference = 'Stop'
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'Newtonsoft.Json.dll'))
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'UAssetAPI.dll'))
+$index = [UAssetAPI.UnrealTypes.FName].GetProperty('Index',[Reflection.BindingFlags]'Instance,Public,NonPublic')
+foreach ($page in @('A','B','C','D','E','F')) {
+    $asset = [UAssetAPI.UAsset]::DeserializeJson([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root ($page+'.json'))))
+    $count = $asset.GetType().GetField('NamesReferencedFromExportDataCount',[Reflection.BindingFlags]'Instance,Public,NonPublic').GetValue($asset)
+    if ($count -ne $asset.GetNameMapIndexList().Count) { throw 'IoStore would trim menu names.' }
+    $call = @($asset.Exports | Where-Object { $_ -is [UAssetAPI.ExportTypes.FunctionExport] -and $_.ScriptBytecodeSize -eq 40 })
+    if ($call.Count -ne 1) { throw 'Missing menu-open call.' }
+    $tag = $call[0].ScriptBytecode[0].Parameters[0].Value[0].Value
+    $tagIndex = [int]$index.GetValue($tag)
+    if ($tagIndex -ne 79 -or $tagIndex -ge $count -or $tag.ToString() -cne ('UI.Dialog.Choice.Studio_PracticeBattle_Menu_'+$page)) {
+        throw 'A menu script uses a missing or incorrect packed name.'
+    }
+}
+Write-Output 'Real engine practice script-name contracts passed.'
+'''
 
 
 CHECK_SCRIPT = r'''param([string]$Root)

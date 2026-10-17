@@ -321,6 +321,31 @@ class NativeTestingTests(unittest.TestCase):
             self.assertEqual(built['Imports'][-tags[0]['OuterIndex']-1]['ObjectName'],'/Script/GameplayTags')
             with self.assertRaises(ValueError): testing.verify_practice_choice(built,tag+'Wrong')
 
+    def test_all_menu_pages_keep_appended_script_names_in_the_packed_name_prefix(self):
+        import gzip
+        from test_existing_visions import module
+        with mock.patch.dict('sys.modules', {'ffbe_lb':SimpleNamespace(NEUTRAL_COLOR='#808080')}):
+            seq = module('practice_name_fixture', ROOT/'scripts/fixtures/engine_motion/ffbe_resonance.py')
+        shell = json.loads(gzip.decompress((ROOT/'scripts/fixtures/practice_dialog/shell.json.gz').read_bytes()))
+        self.assertEqual(shell['NamesReferencedFromExportDataCount'],36)
+        original_names = shell['NameMap'][:]
+        for page in 'ABCDEF':
+            with self.subTest(page=page), mock.patch.dict('sys.modules',{'ffbe_resonance':seq}):
+                tag = 'UI.Dialog.Choice.Studio_PracticeBattle_Menu_'+page
+                built = testing.author_practice_choice(copy.deepcopy(shell),tag)
+                self.assertEqual(built['NameMap'][:len(original_names)],original_names)
+                self.assertEqual(built['NameMap'].index(tag),79)
+                kept = built['NameMap'][:built['NamesReferencedFromExportDataCount']]
+                self.assertEqual(kept[79],tag)
+                testing.verify_practice_choice(built,tag)
+                restored = copy.deepcopy(built)
+                restored['NameMap'].append('/Engine/UnknownPackage')
+                testing.verify_practice_choice(restored,tag)
+                broken = copy.deepcopy(built)
+                broken['NamesReferencedFromExportDataCount'] = 36
+                with self.assertRaisesRegex(ValueError,'lose script names'):
+                    testing.verify_practice_choice(broken,tag)
+
     def test_survival_is_unlimited_native_damage_time_reprieve_and_preserves_other_passives(self):
         effects = {
             'reprieve': {'ID': 1359, 'EffectType': 'Reprieve', 'ParamList': [0,-1]+[-1]*13,
