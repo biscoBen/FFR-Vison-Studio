@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### FFBE 1,000 Needles visual-import investigation — 2026-10-17
+
+- Locate FFBE magic 40050's original `harisenbon1` schedule: group 5002490 spawns effect 1002460 eleven times
+  at four-frame intervals. Record pinned master-table and upstream-converter sources in the
+  [project findings](README.md#ffbe-1000-needles-import-investigation--2026-10-17).
+- Inspect the existing BMB-to-SpriteStudio pipeline and newer upstream source-placement tools. The referenced
+  effect definition/artwork is absent from the checked published masters and packs, so no real extracted preview
+  or game import is claimed. Save the exact missing dependency request and planned private import, retaining
+  Resonance's own mechanics and native-only mode. Documentation only; no new package or visual substitution.
+
 ### Cactuar visual baseline — 2026-10-17
 
 - Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
