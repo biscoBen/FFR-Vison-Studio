@@ -82,7 +82,7 @@ def prepare(apk,output):
         if f[0].endswith('.usm'):
             selected.append({'name':Path(f[0]).name,'kind':'content','size':int(f[2]),'sha256':f[1],'url':f[3],'sourceAsset':f[0],'zipMethod':int(f[6])})
     # Include standalone cinematics from the same APK; names are indexed in UI.
-    selected.extend(v for n,v in records.items() if n.endswith('.usm') and n in ('BMT002.usm','LSA_lapis4new.usm'))
+    selected.extend(v for n,v in records.items() if n.endswith('.usm') and (n in ('BMT002.usm','LSA_lapis4new.usm') or n.startswith(('LB_','SLB_'))))
     unique={r['name']:r for r in selected}
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:list(pool.map(lambda r:fetch(r,output/'memorial-source'),unique.values()))
     from Crypto.Cipher import AES

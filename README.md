@@ -11,7 +11,7 @@ Retest the recorded original-enemy failures then before adding further demo-spec
 
 Home's **FFBE animation library** button opens a local browser page. Browse all **65,428** Memorial skill
 records, their separate IDs and conditional timelines, **15,674** effect groups, **8,779** effect definitions,
-and **86** available skill/summon cinematics. Search by name, ID or effect filename; filter magic, abilities,
+and **90** available cinematics. Search by name, ID or effect filename; filter magic, abilities,
 monster skills, limit bursts or summons. Enable **Include records without animation references** to see passive
 and other records without visual timelines. Use the original sound, speed, target-count and conditional controls
 for previews; cinematic clips have their own playback controls and embedded sound. Everything stays in this
@@ -27,9 +27,11 @@ Some master references have no matching file in this delivery: one BMB, 26 sprit
 and 110 exact cinematic filenames. These remain visible and unavailable rather than receiving substitutes;
 available regional cinematic variants can be browsed independently. The **Source coverage** disclosure and entry
 warnings explain gaps. Browser particle rendering is approximate, shows at most 30 seconds/256 particles per
-effect and does not prove exact FFBE rendering or later Resonance conversion. Original files are not truncated.
+emitter and does not prove exact FFBE rendering or later Resonance conversion. Original files are not truncated.
 
-The offline library adds **1.88 GB** to the package. Studio stages verified packs under `engine/library/ffbe/`
+This includes the four standalone first/second-part limit-burst clips indexed separately from their full-film references.
+
+The offline library adds **1.99 GB** to the package. Studio stages verified packs under `engine/library/ffbe/`
 on first launch and caches previews under `engine/build/ffbelib1/`; expect extra first-start time and a second
 local copy of the packs. Subsequent starts reuse valid packs. The normal engine remains checksum-pinned and
 unchanged; library inspection uses a private renderer based on the

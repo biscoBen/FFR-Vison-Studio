@@ -184,7 +184,7 @@ audio = library.document('audio.json')
 wave = next(iter(audio['waves'].values()))
 assert route['/api/ffbe-library/file/{name:path}']('audio/' + wave['file']).body[:4] == b'fLaC'
 movies = library.document('movies.json')
-assert len(movies) == 86
+assert len(movies) == 90
 movie = next(iter(movies.values()))
 assert route['/api/ffbe-library/file/{name:path}']('movies/' + movie['file']).body[:4] == bytes.fromhex('1a45dfa3')
 print('FFBE library, source particles, sound and cinematic ready')

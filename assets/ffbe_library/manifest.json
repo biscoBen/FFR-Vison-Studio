@@ -15,7 +15,7 @@
    "summon": 63
   },
   "skillsWithAnimation": 42314,
-  "cinematicClips": 86,
+  "cinematicClips": 90,
   "missingCinematicFiles": [
    "LB_LBA_lapis3.usm",
    "LB_LBA_lapis4.usm",
@@ -252,13 +252,13 @@
   },
   {
    "name": "library-08.zip",
-   "bytes": 3209032,
-   "sha256": "a87eecb53e701babcaebcfdfcbf4d383a405ad3a6e52a634c79330111927fabc"
+   "bytes": 3209104,
+   "sha256": "7b4e200b9e5c3f6e51e24fc08b68472030a2d2ee78e0b82f2bee7fa7d2a2c717"
   },
   {
    "name": "library-09.zip",
-   "bytes": 3670652,
-   "sha256": "fe9b4838a6baf7cbed54e04bc7684e1046f6dec49bacf796cc74a31f041f6962"
+   "bytes": 3671087,
+   "sha256": "62907bb19756d911dea3025725c8406f185183d604feeeb9182d4f13f34dad01"
   },
   {
    "name": "library-10.zip",
@@ -302,8 +302,8 @@
   },
   {
    "name": "library-18.zip",
-   "bytes": 34672504,
-   "sha256": "3bf2f197b3c4a7dab284d3d8fb66757df63138457b93cfe7a8c573107dd982d1"
+   "bytes": 34672911,
+   "sha256": "be4cb28b77e4f6a757c4d7c23433f7edbf644cde56131fd8569e84e38bd63158"
   },
   {
    "name": "library-19.zip",
@@ -479,6 +479,21 @@
    "name": "library-53.zip",
    "bytes": 10500959,
    "sha256": "7539ed91f13847dd345484d3feb29245fc7009a368dc6cf4b87853f5512f6f11"
+  },
+  {
+   "name": "library-54.zip",
+   "bytes": 38004501,
+   "sha256": "cc72b9185b935f086ed8a34505528b808f19fd3f1b6d988f582eb3b7b33b3020"
+  },
+  {
+   "name": "library-55.zip",
+   "bytes": 47497561,
+   "sha256": "de4c3eb11d27b67e19e23e1b97838facfd0cfc1eaa89a78dfc47c7020e01b00b"
+  },
+  {
+   "name": "library-56.zip",
+   "bytes": 20506186,
+   "sha256": "312de1040c8afa81a7736c75c5f0294eb333fcdfeb882ffe8845527515a4a32b"
   }
  ],
  "files": {
@@ -5444,8 +5459,8 @@
   },
   "catalog.json": {
    "pack": "library-08.zip",
-   "bytes": 17872946,
-   "sha256": "608d3f8b85fb3c0fbcfd06b9fc180e908342afc741b31760d047a414b0f67b3e"
+   "bytes": 17873690,
+   "sha256": "a77df7f4632a3e35d9c6599c8aebc1125d1e42e83e359e28a882fde370a333ac"
   },
   "effects.json": {
    "pack": "library-08.zip",
@@ -5494,8 +5509,8 @@
   },
   "movies.json": {
    "pack": "library-09.zip",
-   "bytes": 27078,
-   "sha256": "2be182eb0c82de52989c4d1e16d7ad3f9bdd34c2ae5155a23a5c86613d5e1b5d"
+   "bytes": 28531,
+   "sha256": "6512bdd085fbdf53d4eba4fa400a06b5218fcc0ac4ff963f88c56a0222d663ba"
   },
   "movies/ALX001.webm": {
    "pack": "library-10.zip",
@@ -5929,8 +5944,8 @@
   },
   "provenance.json": {
    "pack": "library-18.zip",
-   "bytes": 772793,
-   "sha256": "bd5b4c954373770416afd7ab09236075e74695406f51a324e88fe262d47f4145"
+   "bytes": 774375,
+   "sha256": "ab9e04f0d214e9ab2bde22a6cae038752725ce38aea986790fe2b4b3e1a4e397"
   },
   "raw/001.m3r": {
    "pack": "library-18.zip",
@@ -68611,6 +68626,46 @@
    "pack": "library-53.zip",
    "bytes": 6088,
    "sha256": "20fcc79cffef9d1a649cbf0e03465050121eef11db6ff851249734007c726f1c"
+  },
+  "movies/LB_LBJ_lapis4_kouhan.webm": {
+   "pack": "library-54.zip",
+   "bytes": 7156807,
+   "sha256": "720ce5cffeaab662234abefef3d08a46528a4df43f42e132ff4a7f30dd2a0c20"
+  },
+  "movies/LB_LBJ_lapis4_zenhan.webm": {
+   "pack": "library-54.zip",
+   "bytes": 13643267,
+   "sha256": "d4409e4262bdf5ba4be44ac35af4edd44734d9a9eb63cd68f31261f5ef5f558c"
+  },
+  "movies/LB_LBP_lapis4new_kouhan.webm": {
+   "pack": "library-54.zip",
+   "bytes": 5734381,
+   "sha256": "fd8276cbf899f4a3afed0da0308d353543fa816d171dbcaf5ab4269a527aeab2"
+  },
+  "movies/LB_LBP_lapis4new_zenhan.webm": {
+   "pack": "library-54.zip",
+   "bytes": 11463328,
+   "sha256": "fbb9bdb87d06a44c9a3a3fedf6b13e23c6b6a2a7892cb1fa79a50f4078314c3b"
+  },
+  "source-movies/LB_LBJ_lapis4_kouhan.usm": {
+   "pack": "library-55.zip",
+   "bytes": 15235136,
+   "sha256": "59daac16e8a26bb216a8f9c0921e421ad0a4d6ddf571e3accfde9f398e9f2acb"
+  },
+  "source-movies/LB_LBJ_lapis4_zenhan.usm": {
+   "pack": "library-55.zip",
+   "bytes": 23904160,
+   "sha256": "819af125d9e2fe880453b2f8f11fe5addc91e032f8a41487024c57ebf7d51a05"
+  },
+  "source-movies/LB_LBP_lapis4new_kouhan.usm": {
+   "pack": "library-55.zip",
+   "bytes": 9787616,
+   "sha256": "a34f94145ec0aec8b3b310190c9c0f3d4d17e5e9a3e2651e522f63028f0b9261"
+  },
+  "source-movies/LB_LBP_lapis4new_zenhan.usm": {
+   "pack": "library-56.zip",
+   "bytes": 21233088,
+   "sha256": "a64a71d5e35766894a8ed131fb894955a206db8780362abef480bfc5f0250c90"
   }
  }
 }
