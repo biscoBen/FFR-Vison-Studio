@@ -11,7 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### FFBE needle groups/audio and in-game practice picker
+### Original-enemy animation comparison candidates — 2026-10-17
+
+- Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
+  Atomic Ray and Malbodoom/Malboro Marquis for Bad Breath. Check exact native AI references, AI Blueprint and
+  collected model/material/texture packages. Identify Watcher and Malbodoom as the simplest next practice tests.
+- Distinguish included assets from natural demo story access and live playback. No new practice encounter or
+  skill change is installed by this documentation update. Record that the first blank 1,000 Needles retest had
+  its optional FFBE-import switch off; the user subsequently confirmed playback with it enabled, reporting
+  superimposed streaks and missing sound (addressed in the published update below).
+
+### Cactuar visual baseline — 2026-10-17
+
+- Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
+  No tracer was run. This adds an original-enemy visual observation, while its exact runtime route and whether
+  another original presentation exists remain unconfirmed. Do not generalize it to other failed skills or Cactuar variants.
+- Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
+  under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
+  no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published FFBE needle groups/audio and in-game practice picker — 2026-10-17
+
+Code: [`ba64cb5`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ba64cb5db4bc7cffb15a86d3096c5ccabab3b0c7).
+[Verified Windows test release / run 39059206346](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39059206346).
 
 - Correct the FFBE converter's missing ordered-model emission placement: four particles were retained but
   superimposed at one position. Preserve the positioning mesh's vertex order/scale and per-node instance identity,
@@ -31,25 +53,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   unbound event tracks and compiled timing are checked after writing. Menu interaction, 1-HP survival, revised
   appearance and audible levels remain pending in-game confirmation.
 
-
-### Original-enemy animation comparison candidates — 2026-10-17
-
-- Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
-  Atomic Ray and Malbodoom/Malboro Marquis for Bad Breath. Check exact native AI references, AI Blueprint and
-  collected model/material/texture packages. Identify Watcher and Malbodoom as the simplest next practice tests.
-- Distinguish included assets from natural demo story access and live playback. No new practice encounter or
-  skill change is installed by this documentation update. Record that the first blank 1,000 Needles retest had
-  its optional FFBE-import switch off; the user subsequently confirmed playback with it enabled, reporting
-  superimposed streaks and missing sound (addressed above).
-
-### Cactuar visual baseline — 2026-10-17
-
-- Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
-  No tracer was run. This adds an original-enemy visual observation, while its exact runtime route and whether
-  another original presentation exists remain unconfirmed. Do not generalize it to other failed skills or Cactuar variants.
-- Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
-  under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
-  no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+Validation: 263 Flutter tests (one local Windows-only skip), 428 Python checks (five local/six Windows skips),
+analysis, frozen-engine startup, updater/launcher and Windows compilation pass. Read back all 8,917 converted
+animation keys and atlas pixels, original audio/timeline/binding assets, survival tables and six private native
+choice pages; IoStore verification passes. Downloaded provenance/checksum and 37 managed resources match;
+16 Crystal Fina resources are unchanged. Live confirmation of the new changes remains pending.
+First complete candidate to verified download: **24m 20s**, including corrections and waiting. Successful CI:
+**5m 31s**; both runs used **11m 34s** runner time (**11m 04s Windows**, **30s Linux**). A redundant manual
+run was cancelled after the matching automatic push run became visible; no second package was used.
 
 ## Published FFBE 1,000 Needles visual-import prototype — 2026-10-17
 

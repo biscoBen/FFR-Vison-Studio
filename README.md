@@ -4,24 +4,27 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-[Verified original FFBE 1,000 Needles import test / run 39016148168](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39016148168/Sephira-Studio-Test.zip)
-(code `deb8139`, published 2026-10-17; extension 1.2.37). Enable **Test FFBE 1,000 Needles visual**,
-leave **Use our skill changes** and **Use borrowed Sephira skill visuals** off, rebuild/install and restart.
-The native binding/motion repair switch may remain on. Test 1,000 Needles on an equipped vision or the Cactuar
-practice opponent. This separate, default-off test imports the recovered FFBE effect while keeping native mechanics.
-Turn it off and rebuild/install to restore previous routing. Live brightness, size, placement and repeat casts
-still need confirmation; the offline/cooked checks do not establish live appearance.
+[Verified FFBE needle groups/audio and in-game practice picker / run 39059206346](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39059206346/Sephira-Studio-Test.zip)
+(code `ba64cb5`, published 2026-10-17; extension 1.2.38). **Test FFBE 1,000 Needles visual** now retains
+four separate source streaks and the original hit recording. **Survive at 1 HP for testing** allows normal damage
+and healing with native unlimited reprieve/instant-death resistance. **Shop practice battle** opens an in-game
+opponent picker at Mitra's item-shop Young Woman: twelve encounters across six pages, plus cancellation.
+Enable the desired switches, rebuild/install and restart. Opponent choices then require no rebuild.
+For an isolated FFBE comparison, leave **Use our skill changes** and **Use borrowed Sephira skill visuals** off;
+the native binding/motion repair switch may remain on. Revised appearance/audio, survival damage/status cases,
+and live menu interaction still need user confirmation; the first visual import itself has been confirmed playing.
 
-Local analysis, **263 Flutter tests** (one Windows-only skip) and **423 Python checks** (five skipped) pass.
-Windows validation, compilation, fresh frozen-engine setup and launcher/updater checks pass for the same commit
-(423 Python checks, six skips). Actual effect/texture/timeline serialization, both binding-table readbacks,
-all **8,540 animation keys**, exact atlas pixels, event constants/channel/compiled times and IoStore verification pass.
-The downloaded ZIP's provenance/checksum and all **37** managed extension resources match source; all **16**
-Crystal Fina resources remain unchanged. Windows caught line-ending conversion of a checksum-pinned source JSON;
-`.gitattributes` now preserves the extraction byte-for-byte. One redundant retry of the earlier revision was stopped.
-First complete candidate: **07:55:49 UTC**; downloaded package/source verification: **08:13:04 UTC** on 2026-10-17,
-**17m 15s** elapsed including corrections, retries, waiting and verification. The successful CI run took **5m 27s**.
-All three runs used **24m 22s** of runner job time (**23m 33s Windows**, **49s Linux**), including the cancelled retry.
+Local analysis, **263 Flutter tests** (one Windows-only skip) and **428 Python checks** (five skipped) pass.
+Windows analysis/tests, compilation, fresh frozen-engine setup and launcher/updater checks pass for the same
+commit (428 Python checks, six skips). Actual cooked effect/audio/timeline/binding checks, all **8,917 animation
+keys**, exact atlas pixels, native survival tables, six native choice pages and IoStore packing pass.
+The downloaded provenance/checksum and all **37** managed extension resources match source; all **16** Crystal
+Fina resources remain unchanged. Unsupported BMB generation shapes/alignment still require separate adapters;
+this does not establish parity for every FFBE spell.
+First complete candidate: **18:23:41 UTC**; downloaded package/source verification: **18:48:01 UTC** on 2026-10-17,
+**24m 20s** elapsed including corrections, waits and verification. Successful CI: **5m 31s**. Measured runner job
+time across both runs: **11m 34s** (**11m 04s Windows**, **30s Linux**). One redundant manual run was cancelled
+when the matching push run became visible; the verified download uses the successful push run.
 
 [Verified original Cactuar practice test / run 39011466161](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39011466161/Sephira-Studio-Test.zip)
 (code `90ec6b2`, published 2026-10-16; extension 1.2.36). Enable **Shop practice battle** and choose
