@@ -38,12 +38,23 @@
     "lapis_eff_material_003_0036_light2.png": "192e6d497972be344a42828f25bd9e1298f75a36244a0197bf4067c51de6d0e6",
     "lapis_eff_material_019_common_0008_ball1.png": "bb9f9ed08d2382d00b2fdce3cbe54fe12d5e28af1e272b09043632204f6476af",
     "position_model_circle12.m3r": "b867e521229abf33689a817cfd3a8d1ede2444245f0774388d6c54bb9d29ab78",
-    "source-rows.json": "a64de7532359ac6b70ad022ae751c05ff1669661b2fb26fd30fa6b9e85aae2ac"
+    "source-rows.json": "a64de7532359ac6b70ad022ae751c05ff1669661b2fb26fd30fa6b9e85aae2ac",
+    "audio.json": "b8e658b841347fefc69e7a6fb9e1d8761232b1125cdc0fbfe319dc114de94102",
+    "needle.hca": "063d39c68c1a9156aa62feeef5b3f0db6e2febfd5dc8b8db2a65e512d1290f5b"
   },
   "limits": [
     "Offline BMB particle simulation; live FFBE render parity is unverified.",
     "Group alignment modes 2/2 center each spawn on its target. Native random jitter is omitted for this deterministic prototype.",
-    "Visual import only: no FFBE mechanical definition or audio is imported.",
-    "Build-15 writer uses standard SpriteStudio Mix/Add; newer identity PartsColor keys are omitted."
-  ]
+    "Build-15 writer uses standard SpriteStudio Mix/Add; newer identity PartsColor keys are omitted.",
+    "Audio imports the source cue at every original sound frame using the existing host HCA adapter; skill mechanics are unchanged."
+  ],
+  "audio": {
+    "archive": "SE.acb",
+    "archiveSha256": "22d3f4bd8cae9c2a4ae7485f47b583d662563bb84489bd5db100f4668867565f",
+    "cueId": 99,
+    "cueName": "se_special_needle_1",
+    "rawRecordingSha256": "063d39c68c1a9156aa62feeef5b3f0db6e2febfd5dc8b8db2a65e512d1290f5b"
+  },
+  "placementAdapter": "scripts/ffbe_model_placement.py: ordered-model vertices, inherited node instance ordinals",
+  "placementAdapterSha256": "11bd5060864949059cf891ec644475b696da04876d15b559b1403b18bd5bc955"
 }

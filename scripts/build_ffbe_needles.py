@@ -8,7 +8,6 @@ import copy
 import hashlib
 import json
 from pathlib import Path
-import subprocess
 import sys
 import zipfile
 
@@ -37,9 +36,14 @@ def build(converter, work, output):
     for name, digest in provenance['files'].items():
         if hashlib.sha256((SOURCE / name).read_bytes()).hexdigest() != digest:
             raise ValueError('FFBE source checksum mismatch: ' + name)
-    subprocess.run([sys.executable, str(converter / 'render.py'), str(SOURCE / 'atk_nail1_white.bmb'),
-                    str(work / 'single'), '--assets', str(SOURCE), '--size', '512', '--step', '1',
-                    '--max-frames', '30', '--particles', '64', '--doc', '--ppu', '2.4'], check=True)
+    if hashlib.sha256(Path(__file__).with_name('ffbe_model_placement.py').read_bytes()).hexdigest() != provenance['placementAdapterSha256']:
+        raise ValueError('The positioning adapter differs from the retained conversion provenance.')
+    sys.path.insert(0, str(converter))
+    import ibmb, render
+    from ffbe_model_placement import install
+    install(ibmb)
+    render.render(str(SOURCE / 'atk_nail1_white.bmb'), str(work / 'single'), [str(SOURCE)],
+                  size=512, step=1, max_frames=30, particles=64, doc=True, ppu_fixed=2.4)
     single = json.loads((work / 'single/doc.json').read_bytes())
     doc = compose(single, json.loads((SOURCE / 'source-rows.json').read_bytes()))
     sys.path.insert(0, str(converter))
@@ -54,7 +58,9 @@ def build(converter, work, output):
     if audit['atlasPages'] != 1 or audit['droppedSpriteFrames'] or audit['shrunkSpriteFrames']:
         raise ValueError('The prototype must retain every source particle on one atlas.')
     files = {'spec.json': (json.dumps(spec, indent=1) + '\n').encode(),
-             'tex.bgra': (work / 'ss6/tex.bgra').read_bytes()}
+             'tex.bgra': (work / 'ss6/tex.bgra').read_bytes(),
+             'audio.json': (SOURCE / 'audio.json').read_bytes(),
+             'needle.hca': (SOURCE / 'needle.hca').read_bytes()}
     manifest = {'schema': 1, 'name': NAME, 'source': provenance, 'conversion': audit,
                 'files': {k: hashlib.sha256(v).hexdigest() for k, v in files.items()}}
     output.parent.mkdir(parents=True, exist_ok=True)

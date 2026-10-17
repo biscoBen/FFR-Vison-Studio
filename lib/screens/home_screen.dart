@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles || app.surviveAtOne;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -129,37 +129,25 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),
-                  subtitle: Text('Young Woman in Mitra\'s item shop starts a repeatable battle after her dialogue. Install after changing the switch or opponents.', style: Guide.small()),
+                  subtitle: Text('Young Woman in Mitra\'s item shop opens an in-game opponent picker. Choose a different enemy for each fight without rebuilding. Rebuild/install after switching.', style: Guide.small()),
                   value: app.testingPracticeBattle,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
-                if (app.testingPracticeBattle) ...[
-                  InputDecorator(
-                    decoration: const InputDecoration(labelText: 'Practice opponents'),
-                    child: DropdownButtonHideUnderline(child: DropdownButton<String>(
-                      key: const Key('testing-practice-encounter'),
-                      value: app.testingPracticeEncounter,
-                      isExpanded: true,
-                      items: const [
-                        DropdownMenuItem(value: 'standard', child: Text('Usual enemies (levels 7–8)')),
-                        DropdownMenuItem(value: 'cactuar', child: Text('Cactuar (level 30, original AI)')),
-                      ],
-                      onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
-                        if (value == null) return;
-                        try { await app.setTestingPracticeEncounter(value); } catch (e) { app.showNotice('$e'); }
-                      },
-                    )),
-                  ),
-                  if (app.testingPracticeEncounter == 'cactuar')
-                    Text('Defend and let Cactuar act to test its original 1,000 Needles. Its normal AI may flee; repeat the battle if needed. F8 bookmarks the runtime trace.', style: Guide.small()),
-                  const SizedBox(height: 10),
-                ],
+                SwitchListTile(
+                  key: const Key('testing-survive-at-one'), contentPadding: EdgeInsets.zero,
+                  title: Text('Survive at 1 HP for testing', style: Guide.text()),
+                  subtitle: Text('Party members take normal damage and can be healed, but survive lethal damage at 1 HP. Also resists instant death. Applies in all battles while enabled; rebuild/install after switching.', style: Guide.small()),
+                  value: app.surviveAtOne,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setSurviveAtOne(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
                 SwitchListTile(
                   key: const Key('testing-ffbe-needles'), contentPadding: EdgeInsets.zero,
                   title: Text('Test FFBE 1,000 Needles visual', style: Guide.text()),
-                  subtitle: Text('Imports the original FFBE needle flashes for this skill on either side. Keeps native damage and MP. Independent of the other visual switches; rebuild/install after changing. Experimental: appearance and placement need in-game testing.', style: Guide.small()),
+                  subtitle: Text('Imports the original FFBE needle groups and hit sounds for this skill on either side. Keeps native damage and MP. Independent of the other visual switches; rebuild/install after changing. Experimental: appearance and placement need in-game testing.', style: Guide.small()),
                   value: app.ffbeNeedles,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setFfbeNeedles(value); } catch (e) { app.showNotice('$e'); }

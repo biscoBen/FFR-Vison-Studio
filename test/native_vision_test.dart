@@ -63,6 +63,7 @@ class NativeApi extends ConfigApi {
   NativeApi(super.roster);
   bool maxMr = false;
   bool practiceBattle = false;
+  bool survival = false;
   bool ffbeNeedlesValue = false;
   bool failNeedles = false;
   @override
@@ -89,6 +90,10 @@ class NativeApi extends ConfigApi {
   Future<bool> testingMaxMr() async => maxMr;
   @override
   Future<void> saveTestingMaxMr(bool value) async { maxMr = value; }
+  @override
+  Future<bool> surviveAtOne() async => survival;
+  @override
+  Future<void> saveSurviveAtOne(bool value) async { survival = value; }
   @override
   Future<bool> testingPracticeBattle() async => practiceBattle;
   @override
@@ -536,38 +541,23 @@ void main() {
     await expectLater(app.setFfbeNeedles(false), throwsStateError);
   });
 
-  testWidgets('practice opponents persist and cannot change during a build', (tester) async {
+  testWidgets('practice opponents move in-game and survival stays independent', (tester) async {
     final before = clone(api.roster);
     await show(tester);
-    expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
     final battle = find.byKey(const Key('testing-practice-battle'));
     await tester.ensureVisible(battle); await tester.tap(battle);
     await wait(tester, () => app.testingPracticeBattle);
-    final control = find.byKey(const Key('testing-practice-encounter'));
-    api.failPracticeEncounter = true;
-    await tester.ensureVisible(control); await tester.tap(control); await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text('Cactuar (level 30, original AI)').last);
-    await wait(tester, () => app.notice?.contains('Settings write failed') == true);
-    expect(tester.widget<DropdownButton<String>>(control).value, 'standard');
-    expect(api.practiceEncounter, 'standard');
-    api.failPracticeEncounter = false;
-    await tester.ensureVisible(control); await tester.tap(control); await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text('Cactuar (level 30, original AI)').last);
-    await wait(tester, () => app.testingPracticeEncounter == 'cactuar');
-    expect(api.practiceEncounter, 'cactuar');
-    expect(find.textContaining('Defend and let Cactuar act'), findsOneWidget);
-    await tester.ensureVisible(battle); await tester.tap(battle);
-    await wait(tester, () => !app.testingPracticeBattle);
     expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
-    await tester.tap(battle);
-    await wait(tester, () => app.testingPracticeBattle);
-    expect(app.testingPracticeEncounter, 'cactuar');
+    expect(find.textContaining('in-game opponent picker'), findsOneWidget);
+    final survival = find.byKey(const Key('testing-survive-at-one'));
+    await tester.ensureVisible(survival); await tester.tap(survival);
+    await wait(tester, () => app.surviveAtOne);
+    expect(api.survival, isTrue);
+    expect(app.testingPracticeBattle, isTrue);
     expect(api.roster, before);
     app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<DropdownButton<String>>(control).onChanged, isNull);
-    await expectLater(app.setTestingPracticeEncounter('standard'), throwsStateError);
-    expect(api.practiceEncounter, 'cactuar');
-    await tester.pump(const Duration(seconds: 6));
+    expect(tester.widget<SwitchListTile>(survival).onChanged, isNull);
+    await expectLater(app.setSurviveAtOne(false), throwsStateError);
   });
 
   testWidgets('Sephira visuals switch independently without resetting saved kits', (tester) async {

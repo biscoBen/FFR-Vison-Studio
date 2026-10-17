@@ -1,0 +1,36 @@
+{
+  "schema": "ffr-audio-1",
+  "recordings": [
+    {
+      "sourceCueId": 99,
+      "variation": 0,
+      "sourceWaveIndex": 92,
+      "sourceWaveId": 830,
+      "name": "se_special_needle_1__v1",
+      "durationMs": 568,
+      "sourceEncodeType": 2,
+      "channels": 1,
+      "sampleRate": 44100,
+      "samples": 25016
+    }
+  ],
+  "cues": {
+    "99": {
+      "name": "se_special_needle_1",
+      "cueIndex": 98,
+      "referenceType": 3,
+      "referenceIndex": 98,
+      "waveformIndex": 92,
+      "waveformIndices": [
+        92
+      ],
+      "durationMs": 568
+    }
+  },
+  "waves": {
+    "830": {
+      "sha256": "063d39c68c1a9156aa62feeef5b3f0db6e2febfd5dc8b8db2a65e512d1290f5b"
+    }
+  },
+  "sourceBankSha256": "22d3f4bd8cae9c2a4ae7485f47b583d662563bb84489bd5db100f4668867565f"
+}

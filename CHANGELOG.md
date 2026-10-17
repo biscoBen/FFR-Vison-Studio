@@ -11,6 +11,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### FFBE needle groups/audio and in-game practice picker
+
+- Correct the FFBE converter's missing ordered-model emission placement: four particles were retained but
+  superimposed at one position. Preserve the positioning mesh's vertex order/scale and per-node instance identity,
+  including shared child trails. Reject unsupported shape/alignment modes. Keep every source particle/frame and
+  the original eleven group starts; the skill still deals one native fixed-damage hit.
+- Import the original `se_special_needle_1` recording and all twenty source sound triggers through the existing
+  host-format HCA/routing adapter. Keep the entire recording and allow its final tail to finish.
+- Add default-off **Survive at 1 HP for testing**. Attach private battle-only unlimited reprieve and instant-death
+  resistance to playable units, preserving damage, healing, existing passives and enemy stats/AI. Disable and
+  rebuild/install to remove it; runtime behavior across damage/status cases still needs live testing.
+- Replace Studio's opponent dropdown with a native in-game choice dialog at Mitra's item-shop Young Woman.
+  Six pages cover the usual encounter, Cactuar and all ten comparison candidates. Choose an opponent per fight
+  without rebuilding, or cancel without a fight. Private groups use the usual practice rewards (or MR override),
+  guaranteed escape, native enemy units/AI, an instance-loaded plains stage and no story/recovery/save changes.
+  Preserve the old saved opponent field for compatibility; it no longer selects the fight.
+- Extension 1.2.38; cooked needle/audio/timeline and survival-table readbacks pass. Native choice functions,
+  unbound event tracks and compiled timing are checked after writing. Menu interaction, 1-HP survival, revised
+  appearance and audible levels remain pending in-game confirmation.
+
+
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
@@ -18,7 +39,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   collected model/material/texture packages. Identify Watcher and Malbodoom as the simplest next practice tests.
 - Distinguish included assets from natural demo story access and live playback. No new practice encounter or
   skill change is installed by this documentation update. Record that the first blank 1,000 Needles retest had
-  its optional FFBE-import switch off; enabled-import testing remains pending.
+  its optional FFBE-import switch off; the user subsequently confirmed playback with it enabled, reporting
+  superimposed streaks and missing sound (addressed above).
 
 ### Cactuar visual baseline — 2026-10-17
 

@@ -43,6 +43,8 @@ class Api {
   Future<bool> testingMaxMr() async => (await get('/api/testing'))['maxMr'] == true;
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
   Future<String> testingPracticeEncounter() async => (await get('/api/testing'))['practiceEncounter'] as String? ?? 'standard';
+  Future<bool> surviveAtOne() async => (await get('/api/testing'))['surviveAtOne'] == true;
+  Future<void> saveSurviveAtOne(bool value) => _saveTestingFlag('surviveAtOne', value);
   Future<bool> ffbeNeedles() async => (await get('/api/testing'))['ffbeNeedles'] == true;
   Future<void> saveFfbeNeedles(bool value) => _saveTestingFlag('ffbeNeedles', value);
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
@@ -68,6 +70,7 @@ class Api {
       'schema': 1, 'maxMr': current['maxMr'] == true,
       'practiceBattle': current['practiceBattle'] == true,
       'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
+      'surviveAtOne': current['surviveAtOne'] == true,
       'ffbeNeedles': current['ffbeNeedles'] == true,
       'crystalCave': current['crystalCave'] == true,
       'crystalCaveTest': current['crystalCaveTest'] == true,

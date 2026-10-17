@@ -13,10 +13,10 @@ RELS = ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')
 
 def payload():
     with zipfile.ZipFile(io.BytesIO(Path(__file__).with_name('ffbe_needles.zip').read_bytes())) as archive:
-        if sorted(archive.namelist()) != ['manifest.json', 'spec.json', 'tex.bgra']:
+        if sorted(archive.namelist()) != ['audio.json', 'manifest.json', 'needle.hca', 'spec.json', 'tex.bgra']:
             raise ValueError('Invalid FFBE Needles payload members.')
         manifest = json.loads(archive.read('manifest.json'))
-        files = {k: archive.read(k) for k in ('spec.json', 'tex.bgra')}
+        files = {k: archive.read(k) for k in ('spec.json', 'tex.bgra', 'audio.json', 'needle.hca')}
     if (manifest.get('schema') != 1 or manifest.get('name') != NAME
             or manifest.get('files') != {k: hashlib.sha256(v).hexdigest() for k, v in files.items()}):
         raise ValueError('FFBE Needles payload checksum mismatch.')
@@ -48,12 +48,53 @@ def schedule():
        SsActor_MoveToTarget_plusOffset={'x': 0.0, 'y': 0.0, 'z': 0.0},
        SsActor_MoveToTarget_RelativeActionUnit=False,
        SsActor_MoveToTarget_Height=0.0, SsActor_MoveToTarget_Length=0.0)
+    files, _ = payload()
+    audio = json.loads(files['audio.json'])
+    # Original group cue 99 repeats every two source frames. This is cosmetic:
+    # keep the game's one fixed-damage reaction, independently of sound pulses.
+    for frame in range(0, 40, 2):
+        at(40 + frame, 'SoundPlayHitSound', Sound_PlayHitSound_CueSheetName=audio_bank_name(),
+           Sound_PlayHitSound_playLabel=audio['recordings'][0]['name'])
     # Eleven cosmetic spawns must still produce exactly one native damage hit.
     at(92, 'OtherReaction', Other_Reaction_Id=-1, Otber_Reaction_ReactionNum=-1,
        Otber_Reaction_bReturnIdleMotion=True, Otber_Reaction_bChangeColor=True)
     at(102, 'SsActorDestroyToSsID', SsActor_Destroy_ID=NAME)
     anim(106, 'idle', 0)
-    return {'duration': 110 * 400, 'events': events}
+    # Last source sound starts at frame 78 and has a 568 ms recording. Leave
+    # its tail inside playback, independently of visual destruction at 102.
+    return {'duration': 120 * 400, 'events': sorted(events, key=lambda e: e['time'])}
+
+
+def audio_bank_name():
+    return 'Studio_FFBE_Needles_SE'
+
+
+def prepare_audio(tables, root, extract):
+    import ffbe_audio
+    files, _ = payload()
+    folder = Path(root) / 'build/ffbe-needles-audio'
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / 'audio.json'; path.write_bytes(files['audio.json'])
+    doc = json.loads(files['audio.json'])
+    sample, = doc['waves'].values()
+    samples = folder / 'samples'; samples.mkdir(exist_ok=True)
+    (samples / (sample['sha256'] + '.hca')).write_bytes(files['needle.hca'])
+    shell = Path(root) / 'extracted/legacy' / (ffbe_audio.SHELL + '.uasset')
+    if not shell.is_file(): extract(ffbe_audio.SHELL.replace('FFRS/Content/', ''))
+    if not shell.is_file(): raise ValueError('The native audio bank template could not be extracted.')
+    # Reuse the proven host-format HCA adapter, including the installed game's
+    # key/routing. Do not ship an entire mobile sound bank or alter native audio.
+    bank = {'path': str(path), 'sha256': hashlib.sha256(files['audio.json']).hexdigest(),
+            'name': audio_bank_name(), 'asset': 'FFRS/Content/Sound/FFBE/' + audio_bank_name(),
+            'audioManifest': doc, 'cues': {int(k): v for k, v in doc['cues'].items()},
+            'mode': 'native', 'recordings': doc['recordings'], 'gain': 0.15,
+            'waveformProfile': {'revision': 1, 'version': 0x300,
+                'key': ffbe_audio.hca_host.key_from_config(ffbe_audio.host_config({}))}}
+    for rel in ('Asset/Sound/DT_SoundCueSheetAsset', 'Asset/Sound/CDT_SoundCueSheetAsset_Demo'):
+        tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append({
+            'row': bank['name'], 'cloneFrom': 'SE_BTL', 'set': {
+                'CueSheetName': bank['name'], 'pCueSheet': bank['asset'].replace('FFRS/Content/', '/Game/')}})
+    return bank
 
 
 def prepare(tables, clones, jobs, root, rows, extract):
@@ -78,12 +119,13 @@ def prepare(tables, clones, jobs, root, rows, extract):
         if len(donors) != 1: raise ValueError('The battle timeline template is unavailable.')
         additions.append((rel, donors[0]))
     payload()  # Fail before staging a partial import.
+    bank = prepare_audio(tables, root, extract)
     source = Path(root) / 'extracted/legacy' / (ffbe_resonance.SHELL + '.uasset')
     if not source.is_file(): extract('Sequencer/Battle/Skill/440110/440111/')
     if not source.is_file(): raise ValueError('The battle timeline shell could not be extracted.')
     clones.append({'from': ffbe_resonance.SHELL, 'to': ASSET,
                    'rename': [['SEQ_Battle_440111_Cut_000', Path(ASSET).name]]})
-    jobs.append({'asset': ASSET, 'plan': schedule(), 'audio': None, 'kind': 'skill_motion'})
+    jobs.append({'asset': ASSET, 'plan': schedule(), 'audio': bank, 'kind': 'skill_motion'})
     for rel, donor in additions:
         table = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
         for variant in (500271, 500272):

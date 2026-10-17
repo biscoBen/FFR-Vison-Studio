@@ -64,7 +64,7 @@ class FfbeNeedlesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             data, rows, seq = self.fixture(root); before = copy.deepcopy(data)
             tables = {}; clones = []; jobs = []
-            with mock.patch.dict('sys.modules', {'ffbe_resonance': seq}):
+            with mock.patch.dict('sys.modules', {'ffbe_resonance': seq}), mock.patch.object(needles, 'prepare_audio', return_value={'fixture': 'audio'}):
                 needles.prepare(tables, clones, jobs, root, rows, mock.Mock())
             self.assertEqual(set(tables), set(needles.RELS))
             for table in tables.values():
@@ -99,6 +99,34 @@ class FfbeNeedlesTests(unittest.TestCase):
                 with mock.patch.dict('sys.modules', {'ffbe_resonance': seq}), self.assertRaises(ValueError):
                     needles.prepare(tables, clones, jobs, root, rows, mock.Mock())
                 self.assertEqual((tables, clones, jobs), ({}, [], []))
+
+    def test_original_audio_recording_and_every_source_sound_pulse_are_preserved(self):
+        files, proof = needles.payload()
+        audio = json.loads(files['audio.json'])
+        self.assertEqual(audio['recordings'][0]['sourceCueId'], 99)
+        self.assertEqual(audio['recordings'][0]['name'], 'se_special_needle_1__v1')
+        self.assertEqual(hashlib.sha256(files['needle.hca']).hexdigest(), proof['source']['audio']['rawRecordingSha256'])
+        source = json.loads((ROOT/'scripts/fixtures/ffbe_needles/source-rows.json').read_bytes())
+        expected = [int(v.split(':')[0]) for v in source['F_EFFECT_GROUP_MST'][0]['1fVZ3rKd'].split(',')]
+        sounds = [e for e in needles.schedule()['events'] if e['set']['EventType']=='SoundPlayHitSound']
+        self.assertEqual([e['time'] for e in sounds], [(40+v)*400 for v in expected])
+        self.assertTrue(all(e['set']['Sound_PlayHitSound_playLabel']==audio['recordings'][0]['name'] for e in sounds))
+
+    def test_shipped_first_burst_has_four_separate_parallel_streaks(self):
+        # At source frame 2 only the first group instance exists. The BMB asks
+        # for four copies; the regression was four copies at ONE position.
+        files, proof = needles.payload()
+        self.assertEqual(hashlib.sha256((ROOT/'scripts/ffbe_model_placement.py').read_bytes()).hexdigest(),
+                         proof['source']['placementAdapterSha256'])
+        parts = json.loads(files['spec.json'])['animations'][0]['parts']
+        def sample(keys, frame): return next(value for time, value in reversed(keys) if time <= frame)
+        visible = [v for name, v in parts.items() if name.startswith('mix_') and sample(v['Hide'], 2) == 0]
+        self.assertEqual(len(visible), 4)
+        positions = [(sample(v['Posx'], 2), sample(v['Posy'], 2)) for v in visible]
+        self.assertEqual(len(set(positions)), 4)
+        self.assertEqual(len({sample(v['Rotz'], 2) for v in visible}), 1)
+        span = max(((x-a)**2+(y-b)**2)**.5 for x,y in positions for a,b in positions)
+        self.assertAlmostEqual(span, 20, places=2)  # mesh Y [-1,+1] times native scale 10
 
     def test_needles_flag_requires_a_boolean(self):
         for bad in ('true', 1, None):

@@ -119,16 +119,14 @@ demo presentation as a possibility. It does not establish the cause of the other
 This does not verify its original visuals. Its existing ordinary-Needle substitute remains confined to
 **Use our skill changes**; native-only mode continues to preserve the original source presentation.
 
-For that comparison, **Shop practice battle → Practice opponents → Cactuar (level 30, original AI)** selects a
-private clone of the game's solo encounter (4035), on the existing practice stage in Mitra. Rebuild/install and
-restart, enable the existing [runtime trace helper](scripts/reference/skill-runtime/), then talk to the Young Woman
-in Mitra's item shop. Defend and let Cactuar use **1,000 Needles**, press **F8**, and collect the trace with option 2.
-Record the actual action name and what appears; **Needle** is a different skill. Cactuar's normal AI may flee,
-so retry if needed. Its level, stats, AI, skill IDs and presentation assets remain original. The private encounter
-retains its native rewards (or the existing MR test override) and allows guaranteed player escape. Choose **Usual
-enemies (levels 7–8)** and rebuild/install to restore the previous practice opponents. Disabling the battle retains
-the selected opponents for later. A further trace is optional evidence for identifying the exact enemy route;
-the reported blank appearance is already recorded. This option is not a native skill animation repair.
+For that comparison, enable **Shop practice battle**, rebuild/install and restart, then talk to the Young Woman
+in Mitra's item shop. Her native in-game picker offers two opponents per page, **More opponents** and **Cancel**.
+Choose **Cactuar (level 30): 1,000 Needles**, defend and let it act. Its native AI may flee; repeat as needed.
+Use the existing [runtime trace helper](scripts/reference/skill-runtime/) and F8 if you want to record the route.
+Selecting another opponent requires no new build. The old Studio dropdown has been removed.
+All twelve choices use private story-free encounters, original enemy units/AI, the native plains backdrop,
+guaranteed escape and the usual practice reward (or the MR test override). Original encounter rewards are unchanged.
+This picker supplies comparisons; it does not repair missing native skill animations.
 
 ### Original-enemy comparisons for missing skills — 2026-10-17
 
@@ -195,15 +193,25 @@ to restore prior routing. Cactuar practice can exercise the enemy side; a vision
 The imported project retains all **1,760 particle-frame instances** (no drops/shrinks), eleven source spawns,
 source-timed start at frame 40 and one native damage reaction at frame 92. The effect attaches to the selected
 target's `Null_center`, rather than a hard-coded party-side point. Explicit destruction follows the visual tail;
-hidden padding prevents looping before cleanup. No camera, grading, game-speed, FFBE mechanics or FFBE audio
-is imported. Its private sequence, project/texture and both binding tables pass actual cooked serialization,
+hidden padding prevents looping before cleanup. The original FFBE hit sound now accompanies its twenty source
+triggers. No camera, grading, game-speed or FFBE mechanics are imported. Its private sequence, project/texture and both binding tables pass actual cooked serialization,
 readback and IoStore verification; the build checks event constants, project import, target, one hit, cleanup,
 event-channel times and compiled playback times before packing.
+
+The user confirmed the first import plays in Resonance, but its four simultaneous streaks were superimposed.
+The source BMB selects **ordered-model emission** (mode 8): `position_model_circle12` supplies vertex positions,
+scaled by the node's XYZ factors and inherited by its children. The development converter now preserves that
+placement and per-node emission ordinal. Its four initial streak positions are distinct and all child trails follow.
+This fixes a converter feature rather than adding arbitrary copies of one streak. Other nonzero shape/alignment
+modes fail explicitly until implemented; this does not establish general parity for every FFBE effect.
+The retained original cue **99 / se_special_needle_1** from checksum-verified `SE.acb` plays at group frames
+0, 2, …, 38 (relative to visual start 40). Its complete mono HCA recording uses the existing host-format adapter
+and installed-game routing/key. Twenty cosmetic sound pulses still produce just one native damage reaction.
 
 This is a **visual-import prototype requiring live testing**, not a claim that all FFBE effects now work or
 that its offline preview exactly matches FFBE's renderer. The converter simulates BMB particles; source random
 placement jitter is omitted deterministically, and the build-15 writer uses its standard Mix/Add materials
-instead of newer identity PartsColor keys. Brightness, size, target placement and repeated casts need in-game
+instead of newer identity PartsColor keys. Revised spacing, sound level, target placement and repeated casts need in-game
 confirmation. Other failed native skills remain a separate investigation.
 
 Reproduce the shipped payload with `python scripts/build_ffbe_needles.py --converter <tools/ffbe_effects>
@@ -546,13 +554,17 @@ opponent. This bound covers the largest total of the game's native MR rank costs
 use an overflow-sized reward. Equip the visions first. Scripted battles that suppress rewards keep that behavior;
 awakening ranks and their materials are unchanged. Both controls default off and persist across Studio restarts.
 
-Enable **Shop practice battle**, then install and restart the game. Talk to **Young Woman** in Mitra's item shop
-to fight one level-7 Evil Plant and two level-8 Wild Rats after her normal dialogue, using your current party and a native plains backdrop.
-The shop uses a private instance-loaded stage so its backdrop does not depend on Mitra's preloaded battle levels.
-Escape is guaranteed. The fight uses the one-battle MR reward when that setting is enabled. This switch defaults off;
-disable and reinstall to restore her original interaction. Battle entry is confirmed; the updated backdrop, return and
-repeat use still need in-game confirmation after rebuilding/installing the mod and restarting Resonance.
-NPC event bindings are matched by the actual dialogue text key and talk block; display names and sprite IDs are insufficient.
+Enable **Shop practice battle**, install and restart, then talk to **Young Woman** in Mitra's item shop for an
+in-game opponent dialog. Twelve encounters include the usual enemies, Cactuar and the ten enemy comparisons
+listed above. **More opponents** cycles pages; **Cancel** returns without fighting. Each selection uses your current
+party, the private native plains stage and guaranteed escape. The MR switch applies to every choice.
+
+Enable **Survive at 1 HP for testing** before rebuilding/installing to test strong enemies and healing together.
+Private battle-only native passives provide unlimited 1-HP reprieve and instant-death resistance on playable units.
+Normal damage, maximum HP, healing, other passives and enemy stats/AI stay intact. It applies in all battles while
+enabled; disable, reinstall and restart to remove it. Native table checks pass; lethal multi-hits, damage-over-time,
+instant-death attacks and menu cancellation/repeat use still need live confirmation. Scripted battle endings are
+not changed. The choices do not automatically heal or revive the party. Both testing switches default off.
 
 Use a clean save, do not save with testing active, then disable the testing controls, reinstall and reload the clean save.
 Disabling does not remove items or MR already acquired in the running session or a saved game. Table serialization
@@ -817,6 +829,9 @@ Keep user cave placements, character configs, concise descriptions and source la
 features here as work continues. Mark an item complete only with the tested game version, Studio commit and evidence;
 retain unresolved cases and record the date/source fingerprints when refreshing catalogs.
 
+- [ ] **Practice testing controls.** Recheck native unlimited reprieve/instant-death IDs, playable-unit attachment
+  and the choice/branch/stage tables. Verify lethal multi-hits and damage-over-time at 1 HP, healing, cancellation
+  and repeated fights. Update demo-only opponents and remove superseded animation comparisons.
 - [ ] **Vendors and cave entrance images/models.** Regenerate from full-game shop tables and entrance assets.
   Retain native IDs/chapter variants, review unused entries, locate currently unmapped vendors where data permits,
   and recheck all four entrance previews.

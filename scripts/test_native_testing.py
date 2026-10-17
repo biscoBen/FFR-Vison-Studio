@@ -68,13 +68,20 @@ def practice_game():
         **copy.deepcopy(tables[testing.GROUP]['plant and rats']),
         'ID': 4035, 'UnitIdList': [38], 'locationIdList': [10], 'ap': 220}
     tables[native.UNIT]['Cactuar'] = {'ID': 38, 'Level': 30, 'Category': 'Enemy', 'MaxHitPoint': 1111}
+    inn = copy.deepcopy(woman)
+    inn['ChoicesBranchEventList'] = [{'Index': 0, 'EventList': [{'Condition': '{money}>=1000', 'EventId': 'INN_Accept'}]}]
+    for rel in (testing.SHOP_EVENT, testing.COMPOSITE): tables[rel]['DT_Town_010Gra_20_0920_5'] = copy.deepcopy(inn)
+    tables[testing.CHOICES] = {'native choice': {'ChoiceTag': {'TagName': 'native'}, 'ChoiceTextList': ['Yes', 'No'],
+        'DefaultIndex': 0, 'CancelIndex': 1, 'ChoiceDialogType': 'Normal'}}
+    for key, _, uid, level in testing.OPPONENTS:
+        if uid not in [20, 38]: tables[native.UNIT][key] = {'ID': uid, 'Level': level, 'Category': 'Enemy', 'passiveSkillList': []}
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'ffbeNeedles': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -182,7 +189,7 @@ class NativeTestingTests(unittest.TestCase):
         self.assertEqual(original, before)
         self.assertEqual(set(ops), {testing.SHOP_EVENT, testing.COMPOSITE,
                                    testing.MAP, testing.MAP_COMPOSITE, testing.GROUP,
-                                   testing.STAGE, testing.STAGE_COMPOSITE})
+                                   testing.STAGE, testing.STAGE_COMPOSITE, testing.CHOICES})
         self.assertEqual(len(expected), 4)
         for rel, op in ops.items():
             built = copy.deepcopy(original[rel])
@@ -191,7 +198,8 @@ class NativeTestingTests(unittest.TestCase):
             testing.check_rows(original[rel], built, op)
             if rel in (testing.SHOP_EVENT, testing.COMPOSITE):
                 self.assertEqual([e['row'] for e in op['set']], ['DT_Town_010Gra_20_0920_8'])
-                self.assertEqual(built[testing.SHOP_WOMAN]['encountGroupId'], testing.PRACTICE_ID)
+                self.assertEqual(built[testing.SHOP_WOMAN]['encountGroupId'], -1)
+                self.assertEqual(built[testing.SHOP_WOMAN]['ContinuousEventList'][0]['EventId'], testing.PRACTICE + '_Menu_A')
                 self.assertEqual(built[testing.SHOP_WOMAN]['ArgList'], {'id': '6'})
                 self.assertEqual(built['DT_Town_010Gra_20_1170_1'], original[rel]['DT_Town_010Gra_20_1170_1'])
                 self.assertEqual(built['shopkeeper'], original[rel]['shopkeeper'])
@@ -209,8 +217,8 @@ class NativeTestingTests(unittest.TestCase):
                 self.assertEqual(stage['battleLevelList'], original[rel]['plains']['battleLevelList'])
                 self.assertEqual(stage['unitLightIntensity'], 2.0)
                 self.assertEqual(stage['unitShadowDensity'], 0.8)
-            else:
-                encounter = built[testing.PRACTICE]
+            elif rel == testing.GROUP:
+                encounter = built[testing.PRACTICE + '_standard']
                 self.assertEqual(encounter['UnitIdList'], [20, 22, 22])
                 self.assertEqual(encounter['locationIdList'], [20, 6, 15])
                 self.assertEqual(encounter['probabilityOfSuccessfulEscape'], 100.0)
@@ -218,6 +226,77 @@ class NativeTestingTests(unittest.TestCase):
                 self.assertEqual(encounter['ap'], 20)
         with tempfile.TemporaryDirectory() as root:
             self.assertEqual(testing.prepare({}, [], root, rows), {})
+
+    def test_dialog_pages_reach_every_opponent_and_cancel_has_no_battle(self):
+        original, rows, _ = practice_game()
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)/testing.CONFIG; path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))
+            ops = testing.prepare({}, [], root, rows)
+        events = {e['row']: testing.apply_fields(original[testing.COMPOSITE][e['cloneFrom']], e['set'])
+                  for e in ops[testing.COMPOSITE]['add']}
+        dialogs = {e['row']: testing.apply_fields(original[testing.CHOICES][e['cloneFrom']], e['set'])
+                   for e in ops[testing.CHOICES]['add']}
+        targets = []
+        for page in range(6):
+            key = testing.PRACTICE + '_Menu_' + chr(65+page)
+            branches = events[key]['ChoicesBranchEventList']
+            self.assertEqual([v['Index'] for v in branches], [0, 1, 2])
+            self.assertEqual(dialogs[key]['CancelIndex'], 3)
+            self.assertEqual(dialogs[key]['ChoiceTextList'][-1], 'Cancel')
+            self.assertEqual(branches[2]['EventList'][0]['EventId'], testing.PRACTICE+'_Menu_'+chr(65+(page+1)%6))
+            targets.extend(v['EventList'][0]['EventId'] for v in branches[:2])
+        self.assertEqual(len(set(targets)), 12)
+        self.assertEqual({events[t]['encountGroupId'] for t in targets}, set(range(29990,30002)))
+        for target in targets:
+            event = events[target]
+            self.assertEqual(event['EventSequence'], 'None')
+            self.assertEqual(event['OnFlagList'], [])
+            self.assertFalse(event['OverwriteBattleParty'])
+            self.assertFalse(event['IsSetAutoSave'])
+
+    def test_private_choice_uses_unbound_native_talk_calls_and_compiled_times(self):
+        import gzip
+        from test_existing_visions import ROOT, module
+        with mock.patch.dict('sys.modules', {'ffbe_lb': SimpleNamespace(NEUTRAL_COLOR='#808080')}):
+            seq = module('practice_sequence_fixture', ROOT/'scripts/fixtures/engine_motion/ffbe_resonance.py')
+        shell = json.loads(gzip.decompress((ROOT/'scripts/fixtures/practice_dialog/shell.json.gz').read_bytes()))
+        tag = 'UI.Dialog.Choice.Studio_PracticeBattle_Menu_A'
+        with mock.patch.dict('sys.modules', {'ffbe_resonance':seq}):
+            built = testing.author_practice_choice(shell,tag)
+            testing.verify_practice_choice(built,tag)
+            root = next(e for e in built['Exports'] if e['ClassIndex']<0 and built['Imports'][-e['ClassIndex']-1]['ObjectName']=='LevelSequence')
+            self.assertEqual(seq.child(root['Data'],'BindingReferences','SortedReferences'),[])
+            tags = [i for i in built['Imports'] if i['ObjectName']=='GameplayTag']
+            self.assertEqual(built['Imports'][-tags[0]['OuterIndex']-1]['ObjectName'],'/Script/GameplayTags')
+            with self.assertRaises(ValueError): testing.verify_practice_choice(built,tag+'Wrong')
+
+    def test_survival_is_unlimited_native_damage_time_reprieve_and_preserves_other_passives(self):
+        effects = {
+            'reprieve': {'ID': 1359, 'EffectType': 'Reprieve', 'ParamList': [0,-1]+[-1]*13,
+                'activationCondition': {'Condition':'None'}, 'activationProbability':100, 'effectEndActionNum':-1},
+            'death': {'ID': 1411, 'EffectType':'AddStatusConditionRegist','ParamList':[13,1000]+[-1]*13}}
+        bundle = {'effectId':1359,'passiveSkillAddTiming':'SpawnUnit','TargetType':'Self','targetRelation':'Friendlies'}
+        data = {'Skill/DT_SkillEffectData': effects,
+            'Skill/DT_PassiveSkillData': {'original':{'ID':1259,'effectBundleList':[bundle,dict(bundle),dict(bundle)]}},
+            'Unit/DT_UnitParameter': {'Rain': {'ID':1001,'Category':'Playable','passiveSkillList':[7]},
+                'Lasswell': {'ID':1002,'Category':'Playable','passiveSkillList':[]},
+                'enemy':{'ID':38,'Category':'Enemy','passiveSkillList':[]}}}
+        before = copy.deepcopy(data)
+        ops = {'Unit/DT_UnitParameter': {'asset':'existing','add':[], 'set':[{'row':'Rain','set':{'passiveSkillList':[7,8]}}]}}
+        def table(rel): return ops.setdefault(rel, {'asset':rel,'add':[],'set':[]})
+        testing.prepare_survival(table, lambda rel: copy.deepcopy(data[rel]))
+        self.assertEqual(data, before)
+        self.assertEqual(ops['Unit/DT_UnitParameter']['set'][-2]['set']['passiveSkillList'],[7,8,29660])
+        self.assertFalse(any(e['row']=='enemy' for e in ops['Unit/DT_UnitParameter']['set']))
+        private = ops['Skill/DT_PassiveSkillData']['add'][0]['set']
+        self.assertTrue(private['bBattleOnly']); self.assertFalse(private['isRemovable'])
+        self.assertEqual([v['effectId'] for v in private['effectBundleList']][:2],[29661,29662])
+        self.assertFalse(any('HitPoint' in str(e) or 'Damage' in str(e) for e in ops['Unit/DT_UnitParameter']['set']))
+        effects['reprieve']['ParamList'][1] = 1
+        with self.assertRaises(ValueError): testing.prepare_survival(table, lambda rel:copy.deepcopy(data[rel]))
+        for bad in (1, 'true', None):
+            with self.assertRaises(ValueError): testing.validate_settings({'schema':1,'maxMr':False,'surviveAtOne':bad})
 
     def test_practice_battle_honors_mr_and_original_vision_acquisition_together(self):
         original, rows, unit = practice_game(); unit['testAcquire'] = True
@@ -240,12 +319,12 @@ class NativeTestingTests(unittest.TestCase):
                                            'practiceBattle': True, 'practiceEncounter': 'cactuar'}))
                 ops = testing.prepare({}, [], root, rows)
                 group_op = ops[testing.GROUP]
-                add, = group_op['add']
+                add = next(v for v in group_op['add'] if v['row'].endswith('_cactuar'))
                 group = testing.apply_fields(original[testing.GROUP][add['cloneFrom']], add['set'])
                 self.assertEqual(group['UnitIdList'], [38])
                 self.assertEqual(group['locationIdList'], [10])
-                self.assertEqual(group['ap'], 4995 if max_mr else 220)
-                self.assertEqual(group['ID'], testing.PRACTICE_ID)
+                self.assertEqual(group['ap'], 4995 if max_mr else 20)
+                self.assertEqual(group['ID'], testing.PRACTICE_ID + 1)
                 self.assertEqual(group['probabilityOfSuccessfulEscape'], 100.0)
                 self.assertEqual(group['battleFinishTransition']['mapId'], -1)
                 self.assertFalse(group['battleFinishTransition']['bDoAutoSave'])
@@ -256,16 +335,14 @@ class NativeTestingTests(unittest.TestCase):
         for bad in (None, True, 38, [], {}, 'unknown'):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 testing.validate_settings({'schema': 1, 'maxMr': False, 'practiceEncounter': bad})
-        for change in ('missing', 'duplicate', 'monster', 'story'):
+        for change in ('monster', 'choice-template', 'branch-template'):
             tables, rows, _ = practice_game()
-            if change == 'missing': del tables[testing.GROUP]['Cactuar solo']
-            elif change == 'duplicate': tables[testing.GROUP]['duplicate'] = copy.deepcopy(tables[testing.GROUP]['Cactuar solo'])
-            elif change == 'monster': tables[native.UNIT]['Cactuar']['Level'] = 99
-            else: tables[testing.GROUP]['Cactuar solo']['battleFinishEventId'] = 'story'
+            if change == 'monster': tables[native.UNIT]['Cactuar']['Level'] = 99
+            elif change == 'choice-template': tables[testing.CHOICES].clear()
+            else: del tables[testing.SHOP_EVENT]['DT_Town_010Gra_20_0920_5']
             with self.subTest(change=change), tempfile.TemporaryDirectory() as root:
                 path = Path(root) / testing.CONFIG; path.parent.mkdir(parents=True)
-                path.write_text(json.dumps({'schema': 1, 'maxMr': False,
-                                           'practiceBattle': True, 'practiceEncounter': 'cactuar'}))
+                path.write_text(json.dumps({'schema': 1, 'maxMr': False, 'practiceBattle': True}))
                 with self.assertRaises(ValueError): testing.prepare({}, [], root, rows)
 
     def test_practice_battle_rejects_changed_story_identity_and_incompatible_assets(self):

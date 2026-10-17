@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.37'
+VERSION = '1.2.38'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -64,11 +64,11 @@ def validate_preview_archive(raw):
 
 def validate_needles_archive(raw):
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-        if sorted(archive.namelist()) != ['manifest.json', 'spec.json', 'tex.bgra']:
+        if sorted(archive.namelist()) != ['audio.json', 'manifest.json', 'needle.hca', 'spec.json', 'tex.bgra']:
             raise RuntimeError('Unexpected FFBE Needles archive contents.')
         manifest = json.loads(archive.read('manifest.json'))
         if (manifest.get('schema') != 1 or manifest.get('name') != 'ffbe_needles_test'
-                or manifest.get('files') != {k: sha(archive.read(k)) for k in ('spec.json', 'tex.bgra')}):
+                or manifest.get('files') != {k: sha(archive.read(k)) for k in ('spec.json', 'tex.bgra', 'audio.json', 'needle.hca')}):
             raise RuntimeError('FFBE Needles archive checksum mismatch.')
         spec = json.loads(archive.read('spec.json'))
         w, h = spec['pixelSize']
@@ -178,12 +178,13 @@ def hook_builder(raw):
                     'import _ffr_party_voices',
                     '_ffr_party_voices.prepare(objects, clones, post_objects, party_units, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)), seq_dumps)',
+                    '_ffr_testing.ensure_assets(ROOT, lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))',
                     '_ffr_testing.prepare(tables, party_units + native_units + UNITS, ROOT, rows)',
                     '_ffr_ability_modes.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
                     '                    "objects": post_objects, "bytecode": post_bytecode})']
-    before_pack = [MARKER, 'import _ffr_ffbe_needles',
+    before_pack = [MARKER, '_ffr_testing.build_practice(dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'import _ffr_ffbe_needles',
                    '_ffr_ffbe_needles.build(dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)',
