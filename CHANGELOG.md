@@ -11,20 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Testing verification accounts for the complete mod
-
-- Fix the final `Unit/DT_UnitParameter` check when **Survive at 1 HP for testing** is used with imported visions.
-  The previous check expected only original rows plus testing edits, rejecting the three added visions after
-  the normal verifier had already passed. Compare shared tables with the complete build recipe, then impose
-  independently recomputed testing requirements. Keep the normal original-row verifier and full row checks.
-- Replay native partial map/struct updates, first-element struct-array templates and indexed values when
-  computing expected rows. Verify imported units, native stat edits and additional private passive/effect rows
-  together with survival. Missing/extra rows, incorrect values and missing survival effects still fail, including
-  when a faulty build recipe contains the same survival error. Report the affected row names in future errors.
-- Extension 1.2.41 aligns startup/install checks. Reproduce the reported failure with native cooked tables,
-  then verify the corrected mixed build and IoStore packing. This fixes build verification; live practice-menu,
-  survival and revised FFBE visual/audio behavior still need in-game confirmation.
-
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
@@ -43,6 +29,33 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published mixed-build testing verification fix — 2026-10-17
+
+Code: [`7e1f095`](https://github.com/biscoBen/FFR-Vison-Studio/commit/7e1f095abf1670d3c0e50f8157faa466bf42124f).
+[Verified Windows test release / run 39065483449](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39065483449).
+
+- Fix the final `Unit/DT_UnitParameter` check when **Survive at 1 HP for testing** is used with imported visions.
+  The previous check expected only original rows plus testing edits, rejecting the three added visions after
+  the normal verifier had already passed. Compare shared tables with the complete build recipe, then impose
+  independently recomputed testing requirements. Keep the normal original-row verifier and full row checks.
+- Replay native partial map/struct updates, first-element struct-array templates and indexed values when
+  computing expected rows. Verify imported units, native stat edits and additional private passive/effect rows
+  together with survival. Missing/extra rows, incorrect values and missing survival effects still fail, including
+  when a faulty build recipe contains the same survival error. Report the affected row names in future errors.
+- Extension 1.2.41 aligns startup/install checks. Reproduce the reported failure with native cooked tables,
+  then verify the corrected mixed build and IoStore packing. This fixes build verification; live practice-menu,
+  survival and revised FFBE visual/audio behavior still need in-game confirmation.
+
+Validation: 437 Python checks (six skips locally and on Windows), 28 focused local Flutter tests, full Windows
+analysis and 263 Flutter tests (one skipped), fresh frozen-engine startup, updater/launcher checks and compilation
+pass. Native table write/readback and the actual testing verifier pass with three imports, a native stat override,
+additional private passive/effect rows and survival enabled. Repeat native practice talk/composite/map/encounter/stage
+readbacks, six choice sequences and IoStore packing pass. Downloaded provenance/checksum and all 37 extension
+resources match source; 16 Crystal Fina resources remain unchanged. Live behavior remains pending confirmation.
+First complete candidate **20:06:25 UTC** to verified download **20:15:57 UTC**: **9m 32s**, including a test-fixture
+correction, repeated local checks, waiting and verification. One matching push run: CI **6m 34s**; runner job time
+**9m 57s** (**9m 29s Windows**, **28s Linux**).
 
 ## Published practice menu link serialization fix — 2026-10-17
 

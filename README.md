@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified mixed-build testing verification fix / run 39065483449](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39065483449/Sephira-Studio-Test.zip)
+(code `7e1f095`, published 2026-10-17; extension 1.2.41). Fix the final unit-table check when imported visions and
+**Survive at 1 HP for testing** are enabled together. Check the complete build recipe alongside independently
+recomputed testing requirements, retaining all imported rows and native edits. Missing/extra rows and wrong values
+still fail, with affected row names reported. Update Studio, rebuild/install your mod and restart Resonance.
+
+Windows analysis, **263 Flutter tests** (one skipped), **437 Python checks** (six skipped), fresh engine startup,
+launcher/updater checks and compilation pass. Reproduce the old failure with native tables, then pass the actual
+verifier with three imports, a native stat override, additional private passive/effect rows and survival together.
+Native practice table/sequence readbacks and IoStore packing also pass. Downloaded provenance/checksum and **37**
+extension resources match source; **16** Crystal Fina resources remain unchanged. Live behavior still needs user
+confirmation. First complete candidate **20:06:25 UTC** to verified download **20:15:57 UTC**: **9m 32s**, including a
+fixture correction and repeated local checks. One matching push run: CI **6m 34s**, runner job time **9m 57s**
+(**9m 29s Windows**, **28s Linux**).
+
 [Verified practice menu link fix / run 39063684610](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39063684610/Sephira-Studio-Test.zip)
 (code `3e58dfa`, published 2026-10-17; extension 1.2.40). Fix the subsequent `ContinuousEventList` empty-struct-array
 build failure. Use a populated native template while restoring the shop woman's original dialogue, arguments and
