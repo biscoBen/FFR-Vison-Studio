@@ -11,19 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Practice menu link writes populated native event arrays
-
-- Fix the next build failure when writing the shop woman's empty `ContinuousEventList`. Replace her row
-  using a populated native continuous-event template, restoring every original field except the menu link.
-  Clear the template's quest flags, progress and request changes; retain the original dialogue and arguments.
-- Write `ArgList` as its native map property rather than an unsupported dotted struct path. Use independently
-  retained native talk rows in regression tests, and exercise all nineteen dialogue edits with the pinned
-  engine patcher in Windows CI, including a negative control that reproduces the reported empty-array error.
-- Extension 1.2.40 aligns startup/install checks. Native talk/composite/map/encounter/stage table serialization,
-  exact readback, six choice-sequence readbacks and IoStore verification pass. The reference omits the map
-  composite and UI choice table; those remain covered by logical/schema checks and the user's successful
-  choice-table write. Live menu operation still needs confirmation after installing this fix.
-
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
@@ -42,6 +29,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published practice menu link serialization fix — 2026-10-17
+
+Code: [`3e58dfa`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3e58dfa48c8731350f3ede08aa8c6c0da06a655e).
+[Verified Windows test release / run 39063684610](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39063684610).
+
+- Fix the next build failure when writing the shop woman's empty `ContinuousEventList`. Replace her row
+  using a populated native continuous-event template, restoring every original field except the menu link.
+  Clear the template's quest flags, progress and request changes; retain the original dialogue and arguments.
+- Write `ArgList` as its native map property rather than an unsupported dotted struct path. Use independently
+  retained native talk rows in regression tests, and exercise all nineteen dialogue edits with the pinned
+  engine patcher in Windows CI, including a negative control that reproduces the reported empty-array error.
+- Extension 1.2.40 aligns startup/install checks. Native talk/composite/map/encounter/stage table serialization,
+  exact readback, six choice-sequence readbacks and IoStore verification pass. The reference omits the map
+  composite and UI choice table; those remain covered by logical/schema checks and the user's successful
+  choice-table write. Live menu operation still needs confirmation after installing this fix.
+
+Validation: 431 Python checks (six skips locally and on Windows), 28 focused local Flutter tests, full Windows
+analysis and 263 Flutter tests (one skipped), fresh frozen-engine startup, updater/launcher checks and compilation
+pass. The new actual-engine dialogue contract passes on Windows. Downloaded provenance/checksum and all 37
+extension resources match source; all 16 Crystal Fina resources remain unchanged. Live menu operation is pending.
+First complete candidate **19:42:27 UTC** to verified download **19:49:25 UTC**: **6m 58s**, including local checks,
+waiting and verification. One matching push run: CI **5m 28s**; runner time **8m 53s** (**8m 27s Windows**, **26s Linux**).
 
 ## Published practice boss-category fix — 2026-10-17
 

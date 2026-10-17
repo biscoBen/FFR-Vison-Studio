@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified practice menu link fix / run 39063684610](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39063684610/Sephira-Studio-Test.zip)
+(code `3e58dfa`, published 2026-10-17; extension 1.2.40). Fix the subsequent `ContinuousEventList` empty-struct-array
+build failure. Use a populated native template while restoring the shop woman's original dialogue, arguments and
+settings, then add only the menu link. Write her arguments as a native map. Update Studio, rebuild/install and restart.
+
+Windows analysis, **263 Flutter tests** (one skipped), **431 Python checks** (six skipped), fresh engine startup,
+launcher/updater checks and compilation pass. The actual-engine regression test reproduces the original error and
+accepts all nineteen corrected dialogue edits. Both native talk tables, the map/encounter/stage tables and all six
+choice sequences pass exact readback and IoStore packing. The supplied references omit the composite map and UI
+choice table; those have logical/schema coverage, and the user's log confirms its choice-table write succeeded.
+Downloaded provenance/checksum and **37** extension resources match source; **16** Crystal Fina resources remain
+unchanged. Live menu operation still needs confirmation. First complete candidate **19:42:27 UTC** to verified
+download **19:49:25 UTC**: **6m 58s**. One matching push run: CI **5m 28s**, runner job time **8m 53s**
+(**8m 27s Windows**, **26s Linux**).
+
 [Verified practice boss-category fix / run 39062414190](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39062414190/Sephira-Studio-Test.zip)
 (code `c6e3acc`, published 2026-10-17; extension 1.2.39). Fix the table-preparation failure on Gigantuar (352):
 it, Sheratan and Alpherg use the game's native `Boss` category. The practice picker now accepts these alongside
