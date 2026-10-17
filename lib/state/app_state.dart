@@ -1136,9 +1136,11 @@ class AppState extends ChangeNotifier {
   }
 
   /// One-line message in the header for a few seconds.
+  Timer? _noticeTimer;
   void showNotice(String s) {
+    _noticeTimer?.cancel();
     notice = s; notifyListeners();
-    Future.delayed(const Duration(seconds: 6), () { if (notice == s) { notice = null; notifyListeners(); } });
+    _noticeTimer = Timer(const Duration(seconds: 6), () { if (notice == s) { notice = null; notifyListeners(); } });
   }
 
   void setDark(bool v) {
@@ -1245,6 +1247,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _stopping = true;
+    _noticeTimer?.cancel();
     _buildTimer?.cancel(); _deckTimer?.cancel(); _statusTimer?.cancel(); _saveTimer?.cancel();
     engine?.stop();
     acquisitionLocations.dispose();

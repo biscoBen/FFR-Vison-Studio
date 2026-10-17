@@ -7,7 +7,7 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
 **Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode repairs
 22 audited demo entries, including Cling, using their own effects/timing. New direction repairs for Bioblaster
-and Absolute Zero need live tests; Aqua Breath remains under investigation.
+and Absolute Zero need live tests. Aqua Breath is user-confirmed correct and keeps its native route.
 For Sephira preset units, also turn **Use borrowed Sephira skill visuals** off to test without those preset substitutions.
 Rebuild/install and restart after changing modes. Existing saved kits and explicit custom presentations are retained.
 The read-only [native skill reference helper](scripts/reference/native-skill-animations/) collects all battle timelines

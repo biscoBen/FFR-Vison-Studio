@@ -24,7 +24,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Native-only reports distinguish entries with no direct binding or explicit sequence pointer from existing
   routes. They add no substitute effects. Record the alphabetical test batch on Agrias/Alaya Rundall, including
   MP/LB skips and direction problems, in the [animation compatibility report](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
-  Aqua Breath and the remaining blank skills still need investigation.
+  Aqua Breath is user-confirmed correctly aimed and stays unchanged; the remaining blank skills need investigation.
 - Add the standalone read-only skill-effect collector. It gathers native particle/mesh assets and installed
   Studio routes, allowlisted flags/grants and the latest repair report under Downloads/FFR Mod. Temporary
   container links/copies supply the native global index and are removed before upload ZIP creation. Fix
@@ -32,7 +32,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   The returned two-part collection has 63 native assets and no extraction failures. The installed mod is from
   a different computer than the original test and cannot identify the route used in that battle.
 
-- Local analysis and 58 focused Flutter tests pass. The full Python suite completes 395 checks (four skipped).
+- Cancel the notice-expiry timer when Studio's state is disposed, fixing the delayed callback caught by
+  Windows validation. Repeating the same notice now gives it a fresh six-second duration. Add focused
+  disposal/expiry regression checks. The same-computer follow-up confirms native-only flags, Bioblaster's
+  player route still aimed at the party and Absolute Zero's forced enemy pointer.
+- Local analysis, 58 focused Flutter tests and the full Flutter suite (260 passed, one Windows-only skip) pass.
+  The full Python suite completes 395 checks (four skipped).
   Checks cover exact pointer authorization, mechanical-field rejection, future/custom/changed-source guards,
   native-only report distinctions and existing mode isolation. Collector fixture checks include PowerShell 5.1
   array behavior, temporary-copy fallback, partial failures, ZIP splitting, output guards and source immutability.

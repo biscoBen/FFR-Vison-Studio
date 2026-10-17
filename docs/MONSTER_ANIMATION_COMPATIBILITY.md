@@ -131,7 +131,7 @@ These are user observations plus static reference findings, not new verified-ani
 | Abyss Graviton | 408040 | Not tested: Limit Burst restriction |
 | Alluring Pollen | 503770 | No visible animation |
 | Aqua Blast | 405050 | No visible animation |
-| Aqua Breath | 500800 | Visible effect points toward the party |
+| Aqua Breath | 500800 | Follow-up same-computer test: correctly aimed; user corrected the initial report |
 | Aquatic Pulse | 405130 | No visible animation |
 | Aquatic Synergy | 414410 | No visible animation |
 | Array: Brilliance | 503630 | No visible animation |
@@ -156,8 +156,7 @@ Confirmed static findings from the complete native reference:
   The current private 500971 copy preserves that constant. This explains a concrete party-side aiming problem
   in the copied presentation; the correction still needs a live check of its placement/offset.
 - Aqua Breath already has a native friendly route **500801** with look-at target **18**, while 500802 uses **2**.
-  Its reported direction cannot be explained by a missing player binding alone. Check installed routes and the
-  Niagara system's local orientation before choosing a correction; do not rotate every effect indiscriminately.
+  The user's follow-up test confirmed it already aims correctly. Its native player route remains unchanged.
 - The twelve blank entries have no direct native sequence binding and no explicit `playSequencerId`.
   No same-ID effect folders appear in the supplied asset index. This does **not** prove the effects are absent:
   aliases or character-specific runtime paths may supply them. It does explain why a binding-only audit of the
@@ -194,7 +193,13 @@ Version 1.2.34 prepares two native presentation corrections, without borrowing o
   the private copies change only approved motion flags/names and the two effect placements. IoStore verifies.
   These checks do not establish in-game appearance; both direction corrections still need live confirmation.
 
-Aqua Breath is intentionally unchanged pending a same-computer test of its existing player route. Native-only
+The follow-up `Skill-Effect-Reference-20261016-194051-70134c` confirms native-only flags on and a native-repair
+report. Its installed Bioblaster player route 500971 still has look-at point 2, and Absolute Zero still has pointer
+225042, confirming the targets of this patch. The user corrected the Aqua Breath report: it already aims correctly.
+Aqua Breath is intentionally unchanged. The fresh native tables are byte-identical to the prior reference;
+the prior matching mapping supports decoding the installed tables/timeline in uploaded part 001. The mod-only
+extraction view may show `UnknownExport` for native particle imports absent from that view; this alone is not
+evidence of a missing particle in game. Native source references and their fingerprints remain authoritative. Native-only
 reports now label skills with no direct binding or explicit pointer `no_direct_native_route`, without calling
 all such skills broken or substituting another visual. The twelve blank skills still need further evidence.
 The collector now assigns JSON before enumerating it, handling PowerShell 5.1 empty/single/multiple rosters,
@@ -217,7 +222,7 @@ the mod to refresh existing in-game icons.
 
 ## Full-release follow-up
 
-Recollect native bindings and caster tracks before carrying any of these 21 bridges to the full game. Retest all six
+Recollect native bindings, caster tracks and target-point coordinates before carrying any of these 22 repairs to the full game. Re-audit Absolute Zero's explicit pointer and enemy-route preservation. Retest all six
 skills on imported visions, including multiple targets and a party replacement. Refresh the five live-test
 records only after confirmation on that build. Recheck the native icon masks/templates and rendering.
 The read-only collector lives in `scripts/reference/monster-animations/`; output goes to Downloads/FFR Mod.
