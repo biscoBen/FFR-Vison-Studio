@@ -11,6 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Testing verification accounts for the complete mod
+
+- Fix the final `Unit/DT_UnitParameter` check when **Survive at 1 HP for testing** is used with imported visions.
+  The previous check expected only original rows plus testing edits, rejecting the three added visions after
+  the normal verifier had already passed. Compare shared tables with the complete build recipe, then impose
+  independently recomputed testing requirements. Keep the normal original-row verifier and full row checks.
+- Replay native partial map/struct updates, first-element struct-array templates and indexed values when
+  computing expected rows. Verify imported units, native stat edits and additional private passive/effect rows
+  together with survival. Missing/extra rows, incorrect values and missing survival effects still fail, including
+  when a faulty build recipe contains the same survival error. Report the affected row names in future errors.
+- Extension 1.2.41 aligns startup/install checks. Reproduce the reported failure with native cooked tables,
+  then verify the corrected mixed build and IoStore packing. This fixes build verification; live practice-menu,
+  survival and revised FFBE visual/audio behavior still need in-game confirmation.
+
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for

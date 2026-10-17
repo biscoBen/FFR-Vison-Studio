@@ -106,6 +106,8 @@ class OverworldTests(unittest.TestCase):
                 rows = lambda rel: copy.deepcopy(originals[rel])
                 operations = testing.prepare({}, units, root, rows)
                 field.prepare(operations, [rain], rows)
+                recipe = root/'build/visions_mod/patch.json'; recipe.parent.mkdir(parents=True, exist_ok=True)
+                recipe.write_text(json.dumps({'tables':list(operations.values())}))
                 built = copy.deepcopy(originals)
                 for rel, operation in operations.items():
                     for e in operation['set']:

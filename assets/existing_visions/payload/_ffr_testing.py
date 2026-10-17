@@ -495,21 +495,46 @@ def field_delta(original, desired, prefix=''):
 
 def apply_fields(row, fields):
     result = copy.deepcopy(row)
+    def assign(current, value):
+        # Native structs/maps update supplied fields/keys; struct arrays clone
+        # their first element before applying each item's supplied fields.
+        if isinstance(current, dict) and isinstance(value, dict):
+            merged = copy.deepcopy(current)
+            for key, item in value.items(): merged[key] = assign(current.get(key), item)
+            return merged
+        if isinstance(current, list) and isinstance(value, list):
+            return [assign(current[0] if current else None, item) for item in value]
+        return copy.deepcopy(value)
     for path, value in fields.items():
         target = result; names = path.split('.')
         for name in names[:-1]:
             match = re.fullmatch(r'(\w+)\[(\d+)\]', name)
             target = target[match[1]][int(match[2])] if match else target[name]
-        target[names[-1]] = copy.deepcopy(value)
+        match = re.fullmatch(r'(\w+)\[(\d+)\]', names[-1])
+        if match:
+            target[match[1]][int(match[2])] = assign(target[match[1]][int(match[2])], value)
+        else:
+            target[names[-1]] = assign(target.get(names[-1]), value)
     return result
 
 
-def check_rows(original, built, operation):
+def check_rows(original, built, operation, plan=None):
     expected = copy.deepcopy(original)
+    # The shared table also contains imported visions, native edits and private
+    # passives/effects from the rest of this build. Check their complete recipe,
+    # then independently impose the testing settings recomputed from config.
+    if plan is not None:
+        for e in plan.get('add', []): expected[e['row']] = apply_fields(expected[e['cloneFrom']], e['set'])
+        for e in plan.get('set', []): expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     for e in operation['add']: expected[e['row']] = apply_fields(original[e['cloneFrom']], e['set'])
     for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     if built != expected:
-        raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings.')
+        missing = sorted(expected.keys() - built.keys())
+        extra = sorted(built.keys() - expected.keys())
+        changed = sorted(k for k in expected.keys() & built.keys() if expected[k] != built[k])
+        detail = '; '.join(f'{label}: {", ".join(keys[:5])}'
+                           for label, keys in (('missing', missing), ('extra', extra), ('changed', changed)) if keys)
+        raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings. ' + detail)
 
 
 def verification_operations(root, units, rows):
@@ -529,13 +554,21 @@ def verify(root, tool, usmap):
     units = _ffr_sephira.active_units(units)
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
     operations = verification_operations(root, units, rows)
+    plans = []
+    if operations:
+        try: plans = json.loads((root / 'build/visions_mod/patch.json').read_bytes())['tables']
+        except (OSError, ValueError, KeyError) as error:
+            raise ValueError('The complete build recipe is unavailable; rebuild the mod before verifying testing tables.') from error
     work = root / 'build/vision-testing'; work.mkdir(parents=True, exist_ok=True)
     for rel, operation in operations.items():
+        matches = [plan for plan in plans if plan['asset'] == operation['asset']]
+        if len(matches) != 1:
+            raise ValueError('The build recipe must contain one testing table: ' + rel)
         target = work / (rel.replace('/', '_') + '.json')
         subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         try:
-            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation, matches[0])
         except ValueError as error:
             raise ValueError(f'{rel}: {error}') from error
     if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')
