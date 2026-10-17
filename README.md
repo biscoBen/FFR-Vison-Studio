@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified practice boss-category fix / run 39062414190](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39062414190/Sephira-Studio-Test.zip)
+(code `c6e3acc`, published 2026-10-17; extension 1.2.39). Fix the table-preparation failure on Gigantuar (352):
+it, Sheratan and Alpherg use the game's native `Boss` category. The practice picker now accepts these alongside
+`Enemy` opponents, preserving their original stats and AI. Update Studio, rebuild/install and restart Resonance.
+The optional `System.acb` LB-opening sound warnings are separate from this failure.
+
+Windows analysis, **263 Flutter tests** (one skipped), **429 Python checks** (six skipped), fresh frozen-engine
+startup, launcher/updater checks and compilation pass. All twelve encounters pass preparation with the supplied
+native unit rows, native table readback and IoStore verification. Downloaded provenance/checksum and all **37**
+extension resources match source; **16** Crystal Fina resources remain unchanged. Live menu interaction remains
+pending confirmation. First complete candidate **19:23:16 UTC** to verified download **19:31:30 UTC**: **8m 14s**.
+One matching push run: CI **5m 29s**, runner job time **9m 10s** (**8m 44s Windows**, **26s Linux**).
+
 [Verified FFBE needle groups/audio and in-game practice picker / run 39059206346](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39059206346/Sephira-Studio-Test.zip)
 (code `ba64cb5`, published 2026-10-17; extension 1.2.38). **Test FFBE 1,000 Needles visual** now retains
 four separate source streaks and the original hit recording. **Survive at 1 HP for testing** allows normal damage

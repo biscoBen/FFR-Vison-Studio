@@ -11,18 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Practice picker accepts native boss opponents
-
-- Fix the preparation failure on Gigantuar (352): the game classifies it, Sheratan (641) and Alpherg (651)
-  as `Boss`, while the new practice validator only accepted `Enemy`. Accept both native hostile categories,
-  retain expected levels, and continue rejecting playable/vision rows. Leave opponent categories, stats and AI intact.
-- Replace the generated enemy-category test assumptions with independently retained fields from all thirteen
-  supplied demo unit rows used by the twelve practice choices. Exercise every choice and the three boss rows,
-  including rejection of playable/vision substitutions. Extension 1.2.39 keeps startup/install checks aligned.
-- The supplied error occurred before any practice tables were written. Common `System.acb` LB-opening warnings
-  are separate from this failure. Live practice-menu interaction still needs confirmation after rebuilding.
-
-
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
@@ -41,6 +29,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published practice boss-category fix — 2026-10-17
+
+Code: [`c6e3acc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c6e3acc7907e1da6345ee7cc705f64a98535cf75).
+[Verified Windows test release / run 39062414190](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39062414190).
+
+- Fix the preparation failure on Gigantuar (352): the game classifies it, Sheratan (641) and Alpherg (651)
+  as `Boss`, while the new practice validator only accepted `Enemy`. Accept both native hostile categories,
+  retain expected levels, and continue rejecting playable/vision rows. Leave opponent categories, stats and AI intact.
+- Replace the generated enemy-category test assumptions with independently retained fields from all thirteen
+  supplied demo unit rows used by the twelve practice choices. Exercise every choice and the three boss rows,
+  including rejection of playable/vision substitutions. Extension 1.2.39 keeps startup/install checks aligned.
+- The supplied error occurred before any practice tables were written. Common `System.acb` LB-opening warnings
+  are separate from this failure. Live practice-menu interaction still needs confirmation after rebuilding.
+
+Validation: 429 Python checks (five local/six Windows skips), 28 focused local Flutter tests, full Windows analysis
+and 263 Flutter tests (one skipped), fresh frozen-engine startup, updater/launcher checks and compilation pass.
+All twelve encounters pass preparation against the supplied full native unit table; native encounter/stage
+serialization, exact readback and IoStore verification pass with the original rows retained. Downloaded
+provenance/checksum and 37 extension resources match source; 16 Crystal Fina resources remain unchanged.
+First complete candidate **19:23:16 UTC** to verified download **19:31:30 UTC**: **8m 14s**, including local checks,
+waiting and verification. One matching push run: CI **5m 29s**; runner time **9m 10s** (**8m 44s Windows**, **26s Linux**).
 
 ## Published FFBE needle groups/audio and in-game practice picker — 2026-10-17
 
