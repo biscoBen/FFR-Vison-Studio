@@ -11,6 +11,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+## Published skill animation runtime trace — 2026-10-16
+
+Code: [`41ea510`](https://github.com/biscoBen/FFR-Vison-Studio/commit/41ea510a6ad9e67a815205392f4647549e5c183b).
+[Verified Windows test release / run 39007387217](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39007387217).
+[Standalone helper source/instructions](scripts/reference/skill-runtime/). No Studio update is required.
+
 - Record the follow-up failures for 1,000 Needles, 10,000 Needles, Alluring Pollen, Atomic Ray, Bad Breath,
   Blighted Gloom, Bubble Breath and Carmine Inferno. Audit the three new IDs against the complete returned tables;
   no direct/secondary route is recovered. The native `atk` alias has not resolved this reported batch. Static AI
@@ -27,8 +33,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Focused observer/lifecycle checks cover missing runtime fields, game-thread queueing, capture limits,
   ownership/path guards, private-log filtering and repeat enable/collect/remove. Normalize Windows short/long
   folder spellings consistently before rejecting capture destinations inside the game; test both alias directions.
-  The full local Python suite completes 416 tests (five skipped), and both managed resource manifests verify without changes. Lua fixtures and
-  PowerShell lifecycle tests do not verify live UE4SS startup, original enemy playback or Unreal rendering.
+  The full local Python suite completes 416 tests (five skipped), and both managed resource manifests verify
+  without changes. Lua fixtures and PowerShell lifecycle tests do not verify live UE4SS startup, original enemy
+  playback or Unreal rendering.
+
+- Windows validation and compilation pass for the same commit, including the short/long-path regression,
+  full Flutter/Python suites, frozen-engine startup and launcher/updater checks. Downloaded provenance/checksum
+  matches the commit/run. All 35 existing-vision resources and all 16 Crystal Fina resources match source and
+  remain byte-identical to extension 1.2.35. The four-file helper ZIP matches its committed sources and its local
+  SHA256. These checks do not establish live UE4SS/game playback; the eight reported skills remain unresolved.
+  The standalone ZIP is delivered with the task. GitHub rejected its separate asset upload (HTTP 401); the helper
+  source/instructions are committed in the project, and no helper ZIP is attached to the test release.
+- First complete candidate to verified helper delivery: **20m47s**, including
+  local checks, the Windows path correction, waiting, cancelled retry and verification. Final successful Windows CI:
+  **5m34s**; its runner usage: **9m10s**. Total runner usage across all three
+  runs: **21m57s**. The initial push run failed its output-path check; the helper's automatic
+  retry of that old commit was cancelled. The corrected commit reused its matching automatic run without dispatching
+  another build.
 
 ## Published native skill routing audit and motion compatibility — 2026-10-16
 

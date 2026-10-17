@@ -34,7 +34,8 @@ reflection data for further runtime investigation; there is no need to repeat th
 
 The follow-up test still has eight blank entries, including newly reported Blighted Gloom, Bubble Breath and
 Carmine Inferno. They are recorded in the [test findings](docs/MONSTER_ANIMATION_COMPATIBILITY.md#follow-up-blank-skills-and-sampled-runtime-trace).
-Use the optional [Skill Runtime Trace helper](scripts/reference/skill-runtime/) to compare one failed skill with a
+The [verified Skill Runtime Trace helper source/instructions](scripts/reference/skill-runtime/)
+(code `41ea510`, checked 2026-10-16 by [Windows run 39007387217](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39007387217)). Compare one failed skill with a
 working one and observe original enemy actions. It samples through the existing UE4SS loader and makes no playback
 changes. Close the game, choose **1** to enable, relaunch/test, then choose **2** to collect the small ZIP in
 Downloads\FFR Mod. Close the game and choose **3** to remove it. No Studio update or mod rebuild is required.
