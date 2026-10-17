@@ -1,0 +1,26 @@
+Extract both helper files together, then run Collect Skill Routing Reference.cmd.
+Choose the Studio folder and the Resonance game installation you are testing.
+No in-game test, Studio update or runtime loader is needed.
+
+This comprehensive collection reads the native battle timelines, secondary skill
+links, battle/skill/unit/encounter tables, demo table selection, AI/event callers,
+full effect libraries and shared materials/textures, original battle character
+animation projects, camera/postprocess support, cue metadata, and the relevant
+SpriteStudio/Niagara/engine support assets. It includes original asset/bulk data,
+so allow time and disk space for a larger extraction and multiple ZIPs.
+
+It does not change game or Studio files or install anything. It reads gameRoot
+from Studio config only to find the game; the config itself is never copied.
+No saved kits, saves, tokens, executable, installed mod containers or runtime logs
+are copied. The report includes engine/game paths, native container header hashes
+and missing asset checks against the full inventory. Container payloads stay on
+this PC. Shader libraries, map levels and video/audio payload containers are not
+requested; movie/cue metadata is included for cross-references.
+
+Outputs are separate ordinary ZIPs under Downloads\FFR Mod.
+Upload ALL Skill-Routing-Reference-*.zip parts from the same run.
+Each ZIP stays under 22 MiB before compression. Large individual assets are
+streamed into chunks, with original lengths and SHA256 in split-files.json. You
+do not need to join them or run another program; we restore them after upload.
+A Partial report still produces ZIPs for inspection. Keep the extraction log if
+an error occurs. Please wait until it says Upload ALL before sending the files.

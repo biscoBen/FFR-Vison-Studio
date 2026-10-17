@@ -1,0 +1,170 @@
+{
+  "schema": 1,
+  "date": "2026-10-16",
+  "reference": "Native-Skill-Animation-Reference-20261016-171038-cabc96",
+  "assetIndexSha256": "a37ed8486ebeca3430e2aa8670314b6e77b1b8ed3b266f3ec3ee41b3a3661fed",
+  "kind": "Static inventory/package-reference audit, not a live animation verification",
+  "matchingAssetPackages": 7130,
+  "scopeCounts": {
+    "FFRS/Content/Datatable/Skill/": 14,
+    "FFRS/Content/Datatable/Battle/": 18,
+    "FFRS/Content/Datatable/Asset/": 36,
+    "FFRS/Content/Datatable/Unit/": 52,
+    "FFRS/Content/Datatable/Encount/": 81,
+    "FFRS/Content/Datatable/Item/": 9,
+    "FFRS/Content/Datatable/Sequencer/": 4,
+    "FFRS/Content/Datatable/Color/": 5,
+    "FFRS/Content/Datatable/PostProcess/": 3,
+    "FFRS/Content/Datatable/Strings/ST_Skill/": 8,
+    "FFRS/Content/Datatable/DT_AppDataTableList.uasset": 1,
+    "FFRS/Content/Datatable/CDT_AppDataTableList_Demo.uasset": 1,
+    "FFRS/Content/Datatable/DT_AppDataTableList_Demo.uasset": 1,
+    "FFRS/Content/Sequencer/Battle/": 1400,
+    "FFRS/Content/Sequencer/Skill/": 2,
+    "FFRS/Content/BP/Battle/": 261,
+    "FFRS/Content/BP/Camera/": 75,
+    "FFRS/Content/BP/Effect/": 11,
+    "FFRS/Content/BP/PostProcess/": 4,
+    "FFRS/Content/BP/Movie/": 2,
+    "FFRS/Content/BP/Map/Unit/": 40,
+    "FFRS/Content/Effect/": 3096,
+    "FFRS/Content/Chara/Unit/": 52,
+    "FFRS/Content/Chara/monster/": 1082,
+    "FFRS/Content/Chara/summon/": 140,
+    "FFRS/Content/PostProcess/": 8,
+    "FFRS/Content/Sound/Cri/Se/": 261,
+    "FFRS/Content/Sound/Cri/Voice/VO_BTL/": 77,
+    "FFRS/Content/Movies/Sequencer/": 5,
+    "FFRS/Content/Movies/Skill/": 6,
+    "FFRS/Content/Movies/summon/": 4,
+    "FFRS/Plugins/SpriteStudio6/Content/": 53,
+    "Engine/Content/": 314,
+    "Engine/Plugins/FX/Niagara/Content/": 4
+  },
+  "battleSequenceGamePackageReferences": 2048,
+  "battleSequenceGamePackageReferencesOutsideCollection": 0,
+  "sameNumberMasterCandidates": [
+    {
+      "id": 400310,
+      "name": "Bladeblitz",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Skill/400310/400311/SEQ_Battle_400311_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Skill/400310/400312/SEQ_Battle_400312_Master.uasset"
+      ]
+    },
+    {
+      "id": 420100,
+      "name": "Water Blade",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Skill/420100/420101/SEQ_Battle_420101_Master.uasset"
+      ]
+    },
+    {
+      "id": 420110,
+      "name": "Watera Blade",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Skill/420110/420111/SEQ_Battle_420111_Master.uasset"
+      ]
+    },
+    {
+      "id": 420120,
+      "name": "Waterga Blade",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Skill/420120/420121/SEQ_Battle_420121_Master.uasset"
+      ]
+    },
+    {
+      "id": 500240,
+      "name": "Scorch",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/EnemySkill/500240/500241/SEQ_Battle_500241_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/EnemySkill/500240/500242/SEQ_Battle_500242_Master.uasset"
+      ]
+    },
+    {
+      "id": 500410,
+      "name": "Cyclone",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/EnemySkill/500410/500411/SEQ_Battle_500411_Master.uasset"
+      ]
+    },
+    {
+      "id": 220040,
+      "name": "Inferno Sphere",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220040/220041/SEQ_Battle_220041_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220040/220042/SEQ_Battle_220042_Master.uasset"
+      ]
+    },
+    {
+      "id": 220080,
+      "name": "Freezing Spike",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220080/220081/SEQ_Battle_220081_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220080/220082/SEQ_Battle_220082_Master.uasset"
+      ]
+    },
+    {
+      "id": 220120,
+      "name": "Chain Spark",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220120/220121/SEQ_Battle_220121_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220120/220122/SEQ_Battle_220122_Master.uasset"
+      ]
+    },
+    {
+      "id": 220160,
+      "name": "Cyclone Wave",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220160/220161/SEQ_Battle_220161_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220160/220162/SEQ_Battle_220162_Master.uasset"
+      ]
+    },
+    {
+      "id": 220200,
+      "name": "Tempest",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220200/220201/SEQ_Battle_220201_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220200/220202/SEQ_Battle_220202_Master.uasset"
+      ]
+    },
+    {
+      "id": 220240,
+      "name": "Calamity",
+      "playSequencerId": -1,
+      "masters": [
+        "FFRS/Content/Sequencer/Battle/Magic/220240/220241/SEQ_Battle_220241_Master.uasset",
+        "FFRS/Content/Sequencer/Battle/Magic/220240/220242/SEQ_Battle_220242_Master.uasset"
+      ]
+    }
+  ],
+  "sameNumberMasterCaution": "Matching package numbers do not prove current skill ownership. Native lookup rows already reuse different-number packages. Trace secondary links/callers and active tracks before creating routes.",
+  "unboundSkillsWithSameIdEffectFolderReferencedBySequences": 23,
+  "effectReferenceCaution": "Package imports can include disabled/template tracks; an import alone does not establish live playback.",
+  "mappingLinkStructure": {
+    "name": "BTL_LINK_SEQUENCER_PLAY_SKILL",
+    "fields": [
+      "SkillId",
+      "sequenceIdRain",
+      "sequenceIdLasswell",
+      "sequenceIdFina",
+      "sequenceIdDarkFina",
+      "sequenceIdLid",
+      "sequenceIdNichol",
+      "sequenceIdJake",
+      "sequenceIdSakura"
+    ],
+    "status": "Schema inspected; native table contents pending collection."
+  }
+}

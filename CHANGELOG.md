@@ -11,6 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+- Add a standalone read-only skill-routing collector covering secondary links/callers, demo table selection,
+  native battle timelines, complete effect libraries, shared materials/textures, battle sprite-animation
+  projects, camera/postprocess support, cue metadata and relevant engine/plugin assets. The current inventory
+  predicts 7,130 packages and covers all 2,048 game-package references found in the earlier sequence audit.
+  Report native container header hashes and compare extraction coverage against the asset inventory.
+  Write ordinary upload ZIPs to Downloads/FFR Mod, streaming large individual assets into chunks with a
+  length/SHA256 restoration ledger. No Studio update, game test or runtime loader is needed.
+- Collector fixture checks cover the full scope, partial collections, source immutability, output guards,
+  multipart ZIPs and exact restoration of oversized assets. A real retoc/PowerShell collection of 91
+  native-derived packages also passes. Six restoration regression tests cover integrity failures, missing
+  chunks, conflicting files and path traversal. The full Python suite completes 401 tests (four skipped).
+  Actual Windows PowerShell 5.1 extraction and the secondary
+  table contents still need the returned reference; no new app package is published for this helper.
+- Record the user's successful Absolute Zero/Bioblaster direction retest and the follow-up catalog audit in
+  the animation compatibility report. Missing direct routes remain unresolved while secondary links are traced;
+  this diagnostic update changes no game timelines, skill mechanics or verification labels.
+
 ## Published native skill facing and diagnostics — 2026-10-16
 
 Code: [`e3f73bf`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e3f73bf1e667f3ef66732d4877bd897b0e4a8675).

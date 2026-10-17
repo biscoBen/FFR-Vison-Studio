@@ -212,6 +212,74 @@ allowlists, source immutability, missing installed packs, partial failures and o
 collection of native tables and private installed timelines is also checked. Windows PowerShell 5.1 on the user's
 PC remains the final environment check; local execution uses PowerShell 7 with 5.1-compatible syntax.
 
+## Secondary routing investigation and confirmed facing retest
+
+The user confirmed the version 1.2.34 Absolute Zero and Bioblaster corrections now aim correctly.
+Aqua Breath was already correct and remains unchanged. Cling's repaired native route was previously
+confirmed working. These observations apply to the tested native-repair mode; they do not verify every
+skill or the original unrepaired routes.
+
+The follow-up inventory audit found secondary assets outside the first collection's seven tables:
+
+- `Datatable/Skill/Other/DT_SkillLinkSequencerData`, `DT_SkillGeneralData` and `DT_SkillTargetData`.
+- `Datatable/Battle/Misc/DT_BtlSkillReactionParamDef`, unit asset/command/AI tables and demo table lists.
+- `Sequencer/Skill/BP/BP_BtlSequenceEvent` and `BP_BtlLevelSequenceDirector`, plus native battle AI callers.
+
+The matching mapping describes `BTL_LINK_SEQUENCER_PLAY_SKILL` with `SkillId` and separate sequence IDs
+for Rain, Lasswell, Fina, Dark Fina, Lid, Nichol, Jake and Sakura. That is evidence of another supported link
+structure, not evidence that it supplies the twelve blank skills: its native table contents have not yet been
+collected. `Sequencer/Skill/` contains two event blueprints, rather than another set of attack timelines.
+A skill definition can also describe content that the demo never uses. Presence in the catalog alone does
+not prove a complete effect or original runtime caller is included.
+
+The standalone [skill-routing collector](../scripts/reference/skill-routing/) gathers these missing scopes
+alongside the complete native battle timelines and visual libraries: all skill/battle/unit/encounter/asset tables,
+demo table lists, battle AI/event callers, full effect assets and shared materials/textures, battle character
+animation projects, camera/postprocess support, movie/cue metadata and relevant engine/SpriteStudio/Niagara
+support. The current inventory predicts **7,130 packages**, including every one of the **2,048 game-package
+references** found in the earlier sequence views. See [scope counts and candidate evidence](native-skill-routing-scope.json).
+All native asset bytes, including extracted bulk data, are retained. Map levels, shader libraries and full
+game/video/audio containers are outside the requested scope.
+
+The report compares extraction against the inventory and required key files, preserving partial collections.
+It records selected source paths and native container header hashes; it reads the saved game path but copies
+no config, saved kits, saves, executable, runtime logs or installed mod containers. Outputs go to Downloads/FFR Mod.
+No loader, in-game test or new Studio build is required. Ordinary ZIPs stay below 22 MiB before compression.
+Individual larger files are streamed into numbered chunks without a second on-disk copy, with original
+length/SHA256 and ordered parts recorded in `split-files.json`. After all ZIPs have been extracted together,
+maintainers run `python3 scripts/restore_reference_chunks.py <collection-folder>` before decoding.
+The restoration tool checks lengths/hashes and rejects missing chunks, conflicting files and escaping paths.
+
+Fixture checks run the actual PowerShell collector with an extractor driven by all 7,130 matching inventory
+entries, including multiple 36 MiB assets whose restored bytes match exactly. Tests also cover partial/missing
+assets, inventory failure, no assets, missing mapping, quoted paths, config-based discovery, source immutability,
+private-data exclusion, default output, output guards and ordinary ZIP integrity. Real retoc/PowerShell collection
+of 91 native-derived packages passes, with missing native scopes correctly reported as partial. Six focused
+Python restoration tests pass. Actual Windows PowerShell 5.1 execution and newly requested native table contents
+still require the user's returned collection.
+
+Further static leads support tracing existing assets before authoring replacements. Twenty-three unbound skill
+definitions have same-ID effect folders referenced by existing sequence packages. Twelve have matching-number
+master timelines on disk, including Bladeblitz, Water/Watera/Waterga Blade, Scorch, Cyclone and six magic entries.
+These are candidates, not recovered bindings: the native lookups already reuse packages under different IDs,
+and package imports can belong to disabled/template tracks. Current skill ownership and active playback must
+be established from the secondary tables/callers and keyed events, rather than from file numbers alone.
+
+The next audit will join skill IDs through those tables and callers, follow sequence imports to their native
+effects, and compare original player/enemy placement and supported caster motions. Only when no usable
+native timeline can be recovered should a private timeline be authored around the skill's own available
+effects. Finding only combat data cannot reconstruct missing original art. Borrowed visuals remain a separate
+optional mode.
+
+The active-event scan of the already collected battle timelines also found additional repair candidates:
+Thwack, Bio and Banishra still use the fixed party-side effect point in their copied player timelines;
+El Niño's shared route selects an enemy Aqua Breath timeline. Escape has an active friendly `atk` request.
+Seal of Conviction combines party-side placement with specialized monster motions and game-speed events,
+so changing its target point alone is insufficient. Friendly Light Veil intentionally uses the party point.
+These are static findings awaiting implementation and live tests, not new repairs in this helper.
+The aiming audit must consider the selected effect function and target relation; a global rotation or a global
+replacement of positive-Y points would also change correctly placed friendly effects.
+
 ## Imported vision icon framing
 
 Face, timeline and ability icons now use the game's existing Cloud frame and supplied portrait mask.
