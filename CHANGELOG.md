@@ -11,7 +11,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Original Cactuar practice encounter
+## Published original Cactuar practice encounter — 2026-10-16
+
+Code: [`90ec6b2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/90ec6b277e1c9586c3af778255251d33c8b5c50e).
+[Verified Windows test release / run 39011466161](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39011466161).
 
 - Add a **Practice opponents** dropdown below the enabled **Shop practice battle** switch: the existing three
   level 7–8 enemies or the game's solo level-30 Cactuar encounter. Rebuild/install after selecting. This makes
@@ -23,10 +26,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Cactuar's AI uses the same 500270 ID tested on imported visions; its original enemy presentation remains
   unobserved. This adds a diagnostic encounter, not a new effect or verified animation claim.
 - Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
-  choices' native encounter/stage serialization, exact readback and IoStore verification pass. Windows package
-  validation is pending; the existing trace helper is unchanged.
+  choices' native encounter/stage serialization, exact readback and IoStore verification pass. Windows validation,
+  compilation, full suites, frozen-engine setup and launcher/updater checks pass for the same commit. Downloaded
+  provenance/checksum and all 35 managed extension resources match source; all 16 Crystal Fina resources and the
+  existing trace helper remain unchanged.
 - Correct Studio's required extension version and fresh-engine test to 1.2.36 after the first Windows startup
   check rejected the newly installed extension. No failed package was published.
+- Measured first-complete-candidate to verified download: 18m 54s, including local checks, corrections, the failed
+  attempt, cancelled automatic retry and waiting. Successful CI wall time: 5m 31s. Runner job time across all three
+  attempts: 22m 14s (Windows 21m 27s; Linux 47s), measured separately from elapsed time.
 
 ### Native-only runtime findings — 2026-10-16
 
@@ -41,7 +49,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Save the [runtime evidence and limits](README.md#confirmed-runtime-fallbacks) and add both IDs to the shared
   full-release checklist. The other six blank follow-up skills remain unconfirmed by this capture. No new
   presentation is recoverable from the placeholder itself; no donor visual, gameplay change or verified label is
-  added. This is a documentation-only investigation result and does not require a new Studio package.
+  added by the fallback analysis itself. The package above adds the original-enemy practice comparison.
 
 ## Published skill animation runtime trace — 2026-10-16
 

@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified original Cactuar practice test / run 39011466161](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39011466161/Sephira-Studio-Test.zip)
+(code `90ec6b2`, published 2026-10-16; extension 1.2.36). Enable **Shop practice battle** and choose
+**Practice opponents → Cactuar (level 30, original AI)**, then rebuild/install. The Young Woman in Mitra's item
+shop starts the private clone of its original solo encounter. Let Cactuar use **1,000 Needles**, bookmark with
+**F8** in the existing runtime trace helper, and collect with option 2. Keep visual-substitution options off.
+The new option needs that original-enemy live capture; the imported-vision fallback is already documented
+[below](#confirmed-runtime-fallbacks). It does not mark the missing skill visuals repaired.
+
+Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
+choices' actual native encounter/stage serialization, exact readback and IoStore verification pass. Windows
+validation and compilation pass for the same commit, including fresh frozen-engine setup and launcher/updater.
+Downloaded provenance/checksum and all 35 managed extension resources match source; all 16 Crystal Fina resources
+remain unchanged. The first Windows attempt caught a mismatched Studio version check, corrected before publication.
+Measured first-complete-candidate to verified download: **18m 54s**, including corrections and waiting. The successful
+CI run took **5m 31s**; all three attempts used **22m 14s** of runner job time (**21m 27s Windows**, **47s Linux**).
+
 [Verified native aiming and motion compatibility / run 39004444107](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39004444107/Sephira-Studio-Test.zip)
 (code `56a9d39`, published 2026-10-16; extension 1.2.35). Correct the private player effect point for Thwack,
 Bio and Banishra. Add El Niño's private player route with its original effect/timing, correct native aiming and
