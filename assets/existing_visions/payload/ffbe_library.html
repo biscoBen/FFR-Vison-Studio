@@ -577,7 +577,10 @@
         if (state.images.has(record.url)) return state.images.get(record.url);
         const image = new Image();
         const result = new Promise((resolve) => {
-          image.onload = () => resolve(image);
+          image.onload = () => {
+            imageCache.set(record.url, image);
+            resolve(image);
+          };
           image.onerror = () => resolve(null);
         });
         image.src = record.url;
