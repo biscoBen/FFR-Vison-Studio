@@ -19,6 +19,10 @@ attach the **Resonance-Crash-Reference-*.zip** from **Downloads\FFR Mod**. It ga
 game/UE4SS log tails, runtime hashes, mod-file inventory and available testing/repair-version reports. It installs
 nothing and needs no Studio update, tracer, mod rebuild or live game. The crash remains undiagnosed until that
 report is available. Test coverage uses a fake installation; it does not reproduce the user's crash.
+The standalone collector source passed [Windows run 39069211497](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39069211497)
+(code `31c2d35`): 445 Python checks (seven skipped), including the helper's real file-collection tests. The helper ZIP
+is provided directly in chat because GitHub rejected the extra release-asset upload; source remains available above.
+No Studio/game/runtime update is required for collection. Full validation and measured timings are in the changelog.
 
 [Verified practice menu crash fix / run 39067343262](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39067343262/Sephira-Studio-Test.zip)
 (code `b57a263`, published 2026-10-17; extension 1.2.42). Fix **Bad name index 79/36** while opening the practice
@@ -204,6 +208,23 @@ Selecting another opponent requires no new build. The old Studio dropdown has be
 All twelve choices use private story-free encounters, original enemy units/AI, the native plains backdrop,
 guaranteed escape and the usual practice reward (or the MR test override). Original encounter rewards are unchanged.
 This picker supplies comparisons; it does not repair missing native skill animations.
+
+### Original Watcher and Malbodoom visual tests — 2026-10-17
+
+The user reports the following original-enemy casts in the practice battles. No new runtime trace accompanies
+this report. These observations extend the original Cactuar baseline; they do not verify imported-vision
+playback or prove that another native route/source visual cannot exist.
+
+| Original enemy | Visible animations reported | No visible animation reported |
+| --- | --- | --- |
+| Watcher (188) | Missile, Laser, Machine Gun, Poison Gas | Megavolt (500180), Atomic Ray (500380) |
+| Malbodoom (257) | Whip, Digestive Fluid | Bad Breath (505020), Pollen (500690) |
+
+The failures' exact IDs occur in these units' collected `DT_BtlUnitAIParameter` rows. **Pollen (500690)** is
+separate from **Alluring Pollen (503770)**; do not combine their test status. Native enemy-side Atomic Ray and
+Bad Breath now also have blank visual reports, so an imported-vision-only binding problem cannot explain all
+observations. Investigate their own source routes before adding an FFBE import or substitute. Retain the working
+original presentations and keep these native findings separate from the successful optional FFBE Needles import.
 
 ### Original-enemy comparisons for missing skills — 2026-10-17
 

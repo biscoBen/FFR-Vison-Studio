@@ -11,7 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Read-only intermittent crash diagnostics — 2026-10-17
+### Original Watcher and Malbodoom test results — 2026-10-17
+
+- Record the user's original-enemy tests: Watcher's Missile, Laser, Machine Gun and Poison Gas show visuals;
+  Megavolt and Atomic Ray do not. Malbodoom's Whip and Digestive Fluid show visuals; Bad Breath and Pollen do not.
+- Match the four failed names to the tested units' native AI skill references. Keep Pollen (500690) separate
+  from Alluring Pollen (503770). Atomic Ray/Bad Breath now have native enemy-side blank reports too; an
+  imported-vision-only binding fix is insufficient to explain these observations. No new trace or visual fix
+  is implied by this documentation update.
+
+
+## Published read-only intermittent crash collector — 2026-10-17
+
+Code: [`31c2d35`](https://github.com/biscoBen/FFR-Vison-Studio/commit/31c2d35dd2bc7dee12f1fa8c240d3eb6ffe6119a).
+[Successful Windows validation / run 39069211497](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39069211497).
+[Collector source and instructions](scripts/reference/game-crash/).
 
 - Add a standalone Windows helper that collects recent Unreal crash contexts, bounded game/UE4SS logs,
   runtime hashes, installed-mod inventory and available testing/repair-version reports. Run after the crash
@@ -42,6 +56,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+Validation: 445 Python checks pass locally and on Windows (seven skips on each platform), including actual
+helper execution against fake game/Saved trees. Windows analysis, 263 Flutter tests (one skipped), fresh frozen-engine
+startup, launcher/updater checks and compilation pass. All 37 extension and 16 Crystal Fina packaged resource hashes
+match source; no game/runtime code is changed. The helper ZIP's contents and SHA256 are verified locally; GitHub's
+standalone extra-asset upload returned HTTP 401, so the ZIP is supplied directly in chat alongside the committed
+source. The crash itself remains undiagnosed pending the user's report.
+First complete candidate **21:00:54.779 UTC** to verified collector ZIP **21:11:54.398 UTC**: **11m 00s** (rounded),
+including checks, waiting and the failed extra-asset upload. One matching push run: CI **6m 53s**; summed runner job
+time **10m 18s** (**9m 50s Windows**, **28s Linux**). No duplicate workflow was dispatched.
 
 ## Published practice menu name-retention crash fix — 2026-10-17
 
