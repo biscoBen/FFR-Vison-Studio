@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Intermittent Mitra crash diagnostics — 2026-10-17
+
+The user confirms that the in-game practice picker opens and the revised FFBE **1,000 Needles** visual and hit
+sound play correctly. A separate generic **Fatal error!** occurs both while walking around Mitra and on a second
+interaction with the practice woman. The first interaction worked. This report does not identify the failing
+function or establish that the picker caused the walking crash; retain these observations separately from the
+previous explicit name-index serialization failure. Misses reportedly have no sound; the imported timeline uses
+`SoundPlayHitSound`, so this is not yet evidence of a missing source cue.
+
+Use the [read-only crash collector](scripts/reference/game-crash/) after the crash, **before restarting the game**.
+Extract its three files together and run **Collect Resonance Crash.cmd**. Accept or enter the game folder and
+attach the **Resonance-Crash-Reference-*.zip** from **Downloads\FFR Mod**. It gathers recent Unreal crash contexts,
+game/UE4SS log tails, runtime hashes, mod-file inventory and available testing/repair-version reports. It installs
+nothing and needs no Studio update, tracer, mod rebuild or live game. The crash remains undiagnosed until that
+report is available. Test coverage uses a fake installation; it does not reproduce the user's crash.
+
 [Verified practice menu crash fix / run 39067343262](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39067343262/Sephira-Studio-Test.zip)
 (code `b57a263`, published 2026-10-17; extension 1.2.42). Fix **Bad name index 79/36** while opening the practice
 picker. Retain the full 80-name map on every menu page, preserving the appended choice tag at index 79 during
@@ -14,7 +30,8 @@ engine startup, launcher/updater checks and compilation pass. The actual engine 
 indices. Packing/extracting the old page reproduces unresolved `79`; all six corrected packed pages retain their
 menu tags, callbacks, unbound tracks and compiled timing after native readback. Container integrity alone missed
 the original error. Downloaded provenance/checksum and **37** extension resources match source; **16** Crystal Fina
-resources remain unchanged. Opening, paging and cancelling the menu in-game still need user confirmation.
+resources remain unchanged. The user subsequently confirms that the menu works; repeated interaction and walking
+now expose a separate intermittent generic fatal error, tracked above. Paging/cancellation remain unconfirmed.
 First complete candidate **20:33:57 UTC** to verified download **20:41:35 UTC**: **7m 38s**. One matching push run:
 CI **6m 02s**, runner job time **9m 25s** (**9m 01s Windows**, **24s Linux**).
 
@@ -209,14 +226,17 @@ must never be treated as proof that the normal demo can reach the encounter.
 
 **Watcher and Malbodoom are the best next practice-fight candidates:** they use ordinary enemy AI and directly
 cover two of the user's failed skills. Sheratan and Alpherg have boss/phase behavior requiring additional setup
-checks. Add controlled encounters using the included native units/AI, as for Cactuar, then observe the original
-skill without borrowed visuals or the FFBE import. These encounters have not been added or runtime-validated yet.
+checks. All enemies in this table are now in the practice picker. Observe each original enemy casting the named
+skill with **Use our skill changes**, **Use borrowed Sephira skill visuals** and **Test FFBE 1,000 Needles visual**
+OFF. The native binding/track repair option may stay ON. Keep **Survive at 1 HP for testing** ON if needed.
+These pairings establish AI usage, not that their native visuals work. Allow enemy turns and report the actual
+skill name, visible effect, direction and sound; a skill it never casts is untested, not a failed visual.
 Existing native-only fixes also permit comparisons against Belmodar's Thwack and Dark Skeleton's Throat Strike;
 those two originally lacked player routes but already have native repair work.
 
 The first reported blank 1,000 Needles vision cast was made with **Test FFBE 1,000 Needles visual OFF**, as the
-user confirmed. It is not a failed enabled-import test. Leave the implementation unchanged pending the enabled
-switch/rebuild/install/restart retest; live FFBE-import appearance remains unconfirmed.
+user confirmed. It is not a failed enabled-import test. Subsequent enabled tests confirmed playback, and the latest
+revised build now has user-confirmed line placement and hit sound. Its import is separate from the original Cactuar baseline.
 
 ### FFBE 1,000 Needles import investigation — 2026-10-17
 
@@ -987,7 +1007,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
   schemas, SpriteStudio serialization and IoStore roundtrips. Separate or invalidate prepared demo data. Review our engine
   extensions against upstream updates; change pinned checksums only for verified replacements. Preserve engine hosting.
-- [ ] **Testing features.** Recheck the Young Woman binding, picker paging/cancellation, packed script names,
+- [ ] **Testing features.** Resolve the reported intermittent Mitra fatal error using Unreal/UE4SS crash logs;
+  it occurs during walking and repeat practice interactions, separately from the fixed name-index error. Recheck the Young Woman binding, picker paging/cancellation, packed script names,
   practice enemies, backdrop and return; original-vision grants and toggle restoration. Test 1-HP survival with
   damage, status effects and healing. Recompute the one-battle MR reward within actual numeric bounds: 11,430 AP
   comes from the current demo's rank costs. Test with clean saves.

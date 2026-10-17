@@ -1,0 +1,17 @@
+Extract these three files together, then run Collect Resonance Crash.cmd.
+Run it after the crash, before launching Resonance again. No tracer is needed.
+Accept the detected game folder, or paste the folder containing FFRS.
+Attach the Resonance-Crash-Reference-*.zip created in Downloads\FFR Mod.
+Also say whether you had just returned from a battle, cancelled the picker,
+or were walking before opening it at all, and which opponent you last chose.
+
+The collector is read-only. It does not install/remove anything, launch the
+game, enable hooks, change settings or require a Studio rebuild.
+It reads up to three recent Unreal crash folders in each of the game's and
+LocalAppData\FFRS Saved locations, two recent game logs per location,
+UE4SS logs/settings/mod lists, Studio testing settings and repair/version
+reports. It hashes known runtime files and lists installed mod names/files.
+Logs are limited to their last 4 MiB. Paths and actor/asset names can appear
+in reports. Saves, game assets, DLLs, custom rosters, credentials and memory
+dumps are excluded. Missing files are reported; a ZIP with no crash folder
+can still contain useful UE4SS/game logs.

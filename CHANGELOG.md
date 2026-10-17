@@ -11,6 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Read-only intermittent crash diagnostics — 2026-10-17
+
+- Add a standalone Windows helper that collects recent Unreal crash contexts, bounded game/UE4SS logs,
+  runtime hashes, installed-mod inventory and available testing/repair-version reports. Run after the crash
+  before restarting. No game mutation, installation, tracer or Studio rebuild is needed; saves, assets,
+  DLL contents, rosters and memory dumps are excluded.
+- Record live confirmation: the practice picker works, revised FFBE 1,000 Needles placement and successful-hit
+  sound work. A separate generic fatal error occurs while walking in Mitra and on a repeat practice interaction.
+  This helper collects evidence; it does not claim a fix or identify the crash's cause without the report.
+- Update the original-enemy test instructions to match the twelve installed practice choices. Keep native
+  baseline tests separate from borrowed skill visuals and the optional FFBE Needles import.
+
+
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
