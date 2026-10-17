@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+[Verified practice menu crash fix / run 39067343262](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39067343262/Sephira-Studio-Test.zip)
+(code `b57a263`, published 2026-10-17; extension 1.2.42). Fix **Bad name index 79/36** while opening the practice
+picker. Retain the full 80-name map on every menu page, preserving the appended choice tag at index 79 during
+IoStore packing. Check the retained prefix after writing. Update Studio, rebuild/install your mod and restart.
+
+Windows analysis, **263 Flutter tests** (one skipped), **439 Python checks** (six Windows/seven local skips), fresh
+engine startup, launcher/updater checks and compilation pass. The actual engine serializer checks all six tag
+indices. Packing/extracting the old page reproduces unresolved `79`; all six corrected packed pages retain their
+menu tags, callbacks, unbound tracks and compiled timing after native readback. Container integrity alone missed
+the original error. Downloaded provenance/checksum and **37** extension resources match source; **16** Crystal Fina
+resources remain unchanged. Opening, paging and cancelling the menu in-game still need user confirmation.
+First complete candidate **20:33:57 UTC** to verified download **20:41:35 UTC**: **7m 38s**. One matching push run:
+CI **6m 02s**, runner job time **9m 25s** (**9m 01s Windows**, **24s Linux**).
+
 [Verified mixed-build testing verification fix / run 39065483449](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39065483449/Sephira-Studio-Test.zip)
 (code `7e1f095`, published 2026-10-17; extension 1.2.41). Fix the final unit-table check when imported visions and
 **Survive at 1 HP for testing** are enabled together. Check the complete build recipe alongside independently
@@ -973,9 +987,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
   schemas, SpriteStudio serialization and IoStore roundtrips. Separate or invalidate prepared demo data. Review our engine
   extensions against upstream updates; change pinned checksums only for verified replacements. Preserve engine hosting.
-- [ ] **Testing features.** Recheck the Young Woman binding, practice enemies, backdrop and return; original-vision
-  grants and toggle restoration. Recompute the one-battle MR reward within actual numeric bounds: 11,430 AP comes from
-  the current demo's rank costs. Test with clean saves.
+- [ ] **Testing features.** Recheck the Young Woman binding, picker paging/cancellation, packed script names,
+  practice enemies, backdrop and return; original-vision grants and toggle restoration. Test 1-HP survival with
+  damage, status effects and healing. Recompute the one-battle MR reward within actual numeric bounds: 11,430 AP
+  comes from the current demo's rank costs. Test with clean saves.
 - [ ] **Custom IDs, capacity and configs.** Check reserved skill/unit/map/event/asset ranges against newly occupied IDs.
   Revalidate the 64-added-unit limit against engine/table constraints. Preserve old configs, separate appearance choices
   and selected cave snapshots.

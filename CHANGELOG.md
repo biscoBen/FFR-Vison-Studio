@@ -11,18 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Practice menu keeps script names when packed
-
-- Fix the runtime crash while opening the practice picker: its choice tag used name index 79, but the
-  inherited shell's `NamesReferencedFromExportDataCount` retained only the first 36 names in IoStore.
-  Preserve the full 80-name map in its existing order on all six authored menu pages.
-- Check that every menu tag falls inside the retained prefix after writing. Regression tests reproduce
-  the old 79/36 mismatch on all six pages, and the pinned engine's serializer checks their actual FName indices.
-- Reproduce the failure by packing/extracting the old page: its tag becomes unresolved `79`. Pack/extract all
-  six corrected pages and verify their retained names, native calls, bindings and compiled timing. Container
-  integrity verification alone did not detect this error. Extension 1.2.42 aligns startup/install checks.
-- The packed assets pass these checks; opening, navigating and cancelling the menu in-game still need user confirmation.
-
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
@@ -41,6 +29,30 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published practice menu name-retention crash fix — 2026-10-17
+
+Code: [`b57a263`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b57a263a080c46a80896de8456cb1d70da1d9eec).
+[Verified Windows test release / run 39067343262](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/sephira-test-39067343262).
+
+- Fix the runtime crash while opening the practice picker: its choice tag used name index 79, but the
+  inherited shell's `NamesReferencedFromExportDataCount` retained only the first 36 names in IoStore.
+  Preserve the full 80-name map in its existing order on all six authored menu pages.
+- Check that every menu tag falls inside the retained prefix after writing. Regression tests reproduce
+  the old 79/36 mismatch on all six pages, and the pinned engine's serializer checks their actual FName indices.
+- Reproduce the failure by packing/extracting the old page: its tag becomes unresolved `79`. Pack/extract all
+  six corrected pages and verify their retained names, native calls, bindings and compiled timing. Container
+  integrity verification alone did not detect this error. Extension 1.2.42 aligns startup/install checks.
+- The packed assets pass these checks; opening, navigating and cancelling the menu in-game still need user confirmation.
+
+Validation: 439 Python checks (seven local/six Windows skips), 28 focused local Flutter tests, full Windows
+analysis and 263 Flutter tests (one skipped), fresh frozen-engine startup, updater/launcher checks and compilation
+pass. The pinned engine's FName-index contract passes for all six pages. Actual IoStore packing/extraction and
+native readback retain the complete original name prefix, menu tag, native callbacks, unbound tracks and compiled
+timing on all six pages; the old packed page reproduces the unresolved index 79. Downloaded provenance/checksum
+and 37 extension resources match source; 16 Crystal Fina resources remain unchanged. Live interaction is pending.
+First complete candidate **20:33:57 UTC** to verified download **20:41:35 UTC**: **7m 38s**, including checks,
+waiting and verification. One matching push run: CI **6m 02s**; runner job time **9m 25s** (**9m 01s Windows**, **24s Linux**).
 
 ## Published mixed-build testing verification fix — 2026-10-17
 
