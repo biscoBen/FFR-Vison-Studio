@@ -7,7 +7,7 @@ import sys
 import unittest
 from types import SimpleNamespace
 from unittest import mock
-from test_existing_visions import fixture, native
+from test_existing_visions import ROOT, fixture, native
 import _ffr_testing as testing
 sys.modules['_ffr_existingvisions'] = native
 
@@ -73,8 +73,12 @@ def practice_game():
     for rel in (testing.SHOP_EVENT, testing.COMPOSITE): tables[rel]['DT_Town_010Gra_20_0920_5'] = copy.deepcopy(inn)
     tables[testing.CHOICES] = {'native choice': {'ChoiceTag': {'TagName': 'native'}, 'ChoiceTextList': ['Yes', 'No'],
         'DefaultIndex': 0, 'CancelIndex': 1, 'ChoiceDialogType': 'Normal'}}
-    for key, _, uid, level in testing.OPPONENTS:
-        if uid not in [20, 38]: tables[native.UNIT][key] = {'ID': uid, 'Level': level, 'Category': 'Enemy', 'passiveSkillList': []}
+    # Independent supplied-game rows: do not manufacture categories/levels
+    # from the implementation's opponent list. That hid the Boss-category bug.
+    source = json.loads((ROOT/'scripts/fixtures/practice_dialog/opponents.json').read_bytes())['rows']
+    for source_key, original in source.items():
+        key = next((k for k,v in tables[native.UNIT].items() if v.get('ID') == original['ID']), source_key)
+        tables[native.UNIT].setdefault(key, {}).update(copy.deepcopy(original))
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
@@ -254,6 +258,29 @@ class NativeTestingTests(unittest.TestCase):
             self.assertEqual(event['OnFlagList'], [])
             self.assertFalse(event['OverwriteBattleParty'])
             self.assertFalse(event['IsSetAutoSave'])
+
+    def test_source_enemy_and_boss_rows_are_accepted_without_reclassifying_them(self):
+        original, rows, _ = practice_game()
+        source = original[native.UNIT]
+        bosses = {v['ID']:v for v in source.values() if v.get('Category') == 'Boss'}
+        self.assertEqual(set(bosses), {352,641,651})
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root)/testing.CONFIG; path.parent.mkdir(parents=True)
+            path.write_text(json.dumps({'schema':1,'maxMr':False,'practiceBattle':True}))
+            ops = testing.prepare({}, [], root, rows)
+        self.assertNotIn(native.UNIT, ops)
+        self.assertEqual(len(ops[testing.GROUP]['add']), 12)
+        self.assertTrue(set(bosses) <= {v['set']['UnitIdList'][0] for v in ops[testing.GROUP]['add']})
+        self.assertEqual(source, rows(native.UNIT))
+        for identity in (352,641,651):
+            key = next(k for k,v in source.items() if v.get('ID') == identity)
+            for category in ('Playable','Summon'):
+                with self.subTest(identity=identity, category=category), tempfile.TemporaryDirectory() as root:
+                    data = copy.deepcopy(original); data[native.UNIT][key]['Category'] = category
+                    path = Path(root)/testing.CONFIG; path.parent.mkdir(parents=True)
+                    path.write_text(json.dumps({'schema':1,'maxMr':False,'practiceBattle':True}))
+                    with self.assertRaisesRegex(ValueError, str(identity)):
+                        testing.prepare({}, [], root, lambda rel:copy.deepcopy(data[rel]))
 
     def test_private_choice_uses_unbound_native_talk_calls_and_compiled_times(self):
         import gzip

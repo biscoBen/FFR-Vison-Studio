@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "source": "Supplied demo Skill-Routing reference 20261016-213210",
+  "sourceTable": "Unit/DT_UnitParameter",
+  "sourceTableSha256": "ff5719a2ff11ade9339b9ef7cba55e92025234d1fe396e3938af1cd43168a58f",
+  "rows": {
+    "イビルプラント": {
+      "ID": 20,
+      "Level": 7,
+      "Category": "Enemy",
+      "MaxHitPoint": 300,
+      "passiveSkillList": []
+    },
+    "ワイルドラット": {
+      "ID": 22,
+      "Level": 8,
+      "Category": "Enemy",
+      "MaxHitPoint": 320,
+      "passiveSkillList": []
+    },
+    "ウッドアイズ": {
+      "ID": 23,
+      "Level": 11,
+      "Category": "Enemy",
+      "MaxHitPoint": 230,
+      "passiveSkillList": []
+    },
+    "ボム": {
+      "ID": 24,
+      "Level": 12,
+      "Category": "Enemy",
+      "MaxHitPoint": 1000,
+      "passiveSkillList": []
+    },
+    "サボテンダー": {
+      "ID": 38,
+      "Level": 30,
+      "Category": "Enemy",
+      "MaxHitPoint": 1111,
+      "passiveSkillList": [
+        1085,
+        1086
+      ]
+    },
+    "ウォッチャー": {
+      "ID": 188,
+      "Level": 26,
+      "Category": "Enemy",
+      "MaxHitPoint": 1320,
+      "passiveSkillList": []
+    },
+    "ガニメデ": {
+      "ID": 196,
+      "Level": 70,
+      "Category": "Enemy",
+      "MaxHitPoint": 468200,
+      "passiveSkillList": []
+    },
+    "モルボルドゥーム": {
+      "ID": 257,
+      "Level": 40,
+      "Category": "Enemy",
+      "MaxHitPoint": 44900,
+      "passiveSkillList": []
+    },
+    "モルボルマーキス": {
+      "ID": 258,
+      "Level": 53,
+      "Category": "Enemy",
+      "MaxHitPoint": 86700,
+      "passiveSkillList": []
+    },
+    "ホワイトピーク": {
+      "ID": 283,
+      "Level": 15,
+      "Category": "Enemy",
+      "MaxHitPoint": 320,
+      "passiveSkillList": []
+    },
+    "ジャボテンダー": {
+      "ID": 352,
+      "Level": 40,
+      "Category": "Boss",
+      "MaxHitPoint": 11111,
+      "passiveSkillList": [
+        1085,
+        1086
+      ]
+    },
+    "シェラタン第一形態": {
+      "ID": 641,
+      "Level": 50,
+      "Category": "Boss",
+      "MaxHitPoint": 240000,
+      "passiveSkillList": [
+        1003
+      ]
+    },
+    "アルフェーグ第一形態": {
+      "ID": 651,
+      "Level": 50,
+      "Category": "Boss",
+      "MaxHitPoint": 200000,
+      "passiveSkillList": [
+        1003,
+        1071
+      ]
+    }
+  }
+}

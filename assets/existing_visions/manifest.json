@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "c997515264f16ca623a4fe4a847856ae85a329966ab8fc127bb7bc9ca682b9aa",
+    "install_existing_visions.py": "acc9699805875b6712a97e672d5c7f8345afea451b895426faeb953e36e70bde",
     "payload/_ffr_ability_modes.py": "15113beaa5d549c21a8c98cffc338dc910fe782fbda0636a313c1271d9e8db8a",
     "payload/_ffr_animation_repair.py": "c30988ffe7057f486f12dd582be846995ee4fc56da79cd5ef89301d24fc36501",
     "payload/_ffr_build_icons.py": "b6e48223d9d79dc376651a219cf6aed5a167f8fa7bc5da2f4187bb2fa22d714b",
@@ -21,7 +21,7 @@
     "payload/_ffr_party.py": "72f787b527ff2bc7d46a02a567415de826372487edea39e290aa24473ee6e126",
     "payload/_ffr_party_voices.py": "7dd587b6298595ae06eb25b0fbd50c7aa3172a86774bb222d089feb3ac87ac34",
     "payload/_ffr_sephira.py": "98a985967de8e8f55caf44c2e432aa4634c38740b08cee0e6001a2a7ad7b1ead",
-    "payload/_ffr_testing.py": "7723da8e8c23c6012e6d31df9f32ef3be9afc43053b2719781540fd18ea1aa42",
+    "payload/_ffr_testing.py": "6277283183299f81bc079230d23102e2d820733344c8cdce44ef688ba10dc1f3",
     "payload/ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "payload/ability_live_tests.json": "5146769c870c13923175c8179cba390ae8beef096b54cc972d7a85140e9cc5cc",
     "payload/cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
@@ -31,7 +31,7 @@
     "payload/field_leader.lua": "f7c195fa9bdfba168f1f4ad85f6d456bfe2c02ac6466704597c6cff1b579eea4",
     "payload/fina_battle.lua": "191264890de6cf2a62e5bf46a5b23bb6e1c39febe18163829de176ae57961534",
     "payload/fina_battle_preview.zip": "3d4d76ddf718ef30fc4343da2f61cc76a1a3b5fb571e5f786268174f7037696e",
-    "payload/manifest.json": "080319122136a60d11cdea539590f7b64c16fe346682ebbc7f5fd9315aef9497",
+    "payload/manifest.json": "5c569d707a8fdfedfa2eb5f47c25f7be07d4277b6da2b9c46aa44a62809690cd",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",

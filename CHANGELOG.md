@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Practice picker accepts native boss opponents
+
+- Fix the preparation failure on Gigantuar (352): the game classifies it, Sheratan (641) and Alpherg (651)
+  as `Boss`, while the new practice validator only accepted `Enemy`. Accept both native hostile categories,
+  retain expected levels, and continue rejecting playable/vision rows. Leave opponent categories, stats and AI intact.
+- Replace the generated enemy-category test assumptions with independently retained fields from all thirteen
+  supplied demo unit rows used by the twelve practice choices. Exercise every choice and the three boss rows,
+  including rejection of playable/vision substitutions. Extension 1.2.39 keeps startup/install checks aligned.
+- The supplied error occurred before any practice tables were written. Common `System.acb` LB-opening warnings
+  are separate from this failure. Live practice-menu interaction still needs confirmation after rebuilding.
+
+
 ### Original-enemy animation comparison candidates — 2026-10-17
 
 - Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for

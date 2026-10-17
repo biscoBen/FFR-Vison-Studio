@@ -244,8 +244,12 @@ def prepare_practice(table, rows, ap, encounter='standard'):
     units = rows('Unit/DT_UnitParameter')
     by_id = {v['ID']: v for v in units.values()}
     for _, _, uid, level in OPPONENTS:
-        if by_id.get(uid, {}).get('Category') != 'Enemy' or by_id[uid].get('Level') != level:
-            raise ValueError('A native practice enemy changed: ' + str(uid))
+        opponent = by_id.get(uid, {})
+        # Boss is a separate native category, including Gigantuar and the
+        # twelve-arms bosses. Keep that category and every enemy row intact.
+        if opponent.get('Category') not in ('Enemy', 'Boss') or opponent.get('Level') != level:
+            raise ValueError(f'Native practice opponent {uid} requires an Enemy/Boss at level {level}; '
+                             f"found category={opponent.get('Category')}, level={opponent.get('Level')}.")
     if by_id.get(20, {}).get('Level') != 7 or by_id.get(22, {}).get('Level') != 8:
         raise ValueError('The usual practice enemies changed.')
     for index, (key, label, uid, level) in enumerate(OPPONENTS):
