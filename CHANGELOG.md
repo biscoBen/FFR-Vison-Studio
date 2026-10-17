@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Cactuar visual baseline — 2026-10-17
+
+- Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.
+  No tracer was run. This adds an original-enemy visual observation, while its exact runtime route and whether
+  another original presentation exists remain unconfirmed. Do not generalize it to other failed skills or Cactuar variants.
+- Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
+  under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
+  no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
 ## Published original Cactuar practice encounter — 2026-10-16
 
 Code: [`90ec6b2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/90ec6b277e1c9586c3af778255251d33c8b5c50e).
@@ -23,8 +32,8 @@ Code: [`90ec6b2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/90ec6b277e
   and preserve normal encounters. Keep guaranteed player escape, native encounter rewards (or the existing MR
   override), no story transition/autosave, and the previous shop dialogue/party. Persist opponents across other
   testing switches, disable/re-enable and older clients' updates. Default to the existing opponents for old configs.
-- Cactuar's AI uses the same 500270 ID tested on imported visions; its original enemy presentation remains
-  unobserved. This adds a diagnostic encounter, not a new effect or verified animation claim.
+- Cactuar's AI uses the same 500270 ID tested on imported visions; its original enemy presentation was
+  unobserved at publication. This adds a diagnostic encounter, not a new effect or verified animation claim.
 - Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
   choices' native encounter/stage serialization, exact readback and IoStore verification pass. Windows validation,
   compilation, full suites, frozen-engine setup and launcher/updater checks pass for the same commit. Downloaded

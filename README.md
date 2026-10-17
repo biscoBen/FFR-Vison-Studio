@@ -9,8 +9,9 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 **Practice opponents → Cactuar (level 30, original AI)**, then rebuild/install. The Young Woman in Mitra's item
 shop starts the private clone of its original solo encounter. Let Cactuar use **1,000 Needles**, bookmark with
 **F8** in the existing runtime trace helper, and collect with option 2. Keep visual-substitution options off.
-The new option needs that original-enemy live capture; the imported-vision fallback is already documented
-[below](#confirmed-runtime-fallbacks). It does not mark the missing skill visuals repaired.
+The follow-up visual test found no visible 1,000 Needles animation from the tested Cactuar either; no enemy trace
+was collected. Its exact runtime route remains unconfirmed. The imported-vision fallback and the scope of this
+observation are documented [below](#confirmed-runtime-fallbacks). No missing skill visual is marked repaired.
 
 Local analysis, 262 Flutter tests (one Windows-only skip), 418 Python checks (five skipped), and both encounter
 choices' actual native encounter/stage serialization, exact readback and IoStore verification pass. Windows
@@ -91,9 +92,13 @@ their existing options; this finding adds no substitute or verified label. No re
 casts or comprehensive asset extraction is needed to establish the fallback behavior.
 
 Cactuar's native unit (38) and AI do select the same **500270** ID, distinct from ordinary **Needle (500260)**.
-Its collected AI blueprint hands scheduled actions to a native method; the original enemy's live presentation
-has not been traced. The user has seen Cactuar fights in videos, not encountered it in this demo save. Neither
-that video report nor the imported-vision fallback proves whether a separate original effect plays.
+Its collected AI blueprint hands scheduled actions to a native method. In the **2026-10-17 follow-up visual test**,
+the user reports that the tested Cactuar also casts **1,000 Needles with no visible animation**. No tracer was run
+for this test, so it establishes the reported enemy-side appearance, not its selected sequence or the absence of
+all possible original assets. Together with the imported-vision trace and unset binding, this supports an unfinished
+demo presentation as a possibility. It does not establish the cause of the other blank skills or other Cactuar variants.
+This does not verify its original visuals. Its existing ordinary-Needle substitute remains confined to
+**Use our skill changes**; native-only mode continues to preserve the original source presentation.
 
 For that comparison, **Shop practice battle → Practice opponents → Cactuar (level 30, original AI)** selects a
 private clone of the game's solo encounter (4035), on the existing practice stage in Mitra. Rebuild/install and
@@ -103,8 +108,8 @@ Record the actual action name and what appears; **Needle** is a different skill.
 so retry if needed. Its level, stats, AI, skill IDs and presentation assets remain original. The private encounter
 retains its native rewards (or the existing MR test override) and allows guaranteed player escape. Choose **Usual
 enemies (levels 7–8)** and rebuild/install to restore the previous practice opponents. Disabling the battle retains
-the selected opponents for later. This diagnostic option still needs an original-enemy live capture; it is not a
-native skill animation repair.
+the selected opponents for later. A further trace is optional evidence for identifying the exact enemy route;
+the reported blank appearance is already recorded. This option is not a native skill animation repair.
 
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
@@ -742,6 +747,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   (500380) selected the native damage/reaction-only 900000 placeholder on imported visions in the demo. Find their
   own full-release presentation assets/routes and retest them, rather than treating a restored caster alias as
   recovery of their original visuals. The other six blank follow-up entries still lack this runtime attribution.
+  Retest 1,000 Needles on the original enemy too: the 2026-10-17 visual test reports no visible animation from
+  the tested Cactuar, without a trace. Preserve this observation separately from proof of a missing asset or route.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,
