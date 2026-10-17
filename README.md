@@ -41,6 +41,40 @@ changes. Close the game, choose **1** to enable, relaunch/test, then choose **2*
 Downloads\FFR Mod. Close the game and choose **3** to remove it. No Studio update or mod rebuild is required.
 Missing sampled records do not prove an effect never played; short events can fall between samples.
 
+### Confirmed runtime fallbacks
+
+The returned `Skill-Runtime-Trace-20261016-231903-ce871e.zip` contains a successful observer capture:
+2,421 log lines, 588 battle samples, three bookmarks and no collection errors. The user confirmed the cast order
+as **1,000 Needles → Aqua Breath → Atomic Ray**. The collected engine is extension **1.2.35**; all recorded
+resource hashes match the committed extension, and its build report selects **native repairs** with the `atk`
+alias. This establishes the collected engine state; installed game containers were not part of this collection.
+
+| Cast | Observed playing sequence | Result |
+| --- | --- | --- |
+| 1,000 Needles (500270), 23:17:42 | `Skill/900000/SEQ_Battle_900000_Master` | Generic fallback; no job-linked skill particles recorded; vision remained idle |
+| Aqua Breath (500800), 23:17:55 | `EnemySkill/500800/500801/SEQ_Battle_500801_Master` | Original timeline, linked water effect and `magic_idle`/`magic_attack` motions recorded |
+| Atomic Ray (500380), 23:18:11 | `Skill/900000/SEQ_Battle_900000_Master` | Generic fallback; no job-linked skill particles recorded; vision remained idle |
+
+Times are the local timestamps in the supplied UE4SS log. Skill IDs for the two fallback casts are matched
+from the user's bookmark order and catalog names: the optional runtime `GetSkillId` read was unavailable,
+logged once and did not stop capture. Native enemy actions in this battle used other skills; original enemy
+1,000 Needles/Atomic Ray playback was not observed.
+
+The original binding's Japanese row name, **シーケンサー未設定用**, means **for an unset sequencer**. Its native
+900000 package has exactly one event track, enabled, with one `OtherReaction` event at tick 4000. There are
+no disabled motion tracks, caster-animation events, particle spawns, effect imports or child sequence imports
+to restore in this fallback. The same package bytes are present in both complete reference collections. Its
+event schedules combat reaction without supplying a skill presentation, explaining damage/status processing
+while the imported vision stays idle. The working Aqua Breath cast provides a positive playback comparison.
+
+This identifies the immediate cause for these **two tested casts**; it does not establish that every unbound
+skill is broken or that the original effects cannot exist through another native enemy path. The other six
+recently reported blank skills were not cast in this capture. A binding/track repair cannot recover skill-specific
+art from the empty fallback. An original sequence/effect must be located, or a new presentation must be authored.
+Existing donor-based substitutes remain under their existing options; this finding adds no substitute and changes
+no gameplay or verification labels. No further asset extraction or repeat of these two imported-vision casts is
+needed to establish this fallback behavior. Recheck their own assets/routes at full release.
+
 [Verified native-only mode and 21 native skill routes / run 38986188584](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38986188584/Sephira-Studio-Test.zip)
 (code `aa0452b`, published 2026-10-16; extension 1.2.33). Local analysis, 58 focused Flutter tests and
 393 Python checks pass. All 21 native routes pass actual asset build/readback and IoStore verification;
@@ -673,6 +707,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   dispatch, the original twelve unresolved blank test cases and the three additional reports. Compare original
   enemy/runtime playback before inventing bindings; do not equate AI assignments with tested visuals. Recheck the
   optional observer's reflected fields against the new build and remove it after diagnosis.
+  Re-audit the [confirmed runtime fallbacks](#confirmed-runtime-fallbacks): 1,000 Needles (500270) and Atomic Ray
+  (500380) selected the native damage/reaction-only 900000 placeholder on imported visions in the demo. Find their
+  own full-release presentation assets/routes and retest them, rather than treating a restored caster alias as
+  recovery of their original visuals. The other six blank follow-up entries still lack this runtime attribution.
 - [ ] **World-map images, coordinates and cave placements.** Refresh native map captures, projection and landmarks.
   Validate saved positions before migration; preserve the user's cave locations and leave unknown vendor pins unavailable.
 - [ ] **Default visions, party members and portraits.** Refresh identities, stats, abilities, MR rewards, Resonances,

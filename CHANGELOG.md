@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Native-only runtime findings — 2026-10-16
+
+- Analyze the returned three-bookmark battle capture, with the user confirming 1,000 Needles, Aqua Breath,
+  then Atomic Ray. Both blank casts actually play the game's 900000 "sequencer not set" fallback. Native package
+  inspection finds one active `OtherReaction` event, no caster-motion/particle events, no disabled motion tracks
+  and no child sequence/effect imports. This explains working combat resolution while the vision stays idle.
+- Aqua Breath plays its original 500801 sequence, links its water particle system and runs the imported vision's
+  magic motions. The collector captured extension 1.2.35 with matching resource hashes and a native-only build
+  report. Its optional skill-ID getter was unavailable, handled once; the user-provided order supplies attribution.
+  Installed game containers and original enemy use of the two failed skills were not captured.
+- Save the [runtime evidence and limits](README.md#confirmed-runtime-fallbacks) and add both IDs to the shared
+  full-release checklist. The other six blank follow-up skills remain unconfirmed by this capture. No new
+  presentation is recoverable from the placeholder itself; no donor visual, gameplay change or verified label is
+  added. This is a documentation-only investigation result and does not require a new Studio package.
+
 ## Published skill animation runtime trace — 2026-10-16
 
 Code: [`41ea510`](https://github.com/biscoBen/FFR-Vison-Studio/commit/41ea510a6ad9e67a815205392f4647549e5c183b).
