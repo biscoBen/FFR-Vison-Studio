@@ -24,9 +24,10 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   other mods and Studio runtime. Collect only tagged trace/own-mod startup lines, observer files, DLL hashes and optional engine
   presentation/version hashes into Downloads\FFR Mod. No Studio update or mod rebuild is needed for this helper.
   Existing application/engine resources, settings and accepted gameplay fixes are unchanged.
-- All 11 focused observer/lifecycle checks pass, including missing runtime fields, game-thread queueing, capture
-  limits, ownership/path guards, private-log filtering and repeat enable/collect/remove. The full local Python suite
-  completes 415 tests (four skipped), and both managed resource manifests verify without changes. Lua fixtures and
+- Focused observer/lifecycle checks cover missing runtime fields, game-thread queueing, capture limits,
+  ownership/path guards, private-log filtering and repeat enable/collect/remove. Normalize Windows short/long
+  folder spellings consistently before rejecting capture destinations inside the game; test both alias directions.
+  The full local Python suite completes 416 tests (five skipped), and both managed resource manifests verify without changes. Lua fixtures and
   PowerShell lifecycle tests do not verify live UE4SS startup, original enemy playback or Unreal rendering.
 
 ## Published native skill routing audit and motion compatibility — 2026-10-16

@@ -193,6 +193,25 @@ class SkillTraceHelperTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as z:
             self.assertEqual(json.loads(z.read('report.json').decode('utf-8-sig'))['traceLines'], 0)
 
+    @unittest.skipUnless(os.name == 'nt', 'Windows short/long filename alias regression.')
+    def test_mixed_short_and_long_game_paths_still_reject_in_game_output(self):
+        import ctypes
+        buffer = ctypes.create_unicode_buffer(32768)
+        get_short = ctypes.windll.kernel32.GetShortPathNameW
+        get_short.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32]
+        get_short.restype = ctypes.c_uint32
+        length = get_short(str(self.game), buffer, len(buffer))
+        self.assertGreater(length, 0)
+        short = Path(buffer.value)
+        if str(short).lower() == str(self.game).lower():
+            self.skipTest('This volume has no 8.3 aliases for the fixture.')
+        original = self.game
+        self.game = short
+        self.run_helper('Collect', success=False, output=original / 'captures')
+        self.game = original
+        self.run_helper('Collect', success=False, output=short / 'captures')
+        self.assertFalse((original / 'captures').exists())
+
     @unittest.skipIf(os.name == 'nt', 'Linux symlink path-guard fixture.')
     def test_linked_mod_folder_is_not_followed(self):
         target = self.root / 'untouched'; target.mkdir()

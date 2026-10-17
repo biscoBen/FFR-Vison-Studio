@@ -15,7 +15,10 @@ function Find-Game([string]$Candidate) {
         $path = $Candidate
         if ($suffix) { $path = Join-Path $Candidate $suffix }
         if (Test-Path -LiteralPath (Join-Path $path 'FFRS\Binaries\Win64') -PathType Container) {
-            return (Resolve-Path -LiteralPath $path).Path
+            # Normalize existing game roots with the same .NET routine used
+            # for output paths. On Windows a TEMP ancestor can use its 8.3
+            # alias while GetFullPath expands it to the long spelling.
+            return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $path).Path)
         }
     }
     return $null
