@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Original-enemy animation comparison candidates — 2026-10-17
+
+- Record ten included enemy/skill pairs covering eight missing-skill names, including Watcher/Ganymede for
+  Atomic Ray and Malbodoom/Malboro Marquis for Bad Breath. Check exact native AI references, AI Blueprint and
+  collected model/material/texture packages. Identify Watcher and Malbodoom as the simplest next practice tests.
+- Distinguish included assets from natural demo story access and live playback. No new practice encounter or
+  skill change is installed by this documentation update. Record that the first blank 1,000 Needles retest had
+  its optional FFBE-import switch off; enabled-import testing remains pending.
+
 ### Cactuar visual baseline — 2026-10-17
 
 - Record the user's follow-up: the tested Cactuar's own **1,000 Needles** also shows no visible animation.

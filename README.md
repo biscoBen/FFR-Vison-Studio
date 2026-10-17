@@ -130,6 +130,36 @@ enemies (levels 7–8)** and rebuild/install to restore the previous practice op
 the selected opponents for later. A further trace is optional evidence for identifying the exact enemy route;
 the reported blank appearance is already recorded. This option is not a native skill animation repair.
 
+### Original-enemy comparisons for missing skills — 2026-10-17
+
+The returned demo Skill-Routing reference includes the following native enemy candidates. Each pairing is
+confirmed by its AI parameter's exact skill ID, its assigned native AI Blueprint and the actual collected cooked
+SpriteStudio project, material, base-color/normal/material textures and their `.uexp` companions. This establishes
+included assets and native skill usage, not natural story access or successful playback. Late-game rows alone
+must never be treated as proof that the normal demo can reach the encounter.
+
+| Missing skill | Included original enemies | Unit IDs |
+| --- | --- | --- |
+| Atomic Ray (500380) | Watcher; Ganymede | 188; 196 |
+| Bad Breath (505020) | Malbodoom; Malboro Marquis | 257; 258 |
+| 10,000 Needles (505110) | Gigantuar | 352 |
+| Alluring Pollen (503770) | Sheratan, first form | 641 |
+| Bubble Breath (501680) | Alpherg, first form | 651 |
+| Self-Destruct (500720) | Bomb | 24 |
+| Constrict (500590) | Wood Eyes | 23 |
+| White Wind (500810) | White Peak | 283 |
+
+**Watcher and Malbodoom are the best next practice-fight candidates:** they use ordinary enemy AI and directly
+cover two of the user's failed skills. Sheratan and Alpherg have boss/phase behavior requiring additional setup
+checks. Add controlled encounters using the included native units/AI, as for Cactuar, then observe the original
+skill without borrowed visuals or the FFBE import. These encounters have not been added or runtime-validated yet.
+Existing native-only fixes also permit comparisons against Belmodar's Thwack and Dark Skeleton's Throat Strike;
+those two originally lacked player routes but already have native repair work.
+
+The first reported blank 1,000 Needles vision cast was made with **Test FFBE 1,000 Needles visual OFF**, as the
+user confirmed. It is not a failed enabled-import test. Leave the implementation unchanged pending the enabled
+switch/rebuild/install/restart retest; live FFBE-import appearance remains unconfirmed.
+
 ### FFBE 1,000 Needles import investigation — 2026-10-17
 
 The supplied [Memorial v208 APK](https://github.com/luminest-llc/ffbe-memorial-downloads/releases/tag/production-v208-9d21fc8b61c9900e)
