@@ -1,0 +1,493 @@
+{
+  "schema": 1,
+  "game": "Resonance demo",
+  "reference": "Native-Skill-Animation-Reference-20261016-171038-cabc96",
+  "date": "2026-10-16",
+  "inGameValidated": false,
+  "skills": {
+    "505040": {
+      "name": "Thwack",
+      "folder": "Sequencer/Battle/EnemySkill/500560/500562",
+      "sourceSequence": 500562,
+      "definitionSha256": "50bda266f21120109560ab493a719298d11e95eff5f0c53d9664fb674f60dc71",
+      "bindingSha256": "55514f9f63c41cbeaf2ae201f8e8dfb71a65497c13e275a30719d821427ac12b",
+      "files": {
+        "SEQ_Battle_500562_Master.uasset": "68770f73cda9c9efcf7b526d9570d3276d82291b65c0fe2e8e33d341ecc454c4",
+        "SEQ_Battle_500562_Master.uexp": "c3e49231eb52b2c73c15fc970db6d77ba648bbeec393b36d428bef9a53e3f530",
+        "Track/SEQ_Battle_500562_Cut_001.uasset": "d736028e6a0ce0816ebe412d2ddfb6bde2e19bd98bd3fa2013f29935f2695fde",
+        "Track/SEQ_Battle_500562_Cut_001.uexp": "84e723e6739976a328a8eeb5e821428b940d9009b495d9f629408940c8961f14",
+        "Track/SEQ_Battle_500562_Effect_001.uasset": "f2a9b205f5c45b280bd93ea219ad65361e32fb8c7ca3bb0f366335f11704bdff",
+        "Track/SEQ_Battle_500562_Effect_001.uexp": "e7956d5f19be128ce4c3c0b171ba7b26cc0721ea8594e9959bf9021dbf85b879",
+        "Track/SEQ_Battle_500562_Sound_001.uasset": "8be20163114d0efb3fa7dd4e9153e33eee87453f7c3657ce5366a45eee051b99",
+        "Track/SEQ_Battle_500562_Sound_001.uexp": "435950572b9f7bfdf1d5a471d05c992db25d9199629aa75c9aa6137b81d37981"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500562_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500562_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500562_Cut_001_DirectorBP_20",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "500250": {
+      "name": "Throat Strike",
+      "folder": "Sequencer/Battle/EnemySkill/500090/500092",
+      "sourceSequence": 500092,
+      "definitionSha256": "cd5e7e487bb6c95980be7728574dc0dd46867b57979689fb345d5f3831de55f8",
+      "bindingSha256": "9f8c1c10d74d4f902b6feec6703a6c8f2da1b65ac7af1c38f9290094e4a131fb",
+      "files": {
+        "SEQ_Battle_500092_Master.uasset": "7b3314c953045a151cac838e24f8ffc9f9f8ecbc3f6f9fef2eee4a6221efa8c8",
+        "SEQ_Battle_500092_Master.uexp": "0f22ff75309a195063394b4aed7f1f3c898023d33bc04f24a0efcc4088aa7806",
+        "Track/SEQ_Battle_500092_Cut_001.uasset": "e2cbd08445deee6225e6da62a668a30ffba2053c00f27cc44e597aa9ab1fbe0f",
+        "Track/SEQ_Battle_500092_Cut_001.uexp": "6d62ec304de8a99da839ebfbeaac6e52729c311b9031a5aecd3effdb36015cd9",
+        "Track/SEQ_Battle_500092_Effect_001.uasset": "3d4f54341f11aed4a9697ba0902d7c4d097800e0ffdd3b80d7de43498f5cea6a",
+        "Track/SEQ_Battle_500092_Effect_001.uexp": "d8737832eaba007fddc4e99eacbc9d50753b5434b185624bef997f0a71962c2f",
+        "Track/SEQ_Battle_500092_Sound_001.uasset": "214aba005bf0d3845bfe3dce9b7aa5d31f8a4367f732e092962bc040966ce115",
+        "Track/SEQ_Battle_500092_Sound_001.uexp": "fc2bf0bf30fe04f45ce82d9e2e87badcce8aa03b9c5d8d59b0af6b593488e7ca"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500092_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500092_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500092_Cut_001_DirectorBP_17",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "500260": {
+      "name": "Needle",
+      "folder": "Sequencer/Battle/EnemySkill/500090/500092",
+      "sourceSequence": 500092,
+      "definitionSha256": "f7c6aedaae0ee038d258f7db0ca5dad4e27c1c577b1c4753919c574bb85e0a5d",
+      "bindingSha256": "e24d45380bbccb52994f2e792a4e0297ebb33814ff90b50c65133517b7d2f6d0",
+      "files": {
+        "SEQ_Battle_500092_Master.uasset": "7b3314c953045a151cac838e24f8ffc9f9f8ecbc3f6f9fef2eee4a6221efa8c8",
+        "SEQ_Battle_500092_Master.uexp": "0f22ff75309a195063394b4aed7f1f3c898023d33bc04f24a0efcc4088aa7806",
+        "Track/SEQ_Battle_500092_Cut_001.uasset": "e2cbd08445deee6225e6da62a668a30ffba2053c00f27cc44e597aa9ab1fbe0f",
+        "Track/SEQ_Battle_500092_Cut_001.uexp": "6d62ec304de8a99da839ebfbeaac6e52729c311b9031a5aecd3effdb36015cd9",
+        "Track/SEQ_Battle_500092_Effect_001.uasset": "3d4f54341f11aed4a9697ba0902d7c4d097800e0ffdd3b80d7de43498f5cea6a",
+        "Track/SEQ_Battle_500092_Effect_001.uexp": "d8737832eaba007fddc4e99eacbc9d50753b5434b185624bef997f0a71962c2f",
+        "Track/SEQ_Battle_500092_Sound_001.uasset": "214aba005bf0d3845bfe3dce9b7aa5d31f8a4367f732e092962bc040966ce115",
+        "Track/SEQ_Battle_500092_Sound_001.uexp": "fc2bf0bf30fe04f45ce82d9e2e87badcce8aa03b9c5d8d59b0af6b593488e7ca"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500092_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500092_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500092_Cut_001_DirectorBP_17",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "500530": {
+      "name": "Steal",
+      "folder": "Sequencer/Battle/EnemySkill/500530/500532",
+      "sourceSequence": 500532,
+      "definitionSha256": "818aab3f7c1437905e44ac14c5f7fc5fb7679c0e45e32cdc1d1e2b74691bbef6",
+      "bindingSha256": "d9802192a7c5fe2c0b709f137ad530c1d918dee2a9c19ab80d2a74ddc0600561",
+      "files": {
+        "SEQ_Battle_500532_Master.uasset": "c5914d0eb0691628592fffa9eedde67c64110fffe46568c1dbe559795944b1fd",
+        "SEQ_Battle_500532_Master.uexp": "170063d32d36f82e26e9b9e0688e828a791bbe2271cabd0d80ab2d5e5b5daa56",
+        "Track/SEQ_Battle_500532_Cut_001.uasset": "9258c4d8e69dd6e3b8c9a45feb37b83200235cb796d2f1146c26858d97c9c731",
+        "Track/SEQ_Battle_500532_Cut_001.uexp": "063dbfc7751a12d0ea86e968934eb8f47b1813f6eacab735ad093cb7f13af48a",
+        "Track/SEQ_Battle_500532_Effect_001.uasset": "876998c9037742404b93b324d59ece78284a254c5107cf2d84d8b94a6905ba09",
+        "Track/SEQ_Battle_500532_Effect_001.uexp": "fb9f575902af1e30656f701999d6074c46a24c606c277c9dd9ea42fb57571cfb",
+        "Track/SEQ_Battle_500532_Sound_001.uasset": "752f4ccf46780fd23eef4f1b620bcefcf5fe356d247160d25da5f49da9619005",
+        "Track/SEQ_Battle_500532_Sound_001.uexp": "f0ee9af05f8e40182b97d2dfdad0897c68435d01f239b72bc89c2ae19938330b"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500532_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500532_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500532_Cut_001_DirectorBP_15",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "500970": {
+      "name": "Bioblaster",
+      "folder": "Sequencer/Battle/EnemySkill/500970/500972",
+      "sourceSequence": 500972,
+      "definitionSha256": "5a12ac7a989ca4f3a1b90ac25032d7f78b6604fb902818eba5459ebff1fcba1e",
+      "bindingSha256": "b855f476865fdff9217c51747c4659db43151cd5f8945ebbae6b52c998bca954",
+      "files": {
+        "SEQ_Battle_500972_Master.uasset": "3ca8e1bacd4658eaec0a84a16be34211a07b9d500a1347bdeba815cc4e35a14a",
+        "SEQ_Battle_500972_Master.uexp": "1f19879029c9891268b35ca734f0eebca3be13c9a38a059c17f2e861531a57f1",
+        "Track/SEQ_Battle_500972_Cut_001.uasset": "e49c14b0d72a3b457a0cb5eb782a4e193a08907131b272c1f725d6d8d0ddb5b8",
+        "Track/SEQ_Battle_500972_Cut_001.uexp": "60e45f02a59eea97dbfcb4a642c40c0f49cbbef258286d1addff8dd1c23cf8e1",
+        "Track/SEQ_Battle_500972_Effect_001.uasset": "6adaadb4bb0d01253e11c8fecea4e700db420d60354bb3ca6481e603f365a8b9",
+        "Track/SEQ_Battle_500972_Effect_001.uexp": "61c3d05d0279ae5adc788f70575f9d6662b89e2cfdc7eef43504ab94287e243e",
+        "Track/SEQ_Battle_500972_Sound_001.uasset": "8d8339c2d9f726da63629f6dff0024092dcda6b61a29e7753ecb13eab5558c75",
+        "Track/SEQ_Battle_500972_Sound_001.uexp": "0d58d7fa10f723a1bce201f0aa169165e8dec134d59376fd13ea286477eb7d27"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "501000": {
+      "name": "Thunder Beam",
+      "folder": "Sequencer/Battle/EnemySkill/501000/501002",
+      "sourceSequence": 501002,
+      "definitionSha256": "4f717ea61e9bae7b5c42319b23233aa07fbb1c817e51642c28fab1e1e4f671f9",
+      "bindingSha256": "80486c48277e9dba33912b3ba35c499df01dc33499ec90765b2f2fce5ea6e525",
+      "files": {
+        "SEQ_Battle_501002_Master.uasset": "f8dc098e90f4c3a4ef927ff6e6e9837174dd8b5885a0c16a0a6bb689a6336e9f",
+        "SEQ_Battle_501002_Master.uexp": "c85491e729a1fd5bc1d89bc997cadebe51610d8642807b6939f0b0ea9c0f42f6",
+        "Track/SEQ_Battle_501002_Cut_001.uasset": "b2fec8e51943472d43f08ee2f01ea4784b560db99c0a5f724ed938edd0233e4d",
+        "Track/SEQ_Battle_501002_Cut_001.uexp": "79e2fe7a10e584dbc197c8082e1bc87908ae5ba2c49163ce0ccc20b8d69ab786",
+        "Track/SEQ_Battle_501002_Effect_001.uasset": "e69fd72c365dcd49607c0ac92fb12acc6bfd5d7e94223c27c5a7850c46c75ea1",
+        "Track/SEQ_Battle_501002_Effect_001.uexp": "c4b07c17e1ecca38186b0876d87fa56512e0a33dd4f1a4f7c9af309f5d475d70",
+        "Track/SEQ_Battle_501002_Sound_001.uasset": "ba8f0db5dc157aa439147bd9cd021b479f8cfcbf8185c344432eaf81d0452520",
+        "Track/SEQ_Battle_501002_Sound_001.uexp": "c82aa26601d016f3218e162a9afd254855fde83975aa908becb0a10545f83624"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_501002_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_501002_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_501002_Cut_001_DirectorBP_17",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "506090": {
+      "name": "Libra",
+      "folder": "Sequencer/Battle/Magic/210220/210222",
+      "sourceSequence": 210222,
+      "definitionSha256": "d5f837b5009ed27a4235625c3afca6ec34738b29e3ec4a30ff1ffcb441aaec74",
+      "bindingSha256": "5762644513d7c475618d12de76d839aff5905adb42a8dfbe2be043aa60e10c0c",
+      "files": {
+        "SEQ_Battle_210222_Master.uasset": "7b6376c8d76a4a41c77857d7e62719f15aadf1da384fbc5dc8bab1439020210c",
+        "SEQ_Battle_210222_Master.uexp": "1439cfa3196dde91e610d10ad05afef1f6075f3361f7de1c461eb7e97bcaa2ed",
+        "Track/SEQ_Battle_210222_Cut_001.uasset": "9c15687ce62d58c103710ba8aa322549526aa75bfdb317aebc63c37bb09d86e4",
+        "Track/SEQ_Battle_210222_Cut_001.uexp": "438a161ee6cfdf543f1d6195726ca403441aa1a34cbfb56b1c3db4fa58d4d739",
+        "Track/SEQ_Battle_210222_Effect_001.uasset": "5c70c460498a576575ab771eace6f96772aa4270e859afe07e2e879fae61dee5",
+        "Track/SEQ_Battle_210222_Effect_001.uexp": "ec7c815c6f11d8ecc962d0d258488cb691d9e83d3c2492406f417a0ac62df299",
+        "Track/SEQ_Battle_210222_Sound_001.uasset": "8835f22d0f4580980bc0a32c613b86ea7c595111fb55df67ac8fe54982919ed9",
+        "Track/SEQ_Battle_210222_Sound_001.uexp": "8736ec6d89520e87e22d369f60e5aaba5e93ae4493f7b03f04587c20e185af4e"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_210222_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_0"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_210222_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_210222_Cut_001_DirectorBP_0",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "580060": {
+      "name": "Gimme an ether!",
+      "folder": "Sequencer/Battle/Magic/210020/210022",
+      "sourceSequence": 210022,
+      "definitionSha256": "e66d93fa8236ee317df849eb381f90618083c29ee5496379d49de2b591aae7e1",
+      "bindingSha256": "7d63e6f0301c4b6a104d2cb626fd0e79ae6ed6a2bc0b50e3d8c860995fd5ddcf",
+      "files": {
+        "SEQ_Battle_210022_Master.uasset": "2d3ae58d52baeef47bf67fe8b7f00d9c6b0ac8a4b3f60b09496c10dabd438954",
+        "SEQ_Battle_210022_Master.uexp": "85e3847769c1f8cbfa3574ddd9317640b9ee482a7dd7fe2b668e3100cee9d86c",
+        "Track/SEQ_Battle_210022_Cut_001.uasset": "7b2c80c5d4b91ee900df2d80d47a5aedc7bc05c9e395efa8ef3987327d85d21c",
+        "Track/SEQ_Battle_210022_Cut_001.uexp": "529f6ccd3f9567ca0e617cc0d376d9a066be4b6f9720d8685735dc4df1ce96bc",
+        "Track/SEQ_Battle_210022_Effect_001.uasset": "65f19e6e6c023a92ee3c662a7f81782493a7ec29296b7951a49222291baff5f0",
+        "Track/SEQ_Battle_210022_Effect_001.uexp": "d572ec5a6a5356e2080145bcef211783df47c66fdfff763d9759927ebb4c67e7",
+        "Track/SEQ_Battle_210022_Sound_001.uasset": "a9374b905a861a6b7b8bf7a1be619b836f0d0ab8f1784011ded1b54ffef4ee04",
+        "Track/SEQ_Battle_210022_Sound_001.uexp": "3c1a0d92aaa0550294f5c673f08711332b50a36b6d63b14d05341d42a9c2ff7a"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "580110": {
+      "name": "Steal",
+      "folder": "Sequencer/Battle/EnemySkill/500530/500532",
+      "sourceSequence": 500532,
+      "definitionSha256": "eb4603cebfb388ee35db6eea487cd3a40fe42db8b686cf92c3590aa807da5fc6",
+      "bindingSha256": "13f5ea9115a9d3219a5369e736bbf592c0899053a2924d3e1e1910cece153dce",
+      "files": {
+        "SEQ_Battle_500532_Master.uasset": "c5914d0eb0691628592fffa9eedde67c64110fffe46568c1dbe559795944b1fd",
+        "SEQ_Battle_500532_Master.uexp": "170063d32d36f82e26e9b9e0688e828a791bbe2271cabd0d80ab2d5e5b5daa56",
+        "Track/SEQ_Battle_500532_Cut_001.uasset": "9258c4d8e69dd6e3b8c9a45feb37b83200235cb796d2f1146c26858d97c9c731",
+        "Track/SEQ_Battle_500532_Cut_001.uexp": "063dbfc7751a12d0ea86e968934eb8f47b1813f6eacab735ad093cb7f13af48a",
+        "Track/SEQ_Battle_500532_Effect_001.uasset": "876998c9037742404b93b324d59ece78284a254c5107cf2d84d8b94a6905ba09",
+        "Track/SEQ_Battle_500532_Effect_001.uexp": "fb9f575902af1e30656f701999d6074c46a24c606c277c9dd9ea42fb57571cfb",
+        "Track/SEQ_Battle_500532_Sound_001.uasset": "752f4ccf46780fd23eef4f1b620bcefcf5fe356d247160d25da5f49da9619005",
+        "Track/SEQ_Battle_500532_Sound_001.uexp": "f0ee9af05f8e40182b97d2dfdad0897c68435d01f239b72bc89c2ae19938330b"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_500532_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_18"
+        }
+      ],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500532_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500532_Cut_001_DirectorBP_15",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "580120": {
+      "name": "Flee",
+      "folder": "Sequencer/Battle/EnemySkill/500680/500682",
+      "sourceSequence": 500682,
+      "definitionSha256": "a2a968d89ca7239322da60288844cd757ab4903c5bc8c421d68fcd132e6cf224",
+      "bindingSha256": "30b49b386a9710697657394d6d2a7e009bc5e5608119e6850fa2acd28d34c983",
+      "files": {
+        "SEQ_Battle_500682_Master.uasset": "1d73c4b486b493aaf421892380e5f6fcf343f8b9c52c0b2593f9e82a70959feb",
+        "SEQ_Battle_500682_Master.uexp": "42ba947ec3cfd8e45d2d3255e6d646fdde6e7e17fdde77e15af3ab63016e393a",
+        "Track/SEQ_Battle_500682_Cut_001.uasset": "ce5c7fb0d5e75d9fa9ab8110f34d5f08430964ffa6e3820e26afe0966aaeb814",
+        "Track/SEQ_Battle_500682_Cut_001.uexp": "a9acac8fbd23fecb3e7bf47188ad7a3433b3abe16f0aa98de6e92b5da9ff7fd0",
+        "Track/SEQ_Battle_500682_Effect_001.uasset": "5d54a6384afdbfe9b28f944b5a7b9fe0b20ac71f22799d2f6f8fdf420ee12a3c",
+        "Track/SEQ_Battle_500682_Effect_001.uexp": "e0150f2a1efc7193ffb1e779a8517291a40a5ed04fef0062490c3a00c8b2524b",
+        "Track/SEQ_Battle_500682_Sound_001.uasset": "44752f2f95a7b679665c1193beeaaf4da4129f67f3378cc7165f594ec02e9b62",
+        "Track/SEQ_Battle_500682_Sound_001.uexp": "fb0981646029526327a7a3f91d6ee5ab6cb36e62c32eb4c731c15f102ad0c628"
+      },
+      "enableTracks": [],
+      "motionEdits": [
+        {
+          "file": "Track/SEQ_Battle_500682_Cut_001.uasset",
+          "function": "SequenceEvent__ENTRYPOINTSEQ_Battle_500682_Cut_001_DirectorBP",
+          "set": {
+            "Unit_PlayAnimByName_AnimationName": "attack_A"
+          }
+        }
+      ]
+    },
+    "245000": {
+      "name": "Cure",
+      "folder": "Sequencer/Battle/Magic/215000/215002",
+      "sourceSequence": 215002,
+      "definitionSha256": "61ba1ab8f9e59396fbb1cfff388dcc6126b76cb498b0331be41a404a11d4fde4",
+      "bindingSha256": "54c54607d9ad274a40baccbaaffaedbcfc627fc9596ff20a3f341a036f3d5659",
+      "files": {
+        "SEQ_Battle_215002_Master.uasset": "c5b46df6c5ab84136810b4d64a1d0fda202192be5b612702de0e76ef8b6abb5a",
+        "SEQ_Battle_215002_Master.uexp": "7491b58f7e2d501f56cada4c82f04b6bf70a584890392bab9cdaa9a19a9ad341",
+        "Track/SEQ_Battle_215002_Cut_001.uasset": "f28d29b8bc5132beb7f695cf90bb04fb1f0bd72c0d4987cc3060c12dfc85d3db",
+        "Track/SEQ_Battle_215002_Cut_001.uexp": "2cce2826166b23b6c035a68331265b8f7e1cdd3091e7677f51785ab3cfa6946c",
+        "Track/SEQ_Battle_215002_Effect_001.uasset": "d09824e9c6a2fe71b26a31e5cd8eea68e603bef99d65aa0bdcbf094b1caabf71",
+        "Track/SEQ_Battle_215002_Effect_001.uexp": "f092b36984afa66af74c25e159e295cf7434d6eb638315bf155cb0837eec065c",
+        "Track/SEQ_Battle_215002_Sound_001.uasset": "e10436eac16f2684b3789f2fc695ebaaabe7b4453f3c23217b0bac0b8e45803b",
+        "Track/SEQ_Battle_215002_Sound_001.uexp": "dcfa61bdc03224bfc92453a2725fe135575a4168dc9c9733169192df0134f31e"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255000": {
+      "name": "Fire",
+      "folder": "Sequencer/Battle/Magic/225200/225202",
+      "sourceSequence": 225202,
+      "definitionSha256": "0d6792d4c959c4cb8168f61fb872f5e6f995302305ca744dc00e936326b2ebe3",
+      "bindingSha256": "1c884f8730841c3af77def12429bb55dfb5c6b377dccbc74624b6990437e70af",
+      "files": {
+        "SEQ_Battle_225202_Master.uasset": "33b9ffb4a89f615d52d18d4eb17c0299eebbc0896f5212bfbf024b417a4fc12a",
+        "SEQ_Battle_225202_Master.uexp": "cb632ae3c19c72ca69020a300038120a56de19c27132cd4e0245b76afe816583",
+        "Track/SEQ_Battle_225202_Cut_001.uasset": "5399cef01ef08248b45a803809a952cf0c5d03b819268efa2704dec033e30643",
+        "Track/SEQ_Battle_225202_Cut_001.uexp": "b8f206fd06ee0b1a8bd789e36a0b1f3d05cda70d7285417c5060752e8202fe63",
+        "Track/SEQ_Battle_225202_Effect_001.uasset": "c65fbb02939c70c27cef528c921118b76a189f239d4a367e5b78cd5ed8438be3",
+        "Track/SEQ_Battle_225202_Effect_001.uexp": "99f46cce6b8539d768088d2a8cce09436f8ed1f6d27271552cccc60ea52b0f17",
+        "Track/SEQ_Battle_225202_Sound_001.uasset": "3a9a6c22bde37b31df8849f7d9f2aaadab2af60a785cc9191a32a671c99d1043",
+        "Track/SEQ_Battle_225202_Sound_001.uexp": "514567fa067fc46b0ea33c39750b9d44db468b4da017f44356b55cc23199b24a"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255030": {
+      "name": "Blizzard",
+      "folder": "Sequencer/Battle/Magic/225210/225212",
+      "sourceSequence": 225212,
+      "definitionSha256": "cb9389ae775d3ff7e582d15c350cd6ab5ba059484ac569f74cdc0f29375ef1e1",
+      "bindingSha256": "cd96d4d49fe560b00815d16a0fe3a93e0d28712431b3d767dbac1fedaeb22765",
+      "files": {
+        "SEQ_Battle_225212_Master.uasset": "5ab53d53c1803406d341c8dc52353d377801f774acd8405a0c446a15415c4410",
+        "SEQ_Battle_225212_Master.uexp": "81a8594c39826974049fe9eacfeaff331825cd325c8dad58df1ac9e68198f23d",
+        "Track/SEQ_Battle_225212_Cut_001.uasset": "d3fdd11538007cdb452d486e0a73588b8fcaad298c033af948e2711c866dc42f",
+        "Track/SEQ_Battle_225212_Cut_001.uexp": "edc66952163cc8d9aff7a2fff3547e27b97bd4e777e5dbec063a21eda585d0b6",
+        "Track/SEQ_Battle_225212_Effect_001.uasset": "2c3826a382029de166f4c91d71e474a98b5c0384facdbca40a0a8aa0951a9bd9",
+        "Track/SEQ_Battle_225212_Effect_001.uexp": "f9ad3f3c1f67741bf784c0dd5793ce774d916acac1582253301729116b1805e2",
+        "Track/SEQ_Battle_225212_Sound_001.uasset": "fb245d99f937bfd7a2ea5a5d9cdb6aa156c4dd58b640fd156b68c22697e45f0b",
+        "Track/SEQ_Battle_225212_Sound_001.uexp": "b7581607a6bfa2fa5b4f6315b0f93a62354686bd65f94c70db62023a8df5b4c1"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255060": {
+      "name": "Thunder",
+      "folder": "Sequencer/Battle/Magic/225220/225222",
+      "sourceSequence": 225222,
+      "definitionSha256": "8ef29c101b51646721464d3c8d5e75a35c10363850476d0a253772562fe16f36",
+      "bindingSha256": "debab55890b5b441ae37469b4ce938e854ed3e7dc0c454c74a53e4f6ffe59c7a",
+      "files": {
+        "SEQ_Battle_225222_Master.uasset": "d7e4d57d2370065a98c3f12e6bef69bd2d67bca5f5126191d8be75581853de25",
+        "SEQ_Battle_225222_Master.uexp": "9e3bac3056beeefd1ea610abb14216f30153aac692232ada2898a98f2d7b2c16",
+        "Track/SEQ_Battle_225222_Cut_001.uasset": "c7a866191aa6153112b2bc44573ee49e2665270c95aa50d749e4093a169bb7c6",
+        "Track/SEQ_Battle_225222_Cut_001.uexp": "a53f940caf427c1fa7425809761aa1e06b4f13c1012813125beca1e460a0c043",
+        "Track/SEQ_Battle_225222_Effect_001.uasset": "c2337d86bb6ddde8c36a569d801aa45537b17fe67a7467127b5b86bc23c2734a",
+        "Track/SEQ_Battle_225222_Effect_001.uexp": "aedd2071fe7a85451225d1d9ee96b11953ace2977fa1803c05c8357fae977cbc",
+        "Track/SEQ_Battle_225222_Sound_001.uasset": "29eaac085978969519ddd385a974d782236d78789c53530d1bcdb25406746878",
+        "Track/SEQ_Battle_225222_Sound_001.uexp": "398a20ea21a6fff22d25692f015bac252b2b7503e1d8ecd0e5dc379869f08ba3"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255090": {
+      "name": "Water",
+      "folder": "Sequencer/Battle/Magic/225230/225232",
+      "sourceSequence": 225232,
+      "definitionSha256": "7f0cf565a7bd6b340502f8e3e91e67f22db424ad91beae8123dde546a6d26aff",
+      "bindingSha256": "6bacfed4ccc0eae782305be0527dc76605b76f41372ba26031c45e4e41fbec21",
+      "files": {
+        "SEQ_Battle_225232_Master.uasset": "8b0850af8ab25e1660f77110a8a8969da1b8cba47bf765a2db3acc8875b2a53b",
+        "SEQ_Battle_225232_Master.uexp": "e3da4e6ffefdf7cfe71a603a1a068475772b9482ff72c62d9b37bec574fb2d92",
+        "Track/SEQ_Battle_225232_Cut_001.uasset": "22950cf7586aaa7b83b028bbbbe0f225081f5557d088fcbeb795f46731428d3c",
+        "Track/SEQ_Battle_225232_Cut_001.uexp": "4ec16c1476f1c6bffbf46cbfa639a0af11f4993eed21aa9a2e971166b0680222",
+        "Track/SEQ_Battle_225232_Effect_001.uasset": "e435155afb38343bb55db550f2dc003f16fdb57deca934d79c31e6048c706e3b",
+        "Track/SEQ_Battle_225232_Effect_001.uexp": "85e649b999530befb3835f3133d9b6c535300caf9fa8cfa103621c2456c86536",
+        "Track/SEQ_Battle_225232_Sound_001.uasset": "5067f741ad71307969f44042940f3550c43b6d9d4e041e3c6565ccfaa8062f4b",
+        "Track/SEQ_Battle_225232_Sound_001.uexp": "2553fc2916254b4327e8ede3480cd37a13fdcc5930ad489c85600b2401457d19"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255120": {
+      "name": "Aero",
+      "folder": "Sequencer/Battle/Magic/225240/225242",
+      "sourceSequence": 225242,
+      "definitionSha256": "6d0b47f81745042184154ae7836bfecee2dc4a3131bddd0efa2f2052d60616ca",
+      "bindingSha256": "c11f8af6674ed6b4f1e9535d1ee17499892d205bda678fbe9291db9aad3345fc",
+      "files": {
+        "SEQ_Battle_225242_Master.uasset": "674cb227f9617f7329a9321666123e27c29c286a28145a767f405ce5ebca6ce9",
+        "SEQ_Battle_225242_Master.uexp": "378f23b1a36fb5b399a4cb986272a893d16240d17242c58c87589f482fc92f2a",
+        "Track/SEQ_Battle_225242_Cut_001.uasset": "3e264da6ce322fcd26406484fb657387fdd716ce770a58ca9d7a8e311f765d18",
+        "Track/SEQ_Battle_225242_Cut_001.uexp": "f41e53463b284f84a8ad4a145fb650837cbab64b806c4ea3fb7ae9392120d335",
+        "Track/SEQ_Battle_225242_Effect_001.uasset": "5e0c0b226a27dcf66c3b1e79f049acaa315b450a2174545a83edc53d0e1e5bf6",
+        "Track/SEQ_Battle_225242_Effect_001.uexp": "5bbc5186089e0a9a6e4b4da7b824a0eab957aaafaaec55e7eb2cd40d146fe482",
+        "Track/SEQ_Battle_225242_Sound_001.uasset": "867a27eabb4109e67bf680c970549929eef02ef78c5d61e1959158409b4d3523",
+        "Track/SEQ_Battle_225242_Sound_001.uexp": "c59db3f683ff845abf43304786b7785ecb900f92e72875436ee10bf80cd2cd79"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255150": {
+      "name": "Stone",
+      "folder": "Sequencer/Battle/Magic/225250/225252",
+      "sourceSequence": 225252,
+      "definitionSha256": "52d5e52267d502c5744a183b6c7403194936bf2ec0e5dedcef1917615caa810b",
+      "bindingSha256": "cf2e4ef3c1d623fed63595a504e78302ae5c1c32baa38aecd15d4818432019e6",
+      "files": {
+        "SEQ_Battle_225252_Master.uasset": "48c2a1a6da20b220e60b633a8d03da83e066463074cace4a3d8c4eecc904b7b2",
+        "SEQ_Battle_225252_Master.uexp": "780ddd318d35d628e56d3fb21aa57d13a623325827162c1f8736cfa032e383b4",
+        "Track/SEQ_Battle_225252_Cut_001.uasset": "dd3e3d2ef5745d2f563e48915ea6227990bb9c82e7b992ee6c3fd08454178022",
+        "Track/SEQ_Battle_225252_Cut_001.uexp": "7fd964198b30f93e1c9b0b710ab9af3061a9e74e47148f6328af33426e6a09ee",
+        "Track/SEQ_Battle_225252_Effect_001.uasset": "69d5b271f5dd7990122df0fc0f610928b7e0c249d323e7bbe7459341323f0a7b",
+        "Track/SEQ_Battle_225252_Effect_001.uexp": "9201a1f2a17458aa3eee9a15c2120dced61daae90cfa00fc43c7f6901b62314a",
+        "Track/SEQ_Battle_225252_Sound_001.uasset": "2c9408556e6a0bce0b6c2e339246a1eb4dc7d84e6eb08ae18220c25f9b3fbc86",
+        "Track/SEQ_Battle_225252_Sound_001.uexp": "54c30e6cd32ac6b51ab3f15aff89de8de717890343fa6e1a005d1e84e4f75483"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "255190": {
+      "name": "Bio",
+      "folder": "Sequencer/Battle/Magic/225190/225192",
+      "sourceSequence": 225192,
+      "definitionSha256": "324a19731bdc428b0082909f393b699d2590ec64279205516fc78822e4ec9f99",
+      "bindingSha256": "529e98e956fc3415752450e45a85777258303af3d4fdd475aa131d6a3941aa27",
+      "files": {
+        "SEQ_Battle_225192_Master.uasset": "0e8361e5fbdd5d903b916706748f7d8ff1e2deed5068a843527a36904fd7141d",
+        "SEQ_Battle_225192_Master.uexp": "b8fb03ab60149922bcaa3914f6fc065e72b47eb293e121c98ebbcccddd5f8936",
+        "Track/SEQ_Battle_225192_Cut_001.uasset": "a8f7e68e3ba27dab370b861544aa24bd8d0f37918158f9583d66e4067ae084c5",
+        "Track/SEQ_Battle_225192_Cut_001.uexp": "8e26c14269a9fa3fcb9c8d17bf16cb646b0eb18d65d47e0ebe2f3a0910a8a551",
+        "Track/SEQ_Battle_225192_Effect_001.uasset": "0b1a3bd37035cec8e07511912454683e493061b1d2d80d3c51a66d7228fcd46f",
+        "Track/SEQ_Battle_225192_Effect_001.uexp": "9b0dae8a2d3874f561f728e54f7c95750acd8a9fc2f58b7f960f40f085588cfb",
+        "Track/SEQ_Battle_225192_Sound_001.uasset": "6f9b087a8819707209be6110db311f3f17e3130ed2d30041b0aa67f1df45d08b",
+        "Track/SEQ_Battle_225192_Sound_001.uexp": "f86cfd847b4184d5fbb5897b621dfa960a536e726d79676b6d22fc54e611a2e6"
+      },
+      "enableTracks": [
+        {
+          "file": "Track/SEQ_Battle_225192_Cut_001.uasset",
+          "export": "MovieSceneEventTrack_0"
+        }
+      ],
+      "motionEdits": []
+    },
+    "245290": {
+      "name": "Banish",
+      "folder": "Sequencer/Battle/Magic/225290/225292",
+      "sourceSequence": 225292,
+      "definitionSha256": "1ce6a4036ddc371d423348d519df7edcbb66defda631ff6e04bc97823e9fe21c",
+      "bindingSha256": "7eadd200d356cc8f909b60eb0f35716a746f2faebec0c6dcedaf7b2268a277aa",
+      "files": {
+        "SEQ_Battle_225292_Master.uasset": "ea4e2a6bd16d9500bb5ad934c6c94caf9930dbc660e3ef121e3d7d7e7ce72a87",
+        "SEQ_Battle_225292_Master.uexp": "93b160fca1ff9b63465a609f594398b131c634ea2a149489ad182c5c7e2f50a3",
+        "Track/SEQ_Battle_225292_Cut_001.uasset": "58103234f13903bd4a89fcf30b6728d6bb6562f36fb7e1d77407b6d40da053eb",
+        "Track/SEQ_Battle_225292_Cut_001.uexp": "fdf2fe8acfbc739fcab2a9b6072c2788185e8e093cc11dd1589a7c87c94612fa",
+        "Track/SEQ_Battle_225292_Effect_001.uasset": "205443fe8c28a90cdac25ed9074372575ff013fdd642f6f7e1fa95485d059e35",
+        "Track/SEQ_Battle_225292_Effect_001.uexp": "9a0d74ee3290b9e357b809f75cd58d77e8cd904e22b55c1488857e2af838363b",
+        "Track/SEQ_Battle_225292_Sound_001.uasset": "ac8de63c546c44840c1970a02bd9bf93a35bdd32450648a09c2abc88c95c32a5",
+        "Track/SEQ_Battle_225292_Sound_001.uexp": "b49f1ef4da82530493f1615c4b23ebb4354413676d12008f411d8bfdb53c1c67"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    },
+    "245300": {
+      "name": "Banishra",
+      "folder": "Sequencer/Battle/Magic/225300/225302",
+      "sourceSequence": 225302,
+      "definitionSha256": "5e9b9447e86c4fec1158d3efcfec3c12bca5cbd2f1008ff74442e3176108c882",
+      "bindingSha256": "5dfdfc671907737a03c19f957b38b142588d82242b6a975c71bae365ad07ddc9",
+      "files": {
+        "SEQ_Battle_225302_Master.uasset": "d4adf08165fa5fb2a227336807ab3aa7c4750982295a819aee68b447fb3f447b",
+        "SEQ_Battle_225302_Master.uexp": "5d78d9aaa645afc01dbcbb81a42f9752413c916e6798c92c248a2e8c57039aa6",
+        "Track/SEQ_Battle_225302_Cut_001.uasset": "45e0cf7d2e99f9e16bd7912a1d140bba2e93d4c26c589a7ea80fdfb6901c91c5",
+        "Track/SEQ_Battle_225302_Cut_001.uexp": "42e2bacad20cb8940d1f2a253014e715a026601b07a9bb2f3fd631146b97b572",
+        "Track/SEQ_Battle_225302_Effect_001.uasset": "e83a69acf4fc3034c5b60a379f1c17bfe86185cd3f5758ea8795eb5af2716e2f",
+        "Track/SEQ_Battle_225302_Effect_001.uexp": "93c9fea57edc251b1bc493b69608efe76cec7b75a8faa3fead1de27199917e80",
+        "Track/SEQ_Battle_225302_Sound_001.uasset": "246d46f850dc79af9f8e8835d14f874ec5f084f999009e09eb531eca1bc27ca4",
+        "Track/SEQ_Battle_225302_Sound_001.uexp": "f885c1ea67d519c9dfca3a5163dcd2c264224e44f3ae63adea991daac94f0277"
+      },
+      "enableTracks": [],
+      "motionEdits": []
+    }
+  }
+}

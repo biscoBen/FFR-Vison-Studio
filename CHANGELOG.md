@@ -12,13 +12,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 ## Unreleased
 
 - Add an independent **Repair native skill bindings / motions** testing checkbox. With Show unverified skills
-  on and Use our skill changes off, apply only audited same-skill repairs, starting with confirmed Cling.
+  on and Use our skill changes off, apply only audited same-skill repairs: Cling plus 20 additional demo entries.
   Keep donor effects, generic fallback timelines, Barrage trials and reviewed hiding rules off in this mode.
-  Remember all three flags across restarts; old settings default the new checkbox off. Extension 1.2.32.
+  Remember all three flags across restarts; old settings default the new checkbox off. Extension 1.2.33.
 - Include a read-only collector for all native battle timelines, skill routing tables, game mapping and asset
   inventory. Separate upload ZIPs go to Downloads/FFR Mod; no runtime loader or installation changes.
-  Broader native repairs await the returned reference audit. Borrowed Sephira preset visuals remain a separate
+  The returned five-part reference contains 1,407 assets. Borrowed Sephira preset visuals remain a separate
   switch and should also be off for a clean native-only test; saved kits and explicit custom presentations stay intact.
+- Audit 1,370 sequence packages and 277 directly bound raw catalog entries. Add 20 own-source player routes
+  alongside Cling, including native monster abilities and group spells. Nine of the new entries need motion/track
+  repairs; enable only their audited complete caster tracks and translate exact `atk` events to `attack_A`.
+  Preserve unused tracks, all effect/audio/hit constants and every original table row. Fingerprint the skill definition,
+  both source bindings and all package bytes; changed inputs skip the repair and report why. Future native routes
+  and explicit custom presentations take precedence. Existing routes and entries without direct bindings stay intact.
+  Only Cling has live confirmation; the additional 20 entries need game testing.
 
 ## Published Cling ally animation and native vision icons — 2026-10-16
 

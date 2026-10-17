@@ -31,6 +31,7 @@ sys.modules['_ffr_deck_sync'] = module('_ffr_deck_sync', ROOT / 'assets/existing
 sys.modules['_ffr_crystal_mesh'] = module('_ffr_crystal_mesh', ROOT / 'assets/existing_visions/payload/_ffr_crystal_mesh.py')
 sys.modules['_ffr_crystal_cave'] = module('_ffr_crystal_cave', ROOT / 'assets/existing_visions/payload/_ffr_crystal_cave.py')
 sys.modules['_ffr_ability_modes'] = module('_ffr_ability_modes', ROOT / 'assets/existing_visions/payload/_ffr_ability_modes.py')
+sys.modules['_ffr_native_skills'] = module('_ffr_native_skills', ROOT / 'assets/existing_visions/payload/_ffr_native_skills.py')
 native = module('native', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
 animation = module('animation', ROOT / 'assets/existing_visions/payload/_ffr_animation_repair.py')
 installer = module('native_installer', ROOT / 'assets/existing_visions/install_existing_visions.py')

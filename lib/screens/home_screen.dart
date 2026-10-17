@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                 CheckboxListTile(
                   key: const Key('native-skill-repairs'), contentPadding: EdgeInsets.zero,
                   title: Text('Repair native skill bindings / motions', style: Guide.text()),
-                  subtitle: Text('Uses the skill’s own effects and timing. Currently repairs Cling; more can be added after the native animation audit.', style: Guide.small()),
+                  subtitle: Text('Uses the skill’s own effects and timing. Repairs audited player bindings and caster motions without borrowing effects.', style: Guide.small()),
                   value: app.useNativeSkillRepairs,
                   onChanged: !app.showUnverifiedSkills || busy || app.api == null ? null : (value) async {
                     try { await app.setAbilityModes(useNativeRepairs: value == true); } catch (e) { app.showNotice('$e'); }

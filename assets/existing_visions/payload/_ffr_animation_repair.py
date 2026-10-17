@@ -1153,14 +1153,17 @@ def prepare_native_sequences(tables, clones, jobs, units, root, rows, extract, n
     """Apply audited same-skill repairs only; never enter donor/fallback code."""
     selected, preserved = repair_selection(units)
     cling = prepare_ally_cling(tables, clones, selected, root, rows, extract, native_support)
+    import _ffr_native_skills
+    repairs = _ffr_native_skills.prepare(tables, clones, selected, root, rows, extract, native_support)
+    if cling: repairs[cling['id']] = cling
     report = Path(root) / 'build/animation-repair-report.json'
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({'schema': 1, 'mode': 'native_repairs', 'inGameValidated': False,
-        'skills': [cling if cling and sid == cling['id'] else {'id': sid, 'status': 'original_game_bindings'}
+        'skills': [repairs.get(sid, {'id': sid, 'status': 'original_game_bindings'})
                    for sid in sorted(selected)], 'preservedNative': preserved}, indent=2) + '\n', encoding='utf-8')
     print('  Native binding/motion repairs only: original skill effects retained; donor effects and fallback timelines are off.')
     if cling: print('  Cling: private ally timeline 500911; native group effects/hit timing, attack_A/idle caster track.')
-    return [cling['id']] if cling else []
+    return [sid for sid, entry in sorted(repairs.items()) if entry['status'] == 'native_ally_variant']
 
 
 def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support=None):
@@ -1168,6 +1171,9 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
     units = [retire_comparison_skills(u) for u in units]
     selected, preserved = repair_selection(units)
     cling = prepare_ally_cling(tables, clones, selected, root, rows, extract, native_support)
+    import _ffr_native_skills
+    repairs = _ffr_native_skills.prepare(tables, clones, selected, root, rows, extract, native_support)
+    if cling: repairs[cling['id']] = cling
     by_id = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     native = None
     if native_support and selected:
@@ -1193,10 +1199,10 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
         details = '\n'.join(f'  {e["name"]} ({e["id"]}), donor {e["donorName"]} ({e["donor"]}): {e["reason"]}' for e in failures)
         raise ValueError(f'Could not prepare effects for {len(failures)} selected skills:\n{details}\n'
                          f'Full audit: {report}. Mod packing stopped; the installed mod is unchanged.')
-    repaired = [cling['id']] if cling else []; reused = []; coverage = []
+    repaired = [sid for sid, entry in sorted(repairs.items()) if entry['status'] == 'native_ally_variant']; reused = []; coverage = []
     for sid, owners in sorted(selected.items()):
-        if cling and sid == cling['id']:
-            coverage.append(cling); continue
+        if sid in repairs:
+            coverage.append(repairs[sid]); continue
         if sequence_present(sid, rows, tables):
             coverage.append({'id': sid, 'status': 'existing_sequence'}); continue
         recipes = [(u.get('skills') or {}).get(str(sid), (u.get('skills') or {}).get(sid)) for u in owners]
@@ -1289,7 +1295,7 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
             coverage.append({'id': sid, 'status': 'motion_fallback', 'nativeReason': reason,
                              **({'profileReason': profile_reason} if profile_reason else {})})
     for entry in coverage:
-        if entry['status'] == 'native_ally_variant':
+        if entry['status'] == 'native_ally_variant' and entry['id'] == 500910:
             print('  Cling: private ally timeline 500911 uses native group effects/hit timing and an enabled attack_A/idle caster track. In-game test pending.')
         elif entry['status'] == 'ffr_steal_motion_trial':
             print('  Steal FFR test: recipient approaches, uses its ready pose, resolves one original item theft, then returns to idle/position. Not a recovered Zidane-specific sequence.')

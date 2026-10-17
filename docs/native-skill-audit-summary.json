@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "date": "2026-10-16",
+  "game": "FINAL FANTASY RESONANCE DEMO",
+  "reference": "Native-Skill-Animation-Reference-20261016-171038-cabc96",
+  "scope": "Raw catalog includes hidden/internal variants. Missing direct bindings and disabled tracks alone do not prove a broken skill.",
+  "rawCatalogEntries": 1167,
+  "statusCounts": {
+    "native_route_present": 256,
+    "no_direct_binding": 890,
+    "enemy_only": 21
+  },
+  "boundEntries": 277,
+  "boundMissingPackages": 0,
+  "pendingDecodes": 0,
+  "boundWithCharacterImports": 7,
+  "sourceAssets": 1407,
+  "decodedSequencePackages": 1370,
+  "decodeOperations": 2747,
+  "repairedIds": [
+    500910,
+    505040,
+    500250,
+    500260,
+    500530,
+    500970,
+    501000,
+    506090,
+    580060,
+    580110,
+    580120,
+    245000,
+    255000,
+    255030,
+    255060,
+    255090,
+    255120,
+    255150,
+    255190,
+    245290,
+    245300
+  ],
+  "existingRoutesWithActiveAtk": [
+    {
+      "id": 210220,
+      "name": "Libra"
+    },
+    {
+      "id": 220060,
+      "name": "Blizzara"
+    },
+    {
+      "id": 220100,
+      "name": "Thundara"
+    },
+    {
+      "id": 220150,
+      "name": "Waterga"
+    },
+    {
+      "id": 220180,
+      "name": "Aerora"
+    },
+    {
+      "id": 220280,
+      "name": "Gravity"
+    },
+    {
+      "id": 225040,
+      "name": "Blizzara"
+    },
+    {
+      "id": 225070,
+      "name": "Thundara"
+    },
+    {
+      "id": 225110,
+      "name": "Waterga"
+    },
+    {
+      "id": 225130,
+      "name": "Aerora"
+    },
+    {
+      "id": 225180,
+      "name": "Poisonga"
+    },
+    {
+      "id": 500220,
+      "name": "Lightning Bolt"
+    },
+    {
+      "id": 500390,
+      "name": "Lightning"
+    },
+    {
+      "id": 500680,
+      "name": "Escape"
+    },
+    {
+      "id": 100230,
+      "name": "Ice Scroll II"
+    },
+    {
+      "id": 100240,
+      "name": "Wind Scroll II"
+    },
+    {
+      "id": 100260,
+      "name": "Lightning Scroll II"
+    }
+  ],
+  "note": "Existing native routes are retained. Cling live-confirmed; the 20 added own-source player routes need game testing."
+}

@@ -5,12 +5,13 @@ release history. Use the `Sephira's-Update` test packages to try these changes; 
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
 Native-only animation testing has its own **Repair native skill bindings / motions** checkbox. Turn on
-**Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode currently
-repairs Cling using its own effects/timing; other skills retain their native bindings pending the full reference audit.
+**Show unverified skills** and the new checkbox, and leave **Use our skill changes** off. This mode repairs
+21 audited demo entries, including Cling, using their own effects/timing. The additional 20 entries need live tests.
 For Sephira preset units, also turn **Use borrowed Sephira skill visuals** off to test without those preset substitutions.
 Rebuild/install and restart after changing modes. Existing saved kits and explicit custom presentations are retained.
 The read-only [native skill reference helper](scripts/reference/native-skill-animations/) collects all battle timelines
-and routing tables into separate ZIPs under Downloads/FFR Mod. Upload every part for the broader audit.
+and routing tables into separate ZIPs under Downloads/FFR Mod. The returned five-part collection was audited; see
+[the native repair cases and limits](docs/MONSTER_ANIMATION_COMPATIBILITY.md#full-native-reference-audit).
 
 Cling's missing ally timeline is repaired when **Show unverified skills** and either repair checkbox are on.
 Its original all-target effects, hit timing, sound and combat values are retained. The private copy enables only
@@ -365,7 +366,7 @@ controls. All default off and are saved with the engine's mod settings. The mode
 | On | On | Either | Full Studio skill repairs and 304 reviewed picker hides; includes native repairs. Ordinary summon commands remain available. |
 
 With Show unverified on and Use our changes off, the native-repair checkbox selects a fourth mode: apply only audited
-repairs to each skill's own timeline/binding/motion. It currently includes Cling. Donor effects, generic fallback
+repairs to each skill's own timeline/binding/motion. It includes 21 audited demo entries. Donor effects, generic fallback
 timelines, Barrage trials and reviewed hides remain off. Both repair checkboxes remember their state while Show
 unverified is off. If both are checked, the existing full-repair path applies, including its native repairs.
 Borrowed Sephira preset visuals are controlled separately; turn that switch off for a clean native-only test.
@@ -625,8 +626,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   native timelines/effects, MR/awakening assignments and source ownership. Native timelines take precedence over our
   fallback repairs. Reassess the 304 reviewed hides and original picker filters while retaining the three modes and
   descriptions/source labels. Do not assume every missing demo skill will be implemented. `Verified` currently
-  tracks an applied visual mapping, rather than observation of every skill in a running game. Recollect Cling's
-  missing ally route and disabled caster track before retaining its bridge. Refresh the five exact-definition
+  tracks an applied visual mapping, rather than observation of every skill in a running game. Recollect the 21 audited
+  native player routes and caster tracks before retaining their bridges; refresh the exact source fingerprints. Refresh the five exact-definition
   **Verified; demo test** records after full-game live testing, including group skills and party replacements;
   see [monster compatibility evidence](docs/MONSTER_ANIMATION_COMPATIBILITY.md).
   Preserve the independent native-repair mode and audit all returned native battle tracks before expanding its rules.
