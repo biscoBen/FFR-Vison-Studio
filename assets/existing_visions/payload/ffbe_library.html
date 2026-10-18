@@ -900,10 +900,17 @@
           for (const s of spritesAt(t)) {
             if (s.screen) continue;
             if (Math.abs(s.sx) > 5000 || Math.abs(s.sy) > 5000) continue;
-            x0 = Math.min(x0, s.x - Math.abs(s.sx) / 2);
-            x1 = Math.max(x1, s.x + Math.abs(s.sx) / 2);
-            y0 = Math.min(y0, s.y - Math.abs(s.sy) / 2);
-            y1 = Math.max(y1, s.y + Math.abs(s.sy) / 2);
+            const angle = ((s.part.rot || 0) * Math.PI) / 180,
+              width =
+                Math.abs(s.sx * Math.cos(angle)) +
+                Math.abs(s.sy * Math.sin(angle)),
+              height =
+                Math.abs(s.sx * Math.sin(angle)) +
+                Math.abs(s.sy * Math.cos(angle));
+            x0 = Math.min(x0, s.x - width / 2);
+            x1 = Math.max(x1, s.x + width / 2);
+            y0 = Math.min(y0, s.y - height / 2);
+            y1 = Math.max(y1, s.y + height / 2);
           }
         }
         return (state.bounds = {

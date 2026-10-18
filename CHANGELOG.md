@@ -17,14 +17,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Follow every recorded owner of a shared presentation. Selecting a source returns that source's exact original skill ID and labels its preview with the selected owner, even when the unfiltered library lists the shared animation under another unit. Preserve distinct character/monster sources and separately named unit versions.
 - Keep the same optional library download and existing archive bytes. Unattributed records remain in **All sources** and are not guessed into a unit's kit. Filtering and previewing change no game skills or saved roster data.
 - Correct Unei’s **Snowstorm** preview and the common composition path: draw rear groups behind the actors and front groups over them, preserving source order within each pass. Screen-anchored effects use their authored flat backdrop as a separate viewport reference instead of being fitted into the unit scene. This prevents large fog walls from shrinking the actors and exposes fewer rectangular plate borders; source camera motion and 3D projection still remain approximate.
-- Reuse cached particle frames and texture PNGs when upgrading preview projection metadata. Preserve source shader/blend values, timelines, sounds, original archives and game assignments.
+- Preserve each mesh’s authored pivot after projecting it into a centred bitmap, including signed scale, rotation and mirroring. Apply this to every mesh-based library preview rather than patching a named spell. The source audit finds 529 off-centre meshes among 875 original mesh files; this is a structural audit, not visual verification of every skill. Include rotated sprite corners in the preview bounds so diagonal effects are not cropped by unrotated framing.
+- Upgrade existing v15 particle draw positions without regenerating texture PNGs when sprite counts, texture indices and every non-position field still match. Re-render if that compatibility check fails. Original shader values, timelines, sounds, archives and game assignments stay intact.
+- Keep the remaining rendering limit explicit: these shared corrections do **not** certify every skill as visually identical to FFBE. Source camera motion, mixed-axis 3D transforms and other unsupported particle behavior still need native comparisons; the apparent Snowstorm wind edge is not a verified one-for-one match.
 
 
 
-Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **474 Python checks**
-(seven skipped), all archived member hashes and Chromium browser checks pass. Browser checks cover 3,370 source choices,
-exact Agrias ownership/shared Cura, Cactuar filtering, pagination/reset, four Snowstorm effects, cached-texture reuse,
-and actual canvas pixels proving rear → actor → foreground alpha compositing. Windows packaging is pending.
+Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **477 Python checks**
+(seven skipped), focused source/cache/particle checks and Chromium checks pass. Windows packaging is pending.
+Browser checks cover 3,370 source choices, exact Agrias ownership/shared Cura, Cactuar filtering, pagination/reset,
+four Snowstorm effects, mesh-pivot cache upgrades, rotated framing and actual canvas pixels proving rear → actor →
+foreground alpha compositing. The mesh-origin audit parses all 875 original models without errors.
 
 ### Consolidated original-enemy missing visuals — 2026-10-17
 

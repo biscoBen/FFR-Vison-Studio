@@ -1363,38 +1363,51 @@ def _node_transform(chain: List[Chunk], frame: int, effect_dur: int, instance_st
     return result + (point_matrix,) if return_matrix else result
 
 
-_MODEL_CACHE: Dict[str, Optional[List[float]]] = {}
+_MODEL_CACHE = {}
 
 
-def model_half_extent(name: Optional[str], search_dirs, rx=0., ry=0.) -> Tuple[float, float]:
-    """Half the XY extent of a .m3r mesh, i.e. its radius in world units.
+def model_projection(name, search_dirs, rx=0., ry=0.):
+    """Projected mesh centre and half extent; retain the authored origin.
 
-    The overwhelmingly common mesh is a unit quad spanning -1..+1, whose half
-    extent is 1.0, so multiplying by this is a no-op for ordinary sprites and
-    only matters for the genuinely large meshes (e.g. model_aura_047 is
-    160 x 201, so a lightning emitter scaled 0.01 x 1.0 is a 0.8 x 100 bolt,
-    not a 0.01-unit dot)."""
+    The generated bitmap is centred on its projected bounding box, which may
+    be offset from the model's origin. Its draw position needs the same offset
+    after scaling, mirroring and rotation. Recentring only the pixels separates
+    adjoining mesh emitters and leaves apparent cuts between their layers.
+    """
     if not name:
-        return (1.0, 1.0)
-    key = (name, rx, ry)
+        return ((0., 0.), (1., 1.))
+    key = (name, tuple(map(os.fspath, search_dirs)), rx, ry)
     if key not in _MODEL_CACHE:
-        ext = None
-        for d in search_dirs:
-            p = os.path.join(d, name + ".m3r")
-            if os.path.exists(p):
-                try:
-                    m = parse_m3r(p)
-                    if m["vertexCount"]:
-                        points = project_mesh_vertices(m, rx, ry)
-                        ext = [(max(p[a] for p in points)-min(p[a] for p in points))/2 for a in (0,1)]
-                except Exception:
-                    ext = None
-                break
-        _MODEL_CACHE[key] = ext
-    ext = _MODEL_CACHE[key]
-    if not ext:
-        return (1.0, 1.0)
-    return (ext[0] or 1.0, ext[1] or 1.0)
+        projection = ((0., 0.), (1., 1.))
+        for directory in search_dirs:
+            path = os.path.join(directory, name + '.m3r')
+            if not os.path.isfile(path):
+                continue
+            try: mesh = parse_m3r(path)
+            except (OSError,ValueError,struct.error): break
+            if mesh['vertices']:
+                points = project_mesh_vertices(mesh, rx, ry)
+                low = [min(p[a] for p in points) for a in (0, 1)]
+                high = [max(p[a] for p in points) for a in (0, 1)]
+                projection = (tuple((a+b)/2 for a,b in zip(low,high)),
+                              tuple((b-a)/2 or 1. for a,b in zip(low,high)))
+            break
+        _MODEL_CACHE[key] = projection
+    return _MODEL_CACHE[key]
+
+
+def model_half_extent(name, search_dirs, rx=0., ry=0.):
+    return model_projection(name, search_dirs, rx, ry)[1]
+
+
+def mesh_position(position, size, projection, rotation=0., mirror=False):
+    """Place a centred bitmap at the original mesh's transformed centre."""
+    centre, half = projection
+    dx = centre[0] * size[0] / (2 * half[0]) * (-1 if mirror else 1)
+    dy = centre[1] * size[1] / (2 * half[1])
+    angle = math.radians(rotation)
+    return [position[0] + dx*math.cos(angle) - dy*math.sin(angle),
+            position[1] + dx*math.sin(angle) + dy*math.cos(angle), position[2]]
 
 
 # Sizes.  Every size in the file -- an emitter's base size, a scale curve, a
@@ -1408,7 +1421,7 @@ SIZE_IS_HALF_EXTENT = True
 
 # Bump when bake() output changes meaning (sizes, colour, timing); layer_spec re-renders cached docs with an older stamp.
 # 3 = v26: half extents, colour slot 19, per-axis curves, radial streaks, repeat / interval.
-BAKE_VERSION = 15
+BAKE_VERSION = 16
 
 
 def _axis_mode(cur: Curve, i: int) -> str:
@@ -2010,6 +2023,9 @@ def bake(eff: Effect, max_frames: int = 600, max_particles: int = 64,
                 # under ordinary alpha blending. Keep texture/global alpha.
                 col = [0., 0., 0.]
                 vertex_colors = None
+
+            if em.model:
+                pos = mesh_position(pos, sc, model_projection(em.model, dirs, *tilt), rot, mirror)
 
             # UV mirror tiling: mode 2 covers the quad with a tx x ty mirrored
             # copy of the texture, so a quarter-authored arc becomes a full

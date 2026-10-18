@@ -228,24 +228,48 @@ class Library:
         if not str(identity).isdigit(): raise ValueError('Invalid effect ID.')
         effects=self.document('effects.json'); effect=effects.get(str(identity))
         if not effect: raise ValueError('No such FFBE effect.')
-        output=self.cache/(str(identity)+'.v2.json.gz')
+        output=self.cache/(str(identity)+'.v3.json.gz')
         if output.exists():return output.read_bytes()
         with _LOCK:
             if output.exists():return output.read_bytes()
-            previous=self.cache/(str(identity)+'.json.gz')
-            if previous.exists():
-                # Reuse already rendered textures when upgrading preview metadata.
+            previous=next((self.cache/(str(identity)+suffix) for suffix in ('.v2.json.gz','.json.gz')
+                           if (self.cache/(str(identity)+suffix)).exists()),None)
+            if previous:
                 result=json.loads(gzip.decompress(previous.read_bytes()))
                 if effect['type']=='5':
                     ibmb=renderer();path=self.materialize('raw/'+effect.get('asset',effect['file'].split(':')[0]))
-                    if path:result['screenReference']=self.screen_reference(ibmb._library_raw_parse(path),result)
-            elif effect['type'] == '1': result=self.sprite_simulation(effect)
+                    original=ibmb._library_raw_parse(path) if path else None
+                    if original is not None:
+                        if result.get('bakeVersion')==15:
+                            for name in [*(x+'.png' for x in original.textures),*(x+'.m3r' for x in original.models),
+                                         *self.document('bmb-dependencies.json').get(path.name,[])]:
+                                self.materialize('raw/'+name)
+                            try: original=ibmb.parse(path)
+                            except (ValueError,FileNotFoundError):pass
+                            fresh=ibmb.bake(original,max_frames=MAX_FRAMES,max_particles=256,model_dirs=[str(path.parent)])
+                            if self.reusable_mesh_pixels(result,fresh):
+                                result['frames']=fresh['frames'];result['bakeVersion']=fresh['bakeVersion']
+                            else:result=self.particle_simulation(effect)
+                        else:result=self.particle_simulation(effect)
+                        result['screenReference']=self.screen_reference(original,result)
             elif effect['type'] == '5': result=self.particle_simulation(effect)
+            elif effect['type'] == '1': result=self.sprite_simulation(effect)
             else: result={'frames':[],'textures':[],'warnings':['This source effect is a control command.'],'fps':60,'durationDeclared':0}
             raw=json.dumps(result,allow_nan=False,separators=(',',':')).encode()
             data=gzip.compress(raw,compresslevel=5)
             self.cache.mkdir(parents=True,exist_ok=True);temporary=output.with_suffix('.part');temporary.write_bytes(data);temporary.replace(output)
             return data
+
+    @staticmethod
+    def reusable_mesh_pixels(previous,fresh):
+        # v16 changes draw positions only. Refuse frame/texture-order changes
+        # before retaining v15's expensive, already rendered mesh PNGs.
+        if len(previous['textures'])!=len(fresh['textures']) or len(previous['frames'])!=len(fresh['frames']):return False
+        for old,new in zip(previous['frames'],fresh['frames']):
+            if len(old)!=len(new):return False
+            for a,b in zip(old,new):
+                if {k:v for k,v in a.items() if k!='pos'}!={k:v for k,v in b.items() if k!='pos'}:return False
+        return True
 
     def particle_simulation(self, effect):
         ibmb = renderer()

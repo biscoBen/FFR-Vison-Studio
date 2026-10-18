@@ -66,6 +66,23 @@ const output = process.argv[3];
     });
     if (snowstorm.effects.length !== 4 || snowstorm.warnings || !snowstorm.screen || !snowstorm.rear) throw Error('Snowstorm layers unavailable');
     if (output) await page.screenshot({ path: path.join(output, 'snowstorm-layering.png'), fullPage: true });
+    // Rotated wide meshes must fit by their transformed corners, rather than
+    // their unrotated dimensions. This used to crop both ends of tall slashes.
+    const framing = await page.evaluate(() => {
+      state.detail = { variants: [[{ frame: 0, flags: ['1', '1'], effects: [{ frame: 0, effectId: 'wide', flags: [] }] }]],
+        effects: { wide: { scale: 1 } } };
+      state.effects = { wide: { textures: [null], frames: [[{ tex: 0, pos: [0, 0, 0], scale: [1800, 60], rot: 73 }]] } };
+      state.duration = 1; state.bounds = null;
+      const b = bounds(), corners = [];
+      for (const x of [-900, 900]) for (const y of [-30, 30]) {
+        const a = 73 * Math.PI / 180,
+          wx = -220 + x * Math.cos(a) - y * Math.sin(a),
+          wy = -30 + x * Math.sin(a) + y * Math.cos(a);
+        corners.push([480 + (wx - b.x) * b.scale, 300 - (wy - b.y) * b.scale]);
+      }
+      if (corners.some(([x,y]) => x < 49 || x > 911 || y < 49 || y > 551)) throw Error('Rotated mesh clipped: ' + JSON.stringify(corners));
+      return corners;
+    });
     // Deliberately put a foreground effect first in the source timeline. Pixel
     // results must show rear red, then green actors, then a half-alpha blue hit.
     const pixels = await page.evaluate(async () => {
@@ -98,6 +115,6 @@ const output = process.argv[3];
     if (pixels.target[0] || Math.abs(pixels.target[1] - 127) > 1 || Math.abs(pixels.target[2] - 128) > 1 ||
       pixels.caster.join() !== '0,255,0,255' || pixels.rear.join() !== '255,0,0,255') throw Error('Incorrect compositing ' + JSON.stringify(pixels));
     if (errors.length) throw Error(errors.join('\n'));
-    console.log(JSON.stringify({ sources: 3370, snowstorm, pixels, errors }, null, 2));
+    console.log(JSON.stringify({ sources: 3370, snowstorm, framing, pixels, errors }, null, 2));
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

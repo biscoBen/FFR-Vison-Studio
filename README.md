@@ -50,7 +50,9 @@ actual skill record. Sources come from the archived FFBE ownership links; unattr
 The same update corrects **Unei → Snowstorm** layering: rear effects draw behind the units, foreground effects draw
 over them, and screen-wide backdrops use a separate viewport projection. Original effect files, sound and blend values
 are retained. The library still approximates source camera motion/3D projection rather than reproducing FFBE's engine.
-Existing preview textures are reused when adding the new projection metadata.
+Mesh previews also retain their authored pivot through rotation/mirroring, and preview framing includes rotated corners.
+Compatible cached texture PNGs are reused while draw positions upgrade. These common fixes apply throughout the library;
+they do not establish that all 45,478 presentations match FFBE exactly, and the Snowstorm wind edge still needs a native comparison.
 
 The APK and its delivery catalogs are SHA-pinned; original master rows, BMB/PNG/M3R/CGG/CGS dependencies,
 source variants, USM cinematics and SE/System sound banks are retained. The page includes **1,011** cue records

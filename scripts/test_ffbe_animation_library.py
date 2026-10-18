@@ -115,16 +115,35 @@ class LibraryTests(unittest.TestCase):
             reference=self.library.screen_reference(SimpleNamespace(chunks=chunks),baked)
         self.assertEqual(reference,{'emitter':4,'center':[0,0],'size':[700,800]})
 
-    def test_preview_cache_upgrade_reuses_existing_frames_and_texture_urls(self):
+    def test_preview_cache_upgrade_moves_meshes_without_rerendering_pixels(self):
         self.library.cache.mkdir(parents=True)
-        old={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10]}]],
+        old={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10]}]],'bakeVersion':15,
              'textures':[{'url':'/api/ffbe-library/preview-texture/kept.png'}],'warnings':[]}
-        (self.library.cache/'1002460.json.gz').write_bytes(gzip.compress(json.dumps(old).encode()))
+        fresh={**copy.deepcopy(old),'textures':['nativeuv:original mesh key'],'bakeVersion':16}
+        fresh['frames'][0][0]['pos']=[4,7,0]
+        (self.library.cache/'1002460.v2.json.gz').write_bytes(gzip.compress(json.dumps(old).encode()))
         reference={'emitter':1,'center':[0,0],'size':[700,800]}
-        with patch.object(self.library,'particle_simulation',side_effect=AssertionError('Unnecessary rebake')), \
+        ibmb=lib.renderer()
+        with patch.object(self.library,'particle_simulation',side_effect=AssertionError('Unnecessary pixel rebake')), \
+                patch.object(ibmb,'bake',return_value=fresh), \
                 patch.object(self.library,'screen_reference',return_value=reference):
             result=json.loads(gzip.decompress(self.library.simulation('1002460')))
-        self.assertEqual(result,{**old,'screenReference':reference})
+        self.assertEqual(result,{**old,'frames':fresh['frames'],'bakeVersion':16,'screenReference':reference})
+        with patch.object(ibmb,'bake',side_effect=AssertionError('Cache upgrade repeated')):
+            self.assertEqual(json.loads(gzip.decompress(self.library.simulation('1002460'))),result)
+
+    def test_cache_upgrade_rejects_changes_beyond_mesh_position(self):
+        base={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10],'alpha':.5}]],'textures':['first']}
+        for mutation in ('size','alpha','order','frames','textures'):
+            changed=copy.deepcopy(base)
+            if mutation=='size':changed['frames'][0][0]['scale'][0]=11
+            elif mutation=='alpha':changed['frames'][0][0]['alpha']=1
+            elif mutation=='order':changed['frames'][0][0]['tex']=1
+            elif mutation=='frames':changed['frames'].append([])
+            else:changed['textures'].append('second')
+            with self.subTest(mutation=mutation):self.assertFalse(self.library.reusable_mesh_pixels(base,changed))
+        moved=copy.deepcopy(base);moved['frames'][0][0]['pos']=[4,8,2]
+        self.assertTrue(self.library.reusable_mesh_pixels(base,moved))
 
     def test_pack_corruption_and_unknown_files_are_rejected(self):
         with self.assertRaises(ValueError):self.library.read('../../config.json')
