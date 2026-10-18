@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/services/bundled_features.dart';
-import 'package:ffr_vision_studio/services/ffbe_animation_library.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -61,19 +60,17 @@ void main() {
       await features.prepareEngine(paths, engineRunning: false);
       expect(material.existsSync(), isTrue);
       expect(roster.readAsBytesSync(), before);
-      await FfbeAnimationLibrary().prepare(
-        paths,
-        readAsset: (path) => File(path).readAsBytes(),
-      );
-      expect(roster.readAsBytesSync(), before);
       final state = json.decode(
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.43');
+      expect(state['version'], '1.2.44');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_ffbe_library.py',
+        '_ffr_ffbe_download.py',
+        'ffbe_library_manifest.json',
+        'ffbe_library_browser.zip',
         '_ffr_ffbe_renderer.py',
         '_ffr_ffbe_texture.py',
         '_ffr_ffbe_placement.py',
@@ -168,12 +165,32 @@ for model, entry in _ffr_overworld.catalog()['models'].items():
     with Image.open(io.BytesIO(_ffr_overworld.asset_bytes(entry, 'icon'))) as image:
         assert image.width > 0
 import gzip, json
-import _ffr_ffbe_library
+import _ffr_ffbe_library, _ffr_ffbe_download
+assert not (root/'library/ffbe/manifest.json').exists()
+requests=[]
+class LocalResponse:
+    status=200
+    headers={}
+    def __init__(self,path):self.stream=path.open('rb')
+    def __enter__(self):return self
+    def __exit__(self,*args):self.stream.close()
+    def read(self,n):return self.stream.read(n)
+pack_source=Path(${json.encode(Directory('assets/ffbe_library').absolute.path)})
+def offline_transport(request,**kwargs):
+    requests.append(request.full_url)
+    return LocalResponse(pack_source/request.full_url.rsplit('/',1)[1])
+installation=_ffr_ffbe_download.Installation(root,opener=offline_transport)
+assert installation.status()['ready'] is False and requests == []
+installation.start()
+installation.thread.join(120)
+assert installation.status()['ready'],installation.status()
+assert len(requests)==56
 library_app = FastAPI()
 _ffr_ffbe_library.register(library_app, {'ROOT': str(root)})
 route = {r.path:r.endpoint for r in library_app.routes if hasattr(r, 'endpoint')}
 summary = route['/api/ffbe-library/catalog'](q='1,000 Needles')
 assert summary['summary']['skills'] == 65428 and summary['total'] > 0
+assert all('sourceLabel' in r for r in summary['items'])
 library = _ffr_ffbe_library.Library(root)
 effect = json.loads(gzip.decompress(library.simulation('1002460')))
 assert effect['warnings'] == [] and len(effect['textures']) == 3

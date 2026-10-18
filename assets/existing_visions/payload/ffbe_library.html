@@ -305,14 +305,34 @@
         </details>
       </div>
     </header>
-    <main>
+    <section
+      id="installation"
+      style="
+        max-width: 650px;
+        margin: 60px auto;
+        padding: 26px;
+        background: var(--paper);
+        border: 2px solid var(--ink);
+      "
+    >
+      <h2>Animation library</h2>
+      <p id="install-message">Checking your downloaded library…</p>
+      <progress id="download-progress" hidden style="width: 100%"></progress>
+      <p id="download-status" role="status"></p>
+      <button id="download-library" class="primary" hidden>
+        Download library
+      </button>
+      <button id="download-later" hidden>Not now</button>
+      <button id="download-cancel" hidden>Pause download</button>
+    </section>
+    <main id="workspace" hidden>
       <aside>
         <div class="band">Find an animation</div>
         <div class="filters">
           <input
             id="query"
             type="search"
-            placeholder="Search names, IDs or effect filenames"
+            placeholder="Search skills, FFBE characters or monsters"
             aria-label="Search animations"
           />
           <div class="pair">
@@ -359,6 +379,13 @@
           ></canvas>
           <div id="status" aria-live="polite"></div>
           <div class="controls">
+            <label
+              >Caster
+              <select id="caster">
+                <option value="character">Christine</option>
+                <option value="monster">Cactuar</option>
+              </select></label
+            >
             <button id="play" class="primary" disabled>Play preview</button
             ><button id="stop" disabled>Stop</button
             ><label><input id="sound" type="checkbox" checked /> Sound</label
@@ -466,8 +493,8 @@
         scheduled: [],
         bounds: null,
       };
-      async function api(path) {
-        const r = await fetch(path);
+      async function api(path, method = "GET") {
+        const r = await fetch(path, { method });
         if (!r.ok) {
           let message;
           try {
@@ -523,8 +550,8 @@
             const info = document.createElement("small");
             info.textContent =
               (labels[entry.kind] || entry.kind) +
-              " · " +
-              entry.id +
+              " · Source: " +
+              entry.sourceLabel +
               (entry.hasAnimation ? "" : " · No animation reference");
             button.append(info);
             button.onclick = () => select(entry);
@@ -541,7 +568,7 @@
           const s = result.summary;
           text(
             "totals",
-            `${s.skills.toLocaleString()} skill records · ${s.groups.toLocaleString()} effect groups\n${s.soundCues.toLocaleString()} sound cues · Saved locally`,
+            `${s.uniqueSkills.toLocaleString()} distinct skill presentations · ${s.skills.toLocaleString()} source records\n${s.soundCues.toLocaleString()} sound cues · Saved locally`,
           );
           text(
             "coverage",
@@ -600,7 +627,12 @@
         $("empty").style.display = "none";
         $("detail").style.display = "block";
         text("title", entry.name);
-        text("metadata", `${labels[entry.kind]} · FFBE ID ${entry.id}`);
+        text(
+          "metadata",
+          `${labels[entry.kind]} · Source: ${entry.sourceLabel}${entry.equivalentCount > 1 ? ` · Shared by ${entry.equivalentCount} source records` : ""}`,
+        );
+        $("caster").value =
+          entry.sourceType === "monster" ? "monster" : "character";
         warnings([]);
         $("play").disabled = true;
         $("seek").disabled = true;
@@ -824,6 +856,53 @@
         });
       }
       const ctx = $("stage").getContext("2d");
+      const actors = { meta: null, images: {} };
+      function sceneDirection() {
+        return $("caster").value === "monster" ? -1 : 1;
+      }
+      function actorFrame(actor, time) {
+        const total = actor.durations.reduce((a, b) => a + b, 0);
+        let at = ((time % total) + total) % total;
+        for (let i = 0; i < actor.frames; i++) {
+          if (at < actor.durations[i]) return i;
+          at -= actor.durations[i];
+        }
+        return 0;
+      }
+      function drawActor(kind, x, y, time, point, ppu, target = false) {
+        const actor = actors.meta?.[kind],
+          image = actors.images[kind];
+        if (!actor || !image) return;
+        const frame = actorFrame(actor, time),
+          height = actor.heightInScene * ppu,
+          width = (actor.width / actor.height) * height;
+        const [cx, cy] = point(x, y),
+          [fx, fy] = point(x, y - actor.heightInScene / 2);
+        ctx.save();
+        ctx.fillStyle = "#0005";
+        ctx.beginPath();
+        ctx.ellipse(fx, fy, 25 * ppu, 7 * ppu, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.imageSmoothingEnabled = false;
+        const hits = (state.detail?.entry.hits || "")
+          .split(/[@-]/)
+          .map((h) => Number(h.split(":")[0]) / 60);
+        const hit =
+          target && hits.some((h) => h > 0 && Math.abs(time - h) < 0.055);
+        if (hit) ctx.filter = "brightness(2)";
+        ctx.drawImage(
+          image,
+          (frame % actor.columns) * actor.width,
+          Math.floor(frame / actor.columns) * actor.height,
+          actor.width,
+          actor.height,
+          cx - width / 2 + (hit ? 2 * ppu : 0),
+          cy - height / 2,
+          width,
+          height,
+        );
+        ctx.restore();
+      }
       const imageCache = new Map();
       const tintedTextures = new Map();
       function tinted(image, textureUrl, color) {
@@ -856,7 +935,10 @@
         const b = bounds(),
           ppu = b.scale * Number($("zoom").value);
         function point(x, y) {
-          return [480 + (x - b.x) * ppu, 300 - (y - b.y) * ppu];
+          return [
+            480 + (x - b.x) * ppu * sceneDirection(),
+            300 - (y - b.y) * ppu,
+          ];
         }
         ctx.strokeStyle = "#29424a";
         ctx.lineWidth = 1;
@@ -875,15 +957,29 @@
         ctx.font = "15px system-ui";
         ctx.textAlign = "center";
         ctx.fillStyle = "#9aaeb4";
-        for (const [x, y, label] of [
-          [220, -30, "Caster"],
-          [-220, -30, "Target"],
+        const casterKind = sceneDirection() === 1 ? "character" : "monster",
+          targetKind = casterKind === "character" ? "monster" : "character";
+        drawActor(casterKind, 220, -30, time, point, ppu);
+        const targets =
+          Number($("targets").value) === 3
+            ? [
+                [-220, -110],
+                [-270, -20],
+                [-170, 50],
+              ]
+            : [[-220, -30]];
+        for (const [x, y] of targets)
+          drawActor(targetKind, x, y, time, point, ppu, true);
+        for (const [x, kind, role] of [
+          [220, casterKind, "Caster"],
+          [-220, targetKind, "Target"],
         ]) {
-          const [p, q] = point(x, y);
-          ctx.beginPath();
-          ctx.arc(p, q, 6, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillText(label, p, q + 25);
+          const [px, py] = point(x, -145);
+          ctx.fillText(
+            `${actors.meta?.[kind]?.name || kind} · ${role}`,
+            px,
+            py,
+          );
         }
         for (const s of spritesAt(time)) {
           if (!s.texture) continue;
@@ -898,9 +994,9 @@
           if (w < 0.2 || h < 0.2 || w > 12000 || h > 12000) continue;
           ctx.save();
           ctx.translate(x, y);
-          ctx.rotate((-(s.part.rot || 0) * Math.PI) / 180);
+          ctx.rotate((-(s.part.rot || 0) * Math.PI * sceneDirection()) / 180);
           ctx.scale(
-            (s.part.flipX ? -1 : 1) * Math.sign(s.sx || 1),
+            (s.part.flipX ? -1 : 1) * Math.sign(s.sx || 1) * sceneDirection(),
             (s.part.flipY ? -1 : 1) * Math.sign(s.sy || 1),
           );
           ctx.globalAlpha = Math.max(0, Math.min(1, s.part.alpha ?? 1));
@@ -1075,6 +1171,7 @@
       $("sound").onchange = () => {
         if (state.playing) play(state.position);
       };
+      $("caster").onchange = () => draw(state.position);
       $("targets").onchange = () => {
         state.bounds = null;
         draw(state.position);
@@ -1084,7 +1181,92 @@
         if (document.hidden) stop();
       });
       window.addEventListener("beforeunload", stop);
-      search();
+      let galleryStarted = false,
+        installTimer;
+      const sizeLabel = (n) => (n / 1e9).toFixed(2) + " GB";
+      async function enterGallery() {
+        if (galleryStarted) return;
+        actors.meta = await api("/api/ffbe-library/actors");
+        await Promise.all(
+          Object.entries(actors.meta).map(async ([key, actor]) => {
+            const img = new Image();
+            await new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = reject;
+              img.src = "/api/ffbe-library/actor/" + actor.file;
+            });
+            actors.images[key] = img;
+          }),
+        );
+        $("installation").hidden = true;
+        $("workspace").hidden = false;
+        galleryStarted = true;
+        await search();
+      }
+      async function installationStatus() {
+        clearTimeout(installTimer);
+        try {
+          const installed = await api("/api/ffbe-library/installation");
+          if (installed.ready) {
+            await enterGallery();
+            return;
+          }
+          $("installation").hidden = false;
+          $("workspace").hidden = true;
+          const running = installed.running;
+          $("download-library").hidden = running;
+          $("download-later").hidden = running;
+          $("download-cancel").hidden = !running;
+          $("download-progress").hidden = !running;
+          $("download-progress").max = installed.totalBytes;
+          $("download-progress").value = installed.bytesDone;
+          text(
+            "install-message",
+            running
+              ? "Downloading the animation library. Verified files are kept if you pause."
+              : `Download the optional FFBE animation library (${sizeLabel(installed.totalBytes)})? It is stored separately and reused across Studio updates.`,
+          );
+          text(
+            "download-status",
+            installed.error ||
+              (running
+                ? `${sizeLabel(installed.bytesDone)} / ${sizeLabel(installed.totalBytes)} · ${installed.filesDone}/${installed.totalFiles} files`
+                : "Nothing downloads until you choose Download library."),
+          );
+          text(
+            "download-library",
+            installed.filesDone
+              ? "Resume / repair library"
+              : "Download library",
+          );
+          if (running) installTimer = setTimeout(installationStatus, 1000);
+        } catch (e) {
+          text("download-status", e.message);
+          $("download-library").hidden = false;
+          $("download-library").disabled = false;
+        }
+      }
+      $("download-library").onclick = async () => {
+        $("download-library").disabled = true;
+        try {
+          await api("/api/ffbe-library/download", "POST");
+          await installationStatus();
+        } catch (e) {
+          text("download-status", e.message);
+        } finally {
+          $("download-library").disabled = false;
+        }
+      };
+      $("download-cancel").onclick = async () => {
+        await api("/api/ffbe-library/download/cancel", "POST");
+        await installationStatus();
+      };
+      $("download-later").onclick = () =>
+        text(
+          "download-status",
+          "No download started. You can close this tab and return whenever you want.",
+        );
+      installationStatus();
       tick();
     </script>
   </body>

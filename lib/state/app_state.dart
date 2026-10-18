@@ -9,7 +9,6 @@ import '../services/api.dart';
 import '../services/acquisition_locations.dart';
 import '../services/acquisition.dart';
 import '../services/bundled_features.dart';
-import '../services/ffbe_animation_library.dart';
 import '../services/character_config.dart';
 import '../services/crystal_fina.dart';
 import '../services/downloader.dart';
@@ -216,10 +215,6 @@ class AppState extends ChangeNotifier {
     await engine?.stop();
     s.detail = 'Preparing bundled units'; notifyListeners();
     await features.prepareEngine(paths, engineRunning: engine?.running ?? false);
-    s.detail = 'Preparing the FFBE animation library'; notifyListeners();
-    await FfbeAnimationLibrary().prepare(paths, onProgress: (done, total) {
-      s.detail = 'Preparing FFBE animation library ($done/$total)'; notifyListeners();
-    });
     final day = DateTime.now().toIso8601String().substring(0, 10);
     engine = Engine(
       paths.engineExe,

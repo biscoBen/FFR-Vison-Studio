@@ -17,13 +17,25 @@ Original particle rendering/game conversion parity remains unverified. Full vali
 Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
 Retest the recorded original-enemy failures then before adding further demo-specific repairs.
 
-Home's **FFBE animation library** button opens a local browser page. Browse all **65,428** Memorial skill
-records, their separate IDs and conditional timelines, **15,674** effect groups, **8,779** effect definitions,
-and **90** available cinematics. Search by name, ID or effect filename; filter magic, abilities,
-monster skills, limit bursts or summons. Enable **Include records without animation references** to see passive
-and other records without visual timelines. Use the original sound, speed, target-count and conditional controls
-for previews; cinematic clips have their own playback controls and embedded sound. Everything stays in this
-separate source library: browsing makes no changes to units, saved kits, mod inputs or installed game files.
+Home's **FFBE animation library** button opens a local browser page. The next update separates the optional
+**1.99 GB** source download from the Studio app: the page checks existing files, then asks **Download library / Not now**
+if needed. Normal startup downloads nothing. Progress, pause/resume and checksum repair reuse completed files;
+existing installations from the earlier bundled library are recognized automatically. App updates keep the data under
+`engine/library/ffbe/`; previews are cached separately under `engine/build/ffbelib1/`.
+
+Browse **45,478** distinct skill presentations backed by all **65,428** retained Memorial master records,
+**15,674** effect groups, **8,779** effect definitions and **90** cinematics. Entries show an actual character,
+monster or esper source name; ownership comes from original grant/skill-set records. Unlinked entries explicitly
+say **Unattributed FFBE source**. Search finds skills and all associated source names. Matching presentations use
+the first known source; monster/character versions and differences in animation files, timing, targeting, sound or
+cinematics stay separate. Original IDs/aliases remain retained for future conversion.
+
+Use animated **Christine 6★** and **Cactuar** as caster/target, swap the caster and choose one or three targets.
+Christine uses her FFBE idle; Cactuar uses the supplied Resonance demo idle. Original hit times flash the target.
+Filter magic, abilities, monster skills, limit bursts or summons. Enable **Include records without animation references**
+to see passive and other records without visual timelines. Sound, speed, seeking, zoom and conditional controls remain
+available; cinematics have their own controls and embedded sound. Browsing makes no changes to units, kits, mod inputs
+or installed game files.
 
 The APK and its delivery catalogs are SHA-pinned; original master rows, BMB/PNG/M3R/CGG/CGS dependencies,
 source variants, USM cinematics and SE/System sound banks are retained. The page includes **1,011** cue records
@@ -40,10 +52,9 @@ emitter and does not prove exact FFBE rendering or later Resonance conversion. O
 
 This includes the four standalone first/second-part limit-burst clips indexed separately from their full-film references.
 
-The offline library adds **1.99 GB** to the package. Studio stages verified packs under `engine/library/ffbe/`
-on first launch and caches previews under `engine/build/ffbelib1/`; expect extra first-start time and a second
-local copy of the packs. Subsequent starts reuse valid packs. The normal engine remains checksum-pinned and
-unchanged; library inspection uses a private renderer based on the
+The source packs are published independently under the stable `ffbe-library-memorial-en-v208-1` release.
+Studio carries a small trusted manifest and browser metadata; future app updates reuse these immutable source packs.
+The normal engine remains checksum-pinned. Library inspection uses a private renderer based on the
 [pinned upstream effect tools](https://github.com/FFBE-JP-Translation/FFR-Vison-Studio/tree/990f2ccab25a6132b0bb3b217420899f6d0e38d9/mod-tools/tools/ffbe_effects),
 with ordered placement/native UV support. No external converter is required for browsing.
 
@@ -56,7 +67,11 @@ python scripts/prepare_ffbe_library_audio.py --source <source> --work <work> --e
 python scripts/prepare_ffbe_library_movies.py --source <source> --work <work>
 python scripts/build_ffbe_animation_library.py --source <source> --work <work> --extract
 python scripts/verify_ffbe_animation_library.py
+python scripts/build_ffbe_library_browser.py --source <source> --actors <original-idle-sprites>
 ```
+
+The browser overlay takes the original `christine.webp` (401002606) and native `cactuar-native.png` idle
+sheet. Its metadata records their source hashes and the master-table hashes used for ownership.
 
 The APK is inspected rather than executed; source downloads use only its verified delivery URLs/ranges. Normal
 Studio use needs none of these developer dependencies. Game assets retain their original ownership.

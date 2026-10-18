@@ -105,6 +105,49 @@ class LibraryTests(unittest.TestCase):
         path=self.library.directory/'library-01.zip';path.write_bytes(path.read_bytes()+b'changed')
         with self.assertRaisesRegex(ValueError,'changed|checksum'):self.library.read('catalog.json')
 
+    def test_identical_presentations_use_first_owner_and_retain_alias_search(self):
+        skill=copy.deepcopy(self.data['catalog.json']['skills'][0])
+        skill.update(key='magic:40051',id='40051')
+        self.data['catalog.json']['skills'].insert(1,skill)
+        owners={'magic:40050':[{'name':'Agrias','type':'character'}],
+                'magic:40051':[{'name':'Christine','type':'character'}]}
+        before=copy.deepcopy(self.data)
+        with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
+                patch.object(self.library,'browser',return_value={'owners':owners}):
+            results=self.library.search('Needles')
+            self.assertEqual(results['total'],2)  # Character and monster presentations remain separate.
+            entry=results['items'][0]
+            self.assertEqual(entry['sourceLabel'],'Agrias')
+            self.assertEqual(entry['equivalentCount'],2)
+            self.assertEqual(self.library.search('Christine')['items'][0]['key'],'magic:40050')
+            self.assertEqual(self.library.detail('magic','40051')['entry']['id'],'40051')
+        self.assertEqual(self.data,before)
+
+    def test_distinct_timing_sounds_target_flags_and_sprite_sequences_remain_separate(self):
+        base=self.data['catalog.json']['skills'][0]
+        # Make the enemy's name identical too: origin, not spelling, must preserve it.
+        self.data['catalog.json']['skills'][1].update(name=base['name'],timeline=base['timeline'])
+        self.data['effects.json']['1002460']={'type':'1','file':'atlas.png:pieces.csv:idle.csv','scale':1}
+        cases=('group-time','effect-time','target','sound','sprite','hits')
+        for i,case in enumerate(cases,1):
+            skill={**base,'key':f'magic:{40050+i}','id':str(40050+i)}
+            group=copy.deepcopy(self.data['groups.json']['5002490'])
+            gid=str(5002490+i)
+            skill['timeline']=f'40:{gid}:1:1:0'
+            if case=='group-time':skill['timeline']=f'41:{gid}:1:1:0'
+            if case=='effect-time':group['effects'][0]['frame']+=1
+            if case=='target':group['effects'][0]['flags'][0]='different-target'
+            if case=='sound':group['sounds'][0]['cueId']='another-sound'
+            if case=='sprite':
+                self.data['effects.json']['123']={'type':'1','file':'atlas.png:pieces.csv:other-motion.csv','scale':1}
+                group['effects'][0]['effectId']='123'
+            if case=='hits':skill['hits']='75:100'
+            self.data['groups.json'][gid]=group
+            self.data['catalog.json']['skills'].append(skill)
+        with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
+                patch.object(self.library,'browser',return_value={'owners':{}}):
+            self.assertEqual(self.library.search('Needles')['total'],len(cases)+2)
+
     def test_corrupt_owned_source_cache_is_recovered_from_verified_pack(self):
         path=self.library.materialize('raw/atk_nail1_white.bmb');path.write_bytes(b'changed')
         self.assertEqual(self.library.materialize('raw/atk_nail1_white.bmb').read_bytes(),self.members['raw/atk_nail1_white.bmb'])
@@ -115,6 +158,7 @@ class LibraryTests(unittest.TestCase):
             def get(self,path):
                 def add(fn):routes[path]=fn;return fn
                 return add
+            post = get
         class HTTPException(Exception):
             def __init__(self,status,detail):self.status_code=status;super().__init__(detail)
         def response(body,**kwargs):return SimpleNamespace(body=body,**kwargs)
@@ -130,6 +174,28 @@ class LibraryTests(unittest.TestCase):
 
 
 class PackagedCatalogTests(unittest.TestCase):
+    def test_large_packs_are_optional_and_browser_bundle_has_named_owners_and_real_actors(self):
+        self.assertNotIn('- assets/ffbe_library/',(ROOT/'pubspec.yaml').read_text())
+        self.assertEqual(json.loads((PAYLOAD/'ffbe_library_manifest.json').read_bytes()),
+                         json.loads((ROOT/'assets/ffbe_library/manifest.json').read_bytes()))
+        from PIL import Image
+        import io
+        with zipfile.ZipFile(PAYLOAD/'ffbe_library_browser.zip') as archive:
+            data=json.loads(archive.read('browser.json'))
+            self.assertGreater(len(data['owners']),39000)
+            self.assertTrue(any(o['name']=='Agrias' for owners in data['owners'].values() for o in owners))
+            self.assertEqual({a['name'] for a in data['actors'].values()},{'Christine','Cactuar'})
+            for actor in data['actors'].values():
+                image=Image.open(io.BytesIO(archive.read(actor['file'])))
+                self.assertEqual(image.width,actor['width']*actor['columns'])
+                self.assertEqual(len(actor['durations']),actor['frames'])
+                self.assertGreater(actor['frames'],1)
+                self.assertTrue(all(0<d<1 for d in actor['durations']))
+                self.assertEqual(image.mode,'RGBA')
+                self.assertGreater(image.getbbox()[2],20)
+        app=(ROOT/'lib/state/app_state.dart').read_text()
+        self.assertNotIn('FfbeAnimationLibrary',app)
+
     def test_all_five_source_tables_and_variants_are_preloaded_without_assignment(self):
         manifest=json.loads((ROOT/'assets/ffbe_library/manifest.json').read_bytes())
         self.assertEqual(manifest['summary']['skills'],65428)
@@ -140,7 +206,10 @@ class PackagedCatalogTests(unittest.TestCase):
         self.assertTrue(all(p['bytes']<100*1024*1024 for p in manifest['packs']))
         # Catalog presence is separate from all mod builder inputs.
         source=(PAYLOAD/'_ffr_ffbe_library.py').read_text()
-        self.assertNotIn('@app.post(',source);self.assertNotIn('@app.put(',source)
+        import re
+        self.assertEqual(re.findall(r"@app.post\('([^']+)'\)", source),
+                         ['/api/ffbe-library/download','/api/ffbe-library/download/cancel'])
+        self.assertNotIn('@app.put(',source)
         self.assertNotIn('make_vision_mod',source)
 
 

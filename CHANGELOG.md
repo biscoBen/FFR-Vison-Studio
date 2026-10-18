@@ -11,6 +11,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Optional animation library download, source names and preview units
+
+- Keep the 1.99 GB Memorial library out of Studio app packages. Opening **FFBE animation library** checks for existing verified packs; missing data prompts **Download library / Not now**. Nothing downloads at normal startup. Show progress and allow pause/resume; check every pack's SHA256 and publish the installed manifest only when all files pass. Reuse prior installed library data across Studio updates and repair only missing or damaged packs.
+- Publish the unchanged source packs once as an independent, immutable data release. Ship only the small trusted manifest and browser metadata with app updates. Keep all original source records, sound banks and files available for later conversion; browsing still assigns nothing to the game.
+- Show actual FFBE unit, monster or esper source names derived from level grants, enhancement recipes, limit-burst links, bestiary names and enemy skill sets. Search also finds alternate owners. Unlinked records say **Unattributed FFBE source** rather than guessing a character or showing a numeric ID as the source.
+- Combine identical same-named skill presentations under their first known source: **45,478** browsing entries represent **65,428** retained master records. Preserve character/monster versions, differing sprite sequences, particle files, cue timing, hit timing, placement flags and cinematics. Original IDs and aliases remain available internally for later imports.
+- Preview with animated **Christine 6★** and **Cactuar** sprites instead of dots. Choose either caster, show one or three actual targets and mark original hit times. Christine uses her FFBE idle; Cactuar uses the supplied Resonance demo idle. These are preview actors only; source caller motion/camera commands and every FFBE emitter remain subject to the existing renderer limits.
+
+
+Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **469 Python checks**
+(seven skipped), source-archive verification and Chromium previews pass. Cover consent/decline, progress, pause/resume,
+checksum failures, existing-library reuse, corrupted-pack repair, source-name search, distinct timing/target/audio/sprite
+variants, Christine/Cactuar rendering, original Needles audio, seeking and cinematics. Windows packaging is pending.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

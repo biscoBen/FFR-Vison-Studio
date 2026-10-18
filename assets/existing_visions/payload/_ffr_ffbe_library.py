@@ -66,16 +66,73 @@ class Library:
     @property
     def catalog(self): return self.document('catalog.json')
 
+    @lru_cache(maxsize=1)
+    def browser(self):
+        path=Path(__file__).with_name('ffbe_library_browser.zip')
+        if not path.is_file():return {'owners':{},'actors':{}}
+        with zipfile.ZipFile(path) as archive:return json.loads(archive.read('browser.json'))
+
+    @lru_cache(maxsize=1)
+    def browsing(self):
+        owners=self.browser()['owners'];groups=self.document('groups.json');effects=self.document('effects.json')
+        effect_signatures={}
+        for eid,effect in effects.items():
+            names=effect['file'].split(':') if effect['type']=='1' else effect.get('asset',effect['file']).split(':')
+            effect_signatures[eid]=[effect['type'],effect.get('scale',1),
+                [self.files.get('raw/'+name,{}).get('sha256',name) for name in names]]
+        group_signatures={}
+        for gid,group in groups.items():
+            signature={'effects':[[e['frame'],effect_signatures.get(e['effectId'],e['effectId']),e['flags']] for e in group['effects']],
+                       'sounds':group['sounds'],'camera':group.get('raw',{}).get('rPHs9p8F','')}
+            group_signatures[gid]=hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()
+        buckets={};aliases={};reverse={k:{} for k in ('groups','effects','movies')}
+        for original in self.catalog['skills']:
+            key=original['key'];origin='monster' if original['kind']=='monster' else 'summon' if original['kind']=='summon' else 'character'
+            sequences=[];used_groups=[]
+            for variant in original.get('timeline','').split('@'):
+                sequence=[]
+                for fields in split_frames(variant):
+                    if len(fields)<2:continue
+                    sequence.append([fields[0],group_signatures.get(fields[1],'missing:'+fields[1]),fields[2:]])
+                    used_groups.append(fields[1])
+                sequences.append(sequence)
+            hit_frames=[[([f[0],*f[2:]]) for f in (h.split(':') for h in part.split('-')) if f and f[0]] for part in original.get('hits','').split('@')]
+            signature=[original['name'].casefold().strip(),origin,original['kind']=='lb',sequences,hit_frames,original.get('movies',[])]
+            fingerprint=hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()
+            entry=buckets.get(fingerprint)
+            if entry is None:
+                entry={**original,'sourceLabel':'Unattributed FFBE source','sourceType':origin,'sourceNames':[],
+                       'equivalentCount':0,'aliasKeys':[]};buckets[fingerprint]=entry
+            entry['equivalentCount']+=1;entry['aliasKeys'].append(key);aliases[key]=entry
+            for owner in owners.get(key,[]):
+                if owner['name'] not in entry['sourceNames']:entry['sourceNames'].append(owner['name'])
+                if entry['sourceLabel']=='Unattributed FFBE source':
+                    entry['sourceLabel']=owner['name'];entry['sourceType']=owner['type']
+            for gid in used_groups:
+                reverse['groups'].setdefault(gid,[]).append(entry)
+                for effect in groups.get(gid,{}).get('effects',[]):reverse['effects'].setdefault(effect['effectId'],[]).append(entry)
+            for name in original.get('movies',[]):reverse['movies'].setdefault(name,[]).append(entry)
+        result={'skills':list(buckets.values())}
+        for scope in ('groups','effects','movies'):
+            result[scope]=[]
+            for original in self.catalog.get(scope,[]):
+                candidates=reverse[scope].get(original['id'],[])
+                owner=next((e for e in candidates if e['sourceNames']),None)
+                result[scope].append({**original,'sourceLabel':owner['sourceLabel'] if owner else 'Unattributed FFBE source',
+                    'sourceType':owner['sourceType'] if owner else scope[:-1],
+                    'sourceNames':list(dict.fromkeys(n for e in candidates for n in e['sourceNames']))})
+        return result,aliases
+
     def search(self, query='', kind='all', scope='skills', offset=0, limit=60, animated=True):
         if scope not in ('skills', 'groups', 'effects', 'movies'): raise ValueError('Unknown library view.')
         if not 0 <= offset <= 200000 or not 1 <= limit <= 100: raise ValueError('Invalid library page.')
-        rows = self.catalog[scope]
+        rows = self.browsing()[0][scope]
         query = query.casefold().strip()
         result = [r for r in rows if (kind == 'all' or r['kind'] == kind)
                   and (not animated or r.get('hasAnimation', True))
-                  and (not query or query in (r['name']+' '+r['id']+' '+r.get('file','')).casefold())]
+                  and (not query or query in (r['name']+' '+r['id']+' '+r.get('file','')+' '+' '.join(r.get('sourceNames',[]))).casefold())]
         return {'total': len(result), 'offset': offset, 'items': result[offset:offset+limit],
-                'summary': self.manifest['summary'], 'revision': REVISION}
+                'summary': {**self.manifest['summary'],'uniqueSkills':len(self.browsing()[0]['skills'])}, 'revision': REVISION}
 
     def detail(self, kind, identity):
         key = kind+':'+str(identity)
@@ -83,6 +140,11 @@ class Library:
             row = next((r for r in self.catalog.get(scope,[]) if r['key'] == key), None)
             if row is not None: break
         if row is None: raise ValueError('No such FFBE animation entry.')
+        if kind in ('group','effect','movie'):
+            row=next(r for r in self.browsing()[0][scope] if r['key']==key)
+        else:
+            info=self.browsing()[1][key]
+            row={**row,**{k:info[k] for k in ('sourceLabel','sourceType','sourceNames','equivalentCount')}}
         groups = self.document('groups.json'); effects = self.document('effects.json')
         variants = []
         if kind == 'effect':
@@ -233,8 +295,24 @@ def split_frames(text): return [x.split(':') for x in re.split(r'[&,]',text or '
 
 def register(app, env):
     from fastapi import HTTPException
+    from _ffr_ffbe_download import Installation
     @lru_cache(maxsize=1)
     def library(): return Library(env['ROOT'])
+    installation=Installation(env['ROOT'],on_ready=library.cache_clear)
+    @app.get('/api/ffbe-library/installation')
+    def installation_status():return checked(installation.status)
+    @app.post('/api/ffbe-library/download')
+    def download_library():return checked(installation.start)
+    @app.post('/api/ffbe-library/download/cancel')
+    def cancel_download():return checked(installation.cancel)
+    @app.get('/api/ffbe-library/actors')
+    def actors():
+        with zipfile.ZipFile(Path(__file__).with_name('ffbe_library_browser.zip')) as archive:return json.loads(archive.read('browser.json'))['actors']
+    @app.get('/api/ffbe-library/actor/{name}')
+    def actor_image(name:str):
+        from fastapi.responses import Response
+        if name not in ('christine.png','cactuar.png'):raise HTTPException(404,'Unknown preview actor.')
+        with zipfile.ZipFile(Path(__file__).with_name('ffbe_library_browser.zip')) as archive:return Response(archive.read(name),media_type='image/png')
     def checked(fn,*args,**kwargs):
         try:return fn(*args,**kwargs)
         except (ValueError,OSError,KeyError,IndexError,struct.error,zipfile.BadZipFile) as e:raise HTTPException(422,str(e)) from e

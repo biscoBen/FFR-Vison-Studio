@@ -233,6 +233,8 @@ jobs:
                                       int(os.environ['RUN_ID']), int(os.environ['GITHUB_RUN_ATTEMPT']))
           if json.loads(Path('bundle/build-provenance.json').read_text()) != expected:
               raise RuntimeError('Compiled artifact does not match this validated workflow request.')
+          from publish_ffbe_library import publish as publish_library
+          publish_library()
           package(Path('bundle'), Path('Sephira-Studio-Test.zip'), os.environ['COMMIT_SHA'],
                   int(os.environ['RUN_ID']), build=int(os.environ['BUILD_NUMBER']))
           subprocess.run([
