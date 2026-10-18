@@ -4,19 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-### FFBE animation library — 2026-10-17
+### Animation source filters and mesh alignment — 2026-10-17
 
-[Verified Windows download / run 39081843723](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39081843723/Sephira-Studio-Test.zip)
-(code `1a32262`, extension 1.2.44; **46.4 MB**). The optional **1.99 GB** library is separate from Studio updates.
-Use **Home → FFBE animation library**; existing files are reused, or choose **Download library** when prompted.
-No mod rebuild or game installation is needed for browsing. Entries show named sources and combine matching
-presentations. Animated Christine/Cactuar preview units replace the dots; Cactuar's original packed cells prevent clipping.
+[Verified Windows download / run 39085967496](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39085967496/Sephira-Studio-Test.zip)
+(code `645270a`, extension 1.2.46; **46.4 MB**). The optional **1.99 GB** library stays separate and is reused.
+Use **Home → FFBE animation library**, then **Find a source** and the grouped **Ability source** selector to narrow
+skills to a character/vision, monster or esper. Shared presentations retain that owner's exact original skill record.
+**All sources** clears the filter. No mod rebuild or game installation is needed for browsing.
 
-The full Windows Flutter suite, analysis, **469 Python checks** (seven skipped), fresh frozen-engine setup and
+Shared preview corrections preserve rear/front layer order, each mesh's authored pivot and rotated effect bounds.
+They apply throughout the library, including compatible cached previews. This does **not** certify all 45,478 distinct
+presentations as visually identical to FFBE: source camera/3D behavior remains approximate, and Snowstorm's remaining
+wind outline still needs a native comparison.
+
+The full Windows Flutter suite, analysis, **477 Python checks** (seven skipped), fresh frozen-engine setup and
 launcher/updater checks pass. Package provenance/checksum, all **46** extension files and **16** Crystal Fina files
-match source; the app contains no large library packs. The separate release's **56** pack digests match, and a real
-public download of a missing pack with reuse of the other 55 succeeds. Original particle rendering/game conversion
-parity remains unverified. Full validation and measured timings are in the changelog.
+match source; the app contains no large library packs. Source filtering and browser checks pass for 3,370 source choices,
+Snowstorm and five other representative spells. A structural audit checks all **875** source meshes; it is not a visual
+parity test. The separate release's **56** pack digests remain unchanged. Full validation and measured timings are in
+[the changelog](CHANGELOG.md#published-animation-source-filters-and-mesh-alignment--2026-10-17).
 
 Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
 Retest the recorded original-enemy failures then before adding further demo-specific repairs.
@@ -41,13 +47,13 @@ to see passive and other records without visual timelines. Sound, speed, seeking
 available; cinematics have their own controls and embedded sound. Browsing makes no changes to units, kits, mod inputs
 or installed game files.
 
-The next update adds **Ability source**: type a name in **Find a source**, then choose the exact character/vision,
+Use **Ability source**: type a name in **Find a source**, then choose the exact character/vision,
 monster or esper from the grouped selector. Select **All sources** to clear it. Source filtering combines with skill
 type and text search; **Include records without an animation reference** also shows that source's passive/unanimated
 records. Shared animations remain included for every recorded owner, and the selected preview uses that owner's
 actual skill record. Sources come from the archived FFBE ownership links; unattributed records stay in the full list.
 
-The same update corrects **Unei → Snowstorm** layering: rear effects draw behind the units, foreground effects draw
+The preview corrects **Unei → Snowstorm** layering: rear effects draw behind the units, foreground effects draw
 over them, and screen-wide backdrops use a separate viewport projection. Original effect files, sound and blend values
 are retained. The library still approximates source camera motion/3D projection rather than reproducing FFBE's engine.
 Mesh previews also retain their authored pivot through rotation/mirroring, and preview framing includes rotated corners.

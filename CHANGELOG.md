@@ -11,24 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Animation source filters and layered screen previews
-
-- Add a searchable **Ability source** selector, grouped into **Characters / visions**, **Monsters** and **Espers**. Select an exact source to show its recorded abilities; **All sources** clears the filter. Combine source selection with skill type, text search, pagination and the existing option to include records without animation references.
-- Follow every recorded owner of a shared presentation. Selecting a source returns that source's exact original skill ID and labels its preview with the selected owner, even when the unfiltered library lists the shared animation under another unit. Preserve distinct character/monster sources and separately named unit versions.
-- Keep the same optional library download and existing archive bytes. Unattributed records remain in **All sources** and are not guessed into a unit's kit. Filtering and previewing change no game skills or saved roster data.
-- Correct Unei’s **Snowstorm** preview and the common composition path: draw rear groups behind the actors and front groups over them, preserving source order within each pass. Screen-anchored effects use their authored flat backdrop as a separate viewport reference instead of being fitted into the unit scene. This prevents large fog walls from shrinking the actors and exposes fewer rectangular plate borders; source camera motion and 3D projection still remain approximate.
-- Preserve each mesh’s authored pivot after projecting it into a centred bitmap, including signed scale, rotation and mirroring. Apply this to every mesh-based library preview rather than patching a named spell. The source audit finds 529 off-centre meshes among 875 original mesh files; this is a structural audit, not visual verification of every skill. Include rotated sprite corners in the preview bounds so diagonal effects are not cropped by unrotated framing.
-- Upgrade existing v15 particle draw positions without regenerating texture PNGs when sprite counts, texture indices and every non-position field still match. Re-render if that compatibility check fails. Original shader values, timelines, sounds, archives and game assignments stay intact.
-- Keep the remaining rendering limit explicit: these shared corrections do **not** certify every skill as visually identical to FFBE. Source camera motion, mixed-axis 3D transforms and other unsupported particle behavior still need native comparisons; the apparent Snowstorm wind edge is not a verified one-for-one match.
-
-
-
-Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **477 Python checks**
-(seven skipped), focused source/cache/particle checks and Chromium checks pass. Windows packaging is pending.
-Browser checks cover 3,370 source choices, exact Agrias ownership/shared Cura, Cactuar filtering, pagination/reset,
-four Snowstorm effects, mesh-pivot cache upgrades, rotated framing and actual canvas pixels proving rear → actor →
-foreground alpha compositing. The mesh-origin audit parses all 875 original models without errors.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -72,6 +54,37 @@ foreground alpha compositing. The mesh-origin audit parses all 875 original mode
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published animation source filters and mesh alignment — 2026-10-17
+
+Code: [`645270a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/645270adff9be984c5b1e6b2f47d1caf6df79201), extension **1.2.46**.
+Windows package: [run 39085967496](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39085967496/Sephira-Studio-Test.zip). **46,353,319 bytes** (46.4 MB).
+SHA-256: `77cf2768ef6f9df74ff87c89a24a412ca82cbfe72619a08dae791faf89537319`.
+
+- Add a searchable **Ability source** selector, grouped into **Characters / visions**, **Monsters** and **Espers**. Select an exact source to show its recorded abilities; **All sources** clears the filter. Combine source selection with skill type, text search, pagination and the existing option to include records without animation references.
+- Follow every recorded owner of a shared presentation. Selecting a source returns that source's exact original skill ID and labels its preview with the selected owner, even when the unfiltered library lists the shared animation under another unit. Preserve distinct character/monster sources and separately named unit versions.
+- Keep the same optional library download and existing archive bytes. Unattributed records remain in **All sources** and are not guessed into a unit's kit. Filtering and previewing change no game skills or saved roster data.
+- Correct Unei’s **Snowstorm** preview and the common composition path: draw rear groups behind the actors and front groups over them, preserving source order within each pass. Screen-anchored effects use their authored flat backdrop as a separate viewport reference instead of being fitted into the unit scene. This prevents large fog walls from shrinking the actors and exposes fewer rectangular plate borders; source camera motion and 3D projection still remain approximate.
+- Preserve each mesh’s authored pivot after projecting it into a centred bitmap, including signed scale, rotation and mirroring. Apply this to every mesh-based library preview rather than patching a named spell. The source audit finds 529 off-centre meshes among 875 original mesh files; this is a structural audit, not visual verification of every skill. Include rotated sprite corners in the preview bounds so diagonal effects are not cropped by unrotated framing.
+- Upgrade existing v15 particle draw positions without regenerating texture PNGs when sprite counts, texture indices and every non-position field still match. Re-render if that compatibility check fails. Original shader values, timelines, sounds, archives and game assignments stay intact.
+- Keep the remaining rendering limit explicit: these shared corrections do **not** certify every skill as visually identical to FFBE. Source camera motion, mixed-axis 3D transforms and other unsupported particle behavior still need native comparisons; the apparent Snowstorm wind edge is not a verified one-for-one match.
+
+Validation: local analysis and 28 focused Flutter checks (one Windows-only skip), 477 Python checks (seven skipped),
+exact source filtering/pagination/reset, real canvas compositing, rotated-corner framing and all four Unei Snowstorm
+components pass. Firaga, Cure, Tornado, Holy and Blizzaga load and produce particles in Chromium without warnings.
+A numerical audit checks 2,843,667 projected vertices across all 875 source meshes at three tilts, signed scales,
+rotation and mirroring; maximum coordinate error is below 5e-13. This proves coordinate consistency, not visual parity.
+The full Windows validation/compilation, frozen-engine startup and launcher/updater checks pass for this exact code.
+Package hashes match all 46 extension files and 16 Crystal Fina files; no large library packs are bundled. The optional
+library's 56 existing pack digests stay unchanged. Some camera-dependent 3D behavior still needs native comparison;
+the remaining Snowstorm wind outline is not certified to match FFBE.
+
+Measured timing: first complete candidate **2026-10-18 00:53:33 UTC** → verified release download
+**01:29:09 UTC**, **35m 36s**, including the mesh correction, both builds, local checks, waits and verification.
+The timer was not restarted after the correction. Actual CI wall times were **11m 27s** (run 39084512021) and
+**10m 57s** (final run 39085967496). Sum of started-to-completed runner job time across both runs: **31m 38s**
+(**24m 00s Windows**, **7m 38s Ubuntu**); this is measured job time, not billed/rounded usage. The end-to-end
+elapsed time is separate from the overlapping CI durations and runner usage.
 
 ## Published optional animation library, named sources and preview units — 2026-10-17
 
