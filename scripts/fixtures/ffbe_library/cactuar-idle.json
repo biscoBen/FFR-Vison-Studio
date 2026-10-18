@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "source": "Original Resonance demo monster038 SpriteStudio CellmapList and idle keys",
+  "sourceProjectSha256": "0c65ee53b0da8bd6af6a85ade678413e13e29a6570c10aff3d74ca9f55779e7d",
+  "sourceAtlasSha256": "a1a3f178c85491bc550e189f0137f502f1f326a27844803210be6cae7e9c9664",
+  "fps": 60,
+  "cells": [
+    {
+      "name": "npc_0_0",
+      "rect": [
+        0,
+        0,
+        50,
+        62
+      ],
+      "pivot": [
+        0.0,
+        -0.032258063554763794
+      ],
+      "trimmedSize": [
+        46,
+        58
+      ],
+      "trimmedRgbaSha256": "82313ffef76e4dafd708098618e8129489fa9b8618ac8ea1feac63d7d8b2014f"
+    },
+    {
+      "name": "npc_0_1",
+      "rect": [
+        52,
+        0,
+        98,
+        61
+      ],
+      "pivot": [
+        0.0,
+        -0.02459016442298889
+      ],
+      "trimmedSize": [
+        42,
+        57
+      ],
+      "trimmedRgbaSha256": "111082e60efce1634386b8b5d5645abe2406a0f4ccfbe6c9f6ceb6b4af194ca7"
+    },
+    {
+      "name": "npc_0_2",
+      "rect": [
+        51,
+        64,
+        96,
+        124
+      ],
+      "pivot": [
+        0.03333333507180214,
+        -0.01666666753590107
+      ],
+      "trimmedSize": [
+        41,
+        56
+      ],
+      "trimmedRgbaSha256": "eb1620f80310b7248f69fa70ae60fe84caae3f22a5437673e15b837e04eedd3c"
+    },
+    {
+      "name": "npc_0_3",
+      "rect": [
+        0,
+        64,
+        49,
+        125
+      ],
+      "pivot": [
+        0.030612245202064514,
+        -0.02459016442298889
+      ],
+      "trimmedSize": [
+        45,
+        57
+      ],
+      "trimmedRgbaSha256": "2f22e32215302d276d76398edb7971e486145380c072f309beb543f2ad88480d"
+    }
+  ],
+  "holds": [
+    25,
+    8,
+    25,
+    9
+  ]
+}

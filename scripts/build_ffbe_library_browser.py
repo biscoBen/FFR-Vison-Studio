@@ -62,9 +62,25 @@ def sheet(images,durations):
     bounds=(min(b[0] for b in boxes),min(b[1] for b in boxes),max(b[2] for b in boxes),max(b[3] for b in boxes))
     width,height=bounds[2]-bounds[0],bounds[3]-bounds[1];columns=min(8,len(images));rows=(len(images)+columns-1)//columns
     atlas=Image.new('RGBA',(width*columns,height*rows))
-    for i,im in enumerate(images):atlas.alpha_composite(im.crop(bounds),((i%columns)*width,(i//columns)*height))
+    for i,im in enumerate(images):atlas.paste(im.crop(bounds),((i%columns)*width,(i//columns)*height))
     stream=io.BytesIO();atlas.save(stream,format='PNG')
     return stream.getvalue(),{'width':width,'height':height,'columns':columns,'durations':durations,'frames':len(images)}
+
+
+def cactuar_frames(path,metadata):
+    """Respect packed native cells and pivots; this atlas is not a regular grid."""
+    from PIL import Image
+    if hashlib.sha256(path.read_bytes()).hexdigest()!=metadata['sourceAtlasSha256']:
+        raise ValueError('The Cactuar atlas differs from the referenced native idle.')
+    with Image.open(path) as image:atlas=image.convert('RGBA')
+    frames=[]
+    for cell in metadata['cells']:
+        sprite=atlas.crop(cell['rect'])
+        # Place each original pivot at a shared origin before trimming the strip.
+        x=round(64-(.5+cell['pivot'][0])*sprite.width)
+        y=round(64-(.5-cell['pivot'][1])*sprite.height)
+        frame=Image.new('RGBA',(128,128));frame.paste(sprite,(x,y));frames.append(frame)
+    return frames
 
 
 def build(source,actors,output):
@@ -76,12 +92,12 @@ def build(source,actors,output):
         for i in range(image.n_frames):image.seek(i);durations.append(image.info.get('duration',100)/1000)
     files['christine.png'],meta['character']=sheet(images,durations)
     meta['character'].update(name='Christine',look='6★',file='christine.png',heightInScene=160)
-    atlas=Image.open(actors/'cactuar-native.png').convert('RGBA')
-    frames=[atlas.crop((x,y,x+64,y+64)) for x,y in ((0,0),(64,0),(0,64),(64,64))]
-    files['cactuar.png'],meta['monster']=sheet(frames,[25/60,8/60,25/60,9/60])
+    native_idle=json.loads((ROOT/'scripts/fixtures/ffbe_library/cactuar-idle.json').read_bytes())
+    frames=cactuar_frames(actors/'cactuar-native.png',native_idle)
+    files['cactuar.png'],meta['monster']=sheet(frames,[h/native_idle['fps'] for h in native_idle['holds']])
     meta['monster'].update(name='Cactuar',file='cactuar.png',heightInScene=150)
     metadata={'schema':1,'owners':own,'actors':meta,'actorSource':{'character':'Original FFBE Christine 6-star idle, pinned Studio host','monster':'Original Resonance demo Cactuar idle, supplied native reference'},'source':'FFBE Memorial EN Global Events v208',
-              'provenance':{'masters':{table+'-memorial.json':hashlib.sha256((source/(table+'-memorial.json')).read_bytes()).hexdigest() for table in sorted(OWNER_TABLES)},
+              'provenance':{'nativeIdle':native_idle,'masters':{table+'-memorial.json':hashlib.sha256((source/(table+'-memorial.json')).read_bytes()).hexdigest() for table in sorted(OWNER_TABLES)},
                             'actors':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in actors.iterdir() if p.name in ('christine.webp','cactuar-native.png')}}}
     files['browser.json']=(json.dumps(metadata,ensure_ascii=False,separators=(',',':'))+'\n').encode()
     with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:

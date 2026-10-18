@@ -18,6 +18,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Show actual FFBE unit, monster or esper source names derived from level grants, enhancement recipes, limit-burst links, bestiary names and enemy skill sets. Search also finds alternate owners. Unlinked records say **Unattributed FFBE source** rather than guessing a character or showing a numeric ID as the source.
 - Combine identical same-named skill presentations under their first known source: **45,478** browsing entries represent **65,428** retained master records. Preserve character/monster versions, differing sprite sequences, particle files, cue timing, hit timing, placement flags and cinematics. Original IDs and aliases remain available internally for later imports.
 - Preview with animated **Christine 6★** and **Cactuar** sprites instead of dots. Choose either caster, show one or three actual targets and mark original hit times. Christine uses her FFBE idle; Cactuar uses the supplied Resonance demo idle. These are preview actors only; source caller motion/camera commands and every FFBE emitter remain subject to the existing renderer limits.
+- Correct Cactuar’s unevenly packed native cells using their original coordinates and pivots. Verify every idle frame against its original pixel hash to catch head/arm clipping or neighboring-frame bleed.
 
 
 Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **469 Python checks**

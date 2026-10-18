@@ -193,6 +193,17 @@ class PackagedCatalogTests(unittest.TestCase):
                 self.assertTrue(all(0<d<1 for d in actor['durations']))
                 self.assertEqual(image.mode,'RGBA')
                 self.assertGreater(image.getbbox()[2],20)
+            # Check each complete native Cactuar cell against its original pixels.
+            # A 64px-grid crop truncates heads/arms and includes the adjacent cell.
+            actor=data['actors']['monster']
+            image=Image.open(io.BytesIO(archive.read(actor['file'])))
+            native=json.loads((ROOT/'scripts/fixtures/ffbe_library/cactuar-idle.json').read_bytes())
+            self.assertEqual(data['provenance']['nativeIdle'],native)
+            for i,cell in enumerate(native['cells']):
+                frame=image.crop((i*actor['width'],0,(i+1)*actor['width'],actor['height']))
+                trimmed=frame.crop(frame.getbbox())
+                self.assertEqual(list(trimmed.size),cell['trimmedSize'])
+                self.assertEqual(hashlib.sha256(trimmed.tobytes()).hexdigest(),cell['trimmedRgbaSha256'])
         app=(ROOT/'lib/state/app_state.dart').read_text()
         self.assertNotIn('FfbeAnimationLibrary',app)
 
