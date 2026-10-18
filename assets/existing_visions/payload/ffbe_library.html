@@ -629,7 +629,9 @@
         const missing = coverage.missing || [];
         text(
           "coverage-count",
-          `${coverage.skills.toLocaleString()} library entries · ${missing.length.toLocaleString()} other Global records unavailable here`,
+          coverage.skills || missing.length
+            ? `${coverage.skills.toLocaleString()} library entries${missing.length ? ` · ${missing.length.toLocaleString()} other Global records unavailable here` : ""}`
+            : "This named source has no recorded skill associations in the available tables.",
         );
         $("missing-skills").hidden = !missing.length;
         const names = new Map();

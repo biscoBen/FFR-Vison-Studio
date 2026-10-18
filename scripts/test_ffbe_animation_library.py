@@ -308,6 +308,8 @@ class PackagedCatalogTests(unittest.TestCase):
         owners=data['owners']['magic:20210']
         self.assertTrue(any(o['name']=='Christine' for o in owners))
         self.assertNotEqual(owners[0]['name'],'Christine')  # shared spell keeps its first source too
+        self.assertIn('monster:Bandit',data['sources'])
+        self.assertIn('monster:Abysteel',data['sources'])
         for name in ('Elena','Esther','Karten','Fryevia','Ling'):
             self.assertIn('character:'+name,data['sources'])
         for sid,name in [('10101','Siren'),('10201','Ifrit'),('10301','Shiva')]:

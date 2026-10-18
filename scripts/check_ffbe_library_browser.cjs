@@ -54,6 +54,9 @@ const output = process.argv[3];
     await page.fill('#source-search', 'Karten');
     result = await choose('character:Karten');
     if (result.total || !result.sourceCoverage.missing.length) throw Error('Unavailable Global source disappeared');
+    await page.fill('#source-search', 'Bandit');
+    result = await choose('monster:Bandit');
+    if (result.total || !(await page.locator('#coverage-count').textContent()).includes('no recorded skill associations')) throw Error('Unlinked monster omitted or mislabelled');
     await page.fill('#source-search', 'Shiva');
     result = await choose('summon:Shiva');
     if (result.total !== 3 || !result.items.every(r => r.sourceLabel === 'Shiva')) throw Error('Esper identity join failed');
@@ -155,6 +158,6 @@ const output = process.argv[3];
     if (pixels.target[0] || Math.abs(pixels.target[1] - 127) > 1 || Math.abs(pixels.target[2] - 128) > 1 ||
       pixels.caster.join() !== '0,255,0,255' || pixels.rear.join() !== '255,0,0,255') throw Error('Incorrect compositing ' + JSON.stringify(pixels));
     if (errors.length) throw Error(errors.join('\n'));
-    console.log(JSON.stringify({ sources: 3807, snowstorm, edgeProfiles, framing, pixels, errors }, null, 2));
+    console.log(JSON.stringify({ sources: 3901, snowstorm, edgeProfiles, framing, pixels, errors }, null, 2));
   } finally { await browser.close(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

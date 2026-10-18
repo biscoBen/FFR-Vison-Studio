@@ -108,6 +108,7 @@ class OwnershipBuilderTests(unittest.TestCase):
         tables.update({'F_MAGIC_MST':[{'QV1HE7Wq':'20210','G4L0YIB2':'Blizzaga'}],
             'F_ABILITY_MST':[{'Ga5V42LZ':'100740','G4L0YIB2':'Auto-Refresh'},
                              {'Ga5V42LZ':'42','G4L0YIB2':'Different record'}],
+            'F_MONSTER_MST':[{'xqartN26':'999','V9j8wJcC':'999','G4L0YIB2':'Monster without skills'}],
             'F_UNIT_MST':[{'3HriTp6B':'100','woghJa61':'100','G4L0YIB2':'Lasswell'}],
             'F_UNIT_SERIES_LV_ACQUIRE_MST':[{'woghJa61':'100','i6kc1jN0':'20210'},
                                             {'woghJa61':'401002606','1Zsh27mS':'100740'}],
@@ -132,6 +133,7 @@ class OwnershipBuilderTests(unittest.TestCase):
         missing=result['sources']['character:Christine']['missing']
         self.assertEqual({r['name'] for r in missing},{'Snow Burial','Same numeric ID, different skill'})
         self.assertIn('character:Another missing unit',result['coverage']['sourcesWithNoAvailableRecord'])
+        self.assertIn('monster:Monster without skills',result['sources'])
 
     def test_changed_global_source_file_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:

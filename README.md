@@ -24,7 +24,7 @@ Snowstorm and five other representative spells. A structural audit checks all **
 parity test. The separate release's **56** pack digests remain unchanged. Full validation and measured timings are in
 [the changelog](CHANGELOG.md#published-animation-source-filters-and-mesh-alignment--2026-10-17).
 
-The next update adds a portable **Soften exposed fog edges** option and broadens the source index to 3,807 names,
+The next update adds a portable **Soften exposed fog edges** option and broadens the source index to 3,901 names,
 including Christine and all 21 espers. Known Global skills absent from the Memorial data are listed explicitly under
 the selected source. Generated fog alpha is also retained in downloadable visual-layer conversion files; they assign
 nothing to the game. Final verification and package publication are pending.

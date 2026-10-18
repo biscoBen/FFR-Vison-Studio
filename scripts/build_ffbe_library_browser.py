@@ -79,6 +79,7 @@ def ownership(source, global_source=None):
                 for kind in ('magic','ability'):add(kind,sid,name,'character',uid)
     dictionaries={m['V9j8wJcC']:m['G4L0YIB2'] for m in read('F_MONSTER_DICTIONARY_MST')}
     monsters={m['xqartN26']:dictionaries.get(m['V9j8wJcC'],m['G4L0YIB2']) for m in read('F_MONSTER_MST')}
+    for uid,name in monsters.items():register(name,'monster',uid)
     sets={s['A5x02C6a']:[x for x in s['7qxLC5hP'].split(',') if x] for s in read('F_MONSTER_SKILL_SET_MST')}
     for part in read('F_MONSTER_PARTS_MST'):
         uid=part['xqartN26'];name=monsters.get(uid,part['G4L0YIB2'])
