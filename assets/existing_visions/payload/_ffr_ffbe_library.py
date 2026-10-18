@@ -102,9 +102,10 @@ class Library:
             entry=buckets.get(fingerprint)
             if entry is None:
                 entry={**original,'sourceLabel':'Unattributed FFBE source','sourceType':origin,'sourceNames':[],
-                       'equivalentCount':0,'aliasKeys':[]};buckets[fingerprint]=entry
+                       'equivalentCount':0,'aliasKeys':[],'sourceMembers':{}};buckets[fingerprint]=entry
             entry['equivalentCount']+=1;entry['aliasKeys'].append(key);aliases[key]=entry
             for owner in owners.get(key,[]):
+                entry['sourceMembers'].setdefault(source_key(owner),key)
                 if owner['name'] not in entry['sourceNames']:entry['sourceNames'].append(owner['name'])
                 if entry['sourceLabel']=='Unattributed FFBE source':
                     entry['sourceLabel']=owner['name'];entry['sourceType']=owner['type']
@@ -120,13 +121,39 @@ class Library:
                 owner=next((e for e in candidates if e['sourceNames']),None)
                 result[scope].append({**original,'sourceLabel':owner['sourceLabel'] if owner else 'Unattributed FFBE source',
                     'sourceType':owner['sourceType'] if owner else scope[:-1],
+                    'sourceMembers':{source:original['key'] for e in candidates for source in e['sourceMembers']},
                     'sourceNames':list(dict.fromkeys(n for e in candidates for n in e['sourceNames']))})
         return result,aliases
 
-    def search(self, query='', kind='all', scope='skills', offset=0, limit=60, animated=True):
+    @lru_cache(maxsize=1)
+    def skill_rows(self):return {r['key']:r for r in self.catalog['skills']}
+
+    @lru_cache(maxsize=1)
+    def sources(self):
+        """List actual named owners, counting each deduplicated presentation once."""
+        sources={}
+        for entry in self.browsing()[0]['skills']:
+            for key in entry['sourceMembers']:
+                kind,_,name=key.partition(':')
+                source=sources.setdefault(key,{'key':key,'name':name,'type':kind,'skills':0})
+                source['skills']+=1
+        return {'items':sorted(sources.values(),key=lambda s:(s['type'],s['name'].casefold()))}
+
+    def search(self, query='', kind='all', scope='skills', offset=0, limit=60, animated=True, source=''):
         if scope not in ('skills', 'groups', 'effects', 'movies'): raise ValueError('Unknown library view.')
         if not 0 <= offset <= 200000 or not 1 <= limit <= 100: raise ValueError('Invalid library page.')
         rows = self.browsing()[0][scope]
+        if source:
+            selected=[]
+            for row in rows:
+                member=row['sourceMembers'].get(source)
+                if member is None:continue
+                # Preserve the selected owner's exact record, even when the
+                # unfiltered presentation is listed under another owner's ID.
+                original=self.skill_rows()[member] if scope=='skills' else row
+                source_type,_,name=source.partition(':')
+                selected.append({**row,**original,'sourceLabel':name,'sourceType':source_type})
+            rows=selected
         query = query.casefold().strip()
         result = [r for r in rows if (kind == 'all' or r['kind'] == kind)
                   and (not animated or r.get('hasAnimation', True))
@@ -134,7 +161,7 @@ class Library:
         return {'total': len(result), 'offset': offset, 'items': result[offset:offset+limit],
                 'summary': {**self.manifest['summary'],'uniqueSkills':len(self.browsing()[0]['skills'])}, 'revision': REVISION}
 
-    def detail(self, kind, identity):
+    def detail(self, kind, identity, source=''):
         key = kind+':'+str(identity)
         for scope in ('skills', 'groups', 'effects', 'movies'):
             row = next((r for r in self.catalog.get(scope,[]) if r['key'] == key), None)
@@ -145,6 +172,13 @@ class Library:
         else:
             info=self.browsing()[1][key]
             row={**row,**{k:info[k] for k in ('sourceLabel','sourceType','sourceNames','equivalentCount')}}
+        if source:
+            if kind in ('group','effect','movie'):
+                owns=source in row['sourceMembers']
+            else:owns=any(source_key(o)==source for o in self.browser()['owners'].get(key,[]))
+            if not owns:raise ValueError('This entry is not recorded for the selected source.')
+            source_type,_,name=source.partition(':')
+            row={**row,'sourceLabel':name,'sourceType':source_type}
         groups = self.document('groups.json'); effects = self.document('effects.json')
         variants = []
         if kind == 'effect':
@@ -194,11 +228,18 @@ class Library:
         if not str(identity).isdigit(): raise ValueError('Invalid effect ID.')
         effects=self.document('effects.json'); effect=effects.get(str(identity))
         if not effect: raise ValueError('No such FFBE effect.')
-        output=self.cache/(str(identity)+'.json.gz')
+        output=self.cache/(str(identity)+'.v2.json.gz')
         if output.exists():return output.read_bytes()
         with _LOCK:
             if output.exists():return output.read_bytes()
-            if effect['type'] == '1': result=self.sprite_simulation(effect)
+            previous=self.cache/(str(identity)+'.json.gz')
+            if previous.exists():
+                # Reuse already rendered textures when upgrading preview metadata.
+                result=json.loads(gzip.decompress(previous.read_bytes()))
+                if effect['type']=='5':
+                    ibmb=renderer();path=self.materialize('raw/'+effect.get('asset',effect['file'].split(':')[0]))
+                    if path:result['screenReference']=self.screen_reference(ibmb._library_raw_parse(path),result)
+            elif effect['type'] == '1': result=self.sprite_simulation(effect)
             elif effect['type'] == '5': result=self.particle_simulation(effect)
             else: result={'frames':[],'textures':[],'warnings':['This source effect is a control command.'],'fps':60,'durationDeclared':0}
             raw=json.dumps(result,allow_nan=False,separators=(',',':')).encode()
@@ -227,7 +268,33 @@ class Library:
         baked['textures']=[self.texture(name,path.parent,warnings,cache) for name in baked['textures']]
         if not any(baked['frames']):warnings.append('The original file is saved, but this renderer produced no visible particles.')
         baked['warnings']=warnings
+        baked['screenReference']=self.screen_reference(original,baked)
         return baked
+
+    def screen_reference(self,original,baked):
+        """Find an authored flat backdrop for screen-anchored effect projection.
+
+        The skill's anchor flag decides whether this reference is used. Normal
+        cloud walls take priority over additive flashes; volumetric meshes are
+        excluded. Unit/target anchored effects retain their original world scale.
+        """
+        ibmb=renderer();candidates=[]
+        for emitter in original.chunks:
+            if not emitter.model:continue
+            path=self.materialize('raw/'+emitter.model+'.m3r')
+            if path is None:continue
+            try:mesh=ibmb.parse_m3r(path)
+            except (ValueError,OSError,struct.error):continue
+            if not mesh['vertices'] or mesh['extent'][2]>1e-4:continue
+            parts=(p for frame in baked['frames'] for p in frame
+                   if p.get('emitter')==emitter.index and p.get('alpha',1)>.01)
+            reference=max(parts,key=lambda p:abs(p['scale'][0]*p['scale'][1]),default=None)
+            if reference is None:continue
+            width,height=map(abs,reference['scale'][:2])
+            if min(width,height)<1:continue
+            candidates.append((emitter.blend!=1,-width*height,emitter.index,
+                {'emitter':emitter.index,'center':reference['pos'][:2],'size':[width,height]}))
+        return min(candidates,key=lambda item:item[:3])[-1] if candidates else None
 
     def texture(self,name,directory,warnings,cache):
         if name.startswith(('nativeuv:', 'quadcolor:', 'mesh:', 'solid:')):
@@ -291,6 +358,7 @@ def renderer():
 
 def integer(value): return bool(re.fullmatch(r'-?\d+',value))
 def split_frames(text): return [x.split(':') for x in re.split(r'[&,]',text or '') if x]
+def source_key(owner):return owner['type']+':'+owner['name']
 
 
 def register(app, env):
@@ -321,10 +389,12 @@ def register(app, env):
         from fastapi.responses import HTMLResponse
         return HTMLResponse(Path(__file__).with_name('ffbe_library.html').read_text(encoding='utf-8'),headers={'Cache-Control':'no-store'})
     @app.get('/api/ffbe-library/catalog')
-    def catalog(q:str='',kind:str='all',scope:str='skills',offset:int=0,limit:int=60,animated:bool=True):
-        return checked(lambda:library().search(q,kind,scope,offset,limit,animated))
+    def catalog(q:str='',kind:str='all',scope:str='skills',offset:int=0,limit:int=60,animated:bool=True,source:str=''):
+        return checked(lambda:library().search(q,kind,scope,offset,limit,animated,source))
+    @app.get('/api/ffbe-library/sources')
+    def sources():return checked(lambda:library().sources())
     @app.get('/api/ffbe-library/entry/{kind}/{identity}')
-    def entry(kind:str,identity:str):return checked(lambda:library().detail(kind,identity))
+    def entry(kind:str,identity:str,source:str=''):return checked(lambda:library().detail(kind,identity,source))
     @app.get('/api/ffbe-library/effect/{identity}')
     def effect(identity:str):
         from fastapi.responses import Response

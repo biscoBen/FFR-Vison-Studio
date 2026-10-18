@@ -41,6 +41,17 @@ to see passive and other records without visual timelines. Sound, speed, seeking
 available; cinematics have their own controls and embedded sound. Browsing makes no changes to units, kits, mod inputs
 or installed game files.
 
+The next update adds **Ability source**: type a name in **Find a source**, then choose the exact character/vision,
+monster or esper from the grouped selector. Select **All sources** to clear it. Source filtering combines with skill
+type and text search; **Include records without an animation reference** also shows that source's passive/unanimated
+records. Shared animations remain included for every recorded owner, and the selected preview uses that owner's
+actual skill record. Sources come from the archived FFBE ownership links; unattributed records stay in the full list.
+
+The same update corrects **Unei → Snowstorm** layering: rear effects draw behind the units, foreground effects draw
+over them, and screen-wide backdrops use a separate viewport projection. Original effect files, sound and blend values
+are retained. The library still approximates source camera motion/3D projection rather than reproducing FFBE's engine.
+Existing preview textures are reused when adding the new projection metadata.
+
 The APK and its delivery catalogs are SHA-pinned; original master rows, BMB/PNG/M3R/CGG/CGS dependencies,
 source variants, USM cinematics and SE/System sound banks are retained. The page includes **1,011** cue records
 and **990** distinct recordings, decoded losslessly and trimmed to their declared sample lengths. Original

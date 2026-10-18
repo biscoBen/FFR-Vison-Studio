@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Animation source filters and layered screen previews
+
+- Add a searchable **Ability source** selector, grouped into **Characters / visions**, **Monsters** and **Espers**. Select an exact source to show its recorded abilities; **All sources** clears the filter. Combine source selection with skill type, text search, pagination and the existing option to include records without animation references.
+- Follow every recorded owner of a shared presentation. Selecting a source returns that source's exact original skill ID and labels its preview with the selected owner, even when the unfiltered library lists the shared animation under another unit. Preserve distinct character/monster sources and separately named unit versions.
+- Keep the same optional library download and existing archive bytes. Unattributed records remain in **All sources** and are not guessed into a unit's kit. Filtering and previewing change no game skills or saved roster data.
+- Correct Unei’s **Snowstorm** preview and the common composition path: draw rear groups behind the actors and front groups over them, preserving source order within each pass. Screen-anchored effects use their authored flat backdrop as a separate viewport reference instead of being fitted into the unit scene. This prevents large fog walls from shrinking the actors and exposes fewer rectangular plate borders; source camera motion and 3D projection still remain approximate.
+- Reuse cached particle frames and texture PNGs when upgrading preview projection metadata. Preserve source shader/blend values, timelines, sounds, original archives and game assignments.
+
+
+
+Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **474 Python checks**
+(seven skipped), all archived member hashes and Chromium browser checks pass. Browser checks cover 3,370 source choices,
+exact Agrias ownership/shared Cura, Cactuar filtering, pagination/reset, four Snowstorm effects, cached-texture reuse,
+and actual canvas pixels proving rear → actor → foreground alpha compositing. Windows packaging is pending.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.44');
+      expect(state['version'], '1.2.45');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_ffbe_library.py',
@@ -191,6 +191,12 @@ route = {r.path:r.endpoint for r in library_app.routes if hasattr(r, 'endpoint')
 summary = route['/api/ffbe-library/catalog'](q='1,000 Needles')
 assert summary['summary']['skills'] == 65428 and summary['total'] > 0
 assert all('sourceLabel' in r for r in summary['items'])
+owners = route['/api/ffbe-library/sources']()['items']
+assert any(s['key']=='character:Agrias' for s in owners)
+agrias = route['/api/ffbe-library/catalog'](source='character:Agrias',animated=False)
+assert agrias['total'] > 0 and all(r['sourceLabel']=='Agrias' for r in agrias['items'])
+own = agrias['items'][0]
+assert route['/api/ffbe-library/entry/{kind}/{identity}'](own['kind'],own['id'],source='character:Agrias')['entry']['sourceLabel']=='Agrias'
 library = _ffr_ffbe_library.Library(root)
 effect = json.loads(gzip.decompress(library.simulation('1002460')))
 assert effect['warnings'] == [] and len(effect['textures']) == 3

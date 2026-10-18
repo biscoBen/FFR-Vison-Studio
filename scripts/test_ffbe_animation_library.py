@@ -100,6 +100,32 @@ class LibraryTests(unittest.TestCase):
         self.assertEqual(result['frames'][0][0]['pos'],[17.0,-21.0,0])
         self.assertEqual(result['warnings'],[])
 
+    def test_screen_reference_prefers_cloud_wall_to_flash_and_excludes_volume(self):
+        chunks=[SimpleNamespace(index=4,model='wall',blend=1),
+                SimpleNamespace(index=5,model='flash',blend=2),
+                SimpleNamespace(index=8,model='globe',blend=1)]
+        meshes={'wall':{'vertices':[(0,0,0)],'extent':[1,1,0]},
+                'flash':{'vertices':[(0,0,0)],'extent':[2,2,0]},
+                'globe':{'vertices':[(0,0,0)],'extent':[2,3,2]}}
+        baked={'frames':[[{'emitter':4,'pos':[0,0,0],'scale':[700,800],'alpha':1},
+                          {'emitter':5,'pos':[0,260,0],'scale':[1200,900],'alpha':.95},
+                          {'emitter':8,'pos':[80,0,0],'scale':[700,1236],'alpha':.5}]]}
+        with patch.object(self.library,'materialize',side_effect=lambda name:Path(name).stem), \
+                patch.object(lib,'renderer',return_value=SimpleNamespace(parse_m3r=lambda name:meshes[name])):
+            reference=self.library.screen_reference(SimpleNamespace(chunks=chunks),baked)
+        self.assertEqual(reference,{'emitter':4,'center':[0,0],'size':[700,800]})
+
+    def test_preview_cache_upgrade_reuses_existing_frames_and_texture_urls(self):
+        self.library.cache.mkdir(parents=True)
+        old={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10]}]],
+             'textures':[{'url':'/api/ffbe-library/preview-texture/kept.png'}],'warnings':[]}
+        (self.library.cache/'1002460.json.gz').write_bytes(gzip.compress(json.dumps(old).encode()))
+        reference={'emitter':1,'center':[0,0],'size':[700,800]}
+        with patch.object(self.library,'particle_simulation',side_effect=AssertionError('Unnecessary rebake')), \
+                patch.object(self.library,'screen_reference',return_value=reference):
+            result=json.loads(gzip.decompress(self.library.simulation('1002460')))
+        self.assertEqual(result,{**old,'screenReference':reference})
+
     def test_pack_corruption_and_unknown_files_are_rejected(self):
         with self.assertRaises(ValueError):self.library.read('../../config.json')
         path=self.library.directory/'library-01.zip';path.write_bytes(path.read_bytes()+b'changed')
@@ -147,6 +173,57 @@ class LibraryTests(unittest.TestCase):
         with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
                 patch.object(self.library,'browser',return_value={'owners':{}}):
             self.assertEqual(self.library.search('Needles')['total'],len(cases)+2)
+
+    def test_source_filter_follows_shared_alias_to_owners_exact_skill_and_detail(self):
+        skill={**self.data['catalog.json']['skills'][0],'key':'magic:40051','id':'40051'}
+        self.data['catalog.json']['skills'].append(skill)
+        owners={'magic:40050':[{'name':'Agrias','type':'character'}],
+                'magic:40051':[{'name':'Christine','type':'character'}],
+                'ability:99':[{'name':'Christine','type':'character'}]}
+        with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
+                patch.object(self.library,'browser',return_value={'owners':owners}):
+            entry,=self.library.search(source='character:Christine')['items']
+            self.assertEqual(entry['key'],'magic:40051')
+            self.assertEqual(entry['sourceLabel'],'Christine')
+            self.assertEqual(entry['equivalentCount'],2)
+            detail=self.library.detail('magic','40051',source='character:Christine')
+            self.assertEqual(detail['entry']['sourceLabel'],'Christine')
+            self.assertEqual(detail['variants'][0][0]['groupId'],'5002490')
+            with self.assertRaisesRegex(ValueError,'selected source'):
+                self.library.detail('magic','40050',source='character:Christine')
+            self.assertEqual(self.library.search(source='character:Christine',animated=False)['total'],2)
+            self.assertEqual(self.library.search(source='character:Christine',kind='ability',animated=False)['items'][0]['id'],'99')
+            self.assertEqual(self.library.search('Needles')['items'][0]['sourceLabel'],'Agrias')
+            counts={s['key']:s['skills'] for s in self.library.sources()['items']}
+            self.assertEqual(counts,{'character:Agrias':1,'character:Christine':2})
+
+    def test_source_filter_is_exact_typed_and_combines_with_query_and_pagination(self):
+        owners={'magic:40050':[{'name':'Agrias','type':'character'}],
+                'monster:151400':[{'name':'Agrias','type':'monster'}],
+                'ability:99':[{'name':'Agrias: Test','type':'character'}]}
+        with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
+                patch.object(self.library,'browser',return_value={'owners':owners}):
+            self.assertEqual(self.library.search(source='character:Agrias')['items'][0]['kind'],'magic')
+            self.assertEqual(self.library.search(source='monster:Agrias')['items'][0]['kind'],'monster')
+            self.assertEqual(self.library.search(source='character:Agri')['total'],0)
+            self.assertEqual(self.library.search('missing',source='character:Agrias')['total'],0)
+            self.assertEqual(self.library.search(source='character:Agrias',offset=1)['items'],[])
+            self.assertEqual(self.library.search(source='character:Agrias: Test',animated=False)['items'][0]['id'],'99')
+            self.assertEqual(self.library.search(source='character:Agrias',kind='monster')['total'],0)
+
+    def test_source_filter_applies_to_raw_effect_views_and_rejects_unowned_detail(self):
+        self.data['catalog.json']['groups']=[{'key':'group:5002490','kind':'group','id':'5002490','name':'Needles group'}]
+        self.data['catalog.json']['effects']=[{'key':'effect:1002460','kind':'effect','id':'1002460','name':'Needles effect'}]
+        owners={'magic:40050':[{'name':'Agrias','type':'character'}]}
+        with patch.object(self.library,'document',side_effect=self.data.__getitem__), \
+                patch.object(self.library,'browser',return_value={'owners':owners}):
+            for scope,kind,identity in [('groups','group','5002490'),('effects','effect','1002460')]:
+                entry,=self.library.search(scope=scope,source='character:Agrias')['items']
+                self.assertEqual(entry['sourceLabel'],'Agrias')
+                self.assertEqual(self.library.detail(kind,identity,source='character:Agrias')['entry']['sourceLabel'],'Agrias')
+                self.assertEqual(self.library.search(scope=scope,source='monster:Agrias')['total'],0)
+                with self.assertRaisesRegex(ValueError,'selected source'):
+                    self.library.detail(kind,identity,source='monster:Agrias')
 
     def test_corrupt_owned_source_cache_is_recovered_from_verified_pack(self):
         path=self.library.materialize('raw/atk_nail1_white.bmb');path.write_bytes(b'changed')

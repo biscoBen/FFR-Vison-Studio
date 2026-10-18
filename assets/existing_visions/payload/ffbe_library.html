@@ -118,6 +118,10 @@
       .filters input[type="search"] {
         width: 100%;
       }
+      .filters > select {
+        width: 100%;
+        min-width: 0;
+      }
       .pair {
         display: flex;
         gap: 8px;
@@ -350,6 +354,16 @@
               <option value="summon">Summons</option>
             </select>
           </div>
+          <label for="source-search">Character / vision / monster</label>
+          <input
+            id="source-search"
+            type="search"
+            placeholder="Find a source by name"
+            aria-label="Find an ability source"
+          />
+          <select id="source" aria-label="Ability source">
+            <option value="">All sources</option>
+          </select>
           <label
             ><input id="includeEmpty" type="checkbox" /> Include records without
             an animation reference</label
@@ -531,6 +545,7 @@
           offset: state.offset,
           limit: 60,
           animated: !$("includeEmpty").checked,
+          source: $("source").value,
         });
         try {
           const result = await api("/api/ffbe-library/catalog?" + params);
@@ -579,6 +594,44 @@
         }
       }
       let searchTimer;
+      let sourceOptions = [];
+      function renderSources() {
+        const selected = $("source").value,
+          query = $("source-search").value.toLocaleLowerCase().trim();
+        $("source").replaceChildren(new Option("All sources", ""));
+        for (const [type, label] of [
+          ["character", "Characters / visions"],
+          ["monster", "Monsters"],
+          ["summon", "Espers"],
+        ]) {
+          const matches = sourceOptions.filter(
+            (s) =>
+              s.type === type &&
+              (!query ||
+                s.name.toLocaleLowerCase().includes(query) ||
+                s.key === selected),
+          );
+          if (!matches.length) continue;
+          const group = document.createElement("optgroup");
+          group.label = label;
+          for (const source of matches)
+            group.append(new Option(source.name, source.key));
+          $("source").append(group);
+        }
+        $("source").value = selected;
+      }
+      $("source-search").oninput = renderSources;
+      $("source").onchange = () => {
+        if (!$("source").value) $("source-search").value = "";
+        renderSources();
+        stop();
+        ++state.token;
+        state.key = null;
+        state.detail = null;
+        $("detail").style.display = "none";
+        $("empty").style.display = "block";
+        search();
+      };
       $("query").oninput = () => {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => search(), 220);
@@ -641,7 +694,7 @@
           b.setAttribute("aria-selected", String(b.dataset.key === entry.key));
         try {
           const detail = await api(
-            `/api/ffbe-library/entry/${encodeURIComponent(entry.kind)}/${encodeURIComponent(entry.id)}`,
+            `/api/ffbe-library/entry/${encodeURIComponent(entry.kind)}/${encodeURIComponent(entry.id)}?${new URLSearchParams({ source: $("source").value })}`,
           );
           if (token !== state.token) return;
           state.detail = detail;
@@ -822,6 +875,9 @@
                 if (!part || !Number.isFinite(part.pos[0])) continue;
                 result.push({
                   part,
+                  rear: Number(group.flags[0]) === 2,
+                  screen:
+                    Number(group.flags[1]) === 4 ? sim.screenReference : null,
                   texture: sim.textures[part.tex],
                   x: ax + dx + part.pos[0] * scale,
                   y: ay + dy + part.pos[1] * scale,
@@ -842,6 +898,7 @@
           y1 = 330;
         for (let t = 0; t < state.duration; t += 0.18) {
           for (const s of spritesAt(t)) {
+            if (s.screen) continue;
             if (Math.abs(s.sx) > 5000 || Math.abs(s.sy) > 5000) continue;
             x0 = Math.min(x0, s.x - Math.abs(s.sx) / 2);
             x1 = Math.max(x1, s.x + Math.abs(s.sx) / 2);
@@ -959,6 +1016,12 @@
         ctx.fillStyle = "#9aaeb4";
         const casterKind = sceneDirection() === 1 ? "character" : "monster",
           targetKind = casterKind === "character" ? "monster" : "character";
+        const sprites = spritesAt(time);
+        drawSprites(
+          sprites.filter((s) => s.rear),
+          point,
+          ppu,
+        );
         drawActor(casterKind, 220, -30, time, point, ppu);
         const targets =
           Number($("targets").value) === 3
@@ -981,16 +1044,40 @@
             py,
           );
         }
-        for (const s of spritesAt(time)) {
+        drawSprites(
+          sprites.filter((s) => !s.rear),
+          point,
+          ppu,
+        );
+        text("time", `${time.toFixed(2)} / ${state.duration.toFixed(2)} s`);
+      }
+      function drawSprites(sprites, point, ppu) {
+        for (const s of sprites) {
           if (!s.texture) continue;
           const cached = state.images.get(s.texture.url);
           if (!imageCache.has(s.texture.url) && cached)
             cached.then((img) => imageCache.set(s.texture.url, img));
           const image = imageCache.get(s.texture.url);
           if (!image) continue;
-          const [x, y] = point(s.x, s.y),
-            w = Math.abs(s.sx) * ppu,
-            h = Math.abs(s.sy) * ppu;
+          let position = point(s.x, s.y),
+            pixelsPerUnit = ppu;
+          if (s.screen) {
+            // Screen backdrops have their own projection. Fitting them into
+            // the unit scene exposed rectangular plate borders and shrank
+            // every actor when effects used a large fog wall or flash.
+            pixelsPerUnit = Math.max(
+              960 / s.screen.size[0],
+              600 / s.screen.size[1],
+            );
+            position = [
+              480 +
+                (s.x - s.screen.center[0]) * pixelsPerUnit * sceneDirection(),
+              300 - (s.y - 100 - s.screen.center[1]) * pixelsPerUnit,
+            ];
+          }
+          const [x, y] = position,
+            w = Math.abs(s.sx) * pixelsPerUnit,
+            h = Math.abs(s.sy) * pixelsPerUnit;
           if (w < 0.2 || h < 0.2 || w > 12000 || h > 12000) continue;
           ctx.save();
           ctx.translate(x, y);
@@ -1011,7 +1098,6 @@
           );
           ctx.restore();
         }
-        text("time", `${time.toFixed(2)} / ${state.duration.toFixed(2)} s`);
       }
       function sourceList() {
         const list = $("sourceList");
@@ -1186,7 +1272,13 @@
       const sizeLabel = (n) => (n / 1e9).toFixed(2) + " GB";
       async function enterGallery() {
         if (galleryStarted) return;
-        actors.meta = await api("/api/ffbe-library/actors");
+        const [metadata, sources] = await Promise.all([
+          api("/api/ffbe-library/actors"),
+          api("/api/ffbe-library/sources"),
+        ]);
+        actors.meta = metadata;
+        sourceOptions = sources.items;
+        renderSources();
         await Promise.all(
           Object.entries(actors.meta).map(async ([key, actor]) => {
             const img = new Image();
