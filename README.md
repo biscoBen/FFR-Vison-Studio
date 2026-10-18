@@ -4,30 +4,35 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-### Animation source filters and mesh alignment — 2026-10-17
+### Portable fog edges and complete source choices — 2026-10-18
 
-[Verified Windows download / run 39085967496](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39085967496/Sephira-Studio-Test.zip)
-(code `645270a`, extension 1.2.46; **46.4 MB**). The optional **1.99 GB** library stays separate and is reused.
-Use **Home → FFBE animation library**, then **Find a source** and the grouped **Ability source** selector to narrow
-skills to a character/vision, monster or esper. Shared presentations retain that owner's exact original skill record.
-**All sources** clears the filter. No mod rebuild or game installation is needed for browsing.
+[Verified Windows download / run 39150580826](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39150580826/Sephira-Studio-Test.zip)
+(code `bbf642f`, extension 1.2.48; **46.6 MB**). The optional **1.99 GB** library stays separate and is reused;
+its 56 source packs have not changed. No source-library redownload or mod rebuild is needed for browsing.
 
-Shared preview corrections preserve rear/front layer order, each mesh's authored pivot and rotated effect bounds.
-They apply throughout the library, including compatible cached previews. This does **not** certify all 45,478 distinct
-presentations as visually identical to FFBE: source camera/3D behavior remains approximate, and Snowstorm's remaining
-wind outline still needs a native comparison.
+Use **Home → FFBE animation library**, then **Find a source** and the grouped **Ability source** selector.
+The full data audit adds **531 source choices**, bringing the selector to **3,901**, including Christine and
+94 previously omitted named monsters. All **21 esper** ownership links are corrected. Every associated owner
+can find a shared presentation, even when its first displayed source is someone else.
 
-The full Windows Flutter suite, analysis, **477 Python checks** (seven skipped), fresh frozen-engine setup and
-launcher/updater checks pass. Package provenance/checksum, all **46** extension files and **16** Crystal Fina files
-match source; the app contains no large library packs. Source filtering and browser checks pass for 3,370 source choices,
-Snowstorm and five other representative spells. A structural audit checks all **875** source meshes; it is not a visual
-parity test. The separate release's **56** pack digests remain unchanged. Full validation and measured timings are in
-[the changelog](CHANGELOG.md#published-animation-source-filters-and-mesh-alignment--2026-10-17).
+Christine has **seven matching library records**. Her Global-exclusive skills such as **Snow Burial** have no
+matching record in this supplied Memorial archive; the selected source lists those unavailable skills by name.
+Known sources remain selectable even when no matching skills or skill associations are recorded. No substitute
+animations are guessed. **All sources** clears the filter.
 
-The next update adds a portable **Soften exposed fog edges** option and broadens the source index to 3,901 names,
-including Christine and all 21 espers. Known Global skills absent from the Memorial data are listed explicitly under
-the selected source. Generated fog alpha is also retained in downloadable visual-layer conversion files; they assign
-nothing to the game. Final verification and package publication are pending.
+**Soften exposed fog edges** is on by default. It feathers exposed fog/cloud/smoke outlines in the actual generated
+texture alpha, including the background wall and slanted sheet in Unei's **Snowstorm**. Uncheck it to compare
+original edges. Under **Effects and sound cues**, **Download visual-layer conversion** provides the prepared
+textures, animation document and a helper for the existing SpriteStudio converter. The exported textures preserve
+the correction through conversion; these files assign nothing to the game. Skill timing placement, anchors,
+sound routing, asset capacity and game bindings still need integration.
+
+Windows full validation, frozen-engine setup, launcher/updater checks and compilation pass for this exact code.
+The downloaded package matches all **46** extension and **16** Crystal Fina file hashes and contains no large library
+packs. Chromium checks cover source filtering, both edge modes, layering and a real conversion download. All **199**
+fog-sheet cells retain exact RGBA through the existing converter's PNG and BGRA atlas output. This proves portable
+visual data, not live-game playback or full FFBE camera/3D parity. Full validation, checksum and measured timings
+are in [the changelog](CHANGELOG.md#published-portable-fog-edge-conversion-and-missing-source-coverage--2026-10-18).
 
 Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
 Retest the recorded original-enemy failures then before adding further demo-specific repairs.
@@ -56,14 +61,18 @@ Use **Ability source**: type a name in **Find a source**, then choose the exact 
 monster or esper from the grouped selector. Select **All sources** to clear it. Source filtering combines with skill
 type and text search; **Include records without an animation reference** also shows that source's passive/unanimated
 records. Shared animations remain included for every recorded owner, and the selected preview uses that owner's
-actual skill record. Sources come from the archived FFBE ownership links; unattributed records stay in the full list.
+actual skill record. Sources come from archived Memorial ownership links and checksum-pinned Global grants;
+Global links require an exact typed skill ID and matching original name. Unattributed records stay in the full list.
+Selected sources list known Global skills with no matching Memorial record, rather than hiding the source itself.
 
 The preview corrects **Unei → Snowstorm** layering: rear effects draw behind the units, foreground effects draw
 over them, and screen-wide backdrops use a separate viewport projection. Original effect files, sound and blend values
 are retained. The library still approximates source camera motion/3D projection rather than reproducing FFBE's engine.
 Mesh previews also retain their authored pivot through rotation/mirroring, and preview framing includes rotated corners.
-Compatible cached texture PNGs are reused while draw positions upgrade. These common fixes apply throughout the library;
-they do not establish that all 45,478 presentations match FFBE exactly, and the Snowstorm wind edge still needs a native comparison.
+Shared triangle edges follow GL's top-left fill rule so translucent triangles do not shade a common diagonal twice.
+Separate soft/original caches include the portable fog-edge treatment described above. These common fixes apply
+throughout the library; they do not establish that all 45,478 presentations match FFBE exactly. Camera motion,
+mixed-axis 3D transforms and other unsupported source behavior still need native comparisons.
 
 The APK and its delivery catalogs are SHA-pinned; original master rows, BMB/PNG/M3R/CGG/CGS dependencies,
 source variants, USM cinematics and SE/System sound banks are retained. The page includes **1,011** cue records
@@ -95,11 +104,13 @@ python scripts/prepare_ffbe_library_audio.py --source <source> --work <work> --e
 python scripts/prepare_ffbe_library_movies.py --source <source> --work <work>
 python scripts/build_ffbe_animation_library.py --source <source> --work <work> --extract
 python scripts/verify_ffbe_animation_library.py
-python scripts/build_ffbe_library_browser.py --source <source> --actors <original-idle-sprites>
+python scripts/build_ffbe_library_browser.py --source <source> --actors <original-idle-sprites> --global-source <pinned-global-json-folder>
 ```
 
 The browser overlay takes the original `christine.webp` (401002606) and native `cactuar-native.png` idle
-sheet. Its metadata records their source hashes and the master-table hashes used for ownership.
+sheet. Its metadata records their source hashes and the master-table hashes used for ownership. The optional
+Global ownership folder uses the exact JSON inputs and commit pinned by
+[`global-ownership-lock.json`](scripts/fixtures/ffbe_library/global-ownership-lock.json); mismatched hashes are rejected.
 
 The APK is inspected rather than executed; source downloads use only its verified delivery URLs/ranges. Normal
 Studio use needs none of these developer dependencies. Game assets retain their original ownership.

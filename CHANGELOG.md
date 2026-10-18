@@ -11,25 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Portable fog-edge conversion and missing source coverage
-
-- Correct shared triangle-edge ownership to match GL's top-left fill rule. Translucent mesh triangles no longer shade their common diagonal twice.
-- Add **Soften exposed fog edges**, on by default, with an original-edge comparison. Recognize normal-blended source fog/cloud/smoke surfaces; feather their exposed geometry outlines in generated PNG alpha. Preserve the interior, source RGB, timing and raw archive files. Already feathered mesh outlines, additive flashes and non-fog materials keep their existing treatment. The correction addresses the circled background wall and slanted fog sheet in Unei's Snowstorm and applies to the same material classes throughout the library.
-- Bake the treatment into conversion textures rather than clipping the browser viewport. Add **Download visual-layer conversion** under **Effects and sound cues**: prepared PNGs, a normalized animation document and a helper for the existing SpriteStudio converter. Optional emitter selection can split large effects. These are visual-layer source files, not an installed skill; timing placement, anchors, sound routing, asset capacity and game bindings still need integration. No game assignment or table changes are made.
-- Refresh derived particle previews once for corrected triangle rasterization and separate soft/original profiles. Keep all 56 optional library packs unchanged; no source-library redownload is needed.
-- Audit the source index across the full available unit data. Supplement missing Memorial character records with checksum-pinned Global unit grants, passives, limit bursts and enhancements from `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`. Require an exact typed skill ID and matching original name before linking Global grants to an existing Memorial record. Keep original first-source labels while retaining every associated owner for filtering.
-- Add **531 selectable sources**, bringing the selector to **3,901**. Christine now shows her seven matching library records, including Blizzaga despite its first source being Lasswell. Also retain all 94 previously omitted named monsters whose available records have no skill-set associations. Keep known units with no matching archive skills selectable; explain their missing Global records by name instead of silently omitting them. Christine's Snow Burial and other exclusive Global skills have no matching record in this supplied Memorial archive; no substitute animations are guessed.
-- Correct all **21 esper** source links using the original esper/rank status table. The skill table's boolean field was previously mistaken for an identity. Preserve every existing character/monster variant and all 65,428 original Memorial records.
-
-Validation: local analysis, **28 focused Flutter checks** (one Windows-only skip), **485 Python checks**
-(19 local platform/tool skips) and Chromium checks pass. Cover real packaged Christine/other Global coverage,
-all esper links, typed-ID collisions, source checksums, triangle fill, alpha at multiple aspect ratios and independent
-edge caches. Real UI downloads a full Snowstorm foreground conversion archive; its 199 fog-sheet texture cells
-retain byte-exact RGBA through the existing SpriteStudio converter and BGRA atlas output. Both edge modes,
-source filtering/pagination/reset and rear → actor → foreground compositing pass. No live-game assignment or
-playback test is claimed. Windows packaging is pending.
-
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -73,6 +54,44 @@ playback test is claimed. Windows packaging is pending.
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published portable fog-edge conversion and missing source coverage — 2026-10-18
+
+Code: [`bbf642f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bbf642f53220cfb583599826cb5d19a12cdbc465), extension **1.2.48**.
+Windows package: [run 39150580826](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39150580826/Sephira-Studio-Test.zip). **46,602,319 bytes** (46.6 MB).
+SHA-256: `b241b9a2327986fff25621abc4d238eab4c4b7c481f23b0d14a63379c581ec7b`.
+
+- Correct shared triangle-edge ownership to match GL's top-left fill rule. Translucent mesh triangles no longer shade their common diagonal twice.
+- Add **Soften exposed fog edges**, on by default, with an original-edge comparison. Recognize normal-blended source fog/cloud/smoke surfaces; feather their exposed geometry outlines in generated PNG alpha. Preserve the interior, source RGB, timing and raw archive files. Already feathered mesh outlines, additive flashes and non-fog materials keep their existing treatment. The correction addresses the circled background wall and slanted fog sheet in Unei's Snowstorm and applies to the same material classes throughout the library.
+- Bake the treatment into conversion textures rather than clipping the browser viewport. Add **Download visual-layer conversion** under **Effects and sound cues**: prepared PNGs, a normalized animation document and a helper for the existing SpriteStudio converter. Optional emitter selection can split large effects. These are visual-layer source files, not an installed skill; timing placement, anchors, sound routing, asset capacity and game bindings still need integration. No game assignment or table changes are made.
+- Refresh derived particle previews once for corrected triangle rasterization and separate soft/original profiles. Keep all 56 optional library packs unchanged; no source-library redownload is needed.
+- Audit the source index across the full available unit data. Supplement missing Memorial character records with checksum-pinned Global unit grants, passives, limit bursts and enhancements from `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`. Require an exact typed skill ID and matching original name before linking Global grants to an existing Memorial record. Keep original first-source labels while retaining every associated owner for filtering.
+- Add **531 selectable sources**, bringing the selector to **3,901**. Christine now shows her seven matching library records, including Blizzaga despite its first source being Lasswell. Also retain all 94 previously omitted named monsters whose available records have no skill-set associations. Keep known units with no matching archive skills selectable; explain their missing Global records by name instead of silently omitting them. Christine's Snow Burial and other exclusive Global skills have no matching record in this supplied Memorial archive; no substitute animations are guessed.
+- Correct all **21 esper** source links using the original esper/rank status table. The skill table's boolean field was previously mistaken for an identity. Preserve every existing character/monster variant and all 65,428 original Memorial records.
+
+Validation: local analysis, **28 focused Flutter checks** (one Windows-only skip), **485 Python checks**
+(19 local platform/tool skips) and real Chromium checks pass. Cover the complete 3,901-name source index,
+actual Christine/shared Blizzaga, other missing Global units, no-association monsters, all esper joins,
+source checksums, triangle fill, alpha at multiple aspect ratios, independent edge profiles, pagination/reset,
+rotated framing and rear → actor → foreground compositing. At Snowstorm's exposed fog outline the prepared
+texture's maximum border alpha changes from 180 (original) to 0 (soft), independently of the viewport.
+A real UI conversion download is processed by the existing SpriteStudio converter: all **199** fog-sheet cells
+retain exact RGBA in both PNG and BGRA atlas data. This verifies portable visual data, not live-game playback
+or automatic skill integration. Source camera/motion and other particle behavior remain approximate; soft edges
+are a reversible conversion treatment, not a claim of native FFBE parity.
+
+Full Windows validation, fresh frozen-engine setup, launcher/updater checks and compilation pass for the exact
+code. The downloaded package's provenance and SHA-256 match its published release asset. All **46** extension
+and **16** Crystal Fina file hashes match source; no large library packs are bundled. The separate release's
+**56** source-pack digests stay unchanged. Engine pin, personal rosters and game skill assignments are unchanged.
+
+Measured timing: first complete candidate **2026-10-18 17:09:57.750 UTC** → verified release download
+**17:56:07.371 UTC**, **46m 10s**, including local checks, corrections, the final monster-registry audit, both
+builds, waits and verification. The timer was not restarted after corrections. Actual CI wall times were
+**10m 10s** (run 39149811241) and **11m 57s** (final run 39150580826). Both matching automatic code runs
+succeeded; no duplicate manual workflow was dispatched. Sum of started-to-completed runner job time across
+both runs: **31m 35s** (**23m 34s Windows**, **8m 01s Ubuntu**), separate from the overlapping CI wall times
+and end-to-end elapsed time. These are measured job durations, not billed/rounded usage.
 
 ## Published animation source filters and mesh alignment — 2026-10-17
 
