@@ -11,21 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Optional animation library download, source names and preview units
-
-- Keep the 1.99 GB Memorial library out of Studio app packages. Opening **FFBE animation library** checks for existing verified packs; missing data prompts **Download library / Not now**. Nothing downloads at normal startup. Show progress and allow pause/resume; check every pack's SHA256 and publish the installed manifest only when all files pass. Reuse prior installed library data across Studio updates and repair only missing or damaged packs.
-- Publish the unchanged source packs once as an independent, immutable data release. Ship only the small trusted manifest and browser metadata with app updates. Keep all original source records, sound banks and files available for later conversion; browsing still assigns nothing to the game.
-- Show actual FFBE unit, monster or esper source names derived from level grants, enhancement recipes, limit-burst links, bestiary names and enemy skill sets. Search also finds alternate owners. Unlinked records say **Unattributed FFBE source** rather than guessing a character or showing a numeric ID as the source.
-- Combine identical same-named skill presentations under their first known source: **45,478** browsing entries represent **65,428** retained master records. Preserve character/monster versions, differing sprite sequences, particle files, cue timing, hit timing, placement flags and cinematics. Original IDs and aliases remain available internally for later imports.
-- Preview with animated **Christine 6★** and **Cactuar** sprites instead of dots. Choose either caster, show one or three actual targets and mark original hit times. Christine uses her FFBE idle; Cactuar uses the supplied Resonance demo idle. These are preview actors only; source caller motion/camera commands and every FFBE emitter remain subject to the existing renderer limits.
-- Correct Cactuar’s unevenly packed native cells using their original coordinates and pivots. Verify every idle frame against its original pixel hash to catch head/arm clipping or neighboring-frame bleed.
-
-
-Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **469 Python checks**
-(seven skipped), source-archive verification and Chromium previews pass. Cover consent/decline, progress, pause/resume,
-checksum failures, existing-library reuse, corrupted-pack repair, source-name search, distinct timing/target/audio/sprite
-variants, Christine/Cactuar rendering, original Needles audio, seeking and cinematics. Windows packaging is pending.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -69,6 +54,42 @@ variants, Christine/Cactuar rendering, original Needles audio, seeking and cinem
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published optional animation library, named sources and preview units — 2026-10-17
+
+Code: [`1a32262`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1a322621825313798daaedb57f896651b78e4e36), extension **1.2.44**.
+[Verified Windows download / run 39081843723](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39081843723/Sephira-Studio-Test.zip), **46,350,787 bytes** (46.4 MB).
+[Independent source data release](https://github.com/biscoBen/FFR-Vison-Studio/releases/tag/ffbe-library-memorial-en-v208-1).
+
+- Keep the 1.99 GB Memorial library out of Studio app packages. Opening **FFBE animation library** checks for existing verified packs; missing data prompts **Download library / Not now**. Nothing downloads at normal startup. Show progress and allow pause/resume; check every pack's SHA256 and publish the installed manifest only when all files pass. Reuse prior installed library data across Studio updates and repair only missing or damaged packs.
+- Publish the unchanged source packs once as an independent, immutable data release. Ship only the small trusted manifest and browser metadata with app updates. Keep all original source records, sound banks and files available for later conversion; browsing still assigns nothing to the game.
+- Show actual FFBE unit, monster or esper source names derived from level grants, enhancement recipes, limit-burst links, bestiary names and enemy skill sets. Search also finds alternate owners. Unlinked records say **Unattributed FFBE source** rather than guessing a character or showing a numeric ID as the source.
+- Combine identical same-named skill presentations under their first known source: **45,478** browsing entries represent **65,428** retained master records. Preserve character/monster versions, differing sprite sequences, particle files, cue timing, hit timing, placement flags and cinematics. Original IDs and aliases remain available internally for later imports.
+- Preview with animated **Christine 6★** and **Cactuar** sprites instead of dots. Choose either caster, show one or three actual targets and mark original hit times. Christine uses her FFBE idle; Cactuar uses the supplied Resonance demo idle. These are preview actors only; source caller motion/camera commands and every FFBE emitter remain subject to the existing renderer limits.
+- Correct Cactuar’s unevenly packed native cells using their original coordinates and pivots. Verify every idle frame against its original pixel hash to catch head/arm clipping or neighboring-frame bleed.
+
+Validation: local analysis, **28 focused Flutter checks** (one Windows-only check skipped), **469 Python checks**
+(seven skipped), source-archive verification and Chromium previews pass. Cover consent/decline, progress, pause/resume,
+checksum failures, existing-library reuse, corrupted-pack repair, source-name search, distinct timing/target/audio/sprite
+variants, Christine/Cactuar rendering, original Needles audio, seeking and cinematics. The full Windows Flutter suite, analysis, **469 Python checks** (seven skipped), fresh frozen-engine installation, original particle/sprite/audio/cinematic reads, launcher/updater checks and compilation pass.
+
+The downloaded app's provenance and SHA256 match the selected workflow. All **46** packaged extension files
+(**43** managed runtime resources) and **16** Crystal Fina files match source hashes. The app contains no
+`assets/ffbe_library/` packs. All 56 independent data-release digests match the existing immutable archives.
+A real public download through the shipped installer fetches one missing pack, reuses 55 existing verified packs
+and commits a ready manifest successfully. Windows' fresh-install fixture installs all 56 packs through a local
+transport; the public test separately confirms the real download endpoint. Archive bytes, engine pin, game
+assignments, personal rosters and Crystal Fina assets remain unchanged. No mod rebuild is needed for browsing.
+
+Package SHA256: `e618d9548ee7bc3fc1d509101da166a2908d5e969bdce1ae3d85fb1dfc710909`.
+
+First complete code candidate **00:03:59.187 UTC** to verified download **00:25:49.545 UTC** on October 18:
+**21m 50s**, including local checks, the reported Cactuar clipping correction, build waits, separate-data publication
+and package/public-download verification. The final matching push run took **13m 39s** of CI elapsed time.
+Two automatic code workflows ran: the first was superseded/cancelled and the corrected candidate passed; no manual
+duplicate was dispatched. Summed runner job time: **31m 37s** (**24m 29s Windows**, **7m 08s Linux**), separate
+from local elapsed time. Required step outcomes are confirmed through the Jobs API; package download used the
+helper's authenticated, checksum-verified test-release fallback.
 
 ## Published FFBE animation and sound library — 2026-10-17
 

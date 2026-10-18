@@ -6,19 +6,23 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 
 ### FFBE animation library — 2026-10-17
 
-[Verified Windows download / run 39076528651](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39076528651/Sephira-Studio-Test.zip)
-(code `a8bec63`, extension 1.2.43; about **2.03 GB**). Update Studio and use **Home → FFBE animation library**.
-No mod rebuild or game installation is needed for browsing. The full Windows Flutter suite, analysis, **454 Python
-checks** (seven skipped), fresh frozen-engine setup and launcher/updater checks pass. Download provenance/checksum,
-all **56** library packs and all **43** extension/**16** Crystal Fina resources are verified against source; Crystal
-Fina assets remain unchanged. The library manifest differs only in Windows newlines; its JSON and member hashes match.
-Original particle rendering/game conversion parity remains unverified. Full validation and timings are in the changelog.
+[Verified Windows download / run 39081843723](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39081843723/Sephira-Studio-Test.zip)
+(code `1a32262`, extension 1.2.44; **46.4 MB**). The optional **1.99 GB** library is separate from Studio updates.
+Use **Home → FFBE animation library**; existing files are reused, or choose **Download library** when prompted.
+No mod rebuild or game installation is needed for browsing. Entries show named sources and combine matching
+presentations. Animated Christine/Cactuar preview units replace the dots; Cactuar's original packed cells prevent clipping.
+
+The full Windows Flutter suite, analysis, **469 Python checks** (seven skipped), fresh frozen-engine setup and
+launcher/updater checks pass. Package provenance/checksum, all **46** extension files and **16** Crystal Fina files
+match source; the app contains no large library packs. The separate release's **56** pack digests match, and a real
+public download of a missing pack with reuse of the other 55 succeeds. Original particle rendering/game conversion
+parity remains unverified. Full validation and measured timings are in the changelog.
 
 Native missing-animation repair work is on hold until the full game launches on Thursday, as requested.
 Retest the recorded original-enemy failures then before adding further demo-specific repairs.
 
-Home's **FFBE animation library** button opens a local browser page. The next update separates the optional
-**1.99 GB** source download from the Studio app: the page checks existing files, then asks **Download library / Not now**
+Home's **FFBE animation library** button opens a local browser page. The optional
+**1.99 GB** source download is separate from the Studio app: the page checks existing files, then asks **Download library / Not now**
 if needed. Normal startup downloads nothing. Progress, pause/resume and checksum repair reuse completed files;
 existing installations from the earlier bundled library are recognized automatically. App updates keep the data under
 `engine/library/ffbe/`; previews are cached separately under `engine/build/ffbelib1/`.
