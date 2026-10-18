@@ -31,8 +31,9 @@ import hashlib
 import math
 import os
 import random
+import re
 import struct
-from collections import OrderedDict
+from collections import Counter, OrderedDict
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
@@ -1421,7 +1422,40 @@ SIZE_IS_HALF_EXTENT = True
 
 # Bump when bake() output changes meaning (sizes, colour, timing); layer_spec re-renders cached docs with an older stamp.
 # 3 = v26: half extents, colour slot 19, per-axis curves, radial streaks, repeat / interval.
-BAKE_VERSION = 16
+BAKE_VERSION = 17
+
+
+def mesh_has_exposed_edge(mesh):
+    """Detect nontransparent outline vertices, welding UV-split positions."""
+    vertices=mesh['vertices'];colours=mesh.get('colors') or [(1,1,1,1)]*len(vertices)
+    welded=[tuple(round(v,5) for v in point) for point in vertices]
+    edges=Counter()
+    indices=mesh['indices']
+    for i in range(0,len(indices)-2,3):
+        a,b,c=indices[i:i+3]
+        for x,y in ((a,b),(b,c),(c,a)):
+            if welded[x]!=welded[y]:edges[tuple(sorted((welded[x],welded[y])))]+=1
+    boundary={point for edge,count in edges.items() if count==1 for point in edge}
+    return any(welded[i] in boundary and colour[3]>.05 for i,colour in enumerate(colours))
+
+
+def fog_edge_emitters(contexts,dirs):
+    """Compatibility treatment for exposed source fog/smoke/cloud geometry.
+
+    No skill IDs or replacement art. Already feathered outlines, additive
+    flashes and non-fog textures retain their original edge treatment.
+    """
+    result=set();models={}
+    for ctx in contexts:
+        em=ctx.emitter
+        if em.blend!=1 or not re.search(r'(?:cloud|smoke|fog)\d*(?:_|$)',em.texture or '',re.I):continue
+        if not em.model:
+            result.add(em.index);continue
+        if em.model not in models:
+            path=next((os.path.join(d,em.model+'.m3r') for d in dirs if os.path.isfile(os.path.join(d,em.model+'.m3r'))),None)
+            models[em.model]=bool(path and mesh_has_exposed_edge(parse_m3r(path)))
+        if models[em.model]:result.add(em.index)
+    return result
 
 
 def _axis_mode(cur: Curve, i: int) -> str:
@@ -1730,7 +1764,7 @@ def _regular_instances(chain: List[Chunk], limit: int):
 
 def bake(eff: Effect, max_frames: int = 600, max_particles: int = 64,
          seed: int = 12345, model_dirs=None, repeat: int = 1, interval: int = 0,
-         canonical_variation: bool = False) -> dict:
+         canonical_variation: bool = False, soften_fog_edges: bool = False) -> dict:
     """Turn the emitter description into a flat per-frame sprite list.
 
     Emission model (MEDIUM confidence, see FORMAT.md 3.3): the emission node
@@ -1758,6 +1792,7 @@ def bake(eff: Effect, max_frames: int = 600, max_particles: int = 64,
     repeat = max(1, int(repeat)); interval = max(0, int(interval))
     dur = min(max(eff.duration + interval * (repeat - 1), 1), max_frames)
     dirs = list(model_dirs or [os.path.dirname(os.path.abspath(eff.path))])
+    softened=fog_edge_emitters(ctxs,dirs) if soften_fog_edges else set()
 
     # pre-roll the particle spawn schedule so it is stable across frames
     schedule = []  # (ctx, spawn_frame, jitter[3], rot_jitter, life, radial (theta, k) | None, copy time offset)
@@ -1968,10 +2003,11 @@ def bake(eff: Effect, max_frames: int = 600, max_particles: int = 64,
                     payload['material'] = material
                 if em.model:
                     payload.update(model=em.model, tilt=[round(tilt[0], 4), round(tilt[1], 4)])
+                if em.index in softened:payload['fogEdgeFade']=.075
                 tex = 'nativeuv:' + json.dumps(payload, sort_keys=True, separators=(',', ':'))
             elif em.model:
                 # drawn through the mesh (vertex alpha / colour + tilt), see rasterise_mesh
-                tex = mesh_sprite_key(em.model, tex, tilt[0], tilt[1])
+                tex = mesh_sprite_key(em.model, tex, tilt[0], tilt[1],em.index in softened)
 
             rot = nrot + rj
 
@@ -2080,6 +2116,8 @@ def bake(eff: Effect, max_frames: int = 600, max_particles: int = 64,
             "textures": tex_list, "frames": frames,
             "durationDeclared": eff.duration, "repeat": repeat, "interval": interval,
             "bakeVersion": BAKE_VERSION}
+    result['conversion']={'fogEdges':'soft' if soften_fog_edges else 'original','softenedEmitters':sorted(softened),
+                          'profile':'portable-fog-edges-v1','changesSourceFiles':False}
     result['alphaFidelity'] = _alpha_fidelity(
         [chunk for ctx in ctxs for chunk in (*ctx.chain, ctx.emitter)])
     result['alphaFidelity']['constantVariance'] = 'fixed-instance' if canonical_variation else 'authored-center'
@@ -2232,7 +2270,16 @@ def _mesh_raster_triangles(mesh, rx, ry, size):
         w0 = ((x1 - gx) * (y2 - gy) - (x2 - gx) * (y1 - gy)) / area
         w1 = ((x2 - gx) * (y0 - gy) - (x0 - gx) * (y2 - gy)) / area
         w2 = 1.0 - w0 - w1
-        m = (w0 >= -1e-4) & (w1 >= -1e-4) & (w2 >= -1e-4)
+        # GL's top-left convention owns a shared triangle edge exactly once.
+        # Inclusive barycentric tests shaded diagonal pixels twice, producing
+        # dark seams through translucent fog and other alpha-blended meshes.
+        def owns_edge(ax,ay,bx,by):
+            dx,dy=bx-ax,by-ay
+            if area<0:dx,dy=-dx,-dy
+            return dy<0 or (dy==0 and dx>0)
+        def inside(weight,owned):return (weight>1e-6) | ((abs(weight)<=1e-6) & owned)
+        m = (inside(w0,owns_edge(x1,y1,x2,y2)) & inside(w1,owns_edge(x2,y2,x0,y0))
+             & inside(w2,owns_edge(x0,y0,x1,y1)))
         if not m.any():
             continue
         u = w0 * UV[i0, 0] + w1 * UV[i1, 0] + w2 * UV[i2, 0]
@@ -2241,8 +2288,35 @@ def _mesh_raster_triangles(mesh, rx, ry, size):
         yield xa, xb, ya, yb, u, v, vertex_color, m
 
 
+_FOG_EDGE_MASKS=OrderedDict()
+
+
+def fog_edge_mask(coverage,fraction):
+    """Smooth an actual projected outline, not animated/tiled texture UVs.
+
+    The L1 distance transform is separable and requires only NumPy. Cache the
+    geometric mask across UV-animation frames. Feathered alpha is baked into
+    the generated PNG; resizing it or exporting it preserves this treatment.
+    """
+    import numpy as np
+    key=(coverage.shape,fraction,hashlib.sha256(coverage.tobytes()).digest())
+    if key in _FOG_EDGE_MASKS:
+        _FOG_EDGE_MASKS.move_to_end(key);return _FOG_EDGE_MASKS[key]
+    mask=np.pad(coverage,1);distance=np.where(mask,1e6,0).astype(np.float32)
+    for axis in (0,1):
+        shape=[1,1];shape[axis]=distance.shape[axis]
+        ramp=np.arange(distance.shape[axis],dtype=np.float32).reshape(shape)
+        distance=np.minimum.accumulate(distance-ramp,axis=axis)+ramp
+        distance=np.flip(np.minimum.accumulate(np.flip(distance,axis=axis)-ramp,axis=axis)+ramp,axis=axis)
+    t=np.clip((distance[1:-1,1:-1]-1)/max(1,min(coverage.shape)*fraction),0,1)
+    result=t*t*(3-2*t)
+    _FOG_EDGE_MASKS[key]=result
+    while len(_FOG_EDGE_MASKS)>32:_FOG_EDGE_MASKS.popitem(last=False)
+    return result
+
+
 def rasterise_mesh(mesh: dict, tex, rx: float = 0.0, ry: float = 0.0, size: int = 256,
-                   texture_sampler=None, *, geometry_cache=None):
+                   texture_sampler=None, *, geometry_cache=None, fog_edge_fade=0.):
     """Project source meshes with ordered straight-alpha triangle compositing.
 
     Repeated UV/material frames reuse exact geometry; the current texture
@@ -2252,11 +2326,13 @@ def rasterise_mesh(mesh: dict, tex, rx: float = 0.0, ry: float = 0.0, size: int 
     if not len(mesh['vertices']) or not mesh.get('indices'):
         return None
     out = np.zeros((size, size, 4), dtype=np.float32)
+    coverage=np.zeros((size,size),dtype=bool) if fog_edge_fade else None
     if tex is None:
         tex = np.ones((2, 2, 4), dtype=np.float32)
     th, tw = tex.shape[:2]
     cache = _MESH_RASTER_PLANS if geometry_cache is None else geometry_cache
     for xa, xb, ya, yb, u, v, vertex_color, m in cache.triangles(mesh, rx, ry, size):
+        if coverage is not None:coverage[ya:yb+1,xa:xb+1]|=m
         if texture_sampler is not None:
             col = texture_sampler(u, v, vertex_color)
         else:
@@ -2272,13 +2348,14 @@ def rasterise_mesh(mesh: dict, tex, rx: float = 0.0, ry: float = 0.0, size: int 
     # Returning premultiplied RGB here multiplied every mesh's vertex/texture
     # alpha a second time at playback and made soft rings/glows too dark.
     np.divide(out[..., :3], out[..., 3:4], out=out[..., :3], where=out[..., 3:4] > 0)
+    if coverage is not None:out[...,3]*=fog_edge_mask(coverage,fog_edge_fade)
     return out
 
 
-def mesh_sprite_key(model: str, texture: str, rx: float, ry: float) -> str:
+def mesh_sprite_key(model: str, texture: str, rx: float, ry: float, fog_edges=False) -> str:
     """Synthetic texture name bake() hands out for a model emitter; the
     renderer's texture cache recognises the prefix and rasterises on demand."""
-    return "mesh:%s|%s|%d|%d" % (model, texture, int(round(rx)), int(round(ry)))
+    return ("mesh:%s|%s|%d|%d" % (model, texture, int(round(rx)), int(round(ry))))+('|fog-edges-v1' if fog_edges else '')
 
 
 # ---------------------------------------------------------------------------

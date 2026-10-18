@@ -1,4 +1,4 @@
-"""Read-only Memorial animation/sound library. Never participates in mod building."""
+"""Read-only Memorial library with portable visual exports; never assigns game skills."""
 from functools import lru_cache
 import gzip
 import hashlib
@@ -15,6 +15,38 @@ import zipfile
 REVISION = 'memorial-en-v208-1'
 MAX_FRAMES = 1800
 _LOCK = threading.Lock()
+CONVERSION_SCRIPT = r'''"""Convert this visual layer with Studio's existing SpriteStudio converter.
+
+Run using the engine's Python environment. No game tables or bindings are made.
+"""
+import argparse,json,sys
+from pathlib import Path
+from PIL import Image
+p=argparse.ArgumentParser(description=__doc__)
+p.add_argument('--engine',type=Path,required=True)
+p.add_argument('--out',type=Path,required=True)
+p.add_argument('--emitter',type=int,action='append',help='Optionally isolate one or more mesh emitters')
+a=p.parse_args()
+root=Path(__file__).resolve().parent
+if a.out.exists():raise SystemExit('Choose a new output folder.')
+sys.path.insert(0,str(a.engine.resolve()/'tools/ffbe_effects'))
+import to_ss6
+def texture(name):
+    path=(root/name).resolve()
+    if not path.is_relative_to(root) or path.suffix!='.png':raise ValueError('Invalid texture path')
+    with Image.open(path) as image:return image.convert('RGBA')
+to_ss6.load_texture=texture
+doc=json.loads((root/'doc.json').read_bytes())
+if a.emitter:
+    doc['frames']=[[p for p in frame if p.get('emitter') in a.emitter] for frame in doc['frames']]
+    used=sorted({p['tex'] for frame in doc['frames'] for p in frame})
+    if not used:raise SystemExit('No visible frames for those emitters.')
+    mapping={old:new for new,old in enumerate(used)}
+    doc['textures']=[doc['textures'][i] for i in used]
+    for frame in doc['frames']:
+        for p in frame:p['tex']=mapping[p['tex']]
+to_ss6.convert(doc,str(a.out),'library_effect',max_units=1000000,min_frames=270)
+'''
 
 
 def safe_name(value):
@@ -131,7 +163,7 @@ class Library:
     @lru_cache(maxsize=1)
     def sources(self):
         """List actual named owners, counting each deduplicated presentation once."""
-        sources={}
+        sources={key:{**record,'skills':0} for key,record in self.browser().get('sources',{}).items()}
         for entry in self.browsing()[0]['skills']:
             for key in entry['sourceMembers']:
                 kind,_,name=key.partition(':')
@@ -158,7 +190,8 @@ class Library:
         result = [r for r in rows if (kind == 'all' or r['kind'] == kind)
                   and (not animated or r.get('hasAnimation', True))
                   and (not query or query in (r['name']+' '+r['id']+' '+r.get('file','')+' '+' '.join(r.get('sourceNames',[]))).casefold())]
-        return {'total': len(result), 'offset': offset, 'items': result[offset:offset+limit],
+        coverage=next((r for r in self.sources()['items'] if r['key']==source),None) if source else None
+        return {'total': len(result), 'offset': offset, 'items': result[offset:offset+limit], 'sourceCoverage':coverage,
                 'summary': {**self.manifest['summary'],'uniqueSkills':len(self.browsing()[0]['skills'])}, 'revision': REVISION}
 
     def detail(self, kind, identity, source=''):
@@ -224,54 +257,71 @@ class Library:
             temporary=path.with_suffix(path.suffix+'.part'); temporary.write_bytes(raw);temporary.replace(path)
         return path
 
-    def simulation(self, identity):
+    def simulation(self, identity, edges='soft'):
         if not str(identity).isdigit(): raise ValueError('Invalid effect ID.')
+        if edges not in ('soft','original'):raise ValueError('Unknown edge treatment.')
         effects=self.document('effects.json'); effect=effects.get(str(identity))
         if not effect: raise ValueError('No such FFBE effect.')
-        output=self.cache/(str(identity)+'.v3.json.gz')
+        output=self.cache/(str(identity)+'.v4.'+edges+'.json.gz')
         if output.exists():return output.read_bytes()
         with _LOCK:
             if output.exists():return output.read_bytes()
-            previous=next((self.cache/(str(identity)+suffix) for suffix in ('.v2.json.gz','.json.gz')
-                           if (self.cache/(str(identity)+suffix)).exists()),None)
-            if previous:
-                result=json.loads(gzip.decompress(previous.read_bytes()))
-                if effect['type']=='5':
-                    ibmb=renderer();path=self.materialize('raw/'+effect.get('asset',effect['file'].split(':')[0]))
-                    original=ibmb._library_raw_parse(path) if path else None
-                    if original is not None:
-                        if result.get('bakeVersion')==15:
-                            for name in [*(x+'.png' for x in original.textures),*(x+'.m3r' for x in original.models),
-                                         *self.document('bmb-dependencies.json').get(path.name,[])]:
-                                self.materialize('raw/'+name)
-                            try: original=ibmb.parse(path)
-                            except (ValueError,FileNotFoundError):pass
-                            fresh=ibmb.bake(original,max_frames=MAX_FRAMES,max_particles=256,model_dirs=[str(path.parent)])
-                            if self.reusable_mesh_pixels(result,fresh):
-                                result['frames']=fresh['frames'];result['bakeVersion']=fresh['bakeVersion']
-                            else:result=self.particle_simulation(effect)
-                        else:result=self.particle_simulation(effect)
-                        result['screenReference']=self.screen_reference(original,result)
-            elif effect['type'] == '5': result=self.particle_simulation(effect)
-            elif effect['type'] == '1': result=self.sprite_simulation(effect)
-            else: result={'frames':[],'textures':[],'warnings':['This source effect is a control command.'],'fps':60,'durationDeclared':0}
+            if effect['type'] == '5':result=self.particle_simulation(effect,edges)
+            elif effect['type'] == '1':result=self.sprite_simulation(effect)
+            else:result={'frames':[],'textures':[],'warnings':['This source effect is a control command.'],'fps':60,'durationDeclared':0}
             raw=json.dumps(result,allow_nan=False,separators=(',',':')).encode()
             data=gzip.compress(raw,compresslevel=5)
             self.cache.mkdir(parents=True,exist_ok=True);temporary=output.with_suffix('.part');temporary.write_bytes(data);temporary.replace(output)
             return data
 
-    @staticmethod
-    def reusable_mesh_pixels(previous,fresh):
-        # v16 changes draw positions only. Refuse frame/texture-order changes
-        # before retaining v15's expensive, already rendered mesh PNGs.
-        if len(previous['textures'])!=len(fresh['textures']) or len(previous['frames'])!=len(fresh['frames']):return False
-        for old,new in zip(previous['frames'],fresh['frames']):
-            if len(old)!=len(new):return False
-            for a,b in zip(old,new):
-                if {k:v for k,v in a.items() if k!='pos'}!={k:v for k,v in b.items() if k!='pos'}:return False
-        return True
+    def conversion_archive(self,identity,edges='soft'):
+        """Portable layer frames and PNGs; no unit assignment or game writes.
 
-    def particle_simulation(self, effect):
+        Pixel UVs / per-cell scale follow the engine's to_ss6 input contract.
+        The exact prepared PNG bytes are shared with the library preview.
+        """
+        baked=json.loads(gzip.decompress(self.simulation(identity,edges)))
+        if not any(baked['frames']):raise ValueError('This source layer has no convertible visual frames.')
+        members={};textures=[];sizes=[]
+        from PIL import Image
+        for texture in baked['textures']:
+            if texture is None:raise ValueError('This effect has unavailable source textures.')
+            url=texture['url']
+            if url.startswith('/api/ffbe-library/preview-texture/'):
+                name=url.rsplit('/',1)[-1]
+                if not re.fullmatch(r'[a-f0-9]{64}\.png',name):raise ValueError('Invalid generated texture.')
+                raw=(self.cache/name).read_bytes()
+                if hashlib.sha256(raw).hexdigest()+'.png'!=name:raise ValueError('Generated texture checksum mismatch.')
+            elif url.startswith('/api/ffbe-library/file/'):
+                raw=self.read(url[len('/api/ffbe-library/file/'):])
+            else:raise ValueError('Unknown conversion texture.')
+            with Image.open(io.BytesIO(raw)) as image:
+                sizes.append(image.size)
+                if not url.startswith('/api/ffbe-library/preview-texture/'):
+                    buffer=io.BytesIO();image.convert('RGBA').save(buffer,format='PNG');raw=buffer.getvalue()
+            # Preserve generated PNG bytes exactly. Raw JPG/PNG sources use a
+            # deterministic RGBA PNG so the output archive needs no decoders.
+            name='textures/'+hashlib.sha256(raw).hexdigest()+'.png';members[name]=raw;textures.append(name)
+        frames=[]
+        for frame in baked['frames']:
+            output=[]
+            for original in frame:
+                p={**original};w,h=sizes[p['tex']];u,v,du,dv=p.get('uv',[0,0,1,1])
+                p['uv']=[u*w,v*h,du*w,dv*h]
+                p['scale']=[p['scale'][0]/max(abs(du*w),1e-9),p['scale'][1]/max(abs(dv*h),1e-9)]
+                p['pos']=p['pos'][:2];output.append(p)
+            frames.append(output)
+        doc={**baked,'textures':textures,'frames':frames,'pixelsPerUnit':1,
+             'sourceEffectId':str(identity),'scope':'visual-layer-only','gameAssigned':False}
+        members['doc.json']=json.dumps(doc,allow_nan=False,separators=(',',':')).encode()
+        members['convert_to_ss6.py']=CONVERSION_SCRIPT.encode()
+        members['README.txt']=b'Portable visual layer, not a game installer. Use the engine Python environment to run: convert_to_ss6.py --engine <Studio engine folder> --out <new output folder>. Optional --emitter <number> isolates a mesh emitter when splitting large effects into separate atlases. This uses the existing to_ss6 converter to make a SpriteStudio spec and atlas while preserving the prepared PNG edges. Skill routing, anchors, timeline placement, audio, asset capacity and game bindings need separate integration. This archive assigns nothing.'
+        buffer=io.BytesIO()
+        with zipfile.ZipFile(buffer,'w',zipfile.ZIP_DEFLATED) as archive:
+            for name,raw in members.items():archive.writestr(name,raw)
+        return buffer.getvalue()
+
+    def particle_simulation(self, effect, edges='soft'):
         ibmb = renderer()
         path=self.materialize('raw/'+effect.get('asset',effect['file'].split(':')[0]))
         if path is None: raise ValueError('The source APK delivery has no file for this effect.')
@@ -284,7 +334,7 @@ class Library:
         warnings=[]
         try: original=ibmb.parse(path)
         except (ValueError,FileNotFoundError) as e: warnings.append(str(e)+'; preview uses the base particle model.')
-        baked=ibmb.bake(original,max_frames=MAX_FRAMES,max_particles=256,model_dirs=[str(path.parent)])
+        baked=ibmb.bake(original,max_frames=MAX_FRAMES,max_particles=256,model_dirs=[str(path.parent)],soften_fog_edges=edges=='soft')
         if original.duration>MAX_FRAMES: warnings.append('Preview shows the first 30 seconds; the full original effect is retained.')
         import _ffr_ffbe_texture as textures
         textures.MESH_SPRITE_DIR = str(self.cache/'virtual-textures')
@@ -420,9 +470,14 @@ def register(app, env):
     @app.get('/api/ffbe-library/entry/{kind}/{identity}')
     def entry(kind:str,identity:str,source:str=''):return checked(lambda:library().detail(kind,identity,source))
     @app.get('/api/ffbe-library/effect/{identity}')
-    def effect(identity:str):
+    def effect(identity:str,edges:str='soft'):
         from fastapi.responses import Response
-        return Response(checked(lambda:library().simulation(identity)),media_type='application/json',headers={'Content-Encoding':'gzip','Cache-Control':'no-cache'})
+        return Response(checked(lambda:library().simulation(identity,edges)),media_type='application/json',headers={'Content-Encoding':'gzip','Cache-Control':'no-cache'})
+    @app.get('/api/ffbe-library/effect/{identity}/conversion')
+    def conversion(identity:str,edges:str='soft'):
+        from fastapi.responses import Response
+        data=checked(lambda:library().conversion_archive(identity,edges))
+        return Response(data,media_type='application/zip',headers={'Content-Disposition':'attachment; filename="ffbe-effect-'+identity+'-'+edges+'.zip"'})
     @app.get('/api/ffbe-library/file/{name:path}')
     def file(name:str):
         from fastapi.responses import Response

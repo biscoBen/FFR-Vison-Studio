@@ -133,6 +133,14 @@
       label {
         font-size: 13px;
       }
+      #missing-skills {
+        max-height: 170px;
+        overflow: auto;
+        font-size: 12px;
+      }
+      #source-coverage p {
+        margin: 6px 0;
+      }
       #list {
         overflow: auto;
         flex: 1;
@@ -368,6 +376,17 @@
             ><input id="includeEmpty" type="checkbox" /> Include records without
             an animation reference</label
           >
+          <div id="source-coverage" hidden>
+            <p id="coverage-count" class="note"></p>
+            <details id="missing-skills" hidden>
+              <summary>Other known Global skills unavailable here</summary>
+              <p class="note">
+                These have no matching record in this Memorial library. They
+                cannot be previewed from these files.
+              </p>
+              <ul id="missing-skill-list"></ul>
+            </details>
+          </div>
         </div>
         <div id="list" role="listbox" aria-label="FFBE animations"></div>
         <div class="pager">
@@ -423,6 +442,15 @@
               <select id="variant"></select
             ></label>
           </div>
+          <label
+            ><input id="fog-edges" type="checkbox" checked /> Soften exposed fog
+            edges</label
+          >
+          <p class="note">
+            Soft edges are baked into converted fog textures for future imports.
+            Turn off to compare the original edges. Nothing is assigned to the
+            game.
+          </p>
           <input
             id="seek"
             type="range"
@@ -551,6 +579,7 @@
           const result = await api("/api/ffbe-library/catalog?" + params);
           if (searchToken !== state.searchToken) return;
           state.total = result.total;
+          showCoverage(result.sourceCoverage);
           $("list").replaceChildren();
           for (const entry of result.items) {
             const button = document.createElement("button");
@@ -591,6 +620,27 @@
           );
         } catch (e) {
           text("list", e.message);
+        }
+      }
+      function showCoverage(coverage) {
+        $("source-coverage").hidden = !coverage;
+        $("missing-skill-list").replaceChildren();
+        if (!coverage) return;
+        const missing = coverage.missing || [];
+        text(
+          "coverage-count",
+          `${coverage.skills.toLocaleString()} library entries · ${missing.length.toLocaleString()} other Global records unavailable here`,
+        );
+        $("missing-skills").hidden = !missing.length;
+        const names = new Map();
+        for (const row of missing) {
+          const name = `${row.name} (${labels[row.kind] || row.kind})`;
+          names.set(name, (names.get(name) || 0) + 1);
+        }
+        for (const [name, count] of names) {
+          const li = document.createElement("li");
+          li.textContent = name + (count > 1 ? ` · ${count} versions` : "");
+          $("missing-skill-list").append(li);
         }
       }
       let searchTimer;
@@ -743,6 +793,7 @@
           ...new Set(variant.flatMap((g) => g.effects.map((e) => e.effectId))),
         ];
         const problems = [];
+        const edges = $("fog-edges").checked ? "soft" : "original";
         let index = 0,
           done = 0;
         status(`Preparing effects 0/${ids.length}…`, true);
@@ -752,7 +803,9 @@
               const id = ids[index++];
               try {
                 if (!state.effects[id]) {
-                  const result = await api("/api/ffbe-library/effect/" + id);
+                  const result = await api(
+                    "/api/ffbe-library/effect/" + id + "?edges=" + edges,
+                  );
                   await Promise.all(result.textures.map(texture));
                   if (token !== state.token) return;
                   state.effects[id] = result;
@@ -1113,6 +1166,12 @@
           const row = document.createElement("div");
           row.className = "sourceRow";
           row.textContent = `Effect ${id}: ${e ? e.name + " · " + e.file : "not in this source delivery"}`;
+          if (e && state.effects[id]?.frames.some((frame) => frame.length)) {
+            const download = document.createElement("a");
+            download.href = `/api/ffbe-library/effect/${encodeURIComponent(id)}/conversion?edges=${$("fog-edges").checked ? "soft" : "original"}`;
+            download.textContent = " · Download visual-layer conversion";
+            row.append(download);
+          }
           list.append(row);
         }
         for (const [id, cue] of Object.entries(state.detail.cues)) {
@@ -1270,6 +1329,13 @@
         draw(state.position);
       };
       $("variant").onchange = () => prepare(++state.token);
+      $("fog-edges").onchange = () => {
+        state.effects = {};
+        state.images.clear();
+        imageCache.clear();
+        tintedTextures.clear();
+        prepare(++state.token);
+      };
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) stop();
       });

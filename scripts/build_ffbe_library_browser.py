@@ -19,18 +19,58 @@ TABLE_KEYS={'magic':('F_MAGIC_MST','QV1HE7Wq'),'ability':('F_ABILITY_MST','Ga5V4
 OWNER_TABLES=tuple(table for table,_ in TABLE_KEYS.values())+(
     'F_UNIT_MST','F_UNIT_SERIES_LV_ACQUIRE_MST','F_SUBLIMATION_RECIPE_MST',
     'F_MONSTER_DICTIONARY_MST','F_MONSTER_MST','F_MONSTER_SKILL_SET_MST',
-    'F_MONSTER_PARTS_MST','F_BEAST_MST','F_BEAST_BOARD_PIECE_MST')
+    'F_MONSTER_PARTS_MST','F_BEAST_MST','F_BEAST_STATUS_MST','F_BEAST_BOARD_PIECE_MST')
 
 
-def owners(source):
+def load_global(folder):
+    lock=json.loads((ROOT/'scripts/fixtures/ffbe_library/global-ownership-lock.json').read_bytes())
+    data={}
+    for name,digest in lock['files'].items():
+        raw=(folder/name).read_bytes()
+        if hashlib.sha256(raw).hexdigest()!=digest:raise ValueError('Global ownership checksum mismatch: '+name)
+        data[name]=json.loads(raw)
+    return data,lock
+
+
+def ownership(source, global_source=None):
     def read(table):return json.loads((source/(table+'-memorial.json')).read_bytes())
-    skills={kind:{r[key] for r in read(table)} for kind,(table,key) in TABLE_KEYS.items()}
-    result=collections.defaultdict(list)
+    skills={kind:{r[key]:r for r in read(table)} for kind,(table,key) in TABLE_KEYS.items()}
+    result=collections.defaultdict(list);sources={};missing=collections.defaultdict(dict)
+    def register(name,entity,identity):
+        if not name:return
+        key=entity+':'+name
+        sources.setdefault(key,{'key':key,'name':name,'type':entity,'ids':[]})
+        if identity not in sources[key]['ids']:sources[key]['ids'].append(identity)
     def add(kind,sid,name,entity,identity):
+        register(name,entity,identity)
         if sid not in skills[kind] or not name:return
         row={'name':name,'type':entity,'id':identity};key=kind+':'+sid
         if not any(o['name']==name and o['type']==entity for o in result[key]):result[key].append(row)
     units=read('F_UNIT_MST');series={u['woghJa61']:u['G4L0YIB2'] for u in reversed(units)}
+    global_units={};global_skills={};global_proof=None
+    if global_source is not None:
+        data,global_proof=load_global(global_source)
+        global_units=data['units.json']
+        global_skills={'magic':data['skills_magic.json'],
+                       'ability':{**data['skills_ability.json'],**data['skills_passive.json']},
+                       'lb':data['limitbursts.json']}
+        identities={}
+        for uid,u in global_units.items():
+            if not u.get('name'):continue
+            register(u['name'],'character',uid)
+            for identity in [uid,*u.get('entries',{})]:
+                identities[identity]=u['name'];series.setdefault(identity,u['name'])
+        def global_add(kind,sid,name,uid):
+            sid=str(sid);original=global_skills[kind].get(sid)
+            if original is None or not original.get('name'):return
+            native=skills[kind].get(sid)
+            # Exact typed ID AND original name: never borrow another spell's
+            # owner merely because its name happens to match.
+            if native and native['G4L0YIB2'].casefold().strip()==original['name'].casefold().strip():
+                add(kind,sid,name,'character',uid)
+            else:
+                missing['character:'+name][kind+':'+sid]={'kind':kind,'id':sid,'name':original['name'],
+                    'reason':'absent' if native is None else 'different-record'}
     for u in units:add('lb',u.get('PR2HIc71',''),u['G4L0YIB2'],'character',u['3HriTp6B'])
     for row in read('F_UNIT_SERIES_LV_ACQUIRE_MST'):
         uid=row['woghJa61'];name=series.get(uid)
@@ -44,16 +84,43 @@ def owners(source):
         uid=part['xqartN26'];name=monsters.get(uid,part['G4L0YIB2'])
         for sid in sets.get(part.get('A5x02C6a'),[]):add('monster',sid,name,'monster',uid)
     beasts={b['Iwfx42Wo']:b['G4L0YIB2'] for b in read('F_BEAST_MST')}
-    for row in read('F_BEAST_SKILL_MST'):
-        # The source esper identity is an explicit field, independent of names.
-        add('summon',row['76LymtEu'],beasts.get(row.get('KF9Av5yX')),'summon',row.get('KF9Av5yX',''))
+    for row in read('F_BEAST_STATUS_MST'):
+        # STATUS links each esper/rank to its actual skill. KF9Av5yX in
+        # SKILL is a boolean flag, not an esper identity.
+        uid=row['Iwfx42Wo'];add('summon',row['76LymtEu'],beasts.get(uid),'summon',uid)
     for row in read('F_BEAST_BOARD_PIECE_MST'):
         for sid in re.findall(r'\d+',row.get('XHEZ47ke','')):
             for kind in ('ability','magic'):add(kind,sid,beasts.get(row['Iwfx42Wo']),'summon',row['Iwfx42Wo'])
     for row in read('F_SUBLIMATION_RECIPE_MST'):
         uid=row.get('25oxcKwN','');name=next((u['G4L0YIB2'] for u in units if u['3HriTp6B']==uid),series.get(uid))
         for kind in ('ability','magic'):add(kind,row.get('Q1n9iYgz',''),name,'character',uid)
-    return dict(result)
+    if global_source is not None:
+        for uid,u in global_units.items():
+            name=u.get('name')
+            if not name:continue
+            for grant in u.get('skills',[]):
+                kind='magic' if grant['type']=='MAGIC' else 'ability'
+                global_add(kind,grant['id'],name,uid)
+            for entry in u.get('entries',{}).values():
+                if entry.get('limitburst_id'):global_add('lb',entry['limitburst_id'],name,uid)
+        for row in data['enhancements.json'].values():
+            for uid in map(str,row.get('units',[])):
+                name=identities.get(uid)
+                if not name:continue
+                for kind in ('magic','ability'):
+                    global_add(kind,row['skill_id_new'],name,uid)
+    for key,entry in sources.items():
+        missing[key]={sid:record for sid,record in missing[key].items()
+                      if not any(o['type']+':'+o['name']==key for o in result.get(sid,[]))}
+        entry['missing']=sorted(missing[key].values(),key=lambda r:(r['name'].casefold(),r['kind'],r['id']))
+    covered={o['type']+':'+o['name'] for records in result.values() for o in records}
+    report={'sources':len(sources),'sourcesWithKnownRecords':len(covered),
+            'sourcesWithNoAvailableRecord':sorted(set(sources)-covered),
+            'globalMissingRecords':sum(len(v) for v in missing.values())}
+    return {'owners':dict(result),'sources':sources,'coverage':report,'globalProvenance':global_proof}
+
+
+def owners(source,global_source=None):return ownership(source,global_source)['owners']
 
 
 def sheet(images,durations):
@@ -83,9 +150,9 @@ def cactuar_frames(path,metadata):
     return frames
 
 
-def build(source,actors,output):
+def build(source,actors,output,global_source=None):
     from PIL import Image,ImageSequence
-    own=owners(source);files={};meta={}
+    ownership_data=ownership(source,global_source);own=ownership_data['owners'];files={};meta={}
     with Image.open(actors/'christine.webp') as image:
         images=[im.convert('RGBA') for im in ImageSequence.Iterator(image)]
         durations=[]
@@ -96,7 +163,7 @@ def build(source,actors,output):
     frames=cactuar_frames(actors/'cactuar-native.png',native_idle)
     files['cactuar.png'],meta['monster']=sheet(frames,[h/native_idle['fps'] for h in native_idle['holds']])
     meta['monster'].update(name='Cactuar',file='cactuar.png',heightInScene=150)
-    metadata={'schema':1,'owners':own,'actors':meta,'actorSource':{'character':'Original FFBE Christine 6-star idle, pinned Studio host','monster':'Original Resonance demo Cactuar idle, supplied native reference'},'source':'FFBE Memorial EN Global Events v208',
+    metadata={'schema':1,**ownership_data,'actors':meta,'actorSource':{'character':'Original FFBE Christine 6-star idle, pinned Studio host','monster':'Original Resonance demo Cactuar idle, supplied native reference'},'source':'FFBE Memorial EN Global Events v208; exact Global ownership supplement',
               'provenance':{'nativeIdle':native_idle,'masters':{table+'-memorial.json':hashlib.sha256((source/(table+'-memorial.json')).read_bytes()).hexdigest() for table in sorted(OWNER_TABLES)},
                             'actors':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in actors.iterdir() if p.name in ('christine.webp','cactuar-native.png')}}}
     files['browser.json']=(json.dumps(metadata,ensure_ascii=False,separators=(',',':'))+'\n').encode()
@@ -108,4 +175,4 @@ def build(source,actors,output):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',type=Path,required=True);p.add_argument('--actors',type=Path,required=True);p.add_argument('--output',type=Path,default=ROOT/'assets/existing_visions/payload/ffbe_library_browser.zip');a=p.parse_args();build(a.source,a.actors,a.output)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--source',type=Path,required=True);p.add_argument('--actors',type=Path,required=True);p.add_argument('--global-source',type=Path);p.add_argument('--output',type=Path,default=ROOT/'assets/existing_visions/payload/ffbe_library_browser.zip');a=p.parse_args();build(a.source,a.actors,a.output,a.global_source)

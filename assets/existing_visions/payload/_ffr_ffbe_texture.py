@@ -135,12 +135,16 @@ class TextureCache:
                 return uv_sampling.channel_sample(texture, u, v, data['channels'][0], data['wrap']) * color
             if mesh_path:
                 arr = ibmb.rasterise_mesh(ibmb.parse_m3r(mesh_path), texture,
-                                         *data['tilt'], texture_sampler=sampler)
+                                         *data['tilt'], texture_sampler=sampler,
+                                         fog_edge_fade=data.get('fogEdgeFade',0.))
             else:
                 height, width = texture.shape[:2]
                 factor = min(1., 512/max(width, height))
                 width, height = max(1, round(width*factor)), max(1, round(height*factor))
                 arr = sampler(*uv_sampling.grid(width, height))
+                if data.get('fogEdgeFade'):
+                    arr=arr.copy()
+                    arr[...,3]*=ibmb.fog_edge_mask(np.ones(arr.shape[:2],dtype=bool),data['fogEdgeFade'])
             if arr is None:
                 # A fully culled/degenerate projected mesh has no covered
                 # pixels. Retain a transparent cell for its virtual texture;
@@ -194,10 +198,11 @@ class TextureCache:
         texture, saved once under build/effects/textures (where to_ss6.py also
         looks) and indexed like any other texture."""
         key = name.lower()
-        model, tex_name, rx, ry = name[5:].split("|")
+        fields=name[5:].split('|');model,tex_name,rx,ry=fields[:4]
+        fog_edge_fade=.075 if fields[4:]==['fog-edges-v1'] else 0.
         mpath = next((os.path.join(d, model + ".m3r") for d in self.dirs if os.path.exists(os.path.join(d, model + ".m3r"))), None)
         texture_path = self.index.get(tex_name.lower())
-        stamp = hashlib.sha256(str(ibmb.BAKE_VERSION).encode())
+        stamp = hashlib.sha256((str(ibmb.BAKE_VERSION)+str(fog_edge_fade)).encode())
         for dependency in (mpath, texture_path):
             if dependency:
                 with open(dependency, 'rb') as stream:
@@ -212,7 +217,7 @@ class TextureCache:
             tex = self.get(tex_name)
             if mpath:
                 try:
-                    arr = ibmb.rasterise_mesh(ibmb.parse_m3r(mpath), tex, float(rx), float(ry))
+                    arr = ibmb.rasterise_mesh(ibmb.parse_m3r(mpath), tex, float(rx), float(ry),fog_edge_fade=fog_edge_fade)
                 except Exception as ex:  # pragma: no cover - diagnostics only
                     print("mesh sprite failed for %s: %s" % (name, ex), file=sys.stderr)
             if arr is None:

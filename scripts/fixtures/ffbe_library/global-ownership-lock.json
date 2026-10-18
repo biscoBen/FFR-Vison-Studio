@@ -1,0 +1,12 @@
+{
+  "repository": "aEnigmatic/ffbe",
+  "commit": "95727376e82d27acc1290b6dc8ad27ce3c89ea71",
+  "files": {
+    "units.json": "7ce30d130557c7ba271ff0ea4fe0673fc1102389698f27997082035449a11bad",
+    "skills_ability.json": "bbec252e0eef3dba444de1728c0f86de2d612aefd2a56a0cd91a388a16482c5b",
+    "skills_passive.json": "41a6b36baacec772b7d9b4731341d677103ff0043384e566a2a52bc410f6bd70",
+    "skills_magic.json": "d901cc14841fa1eaa67aa113c8bb58dc4fd21072db8bc886f168a73db3c85b92",
+    "limitbursts.json": "265b7b68b88cb896666d7d8865c02cc190ad1b9eb48260aac172238c292728ac",
+    "enhancements.json": "045196f54b7d7f9bbb6dd6aa728fe2d47496ac3027aadd0234bcfaeb7bb75733"
+  }
+}

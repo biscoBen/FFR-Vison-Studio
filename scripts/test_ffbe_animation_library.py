@@ -115,35 +115,33 @@ class LibraryTests(unittest.TestCase):
             reference=self.library.screen_reference(SimpleNamespace(chunks=chunks),baked)
         self.assertEqual(reference,{'emitter':4,'center':[0,0],'size':[700,800]})
 
-    def test_preview_cache_upgrade_moves_meshes_without_rerendering_pixels(self):
+    def test_raster_change_invalidates_old_cache_and_keeps_edge_profiles_separate(self):
         self.library.cache.mkdir(parents=True)
-        old={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10]}]],'bakeVersion':15,
-             'textures':[{'url':'/api/ffbe-library/preview-texture/kept.png'}],'warnings':[]}
-        fresh={**copy.deepcopy(old),'textures':['nativeuv:original mesh key'],'bakeVersion':16}
-        fresh['frames'][0][0]['pos']=[4,7,0]
-        (self.library.cache/'1002460.v2.json.gz').write_bytes(gzip.compress(json.dumps(old).encode()))
-        reference={'emitter':1,'center':[0,0],'size':[700,800]}
-        ibmb=lib.renderer()
-        with patch.object(self.library,'particle_simulation',side_effect=AssertionError('Unnecessary pixel rebake')), \
-                patch.object(ibmb,'bake',return_value=fresh), \
-                patch.object(self.library,'screen_reference',return_value=reference):
-            result=json.loads(gzip.decompress(self.library.simulation('1002460')))
-        self.assertEqual(result,{**old,'frames':fresh['frames'],'bakeVersion':16,'screenReference':reference})
-        with patch.object(ibmb,'bake',side_effect=AssertionError('Cache upgrade repeated')):
-            self.assertEqual(json.loads(gzip.decompress(self.library.simulation('1002460'))),result)
+        old={'frames':[],'textures':[],'bakeVersion':16}
+        (self.library.cache/'1002460.v3.json.gz').write_bytes(gzip.compress(json.dumps(old).encode()))
+        calls=[]
+        def simulate(effect,edges):
+            calls.append(edges)
+            return {'frames':[],'textures':[],'bakeVersion':17,'conversion':{'fogEdges':edges}}
+        with patch.object(self.library,'particle_simulation',side_effect=simulate):
+            soft=json.loads(gzip.decompress(self.library.simulation('1002460')))
+            original=json.loads(gzip.decompress(self.library.simulation('1002460','original')))
+            self.assertEqual(json.loads(gzip.decompress(self.library.simulation('1002460'))),soft)
+        self.assertEqual(calls,['soft','original'])
+        self.assertEqual(soft['conversion']['fogEdges'],'soft')
+        self.assertEqual(original['conversion']['fogEdges'],'original')
+        self.assertEqual(json.loads(gzip.decompress((self.library.cache/'1002460.v3.json.gz').read_bytes())),old)
+        with self.assertRaisesRegex(ValueError,'edge treatment'):self.library.simulation('1002460','invalid')
 
-    def test_cache_upgrade_rejects_changes_beyond_mesh_position(self):
-        base={'frames':[[{'tex':0,'pos':[0,0,0],'scale':[10,10],'alpha':.5}]],'textures':['first']}
-        for mutation in ('size','alpha','order','frames','textures'):
-            changed=copy.deepcopy(base)
-            if mutation=='size':changed['frames'][0][0]['scale'][0]=11
-            elif mutation=='alpha':changed['frames'][0][0]['alpha']=1
-            elif mutation=='order':changed['frames'][0][0]['tex']=1
-            elif mutation=='frames':changed['frames'].append([])
-            else:changed['textures'].append('second')
-            with self.subTest(mutation=mutation):self.assertFalse(self.library.reusable_mesh_pixels(base,changed))
-        moved=copy.deepcopy(base);moved['frames'][0][0]['pos']=[4,8,2]
-        self.assertTrue(self.library.reusable_mesh_pixels(base,moved))
+    def test_known_source_without_available_skills_remains_selectable_with_coverage(self):
+        metadata={'owners':{},'sources':{'character:Christine':{'key':'character:Christine','name':'Christine',
+                   'type':'character','missing':[{'name':'Snow Burial','kind':'ability','id':'912855'}]}}}
+        with patch.object(self.library,'browser',return_value=metadata):
+            source,=self.library.sources()['items']
+            self.assertEqual(source['skills'],0)
+            result=self.library.search(source='character:Christine')
+            self.assertEqual(result['items'],[])
+            self.assertEqual(result['sourceCoverage']['missing'][0]['name'],'Snow Burial')
 
     def test_pack_corruption_and_unknown_files_are_rejected(self):
         with self.assertRaises(ValueError):self.library.read('../../config.json')
@@ -302,6 +300,21 @@ class PackagedCatalogTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(trimmed.tobytes()).hexdigest(),cell['trimmedRgbaSha256'])
         app=(ROOT/'lib/state/app_state.dart').read_text()
         self.assertNotIn('FfbeAnimationLibrary',app)
+
+    def test_real_christine_other_global_units_and_all_esper_links_are_packaged(self):
+        with zipfile.ZipFile(PAYLOAD/'ffbe_library_browser.zip') as archive:data=json.loads(archive.read('browser.json'))
+        christine=data['sources']['character:Christine']
+        self.assertTrue(any(r['name']=='Snow Burial' for r in christine['missing']))
+        owners=data['owners']['magic:20210']
+        self.assertTrue(any(o['name']=='Christine' for o in owners))
+        self.assertNotEqual(owners[0]['name'],'Christine')  # shared spell keeps its first source too
+        for name in ('Elena','Esther','Karten','Fryevia','Ling'):
+            self.assertIn('character:'+name,data['sources'])
+        for sid,name in [('10101','Siren'),('10201','Ifrit'),('10301','Shiva')]:
+            self.assertEqual(data['owners']['summon:'+sid][0]['name'],name)
+        self.assertEqual(len([s for s in data['sources'].values() if s['type']=='summon']),21)
+        lock=json.loads((ROOT/'scripts/fixtures/ffbe_library/global-ownership-lock.json').read_bytes())
+        self.assertEqual(data['globalProvenance'],lock)
 
     def test_all_five_source_tables_and_variants_are_preloaded_without_assignment(self):
         manifest=json.loads((ROOT/'assets/ffbe_library/manifest.json').read_bytes())
