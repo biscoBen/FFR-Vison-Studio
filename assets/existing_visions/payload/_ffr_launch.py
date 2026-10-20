@@ -405,6 +405,10 @@ def prepare_game(selected, setup, env, log):
     identity = transfer.game_identity(selected)
     previous = record(root, PREPARED, {})
     if previous.get('gameIdentity') != identity:
+        # Invalidate before moving anything. A failed preparation must not let
+        # switching back to the previous game reuse partial newer-game files.
+        transfer.json_write(transfer.checked(root, PREPARED),
+                            {'schema': 1, 'source': 'Preparation incomplete', 'requestedGameIdentity': identity})
         folder = transfer.checked(root, HOME + '/prepared-backups/' + uuid.uuid4().hex)
         folder.mkdir(parents=True)
         moved = []

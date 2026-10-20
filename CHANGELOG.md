@@ -19,7 +19,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   retain raw evidence in a downloadable reference. Localized labels alone do not count as route changes.
 - Identify game builds by every top-level native container name/size and every `.utoc` hash. Preserve older
   prepared directories when the build changes; rebuild native rows/listing/catalog instead of reusing shipped
-  demo caches. Reject builds/installs against untracked or changed preparation and stale last builds. Flag
+  demo caches. Reject builds/installs against untracked or changed preparation and stale last builds. Invalidate the preparation record before moving data so failed preparation and switching
+  back cannot reuse partial files. Flag
   enabled patches on unreviewed builds with an explicit, fingerprint-specific review or original-game preset.
   Detect full-game folders by the actual container marker without inventing an app ID/name.
 - Add a reversible **original-game test preset**. Back up settings first, disable the visual/repair/test controls
@@ -42,7 +43,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   stale desktop saves; preserve pending edits in a local backup before reloading a restored roster. Preserve
   machine paths, credentials, source downloads and saves separately.
 
-Validation: analysis, **266 Flutter tests** (one Windows-only skip), **499 Python checks** (19 local platform/tool
+Validation: analysis, **266 Flutter tests** (one Windows-only skip), **500 Python checks** (19 local platform/tool
 skips), local transfer/API tests and Chromium round trips pass, including standalone local import, runtime
 removal, restoration, corrupt backups, failed writes, stale previews, build/input changes, per-build observations,
 streamed exports and unchanged-demo comparison. Windows packaging is pending. These tools

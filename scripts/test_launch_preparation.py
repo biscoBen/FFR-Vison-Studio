@@ -263,6 +263,30 @@ class LaunchTests(unittest.TestCase):
         self.assertTrue(launch.prepared_status(self.env)['prepared'])
         self.assertNotIn('old demo rows',(self.root/'extracted/utoc_filelist.tsv').read_text())
 
+    def test_failed_preparation_invalidates_old_identity_before_switching_back(self):
+        from types import SimpleNamespace
+        old=transfer.game_identity(self.game)
+        (self.root/'extracted').mkdir()
+        (self.root/'extracted/original.txt').write_text('original source')
+        setup=SimpleNamespace(SHIPPED=[],EXTRACT_FILTERS=[],_listing=lambda *a:None,_extract=lambda *a:None)
+        def fail(*args,**kwargs):
+            (self.root/'extracted').mkdir(exist_ok=True)
+            (self.root/'extracted/partial.txt').write_text('partial new game source')
+            raise ValueError('simulated changed mapping')
+        setup.prepare=fail
+        (self.game/transfer.MARKER).write_bytes(b'new game build')
+        with self.assertRaisesRegex(ValueError,'changed mapping'):
+            launch.prepare_game(self.game,setup,self.env,lambda _:None)
+        self.assertNotEqual(launch.record(self.root,launch.PREPARED).get('gameIdentity'),old)
+        self.assertFalse(launch.prepared_status(self.env)['prepared'])
+        (self.game/transfer.MARKER).write_bytes(b'explicit synthetic game version fixture')
+        def success(*args,**kwargs):
+            self.assertFalse((self.root/'extracted/partial.txt').exists())
+        setup.prepare=success
+        launch.prepare_game(self.game,setup,self.env,lambda _:None)
+        self.assertTrue(launch.prepared_status(self.env)['prepared'])
+        self.assertEqual(len(list((self.root/launch.HOME/'prepared-backups').glob('*/extracted/*'))),2)
+
     def test_bundled_test_sheet_preserves_waterga_ambiguity_and_distinguishes_imported_failures(self):
         tests=launch.bundled('launch_tests.json')['tests']
         self.assertEqual(len({x['key'] for x in tests}),len(tests))
