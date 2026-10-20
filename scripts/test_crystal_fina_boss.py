@@ -120,6 +120,7 @@ class CrystalFinaBossTests(unittest.TestCase):
         self.assertNotIn('Item/Vision/DT_VisionItemData', operations)
         self.assertNotIn(testing.COMMON, operations)
         self.assertTrue(built[boss.DESIGN][boss.NAME]['isFlipH'])
+        self.assertAlmostEqual(built[boss.DESIGN][boss.NAME]['Scale'], 1.17)
         with tempfile.TemporaryDirectory() as root:
             settings = Path(root)/testing.CONFIG; settings.parent.mkdir(parents=True)
             settings.write_text(json.dumps({'schema':1,'maxMr':False,'practiceBattle':True}))
@@ -138,6 +139,7 @@ class CrystalFinaBossTests(unittest.TestCase):
         asset, = operations[boss.ASSET]['add']
         self.assertIn('/13503/FinaNative13503',asset['set']['animationAssetList[0].Ss6Project'])
         self.assertEqual(operations[boss.UNIT]['add'][0]['set']['MaxHitPoint'],6500)
+        self.assertAlmostEqual(operations[boss.DESIGN]['add'][0]['set']['Scale'],1.17)
 
     def test_verification_combines_owned_fina_postprocessing_without_exempting_other_rows(self):
         unit = {'id':13503, 'jp':'My Fina', 'ffbe':{'id':battle.SPRITE,'source':'CUSTOM'}}

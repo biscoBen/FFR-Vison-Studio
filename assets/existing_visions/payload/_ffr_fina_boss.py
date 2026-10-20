@@ -100,7 +100,11 @@ def prepare(table, rows, units):
         'animationAssetList[0].textureMetallicRoughness': base + '_mreo',
         'animationAssetList[0].isVisionCharacter': False,
         'animationAssetList[0].Material': '/Game/BP/Map/Unit/Material/CharaPBR/M_Ss_Component_PBRBattle'})
-    add(DESIGN, ID, 13108, NAME, {'Scale': fina.BATTLE_SPRITE_SCALE, 'attachEffectSacle': 1.0,
+    # The vision inherits its donor's positive scale; BATTLE_SPRITE_SCALE is
+    # only a fallback for unset native values, not the normal vision size.
+    vision_scale = float(source(DESIGN, 13108)[1]['Scale'])
+    if vision_scale <= 0: vision_scale = fina.BATTLE_SPRITE_SCALE
+    add(DESIGN, ID, 13108, NAME, {'Scale': vision_scale * 1.3, 'attachEffectSacle': 1.0,
         'isSpecialDeadAnim': False, 'isFlipH': True})
     ids = skill_ids()
     for i, recipe in enumerate(recipes()):

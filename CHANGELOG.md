@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina boss size
+
+- Reduce the practice boss and her attached crystal to 130% of her normal vision size.
+  Use her native donor's scale rather than the much larger fallback for unset scales.
+  The demo boss scale is now 1.17 instead of 2.7. Her vision and cave presentation stay as configured.
+- Check both the standalone boss and shared vision presentation. Windows publication and
+  the in-game framing still need verification.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
