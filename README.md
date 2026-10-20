@@ -4,6 +4,13 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Launch preparation and local Deck snapshots — Unreleased
+
+The next tested package adds **Home → Launch preparation & snapshots**: a fresh native-data comparison,
+an original-game preset, editable backups, a build-specific test sheet and local finished-mod transfer to Steam Deck.
+No private GitHub repository is needed. See [the launch/snapshot guide](docs/LAUNCH_PREPARATION.md).
+Windows package verification is pending; the verified package below remains the last published update.
+
 ### Portable fog edges and complete source choices — 2026-10-18
 
 [Verified Windows download / run 39150580826](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39150580826/Sephira-Studio-Test.zip)
@@ -575,15 +582,26 @@ exe next to the engine and the data packs.
 
 ## Steam Deck / SteamOS
 
-### Build on PC, install on Deck (recommended)
+### Local snapshots: build on PC, install on Deck (recommended)
 
-[Download the tested PC app](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Sephira-Studio-Test.zip)
-or update with your existing Windows test shortcut.
-[Download the small Deck installer](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38457270486/Resonance-Deck-Sync.zip)
-(code `8ce9507`, run **38457270486**, published 2026-10-13). Automated Windows/Linux checks passed; first live
-private PC-to-Deck publishing/gameplay remains pending.
+The upcoming launch-preparation package makes local transfer the primary route:
 
-Studio's **Steam Deck sync** panel publishes a finished mod to **your own private GitHub repository**.
+1. Set up your units on the PC and use **Build for Deck snapshot** (or build/install normally).
+2. Open **Export / import snapshots → Export Deck snapshot**. Copy **Resonance-Mod-Snapshot.zip** to the Deck.
+3. Extract the whole folder. Close Resonance and run `bash "Install snapshot.sh"` in Desktop Mode.
+4. Repeat export/copy/import after PC changes. The Deck needs Python 3, with no Studio, engine build, repository
+   or token. The installer detects Steam/SD-card libraries, verifies the native game build, backs up replaced files,
+   removes stale owned runtime files and supplies a restore menu/shortcut.
+
+Crystal Fina or cycling snapshots include the required runtime and document
+`WINEDLLOVERRIDES="dwmapi=n,b" %command%` for the game's Steam launch options. Both computers need the same
+native game build. **Export Studio backup** separately saves editable unit recipes and switches; the finished
+Deck snapshot carries the actual compiled mod. See [the full guide](docs/LAUNCH_PREPARATION.md) for backup/import,
+comparison and testing instructions. Real Deck/Proton playback remains to be tested.
+
+### Optional: private GitHub publishing
+
+The collapsed **Optional GitHub publishing** section publishes a finished mod to **your own private GitHub repository**.
 The Deck downloads and installs that package without running Studio, downloading the engine or rebuilding assets.
 Personal publishing starts **off**, with no destination or credentials shipped in the public fork. Ordinary builds
 and installs never upload, even when personal publishing is enabled. Each person configures their own destination.
@@ -1059,6 +1077,8 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 This is the running project list for the full game's release, started **2026-10-04** from the `Sephira's-Update`
 demo baseline `b15a4c0`. These are areas to review when the full game is available, not confirmed future bugs.
+The [launch-preparation tools](docs/LAUNCH_PREPARATION.md) provide native comparisons, a reversible original-game
+test preset, editable/compiled snapshots and a per-build test sheet; they do not mark the items below complete.
 Keep user cave placements, character configs, concise descriptions and source labels. Add new demo-dependent
 features here as work continues. Mark an item complete only with the tested game version, Studio commit and evidence;
 retain unresolved cases and record the date/source fingerprints when refreshing catalogs.
@@ -1174,7 +1194,10 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Steam libraries/SD cards, update fallback, process detection across prefixes and mod installation. Test real Deck rendering
   and controller use; preserve the separate Studio data and Proton prefix. Confirm full-game Pak paths and runtime-loader
   compatibility on SteamOS independently of Windows CI.
-- [ ] **Private PC-to-Deck mod sync.** Recheck full-game Pak filenames and version fingerprint, private GitHub release
+- [ ] **Local PC-to-Deck snapshots and optional private sync.** Recheck local ZIP export/import, unchanged-game
+  fingerprint, settings freshness, runtime-on → runtime-off cleanup and restore with real SteamOS/Proton.
+  The normal transfer needs no repository/token or Deck-side build. Keep editable backups separate from compiled mod snapshots.
+  **Optional GitHub path:** Recheck full-game Pak filenames and version fingerprint, private GitHub release
   APIs and digests, local credential managers, Steam library detection, owned backup/recovery and runtime dependencies.
   Test UE4SS under the game's Proton with the native `dwmapi` override. Keep destinations/credentials local and
   personal publishing opt-in; never bundle personal packages/configs into the public program release.

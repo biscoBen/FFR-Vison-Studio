@@ -35,7 +35,25 @@ class _DeckSyncPanelState extends State<DeckSyncPanel> {
     final sync = app.deckSync;
     final busy = app.building || app.deckWorking || app.sephiraWorking || app.api == null;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Band('Steam Deck sync', color: Guide.ink),
+      Band('Steam Deck snapshots', color: Guide.ink),
+      Box(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('Build on this PC, export a snapshot, then copy it to the Deck and run Install snapshot.sh. No GitHub setup or building on the Deck is needed.', style: Guide.text()),
+        const SizedBox(height: 8),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          GuideButton('Build for Deck snapshot', key: const Key('deck-snapshot-build'),
+              onPressed: busy || !widget.canBuild ? null : () => app.startBuild(install: false)),
+          GuideButton('Export / import snapshots', key: const Key('deck-snapshots'),
+              onPressed: busy ? null : () async {
+                await app.save();
+                if (app.dirty) return;
+                await launchUrl(Uri.parse('${app.api!.base}/launch-preparation'));
+              }),
+        ]),
+      ])),
+      const SizedBox(height: 8),
+      ExpansionTile(key: const Key('deck-private-advanced'),
+        title: Text('Optional GitHub publishing', style: Guide.small()), children: [
+
       Box(child: Material(color: Colors.transparent, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SwitchListTile(
           key: const Key('deck-sync-enabled'), contentPadding: EdgeInsets.zero,
@@ -65,6 +83,7 @@ class _DeckSyncPanelState extends State<DeckSyncPanel> {
         Text('On the Deck, download Resonance-Deck-Sync.zip and run Update my mod.sh in Desktop Mode. It installs your finished mod and creates a shortcut; Studio and building are not needed.', style: Guide.small()),
         if (sync['message'] != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text('${sync['message']}', style: Guide.text())),
       ]))),
+      ]),
     ]);
   }
 }

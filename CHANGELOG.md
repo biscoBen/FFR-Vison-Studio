@@ -11,6 +11,45 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Launch preparation and local Steam Deck snapshots
+
+- Add **Launch preparation & snapshots** on Home. Collect fresh official native skill/unit/MR/routing tables,
+  timeline packages, sound references and inventory in an isolated view that excludes installed mods. Compare
+  exact definitions, schema fields, routing and asset/timeline changes against the supplied demo metadata;
+  retain raw evidence in a downloadable reference. Localized labels alone do not count as route changes.
+- Identify game builds by every top-level native container name/size and every `.utoc` hash. Preserve older
+  prepared directories when the build changes; rebuild native rows/listing/catalog instead of reusing shipped
+  demo caches. Reject builds/installs against untracked or changed preparation and stale last builds. Flag
+  enabled patches on unreviewed builds with an explicit, fingerprint-specific review or original-game preset.
+  Detect full-game folders by the actual container marker without inventing an app ID/name.
+- Add a reversible **original-game test preset**. Back up settings first, disable the visual/repair/test controls
+  and original-vision test grants, retain edited kits/appearances and explicit custom animations. Individual
+  switches remain available. A completely unmodified comparison still requires removing the mod.
+- Add a 31-entry editable launch sheet: 19 original-enemy failed skill names / 20 candidate IDs, two separately
+  reported imported-vision failures and ten regression groups. Preserve Waterga's unresolved exact variant and
+  AI-only shared references. Save visuals, direction, sound, hit timing and notes separately per native build;
+  export CSV without converting old observations into new-build passes.
+- Make local finished-mod snapshots the main Deck route. Build once on PC, export **Resonance-Mod-Snapshot.zip**,
+  copy/extract on Deck and run **Install snapshot.sh**. Include a standalone Python installer, exact compiled
+  files and required Crystal Fina/cycling runtime. No GitHub, credentials, Studio download or building on Deck.
+  Stream large exports through the browser; verify game/input/output freshness and package checksums.
+- Reuse the owned-file installer transaction, automatic backups, interruption recovery and restore shortcut.
+  Later snapshots remove stale runtime files. Keep optional private GitHub publishing collapsed and opt-in;
+  normal builds and local snapshots never upload.
+- Add a separate **Studio backup** for the recorded roster, appearance/acquisition choices, icon layout and
+  visual/testing settings. Preview before restoring, reject a stale preview and make an automatic prior backup.
+  Restore atomically with rollback; notify Studio to reload saved setups and invalidate prior builds. Reject
+  stale desktop saves; preserve pending edits in a local backup before reloading a restored roster. Preserve
+  machine paths, credentials, source downloads and saves separately.
+
+Validation: analysis, **266 Flutter tests** (one Windows-only skip), **499 Python checks** (19 local platform/tool
+skips), local transfer/API tests and Chromium round trips pass, including standalone local import, runtime
+removal, restoration, corrupt backups, failed writes, stale previews, build/input changes, per-build observations,
+streamed exports and unchanged-demo comparison. Windows packaging is pending. These tools
+prepare evidence and reversible workflows; full-game mapping/asset compatibility and actual Deck/Proton rendering,
+controller use and runtime behavior remain untested. See [the guide](docs/LAUNCH_PREPARATION.md).
+
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

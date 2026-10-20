@@ -41,8 +41,11 @@ void main() {
     expect(app.deckSync['enabled'], false);
     expect(app.deckSync['repository'], '');
     await tester.pumpWidget(ChangeNotifierProvider.value(value: app, child: MaterialApp(
-      theme: Guide.theme(), home: const Scaffold(body: DeckSyncPanel(canBuild: true)),
+      theme: Guide.theme(), home: const Scaffold(body: SingleChildScrollView(child: DeckSyncPanel(canBuild: true))),
     )));
+    expect(find.text('STEAM DECK SNAPSHOTS'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('deck-private-advanced')));
+    await tester.pumpAndSettle();
     expect(tester.widget<SwitchListTile>(find.byKey(const Key('deck-sync-enabled'))).value, false);
     await tester.tap(find.byKey(const Key('deck-sync-publish')));
     expect(app.buildState, isNull);

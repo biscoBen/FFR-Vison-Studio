@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../design/theme.dart';
 import '../design/widgets.dart';
@@ -85,6 +86,9 @@ class _SetupScreenState extends State<SetupScreen> {
                   Expanded(child: Text(booted && !gameOk ? 'Point at the folder that contains FFRS.exe.' : 'Takes about two minutes. The game can stay closed.', style: Guide.small())),
                   GuideButton('Logs folder', small: true, icon: Icons.folder_open, onPressed: app.openLogs),
                 ]),
+                const SizedBox(height: 10),
+                Wrap(children: [GuideButton('Launch preparation & snapshots', key: const Key('setup-launch-preparation'),
+                    onPressed: app.api == null || preparing ? null : () => launchUrl(Uri.parse('${app.api!.base}/launch-preparation')))]),
               ]),
             ),
           ]),
@@ -108,13 +112,13 @@ class _SetupScreenState extends State<SetupScreen> {
           child: TextField(
             controller: _game,
             style: Guide.small(Guide.ink),
-            decoration: InputDecoration(hintText: r'…\steamapps\common\FINAL FANTASY RESONANCE DEMO', suffixIcon: Icon(ok ? Icons.check : Icons.search, size: 16, color: ok ? Guide.green : Guide.inkFaint)),
+            decoration: InputDecoration(hintText: r'…\steamapps\common\<Resonance game folder>', suffixIcon: Icon(ok ? Icons.check : Icons.search, size: 16, color: ok ? Guide.green : Guide.inkFaint)),
             onChanged: (_) => setState(() {}),
           ),
         ),
         const SizedBox(width: 8),
         GuideButton('Browse', small: true, onPressed: () async {
-          final d = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Where is FINAL FANTASY RESONANCE DEMO installed?');
+          final d = await FilePicker.platform.getDirectoryPath(dialogTitle: 'Where is Resonance installed?');
           if (d != null) setState(() => _game.text = d);
         }),
         const SizedBox(width: 6),

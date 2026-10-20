@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "tests": [
+    {
+      "key": "skill-500270",
+      "name": "1,000 Needles",
+      "skillIds": [
+        500270
+      ],
+      "source": "Cactuar (38)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500180",
+      "name": "Megavolt",
+      "skillIds": [
+        500180
+      ],
+      "source": "Watcher (188)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500380",
+      "name": "Atomic Ray",
+      "skillIds": [
+        500380
+      ],
+      "source": "Watcher (188); Ganymede (196)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-505020",
+      "name": "Bad Breath",
+      "skillIds": [
+        505020
+      ],
+      "source": "Malbodoom (257); Malboro Marquis (258)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500690",
+      "name": "Pollen",
+      "skillIds": [
+        500690
+      ],
+      "source": "Malbodoom (257); shared AI: Marquis / Sheratan",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500190",
+      "name": "Flatten",
+      "skillIds": [
+        500190
+      ],
+      "source": "Malboro Marquis (258)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-505110",
+      "name": "10,000 Needles",
+      "skillIds": [
+        505110
+      ],
+      "source": "Gigantuar (352)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-503770",
+      "name": "Alluring Pollen",
+      "skillIds": [
+        503770
+      ],
+      "source": "Sheratan (641)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-501070",
+      "name": "Octostrike",
+      "skillIds": [
+        501070
+      ],
+      "source": "Sheratan (641)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-503780",
+      "name": "Branch Spear",
+      "skillIds": [
+        503780
+      ],
+      "source": "Sheratan (641)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-255170",
+      "name": "Stonega",
+      "skillIds": [
+        255170
+      ],
+      "source": "Sheratan (641)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-250190",
+      "name": "Aeroga",
+      "skillIds": [
+        250190
+      ],
+      "source": "Sheratan (641); shared AI: Alpherg",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-501680",
+      "name": "Bubble Breath",
+      "skillIds": [
+        501680
+      ],
+      "source": "Alpherg (651)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-503800",
+      "name": "Reflectga",
+      "skillIds": [
+        503800
+      ],
+      "source": "Alpherg (651)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-250150",
+      "name": "Waterga",
+      "skillIds": [
+        250150,
+        255110
+      ],
+      "source": "Alpherg (651); exact cast variant unresolved",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-250330",
+      "name": "Flare",
+      "skillIds": [
+        250330
+      ],
+      "source": "Alpherg (651)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500720",
+      "name": "Self-Destruct",
+      "skillIds": [
+        500720
+      ],
+      "source": "Bomb (24)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500590",
+      "name": "Constrict",
+      "skillIds": [
+        500590
+      ],
+      "source": "Wood Eyes (23)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "skill-500810",
+      "name": "White Wind",
+      "skillIds": [
+        500810
+      ],
+      "source": "White Peak (283)",
+      "demo": "Original-enemy visual reported blank; AI-only shared references are separate observations."
+    },
+    {
+      "key": "imported-407050",
+      "name": "Blighted Gloom",
+      "skillIds": [
+        407050
+      ],
+      "source": "Imported vision; original-enemy cast not established",
+      "demo": "Imported-vision visual reported blank."
+    },
+    {
+      "key": "imported-505340",
+      "name": "Carmine Inferno",
+      "skillIds": [
+        505340
+      ],
+      "source": "Imported vision; original-enemy cast not established",
+      "demo": "Imported-vision visual reported blank."
+    },
+    {
+      "key": "needles-import",
+      "name": "Optional FFBE Needles import",
+      "source": "Regression",
+      "demo": "Enable only for a separate comparison: streak stacking, hit sound, miss behavior."
+    },
+    {
+      "key": "direction",
+      "name": "Native direction comparisons",
+      "source": "Regression",
+      "demo": "Absolute Zero, Bioblaster, Aqua Breath: caster/target sides and single/group targets."
+    },
+    {
+      "key": "fina-cave",
+      "name": "Crystal Fina cave",
+      "source": "Regression",
+      "demo": "One Fina, approved size/glass/refraction/rotation; acquire, disappear and return."
+    },
+    {
+      "key": "fina-battle",
+      "name": "Crystal Fina battle",
+      "source": "Regression",
+      "demo": "Idle crystal/no glow; regular shot/impact sync; resonance glow/turn/fall/1.25 s hold/reformation."
+    },
+    {
+      "key": "knockout",
+      "name": "Replacement character knockout and revival",
+      "source": "Regression",
+      "demo": "Lasswell → regular Cleome plus another character/look; fallen hold and revival."
+    },
+    {
+      "key": "mr",
+      "name": "Default vision exact skills and MR",
+      "source": "Regression",
+      "demo": "Tronn and another vision: exact source IDs, MR unlock ranks and permanent rewards."
+    },
+    {
+      "key": "caves",
+      "name": "Cave and vendor acquisition",
+      "source": "Regression",
+      "demo": "Choose cave before placement, exit name/destination, grant/ownership and vendor entries."
+    },
+    {
+      "key": "practice",
+      "name": "Practice menu and return",
+      "source": "Regression",
+      "demo": "Open/cancel/page/change opponent, two consecutive battles, walk through Mitra afterwards."
+    },
+    {
+      "key": "survival",
+      "name": "1 HP survival and healing",
+      "source": "Regression",
+      "demo": "Separate opt-in test: lethal single/multiple hits, damage over time, instant death, healing."
+    },
+    {
+      "key": "deck",
+      "name": "Desktop → Deck snapshot and restore",
+      "source": "Regression",
+      "demo": "Fresh install, replacement snapshot, cycling/Fina runtime on/off, restore originals, controller use."
+    }
+  ]
+}

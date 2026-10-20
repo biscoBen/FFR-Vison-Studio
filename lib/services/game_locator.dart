@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:win32_registry/win32_registry.dart';
 
-/// Finds FINAL FANTASY RESONANCE DEMO on this machine.
+/// Finds Resonance installations by their actual container marker.
 ///
 /// Order: Steam's registry entry and every library folder it lists, then a scan of every drive's
 /// `steamapps\common` and a few common install roots, then nothing (the UI asks for a folder).
@@ -12,7 +12,7 @@ class GameLocator {
   static const marker = r'FFRS\Content\Paks\FFRS-Windows.utoc';
 
   static bool isGameRoot(String? dir) =>
-      dir != null && dir.isNotEmpty && File(p.join(dir, marker)).existsSync();
+      dir != null && dir.isNotEmpty && File(p.joinAll([dir, ...marker.split(r'\')])).existsSync();
 
   static List<String> steamLibraries() {
     final libs = <String>[];
@@ -43,11 +43,27 @@ class GameLocator {
     return out;
   }
 
+  /// Scan one Steam common directory without assuming a full-game name/app ID.
+  static List<String> candidates(String common) {
+    final directory = Directory(common);
+    if (!directory.existsSync()) return [];
+    List<FileSystemEntity> entries;
+    try { entries = directory.listSync(followLinks: false); } on FileSystemException { return []; }
+    final found = entries.whereType<Directory>()
+        .map((entry) => entry.path).where(isGameRoot).toList();
+    found.sort((a, b) {
+      final demoA = p.basename(a).toUpperCase().contains('DEMO') ? 1 : 0;
+      final demoB = p.basename(b).toUpperCase().contains('DEMO') ? 1 : 0;
+      return demoA != demoB ? demoA.compareTo(demoB) : a.compareTo(b);
+    });
+    return found;
+  }
+
   /// The game folder, or null.
   static Future<String?> detect() async {
     for (final lib in steamLibraries()) {
-      final c = p.join(lib, 'steamapps', 'common', dirName);
-      if (isGameRoot(c)) return c;
+      final found = candidates(p.join(lib, 'steamapps', 'common'));
+      if (found.isNotEmpty) return found.first;
     }
     // Every drive: X:\SteamLibrary, X:\Steam, X:\Games\Steam, X:\Program Files (x86)\Steam ...
     for (final letter in 'CDEFGHIJKLMNOPQRSTUVWXYZ'.split('')) {
@@ -56,8 +72,8 @@ class GameLocator {
       for (final sub in [
         'SteamLibrary', 'Steam', r'Games\Steam', r'Program Files (x86)\Steam', r'Program Files\Steam', 'Games', ''
       ]) {
-        final c = p.join(drive, sub, 'steamapps', 'common', dirName);
-        if (isGameRoot(c)) return c;
+        final found = candidates(p.join(drive, sub, 'steamapps', 'common'));
+        if (found.isNotEmpty) return found.first;
       }
     }
     return null;

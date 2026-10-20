@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.48'
+VERSION = '1.2.49'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -262,11 +262,30 @@ def hook_server(raw):
     # Invalidate the prior export on every attempt; only a verified successful
     # build records a new snapshot, including its exact cycling payload.
     lines[build.body[0].lineno - 1] = nl.join([
-        '    import _ffr_deck_sync', '    try: _ffr_deck_sync.begin_build(ROOT)',
-        '    except Exception:',
-        '        state.update(running=False, result="failed", message="Could not prepare the Deck build snapshot. Check the local build folder.")',
+        '    import _ffr_deck_sync, _ffr_launch',
+        '    try:',
+        '        launch_start = _ffr_launch.guard(globals())',
+        '        launch_start["inputsSha256"] = _ffr_deck_sync.inputs_digest(ROOT)',
+        '        _ffr_deck_sync.begin_build(ROOT)',
+        '    except Exception as launch_error:',
+        '        state.update(running=False, result="failed", message=str(launch_error))',
         '        return',
     ]) + nl + lines[build.body[0].lineno - 1]
+    verified, = [n for n in ast.walk(build) if isinstance(n, ast.If) and ast.unparse(n.test) == 'v.returncode != 0']
+    indent = ' ' * verified.col_offset
+    lines[verified.lineno - 1] = (indent + 'if v.returncode == 0: _ffr_launch.capture_build(globals(), launch_start)' + nl + lines[verified.lineno - 1])
+    setup_call, = [n for n in ast.walk(tree) if isinstance(n, ast.Call) and ast.unparse(n.func) == 'studio_setup.prepare']
+    old = ast.get_source_segment(text, setup_call)
+    lines[setup_call.lineno - 1] = lines[setup_call.lineno - 1].replace(old,
+        '_ffr_launch.prepare_game(game, studio_setup, globals(), log=lambda m: setup_state["log"].append(str(m)))')
+    status_fn, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'status']
+    status_return, = [n for n in status_fn.body if isinstance(n, ast.Return)]
+    status_text = ast.get_source_segment(text, status_return)
+    augmented = 'return {**(' + ast.get_source_segment(text, status_return.value) + '), **_ffr_launch.brief(globals())}'
+    if status_return.lineno != status_return.end_lineno:
+        for index in range(status_return.lineno - 1, status_return.end_lineno): lines[index] = ''
+        lines[status_return.lineno - 1] = ' ' * status_return.col_offset + augmented + nl
+    else: lines[status_return.lineno - 1] = lines[status_return.lineno - 1].replace(status_text, augmented)
     finish, = [n for n in build.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == "state['stage']"]
     lines[finish.lineno - 1] = nl.join([
         '    try:', '        if state["result"] == "ok": _ffr_deck_sync.capture(globals())',
@@ -284,6 +303,7 @@ def hook_server(raw):
     restore, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'restore_game']
     # Preflight ownership/loader before package copies, then deploy only after
     # those copies succeed. No changes to another loader or mod's configuration.
+    lines[install.body[0].lineno - 1] = '    _ffr_launch.guard(globals(), installing=True)' + nl + lines[install.body[0].lineno - 1]
     state, = [n for n in install.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'st']
     returned, = [n for n in install.body if isinstance(n, ast.Return)]
     lines[state.lineno - 1] = '    import _ffr_field_leader' + nl + '    leader_plan = _ffr_field_leader.install_plan(ROOT, _game_root(paks))' + nl + lines[state.lineno - 1]
@@ -293,7 +313,7 @@ def hook_server(raw):
     for returned in [n for n in ast.walk(restore) if isinstance(n, ast.Return)]:
         indent = ' ' * returned.col_offset
         lines[returned.lineno - 1] = indent + '_ffr_field_leader.deploy(leader_plan)' + nl + lines[returned.lineno - 1]
-    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions', '_ffr_existingvisions.register(app, globals())', '']))
+    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions, _ffr_launch', '_ffr_existingvisions.register(app, globals())', '']))
     result = ''.join(lines); compile(result, 'server.py', 'exec')
     return (b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'') + result.encode('utf-8')
 
@@ -377,6 +397,10 @@ def run(root, action):
         if name.endswith('.py'): compile(raw, name, 'exec')
         elif name.endswith(('.lua', '.html')): raw.decode('utf-8')
         elif name.endswith('.json'): json.loads(raw)
+        elif name == 'launch_demo.json.gz':
+            import gzip
+            if json.loads(gzip.decompress(raw)).get('kind') != 'ffr-native-reference':
+                raise RuntimeError('Invalid demo comparison metadata.')
         elif name.endswith('.png'):
             if not raw.startswith(b'\x89PNG\r\n\x1a\n'):
                 raise RuntimeError('Existing vision field sheet is not a PNG.')

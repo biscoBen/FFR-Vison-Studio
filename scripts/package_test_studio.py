@@ -48,13 +48,14 @@ def package(app, output, commit, run_id, branch="Sephira's-Update", build=15):
             info.external_attr = 0o100755 << 16
             bundle.writestr(info, source.read_text(encoding='utf-8').replace('\r\n', '\n'))
         bundle.writestr('test-build.json', json.dumps(metadata, indent=2) + '\n')
-        bundle.writestr('Read me.txt', 'On PC: use Studio > Set up private sync > Build & publish to Deck.\n'
+        bundle.writestr('Read me.txt', 'On PC: build successfully, then Export / import snapshots > Export Deck snapshot.\n'
+                        'Copy/extract Resonance-Mod-Snapshot.zip on Deck and run its Install snapshot.sh; no GitHub or build is needed.\n'
                         'On Steam Deck: extract this ZIP into Downloads/FFR Mod/Installer.\n'
                         'In Desktop Mode, run: bash "$HOME/Downloads/FFR Mod/Installer/Update my mod.sh"\n'
                         'Choose 1, then enter your private owner/repository and a Contents: read token.\n'
                         'Close Resonance. The installer detects the game and creates a desktop shortcut.\n'
                         'Settings/backups/helper stay in Downloads/FFR Mod/Deck Sync.\n'
-                        'See the project README for private setup and cycling Steam launch options.\n')
+                        'Optional GitHub publishing is separate. See the launch/snapshot guide for local import and runtime launch options.\n')
     return metadata
 
 

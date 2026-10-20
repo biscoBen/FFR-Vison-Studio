@@ -252,6 +252,11 @@ class AppState extends ChangeNotifier {
   }
   void _writeInstalled(Map<String, dynamic> m) => File(paths.installedManifest).writeAsStringSync(json.encode(m));
 
+  String? _launchRevision;
+  JsonMap? gameCompatibility;
+  bool _reloadingLaunchSetup = false;
+  bool snapshotConflict = false;
+
   Future<void> refreshStatus() async {
     if (api == null) return;
     try {
@@ -262,12 +267,52 @@ class AppState extends ChangeNotifier {
       placed = (st['placed'] as num?)?.toInt() ?? 0;
       gameRoot = (st['gameRoot'] as String?) ?? gameRoot;
       engineVersion = st['engineVersion']?.toString();
+      gameCompatibility = (st['gameCompatibility'] as Map?)?.cast<String, dynamic>();
+      final remoteRevision = st['launchRevision']?.toString();
+      if (remoteRevision != null && _launchRevision != remoteRevision) {
+        final wasLoaded = _launchRevision != null;
+        if (wasLoaded && dirty) {
+          snapshotConflict = true;
+          _saveTimer?.cancel();
+          notice = 'A snapshot or preset changed the saved setup. Reload the restored setup; your unsaved edits will be backed up first.';
+        } else {
+          _launchRevision = remoteRevision;
+          api!.launchRevision = remoteRevision;
+          snapshotConflict = false;
+          if (wasLoaded && !_reloadingLaunchSetup && !building) {
+            _reloadingLaunchSetup = true;
+            try { await loadAll(); } finally { _reloadingLaunchSetup = false; }
+          }
+        }
+      }
+
       // a preparation that lost a table (interrupted, or a dump that failed) shows up here: go back to the setup page
       if (st['setupNeeded'] == true && phase == Phase.ready && setupProgress?.state != 'working') { phase = Phase.setup; setupProgress = null; }
       notifyListeners();
     } catch (_) {
       if (engine != null && !engine!.running && !_stopping) { engineDown = true; notifyListeners(); }
     }
+  }
+
+  Future<void> reloadRestoredSetup() async {
+    String? saved;
+    await _withRoster(() async {
+      if (api == null || building) return;
+      final directory = Directory(paths.configBackups);
+      await directory.create(recursive: true);
+      final backup = File(p.join(directory.path, 'Before snapshot reload-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(units), flush: true);
+      saved = backup.path;
+      _saveTimer?.cancel();
+      dirty = false;
+      _pendingEdits.clear();
+      _rosterRevision++;
+      _launchRevision = null;
+      snapshotConflict = false;
+    });
+    if (saved == null) return;
+    await loadAll();
+    showNotice('Restored setup loaded. Previous unsaved edits were backed up to $saved');
   }
 
   /// Opens the folder with the engine logs in Explorer.
@@ -318,6 +363,8 @@ class AppState extends ChangeNotifier {
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);
+    } else {
+      sephiraEnabled = false;
     }
     units = units.map((u) {
       final migrated = CharacterConfig.retireComparisonAbilities(u as JsonMap);

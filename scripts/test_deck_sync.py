@@ -161,7 +161,7 @@ class SyncTests(unittest.TestCase):
             sync.make_package(env, archive)
         sync.capture(env)
         (game / sync.MARKER).write_bytes(b'game updated')
-        with self.assertRaisesRegex(sync.SyncError, 'game or runtime changed'):
+        with self.assertRaisesRegex(sync.SyncError, 'game.*runtime changed'):
             sync.make_package(env, archive)
 
     def test_runtime_change_and_missing_loader_block_publish(self):

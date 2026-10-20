@@ -320,6 +320,7 @@ def configure(root, enabled, repo, token=None, github=GitHub, credentials=None):
 
 def begin_build(root):
     checked(root, VERIFIED).unlink(missing_ok=True)
+    checked(root, 'build/launch-game.json').unlink(missing_ok=True)
 
 
 def source_files(env):
@@ -354,12 +355,73 @@ def source_files(env):
     return game, files, leader
 
 
+# Transfer identity covers every official top-level container header and size.
+# ~mods is deliberately excluded, so installed mods cannot identify the game.
+def game_identity(game):
+    paks = checked(game, 'FFRS/Content/Paks')
+    containers = {}
+    for path in sorted(paks.iterdir()):
+        if path.suffix.lower() not in ('.utoc', '.ucas', '.pak') or not path.is_file():
+            continue
+        checked(paks, path.name)
+        containers[path.name] = {'size': path.stat().st_size,
+                                 **({'sha256': sha(path)} if path.suffix.lower() == '.utoc' else {})}
+    if 'FFRS-Windows.utoc' not in containers:
+        raise SyncError('Select the Resonance folder containing FFRS/Content/Paks/FFRS-Windows.utoc.')
+    digest = hashlib.sha256(json.dumps(containers, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    return {'schema': 1, 'sha256': digest, 'containers': containers}
+
+
+STUDIO_INPUTS = ('units.json', 'icon_layout.json', 'testing.json', 'ability-modes.json', 'sephira-settings.json')
+
+
+def inputs_digest(root):
+    files = {name: sha(checked(root, 'mods/EstherTsukiko/' + name))
+             for name in STUDIO_INPUTS if checked(root, 'mods/EstherTsukiko/' + name).is_file()}
+    return hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()
+
+
+def local_snapshot(env, output):
+    """Self-contained offline installer; no repository, token or network call."""
+    with tempfile.TemporaryDirectory(prefix='ffr-local-snapshot-') as folder:
+        package = Path(folder) / 'mod.zip'
+        manifest = make_package(env, package)
+        with zipfile.ZipFile(output, 'w', zipfile.ZIP_STORED, allowZip64=True) as bundle:
+            bundle.write(package, 'mod.zip')
+            info = zipfile.ZipInfo('Install snapshot.sh')
+            info.create_system = 3
+            info.external_attr = 0o100755 << 16
+            bundle.writestr(info, '#!/usr/bin/env bash\nset -euo pipefail\nsnapshot_dir="$(cd -- "$(dirname -- "$0")" && pwd)"\nexec python3 "$snapshot_dir/Deck Mod Sync.py" --snapshot "$snapshot_dir/mod.zip" --interactive "$@"\n')
+            bundle.writestr('Deck Mod Sync.py', Path(__file__).read_bytes())
+            bundle.writestr('Read me.txt',
+                'Extract the whole ZIP on Steam Deck. Close Resonance. In Desktop Mode run:\n'
+                'bash "Install snapshot.sh"\n'
+                'Select/detect your Resonance game folder. No GitHub, token, Studio or building is needed.\n'
+                'Both computers must have the same game build. A later snapshot replaces this mod and removes its stale runtime files.\n'
+                'Backups and the restore shortcut stay under Downloads/FFR Mod/Deck Sync.\n'
+                'If runtime scripts are included (Crystal Fina or walking-character cycling), set this game Steam launch option:\n'
+                'WINEDLLOVERRIDES="dwmapi=n,b" %command%\n'
+                'This is a finished mod snapshot. Use the separate Studio backup to transfer editable units/settings. Game saves are separate.\n')
+    return manifest
+
+
+def import_snapshot(root, game, archive, running=None):
+    root, game, archive = Path(root), Path(game), Path(archive)
+    running = running or game_running
+    if not archive.is_file() or archive.stat().st_size > MAX_ZIP:
+        raise SyncError('Choose a finished mod snapshot ZIP (mod.zip inside the exported folder).')
+    with tempfile.TemporaryDirectory(prefix='snapshot-', dir=root) as folder:
+        manifest = validate_package(archive, folder)
+        return install(root, game, folder, manifest, '', running=running)
+
+
 def capture(env):
     """Called only by the completed, verified build; later edits cannot alter it."""
     root = Path(env['ROOT'])
     game, files, leader = source_files(env)
     record = {'schema': 1, 'id': uuid.uuid4().hex, 'created': dt.datetime.now(dt.timezone.utc).isoformat(),
               'gameSha256': sha(checked(game, MARKER)),
+              'gameIdentity': game_identity(game), 'inputsSha256': inputs_digest(root),
               'files': {k: {'sha256': sha(v), 'size': v.stat().st_size} for k, v in files.items()},
               'leader': leader, 'engine': env.get('ENGINE_VERSION', '')}
     # No PC paths, tokens, Studio config, or saves in the exported manifest.
@@ -370,14 +432,17 @@ def capture(env):
 def make_package(env, output):
     root = Path(env['ROOT'])
     record = read_json(checked(root, VERIFIED))
-    if not isinstance(record, dict) or record.get('schema') != 1:
-        raise SyncError('Build successfully with this Studio before publishing.')
+    if (not isinstance(record, dict) or record.get('schema') != 1
+            or not {'gameIdentity', 'inputsSha256'} <= set(record)):
+        raise SyncError('Build successfully with this Studio before exporting or publishing.')
     game, files, leader = source_files(env)
-    if (record['gameSha256'] != sha(checked(game, MARKER)) or record['leader'] != leader
+    if (record['gameSha256'] != sha(checked(game, MARKER)) or record.get('gameIdentity', game_identity(game)) != game_identity(game)
+            or record.get('inputsSha256', inputs_digest(root)) != inputs_digest(root) or record['leader'] != leader
             or set(record['files']) != set(files)):
-        raise SyncError('The game or runtime changed since the build. Rebuild before publishing.')
+        raise SyncError('The game, Studio settings or runtime changed since the build. Rebuild before exporting or publishing.')
     manifest = {k: record[k] for k in ('schema', 'id', 'created', 'gameSha256', 'engine')}
     manifest.update(channel=CHANNEL, files=dict(record['files']))
+    if 'gameIdentity' in record: manifest['gameIdentity'] = record['gameIdentity']
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as bundle:
         for name, path in files.items():
             expected = record['files'][name]
@@ -393,10 +458,12 @@ def make_package(env, output):
             bundle.writestr('files/' + relative, data)
         bundle.writestr('manifest.json', json.dumps(manifest))
     if Path(output).stat().st_size > MAX_ZIP:
-        raise SyncError('This mod exceeds GitHub release asset size limits (2 GiB).')
+        raise SyncError('This finished mod exceeds the supported snapshot size limit (2 GiB).')
     # Validate the actual streamed ZIP, catching concurrent changes before upload.
     with tempfile.TemporaryDirectory(prefix='ffr-package-check-') as temporary:
         validate_package(output, Path(temporary))
+    if record['inputsSha256'] != inputs_digest(root) or record['gameIdentity'] != game_identity(game):
+        raise SyncError('Game or Studio inputs changed during export. Rebuild before exporting again.')
     return manifest
 
 
@@ -631,7 +698,8 @@ def install(root, game, staging, manifest, repo, running=game_running):
         raise SyncError('Close Resonance before updating the mod.')
     recover(root, running)
     marker = checked(game, MARKER)
-    if not marker.is_file() or sha(marker) != manifest['gameSha256']:
+    if (not marker.is_file() or sha(marker) != manifest['gameSha256']
+            or ('gameIdentity' in manifest and game_identity(game) != manifest['gameIdentity'])):
         raise SyncError('The Deck game version differs from the PC build. Update both games and rebuild on the PC.')
     state_path = checked(root, 'installed-state.json')
     previous_raw = state_path.read_bytes() if state_path.exists() else None
@@ -799,6 +867,7 @@ def deck_main():
     parser.add_argument('--root', type=Path, default=Path.home() / 'Downloads/FFR Mod/Deck Sync')
     parser.add_argument('--game', type=Path)
     parser.add_argument('--repository')
+    parser.add_argument('--snapshot', type=Path, help='Install a local finished mod ZIP without GitHub.')
     parser.add_argument('--restore', action='store_true')
     parser.add_argument('--interactive', action='store_true')
     parser.add_argument('--forget-token', action='store_true')
@@ -810,6 +879,32 @@ def deck_main():
             cfg = read_json(checked(root, 'deck-settings.json'), {})
             if args.restore:
                 print('Restored.' if restore(root) else 'No synced mod to restore.')
+                return 0
+            # Local import branches before any credentials/repository work.
+            local = args.snapshot
+            if args.interactive and not local:
+                print('1 — Import local mod snapshot\n2 — Restore files from before importing\n3 — GitHub sync (optional)\nEnter — Exit')
+                action = input('Choose: ').strip()
+                if not action: return 0
+                if action == '2':
+                    print('Restored.' if restore(root) else 'No installed snapshot to restore.')
+                    return 0
+                if action == '1':
+                    local = Path(input('Path to mod.zip from the exported snapshot: ').strip().strip('"'))
+                elif action != '3': raise SyncError('Choose one of the listed actions.')
+            if local:
+                game = args.game or (Path(cfg['game']) if cfg.get('game') else None)
+                if game is None:
+                    found = steam_games()
+                    game = found[0] if len(found) == 1 else Path(input('Resonance game folder: ').strip().strip('"'))
+                result = import_snapshot(root, game.resolve(), local)
+                json_write(checked(root, 'deck-settings.json'), {**cfg, 'game': str(game.resolve())})
+                helper = checked(root, 'Deck Mod Sync.py')
+                atomic(helper, Path(__file__).read_bytes())
+                desktop_shortcut(helper, root)
+                print('Snapshot installed. No download or build was needed.')
+                if result['cycling']:
+                    print('Steam launch option for the included runtime: WINEDLLOVERRIDES="dwmapi=n,b" %command%')
                 return 0
             repo = args.repository or cfg.get('repository')
             vault = CredentialStore(root)

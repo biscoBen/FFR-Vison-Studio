@@ -455,8 +455,9 @@ class NativeInstallerTests(unittest.TestCase):
         self.builder.write_bytes(fina_installer.hook_builder((ROOT / 'scripts/fixtures/crystal_fina/make_vision_mod.py').read_bytes()))
         self.server = self.root / installer.SOURCES[1]; self.server.parent.mkdir(parents=True)
         self.server.write_bytes(b'from fastapi import FastAPI\napp = FastAPI()\ndef keep(): return "upstream"\n'
-            b'def run_build(install):\n    state.update(running=True)\n    state["result"] = "ok"\n    state["stage"] = "Done"; state["running"] = False\n'
+            b'def run_build(install):\n    state.update(running=True)\n    if v.returncode != 0: raise ValueError("verification failed")\n    state["result"] = "ok"\n    state["stage"] = "Done"; state["running"] = False\n'
             b'async def build(req):\n    threading.Thread(target=run_build, args=(False,), daemon=True).start()\n    return {"ok": True}\n'
+            b'def run_setup(game):\n    studio_setup.prepare(game, log=print)\ndef status():\n    return {"gameRunning": False}\n'
             b'def install_files(log=print):\n    paks = game_paks()\n    st = _game_state(); bdir = "backup"\n    return {"files": 3}\n'
             b'def restore_game(backup=None):\n    paks = game_paks()\n    game = _game_root(paks)\n    if backup:\n        return {"backup": backup}\n    return {"backup": None}\n')
         self.verifier = self.root / installer.SOURCES[2]

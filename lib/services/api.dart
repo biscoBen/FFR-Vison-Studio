@@ -8,6 +8,7 @@ import 'crystal_fina.dart';
 class Api {
   Api(this.base);
   final String base;
+  String? launchRevision;
 
   Uri _u(String path) => Uri.parse('$base$path');
 
@@ -80,7 +81,12 @@ class Api {
     if (value == true && name == 'crystalCaveTest') flags['crystalCave'] = false;
     await put('/api/testing', flags);
   }
-  Future<void> saveSpec(List<dynamic> units) => put('/api/spec', units);
+  Future<void> saveSpec(List<dynamic> units) async {
+    await _json(await http.put(_u('/api/spec'), headers: {
+      'Content-Type': 'application/json',
+      'X-Launch-Revision': ?launchRevision,
+    }, body: json.encode(units)), '/api/spec');
+  }
   Future<Map<String, dynamic>> addUnit(String ffbeId, {String? form, String? name}) async =>
       (await post('/api/spec/add', {'ffbeId': ffbeId, 'form': form, 'name': name, 'autoport': false})) as Map<String, dynamic>;
   Future<void> deleteUnit(String key) => delete('/api/spec/$key');

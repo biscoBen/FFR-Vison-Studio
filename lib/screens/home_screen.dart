@@ -61,6 +61,7 @@ class HomeScreen extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   child: Column(children: [
                     StatRow('Game', app.gameRunning ? 'running' : 'closed', trailing: Icon(app.gameRunning ? Icons.warning_amber : Icons.check, size: 16, color: app.gameRunning ? Guide.gold : Guide.green)),
+                    if (app.gameCompatibility != null) StatRow('Prepared data', app.gameCompatibility!['prepared'] == true ? 'matches game' : 'prepare this build'),
                     StatRow('Mod in the game', app.modInstalled ? 'installed' : 'not installed', zebra: true),
                     StatRow('Units ready', '${app.includedUnitCount}'),
                   ]),
@@ -171,6 +172,16 @@ class HomeScreen extends StatelessWidget {
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   GuideButton('Build without installing', onPressed: !canBuild || busy || app.sephiraWorking ? null : () => app.startBuild(install: false)),
                   GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : app.installLast),
+                  GuideButton('Launch preparation & snapshots', key: const Key('launch-preparation'), icon: Icons.fact_check_outlined,
+                      onPressed: busy || app.api == null ? null : () async {
+                        await app.save();
+                        if (app.dirty) return;
+                        await launchUrl(Uri.parse('${app.api!.base}/launch-preparation'));
+                      }),
+                  if (app.snapshotConflict) GuideButton('Reload restored setup', key: const Key('reload-restored-setup'),
+                      onPressed: busy ? null : () async {
+                        try { await app.reloadRestoredSetup(); } catch (e) { app.showNotice('$e'); }
+                      }),
                   GuideButton('FFBE animation library', key: const Key('ffbe-animation-library'), icon: Icons.movie_outlined, onPressed: app.api == null ? null : () => launchUrl(Uri.parse('${app.api!.base}/ffbe-animation-library'))),
                   GuideButton('Advanced studio', icon: Icons.open_in_new, onPressed: app.api == null ? null : () => launchUrl(Uri.parse(app.api!.advancedUrl()))),
                 ]),

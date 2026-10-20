@@ -265,6 +265,8 @@ def register(app, env):
     _ffr_ffbe_library.register(app, env)
     import _ffr_deck_sync
     _ffr_deck_sync.register(app, env)
+    import _ffr_launch
+    if env.get('ffrenv') is not None: _ffr_launch.register(app, env)
     import _ffr_party
     import _ffr_testing
     import _ffr_ability_modes
