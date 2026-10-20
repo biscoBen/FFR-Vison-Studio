@@ -34,6 +34,10 @@ void main() {
       await app.refreshStatus();
       expect(app.units.single['key'],'restored');
       expect(app.api!.launchRevision,'restored');
+      // A restarted engine creates a fresh API object for the same setup.
+      app.api=Api('http://127.0.0.1:8765');
+      await app.refreshStatus();
+      expect(app.api!.launchRevision,'restored');
       app.dirty=true;
       app.units=[{'id':13501,'key':'unsaved','en':'Unsaved unit'}];
       revision='newer-restore';

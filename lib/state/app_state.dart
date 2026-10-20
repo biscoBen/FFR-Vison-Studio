@@ -269,6 +269,9 @@ class AppState extends ChangeNotifier {
       engineVersion = st['engineVersion']?.toString();
       gameCompatibility = (st['gameCompatibility'] as Map?)?.cast<String, dynamic>();
       final remoteRevision = st['launchRevision']?.toString();
+      if (remoteRevision != null && api!.launchRevision == null) {
+        api!.launchRevision = _launchRevision ?? remoteRevision;
+      }
       if (remoteRevision != null && _launchRevision != remoteRevision) {
         final wasLoaded = _launchRevision != null;
         if (wasLoaded && dirty) {

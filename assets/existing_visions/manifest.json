@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "79eae122c0084c0c4b2a8ae40286dd0fe2e98ab3d83873cd2cec261eb9467900",
+    "install_existing_visions.py": "0ee5b0c3def942b941cabc9251e0d69e214a68cebc207195d65b972273e20978",
     "payload/_ffr_ability_modes.py": "15113beaa5d549c21a8c98cffc338dc910fe782fbda0636a313c1271d9e8db8a",
     "payload/_ffr_animation_repair.py": "c30988ffe7057f486f12dd582be846995ee4fc56da79cd5ef89301d24fc36501",
     "payload/_ffr_build_icons.py": "b6e48223d9d79dc376651a219cf6aed5a167f8fa7bc5da2f4187bb2fa22d714b",
