@@ -11,14 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina boss size
-
-- Reduce the practice boss and her attached crystal to 130% of her normal vision size.
-  Use her native donor's scale rather than the much larger fallback for unset scales.
-  The demo boss scale is now 1.17 instead of 2.7. Her vision and cave presentation stay as configured.
-- Check both the standalone boss and shared vision presentation. Windows publication and
-  the in-game framing still need verification.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -62,6 +54,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina boss size — 2026-10-20
+
+Code: [`ddaaba6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ddaaba6559de919a63832e8f7fe0645cf4559123), extension **1.2.55**.
+Windows package: [run 39504158761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39504158761/Sephira-Studio-Test.zip). **47,474,444 bytes** (47.5 MB).
+SHA-256: `57f94e7abe5ac396d4d1c5e7c179220159ff3b197bb3359a51ff8c2ffec292bf`.
+
+- Reduce the practice boss and her attached crystal to 130% of her normal vision size.
+  Use her native donor's scale rather than the much larger fallback for unset scales.
+  The demo boss scale is now 1.17 instead of 2.7. Her vision and cave presentation stay as configured.
+- Update Studio and reinstall the mod to apply the size change. Existing prepared game data can be reused.
+
+Validation: **72 focused Python tests** and **28 passing local Flutter tests** plus one Windows-only skip.
+Check both the standalone boss and shared vision presentation. Full Windows analysis/tests, fresh frozen-engine
+setup, Python suite, bundle verification, launcher/updater checks and compilation pass. Downloaded provenance,
+SHA-256, all **52** extension and **16** Crystal Fina hashes, and standalone Deck helper match source.
+No live game installation was performed; in-game framing still needs a retry.
+
+Measured timing: first complete candidate **2026-10-20 21:54:03.503 UTC** → verified release download
+**22:08:35.697 UTC**, **14m 32s**, including local checks, CI waits and package verification. One automatic
+Windows run was reused; no duplicate or manual build was dispatched. CI wall time: **12m 33s**.
+Summed runner usage: **16m 55s** (**12m 23s Windows**, **4m 32s Linux**), separate from elapsed delivery time.
 
 ## Published fresh-preparation layout fix — 2026-10-20
 

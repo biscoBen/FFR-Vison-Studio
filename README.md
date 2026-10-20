@@ -4,6 +4,16 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina boss size — 2026-10-20
+
+[Verified Windows download / run 39504158761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39504158761/Sephira-Studio-Test.zip)
+(code `ddaaba6`, extension 1.2.55; **47.5 MB**).
+
+The practice boss and her crystal now use 130% of her normal vision size, down from the oversized fallback.
+Update Studio, keep **Studio Test Data**, and run **Install to game** again. This size change does not require
+another game-data preparation. Windows checks pass and the downloaded package matches source; in-game framing
+still needs a retry. The preparation fix and Crystal Fina boss fight below remain included.
+
 ### Build after preparing game data — 2026-10-20
 
 [Verified Windows download / run 39500304695](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39500304695/Sephira-Studio-Test.zip)
