@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina boss scale verification
+
+- Fix the final table check rejecting the resized boss. Round the intended 1.17 scale before writing
+  the recipe so it matches the native FloatProperty row export, rather than retaining a double arithmetic tail.
+- Keep the requested 130% vision size and strict table checks. Exercise the actual engine patcher and row
+  exporter, including the old failing value and rejection of a genuinely changed scale. Windows publication
+  and the user's game installation still need verification.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

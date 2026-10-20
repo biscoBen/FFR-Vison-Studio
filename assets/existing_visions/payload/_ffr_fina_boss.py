@@ -104,7 +104,9 @@ def prepare(table, rows, units):
     # only a fallback for unset native values, not the normal vision size.
     vision_scale = float(source(DESIGN, 13108)[1]['Scale'])
     if vision_scale <= 0: vision_scale = fina.BATTLE_SPRITE_SCALE
-    add(DESIGN, ID, 13108, NAME, {'Scale': vision_scale * 1.3, 'attachEffectSacle': 1.0,
+    # Avoid double arithmetic tails (0.9 * 1.3 = 1.1700000000000002).
+    # The native FloatProperty row exporter writes the intended scale as 1.17.
+    add(DESIGN, ID, 13108, NAME, {'Scale': round(vision_scale * 1.3, 6), 'attachEffectSacle': 1.0,
         'isSpecialDeadAnim': False, 'isFlipH': True})
     ids = skill_ids()
     for i, recipe in enumerate(recipes()):

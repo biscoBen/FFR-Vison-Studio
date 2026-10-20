@@ -19,6 +19,38 @@ from test_native_testing import ROOT, practice_game, testing
 @unittest.skipUnless(os.name == 'nt' and os.environ.get('GITHUB_ACTIONS') == 'true',
                      'Requires Windows CI and its checksum-verified engine cache.')
 class EnginePracticeContractTests(unittest.TestCase):
+    def test_boss_scale_matches_the_real_patcher_and_row_exporter_exactly(self):
+        from test_crystal_fina_boss import boss, FIXTURE
+        archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
+        with archive.open('rb') as stream:
+            self.assertEqual(hashlib.file_digest(stream,'sha256').hexdigest(),ENGINE_SHA)
+        with zipfile.ZipFile(archive) as bundle: executable = bundle.read('bin/ffr-dt.exe')
+        source = json.loads(gzip.decompress((FIXTURE/'rows.json.gz').read_bytes()))
+        operations = {}
+        boss.prepare(lambda rel: operations.setdefault(rel,{'add':[],'set':[]}),lambda rel: source[rel],[])
+        plan = operations[boss.DESIGN]; edit, = plan['add']
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('Newtonsoft.Json.dll','UAssetAPI.dll','ffr-dt.dll'):
+                (root/name).write_bytes(bundled_assembly(executable,name))
+            (root/'source.json').write_bytes(gzip.decompress(
+                (ROOT/'scripts/fixtures/practice_dialog/talk-properties.json.gz').read_bytes()))
+            (root/'scales.json').write_text(json.dumps({'scale':edit['set']['Scale'],'broken':.9*1.3}),encoding='utf-8')
+            script = root/'check-scale.ps1'; script.write_text(SCALE_CHECK_SCRIPT,encoding='utf-8')
+            result = subprocess.run(['pwsh','-NoProfile','-File',str(script),'-Root',str(root)],
+                                    capture_output=True,text=True,timeout=60)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            actual = json.loads((root/'roundtrip.json').read_bytes())
+        # The old arithmetic tail must differ after native Single conversion.
+        self.assertNotEqual(actual['broken'],.9*1.3)
+        built = copy.deepcopy(source[boss.DESIGN])
+        built[edit['row']] = testing.apply_fields(built[edit['cloneFrom']],edit['set'])
+        built[edit['row']]['Scale'] = actual['scale']
+        testing.check_rows(source[boss.DESIGN],built,plan)
+        built[edit['row']]['Scale'] = 1.18
+        with self.assertRaisesRegex(ValueError,'changed: Studio_CrystalFinaBoss'):
+            testing.check_rows(source[boss.DESIGN],built,plan)
+
     def test_boss_ai_offsets_match_the_real_kismet_serializer(self):
         from test_crystal_fina_boss import boss, native_ai
         archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
@@ -82,6 +114,27 @@ class EnginePracticeContractTests(unittest.TestCase):
                                     capture_output=True,text=True,timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
             self.assertIn('Real engine practice dialogue contracts passed.', result.stdout)
+
+
+SCALE_CHECK_SCRIPT = r'''param([string]$Root)
+$ErrorActionPreference = 'Stop'
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'Newtonsoft.Json.dll'))
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'UAssetAPI.dll'))
+$tool = [Reflection.Assembly]::LoadFrom((Join-Path $Root 'ffr-dt.dll'))
+$asset = [UAssetAPI.UAsset]::DeserializeJson([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root 'source.json')))
+$flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
+$apply = $tool.GetType('Patch',$true).GetMethod('Apply',$flags)
+$export = $tool.GetType('Program',$true).GetMethod('ToJson',$flags)
+$field = [UAssetAPI.PropertyTypes.Objects.FloatPropertyData]::new([UAssetAPI.UnrealTypes.FName]::new($asset,'Scale'))
+$field.Value = [single]0.9
+$inputScales = [Newtonsoft.Json.Linq.JObject]::Parse([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root 'scales.json')))
+$outputScales = [Newtonsoft.Json.Linq.JObject]::new()
+foreach ($key in @('scale','broken')) {
+    $patched = $apply.Invoke($null,[object[]]@($asset,$field,$inputScales[$key]))
+    $outputScales.Add($key,$export.Invoke($null,[object[]]@($patched,$asset)))
+}
+[IO.File]::WriteAllText((Join-Path $Root 'roundtrip.json'),$outputScales.ToString([Newtonsoft.Json.Formatting]::None))
+'''
 
 
 AI_CHECK_SCRIPT = r'''param([string]$Root)
