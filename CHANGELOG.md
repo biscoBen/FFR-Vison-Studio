@@ -11,19 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Build after fresh game preparation
-
-- Fix the missing `build/visions_mod/check/da/DA_UIUnitSsLayout.json` failure after preparing game data.
-  Imported sprites and empty/native-only rosters no longer read an unnecessary donor-layout dump. Cloned
-  native sprites read the current extracted UI layout directly, recovering missing packages from official
-  containers when needed, instead of relying on shipped or prior-build JSON.
-- Explain whether preparation is needed because the setup has no recorded baseline, the selected game
-  files differ, or a preparation was interrupted. An untracked baseline does not prove a Steam game update.
-  Keep native fingerprint and patch-review guards. An already successful preparation can be reused.
-- Regression checks cover builds with the old layout cache absent, fresh native donor layouts, stale cache
-  exclusion, official-container extraction and the distinct preparation states. Windows publication and
-  the user's actual game install remain to be verified.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -67,6 +54,45 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published fresh-preparation layout fix — 2026-10-20
+
+Code: [`ee10c3d`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ee10c3d88b82ba0bbc2ca47322b3fa9d6eeb20ab), extension **1.2.54**.
+Windows package: [run 39500304695](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39500304695/Sephira-Studio-Test.zip). **47,474,317 bytes** (47.5 MB).
+SHA-256: `66496df0adf5e6f818753422cfa0c5661a0403a3c51270c0b8adcd546ef8696c`.
+
+- Fix the missing `build/visions_mod/check/da/DA_UIUnitSsLayout.json` failure after preparing game data.
+  Imported sprites and empty/native-only rosters no longer read an unnecessary donor-layout dump. Cloned
+  native sprites read the current extracted UI layout directly, recovering missing packages from official
+  containers when needed, instead of relying on shipped or prior-build JSON.
+- Explain whether preparation is needed because the setup has no recorded baseline, the selected game
+  files differ, or a preparation was interrupted. An untracked baseline does not prove a Steam game update.
+  Keep native fingerprint and patch-review guards. An already successful preparation can be reused.
+- Regression checks cover builds with the old layout cache absent, fresh native donor layouts, stale cache
+  exclusion, official-container extraction and the distinct preparation states. Windows gates pass;
+  the user's actual game install still needs a retry.
+
+Validation: **512 Python checks** (20 local platform/tool skips), **266 passing local Flutter tests** plus
+one Windows-only skip, and analysis pass. Execute the actual patched builder's layout block with Fina,
+Agrias and Alaya without the old `check` directory, plus a native donor clone with fresh layout fixtures.
+The existing native-only and fully reverted build tests also run without pre-seeding the old layout file.
+Verify that a stale shipped cache is ignored and missing-source extraction excludes `~mods`. Preserve
+changed-game and interrupted-preparation guards. Full Windows tests, fresh frozen-engine setup,
+launcher/updater checks and compilation pass. Separate Linux launcher and Windows transfer checks pass.
+Downloaded provenance/SHA-256, all **52** extension and **16** Crystal Fina hashes, and the standalone Deck
+helper match source. No live installation into the user's game or new game-reference collection was performed.
+
+Measured timing: first complete candidate **2026-10-20 21:23:44.065 UTC** → verified release download
+**21:40:52.572 UTC**, **17m 09s**, including regression corrections, local checks, CI waits and package verification.
+One automatic Windows build and the separately triggered Deck workflow ran; no duplicate or manual build
+was dispatched. The timer was not restarted.
+
+| Workflow | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | ---: | ---: | ---: |
+| Windows 39500304695 | 13m 00s | 13m 49s | 4m 53s |
+| Deck 39500304702 | 2m 20s | 2m 16s | 1m 27s |
+
+Summed runner usage: **22m 25s** (**16m 05s Windows**, **6m 20s Linux**), separate from elapsed delivery time.
 
 ## Published Crystal Fina level-10 boss test — 2026-10-20
 

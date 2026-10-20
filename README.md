@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Build after preparing game data — 2026-10-20
+
+[Verified Windows download / run 39500304695](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39500304695/Sephira-Studio-Test.zip)
+(code `ee10c3d`, extension 1.2.54; **47.5 MB**).
+
+Fix the missing `DA_UIUnitSsLayout.json` error after fresh preparation. Imported sprites skip that unnecessary
+layout dump; native sprite clones read the current game's layout directly. The preparation prompt now distinguishes
+untracked data, changed game files and interrupted preparation. Older setups can need one initial baseline;
+the prompt alone does not prove Steam updated the demo.
+
+Update your existing Studio folder, keep **Studio Test Data**, and retry **Install to game**. A successful
+preparation for the same game build is reusable. Full Windows gates, missing-cache regression checks and
+Linux/Windows transfer checks pass; the downloaded files match source. The Crystal Fina boss test below remains
+included. The user's actual game installation still needs a retry.
+
 ### Crystal Fina level-10 boss test — 2026-10-20
 
 [Verified Windows download / run 39495008542](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39495008542/Sephira-Studio-Test.zip)
