@@ -11,47 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Launch preparation and local Steam Deck snapshots
-
-- Add **Launch preparation & snapshots** on Home. Collect fresh official native skill/unit/MR/routing tables,
-  timeline packages, sound references and inventory in an isolated view that excludes installed mods. Compare
-  exact definitions, schema fields, routing and asset/timeline changes against the supplied demo metadata;
-  retain raw evidence in a downloadable reference. Localized labels alone do not count as route changes.
-- Identify game builds by every top-level native container name/size and every `.utoc` hash. Preserve older
-  prepared directories when the build changes; rebuild native rows/listing/catalog instead of reusing shipped
-  demo caches. Reject builds/installs against untracked or changed preparation and stale last builds. Invalidate the preparation record before moving data so failed preparation and switching
-  back cannot reuse partial files. Flag
-  enabled patches on unreviewed builds with an explicit, fingerprint-specific review or original-game preset.
-  Detect full-game folders by the actual container marker without inventing an app ID/name.
-- Add a reversible **original-game test preset**. Back up settings first, disable the visual/repair/test controls
-  and original-vision test grants, retain edited kits/appearances and explicit custom animations. Individual
-  switches remain available. A completely unmodified comparison still requires removing the mod.
-- Add a 31-entry editable launch sheet: 19 original-enemy failed skill names / 20 candidate IDs, two separately
-  reported imported-vision failures and ten regression groups. Preserve Waterga's unresolved exact variant and
-  AI-only shared references. Save visuals, direction, sound, hit timing and notes separately per native build;
-  export CSV without converting old observations into new-build passes.
-- Make local finished-mod snapshots the main Deck route. Build once on PC, export **Resonance-Mod-Snapshot.zip**,
-  copy/extract on Deck and run **Install snapshot.sh**. Include a standalone Python installer, exact compiled
-  files and required Crystal Fina/cycling runtime. No GitHub, credentials, Studio download or building on Deck.
-  Stream large exports through the browser; verify game/input/output freshness and package checksums.
-- Reuse the owned-file installer transaction, automatic backups, interruption recovery and restore shortcut.
-  Use native Windows/Linux file locks and process checks; expose Windows regression traces directly in CI annotations.
-  Later snapshots remove stale runtime files. Keep optional private GitHub publishing collapsed and opt-in;
-  normal builds and local snapshots never upload.
-- Add a separate **Studio backup** for the recorded roster, appearance/acquisition choices, icon layout and
-  visual/testing settings. Preview before restoring, reject a stale preview and make an automatic prior backup.
-  Restore atomically with rollback; notify Studio to reload saved setups and invalidate prior builds. Reject
-  stale desktop saves; preserve pending edits in a local backup before reloading a restored roster. Preserve
-  machine paths, credentials, source downloads and saves separately.
-
-Validation: analysis, **266 Flutter tests** (one Windows-only skip), **501 Python checks** (19 local platform/tool
-skips), local transfer/API tests and Chromium round trips pass, including standalone local import, runtime
-removal, restoration, corrupt backups, failed writes, stale previews, build/input changes, per-build observations,
-streamed exports and unchanged-demo comparison. Windows packaging is pending. These tools
-prepare evidence and reversible workflows; full-game mapping/asset compatibility and actual Deck/Proton rendering,
-controller use and runtime behavior remain untested. See [the guide](docs/LAUNCH_PREPARATION.md).
-
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -95,6 +54,81 @@ controller use and runtime behavior remain untested. See [the guide](docs/LAUNCH
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published launch preparation and local Steam Deck snapshots — 2026-10-19
+
+Code: [`910aa18`](https://github.com/biscoBen/FFR-Vison-Studio/commit/910aa185ec5c653f424182b714f7d49a12cd74cd), extension **1.2.52**.
+Windows package: [run 39370792784](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39370792784/Sephira-Studio-Test.zip). **47,465,970 bytes** (47.5 MB).
+SHA-256: `82e40408a3fd3cd1431cbd7bc9bba1920139a124410a5f185830d01b03cde313`.
+
+- Add **Launch preparation & snapshots** on Home. Collect fresh official native skill/unit/MR/routing tables,
+  timeline packages, sound references and inventory in an isolated view that excludes installed mods. Compare
+  exact definitions, schema fields, routing and asset/timeline changes against the supplied demo metadata;
+  retain raw evidence in a downloadable reference. Localized labels alone do not count as route changes.
+- Identify game builds by every top-level native container name/size and every `.utoc` hash. Preserve older
+  prepared directories when the build changes; rebuild native rows/listing/catalog instead of reusing shipped
+  demo caches. Reject builds/installs against untracked or changed preparation and stale last builds. Invalidate
+  preparation before moving data so failed attempts and switching back cannot reuse partial files. Flag enabled patches on unreviewed builds with an explicit, fingerprint-specific review or original-game preset.
+  Detect full-game folders by the actual container marker without inventing an app ID/name.
+- Add a reversible **original-game test preset**. Back up settings first, disable the visual/repair/test controls
+  and original-vision test grants, retain edited kits/appearances and explicit custom animations. Individual
+  switches remain available. A completely unmodified comparison still requires removing the mod.
+- Add a 31-entry editable launch sheet: 19 original-enemy failed skill names / 20 candidate IDs, two separately
+  reported imported-vision failures and ten regression groups. Preserve Waterga's unresolved exact variant and
+  AI-only shared references. Save visuals, direction, sound, hit timing and notes separately per native build;
+  export CSV without converting old observations into new-build passes.
+- Make local finished-mod snapshots the main Deck route. Build once on PC, export **Resonance-Mod-Snapshot.zip**,
+  copy/extract on Deck and run **Install snapshot.sh**. Include a standalone Python installer, exact compiled
+  files and required Crystal Fina/cycling runtime. No GitHub, credentials, Studio download or building on Deck.
+  Stream large exports through the browser; verify game/input/output freshness and package checksums.
+- Reuse the owned-file installer transaction, automatic backups, interruption recovery and restore shortcut.
+  Use native Windows/Linux file locks and process checks; expose Windows regression traces directly in CI annotations.
+  Later snapshots remove stale runtime files. Keep optional private GitHub publishing collapsed and opt-in;
+  normal builds and local snapshots never upload.
+- Add a separate **Studio backup** for the recorded roster, appearance/acquisition choices, icon layout and
+  visual/testing settings. Preview before restoring, reject a stale preview and make an automatic prior backup.
+  Restore atomically with rollback; notify Studio to reload saved setups and invalidate prior builds. Reject
+  stale desktop saves; preserve pending edits in a local backup before reloading a restored roster. Preserve
+  machine paths, credentials, source downloads and saves separately.
+
+Validation: analysis, **266 passing local Flutter tests** plus one Windows-only skip, **501 Python checks**
+(19 local platform/tool skips), and real Chromium round trips pass. Check Studio backup export/preview/restore,
+stale saves and previews, pending-edit backup/reload including engine reconnection, per-build observations/CSV,
+unchanged-demo comparison and a streamed Deck download without JavaScript errors. The exported ZIP's own Bash
+wrapper installs all **nine** fixture mod/runtime files, verifies their hashes, creates the shortcut and restores
+cleanly in an isolated Linux handoff. Native Windows/Linux locking, local imports, stale runtime removal and
+owned-file rollback pass; separate Windows transfer checks pass too.
+
+Full Windows analysis/tests, fresh frozen-engine setup, launcher/updater checks and compilation pass for this
+exact code. The downloaded package's provenance and SHA-256 match the published asset; all **50** extension and
+**16** Crystal Fina hashes match source, and the standalone installer matches its managed payload. No large FFBE
+source packs are bundled. Their trusted manifest, original engine pin, personal rosters and game skill assignments
+are unchanged. Full-game mappings/asset compatibility and actual Deck/Proton gameplay, graphics, controller input
+and runtime behavior remain to be tested; these tools do not turn source presence into a live visual pass.
+
+Measured timing: first complete candidate **2026-10-20 04:08:31.758 UTC** → verified release download
+**04:55:29.813 UTC**, **46m 58s**, including corrections, local checks,
+Windows diagnosis, failed/superseded builds, waits and package verification. The timer was not restarted.
+One early helper call raced automatic-run registration and dispatched an unnecessary manual Windows run;
+subsequent delivery joins the existing automatic run. Intermediate failures exposed the Linux-only installer lock
+and the CI command-contract update; both are resolved in the delivered package. Measured workflow wall times:
+
+| Workflow run | Result | Wall time |
+| --- | --- | --- |
+| [39368599062](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39368599062) (Windows) | cancelled | 6m 45s |
+| [39368602423](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39368602423) (Windows) | failure | 9m 04s |
+| [39368884298](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39368884298) (Windows) | failure | 10m 19s |
+| [39369694565](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39369694565) (Windows) | cancelled | 6m 46s |
+| [39370003885](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39370003885) (Windows) | cancelled | 4m 41s |
+| [39370152167](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39370152167) (Windows) | success | 17m 58s |
+| [39370792784](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39370792784) (Windows) | success | 12m 16s |
+| [39368599049](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39368599049) (Deck checks) | success | 1m 28s |
+| [39369694534](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39369694534) (Deck checks) | failure | 1m 48s |
+| [39370003695](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/39370003695) (Deck checks) | success | 2m 18s |
+
+Sum of started-to-completed runner job time across these runs: **103m 17s**
+(**70m 07s Windows**, **33m 10s Ubuntu**). This is measured job duration,
+not billed/rounded usage, and is separate from end-to-end elapsed time and overlapping workflow wall times.
 
 ## Published portable fog-edge conversion and missing source coverage — 2026-10-18
 

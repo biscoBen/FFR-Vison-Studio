@@ -4,12 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-### Launch preparation and local Deck snapshots — Unreleased
+### Launch preparation and local Deck snapshots — 2026-10-19
 
-The next tested package adds **Home → Launch preparation & snapshots**: a fresh native-data comparison,
-an original-game preset, editable backups, a build-specific test sheet and local finished-mod transfer to Steam Deck.
-No private GitHub repository is needed. See [the launch/snapshot guide](docs/LAUNCH_PREPARATION.md).
-Windows package verification is pending; the verified package below remains the last published update.
+[Verified Windows download / run 39370792784](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39370792784/Sephira-Studio-Test.zip)
+(code `910aa18`, extension 1.2.52; **47.5 MB**).
+
+Open **Home → Launch preparation & snapshots** for fresh native-data comparisons, an original-game test preset,
+editable backups and a build-specific regression sheet. **Steam Deck snapshots** is the main transfer route:
+build on PC, export **Resonance-Mod-Snapshot.zip**, copy/extract on the Deck and run **Install snapshot.sh**.
+No private GitHub repository, token, Studio download or building on Deck is needed. Later snapshots update the
+owned files and remove stale runtime; the installer supplies backups and restoration.
+
+**Export Studio backup** separately preserves editable unit recipes and switches. Restore previews the roster,
+backs up the current setup and prevents stale desktop saves from overwriting it. Native game fingerprints guard
+preparation, installation and Deck transfer. Full Windows gates, Linux/Windows transfer checks and browser round
+trips pass; full-game compatibility and real Deck/Proton playback still need testing. The existing optional
+1.99 GB animation library is reused. See [the guide](docs/LAUNCH_PREPARATION.md) and
+[validation/timings](CHANGELOG.md#published-launch-preparation-and-local-steam-deck-snapshots--2026-10-19).
 
 ### Portable fog edges and complete source choices — 2026-10-18
 
@@ -584,7 +595,7 @@ exe next to the engine and the data packs.
 
 ### Local snapshots: build on PC, install on Deck (recommended)
 
-The upcoming launch-preparation package makes local transfer the primary route:
+Studio makes local snapshots the primary transfer route:
 
 1. Set up your units on the PC and use **Build for Deck snapshot** (or build/install normally).
 2. Open **Export / import snapshots → Export Deck snapshot**. Copy **Resonance-Mod-Snapshot.zip** to the Deck.
