@@ -1,9 +1,12 @@
 """Native vision snapshots and narrow overrides against freshly extracted game rows."""
 import copy
 import json
+import math
+import os
 from pathlib import Path
 import re
 import shutil
+import tempfile
 
 UNIT = 'Unit/DT_UnitParameter'
 VISION = 'Item/Vision/DT_VisionItemData'
@@ -11,6 +14,61 @@ BATTLE = 'Asset/Battle/Unit/DT_BtlUnitAsset'
 AWAKENING = 'Item/Vision/DT_VisionAwakeningMasteryData'
 SYNCHRO = 'Item/Vision/DT_VisionSynchroMasteryData'
 FIELDS = ('MaxHitPoint', 'MaxMagicPoint', 'Attack', 'Defence', 'Intelligence', 'Mind', 'Agility')
+MENU_LAYOUT = 'UI/Unit/UIUnitSs/Data/DA_UIUnitSsLayout'
+
+
+def menu_layout(env, units):
+    """Read current native donor layouts, never a shipped or prior-build dump."""
+    if not any(not u.get('ffbe') for u in units): return []
+    legacy = Path(env['LEGACY'])
+    source = legacy / ('FFRS/Content/' + MENU_LAYOUT + '.uasset')
+    if not source.is_file():
+        # Recover an omitted native package without reading installed ~mods.
+        import _ffr_launch as launch
+        game = launch.game(env)
+        before = launch.native_identity(env)
+        with tempfile.TemporaryDirectory(prefix='ffr-layout-source-') as folder:
+            view = Path(folder)
+            for path in (game / 'FFRS/Content/Paks').iterdir():
+                if path.is_file() and path.suffix.lower() in ('.utoc', '.ucas', '.pak'):
+                    launch.transfer.checked(game / 'FFRS/Content/Paks', path.name)
+                    try: os.link(path, view / path.name)
+                    except OSError: shutil.copy2(path, view / path.name)
+            env['run']([env['ffrenv'].RETOC, 'to-legacy', '--no-shaders', '--filter', MENU_LAYOUT,
+                        str(view), str(legacy)])
+        if launch.native_identity(env) != before:
+            raise ValueError('Game files changed while reading the menu layout. Prepare the game again.')
+    if not source.is_file(): raise ValueError('The selected game has no readable native menu layout: ' + MENU_LAYOUT)
+    with tempfile.TemporaryDirectory(prefix='ffr-menu-layout-') as folder:
+        dump = Path(folder) / 'layout.json'
+        env['run']([*env['FFRDT'], 'tojson', str(source), str(dump), '--usmap', env['USMAP']])
+        return decode_menu_layout(json.loads(dump.read_text(encoding='utf-8-sig')))
+
+
+def decode_menu_layout(asset):
+    found = [p for e in asset['Exports'] for p in e.get('Data', []) if p['Name'] == 'LayoutOverrideDataMap']
+    if len(found) != 1 or not found[0]['$type'].split(',')[0].endswith('.MapPropertyData'):
+        raise ValueError('The native menu layout map is missing or ambiguous.')
+    result, seen = [], set()
+    boolean = {'bOverrideOffset', 'bOverrideScale', 'bOverrideFlippedHorizontally', 'bFlippedHorizontally'}
+    for key, value in found[0]['Value']:
+        identity = key['Value']
+        if type(identity) is not int or identity in seen:
+            raise ValueError('The native menu layout contains an invalid or duplicate unit ID.')
+        seen.add(identity)
+        fields = {}
+        for field in value['Value']:
+            name, raw = field['Name'], field['Value']
+            if name in boolean:
+                if type(raw) is not bool: raise ValueError('Invalid native menu layout flag: ' + name)
+                fields[name] = raw
+            elif name == 'Scale':
+                if type(raw) is bool or not isinstance(raw, (int, float, str)) or not math.isfinite(float(raw)):
+                    raise ValueError('Invalid native menu sprite scale.')
+                fields[name] = float(raw)
+        if 'Scale' not in fields: raise ValueError('The native donor menu layout has no scale.')
+        result.append({'Key': identity, 'Value': fields})
+    return result
 
 
 def one(rows, rel, field, value):

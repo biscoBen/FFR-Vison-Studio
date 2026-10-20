@@ -84,10 +84,16 @@ def prepared_status(env):
             saved = {'schema': 1, 'gameIdentity': current, 'source': 'Exact demo tables and containers'}
             transfer.json_write(transfer.checked(root, PREPARED), saved)
     ready = saved.get('gameIdentity') == current
+    if ready: message = 'Prepared data matches this game build.'
+    elif saved.get('source') == 'Preparation incomplete':
+        message = 'The last game preparation did not finish. Prepare the selected game again before building or installing.'
+    elif not saved.get('gameIdentity'):
+        message = 'This Studio setup has no recorded game-data baseline. Prepare the selected game once before building or installing; this does not by itself mean the game updated.'
+    else:
+        message = 'The selected game files differ from the last preparation. Prepare this game before building or installing.'
     return {'gameIdentity': current, 'prepared': ready,
-            'label': 'Recorded demo build' if known_demo(current) else 'Unreviewed game build',
-            'message': 'Prepared data matches this game build.' if ready else
-                       'Game data is new or untracked. Prepare this game before building or installing.',
+            'label': 'Recognized demo build' if known_demo(current) else 'Unreviewed game build',
+            'message': message,
             'demoPatchReview': saved.get('demoPatchReview') == current['sha256']}
 
 

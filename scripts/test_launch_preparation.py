@@ -106,6 +106,17 @@ class LaunchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Prepare'):launch.guard(self.env)
         self.assertNotEqual(status['gameIdentity'],transfer.game_identity(self.game))
 
+    def test_preparation_message_distinguishes_untracked_changed_and_incomplete_data(self):
+        current=transfer.game_identity(self.game)
+        (self.root/launch.PREPARED).unlink()
+        self.assertIn('no recorded game-data baseline',launch.prepared_status(self.env)['message'])
+        transfer.json_write(self.root/launch.PREPARED,{'schema':1,'gameIdentity':{'sha256':'other build'}})
+        self.assertIn('game files differ',launch.prepared_status(self.env)['message'])
+        transfer.json_write(self.root/launch.PREPARED,{'schema':1,'source':'Preparation incomplete'})
+        self.assertIn('did not finish',launch.prepared_status(self.env)['message'])
+        transfer.json_write(self.root/launch.PREPARED,{'schema':1,'gameIdentity':current})
+        self.assertTrue(launch.prepared_status(self.env)['prepared'])
+
     def test_patch_review_is_fingerprint_specific_and_preset_avoids_review(self):
         with self.assertRaisesRegex(ValueError,'Review enabled patches'):launch.guard(self.env)
         with self.client() as client:

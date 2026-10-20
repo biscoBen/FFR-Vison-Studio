@@ -11,6 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Build after fresh game preparation
+
+- Fix the missing `build/visions_mod/check/da/DA_UIUnitSsLayout.json` failure after preparing game data.
+  Imported sprites and empty/native-only rosters no longer read an unnecessary donor-layout dump. Cloned
+  native sprites read the current extracted UI layout directly, recovering missing packages from official
+  containers when needed, instead of relying on shipped or prior-build JSON.
+- Explain whether preparation is needed because the setup has no recorded baseline, the selected game
+  files differ, or a preparation was interrupted. An untracked baseline does not prove a Steam game update.
+  Keep native fingerprint and patch-review guards. An already successful preparation can be reused.
+- Regression checks cover builds with the old layout cache absent, fresh native donor layouts, stale cache
+  exclusion, official-container extraction and the distinct preparation states. Windows publication and
+  the user's actual game install remain to be verified.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

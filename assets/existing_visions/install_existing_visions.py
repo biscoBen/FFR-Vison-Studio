@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.53'
+VERSION = '1.2.54'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -139,6 +139,11 @@ def hook_builder(raw):
     if skill_conversion.lineno != skill_conversion.end_lineno:
         raise RuntimeError('Unsupported roster skill conversion layout.')
     main, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main']
+    layout_source, = [n for n in main.body if isinstance(n, ast.Assign)
+                     and ast.unparse(n.targets[0]) == 'layout'
+                     and 'DA_UIUnitSsLayout.json' in ast.unparse(n.value)]
+    if layout_source.lineno != layout_source.end_lineno:
+        raise RuntimeError('Unsupported menu layout source assignment.')
     loops = [n for n in main.body if isinstance(n, ast.For) and ast.unparse(n.target) == 'u' and ast.unparse(n.iter) == 'UNITS'
              and any(isinstance(a, ast.Assign) and ast.unparse(a.targets[0]) == 'skill_rows' for a in n.body)]
     loop, = loops
@@ -210,6 +215,7 @@ def hook_builder(raw):
                    '_ffr_field_leader.build(party_units + native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
+    lines[layout_source.lineno - 1] = '    layout = _ffr_existingvisions.menu_layout(dict(globals(), LEGACY=LEGACY), UNITS)' + nl
     # Party specs describe only appearance. The legacy vision loader adds
     # skills={} even to untouched party entries, violating that sparse contract.
     index = skill_conversion.lineno - 1

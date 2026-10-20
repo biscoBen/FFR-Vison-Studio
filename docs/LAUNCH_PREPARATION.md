@@ -57,11 +57,19 @@ The page displays the actual native-container fingerprint and whether prepared d
 identity comes from the user's original native reference. Other builds say **Unreviewed game build**; a folder name
 or successful extraction does not mark the full game compatible.
 
+An older Studio setup can need one initial preparation because no game-data baseline was recorded. That prompt
+does not by itself mean Steam updated the game. Studio separately identifies a changed native-container fingerprint
+and an interrupted preparation. Once recorded successfully, the same native build can be reused across Studio
+updates; updating Studio alone does not require another preparation.
+
 Choose the new game folder and **Prepare selected game**. When the fingerprint changes, old `extracted/` and
 `build/` directories move to `engine/launch-prep/prepared-backups/<id>/`; saved units/settings stay in place.
 Preparation uses an isolated view of official containers, rebuilds rows/inventory/catalog and avoids the shipped
 demo catalog/listing/layout cache. The pinned mappings/enums remain helpers; changed full-game schemas may still
 require an updated, verified engine. A failed preparation leaves the new build unprepared and preserves old data.
+
+Builds with imported sprites do not need a donor menu-layout dump. Native sprite clones read the current native
+layout data asset directly. The builder no longer requires a leftover file under `build/visions_mod/check/da/`.
 
 Build/install refuses different or untracked prepared data. A verified build records its game and input fingerprint;
 **Install last build** and snapshot export reject later game/settings changes. Native filenames can be found across

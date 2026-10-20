@@ -365,8 +365,7 @@ class NativeVisionTests(unittest.TestCase):
         patched = installer.hook_builder(fina_installer.hook_builder(source)); tree = ast.parse(patched)
         main, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'main']
         with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp); build = root / 'build/visions_mod'; layout = build / 'check/da/DA_UIUnitSsLayout.json'
-            layout.parent.mkdir(parents=True); layout.write_text(json.dumps({'Properties': {'LayoutOverrideDataMap': []}}))
+            root = Path(temp); build = root / 'build/visions_mod'
             converted = []; extracted = []
             def extract(args):
                 self.assertEqual(args[:3], [str(root / 'tools/extract_legacy.py'), '--filter', args[2]])
@@ -408,8 +407,6 @@ class NativeVisionTests(unittest.TestCase):
         main, = [n for n in ast.parse(patched).body if isinstance(n, ast.FunctionDef) and n.name == 'main']
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp); build = root / 'build/visions_mod'; out = build / 'assets'
-            layout = build / 'check/da/DA_UIUnitSsLayout.json'
-            layout.parent.mkdir(parents=True); layout.write_text(json.dumps({'Properties': {'LayoutOverrideDataMap': []}}))
             stale = out / 'FFRS/Content/Chara/summon/summon13110/replaced.uasset'
             stale.parent.mkdir(parents=True); stale.write_bytes(b'previous model override')
             env = {'UNITS': [], 'ROOT': str(root), 'BUILD': str(build), 'OUT': str(out), 'LEGACY': str(root / 'legacy'),
