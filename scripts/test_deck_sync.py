@@ -384,7 +384,6 @@ class SyncTests(unittest.TestCase):
         with self.assertRaisesRegex(sync.SyncError, 'links'):
             sync.install(self.base / 'state', game, stage, manifest, 'tester/private-mods', running=lambda: False)
 
-    @unittest.skipIf(sys.platform == 'win32', 'Linux installer locking')
     def test_real_install_lock_excludes_concurrent_update(self):
         with sync.locked(self.base):
             with self.assertRaisesRegex(sync.SyncError, 'already running'):

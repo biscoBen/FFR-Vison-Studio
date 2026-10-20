@@ -35,6 +35,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   files and required Crystal Fina/cycling runtime. No GitHub, credentials, Studio download or building on Deck.
   Stream large exports through the browser; verify game/input/output freshness and package checksums.
 - Reuse the owned-file installer transaction, automatic backups, interruption recovery and restore shortcut.
+  Use native Windows/Linux file locks and process checks; expose Windows regression traces directly in CI annotations.
   Later snapshots remove stale runtime files. Keep optional private GitHub publishing collapsed and opt-in;
   normal builds and local snapshots never upload.
 - Add a separate **Studio backup** for the recorded roster, appearance/acquisition choices, icon layout and

@@ -37,6 +37,9 @@ def main():
         print('::notice title=Python runtime::' + escape(sys.version + '\n' + sys.executable), flush=True)
     suite = unittest.defaultTestLoader.discover(args.start_directory, pattern=args.pattern)
     result = unittest.TextTestRunner(verbosity=2 if args.verbose else 1, resultclass=AnnotatedResult).run(suite)
+    # Subtest failures bypass addError/addFailure in unittest.
+    for test, traceback in result.errors + result.failures:
+        result.annotate(test, traceback)
     return 0 if result.wasSuccessful() else 1
 
 
