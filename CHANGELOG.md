@@ -11,6 +11,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina level-10 boss test
+
+- Add Crystal Fina to the item-shop practice picker: level 10, 6,500 HP, fixed early-boss stats, a weak
+  neutral attack, light spells and a bounded self-heal. Her eight-action native AI schedules one action
+  at a time, with Holy as its stronger single-target move. Retain private copies of her full active kit.
+- Load her approved native body and rotating crystal without requiring her in the roster. Share the
+  presentation when she is included; keep the enemy independent of player vision edits. Add a seventh
+  choice page with working More/Cancel. No acquisition gating, vision reward, XP, gil or item farming.
+- See [the stats, rotation and test steps](docs/CRYSTAL_FINA_BOSS.md). Native builds and automated checks
+  are required before publication; live encounter behavior and level-10 difficulty still need testing.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the

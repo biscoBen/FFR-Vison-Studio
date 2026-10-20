@@ -19,6 +19,23 @@ from test_native_testing import ROOT, practice_game, testing
 @unittest.skipUnless(os.name == 'nt' and os.environ.get('GITHUB_ACTIONS') == 'true',
                      'Requires Windows CI and its checksum-verified engine cache.')
 class EnginePracticeContractTests(unittest.TestCase):
+    def test_boss_ai_offsets_match_the_real_kismet_serializer(self):
+        from test_crystal_fina_boss import boss, native_ai
+        archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
+        with archive.open('rb') as stream:
+            self.assertEqual(hashlib.file_digest(stream,'sha256').hexdigest(),ENGINE_SHA)
+        with zipfile.ZipFile(archive) as bundle: executable = bundle.read('bin/ffr-dt.exe')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('Newtonsoft.Json.dll','UAssetAPI.dll'):
+                (root/name).write_bytes(bundled_assembly(executable,name))
+            (root/'boss.json').write_text(json.dumps(boss.author_ai(native_ai()),ensure_ascii=False),encoding='utf-8')
+            script = root/'check-ai.ps1'; script.write_text(AI_CHECK_SCRIPT,encoding='utf-8')
+            result = subprocess.run(['pwsh','-NoProfile','-File',str(script),'-Root',str(root)],
+                                    capture_output=True,text=True,timeout=60)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn('Real engine boss AI offset contracts passed.',result.stdout)
+
     def test_real_serializer_retains_each_choice_tag_within_the_iostore_name_prefix(self):
         from test_existing_visions import module
         archive = Path(os.environ['RUNNER_TEMP'])/'ffr-studio-engine-cache'/(ENGINE_SHA+'.zip')
@@ -33,7 +50,7 @@ class EnginePracticeContractTests(unittest.TestCase):
             for name in ('Newtonsoft.Json.dll','UAssetAPI.dll'):
                 (root/name).write_bytes(bundled_assembly(executable,name))
             with mock.patch.dict('sys.modules',{'ffbe_resonance':seq}):
-                for page in 'ABCDEF':
+                for page in 'ABCDEFG':
                     asset = testing.author_practice_choice(copy.deepcopy(shell),
                         'UI.Dialog.Choice.Studio_PracticeBattle_Menu_'+page)
                     (root/(page+'.json')).write_text(json.dumps(asset),encoding='utf-8')
@@ -67,12 +84,37 @@ class EnginePracticeContractTests(unittest.TestCase):
             self.assertIn('Real engine practice dialogue contracts passed.', result.stdout)
 
 
+AI_CHECK_SCRIPT = r'''param([string]$Root)
+$ErrorActionPreference = 'Stop'
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'Newtonsoft.Json.dll'))
+[void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'UAssetAPI.dll'))
+$asset = [UAssetAPI.UAsset]::DeserializeJson([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root 'boss.json')))
+$think = $asset.Exports | Where-Object { $_.ObjectName.ToString() -ceq 'ThinkInner' }
+$positions = [Collections.Generic.HashSet[int]]::new()
+$offset = 0
+foreach ($node in $think.ScriptBytecode) {
+    [void]$positions.Add($offset)
+    $offset += [int]$node.GetSize($asset)
+}
+if ($offset -ne 466 -or $think.ScriptBytecodeSize -ne $offset) { throw "Incorrect Kismet size $offset" }
+foreach ($node in $think.ScriptBytecode) {
+    if ($node -is [UAssetAPI.Kismet.Bytecode.Expressions.EX_Jump] -or
+        $node -is [UAssetAPI.Kismet.Bytecode.Expressions.EX_JumpIfNot]) {
+        if (-not $positions.Contains([int]$node.CodeOffset)) { throw 'Boss AI jumps inside an instruction.' }
+    }
+}
+$count = $asset.GetType().GetField('NamesReferencedFromExportDataCount',[Reflection.BindingFlags]'Instance,Public,NonPublic').GetValue($asset)
+if ($count -ne $asset.GetNameMapIndexList().Count) { throw 'Boss AI would lose script names in IoStore.' }
+Write-Output 'Real engine boss AI offset contracts passed.'
+'''
+
+
 NAME_CHECK_SCRIPT = r'''param([string]$Root)
 $ErrorActionPreference = 'Stop'
 [void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'Newtonsoft.Json.dll'))
 [void][Reflection.Assembly]::LoadFrom((Join-Path $Root 'UAssetAPI.dll'))
 $index = [UAssetAPI.UnrealTypes.FName].GetProperty('Index',[Reflection.BindingFlags]'Instance,Public,NonPublic')
-foreach ($page in @('A','B','C','D','E','F')) {
+foreach ($page in @('A','B','C','D','E','F','G')) {
     $asset = [UAssetAPI.UAsset]::DeserializeJson([string](Get-Content -Raw -Encoding utf8 (Join-Path $Root ($page+'.json'))))
     $count = $asset.GetType().GetField('NamesReferencedFromExportDataCount',[Reflection.BindingFlags]'Instance,Public,NonPublic').GetValue($asset)
     if ($count -ne $asset.GetNameMapIndexList().Count) { throw 'IoStore would trim menu names.' }

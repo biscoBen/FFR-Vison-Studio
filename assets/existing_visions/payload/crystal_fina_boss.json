@@ -1,0 +1,365 @@
+{
+  "schema": 1,
+  "preset": "crystal_fina",
+  "skills": [
+    {
+      "source": 210010,
+      "from": 210010,
+      "visuals": 210010
+    },
+    {
+      "source": 210250,
+      "from": 210250,
+      "visuals": 210250
+    },
+    {
+      "source": 210020,
+      "from": 210020,
+      "visuals": 210020
+    },
+    {
+      "source": 210260,
+      "from": 210260,
+      "visuals": 210260
+    },
+    {
+      "source": 485212,
+      "from": 503630,
+      "visuals": 210260,
+      "jp": "Sephira_crystal_fina_Kit_4",
+      "en": "Crystal Ray",
+      "desc": "Light magic damage; power 32. Single enemies; MP 24; hits 1; accuracy 100; stagger 25.",
+      "descAuto": false,
+      "set": {
+        "Cost": 24,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None"
+      }
+    },
+    {
+      "source": 485215,
+      "from": 501930,
+      "visuals": 210010,
+      "jp": "Sephira_crystal_fina_Kit_5",
+      "en": "Restore",
+      "desc": "Restore 20% max HP. Single friendlies; MP 18; hits 1; accuracy 100; stagger 25.",
+      "descAuto": false,
+      "set": {
+        "Cost": 18,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None"
+      }
+    },
+    {
+      "source": 485236,
+      "from": 570690,
+      "visuals": 400630,
+      "jp": "Sephira_crystal_fina_Kit_12",
+      "en": "Purify",
+      "desc": "Remove an ally\u2019s ailments. Single friendlies; MP 15; hits 1; accuracy 100; stagger 0.",
+      "descAuto": false,
+      "set": {
+        "Cost": 15,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None",
+        "defaultTargetRelation": "Friendlies"
+      }
+    },
+    {
+      "source": 210030,
+      "from": 210030,
+      "visuals": 210030
+    },
+    {
+      "source": 210270,
+      "from": 210270,
+      "visuals": 210270
+    },
+    {
+      "source": 210150,
+      "from": 210150,
+      "visuals": 210150
+    },
+    {
+      "source": 485233,
+      "from": 503210,
+      "visuals": 210010,
+      "jp": "Sephira_crystal_fina_Kit_11",
+      "en": "Crystal Renewal",
+      "desc": "Restore 10% max HP. Group friendlies; MP 35; hits 1; accuracy 100; stagger 25.",
+      "descAuto": false,
+      "set": {
+        "Cost": 35,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None",
+        "TargetType": "Group",
+        "magnification": 10
+      }
+    },
+    {
+      "source": 210130,
+      "from": 210130,
+      "visuals": 210130
+    },
+    {
+      "source": 485203,
+      "from": 210190,
+      "visuals": 210250,
+      "jp": "Sephira_crystal_fina_Kit_1",
+      "en": "Holy",
+      "desc": "Light magic damage; power 80. Single enemies; MP 63; hits 1; accuracy 100; stagger 40.",
+      "descAuto": false,
+      "set": {
+        "Cost": 63,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None"
+      }
+    },
+    {
+      "source": 485206,
+      "from": 210240,
+      "visuals": 400630,
+      "jp": "Sephira_crystal_fina_Kit_2",
+      "en": "Reraise",
+      "desc": "Grant Reraise to an ally. Single friendlies; MP 60; hits 1; accuracy 100; stagger 25.",
+      "descAuto": false,
+      "set": {
+        "Cost": 60,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None"
+      }
+    },
+    {
+      "source": 485209,
+      "from": 215020,
+      "visuals": 215020,
+      "jp": "Sephira_crystal_fina_Kit_3",
+      "en": "Radiant Restoration",
+      "desc": "Restore healing power 1500. Group friendlies; MP 65; hits 1; accuracy 100; stagger 60.",
+      "descAuto": false,
+      "set": {
+        "Cost": 65,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None"
+      }
+    },
+    {
+      "source": 485230,
+      "from": 240190,
+      "visuals": 210260,
+      "jp": "Sephira_crystal_fina_Kit_10",
+      "en": "Crystal Sanctification",
+      "desc": "Light magic damage; power 40. Group enemies; MP 45; hits 1; accuracy 100; stagger 40.",
+      "descAuto": false,
+      "set": {
+        "Cost": 45,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None",
+        "TargetType": "Group",
+        "magnification": 40
+      }
+    }
+  ],
+  "animations": [
+    {
+      "name": "idle",
+      "frameCount": 346
+    },
+    {
+      "name": "command",
+      "frameCount": 346
+    },
+    {
+      "name": "Lock",
+      "frameCount": 346
+    },
+    {
+      "name": "cushion",
+      "frameCount": 346
+    },
+    {
+      "name": "step_front",
+      "frameCount": 346
+    },
+    {
+      "name": "step_back",
+      "frameCount": 346
+    },
+    {
+      "name": "attack_A",
+      "frameCount": 307
+    },
+    {
+      "name": "attack_B",
+      "frameCount": 307
+    },
+    {
+      "name": "attack_C",
+      "frameCount": 307
+    },
+    {
+      "name": "attack_D",
+      "frameCount": 307
+    },
+    {
+      "name": "attack_E",
+      "frameCount": 307
+    },
+    {
+      "name": "M_attack01",
+      "frameCount": 346
+    },
+    {
+      "name": "M_attack02",
+      "frameCount": 346
+    },
+    {
+      "name": "magic_idle",
+      "frameCount": 346
+    },
+    {
+      "name": "magic_attack",
+      "frameCount": 346
+    },
+    {
+      "name": "LB1_before",
+      "frameCount": 346
+    },
+    {
+      "name": "LB1",
+      "frameCount": 432
+    },
+    {
+      "name": "jump",
+      "frameCount": 346
+    },
+    {
+      "name": "dying",
+      "frameCount": 346
+    },
+    {
+      "name": "dead",
+      "frameCount": 346
+    },
+    {
+      "name": "win",
+      "frameCount": 346
+    },
+    {
+      "name": "win_Loop",
+      "frameCount": 346
+    },
+    {
+      "name": "Rankup",
+      "frameCount": 346
+    },
+    {
+      "name": "Rankup_Loop",
+      "frameCount": 346
+    },
+    {
+      "name": "Setup",
+      "frameCount": 1
+    },
+    {
+      "name": "atk",
+      "frameCount": 30
+    }
+  ]
+}

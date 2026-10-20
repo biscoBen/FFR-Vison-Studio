@@ -1,5 +1,6 @@
 """Original-item grants, clean-save controls and bounded native MR rewards."""
 import copy
+import gzip
 import json
 from pathlib import Path
 import tempfile
@@ -74,6 +75,8 @@ def practice_game():
     for source_key, original in source.items():
         key = next((k for k,v in tables[native.UNIT].items() if v.get('ID') == original['ID']), source_key)
         tables[native.UNIT].setdefault(key, {}).update(copy.deepcopy(original))
+    boss_rows = json.loads(gzip.decompress((ROOT/'scripts/fixtures/crystal_fina_boss/rows.json.gz').read_bytes()))
+    for rel, data in boss_rows.items(): tables.setdefault(rel, {}).update(data)
     return tables, lambda rel: copy.deepcopy(tables[rel]), unit
 
 
@@ -188,7 +191,8 @@ class NativeTestingTests(unittest.TestCase):
         self.assertEqual(original, before)
         self.assertEqual(set(ops), {testing.SHOP_EVENT, testing.COMPOSITE,
                                    testing.MAP, testing.MAP_COMPOSITE, testing.GROUP,
-                                   testing.STAGE, testing.STAGE_COMPOSITE, testing.CHOICES})
+                                   testing.STAGE, testing.STAGE_COMPOSITE, testing.CHOICES,
+                                   *json.loads(gzip.decompress((ROOT/'scripts/fixtures/crystal_fina_boss/rows.json.gz').read_bytes()))})
         self.assertEqual(len(expected), 4)
         for rel, op in ops.items():
             built = copy.deepcopy(original[rel])
@@ -237,16 +241,17 @@ class NativeTestingTests(unittest.TestCase):
         dialogs = {e['row']: testing.apply_fields(original[testing.CHOICES][e['cloneFrom']], e['set'])
                    for e in ops[testing.CHOICES]['add']}
         targets = []
-        for page in range(6):
+        for page in range(7):
             key = testing.PRACTICE + '_Menu_' + chr(65+page)
             branches = events[key]['ChoicesBranchEventList']
-            self.assertEqual([v['Index'] for v in branches], [0, 1, 2])
-            self.assertEqual(dialogs[key]['CancelIndex'], 3)
+            count = 2 if page < 6 else 1
+            self.assertEqual([v['Index'] for v in branches], list(range(count+1)))
+            self.assertEqual(dialogs[key]['CancelIndex'], count+1)
             self.assertEqual(dialogs[key]['ChoiceTextList'][-1], 'Cancel')
-            self.assertEqual(branches[2]['EventList'][0]['EventId'], testing.PRACTICE+'_Menu_'+chr(65+(page+1)%6))
-            targets.extend(v['EventList'][0]['EventId'] for v in branches[:2])
-        self.assertEqual(len(set(targets)), 12)
-        self.assertEqual({events[t]['encountGroupId'] for t in targets}, set(range(29990,30002)))
+            self.assertEqual(branches[count]['EventList'][0]['EventId'], testing.PRACTICE+'_Menu_'+chr(65+(page+1)%7))
+            targets.extend(v['EventList'][0]['EventId'] for v in branches[:count])
+        self.assertEqual(len(set(targets)), 13)
+        self.assertEqual({events[t]['encountGroupId'] for t in targets}, set(range(29990,30003)))
         for target in targets:
             event = events[target]
             self.assertEqual(event['EventSequence'], 'None')
@@ -286,14 +291,14 @@ class NativeTestingTests(unittest.TestCase):
         original, rows, _ = practice_game()
         source = original[native.UNIT]
         bosses = {v['ID']:v for v in source.values() if v.get('Category') == 'Boss'}
-        self.assertEqual(set(bosses), {352,641,651})
+        self.assertEqual(set(bosses), {352,641,651,401})
         with tempfile.TemporaryDirectory() as root:
             path = Path(root)/testing.CONFIG; path.parent.mkdir(parents=True)
             path.write_text(json.dumps({'schema':1,'maxMr':False,'practiceBattle':True}))
             ops = testing.prepare({}, [], root, rows)
-        self.assertNotIn(native.UNIT, ops)
-        self.assertEqual(len(ops[testing.GROUP]['add']), 12)
-        self.assertTrue(set(bosses) <= {v['set']['UnitIdList'][0] for v in ops[testing.GROUP]['add']})
+        self.assertEqual(ops[native.UNIT]['set'], [])
+        self.assertEqual(len(ops[testing.GROUP]['add']), 13)
+        self.assertTrue({352,641,651} <= {v['set']['UnitIdList'][0] for v in ops[testing.GROUP]['add']})
         self.assertEqual(source, rows(native.UNIT))
         for identity in (352,641,651):
             key = next(k for k,v in source.items() if v.get('ID') == identity)
@@ -329,7 +334,7 @@ class NativeTestingTests(unittest.TestCase):
         shell = json.loads(gzip.decompress((ROOT/'scripts/fixtures/practice_dialog/shell.json.gz').read_bytes()))
         self.assertEqual(shell['NamesReferencedFromExportDataCount'],36)
         original_names = shell['NameMap'][:]
-        for page in 'ABCDEF':
+        for page in 'ABCDEFG':
             with self.subTest(page=page), mock.patch.dict('sys.modules',{'ffbe_resonance':seq}):
                 tag = 'UI.Dialog.Choice.Studio_PracticeBattle_Menu_'+page
                 built = testing.author_practice_choice(copy.deepcopy(shell),tag)
@@ -404,7 +409,9 @@ class NativeTestingTests(unittest.TestCase):
                 self.assertEqual(group['battleFinishTransition']['mapId'], -1)
                 self.assertFalse(group['battleFinishTransition']['bDoAutoSave'])
                 self.assertEqual(original, before)
-                self.assertFalse(any('Skill' in rel or 'Unit' in rel for rel in ops))
+                self.assertTrue(all(not op['set'] for rel, op in ops.items() if 'Skill' in rel or 'Unit' in rel))
+                self.assertTrue(all(e['row'].startswith('Studio_CrystalFinaBoss') for rel, op in ops.items()
+                                    if 'Skill' in rel or 'Unit' in rel for e in op['add']))
 
     def test_cactuar_choice_defaults_and_rejects_changed_or_unknown_encounters(self):
         for bad in (None, True, 38, [], {}, 'unknown'):

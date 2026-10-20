@@ -38,6 +38,7 @@ OPPONENTS = (
     ('bomb', 'Bomb (level 12): Self-Destruct', 24, 12),
     ('wood_eyes', 'Wood Eyes (level 11): Constrict', 23, 11),
     ('white_peak', 'White Peak (level 15): White Wind', 283, 15),
+    ('crystal_fina', 'Crystal Fina (level 10): vision boss test', 29670, 10),
 )
 
 
@@ -151,6 +152,8 @@ def prepare(tables, units, root, rows):
     if controls['surviveAtOne']:
         prepare_survival(table, rows)
     if controls['practiceBattle']:
+        import _ffr_fina_boss
+        _ffr_fina_boss.prepare(table, rows, units)
         prepare_practice(table, rows, value)
     import _ffr_crystal_cave
     _ffr_crystal_cave.prepare(tables, units, root, rows)
@@ -244,6 +247,7 @@ def prepare_practice(table, rows, ap, encounter='standard'):
     units = rows('Unit/DT_UnitParameter')
     by_id = {v['ID']: v for v in units.values()}
     for _, _, uid, level in OPPONENTS:
+        if uid == 29670: continue  # Private boss, validated by its own builder.
         opponent = by_id.get(uid, {})
         # Boss is a separate native category, including Gigantuar and the
         # twelve-arms bosses. Keep that category and every enemy row intact.
@@ -310,7 +314,7 @@ def prepare_practice_dialog(table, rows, woman):
         edits = field_delta(inn, desired)
         for rel in (SHOP_EVENT, COMPOSITE):
             table(rel)['add'].append({'row': name, 'cloneFrom': inn_key, 'set': copy.deepcopy(edits)})
-    pages = len(OPPONENTS) // 2
+    pages = (len(OPPONENTS) + 1) // 2
     for page in range(pages):
         name = PRACTICE + '_Menu_' + chr(65 + page)
         tag = 'UI.Dialog.Choice.' + name
@@ -319,7 +323,7 @@ def prepare_practice_dialog(table, rows, woman):
         table(CHOICES)['add'].append({'row': name, 'cloneFrom': choice_key, 'set': {
             'ChoiceTag.TagName': tag, 'ChoiceTextList': [p[1] for p in pair] + [
                 'More opponents (' + str((page+1) % pages + 1) + '/' + str(pages) + ')', 'Cancel'],
-            'DefaultIndex': 0, 'CancelIndex': 3, 'ChoiceDialogType': 'Normal'}})
+            'DefaultIndex': 0, 'CancelIndex': len(pair) + 1, 'ChoiceDialogType': 'Normal'}})
         targets = [PRACTICE + '_' + p[0] for p in pair] + [PRACTICE + '_Menu_' + chr(65 + (page+1) % pages)]
         event(name, {'EventSequence': (CHOICE_FOLDER + 'SEQ_' + name).replace('FFRS/Content/', '/Game/'),
             'ChoicesBranchEventList': [{'Index': i, 'EventList': [{'Condition': '', 'EventId': target}]}
@@ -418,6 +422,8 @@ def author_practice_choice(asset, tag):
 
 def build_practice(env):
     if not settings(env['ROOT'])['practiceBattle']: return
+    import _ffr_fina_boss
+    _ffr_fina_boss.build(env)
     import ffbe_resonance as seq
     legacy, out, work = Path(env['LEGACY']), Path(env['OUT']), Path(env['BUILD']) / 'practice-dialog'
     shell = legacy / (seq.SHELL + '.uasset')
@@ -426,7 +432,7 @@ def build_practice(env):
                                    '--filter', 'Sequencer/Battle/Skill/440110/440111/'))
     if not shell.is_file(): raise ValueError('The practice choice sequence template is unavailable.')
     work.mkdir(parents=True, exist_ok=True)
-    for page in range(len(OPPONENTS)//2):
+    for page in range((len(OPPONENTS)+1)//2):
         name = PRACTICE + '_Menu_' + chr(65 + page)
         destination = CHOICE_FOLDER + 'SEQ_' + name
         patch = work / (name + '-clone.json')
@@ -440,7 +446,7 @@ def build_practice(env):
         env['run']([*env['FFRDT'], 'fromjson', str(dump), str(out/(destination+'.uasset')), '--usmap', env['USMAP']])
         env['run']([*env['FFRDT'], 'tojson', str(out/(destination+'.uasset')), str(dump), '--usmap', env['USMAP']])
         verify_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')), 'UI.Dialog.Choice.' + name)
-    print('  Shop practice: six native choice pages, twelve opponents, cancel without battle.')
+    print(f'  Shop practice: {(len(OPPONENTS)+1)//2} native choice pages, {len(OPPONENTS)} opponents, cancel without battle.')
 
 
 def verify_practice_choice(asset, tag):
@@ -526,7 +532,7 @@ def apply_fields(row, fields):
     return result
 
 
-def check_rows(original, built, operation, plan=None):
+def check_rows(original, built, operation, plan=None, finalize=None):
     expected = copy.deepcopy(original)
     # The shared table also contains imported visions, native edits and private
     # passives/effects from the rest of this build. Check their complete recipe,
@@ -536,6 +542,7 @@ def check_rows(original, built, operation, plan=None):
         for e in plan.get('set', []): expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     for e in operation['add']: expected[e['row']] = apply_fields(original[e['cloneFrom']], e['set'])
     for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
+    if finalize is not None: expected = finalize(expected)
     if built != expected:
         missing = sorted(expected.keys() - built.keys())
         extra = sorted(built.keys() - expected.keys())
@@ -576,7 +583,9 @@ def verify(root, tool, usmap):
         subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         try:
-            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation, matches[0])
+            import _ffr_fina_boss
+            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation, matches[0],
+                       lambda expected: _ffr_fina_boss.final_rows(rel, expected, units, root))
         except ValueError as error:
             raise ValueError(f'{rel}: {error}') from error
     if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')

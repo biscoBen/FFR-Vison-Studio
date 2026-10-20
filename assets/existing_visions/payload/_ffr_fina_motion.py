@@ -178,18 +178,25 @@ def battle_spec(view, texture, old_sheet, original_spec):
             raise ValueError('A native Fina cell lies outside its atlas.')
         cells.append({'name': prop(cell, 'CellName'), 'pos': rect[:2], 'size': rect[2:],
                       'pivot': [float(pivot['X']), float(pivot['Y'])]})
-    original = Image.open(old_sheet).convert('RGBA')
-    if original.size != (1800, 1820): raise ValueError('The original Fina sheet changed.')
-    seat = original.crop((1080, 1430, 1200, 1560)); bounds = seat.getbbox()
-    if not bounds: raise ValueError('The original seated sprite is blank.')
-    seat = seat.crop(bounds); x, y = 0, 330
-    if (seat.width > atlas.width or y + seat.height > atlas.height
-            or any(c['pos'][0] < x + seat.width and c['pos'][0] + c['size'][0] > x
-                   and c['pos'][1] < y + seat.height and c['pos'][1] + c['size'][1] > y for c in cells)):
-        raise ValueError('The seated sprite no longer fits the unused native atlas space.')
-    atlas.paste(seat, (x, y))
-    cells.append({'name': 'original_jacket_free_seated', 'pos': [x, y], 'size': list(seat.size),
-                  'pivot': [(60 - bounds[0]) / seat.width - .5, .5 - (100 - bounds[1]) / seat.height]})
+    if old_sheet is None:
+        # The private solo boss never uses resonance. Keep its unused LB alias
+        # self-contained, without requiring the player to import the vision.
+        name = decode(view)['down6']['parts']['part_0']['Cell'][-1][1]['name']
+        cells.append(dict(copy.deepcopy(next(c for c in cells if c['name'] == name)),
+                          name='original_jacket_free_seated'))
+    else:
+        original = Image.open(old_sheet).convert('RGBA')
+        if original.size != (1800, 1820): raise ValueError('The original Fina sheet changed.')
+        seat = original.crop((1080, 1430, 1200, 1560)); bounds = seat.getbbox()
+        if not bounds: raise ValueError('The original seated sprite is blank.')
+        seat = seat.crop(bounds); x, y = 0, 330
+        if (seat.width > atlas.width or y + seat.height > atlas.height
+                or any(c['pos'][0] < x + seat.width and c['pos'][0] + c['size'][0] > x
+                       and c['pos'][1] < y + seat.height and c['pos'][1] + c['size'][1] > y for c in cells)):
+            raise ValueError('The seated sprite no longer fits the unused native atlas space.')
+        atlas.paste(seat, (x, y))
+        cells.append({'name': 'original_jacket_free_seated', 'pos': [x, y], 'size': list(seat.size),
+                      'pivot': [(60 - bounds[0]) / seat.width - .5, .5 - (100 - bounds[1]) / seat.height]})
     clips = decode(view); body = draft(view)
     idle = stitch(clips, 'idle', [('openarmidle2', 49)])
     # The supplied trace has 30-frame preparation and release windows. Fit the

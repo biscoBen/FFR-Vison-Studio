@@ -17,9 +17,15 @@ PREFIX = 'Chara/StudioCrystalFinaBattle/'
 BATTLE_SPRITE_SCALE = 2.7
 
 
-def selected(units):
+def selected(units, root=None):
     matches = [u for u in units if not u.get('party') and str((u.get('ffbe') or {}).get('id')) == SPRITE]
-    if not matches: return None
+    if not matches:
+        if root is not None:
+            import _ffr_testing
+            if _ffr_testing.settings(root)['practiceBattle']:
+                import _ffr_fina_boss
+                return _ffr_fina_boss.presentation([])
+        return None
     if len(matches) != 1 or type(matches[0].get('id')) is not int or matches[0]['id'] <= 0:
         raise ValueError('Crystal Fina battle presentation needs one unambiguous vision ID.')
     if (matches[0].get('ffbe') or {}).get('source') != 'CUSTOM':
@@ -71,6 +77,8 @@ def battle_table(original, unit):
         raise ValueError('The freshly built Crystal Fina battle row is missing or ambiguous.')
     animation, = cave.property_data(matches[0], 'animationAssetList')['Value']
     expected = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
+    if unit['id'] == 29670:
+        expected = '/Game/' + package(unit, 'FinaNative' + str(unit['id']))
     if cave.property_data(animation, 'Ss6Project')['Value']['AssetPath']['PackageName'] != expected:
         raise ValueError('Crystal Fina battle assets no longer match this build.')
     target = '/Game/' + package(unit, 'FinaNative' + str(unit['id']))
@@ -110,7 +118,7 @@ def design_table(original, unit):
 
 
 def build(units, env):
-    unit = selected(units)
+    unit = selected(units, env['ROOT'])
     if unit is None: return
     import _ffr_fina_motion as motion
     root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
@@ -164,10 +172,26 @@ def build(units, env):
         src = legacy / ('FFRS/Content/' + cave.TEST_NATIVE_MESH + suffix)
         if src.is_file(): (content / (private_mesh + suffix)).write_bytes(src.read_bytes())
         elif suffix == '.ubulk': raise ValueError('Missing Sanctum crystal streamed mesh data.')
-    original_spec = root / 'build/sprites' / unit['key'] / 'battle/spec.json'
-    sheet = root / unit['ffbe']['dir'] / ('unit_anime_' + SPRITE + '.png')
+    import _ffr_fina_boss as boss
+    private_boss = unit['id'] == boss.ID
+    old = f'Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
+    template_content = content
+    if private_boss:
+        old = 'Chara/summon/summon13108/summon13108'
+        native(old)
+        for suffix in ('_tex', '_normal', '_mreo'): native(old + suffix)
+        original_spec = {'animations': json.loads(Path(boss.__file__).with_name('crystal_fina_boss.json').read_bytes())['animations']}
+        sheet = None; template_content = legacy / 'FFRS/Content'
+    else:
+        original_spec = json.loads((root / 'build/sprites' / unit['key'] / 'battle/spec.json').read_bytes())
+        sheet = root / unit['ffbe']['dir'] / ('unit_anime_' + SPRITE + '.png')
+    import _ffr_testing
+    if _ffr_testing.settings(root)['practiceBattle'] and not any(a['name'] == 'atk' for a in original_spec['animations']):
+        # The native enemy sequencer uses atk; imported vision templates use
+        # attack_A. A shared body must support both animation contracts.
+        original_spec['animations'].append({'name': 'atk', 'frameCount': motion.RELEASE_FRAMES})
     atlas, spec = motion.battle_spec(source[cave.TEST_SPRITE.removeprefix('/Game/')],
-        source[cave.TEST_SPRITE.removeprefix('/Game/') + '_tex'], sheet, json.loads(original_spec.read_bytes()))
+        source[cave.TEST_SPRITE.removeprefix('/Game/') + '_tex'], sheet, original_spec)
     name = 'FinaNative' + str(unit['id']); rel = package(unit, name)
     spec.update(cellmapName=name, animePackName=name, imagePath=name + '_tex.png')
     spec_path = work / 'spec.json'; spec_path.write_text(json.dumps(spec), encoding='utf-8')
@@ -175,16 +199,15 @@ def build(units, env):
     w, h = atlas.size
     (work / 'normal.bc5').write_bytes(bytes((128, 128, 0, 0, 0, 0, 0, 0)) * (2 * (w // 4) * (h // 4)))
     (work / 'mreo.bgra').write_bytes(bytes((0, 120, 60, 0)) * w * h)
-    old = f'Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
     dest = content / (rel + '.uasset'); dest.parent.mkdir(parents=True, exist_ok=True)
-    rename = 'summon' + str(unit['id']) + '=' + name
-    run(tool + ['make-ss6', str(content / (old + '.uasset')), str(spec_path), str(dest),
+    rename = Path(old).name + '=' + name
+    run(tool + ['make-ss6', str(template_content / (old + '.uasset')), str(spec_path), str(dest),
                 '/Game/' + old, '/Game/' + rel, rename, '--usmap', usmap])
     native_model = decode(dest, 'native-battle-model')
     motion.verify_model(native_model, spec)
     motion.verify_image_mirroring(native_model, spec)
     for suffix, payload in [('_tex', 'tex.bgra'), ('_normal', 'normal.bc5'), ('_mreo', 'mreo.bgra')]:
-        run(tool + ['make-texture', str(content / (old + suffix + '.uasset')), str(work / payload),
+        run(tool + ['make-texture', str(template_content / (old + suffix + '.uasset')), str(work / payload),
                     str(w), str(h), str(content / (rel + suffix + '.uasset')),
                     '/Game/' + old + suffix, '/Game/' + rel + suffix, rename, '--usmap', usmap])
     _, mesh = cave.export(source[cave.TEST_NATIVE_MESH], Path(cave.TEST_NATIVE_MESH).name)

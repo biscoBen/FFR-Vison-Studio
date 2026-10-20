@@ -130,7 +130,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('testing-practice-battle'), contentPadding: EdgeInsets.zero,
                   title: Text('Shop practice battle', style: Guide.text()),
-                  subtitle: Text('Young Woman in Mitra\'s item shop opens an in-game opponent picker. Choose a different enemy for each fight without rebuilding. Rebuild/install after switching.', style: Guide.small()),
+                  subtitle: Text('Young Woman in Mitra\'s item shop opens an in-game opponent picker. Includes the level-10 Crystal Fina boss test. Choose a different enemy for each fight without rebuilding. Rebuild/install after switching.', style: Guide.small()),
                   value: app.testingPracticeBattle,
                   onChanged: busy || app.api == null ? null : (value) async {
                     try { await app.setTestingPracticeBattle(value); } catch (e) { app.showNotice('$e'); }

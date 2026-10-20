@@ -191,7 +191,7 @@ def build(units, env):
     root = Path(env['ROOT']); work = root / 'build/field-leader'; work.mkdir(parents=True, exist_ok=True)
     payload = {'schema': 1, 'files': {}}
     import _ffr_fina_battle as fina
-    selected = fina.selected(units)
+    selected = fina.selected(units, root)
     field = enabled(root)
     if field or selected:
         config = bank(units, env['rows'])[1] if field else {'schema': 1, 'actors': {}}
