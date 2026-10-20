@@ -169,7 +169,7 @@ foreach ($edit in $ops.add) {
         }
     }
 }
-if ($ops.add.Count -ne 19 -or $ops.set.Count -ne 0) { throw 'Unexpected practice row operations.' }
+if ($ops.add.Count -ne 21 -or $ops.set.Count -ne 0) { throw 'Unexpected practice row operations.' }
 Write-Output 'Real engine practice dialogue contracts passed.'
 '''
 
