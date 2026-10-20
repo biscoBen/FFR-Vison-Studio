@@ -11,14 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina boss scale verification
-
-- Fix the final table check rejecting the resized boss. Round the intended 1.17 scale before writing
-  the recipe so it matches the native FloatProperty row export, rather than retaining a double arithmetic tail.
-- Keep the requested 130% vision size and strict table checks. Exercise the actual engine patcher and row
-  exporter, including the old failing value and rejection of a genuinely changed scale. Windows publication
-  and the user's game installation still need verification.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -62,6 +54,32 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina boss scale verification — 2026-10-20
+
+Code: [`9493d9b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9493d9be0b16a6021d8cf5004ee55baaed8bb4ca), extension **1.2.56**.
+Windows package: [run 39507226508](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39507226508/Sephira-Studio-Test.zip). **47,474,464 bytes** (47.5 MB).
+SHA-256: `74ff8c38afe46c4bf1cee56b2f7e85027d97985224dc6e4b5c3471abc0c3e388`.
+
+- Fix the final table check rejecting the resized boss. Python's `0.9 * 1.3` produced
+  `1.1700000000000002`; the actual native FloatProperty row exporter writes `1.17`.
+  Round the intended scale before writing the recipe so exact verification succeeds.
+- Keep the requested 130% vision size and strict table checks. Existing prepared data can be reused;
+  update Studio and retry **Install to game**. This supersedes the earlier size package for installation.
+
+Validation: **22 focused Python tests**, **28 passing local Flutter tests** plus one Windows-only skip,
+and a local run through the actual engine patcher/row exporter. Add the same native conversion regression
+to Windows CI using its checksum-verified engine archive. The old failing value changes during conversion;
+the corrected recipe verifies exactly, and a genuinely changed scale is still rejected. Replace approximate
+size assertions with exact comparisons. Full Windows analysis/tests, fresh frozen-engine setup, Python suite,
+bundle verification, launcher/updater checks and compilation pass. Downloaded provenance/SHA-256, all **52**
+extension and **16** Crystal Fina hashes, and standalone Deck helper match source. No live game installation
+was performed; the user's install still needs a retry.
+
+Measured timing: first complete candidate **2026-10-20 22:18:15.958 UTC** → verified release download
+**22:32:18.017 UTC**, **14m 02s**, including local checks, CI waits and package verification. One automatic
+Windows run was reused; no duplicate or manual build was dispatched. CI wall time: **12m 30s**.
+Summed runner usage: **17m 59s** (**13m 06s Windows**, **4m 53s Linux**), separate from elapsed delivery time.
 
 ## Published Crystal Fina boss size — 2026-10-20
 
