@@ -102,7 +102,7 @@ class WorkflowPlanTests(unittest.TestCase):
         commands = '\n'.join(step.get('run', '') for step in jobs['validate']['steps'])
         for required in ['flutter analyze --no-pub', 'flutter test --no-pub', 'test_windows_bundled_startup.ps1',
                          'test_verified_engine_archive.ps1', 'test_studio_launcher.ps1', 'test_official_visions_import.ps1',
-                         'unittest discover']:
+                         'scripts/run_python_tests.py']:
             self.assertIn(required, commands)
         cache, = [step for step in jobs['validate']['steps'] if step.get('uses') == 'actions/cache@v4']
         self.assertEqual(cache['with']['key'], 'ffr-windows-engine-1.0.0.15-1c6e4d4b348b048404b6578bf10010c4caa873a5599d9dcbb9f64b00d299c41d')

@@ -44,7 +44,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   stale desktop saves; preserve pending edits in a local backup before reloading a restored roster. Preserve
   machine paths, credentials, source downloads and saves separately.
 
-Validation: analysis, **266 Flutter tests** (one Windows-only skip), **500 Python checks** (19 local platform/tool
+Validation: analysis, **266 Flutter tests** (one Windows-only skip), **501 Python checks** (19 local platform/tool
 skips), local transfer/API tests and Chromium round trips pass, including standalone local import, runtime
 removal, restoration, corrupt backups, failed writes, stale previews, build/input changes, per-build observations,
 streamed exports and unchanged-demo comparison. Windows packaging is pending. These tools
