@@ -11,17 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina level-10 boss test
-
-- Add Crystal Fina to the item-shop practice picker: level 10, 6,500 HP, fixed early-boss stats, a weak
-  neutral attack, light spells and a bounded self-heal. Her eight-action native AI schedules one action
-  at a time, with Holy as its stronger single-target move. Retain private copies of her full active kit.
-- Load her approved native body and rotating crystal without requiring her in the roster. Share the
-  presentation when she is included; keep the enemy independent of player vision edits. Add a seventh
-  choice page with working More/Cancel. No acquisition gating, vision reward, XP, gil or item farming.
-- See [the stats, rotation and test steps](docs/CRYSTAL_FINA_BOSS.md). Native builds and automated checks
-  are required before publication; live encounter behavior and level-10 difficulty still need testing.
-
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -65,6 +54,43 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina level-10 boss test — 2026-10-20
+
+Code: [`533749b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/533749b798f348a160176fbe907d0d5f5130dc0c), extension **1.2.53**.
+Windows package: [run 39495008542](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39495008542/Sephira-Studio-Test.zip). **47,473,092 bytes** (47.5 MB).
+SHA-256: `f831a1f4edba15bd716862e01a1fba62e10a3f508b08ef3e618b8096661dd2b2`.
+
+- Add Crystal Fina to the item-shop practice picker: level 10, 6,500 HP, fixed early-boss stats, a weak
+  neutral attack, light spells and a bounded self-heal. Her eight-action native AI schedules one action
+  at a time, with Holy as its stronger single-target move. Retain private copies of her full active kit.
+- Load her approved native body and rotating crystal without requiring her in the roster. Share the
+  presentation when she is included; keep the enemy independent of player vision edits. Add a seventh
+  choice page with working More/Cancel. No acquisition gating, vision reward, XP, gil or item farming.
+- See [the stats, rotation and test steps](docs/CRYSTAL_FINA_BOSS.md). Native builds and automated checks
+  pass as described below; live encounter behavior and level-10 difficulty still need testing.
+
+Validation: **506 Python checks** (20 local platform/tool skips), **266 passing local Flutter tests** plus
+one Windows-only skip, and analysis pass. Full Windows validation, fresh frozen-engine setup, native Kismet
+size/jump contracts, dialogue patching, launcher/updater checks and compilation pass for the published commit.
+Build/read back all **10** affected native boss tables (**93** private rows), both standalone and shared Fina
+presentations (**27** clips each), the crystal/material/texture/runtime payload and all **seven** choice sequences.
+The standalone case requires no saved/imported Fina. Download provenance/SHA-256 and all **52** extension and
+**16** Crystal Fina source hashes match; the standalone Deck helper also matches. No live fight was run.
+
+Measured timing: first complete candidate **2026-10-20 20:30:13.039 UTC** → verified release download
+**21:03:26.009 UTC**, **33m 13s**, including local/native checks, correction, both automatic CI runs, waits and
+package verification. The first run exposed an obsolete 19-row expectation in the Windows-only dialogue
+contract; update it to the 21 rows required by thirteen opponents and seven pages, and verify it with the real
+engine serializer before the second push. No encounter code changed in that correction. The timer was not
+restarted and no duplicate/manual workflow was dispatched.
+
+| Automatic run | Result | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| 39493478585 | Failed stale dialogue test | 11m 24s | 12m 48s | 3m 19s |
+| 39495008542 | Passed and published | 13m 55s | 13m 03s | 5m 52s |
+
+Summed runner usage: **35m 02s** (**25m 51s Windows**, **9m 11s Linux**), separate from elapsed delivery time.
 
 ## Published launch preparation and local Steam Deck snapshots — 2026-10-19
 

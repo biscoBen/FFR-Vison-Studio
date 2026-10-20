@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina level-10 boss test — 2026-10-20
+
+[Verified Windows download / run 39495008542](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39495008542/Sephira-Studio-Test.zip)
+(code `533749b`, extension 1.2.53; **47.5 MB**).
+
+Enable **Home → Shop practice battle**, rebuild/install and restart the game. Talk to the Young Woman in
+Mitra's item shop, then choose **More opponents** until the final page's **Crystal Fina (level 10)** appears.
+She has **6,500 HP**, a neutral basic attack, light magic and a self-heal opportunity once per eight actions
+when at or below half health. Light is resisted and dark is a weakness. Turn **Survive at 1 HP** off to judge
+balance. See [the complete stats and rotation](docs/CRYSTAL_FINA_BOSS.md).
+
+She uses her native body and rotating crystal even without an owned Fina or the Sephira collection enabled.
+The fight is repeatable and awards no vision, XP, gil or items; acquisition progression stays unchanged.
+Native table/AI/presentation/menu builds and full Windows gates pass, and the downloaded files match source.
+Live combat behavior and level-10 difficulty still need an in-game test.
+
 ### Launch preparation and local Deck snapshots — 2026-10-19
 
 [Verified Windows download / run 39370792784](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39370792784/Sephira-Studio-Test.zip)
