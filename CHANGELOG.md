@@ -11,17 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Shop verification and earlier table checks
-
-- Fix the final Mitra inventory check when the temporary 1-gil Sephira shop override is enabled. Verify the
-  effective build locations and include Folka's story-gated Olderion inventory when normal acquisition is selected.
-  Keep checks for unrelated stock, purchase limits, conditions and missing entries.
-- Run the existing acquisition/testing table checks and independently check shop routing immediately after writing tables,
-  before building skill effects, converting unit sprites or packing. Stop at the first failed checked table with its name;
-  retain final verification for later scene edits and generated assets. Sprite/packing failures can still occur later.
-- Native serialization and Windows package validation pending; live installation requires a new test.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -90,6 +79,51 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published shop verification and earlier table checks — 2026-10-22
+
+Code: [`bdc10cd`](https://github.com/biscoBen/FFR-Vison-Studio/commit/bdc10cd841f691bbd26a49d17ef55ac56717f51a), extension **1.2.62**.
+Windows package: [run 39871672325](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39871672325/Sephira-Studio-Test.zip). **47,530,217 bytes** (47.5 MB).
+SHA-256: `8b5603da53620d6ab851b2dc6a7ca0884d173e419a5f4930ba0747553298eb45`.
+
+- Fix the final Mitra inventory check when the temporary 1-gil Sephira shop override is enabled. Verify the
+  effective build locations and include Folka's story-gated Olderion inventory when normal acquisition is selected.
+  Keep checks for unrelated stock, purchase limits, conditions and missing entries.
+- Run the existing acquisition/testing table checks and independently check shop routing immediately after writing tables,
+  before building skill effects, converting unit sprites or packing. Stop at the first failed checked table with its name;
+  retain final verification for later scene edits and generated assets. Sprite/packing failures can still occur later.
+- Native serialization and Windows package validation pass; live installation requires a new test.
+
+Update while retaining **Studio Test Data**, then rebuild/install. Prepared game data and the saved roster/settings
+remain usable. No additional MR/acquisition update is required for this verification-only change.
+
+Validation: **551 local Python checks** with 22 platform/dependency skips, **28 focused Flutter passes** and static
+analysis pass. Regression covers both borrowed-visual modes, the shop override on/off, disabled members, normal Folka
+story stock, stale entries and altered unrelated stock. The installed builder hook stops before effect/sprite/pack
+work on a failed table. Signed zero is accepted, AI class references use the established verifier, and later
+presentation edits remain checked at the final stage.
+The pinned native patcher and row exporter pass **29 full-game tables / 2,822 operations** for normal routes and
+**one inventory operation** for the shop override. Deliberately corrupted stock fails in both native cases.
+Full Windows analysis/tests, frozen-engine setup, Python checks, bundle integrity, launcher/updater checks and
+compilation pass for the same code commit. Download verification checks provenance, SHA-256, all **55** extension
+and **16** Crystal Fina file hashes, the new hook/helper version and the unchanged 30-preset catalog. The optional
+FFBE animation library remains separate. Live rebuilding and installation on the user's PC still need confirmation.
+
+Measured timing: first complete candidate **2026-10-22 16:06:55 PDT** → verified package
+**16:39:42 PDT**, **32m 47s**, including local checks, native export-format corrections, the correction to reuse existing
+staged validators, both CI runs and download verification. The timer was not restarted after that correction. Reused
+two matching automatic Windows runs for two distinct code commits; no manual/duplicate build was dispatched.
+The first package was withdrawn to draft before delivery after final review found that broad recipe replay could
+misread native hard-reference/vector export notation. The corrected version stages the existing independent validators.
+Deck workflow files and transfer helpers were unchanged, so no separate Deck workflow was triggered. Publication notes only change README/CHANGELOG and
+produce no new binary or relabelled package.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Windows 39870174199 (superseded) | success; package withdrawn | 10m 13s | 11m 44s | 3m 14s |
+| Windows 39871672325 | success | 13m 25s | 14m 09s | 5m 18s |
+
+Summed runner usage: **34m 25s** (**25m 53s Windows**, **8m 32s Linux**), separate from elapsed delivery time.
 
 ## Published protected MR rewards and temporary Mitra shop — 2026-10-22
 

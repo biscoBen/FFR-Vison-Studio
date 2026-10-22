@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Shop check fix and earlier build errors — 2026-10-22
+
+[Verified Windows download / run 39871672325](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39871672325/Sephira-Studio-Test.zip)
+(code `bdc10cd`, extension **1.2.62**; **47.5 MB**).
+
+Fix a separate shop check that still used saved acquisition locations while the temporary 1-gil Mitra override
+was enabled. Normal acquisition also verifies Folka's story-gated Olderion stock together with other selected shops.
+Acquisition/testing and shop tables are now checked immediately after writing, before skill effects, sprite conversion
+and packing; the build stops on the first failing checked table. Final checks remain for later scene edits and generated assets.
+
+Update while keeping **Studio Test Data**, then rebuild/install. Existing prepared data and saved vision settings
+can be reused; this update does not need another MR/acquisition migration. Windows checks and cooked full-game table
+checks pass. The user's live rebuild/install remains to be confirmed. See
+[validation and measured timings](CHANGELOG.md#published-shop-verification-and-earlier-table-checks--2026-10-22).
+
 ### Protected MR rewards and temporary 1-gil shop — 2026-10-22
 
 [Verified Windows download / run 39865892697](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39865892697/Sephira-Studio-Test.zip)
