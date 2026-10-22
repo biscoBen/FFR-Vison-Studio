@@ -12,27 +12,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 ## Unreleased
 
 
-### Protected original MR rewards, temporary Mitra shop and visual-mode installation check
-
-- Remove all 52 reused MR rewards belonging to the 11 original visions the user is keeping: 44 MR grants and
-  eight awakening grants. Use 37 equipment/enemy bonuses and 15 bounded private enemy skills. Preserve the
-  excluded originals’ full grant coverage, awakening counts, five MR abilities, permanent stats and boss budgets.
-  Check all 55 protected original rewards by source ID, including private copies, so moving a reward cannot evade it.
-- Apply this as recipe revision 5 through **Apply MR and acquisition update**. Back up the roster and replace
-  affected learned rewards in place while retaining allocated identities, artwork, stats, unrelated skills and
-  revision-4 custom acquisition choices. Keep native bonus mechanics; use private English text and a 20-AP floor
-  for originally zero-cost item bonuses. See [the full replacement list](docs/SEPHIRA_REWARD_CHANGES.md).
-- Add **Sephira visions: 1-gil Mitra shop**, off by default. Override only enabled collection members in the build,
-  without rewriting saved locations/prices. While enabled, omit their challenge/cave/story-shop acquisition and
-  sell them once each in Mitra. Turning it off and rebuilding restores saved acquisition. Purchased visions stay owned.
-  Preserve the switch across settings saves, backups and Deck snapshots, independently of visual modes.
-- Fix the reported final installation check expecting borrowed visual rows after building with original visuals.
-  Recompute the same ephemeral visual/acquisition choices in verification. Preserve strict checks for unrelated rows.
-  The supplied log reached final validation and did not confirm installation.
-- Offline source, migration, shop-routing and native serialization checks cover these changes. Windows packaging
-  and live full-game acquisition/visuals/battle difficulty remain unverified until the checks and playtesting finish.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -101,6 +80,62 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published protected MR rewards and temporary Mitra shop — 2026-10-22
+
+Code: [`19202e6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/19202e6367a084758ab822605e47caed6f0001d9), extension **1.2.61**.
+Windows package: [run 39865892697](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39865892697/Sephira-Studio-Test.zip). **47,529,655 bytes** (47.5 MB).
+SHA-256: `e3ce1001ca777bf6095e4a5d0ee6d8241d267929d7d513140017e0a6ef67df78`.
+
+- Remove all 52 reused MR rewards belonging to the 11 original visions the user is keeping: 44 MR grants and
+  eight awakening grants. Use 37 equipment/enemy bonuses and 15 bounded private enemy skills. Preserve the
+  excluded originals’ full grant coverage, awakening counts, five MR abilities, permanent stats and boss budgets.
+  Check all 55 protected original rewards by source ID, including private copies, so moving a reward cannot evade it.
+- Apply this as recipe revision 5 through **Apply MR and acquisition update**. Back up the roster and replace
+  affected learned rewards in place while retaining allocated identities, artwork, stats, unrelated skills and
+  revision-4 custom acquisition choices. Keep native bonus mechanics; use private English text and a 20-AP floor
+  for originally zero-cost item bonuses. See [the full replacement list](docs/SEPHIRA_REWARD_CHANGES.md).
+- Add **Sephira visions: 1-gil Mitra shop**, off by default. Override only enabled collection members in the build,
+  without rewriting saved locations/prices. While enabled, omit their challenge/cave/story-shop acquisition and
+  sell them once each in Mitra. Turning it off and rebuilding restores saved acquisition. Purchased visions stay owned.
+  Preserve the switch across settings saves, backups and Deck snapshots, independently of visual modes.
+- Fix the reported final installation check expecting borrowed visual rows after building with original visuals.
+  Recompute the same ephemeral visual/acquisition choices in verification. Preserve strict checks for unrelated rows.
+  The supplied log reached final validation and did not confirm installation.
+- Offline source, migration, shop-routing and native serialization checks cover these changes. Full Windows packaging
+  checks pass; live full-game acquisition, visuals and battle difficulty still require playtesting.
+
+Keep **Studio Test Data**, use **Apply MR and acquisition update** and rebuild/install. The existing game preparation
+can be reused. Home’s new shop override applies after a rebuild/install; switching it off restores saved routes and
+prices. See [the vision guide](SEPHIRAS_VISIONS.md) and [all 52 source replacements](docs/SEPHIRA_REWARD_CHANGES.md).
+
+Validation: **547 local Python checks** with 22 platform/dependency skips, **271 Flutter passes** plus one platform
+skip, and static analysis pass. A local suite run stalled at API tests with restricted networking and was interrupted;
+the diagnostic rerun with network access passed all checks. Regression covers every protected MR source in both
+progression fields and active-copy recipes, native bonus conditions/costs, reassigned IDs, custom slot collisions,
+legacy migration, edited acquisition preservation, settings round trips and reversible shop routing. The actual
+installed verifier reproduces the original-mode mismatch and checks the corrected mode without weakening unrelated-row checks.
+The pinned native patcher/readback verifies **165 operations across eight full-game tables**, including **37** named
+private bonuses, **15** new active recipes and visual/hit bindings, plus **30** one-gil vision prices and Mitra stock.
+Native bonus effect parameters and unrelated rows are preserved; formerly zero-cost bonuses use a 20-AP equip cost.
+Full Windows analysis/tests, fresh frozen-engine setup, Python suite, bundle checks, launcher/updater checks and
+compilation pass for the same code commit. Deck launcher and Windows transfer checks also pass. The downloaded
+release matches provenance/SHA-256, all **55** extension and **16** Crystal Fina file hashes, all 30 revision-5 presets,
+all 55 protected source exclusions and the standalone Deck installer. The optional FFBE library remains separate.
+Live gameplay, balance and acquisition behavior still need testing on the user's installation.
+
+Measured timing: first complete candidate **2026-10-22 22:28:15.670 UTC** → verified package
+**22:44:53.302 UTC**, **16m 38s**, including local checks, the interrupted API-test run and diagnostic rerun,
+CI waits, metadata access fallback and download verification. Timer not restarted. One matching automatic Windows
+run and its companion Deck workflow were reused; no manual or duplicate build was dispatched. Publication notes
+are a README/CHANGELOG-only commit and do not rebuild or relabel the verified binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Windows 39865892697 | success | 10m 17s | 13m 05s | 2m 13s |
+| Deck 39865892852 | success | 1m 18s | 1m 18s | 0m 37s |
+
+Summed runner usage: **17m 13s** (**14m 23s Windows**, **2m 50s Linux**), separate from elapsed delivery time.
 
 ## Published Sephira MR progression and guarded vision challenges — 2026-10-22
 

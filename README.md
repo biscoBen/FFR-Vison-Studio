@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Protected MR rewards and temporary 1-gil shop — 2026-10-22
+
+[Verified Windows download / run 39865892697](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39865892697/Sephira-Studio-Test.zip)
+(code `19202e6`, extension **1.2.61**; **47.5 MB**).
+
+Replace all 52 reused MR rewards from the original visions being kept, including eight grants that had moved to
+awakening. Use equipment/enemy bonuses and bounded enemy skills while retaining kit counts, MR structure, permanent
+stats and excluded-vision coverage. See [every replacement and its source](docs/SEPHIRA_REWARD_CHANGES.md).
+
+Update while keeping **Studio Test Data**, use **Apply MR and acquisition update**, then rebuild/install. This backs
+up the roster and preserves unrelated edits and saved revision-4 acquisition choices. Prepared game data can be reused.
+Home’s **Sephira visions: 1-gil Mitra shop** toggle, off by default, temporarily sells enabled collection members in
+Mitra for 1 gil each. Turn it off and rebuild/install to restore their saved locations and prices. Purchased visions stay owned.
+
+Fix the reported final installation check expecting borrowed visual rows after a build using original visuals.
+Verification now uses the build’s visual and acquisition modes. Full Windows validation/compilation and Deck checks
+pass, and the downloaded package matches provenance, checksums and source. Native readback covers the new bonuses,
+abilities, visual routing and shop prices. Gameplay balance and acquisition still need live testing. See
+[validation and measured timings](CHANGELOG.md#published-protected-mr-rewards-and-temporary-mitra-shop--2026-10-22).
+
 ### Sephira MR rewards and vision challenges — 2026-10-22
 
 [Verified Windows download / run 39857881255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39857881255/Sephira-Studio-Test.zip)
