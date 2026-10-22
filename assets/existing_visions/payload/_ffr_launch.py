@@ -123,11 +123,12 @@ def flags(root):
     if a['showUnverified'] and a['useChanges']: enabled.append('Use our skill changes')
     if a['showUnverified'] and a.get('useNativeRepairs'): enabled.append('Repair native skill bindings / motions')
     if s['useBorrowedSkillVisuals']: enabled.append('Use borrowed Sephira skill visuals')
+    if s.get('shopAcquisitionOverride'): enabled.append('Sephira visions: 1-gil Mitra shop')
     roster = Path(root) / 'mods/EstherTsukiko/units.json'
     if roster.is_file():
         import _ffr_shrine_challenges as challenges
         units = sephira.active_units(json.loads(roster.read_bytes()))
-        if challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units):
+        if not s.get('shopAcquisitionOverride') and (challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units)):
             enabled.append('Sephira vision challenges and story shop')
     for key, label in (('ffbeNeedles', 'FFBE 1,000 Needles import'), ('practiceBattle', 'Shop practice battle'),
                        ('maxMr', 'One-battle MR'), ('crystalCave', 'Legacy Crystal Fina cave'),

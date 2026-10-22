@@ -11,6 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+
+### Protected original MR rewards, temporary Mitra shop and visual-mode installation check
+
+- Remove all 52 reused MR rewards belonging to the 11 original visions the user is keeping: 44 MR grants and
+  eight awakening grants. Use 37 equipment/enemy bonuses and 15 bounded private enemy skills. Preserve the
+  excluded originals’ full grant coverage, awakening counts, five MR abilities, permanent stats and boss budgets.
+  Check all 55 protected original rewards by source ID, including private copies, so moving a reward cannot evade it.
+- Apply this as recipe revision 5 through **Apply MR and acquisition update**. Back up the roster and replace
+  affected learned rewards in place while retaining allocated identities, artwork, stats, unrelated skills and
+  revision-4 custom acquisition choices. Keep native bonus mechanics; use private English text and a 20-AP floor
+  for originally zero-cost item bonuses. See [the full replacement list](docs/SEPHIRA_REWARD_CHANGES.md).
+- Add **Sephira visions: 1-gil Mitra shop**, off by default. Override only enabled collection members in the build,
+  without rewriting saved locations/prices. While enabled, omit their challenge/cave/story-shop acquisition and
+  sell them once each in Mitra. Turning it off and rebuilding restores saved acquisition. Purchased visions stay owned.
+  Preserve the switch across settings saves, backups and Deck snapshots, independently of visual modes.
+- Fix the reported final installation check expecting borrowed visual rows after building with original visuals.
+  Recompute the same ephemeral visual/acquisition choices in verification. Preserve strict checks for unrelated rows.
+  The supplied log reached final validation and did not confirm installation.
+- Offline source, migration, shop-routing and native serialization checks cover these changes. Windows packaging
+  and live full-game acquisition/visuals/battle difficulty remain unverified until the checks and playtesting finish.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

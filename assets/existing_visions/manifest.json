@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "ea5b9e80a3f97f7791d014249cb7557856d307e16ac04f7799a0be8538703db2",
+    "install_existing_visions.py": "64502a29679fb6f6f5b5007220bfb1d0cb8b4383d524da30f517f1516bfad9c9",
     "payload/_ffr_ability_modes.py": "15113beaa5d549c21a8c98cffc338dc910fe782fbda0636a313c1271d9e8db8a",
     "payload/_ffr_animation_repair.py": "c30988ffe7057f486f12dd582be846995ee4fc56da79cd5ef89301d24fc36501",
     "payload/_ffr_build_icons.py": "b6e48223d9d79dc376651a219cf6aed5a167f8fa7bc5da2f4187bb2fa22d714b",
@@ -23,15 +23,15 @@
     "payload/_ffr_fina_motion.py": "0ee697d0b189de76b082955e6d1256db9250ac2c0a7b192030d43bcb19edf674",
     "payload/_ffr_fina_preview.py": "116a996a47d0e756e6081487cedc51dea5d9e5b840ff8d6d22341a76d215565c",
     "payload/_ffr_game_tables.py": "58c71ffe35a8e06163ef8ce9363f7f5dd6558f08b22ac2121470167e57bd74df",
-    "payload/_ffr_launch.py": "3ca499ee4351b10a4649a4202f323b319e402077fd8699542b79dcbf97624e20",
+    "payload/_ffr_launch.py": "2ad9bc997df7ea1dddfd5b9bd1a4d2710940baf60c9206c06caea0401103c441",
     "payload/_ffr_library.py": "b855803ffe3639f3df427f006830f11c49fa1b4c094bd17d7b3c2d3ae5de79df",
     "payload/_ffr_native_skills.py": "3bb46f1341836e2a669423f414dd9e5dcb2a78be8dd1e6e3796fe6a989ce4def",
     "payload/_ffr_overworld.py": "6ff5337c163acd8e5f5213ad9a00796b8eec17b872f6e363ff45424be49b0f53",
     "payload/_ffr_party.py": "72f787b527ff2bc7d46a02a567415de826372487edea39e290aa24473ee6e126",
     "payload/_ffr_party_voices.py": "7dd587b6298595ae06eb25b0fbd50c7aa3172a86774bb222d089feb3ac87ac34",
-    "payload/_ffr_sephira.py": "98a985967de8e8f55caf44c2e432aa4634c38740b08cee0e6001a2a7ad7b1ead",
+    "payload/_ffr_sephira.py": "5ccf4fe6f8b5835ad557728403d006e4b6a5afc1bc094a01cac0196e07cd004d",
     "payload/_ffr_shrine_challenges.py": "c0a778f21ca0acc108ab3e9fd16406360749f2838cc7570eb1762bb9924756a2",
-    "payload/_ffr_testing.py": "a3aa735baca71f9e0b0cb16d16aabc32c8b832953d3d38a7ca6eb2aa6ae2f674",
+    "payload/_ffr_testing.py": "ff5dd5cb5bc8169faa6b02868dcdc8b67ce2a6726c3968b8f9947470b47af3bb",
     "payload/ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "payload/ability_live_tests.json": "5146769c870c13923175c8179cba390ae8beef096b54cc972d7a85140e9cc5cc",
     "payload/cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
@@ -48,13 +48,13 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "3afc150d8fdd684e3a9c4f8014e7f15ab19994ff077da5c97a557792f6439534",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "fd37b926074edb4a648581b8e833fc7b547ea37327591f8303e67d9548931975",
+    "payload/manifest.json": "a1c563f337af0daaa16e6ef924f698191511ee393ff0f14a13878e261575d2a5",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",
     "payload/sephira_challenges.json": "07ac3dd3e8c07c87b43c88ace3463f8feda9a351e6af1e6b6f27c6b081d09480",
-    "payload/sephira_visuals.json": "5dfdd9e6ea34e0a8c6430a22396247635a0e9a150b988ec0bcacfc3da0e9caa7",
+    "payload/sephira_visuals.json": "501de528645c5827eb05797bdf76414f510b2af4d759ffa541ef80483d3a91ed",
     "payload/vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
   }
 }

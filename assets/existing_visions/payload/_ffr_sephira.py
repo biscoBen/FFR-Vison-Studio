@@ -14,9 +14,12 @@ CONFIG = 'mods/EstherTsukiko/sephira-settings.json'
 
 
 def validate_settings(value):
-    if (not isinstance(value, dict) or set(value) != {'schema', 'useBorrowedSkillVisuals'}
+    required = {'schema', 'useBorrowedSkillVisuals'}
+    if (not isinstance(value, dict) or not required <= set(value)
+            or set(value) - required - {'shopAcquisitionOverride'}
             or type(value['schema']) is not int or value['schema'] != 1
-            or type(value['useBorrowedSkillVisuals']) is not bool):
+            or type(value['useBorrowedSkillVisuals']) is not bool
+            or ('shopAcquisitionOverride' in value and type(value['shopAcquisitionOverride']) is not bool)):
         raise ValueError('Invalid Sephira skill visual settings.')
     return dict(value)
 
@@ -35,7 +38,15 @@ def visual_units(units, root, rows=None):
     Saved recipes keep the borrowed donors so turning the setting on restores them.
     """
     result = copy.deepcopy(units)
-    if settings(root)['useBorrowedSkillVisuals']:
+    controls = settings(root)
+    if controls.get('shopAcquisitionOverride', False):
+        for unit in result:
+            value = membership(unit)
+            if value is not None and value['enabled'] and value['preset'] not in RETIRED:
+                unit['studioAcquisition'] = {'version': 1, 'location': 'mitra_shop',
+                                            'random': False, 'hideSpoilers': True}
+                unit['price'] = 1
+    if controls['useBorrowedSkillVisuals']:
         return result
     policy = json.loads(Path(__file__).with_name('sephira_visuals.json').read_bytes())
     if policy.get('schema') != 1:
@@ -78,6 +89,9 @@ def register(app, env):
     def put_settings(value: dict):
         try:
             value = validate_settings(value)
+            current = settings(env['ROOT'])
+            if 'shopAcquisitionOverride' not in value and 'shopAcquisitionOverride' in current:
+                value['shopAcquisitionOverride'] = current['shopAcquisitionOverride']
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG
@@ -159,9 +173,25 @@ def bind_units(units, rows):
         if native_skills & owned:
             raise ValueError('A Sephira custom skill/LB ID overlaps the game catalog. Reset this preset in Studio to allocate safe IDs.')
         private = {}
+        labels = u.get('sephiraPassiveText') or {}
         for field in ['awakening', 'synchro']:
             for tier in u[field]:
                 for g in tier:
+                    if g[0] == 'PassiveSkill' and str(g[1]) in labels:
+                        sid = g[1]
+                        pk, passive = passives[sid]
+                        new_sid = u['id'] * 10000 + sid
+                        if new_sid in passives:
+                            raise ValueError('Sephira private passive ID overlaps the game catalog.')
+                        label = labels[str(sid)]
+                        fields = {'ID': new_sid, 'Name': label['name'], 'Description': label['desc']}
+                        # Item-granted imbues/evasion can have zero equip cost;
+                        # learned equivalents use the native 20-AP utility tier.
+                        if passive['equipCost'] == 0: fields['equipCost'] = 20
+                        private[sid] = {'passive': {'row': f"Studio_Sephira_{u['id']}_Passive_{sid}",
+                            'cloneFrom': pk, 'set': fields}}
+                        g[1] = new_sid
+                        continue
                     if g[0] != 'PassiveSkill' or g[1] not in BINDINGS: continue
                     sid = g[1]
                     eid, kind, index, original, replacement = BINDINGS[sid]
@@ -191,4 +221,5 @@ def prepare(tables, units):
     for u in units:
         for binding in u.get('_sephiraBindings', []):
             for rel, key in [(EFFECT, 'effect'), (PASSIVE, 'passive')]:
+                if key not in binding: continue
                 tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['add'].append(binding[key])

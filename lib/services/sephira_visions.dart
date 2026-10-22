@@ -99,6 +99,14 @@ class SephiraVisions {
     final template = CharacterConfig.restore(
         preset['profile'] as Map<String, dynamic>, [], replacing: unit);
     final result = CharacterConfig.copy(unit);
+    _replaceProtectedRewards(result, template, preset);
+    // Revision 5 corrects sources in place. Preserve the already-applied MR
+    // schedule, custom acquisition, stats, artwork and unrelated combat edits.
+    if ((unit['sephiraRecipe'] as int? ?? 0) >= 4) {
+      result['sephiraRecipe'] = latest;
+      CharacterConfig.validate(result);
+      return result;
+    }
     final available = <String, List<dynamic>>{};
     String key(List g) => '${g[0]}:${g[1]}';
     for (final field in ['awakening', 'synchro']) {
@@ -173,5 +181,57 @@ class SephiraVisions {
     }
     CharacterConfig.validate(result);
     return result;
+  }
+
+  static void _replaceProtectedRewards(Map<String, dynamic> unit,
+      Map<String, dynamic> template, Map<String, dynamic> preset) {
+    final replacements = preset['rewardReplacements'] as List? ?? [];
+    final sourceBase = CharacterConfig.skillBase(preset['profile']['id'] as int);
+    final targetBase = CharacterConfig.skillBase(unit['id'] as int);
+    final owned = unit['skills'] as Map;
+    final inserted = <String, List<dynamic>>{};
+    for (final field in ['awakening', 'synchro']) {
+      for (final tier in unit[field] as List) {
+        for (var i = 0; i < (tier as List).length; i++) {
+          final grant = tier[i] as List;
+          final recipe = grant[0] == 'ActiveSkill' ? owned[grant[1].toString()] as Map? : null;
+          final source = recipe?['from'] ?? grant[1];
+          final spec = replacements.where((r) => r['oldKind'] == grant[0] && r['oldSource'] == source).firstOrNull;
+          if (spec == null) continue;
+          final replacement = List<dynamic>.from(spec['newGrant'] as List);
+          if (replacement[0] == 'ActiveSkill') {
+            final identity = targetBase + (replacement[1] as int) - sourceBase;
+            final key = '${replacement[0]}:${spec['source']}';
+            if (inserted.containsKey(key)) {
+              tier[i] = List<dynamic>.from(inserted[key]!);
+              continue;
+            }
+            final value = CharacterConfig.copy(template['skills'][identity.toString()] as Map<String, dynamic>);
+            final same = owned.entries.where((e) => (e.value as Map)['from'] == spec['source']).firstOrNull;
+            int target;
+            if (same != null) {
+              target = int.parse(same.key.toString());
+            } else {
+              final occupied = {for (final k in owned.keys) for (final offset in [0, 1, 2]) int.parse(k.toString()) + offset};
+              target = [identity, for (var n = 1; n < 32; n++) targetBase + n * 3]
+                  .firstWhere((id) => [id, id + 1, id + 2].every((v) => !occupied.contains(v)));
+              value['jp'] = '${value['jp']}_MR5_$target';
+              owned[target.toString()] = value;
+            }
+            replacement[1] = target;
+            inserted[key] = replacement;
+          }
+          tier[i] = replacement;
+        }
+      }
+    }
+    final learned = {for (final field in ['awakening', 'synchro'])
+      for (final tier in unit[field] as List) for (final g in tier as List)
+        if (g[0] == 'ActiveSkill') g[1]};
+    owned.removeWhere((id, recipe) => !learned.contains(int.parse(id.toString())) &&
+        replacements.any((r) => r['oldKind'] == 'ActiveSkill' && r['oldSource'] == (recipe as Map)['from']));
+    unit['sephiraPassiveText'] = {
+      ...?unit['sephiraPassiveText'] as Map?, ...?template['sephiraPassiveText'] as Map?,
+    };
   }
 }

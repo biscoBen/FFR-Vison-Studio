@@ -32,6 +32,9 @@ class _BonusesStepState extends State<BonusesStep> {
     String title(Map<String, dynamic> row) => catalogEntryTitle(cat, 'passives', row, nativeUnit: nativeKitContext(kit, widget.unit));
     final allPassives = (cat['passives'] as List).cast<Map<String, dynamic>>();
     final descriptions = catalogDescriptions(cat, 'passives');
+    for (final entry in (widget.unit['sephiraPassiveText'] as Map? ?? {}).entries) {
+      descriptions[int.parse(entry.key.toString())] = entry.value['desc'] as String;
+    }
     final passives = catalogSelectableLibrary(cat, 'passives', [...app.units, widget.unit])
       ..sort((a, b) => title(a).compareTo(title(b)));
     final s = q.trim().toLowerCase();

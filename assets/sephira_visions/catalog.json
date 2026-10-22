@@ -580,6 +580,31 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "485018": {
+            "from": 500890,
+            "visuals": 400530,
+            "jp": "Sephira_a2_Kit_6",
+            "en": "Numbing Slash",
+            "desc": "Non-elemental physical damage; power 12. Apply Paralyzation (100%). Single enemies; MP 10; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                320
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                320,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
           }
         },
         "ffbeMap": {
@@ -587,7 +612,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -698,7 +723,7 @@
             ],
             [
               "ActiveSkill",
-              400500,
+              485018,
               -1
             ],
             [
@@ -2050,6 +2075,66 @@
               "awakening",
               0
             ]
+          },
+          {
+            "id": 485018,
+            "source": 500890,
+            "name": "Numbing Slash",
+            "originalName": "Numbclaw",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                320
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                320,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 10,
+              "magnification": 12,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [
+              1033
+            ],
+            "unlock": [
+              "awakening",
+              3
+            ]
           }
         ],
         "masteryStats": [
@@ -2091,7 +2176,29 @@
         "sha256": "11e32f650ef69e6e4b3bdc2bf4ff117ff94985755df6128489f66c5afc9faf86",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "a2",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "ActiveSkill",
+          "oldId": 400500,
+          "oldSource": 400500,
+          "protectedOwners": [
+            {
+              "vision": 13125,
+              "rank": 1
+            }
+          ],
+          "source": 500890,
+          "newGrant": [
+            "ActiveSkill",
+            485018,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "christine",
@@ -2387,7 +2494,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -3259,7 +3366,8 @@
         "sha256": "f098757c935fc3e7c74f90c508b92cb39ac9a40a60a1c9930f04dcf35c1afc97",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "crystal_fina",
@@ -3503,6 +3611,33 @@
               "selfSkillActivateVoiceLabel": "None",
               "defaultTargetRelation": "Friendlies"
             }
+          },
+          "485218": {
+            "from": 506110,
+            "visuals": 210020,
+            "jp": "Sephira_crystal_fina_Kit_6",
+            "en": "Crystal Renewal",
+            "desc": "Restore healing power 400. Group friendlies; MP 50; hits 1; accuracy 100; stagger 50.",
+            "descAuto": false,
+            "set": {
+              "Cost": 50,
+              "accuracy": 100,
+              "belongCommandList": [
+                322
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                322,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 400,
+              "defaultTargetRelation": "Friendlies"
+            }
           }
         },
         "ffbeMap": {
@@ -3510,7 +3645,7 @@
           "passives": {}
         },
         "menuScale": 2.52,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -3640,7 +3775,7 @@
           [
             [
               "PassiveSkill",
-              1393,
+              1551,
               -1
             ]
           ],
@@ -3654,7 +3789,7 @@
           [
             [
               "ActiveSkill",
-              400740,
+              485218,
               -1
             ]
           ],
@@ -3668,7 +3803,7 @@
           [
             [
               "PassiveSkill",
-              1397,
+              1552,
               -1
             ]
           ],
@@ -3766,6 +3901,16 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1551": {
+            "name": "Magic Evasion +15%",
+            "desc": "Evade magic attacks with a 15% chance."
+          },
+          "1552": {
+            "name": "LB Charge on Action",
+            "desc": "Fill the LB gauge by 10% at the start of each action."
+          }
         }
       },
       "balance": {
@@ -4263,6 +4408,68 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485218,
+            "source": 506110,
+            "name": "Crystal Renewal",
+            "originalName": "Curaga",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 50,
+              "accuracy": 500,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": 210030,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 600,
+              "defaultTargetRelation": "Enemies"
+            },
+            "adjusted": {
+              "Cost": 50,
+              "accuracy": 100,
+              "belongCommandList": [
+                322
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                322,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 400,
+              "defaultTargetRelation": "Friendlies"
+            },
+            "combat": {
+              "Cost": 50,
+              "magnification": 400,
+              "DamageType": "None",
+              "damageCalcType": "Magic",
+              "element": "None",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Friendlies",
+              "parameterVariationType": "Increase",
+              "hitCount": 1,
+              "breakDamageValue": 50
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              5
+            ]
           }
         ],
         "masteryStats": [
@@ -4304,7 +4511,107 @@
         "sha256": null,
         "source": "CUSTOM"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "crystal_fina",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1393,
+          "oldSource": 1393,
+          "protectedOwners": [
+            {
+              "vision": 13051,
+              "rank": 7
+            }
+          ],
+          "source": 1551,
+          "equipment": [
+            {
+              "id": 10295,
+              "name": "\u6b63\u5b97"
+            },
+            {
+              "id": 11027,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff15"
+            },
+            {
+              "id": 11526,
+              "name": "\u8ffd\u52a0\u30ed\u30fc\u30d6\uff16"
+            },
+            {
+              "id": 11527,
+              "name": "\u8ffd\u52a0\u30ed\u30fc\u30d6\uff17"
+            },
+            {
+              "id": 11528,
+              "name": "\u9b54\u6cd5\u56de\u907f\u30ed\u30fc\u30d6\uff13"
+            },
+            {
+              "id": 11530,
+              "name": "\u8ffd\u52a0\u30ed\u30fc\u30d6\uff11\uff10"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1551,
+            -1
+          ]
+        },
+        {
+          "preset": "crystal_fina",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "ActiveSkill",
+          "oldId": 400740,
+          "oldSource": 400740,
+          "protectedOwners": [
+            {
+              "vision": 13051,
+              "rank": 5
+            }
+          ],
+          "source": 506110,
+          "newGrant": [
+            "ActiveSkill",
+            485218,
+            -1
+          ]
+        },
+        {
+          "preset": "crystal_fina",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1397,
+          "oldSource": 1397,
+          "protectedOwners": [
+            {
+              "vision": 13051,
+              "rank": 9
+            }
+          ],
+          "source": 1552,
+          "equipment": [
+            {
+              "id": 10797,
+              "name": "\u30a2\u30eb\u30af\u30c8\u30a5\u30eb\u30b9\u30fb\u6539"
+            },
+            {
+              "id": 10799,
+              "name": "\u30a2\u30eb\u30af\u30c8\u30a5\u30eb\u30b9"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1552,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "barusa",
@@ -4634,7 +4941,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -5558,7 +5865,8 @@
       "masteryFillers": [
         485333,
         485336
-      ]
+      ],
+      "rewardReplacements": []
     },
     {
       "id": "fran",
@@ -5832,6 +6140,32 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "485412": {
+            "from": 500050,
+            "visuals": 500050,
+            "jp": "Sephira_fran_Kit_4",
+            "en": "Focused Arrow",
+            "desc": "Non-elemental physical damage; power 18. Single enemies; MP 8; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 18
+            }
           }
         },
         "ffbeMap": {
@@ -5839,7 +6173,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -5954,7 +6288,7 @@
           [
             [
               "ActiveSkill",
-              400450,
+              485412,
               -1
             ]
           ],
@@ -6625,6 +6959,66 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485412,
+            "source": 500050,
+            "name": "Focused Arrow",
+            "originalName": "Hack",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 12
+            },
+            "adjusted": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 18
+            },
+            "combat": {
+              "Cost": 8,
+              "magnification": 18,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              1
+            ]
           }
         ],
         "masteryStats": [
@@ -6669,6 +7063,28 @@
       "masteryFillers": [
         485439,
         485442
+      ],
+      "rewardReplacements": [
+        {
+          "preset": "fran",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "ActiveSkill",
+          "oldId": 400450,
+          "oldSource": 400450,
+          "protectedOwners": [
+            {
+              "vision": 13017,
+              "rank": 3
+            }
+          ],
+          "source": 500050,
+          "newGrant": [
+            "ActiveSkill",
+            485412,
+            -1
+          ]
+        }
       ]
     },
     {
@@ -6944,7 +7360,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -7060,7 +7476,7 @@
           [
             [
               "PassiveSkill",
-              1326,
+              1510,
               -1
             ]
           ],
@@ -7088,7 +7504,7 @@
           [
             [
               "PassiveSkill",
-              1396,
+              1517,
               -1
             ]
           ],
@@ -7178,6 +7594,16 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1510": {
+            "name": "Lingering Debuffs",
+            "desc": "Increase the duration of inflicted ailments and debuffs by 2 turns."
+          },
+          "1517": {
+            "name": "Healthy Focus",
+            "desc": "Increase damage and stagger power by 8% while HP is at least 75%."
+          }
         }
       },
       "balance": {
@@ -7791,7 +8217,63 @@
         "sha256": "cf0ae932aefc10e48bd6863f00d9c5a18afd6380e634d6476d89aafef6293578",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "lunafreya",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1326,
+          "oldSource": 1326,
+          "protectedOwners": [
+            {
+              "vision": 13017,
+              "rank": 1
+            }
+          ],
+          "source": 1510,
+          "equipment": [
+            {
+              "id": 10690,
+              "name": "\u30a2\u30a4\u30ea\u30fc\u30f3\u88c5\u5099\u9b54\u4eba\u30d5\u30a3\u30fc\u30ca"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1510,
+            -1
+          ]
+        },
+        {
+          "preset": "lunafreya",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1396,
+          "oldSource": 1396,
+          "protectedOwners": [
+            {
+              "vision": 13017,
+              "rank": 5
+            }
+          ],
+          "source": 1517,
+          "equipment": [
+            {
+              "id": 12095,
+              "name": "\u30a2\u30eb\u30c6\u30de\u30ea\u30a2\u30af\u30bf\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1517,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "minfilia",
@@ -8153,7 +8635,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -9123,7 +9605,8 @@
         "sha256": "8f772a287b1b2e6696b90fb7a303f1a8223a880ff4b60070e2d6da2de58c97da",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "folka",
@@ -9581,6 +10064,92 @@
                 }
               ]
             }
+          },
+          "485718": {
+            "from": 571450,
+            "visuals": 220140,
+            "jp": "Sephira_folka_Kit_6",
+            "en": "Tidal Invocation",
+            "desc": "Water magic damage; power 30. Group enemies; MP 36; hits 4; accuracy 100; stagger 12.",
+            "descAuto": false,
+            "set": {
+              "Cost": 36,
+              "accuracy": 100,
+              "belongCommandList": [
+                327
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                327,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 30,
+              "hitCount": 4,
+              "hitDamageRatioList": [
+                0.25,
+                0.25,
+                0.25,
+                0.25,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "485721": {
+            "from": 250150,
+            "visuals": 220140,
+            "jp": "Sephira_folka_Kit_7",
+            "en": "Waterga Surge",
+            "desc": "Water magic damage; power 30. Group enemies; MP 30; hits 3; accuracy 100; stagger 21.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                327
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                327,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Group"
+            }
           }
         },
         "ffbeMap": {
@@ -9588,7 +10157,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -9728,7 +10297,7 @@
           [
             [
               "ActiveSkill",
-              400680,
+              485718,
               -1
             ]
           ],
@@ -9756,7 +10325,7 @@
           [
             [
               "PassiveSkill",
-              1445,
+              1535,
               -1
             ]
           ],
@@ -9770,7 +10339,7 @@
           [
             [
               "ActiveSkill",
-              400360,
+              485721,
               -1
             ],
             [
@@ -9829,6 +10398,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1535": {
+            "name": "Water Damage +30%",
+            "desc": "Increase water damage by 30%."
+          }
         }
       },
       "balance": {
@@ -10782,6 +11357,194 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485718,
+            "source": 571450,
+            "name": "Tidal Invocation",
+            "originalName": "\u30bf\u30a4\u30c0\u30eb\u30a6\u30a7\u30a4\u30d6(\u30b3\u30ed\u30b7\u30a2\u30e0)",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 500,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 60,
+              "hitCount": 2,
+              "hitDamageRatioList": [
+                0.5,
+                0.5,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "adjusted": {
+              "Cost": 36,
+              "accuracy": 100,
+              "belongCommandList": [
+                327
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                327,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 30,
+              "hitCount": 4,
+              "hitDamageRatioList": [
+                0.25,
+                0.25,
+                0.25,
+                0.25,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "combat": {
+              "Cost": 36,
+              "magnification": 30,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "Water",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 4,
+              "breakDamageValue": 12
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              3
+            ]
+          },
+          {
+            "id": 485721,
+            "source": 250150,
+            "name": "Waterga Surge",
+            "originalName": "Waterga",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 44,
+              "accuracy": 100,
+              "belongCommandList": [
+                1
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                901,
+                -1
+              ],
+              "skillIdAfterModeChange": 255110,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Single"
+            },
+            "adjusted": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                327
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                327,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Group"
+            },
+            "combat": {
+              "Cost": 30,
+              "magnification": 30,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "Water",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 3,
+              "breakDamageValue": 21
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              9
+            ]
           }
         ],
         "masteryStats": [
@@ -10823,7 +11586,76 @@
         "sha256": "ce0cdfa15d5ed9844c4db434d862741f73c2d986be92e79bf843228a2cb877f8",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "folka",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "ActiveSkill",
+          "oldId": 400680,
+          "oldSource": 400680,
+          "protectedOwners": [
+            {
+              "vision": 13045,
+              "rank": 5
+            }
+          ],
+          "source": 571450,
+          "newGrant": [
+            "ActiveSkill",
+            485718,
+            -1
+          ]
+        },
+        {
+          "preset": "folka",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1445,
+          "oldSource": 1445,
+          "protectedOwners": [
+            {
+              "vision": 13027,
+              "rank": 3
+            }
+          ],
+          "source": 1535,
+          "equipment": [
+            {
+              "id": 10508,
+              "name": "\u5f8c\u7a0b\u30d1\u30c3\u30b7\u30d6\u4ed8\u4e0e3"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1535,
+            -1
+          ]
+        },
+        {
+          "preset": "folka",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "ActiveSkill",
+          "oldId": 400360,
+          "oldSource": 400360,
+          "protectedOwners": [
+            {
+              "vision": 13127,
+              "rank": 9
+            }
+          ],
+          "source": 250150,
+          "newGrant": [
+            "ActiveSkill",
+            485721,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "fryevia",
@@ -11206,6 +12038,68 @@
               "selfSkillActivateVoiceLabel": "None",
               "element": "Ice"
             }
+          },
+          "485824": {
+            "from": 501300,
+            "visuals": 501300,
+            "jp": "Sephira_fryevia_Kit_8",
+            "en": "Frost Dance",
+            "desc": "Ice physical damage; power 28. Single enemies; MP 24; hits 4; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 24,
+              "accuracy": 100,
+              "belongCommandList": [
+                328
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                328,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Ice",
+              "TargetType": "Single",
+              "hitCount": 4,
+              "magnification": 28,
+              "hitDamageRatioList": [
+                0.25,
+                0.25,
+                0.25,
+                0.25,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
           }
         },
         "ffbeMap": {
@@ -11213,7 +12107,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -11329,7 +12223,7 @@
           [
             [
               "PassiveSkill",
-              1344,
+              1522,
               -1
             ]
           ],
@@ -11357,7 +12251,7 @@
           [
             [
               "ActiveSkill",
-              400350,
+              485824,
               -1
             ]
           ],
@@ -11444,6 +12338,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1522": {
+            "name": "Imbue Ice",
+            "desc": "Add ice to non-elemental standard attacks and battle skills."
+          }
         }
       },
       "balance": {
@@ -12254,6 +13154,138 @@
               "awakening",
               0
             ]
+          },
+          {
+            "id": 485824,
+            "source": 501300,
+            "name": "Frost Dance",
+            "originalName": "Slash",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "None",
+              "TargetType": "Single",
+              "hitCount": 1,
+              "magnification": 12,
+              "hitDamageRatioList": [
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "adjusted": {
+              "Cost": 24,
+              "accuracy": 100,
+              "belongCommandList": [
+                328
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                328,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Ice",
+              "TargetType": "Single",
+              "hitCount": 4,
+              "magnification": 28,
+              "hitDamageRatioList": [
+                0.25,
+                0.25,
+                0.25,
+                0.25,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "combat": {
+              "Cost": 24,
+              "magnification": 28,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Ice",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 4,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              5
+            ]
           }
         ],
         "masteryStats": [
@@ -12297,6 +13329,63 @@
       },
       "masteryFillers": [
         485842
+      ],
+      "rewardReplacements": [
+        {
+          "preset": "fryevia",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1344,
+          "oldSource": 1344,
+          "protectedOwners": [
+            {
+              "vision": 13060,
+              "rank": 9
+            }
+          ],
+          "source": 1522,
+          "equipment": [
+            {
+              "id": 10106,
+              "name": "\u30a2\u30a4\u30b9\u30d6\u30e9\u30f3\u30c9"
+            },
+            {
+              "id": 10706,
+              "name": "\u30b3\u30ad\u30e5\u30fc\u30c8\u30b9"
+            },
+            {
+              "id": 12079,
+              "name": "\u6c37\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1522,
+            -1
+          ]
+        },
+        {
+          "preset": "fryevia",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "ActiveSkill",
+          "oldId": 400350,
+          "oldSource": 400350,
+          "protectedOwners": [
+            {
+              "vision": 13033,
+              "rank": 5
+            }
+          ],
+          "source": 501300,
+          "newGrant": [
+            "ActiveSkill",
+            485824,
+            -1
+          ]
+        }
       ]
     },
     {
@@ -12964,7 +14053,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -14612,7 +15701,8 @@
         "sha256": "8fbb6ad9c8c3f194f8aea49e2b778f2d6d3a83326229a0d73d08de11fa2e8ec3",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "lila",
@@ -14858,7 +15948,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -15619,7 +16709,8 @@
         "sha256": "bab5c62752ce64644743eefc67aec79ac164d59d3b79afc958ab13a864feb00f",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "mystea",
@@ -15668,31 +16759,6 @@
             "descAuto": false,
             "set": {
               "Cost": 40,
-              "accuracy": 100,
-              "belongCommandList": [
-                331
-              ],
-              "commandIdBelongDebuggingAllSkills": [
-                331,
-                -1
-              ],
-              "skillIdAfterModeChange": -1,
-              "isApplyAllMag": false,
-              "playSequencerId": -1,
-              "sequencerIdWhenTargetFriendlies": -1,
-              "voiceLabel": "None",
-              "selfSkillActivateVoiceLabel": "None"
-            }
-          },
-          "486106": {
-            "from": 400790,
-            "visuals": 400630,
-            "jp": "Sephira_mystea_Kit_2",
-            "en": "Moiety Mirror",
-            "desc": "Choose a physical and magic counter; reduce incoming damage this turn. Self friendlies; MP 30; hits 1; accuracy 100; stagger 0.",
-            "descAuto": false,
-            "set": {
-              "Cost": 30,
               "accuracy": 100,
               "belongCommandList": [
                 331
@@ -16046,7 +17112,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -16176,7 +17242,7 @@
           [
             [
               "PassiveSkill",
-              1395,
+              1530,
               -1
             ]
           ],
@@ -16203,8 +17269,8 @@
           ],
           [
             [
-              "ActiveSkill",
-              486106,
+              "PassiveSkill",
+              1274,
               -1
             ]
           ],
@@ -16218,7 +17284,7 @@
           [
             [
               "PassiveSkill",
-              1402,
+              1513,
               -1
             ],
             [
@@ -16275,6 +17341,20 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1530": {
+            "name": "Magic Evasion +20%",
+            "desc": "Evade magic attacks with a 20% chance."
+          },
+          "1274": {
+            "name": "Physical Defense +30%",
+            "desc": "Reduce physical damage taken by 30%."
+          },
+          "1513": {
+            "name": "Damage Reduction +20%",
+            "desc": "Reduce physical and magic damage taken by 20%."
+          }
         }
       },
       "balance": {
@@ -16284,8 +17364,8 @@
         "activeCount": 15,
         "passiveCount": 5,
         "kitCount": 20,
-        "mrActiveCount": 1,
-        "mrPassiveCount": 4,
+        "mrActiveCount": 0,
+        "mrPassiveCount": 5,
         "mrSkillCount": 5,
         "totalSkillCount": 25,
         "previousCount": 12,
@@ -16353,68 +17433,6 @@
             "unlock": [
               "awakening",
               2
-            ]
-          },
-          {
-            "id": 486106,
-            "source": 400790,
-            "name": "Moiety Mirror",
-            "originalName": "Moiety\u2019s Mirror",
-            "sourceCategory": "native",
-            "original": {
-              "Cost": 0,
-              "accuracy": 100,
-              "belongCommandList": [
-                1
-              ],
-              "commandIdBelongDebuggingAllSkills": [
-                900,
-                -1
-              ],
-              "skillIdAfterModeChange": -1,
-              "isApplyAllMag": false,
-              "playSequencerId": -1,
-              "sequencerIdWhenTargetFriendlies": -1,
-              "voiceLabel": "None",
-              "selfSkillActivateVoiceLabel": "None"
-            },
-            "adjusted": {
-              "Cost": 30,
-              "accuracy": 100,
-              "belongCommandList": [
-                331
-              ],
-              "commandIdBelongDebuggingAllSkills": [
-                331,
-                -1
-              ],
-              "skillIdAfterModeChange": -1,
-              "isApplyAllMag": false,
-              "playSequencerId": -1,
-              "sequencerIdWhenTargetFriendlies": -1,
-              "voiceLabel": "None",
-              "selfSkillActivateVoiceLabel": "None"
-            },
-            "combat": {
-              "Cost": 30,
-              "magnification": 0,
-              "DamageType": "None",
-              "damageCalcType": "None",
-              "element": "None",
-              "TargetType": "Self",
-              "defaultTargetRelation": "Friendlies",
-              "parameterVariationType": "Increase",
-              "hitCount": 1,
-              "breakDamageValue": 0
-            },
-            "effects": [
-              30022,
-              30023,
-              16143
-            ],
-            "unlock": [
-              "synchro",
-              7
             ]
           },
           {
@@ -17197,7 +18215,114 @@
         "sha256": "93e4d2dc35a032465a3f18fc2f1d37857a6797281dfa119983998e0502eb3483",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "mystea",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1395,
+          "oldSource": 1395,
+          "protectedOwners": [
+            {
+              "vision": 13060,
+              "rank": 1
+            }
+          ],
+          "source": 1530,
+          "equipment": [
+            {
+              "id": 10897,
+              "name": "\u30a6\u30a3\u30b6\u30fc\u30c9\u30ed\u30c3\u30c9\u30fb\u6539"
+            },
+            {
+              "id": 10899,
+              "name": "\u30a6\u30a3\u30b6\u30fc\u30c9\u30ed\u30c3\u30c9"
+            },
+            {
+              "id": 12026,
+              "name": "\u305d\u3088\u98a8\u306e\u30de\u30f3\u30c8"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1530,
+            -1
+          ]
+        },
+        {
+          "preset": "mystea",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "ActiveSkill",
+          "oldId": 486106,
+          "oldSource": 400790,
+          "protectedOwners": [
+            {
+              "vision": 13113,
+              "rank": 7
+            }
+          ],
+          "source": 1274,
+          "equipment": [],
+          "enemies": [
+            {
+              "id": 440,
+              "name": "\u30ea\u30af\u30a4\u30c9\u30b5\u30f3\u30c0\u30fc"
+            },
+            {
+              "id": 603,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff11\u7b2c\u4e00\u5f62\u614b"
+            },
+            {
+              "id": 604,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff11\u7b2c\u4e8c\u5f62\u614b"
+            },
+            {
+              "id": 843,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff11\u6539\u7b2c\u4e00\u5f62\u614b"
+            },
+            {
+              "id": 844,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff11\u6539\u7b2c\u4e8c\u5f62\u614b"
+            }
+          ],
+          "newGrant": [
+            "PassiveSkill",
+            1274,
+            -1
+          ]
+        },
+        {
+          "preset": "mystea",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "PassiveSkill",
+          "oldId": 1402,
+          "oldSource": 1402,
+          "protectedOwners": [
+            {
+              "vision": 13060,
+              "rank": 7
+            }
+          ],
+          "source": 1513,
+          "equipment": [
+            {
+              "id": 10190,
+              "name": "\u30a2\u30a4\u30ea\u30fc\u30f3\u88c5\u5099\u30ec\u30a4\u30f3"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1513,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "reberta",
@@ -17437,6 +18562,32 @@
               "selfSkillActivateVoiceLabel": "None",
               "magnification": 40
             }
+          },
+          "486215": {
+            "from": 500130,
+            "visuals": 500130,
+            "jp": "Sephira_reberta_Kit_5",
+            "en": "Dragoon Cleave",
+            "desc": "Non-elemental physical damage; power 22. Single enemies; MP 16; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 16,
+              "accuracy": 100,
+              "belongCommandList": [
+                332
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                332,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 22
+            }
           }
         },
         "ffbeMap": {
@@ -17444,7 +18595,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -17589,7 +18740,7 @@
           [
             [
               "ActiveSkill",
-              400210,
+              486215,
               -1
             ]
           ],
@@ -17631,7 +18782,7 @@
           [
             [
               "PassiveSkill",
-              1437,
+              1507,
               -1
             ],
             [
@@ -17688,6 +18839,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1507": {
+            "name": "Opening Honed Senses",
+            "desc": "Begin battle with Honed Senses for 5 turns."
+          }
         }
       },
       "balance": {
@@ -18172,6 +19329,66 @@
               "awakening",
               2
             ]
+          },
+          {
+            "id": 486215,
+            "source": 500130,
+            "name": "Dragoon Cleave",
+            "originalName": "Rake",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 12
+            },
+            "adjusted": {
+              "Cost": 16,
+              "accuracy": 100,
+              "belongCommandList": [
+                332
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                332,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 22
+            },
+            "combat": {
+              "Cost": 16,
+              "magnification": 22,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              3
+            ]
           }
         ],
         "masteryStats": [
@@ -18213,7 +19430,56 @@
         "sha256": "d2dd3833fb6339d9e52c59515173b01ec39fca0972c67753ed777fac11d05d32",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "reberta",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "ActiveSkill",
+          "oldId": 400210,
+          "oldSource": 400210,
+          "protectedOwners": [
+            {
+              "vision": 13080,
+              "rank": 3
+            }
+          ],
+          "source": 500130,
+          "newGrant": [
+            "ActiveSkill",
+            486215,
+            -1
+          ]
+        },
+        {
+          "preset": "reberta",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "PassiveSkill",
+          "oldId": 1437,
+          "oldSource": 1437,
+          "protectedOwners": [
+            {
+              "vision": 13125,
+              "rank": 3
+            }
+          ],
+          "source": 1507,
+          "equipment": [
+            {
+              "id": 10290,
+              "name": "\u30a2\u30a4\u30ea\u30fc\u30f3\u88c5\u5099\u30e9\u30b9\u30a6\u30a7\u30eb\u6226"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1507,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "snow_white",
@@ -18675,7 +19941,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -19918,7 +21184,8 @@
         "sha256": "64ac0dc9da613e8f3d3b6f50ffc69a881fedf207100dc2227388af5ba4515c52",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "aria",
@@ -20234,6 +21501,84 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "486421": {
+            "from": 503970,
+            "visuals": 400630,
+            "jp": "Sephira_aria_Kit_7",
+            "en": "Aether Current",
+            "desc": "Drain MP; power 6. Apply MP drain (100% of damage). Single enemies; MP 8; hits 1; accuracy 100; stagger 20.",
+            "descAuto": false,
+            "set": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486424": {
+            "from": 250130,
+            "visuals": 250130,
+            "jp": "Sephira_aria_Kit_8",
+            "en": "Waterdrop",
+            "desc": "Water magic damage; power 14. Single enemies; MP 6; hits 1; accuracy 100; stagger 17.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Water"
+            }
+          },
+          "486427": {
+            "from": 570620,
+            "visuals": 210010,
+            "jp": "Sephira_aria_Kit_9",
+            "en": "Soothing Current",
+            "desc": "Restore 200 HP. Single friendlies; MP 14; hits 1; accuracy 100; stagger 0.",
+            "descAuto": false,
+            "set": {
+              "Cost": 14,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies"
+            }
           }
         },
         "ffbeMap": {
@@ -20241,7 +21586,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -20352,7 +21697,7 @@
             ],
             [
               "PassiveSkill",
-              1401,
+              1527,
               -1
             ],
             [
@@ -20367,7 +21712,7 @@
           [
             [
               "PassiveSkill",
-              1282,
+              1519,
               -1
             ]
           ],
@@ -20380,8 +21725,8 @@
           ],
           [
             [
-              "PassiveSkill",
-              1356,
+              "ActiveSkill",
+              486421,
               -1
             ]
           ],
@@ -20395,7 +21740,7 @@
           [
             [
               "ActiveSkill",
-              400550,
+              486424,
               -1
             ]
           ],
@@ -20422,8 +21767,8 @@
           ],
           [
             [
-              "PassiveSkill",
-              1305,
+              "ActiveSkill",
+              486427,
               -1
             ],
             [
@@ -20478,6 +21823,16 @@
           "location": "mitra_shop",
           "random": false,
           "hideSpoilers": true
+        },
+        "sephiraPassiveText": {
+          "1527": {
+            "name": "Imbue Light",
+            "desc": "Add light to non-elemental standard attacks and battle skills."
+          },
+          "1519": {
+            "name": "Steady Focus",
+            "desc": "Increase damage and stagger power by 8% while HP is at least 25%."
+          }
         }
       },
       "balance": {
@@ -20487,8 +21842,8 @@
         "activeCount": 18,
         "passiveCount": 4,
         "kitCount": 22,
-        "mrActiveCount": 1,
-        "mrPassiveCount": 4,
+        "mrActiveCount": 3,
+        "mrPassiveCount": 2,
         "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 14,
@@ -21148,6 +22503,188 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 486421,
+            "source": 503970,
+            "name": "Aether Current",
+            "originalName": "(\u30dc\u30b9\u30ab\u30a6\u30f3\u30bf\u30fc\u7528)\u30a2\u30b9\u30d4\u30eb",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 8,
+              "magnification": 6,
+              "DamageType": "Magic",
+              "damageCalcType": "MPAbsorb",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 20
+            },
+            "effects": [
+              1343
+            ],
+            "unlock": [
+              "synchro",
+              3
+            ]
+          },
+          {
+            "id": 486424,
+            "source": 250130,
+            "name": "Waterdrop",
+            "originalName": "Water",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 5,
+              "accuracy": 100,
+              "belongCommandList": [
+                1
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                901,
+                -1
+              ],
+              "skillIdAfterModeChange": 255090,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Water"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Water"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 14,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "Water",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 17
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              5
+            ]
+          },
+          {
+            "id": 486427,
+            "source": 570620,
+            "name": "Soothing Current",
+            "originalName": "Regurgitate",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 500,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies"
+            },
+            "adjusted": {
+              "Cost": 14,
+              "accuracy": 100,
+              "belongCommandList": [
+                334
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                334,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies"
+            },
+            "combat": {
+              "Cost": 14,
+              "magnification": 200,
+              "DamageType": "None",
+              "damageCalcType": "Fixed",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies",
+              "parameterVariationType": "Increase",
+              "hitCount": 1,
+              "breakDamageValue": 0
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              9
+            ]
           }
         ],
         "masteryStats": [
@@ -21189,7 +22726,127 @@
         "sha256": "0568f66d46df89606a85dcf6522efac436de98b70f4f4c29803c9db61150cc37",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "aria",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1401,
+          "oldSource": 1401,
+          "protectedOwners": [
+            {
+              "vision": 13051,
+              "rank": 1
+            }
+          ],
+          "source": 1527,
+          "equipment": [
+            {
+              "id": 10196,
+              "name": "\u30e9\u30a4\u30c8\u30d6\u30ea\u30f3\u30ac\u30fc"
+            },
+            {
+              "id": 12084,
+              "name": "\u5149\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1527,
+            -1
+          ]
+        },
+        {
+          "preset": "aria",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1282,
+          "oldSource": 1282,
+          "protectedOwners": [
+            {
+              "vision": 13045,
+              "rank": 3
+            }
+          ],
+          "source": 1519,
+          "equipment": [
+            {
+              "id": 12095,
+              "name": "\u30a2\u30eb\u30c6\u30de\u30ea\u30a2\u30af\u30bf\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1519,
+            -1
+          ]
+        },
+        {
+          "preset": "aria",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1356,
+          "oldSource": 1356,
+          "protectedOwners": [
+            {
+              "vision": 13033,
+              "rank": 1
+            }
+          ],
+          "source": 503970,
+          "newGrant": [
+            "ActiveSkill",
+            486421,
+            -1
+          ]
+        },
+        {
+          "preset": "aria",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "ActiveSkill",
+          "oldId": 400550,
+          "oldSource": 400550,
+          "protectedOwners": [
+            {
+              "vision": 13045,
+              "rank": 1
+            }
+          ],
+          "source": 250130,
+          "newGrant": [
+            "ActiveSkill",
+            486424,
+            -1
+          ]
+        },
+        {
+          "preset": "aria",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "PassiveSkill",
+          "oldId": 1305,
+          "oldSource": 1305,
+          "protectedOwners": [
+            {
+              "vision": 13045,
+              "rank": 9
+            }
+          ],
+          "source": 570620,
+          "newGrant": [
+            "ActiveSkill",
+            486427,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "eiko",
@@ -21485,7 +23142,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -21634,7 +23291,7 @@
           [
             [
               "PassiveSkill",
-              1000,
+              1498,
               -1
             ]
           ],
@@ -21648,7 +23305,7 @@
           [
             [
               "PassiveSkill",
-              1047,
+              1373,
               -1
             ]
           ],
@@ -21721,6 +23378,16 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1498": {
+            "name": "Peaceful LB Engine",
+            "desc": "Fill the LB gauge by 10% when acting without dealing damage."
+          },
+          "1373": {
+            "name": "Weakness Stagger +40%",
+            "desc": "Increase stagger power by 40% when exploiting an elemental weakness."
+          }
         }
       },
       "balance": {
@@ -22360,7 +24027,67 @@
         "sha256": "faad10eeda9f145546d67d1df5ab9d0f20ec3268e43adecf6ad4a8859df4e885",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "eiko",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1000,
+          "oldSource": 1000,
+          "protectedOwners": [
+            {
+              "vision": 13108,
+              "rank": 5
+            }
+          ],
+          "source": 1498,
+          "equipment": [
+            {
+              "id": 10597,
+              "name": "\u30e9\u30b9\u30c8\u30ea\u30be\u30fc\u30c8\u30fb\u6539"
+            },
+            {
+              "id": 10599,
+              "name": "\u30e9\u30b9\u30c8\u30ea\u30be\u30fc\u30c8"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1498,
+            -1
+          ]
+        },
+        {
+          "preset": "eiko",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1047,
+          "oldSource": 1047,
+          "protectedOwners": [
+            {
+              "vision": 13108,
+              "rank": 9
+            }
+          ],
+          "source": 1373,
+          "equipment": [
+            {
+              "id": 10495,
+              "name": "\u30d1\u30a4\u30eb\u30d0\u30f3\u30ab\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1373,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "alice",
@@ -22802,7 +24529,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -22896,7 +24623,7 @@
             ],
             [
               "PassiveSkill",
-              1480,
+              1481,
               -1
             ],
             [
@@ -22945,7 +24672,7 @@
           [
             [
               "PassiveSkill",
-              1330,
+              1531,
               -1
             ]
           ],
@@ -23035,6 +24762,16 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1481": {
+            "name": "Critical Rate +30%",
+            "desc": "Increase critical hit rate by 30%."
+          },
+          "1531": {
+            "name": "Physical Evasion +15%",
+            "desc": "Evade physical attacks with a 15% chance."
+          }
         }
       },
       "balance": {
@@ -23050,7 +24787,7 @@
         "totalSkillCount": 25,
         "previousCount": 12,
         "additionalPassives": [
-          1480,
+          1481,
           1324
         ],
         "playerCopies": [
@@ -24016,7 +25753,79 @@
         "sha256": "852c433596c252e225c92105d5432ebc6c89bd05a809e8292d54d792a32a2943",
         "source": "JP"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "alice",
+          "field": "awakening",
+          "rank": 2,
+          "oldKind": "PassiveSkill",
+          "oldId": 1480,
+          "oldSource": 1480,
+          "protectedOwners": [
+            {
+              "vision": 13113,
+              "rank": 3
+            }
+          ],
+          "source": 1481,
+          "equipment": [
+            {
+              "id": 12071,
+              "name": "\u30b9\u30ca\u30a4\u30d1\u30fc\u30a2\u30a4"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1481,
+            -1
+          ]
+        },
+        {
+          "preset": "alice",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1330,
+          "oldSource": 1330,
+          "protectedOwners": [
+            {
+              "vision": 13060,
+              "rank": 3
+            }
+          ],
+          "source": 1531,
+          "equipment": [
+            {
+              "id": 11023,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff11"
+            },
+            {
+              "id": 11024,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff12"
+            },
+            {
+              "id": 11025,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff13"
+            },
+            {
+              "id": 11026,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff14"
+            },
+            {
+              "id": 11027,
+              "name": "\u7269\u7406\u56de\u907f\u8efd\u93a7\uff15"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1531,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "mog",
@@ -24266,7 +26075,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -24410,7 +26219,7 @@
           [
             [
               "PassiveSkill",
-              1004,
+              1511,
               -1
             ]
           ],
@@ -24499,6 +26308,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1511": {
+            "name": "Opening Good Luck",
+            "desc": "Begin battle with 8 stacks of Good Luck."
+          }
         }
       },
       "balance": {
@@ -24515,7 +26330,7 @@
         "previousCount": 14,
         "additionalPassives": [
           1052,
-          1004,
+          1511,
           1477
         ],
         "playerCopies": [
@@ -25039,7 +26854,36 @@
         "sha256": "8792e512faf0883b717965ec556ab82d751e7d8dc9817b499d1fa7f98dfd4d45",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "mog",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1004,
+          "oldSource": 1004,
+          "protectedOwners": [
+            {
+              "vision": 13080,
+              "rank": 5
+            }
+          ],
+          "source": 1511,
+          "equipment": [
+            {
+              "id": 10790,
+              "name": "\u30a2\u30a4\u30ea\u30fc\u30f3\u88c5\u5099\u30b8\u30a7\u30a4\u30af"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1511,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "lilith",
@@ -25420,7 +27264,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -26469,7 +28313,8 @@
         "sha256": "4f0085f2a226f3c51a4458d53fd9a115c829d99362c2f3d36f200d0022db0475",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "freya",
@@ -26821,6 +28666,32 @@
               "DamageType": "Physic",
               "damageCalcType": "Physic"
             }
+          },
+          "486921": {
+            "from": 503690,
+            "visuals": 400630,
+            "jp": "Sephira_freya_Kit_7",
+            "en": "Mana Lance",
+            "desc": "Drain MP; power 10. Apply MP drain (100% of damage). Single enemies; MP 12; hits 1; accuracy 100; stagger 20.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                339
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                339,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 10
+            }
           }
         },
         "ffbeMap": {
@@ -26828,7 +28699,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -26939,7 +28810,7 @@
             ],
             [
               "PassiveSkill",
-              1334,
+              1529,
               -1
             ]
           ]
@@ -26949,7 +28820,7 @@
           [
             [
               "PassiveSkill",
-              1394,
+              1516,
               -1
             ]
           ],
@@ -26963,7 +28834,7 @@
           [
             [
               "ActiveSkill",
-              400280,
+              486921,
               -1
             ]
           ],
@@ -26991,7 +28862,7 @@
           [
             [
               "PassiveSkill",
-              1438,
+              1497,
               -1
             ]
           ],
@@ -27005,7 +28876,7 @@
           [
             [
               "PassiveSkill",
-              1340,
+              1539,
               -1
             ],
             [
@@ -27064,6 +28935,24 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1529": {
+            "name": "Physical Evasion +20%",
+            "desc": "Evade physical attacks with a 20% chance."
+          },
+          "1516": {
+            "name": "Full-HP Focus",
+            "desc": "Increase damage and stagger power by 8% while HP is full."
+          },
+          "1497": {
+            "name": "Critical Stagger +30%",
+            "desc": "Increase stagger power by 30% on critical hits."
+          },
+          "1539": {
+            "name": "Critical Focus",
+            "desc": "Increase critical damage and stagger power by 15%."
+          }
         }
       },
       "balance": {
@@ -27079,7 +28968,7 @@
         "totalSkillCount": 26,
         "previousCount": 12,
         "additionalPassives": [
-          1334,
+          1529,
           1349
         ],
         "playerCopies": [
@@ -27808,6 +29697,68 @@
               "awakening",
               2
             ]
+          },
+          {
+            "id": 486921,
+            "source": 503690,
+            "name": "Mana Lance",
+            "originalName": "Giga-Syphon",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 30
+            },
+            "adjusted": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                339
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                339,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 10
+            },
+            "combat": {
+              "Cost": 12,
+              "magnification": 10,
+              "DamageType": "Magic",
+              "damageCalcType": "MPAbsorb",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 20
+            },
+            "effects": [
+              1343
+            ],
+            "unlock": [
+              "synchro",
+              3
+            ]
           }
         ],
         "masteryStats": [
@@ -27849,7 +29800,149 @@
         "sha256": "6768c6263a9d1a079cf2faee3af96911ad486f4d02319ce0d41f111188c2ee45",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "freya",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1334,
+          "oldSource": 1334,
+          "protectedOwners": [
+            {
+              "vision": 13033,
+              "rank": 9
+            }
+          ],
+          "source": 1529,
+          "equipment": [
+            {
+              "id": 10297,
+              "name": "\u4f50\u52a9\u306e\u5200\u30fb\u6539"
+            },
+            {
+              "id": 10299,
+              "name": "\u4f50\u52a9\u306e\u5200"
+            },
+            {
+              "id": 12025,
+              "name": "\u898b\u5207\u308a\u306e\u6570\u73e0"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1529,
+            -1
+          ]
+        },
+        {
+          "preset": "freya",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1394,
+          "oldSource": 1394,
+          "protectedOwners": [
+            {
+              "vision": 13033,
+              "rank": 3
+            }
+          ],
+          "source": 1516,
+          "equipment": [
+            {
+              "id": 12095,
+              "name": "\u30a2\u30eb\u30c6\u30de\u30ea\u30a2\u30af\u30bf\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1516,
+            -1
+          ]
+        },
+        {
+          "preset": "freya",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "ActiveSkill",
+          "oldId": 400280,
+          "oldSource": 400280,
+          "protectedOwners": [
+            {
+              "vision": 13060,
+              "rank": 5
+            }
+          ],
+          "source": 503690,
+          "newGrant": [
+            "ActiveSkill",
+            486921,
+            -1
+          ]
+        },
+        {
+          "preset": "freya",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1438,
+          "oldSource": 1438,
+          "protectedOwners": [
+            {
+              "vision": 13125,
+              "rank": 7
+            }
+          ],
+          "source": 1497,
+          "equipment": [
+            {
+              "id": 10496,
+              "name": "\u30c8\u30fc\u30eb\u30cf\u30f3\u30de\u30fc\u30fb\u6539"
+            },
+            {
+              "id": 10498,
+              "name": "\u30c8\u30fc\u30eb\u30cf\u30f3\u30de\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1497,
+            -1
+          ]
+        },
+        {
+          "preset": "freya",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "PassiveSkill",
+          "oldId": 1340,
+          "oldSource": 1340,
+          "protectedOwners": [
+            {
+              "vision": 13017,
+              "rank": 9
+            }
+          ],
+          "source": 1539,
+          "equipment": [
+            {
+              "id": 11396,
+              "name": "\u6e90\u6c0f\u306e\u93a7"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1539,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "trance_terra",
@@ -28021,7 +30114,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -28132,7 +30225,7 @@
             ],
             [
               "PassiveSkill",
-              1430,
+              1532,
               -1
             ]
           ]
@@ -28255,6 +30348,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1532": {
+            "name": "Fire Damage +20%",
+            "desc": "Increase fire damage by 20%."
+          }
         }
       },
       "balance": {
@@ -28270,7 +30369,7 @@
         "totalSkillCount": 26,
         "previousCount": 15,
         "additionalPassives": [
-          1430,
+          1532,
           1065
         ],
         "playerCopies": [
@@ -28606,7 +30705,36 @@
         "sha256": "90d07946ae04acb2715a74e2208bc31e5b3249fd4972b8505e3d26b1c4f52579",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "trance_terra",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1430,
+          "oldSource": 1430,
+          "protectedOwners": [
+            {
+              "vision": 13108,
+              "rank": 1
+            }
+          ],
+          "source": 1532,
+          "equipment": [
+            {
+              "id": 10105,
+              "name": "\u5f8c\u7a0b\u30d1\u30c3\u30b7\u30d6\u4ed8\u4e0e1"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1532,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "ariana",
@@ -28920,6 +31048,31 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "487221": {
+            "from": 503770,
+            "visuals": 400630,
+            "jp": "Sephira_ariana_Kit_7",
+            "en": "Dazzling Refrain",
+            "desc": "Non-elemental magic damage; power 24. Apply Confusion (50%), Charme (50%), Silence (50%), Blind (50%). Group enemies; MP 30; hits 1; accuracy 100; stagger 20.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                342
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                342,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
           }
         },
         "ffbeMap": {
@@ -28927,7 +31080,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -29043,7 +31196,7 @@
             ],
             [
               "PassiveSkill",
-              1391,
+              1515,
               -1
             ]
           ]
@@ -29081,7 +31234,7 @@
           [
             [
               "PassiveSkill",
-              1392,
+              1499,
               -1
             ]
           ],
@@ -29095,7 +31248,7 @@
           [
             [
               "ActiveSkill",
-              400540,
+              487221,
               -1
             ]
           ],
@@ -29109,7 +31262,7 @@
           [
             [
               "PassiveSkill",
-              1464,
+              1518,
               -1
             ],
             [
@@ -29166,6 +31319,20 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1515": {
+            "name": "Opening Sage Eye",
+            "desc": "Increase elemental-weakness stagger power by 50% for the first 4 turns."
+          },
+          "1499": {
+            "name": "Growing Good Luck",
+            "desc": "Gain 1 stack of Good Luck when acting."
+          },
+          "1518": {
+            "name": "Resilient Focus",
+            "desc": "Increase damage and stagger power by 8% while HP is at least 50%."
+          }
         }
       },
       "balance": {
@@ -29832,6 +31999,69 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 487221,
+            "source": 503770,
+            "name": "Dazzling Refrain",
+            "originalName": "Alluring Pollen",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                342
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                342,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 30,
+              "magnification": 24,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "None",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 20
+            },
+            "effects": [
+              1317,
+              1319,
+              1315,
+              1313
+            ],
+            "unlock": [
+              "synchro",
+              7
+            ]
           }
         ],
         "masteryStats": [
@@ -29873,7 +32103,114 @@
         "sha256": "070d69846431acde6eff75626622435fac59099b250d66328f13e6a1b73ff75c",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "ariana",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1391,
+          "oldSource": 1391,
+          "protectedOwners": [
+            {
+              "vision": 13127,
+              "rank": 7
+            }
+          ],
+          "source": 1515,
+          "equipment": [
+            {
+              "id": 10890,
+              "name": "\u30a2\u30a4\u30ea\u30fc\u30f3\u88c5\u5099\u30b5\u30af\u30e9"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1515,
+            -1
+          ]
+        },
+        {
+          "preset": "ariana",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1392,
+          "oldSource": 1392,
+          "protectedOwners": [
+            {
+              "vision": 13080,
+              "rank": 7
+            }
+          ],
+          "source": 1499,
+          "equipment": [
+            {
+              "id": 10797,
+              "name": "\u30a2\u30eb\u30af\u30c8\u30a5\u30eb\u30b9\u30fb\u6539"
+            },
+            {
+              "id": 10799,
+              "name": "\u30a2\u30eb\u30af\u30c8\u30a5\u30eb\u30b9"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1499,
+            -1
+          ]
+        },
+        {
+          "preset": "ariana",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "ActiveSkill",
+          "oldId": 400540,
+          "oldSource": 400540,
+          "protectedOwners": [
+            {
+              "vision": 13051,
+              "rank": 3
+            }
+          ],
+          "source": 503770,
+          "newGrant": [
+            "ActiveSkill",
+            487221,
+            -1
+          ]
+        },
+        {
+          "preset": "ariana",
+          "field": "synchro",
+          "rank": 9,
+          "oldKind": "PassiveSkill",
+          "oldId": 1464,
+          "oldSource": 1464,
+          "protectedOwners": [
+            {
+              "vision": 13127,
+              "rank": 1
+            }
+          ],
+          "source": 1518,
+          "equipment": [
+            {
+              "id": 12095,
+              "name": "\u30a2\u30eb\u30c6\u30de\u30ea\u30a2\u30af\u30bf\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1518,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "elephim",
@@ -30197,7 +32534,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -31153,7 +33490,8 @@
         487327,
         487330,
         487333
-      ]
+      ],
+      "rewardReplacements": []
     },
     {
       "id": "jade",
@@ -31499,7 +33837,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -32476,7 +34814,8 @@
         "sha256": "35f43154ad1b695c99b33643d98d32f0cf3e3c89f5d0b36276e2c7550936ccce",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": []
     },
     {
       "id": "primm",
@@ -32746,6 +35085,34 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "487518": {
+            "from": 255000,
+            "visuals": 255000,
+            "jp": "Sephira_primm_Kit_6",
+            "en": "Blazing Saber",
+            "desc": "Fire physical damage; power 18. Group enemies; MP 14; hits 1; accuracy 100; stagger 12.",
+            "descAuto": false,
+            "set": {
+              "Cost": 14,
+              "accuracy": 100,
+              "belongCommandList": [
+                345
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                345,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "magnification": 18
+            }
           }
         },
         "ffbeMap": {
@@ -32753,7 +35120,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -32874,7 +35241,7 @@
           [
             [
               "PassiveSkill",
-              1310,
+              1521,
               -1
             ]
           ],
@@ -32902,7 +35269,7 @@
           [
             [
               "ActiveSkill",
-              400660,
+              487518,
               -1
             ]
           ],
@@ -32916,7 +35283,7 @@
           [
             [
               "PassiveSkill",
-              1370,
+              1525,
               -1
             ]
           ],
@@ -32990,6 +35357,16 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1521": {
+            "name": "Imbue Fire",
+            "desc": "Add fire to non-elemental standard attacks and battle skills."
+          },
+          "1525": {
+            "name": "Imbue Wind",
+            "desc": "Add wind to non-elemental standard attacks and battle skills."
+          }
         }
       },
       "balance": {
@@ -33542,6 +35919,70 @@
               "awakening",
               2
             ]
+          },
+          {
+            "id": 487518,
+            "source": 255000,
+            "name": "Blazing Saber",
+            "originalName": "Fire",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 5,
+              "accuracy": 100,
+              "belongCommandList": [
+                1
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                901,
+                -1
+              ],
+              "skillIdAfterModeChange": 250010,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "magnification": 12
+            },
+            "adjusted": {
+              "Cost": 14,
+              "accuracy": 100,
+              "belongCommandList": [
+                345
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                345,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "magnification": 18
+            },
+            "combat": {
+              "Cost": 14,
+              "magnification": 18,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Fire",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 12
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              5
+            ]
           }
         ],
         "masteryStats": [
@@ -33583,7 +36024,83 @@
         "sha256": "d16662043f0611685821643da65015064543d5adfa6f33ea622b4df372a43fe0",
         "source": "GLW"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "primm",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1310,
+          "oldSource": 1310,
+          "protectedOwners": [
+            {
+              "vision": 13127,
+              "rank": 5
+            }
+          ],
+          "source": 1521,
+          "equipment": [
+            {
+              "id": 12078,
+              "name": "\u706b\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1521,
+            -1
+          ]
+        },
+        {
+          "preset": "primm",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "ActiveSkill",
+          "oldId": 400660,
+          "oldSource": 400660,
+          "protectedOwners": [
+            {
+              "vision": 13108,
+              "rank": 3
+            }
+          ],
+          "source": 255000,
+          "newGrant": [
+            "ActiveSkill",
+            487518,
+            -1
+          ]
+        },
+        {
+          "preset": "primm",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1370,
+          "oldSource": 1370,
+          "protectedOwners": [
+            {
+              "vision": 13127,
+              "rank": 3
+            }
+          ],
+          "source": 1525,
+          "equipment": [
+            {
+              "id": 12082,
+              "name": "\u98a8\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1525,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "relm",
@@ -33923,6 +36440,59 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "487624": {
+            "from": 570630,
+            "visuals": 400630,
+            "jp": "Sephira_relm_Kit_8",
+            "en": "Aether Palette",
+            "desc": "Restore 30 MP. Single friendlies; MP 18; hits 1; accuracy 100; stagger 0.",
+            "descAuto": false,
+            "set": {
+              "Cost": 18,
+              "accuracy": 100,
+              "belongCommandList": [
+                346
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                346,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 30,
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies"
+            }
+          },
+          "487627": {
+            "from": 250110,
+            "visuals": 220100,
+            "jp": "Sephira_relm_Kit_9",
+            "en": "Storm Canvas",
+            "desc": "Thunder magic damage; power 30. Single enemies; MP 30; hits 3; accuracy 100; stagger 21.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                346
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                346,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
           }
         },
         "ffbeMap": {
@@ -33930,7 +36500,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -34050,8 +36620,8 @@
           [],
           [
             [
-              "PassiveSkill",
-              1328,
+              "ActiveSkill",
+              487624,
               -1
             ]
           ],
@@ -34079,7 +36649,7 @@
           [
             [
               "ActiveSkill",
-              400720,
+              487627,
               -1
             ]
           ],
@@ -34093,7 +36663,7 @@
           [
             [
               "PassiveSkill",
-              1332,
+              1500,
               -1
             ]
           ],
@@ -34166,6 +36736,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1500": {
+            "name": "Damage +30%",
+            "desc": "Increase damage dealt by 30%."
+          }
         }
       },
       "balance": {
@@ -34175,8 +36751,8 @@
         "activeCount": 16,
         "passiveCount": 5,
         "kitCount": 21,
-        "mrActiveCount": 2,
-        "mrPassiveCount": 3,
+        "mrActiveCount": 3,
+        "mrPassiveCount": 2,
         "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 12,
@@ -34890,6 +37466,128 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 487624,
+            "source": 570630,
+            "name": "Aether Palette",
+            "originalName": "Regurgitate",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 500,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 50,
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies"
+            },
+            "adjusted": {
+              "Cost": 18,
+              "accuracy": 100,
+              "belongCommandList": [
+                346
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                346,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 30,
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies"
+            },
+            "combat": {
+              "Cost": 18,
+              "magnification": 30,
+              "DamageType": "None",
+              "damageCalcType": "Fixed",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Friendlies",
+              "parameterVariationType": "Increase",
+              "hitCount": 1,
+              "breakDamageValue": 0
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              1
+            ]
+          },
+          {
+            "id": 487627,
+            "source": 250110,
+            "name": "Storm Canvas",
+            "originalName": "Thundaga",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 44,
+              "accuracy": 100,
+              "belongCommandList": [
+                1
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                901,
+                -1
+              ],
+              "skillIdAfterModeChange": 255080,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                346
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                346,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 30,
+              "magnification": 30,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "Thunder",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 3,
+              "breakDamageValue": 21
+            },
+            "effects": [],
+            "unlock": [
+              "synchro",
+              5
+            ]
           }
         ],
         "masteryStats": [
@@ -34931,7 +37629,76 @@
         "sha256": "5c2b6d5d50745aa02b194e9fc5e9f80dc506953fc65a8c34c22e9dd020b8ead1",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "relm",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1328,
+          "oldSource": 1328,
+          "protectedOwners": [
+            {
+              "vision": 13027,
+              "rank": 1
+            }
+          ],
+          "source": 570630,
+          "newGrant": [
+            "ActiveSkill",
+            487624,
+            -1
+          ]
+        },
+        {
+          "preset": "relm",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "ActiveSkill",
+          "oldId": 400720,
+          "oldSource": 400720,
+          "protectedOwners": [
+            {
+              "vision": 13027,
+              "rank": 5
+            }
+          ],
+          "source": 250110,
+          "newGrant": [
+            "ActiveSkill",
+            487627,
+            -1
+          ]
+        },
+        {
+          "preset": "relm",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1332,
+          "oldSource": 1332,
+          "protectedOwners": [
+            {
+              "vision": 13108,
+              "rank": 7
+            }
+          ],
+          "source": 1500,
+          "equipment": [
+            {
+              "id": 11329,
+              "name": "\u7d42\u7109\u306e\u93a7"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1500,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "rikku",
@@ -35256,7 +38023,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -35406,7 +38173,7 @@
           [
             [
               "PassiveSkill",
-              1044,
+              1009,
               -1
             ]
           ],
@@ -35505,6 +38272,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1009": {
+            "name": "Double EXP",
+            "desc": "Double EXP gained."
+          }
         }
       },
       "balance": {
@@ -35521,7 +38294,7 @@
         "previousCount": 16,
         "additionalPassives": [
           1055,
-          1044
+          1009
         ],
         "playerCopies": [
           {
@@ -36230,7 +39003,36 @@
         "sha256": "f776e4581bd235e29ca061273557ae38dc06036aa3c5667f498d35248b99cc34",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "rikku",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1044,
+          "oldSource": 1044,
+          "protectedOwners": [
+            {
+              "vision": 13045,
+              "rank": 7
+            }
+          ],
+          "source": 1009,
+          "equipment": [
+            {
+              "id": 12001,
+              "name": "\u719f\u7df4\u8005\u306e\u8155\u8f2a"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1009,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "nalu",
@@ -36542,7 +39344,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -36653,7 +39455,7 @@
             ],
             [
               "PassiveSkill",
-              1347,
+              1523,
               -1
             ]
           ]
@@ -36691,7 +39493,7 @@
           [
             [
               "PassiveSkill",
-              1400,
+              1537,
               -1
             ]
           ],
@@ -36705,7 +39507,7 @@
           [
             [
               "PassiveSkill",
-              1404,
+              1496,
               -1
             ]
           ],
@@ -36776,6 +39578,20 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1523": {
+            "name": "Imbue Lightning",
+            "desc": "Add lightning to non-elemental standard attacks and battle skills."
+          },
+          "1537": {
+            "name": "Lightning Damage +30%",
+            "desc": "Increase lightning damage by 30%."
+          },
+          "1496": {
+            "name": "Critical Damage +30%",
+            "desc": "Increase critical damage by 30%."
+          }
         }
       },
       "balance": {
@@ -36791,7 +39607,7 @@
         "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
-          1404,
+          1496,
           1028
         ],
         "playerCopies": [
@@ -37451,7 +40267,98 @@
         "sha256": "ea55081c95e0f5e0232422ce74b0686e7761d8dc3f244cd015162fa3e8b28675",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "nalu",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1347,
+          "oldSource": 1347,
+          "protectedOwners": [
+            {
+              "vision": 13125,
+              "rank": 9
+            }
+          ],
+          "source": 1523,
+          "equipment": [
+            {
+              "id": 10602,
+              "name": "\u96fb\u6483\u97ad"
+            },
+            {
+              "id": 12080,
+              "name": "\u96f7\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1523,
+            -1
+          ]
+        },
+        {
+          "preset": "nalu",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1400,
+          "oldSource": 1400,
+          "protectedOwners": [
+            {
+              "vision": 13125,
+              "rank": 5
+            }
+          ],
+          "source": 1537,
+          "equipment": [
+            {
+              "id": 10427,
+              "name": "\u30cb\u30e7\u30eb\u30cb\u30eb"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1537,
+            -1
+          ]
+        },
+        {
+          "preset": "nalu",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1404,
+          "oldSource": 1404,
+          "protectedOwners": [
+            {
+              "vision": 13080,
+              "rank": 9
+            }
+          ],
+          "source": 1496,
+          "equipment": [
+            {
+              "id": 10496,
+              "name": "\u30c8\u30fc\u30eb\u30cf\u30f3\u30de\u30fc\u30fb\u6539"
+            },
+            {
+              "id": 10498,
+              "name": "\u30c8\u30fc\u30eb\u30cf\u30f3\u30de\u30fc"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1496,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "elza",
@@ -37836,7 +40743,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -37947,7 +40854,7 @@
             ],
             [
               "PassiveSkill",
-              1350,
+              1528,
               -1
             ]
           ]
@@ -37957,7 +40864,7 @@
           [
             [
               "PassiveSkill",
-              1383,
+              1495,
               -1
             ]
           ],
@@ -37971,7 +40878,7 @@
           [
             [
               "PassiveSkill",
-              1389,
+              1506,
               -1
             ]
           ],
@@ -37985,7 +40892,7 @@
           [
             [
               "PassiveSkill",
-              1403,
+              1276,
               -1
             ]
           ],
@@ -38072,6 +40979,24 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1528": {
+            "name": "Imbue Dark",
+            "desc": "Add dark to non-elemental standard attacks and battle skills."
+          },
+          "1495": {
+            "name": "Damage +20%",
+            "desc": "Increase damage dealt by 20%."
+          },
+          "1506": {
+            "name": "Critical Rate +50%",
+            "desc": "Increase critical hit rate by 50%."
+          },
+          "1276": {
+            "name": "Magic Defense +30%",
+            "desc": "Reduce magic damage taken by 30%."
+          }
         }
       },
       "balance": {
@@ -38087,7 +41012,7 @@
         "totalSkillCount": 26,
         "previousCount": 15,
         "additionalPassives": [
-          1383,
+          1495,
           1398
         ],
         "playerCopies": [
@@ -38895,7 +41820,134 @@
         "sha256": "b1a4be9f34308d7dc1726ba06b13c6f18de1a7d6f0df8313605e1825b19feadc",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "elza",
+          "field": "awakening",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1350,
+          "oldSource": 1350,
+          "protectedOwners": [
+            {
+              "vision": 13113,
+              "rank": 9
+            }
+          ],
+          "source": 1528,
+          "equipment": [
+            {
+              "id": 12085,
+              "name": "\u95c7\u5c5e\u6027\u4ed8\u4e0e"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1528,
+            -1
+          ]
+        },
+        {
+          "preset": "elza",
+          "field": "synchro",
+          "rank": 1,
+          "oldKind": "PassiveSkill",
+          "oldId": 1383,
+          "oldSource": 1383,
+          "protectedOwners": [
+            {
+              "vision": 13080,
+              "rank": 1
+            }
+          ],
+          "source": 1495,
+          "equipment": [
+            {
+              "id": 11397,
+              "name": "\u30de\u30af\u30b7\u30df\u30ea\u30a2\u30f3\u30fb\u6539"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1495,
+            -1
+          ]
+        },
+        {
+          "preset": "elza",
+          "field": "synchro",
+          "rank": 3,
+          "oldKind": "PassiveSkill",
+          "oldId": 1389,
+          "oldSource": 1389,
+          "protectedOwners": [
+            {
+              "vision": 13033,
+              "rank": 7
+            }
+          ],
+          "source": 1506,
+          "equipment": [
+            {
+              "id": 12096,
+              "name": "\u6e90\u6c0f\u306e\u5c0f\u624b"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1506,
+            -1
+          ]
+        },
+        {
+          "preset": "elza",
+          "field": "synchro",
+          "rank": 5,
+          "oldKind": "PassiveSkill",
+          "oldId": 1403,
+          "oldSource": 1403,
+          "protectedOwners": [
+            {
+              "vision": 13017,
+              "rank": 7
+            }
+          ],
+          "source": 1276,
+          "equipment": [
+            {
+              "id": 10129,
+              "name": "\u7834\u9b54\u5263"
+            }
+          ],
+          "enemies": [
+            {
+              "id": 605,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff12\u7b2c\u4e00\u5f62\u614b"
+            },
+            {
+              "id": 606,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff12\u7b2c\u4e8c\u5f62\u614b"
+            },
+            {
+              "id": 845,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff12\u6539\u7b2c\u4e00\u5f62\u614b"
+            },
+            {
+              "id": 846,
+              "name": "\u30c0\u30d3\u30fc\u306e\u304a\u4f9b\uff12\u6539\u7b2c\u4e8c\u5f62\u614b"
+            }
+          ],
+          "newGrant": [
+            "PassiveSkill",
+            1276,
+            -1
+          ]
+        }
+      ]
     },
     {
       "id": "lunera",
@@ -39241,7 +42293,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 4,
+        "sephiraRecipe": 5,
         "awakening": [
           [
             [
@@ -39399,7 +42451,7 @@
           [
             [
               "PassiveSkill",
-              1341,
+              1051,
               -1
             ]
           ],
@@ -39470,6 +42522,12 @@
           "random": false,
           "hideSpoilers": true,
           "cave": null
+        },
+        "sephiraPassiveText": {
+          "1051": {
+            "name": "Double MRP",
+            "desc": "Double MRP gained."
+          }
         }
       },
       "balance": {
@@ -40213,7 +43271,36 @@
         "sha256": "255daab2f7fe66a6d685bbeb757d7314816fe5c9abfe6e991b83ac3a61796cbf",
         "source": "GL"
       },
-      "masteryFillers": []
+      "masteryFillers": [],
+      "rewardReplacements": [
+        {
+          "preset": "lunera",
+          "field": "synchro",
+          "rank": 7,
+          "oldKind": "PassiveSkill",
+          "oldId": 1341,
+          "oldSource": 1341,
+          "protectedOwners": [
+            {
+              "vision": 13027,
+              "rank": 9
+            }
+          ],
+          "source": 1051,
+          "equipment": [
+            {
+              "id": 12059,
+              "name": "\u8ffd\u52a0\u30a2\u30af\u30bb\u30b5\u30ea\uff11\uff10"
+            }
+          ],
+          "enemies": [],
+          "newGrant": [
+            "PassiveSkill",
+            1051,
+            -1
+          ]
+        }
+      ]
     }
   ],
   "nativeReservations": {
@@ -46345,5 +49432,574 @@
         9
       ]
     ]
-  }
+  },
+  "excludedVisionIds": [
+    13024,
+    13062,
+    13100,
+    13101,
+    13102,
+    13103,
+    13105,
+    13110,
+    13116,
+    13118,
+    13120,
+    13123,
+    13124,
+    13128,
+    13130
+  ],
+  "protectedMrRewards": [
+    {
+      "kind": "ActiveSkill",
+      "source": 400210,
+      "owners": [
+        {
+          "vision": 13080,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400280,
+      "owners": [
+        {
+          "vision": 13060,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400350,
+      "owners": [
+        {
+          "vision": 13033,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400360,
+      "owners": [
+        {
+          "vision": 13127,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400450,
+      "owners": [
+        {
+          "vision": 13017,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400500,
+      "owners": [
+        {
+          "vision": 13125,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400540,
+      "owners": [
+        {
+          "vision": 13051,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400550,
+      "owners": [
+        {
+          "vision": 13045,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400660,
+      "owners": [
+        {
+          "vision": 13108,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400680,
+      "owners": [
+        {
+          "vision": 13045,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400720,
+      "owners": [
+        {
+          "vision": 13027,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400740,
+      "owners": [
+        {
+          "vision": 13051,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "ActiveSkill",
+      "source": 400790,
+      "owners": [
+        {
+          "vision": 13113,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1000,
+      "owners": [
+        {
+          "vision": 13108,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1004,
+      "owners": [
+        {
+          "vision": 13080,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1044,
+      "owners": [
+        {
+          "vision": 13045,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1047,
+      "owners": [
+        {
+          "vision": 13108,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1282,
+      "owners": [
+        {
+          "vision": 13045,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1305,
+      "owners": [
+        {
+          "vision": 13045,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1310,
+      "owners": [
+        {
+          "vision": 13127,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1326,
+      "owners": [
+        {
+          "vision": 13017,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1328,
+      "owners": [
+        {
+          "vision": 13027,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1330,
+      "owners": [
+        {
+          "vision": 13060,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1332,
+      "owners": [
+        {
+          "vision": 13108,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1334,
+      "owners": [
+        {
+          "vision": 13033,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1340,
+      "owners": [
+        {
+          "vision": 13017,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1341,
+      "owners": [
+        {
+          "vision": 13027,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1344,
+      "owners": [
+        {
+          "vision": 13060,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1347,
+      "owners": [
+        {
+          "vision": 13125,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1350,
+      "owners": [
+        {
+          "vision": 13113,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1356,
+      "owners": [
+        {
+          "vision": 13033,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1370,
+      "owners": [
+        {
+          "vision": 13127,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1383,
+      "owners": [
+        {
+          "vision": 13080,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1389,
+      "owners": [
+        {
+          "vision": 13033,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1391,
+      "owners": [
+        {
+          "vision": 13127,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1392,
+      "owners": [
+        {
+          "vision": 13080,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1393,
+      "owners": [
+        {
+          "vision": 13051,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1394,
+      "owners": [
+        {
+          "vision": 13033,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1395,
+      "owners": [
+        {
+          "vision": 13060,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1396,
+      "owners": [
+        {
+          "vision": 13017,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1397,
+      "owners": [
+        {
+          "vision": 13051,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1400,
+      "owners": [
+        {
+          "vision": 13125,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1401,
+      "owners": [
+        {
+          "vision": 13051,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1402,
+      "owners": [
+        {
+          "vision": 13060,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1403,
+      "owners": [
+        {
+          "vision": 13017,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1404,
+      "owners": [
+        {
+          "vision": 13080,
+          "rank": 9
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1430,
+      "owners": [
+        {
+          "vision": 13108,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1437,
+      "owners": [
+        {
+          "vision": 13125,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1438,
+      "owners": [
+        {
+          "vision": 13125,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1445,
+      "owners": [
+        {
+          "vision": 13027,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1464,
+      "owners": [
+        {
+          "vision": 13127,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1480,
+      "owners": [
+        {
+          "vision": 13113,
+          "rank": 3
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1493,
+      "owners": [
+        {
+          "vision": 13113,
+          "rank": 1
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1494,
+      "owners": [
+        {
+          "vision": 13113,
+          "rank": 5
+        }
+      ]
+    },
+    {
+      "kind": "PassiveSkill",
+      "source": 1504,
+      "owners": [
+        {
+          "vision": 13027,
+          "rank": 7
+        }
+      ]
+    }
+  ]
 }

@@ -1004,6 +1004,15 @@ class AppState extends ChangeNotifier {
   bool get useAbilityChanges => (catalog?['abilityModes'] as Map?)?['useChanges'] == true;
   bool get useNativeSkillRepairs => (catalog?['abilityModes'] as Map?)?['useNativeRepairs'] == true;
   bool get useSephiraBorrowedVisuals => (catalog?['sephiraSettings'] as Map?)?['useBorrowedSkillVisuals'] != false;
+  bool get sephiraShopOverride => (catalog?['sephiraSettings'] as Map?)?['shopAcquisitionOverride'] == true;
+
+  Future<void> setSephiraShopOverride(bool enabled) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    final value = await api!.saveSephiraShopOverride(enabled: enabled, useBorrowedSkillVisuals: useSephiraBorrowedVisuals);
+    catalog = {...?catalog, 'sephiraSettings': value};
+    notifyListeners();
+  });
 
   Future<void> setSephiraBorrowedVisuals(bool enabled) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }

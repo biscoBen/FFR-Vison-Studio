@@ -575,8 +575,12 @@ def verify(root, tool, usmap):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
     import _ffr_sephira
-    units = _ffr_sephira.active_units(units)
     def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    # Recompute the same ephemeral visual/acquisition choices as the builder.
+    # Saved recipes deliberately retain borrowed donors and normal locations.
+    import _ffr_game_tables
+    units = _ffr_sephira.visual_units(_ffr_sephira.active_units(units), root,
+                                     _ffr_game_tables.reader(root, rows))
     operations = verification_operations(root, units, rows)
     plans = []
     if operations:

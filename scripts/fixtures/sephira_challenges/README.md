@@ -9,7 +9,7 @@ the prepared shrine-table ZIP SHA-256 is `a393967156ad5d9a1bcc0712cfb96f30e91311
 World interactions and Blueprint declarations were subsequently supplied in the small world and schema packs.
 
 `rows.json.gz` retains the native donors used by the challenge builder, original grant/replay rows, boss curve
-anchors and item prices. `tronn-room.json.gz` is the original Com_00Com_237_PL, with its two dynamic streams.
+anchors and item prices. The source-correction regression additionally retains all native MR rows, passive/effect definitions, equipment bonus references, the Mitra inventory and the new enemy-skill donors. `tronn-room.json.gz` is the original Com_00Com_237_PL, with its two dynamic streams.
 `crystal-interaction.json.gz` is the decoded native WoL repeat-crystal interaction, Com_00Com_223_EV.
 All gzip streams have deterministic timestamps. The boss bytecode fixture is shared with the earlier Fina test.
 

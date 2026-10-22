@@ -65,6 +65,11 @@ class Api {
       (await put('/api/sephira/settings', {
         'schema': 1, 'useBorrowedSkillVisuals': useBorrowedSkillVisuals,
       })) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> saveSephiraShopOverride({required bool enabled, required bool useBorrowedSkillVisuals}) async =>
+      (await put('/api/sephira/settings', {
+        'schema': 1, 'useBorrowedSkillVisuals': useBorrowedSkillVisuals,
+        'shopAcquisitionOverride': enabled,
+      })) as Map<String, dynamic>;
   Future<void> _saveTestingFlag(String name, Object value) async {
     final current = await get('/api/testing');
     final flags = {

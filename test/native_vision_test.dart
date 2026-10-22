@@ -79,12 +79,19 @@ class NativeApi extends ConfigApi {
   Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges, bool useNativeRepairs = false}) async =>
       {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs};
   bool borrowedVisuals = true;
+  bool shopOverride = false;
   bool failVisualSettings = false;
   @override
   Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async {
     if (failVisualSettings) throw StateError('Settings write failed.');
     borrowedVisuals = useBorrowedSkillVisuals;
-    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals};
+    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals, 'shopAcquisitionOverride':shopOverride};
+  }
+  @override
+  Future<Map<String, dynamic>> saveSephiraShopOverride({required bool enabled, required bool useBorrowedSkillVisuals}) async {
+    if (failVisualSettings) throw StateError('Settings write failed.');
+    shopOverride=enabled; borrowedVisuals=useBorrowedSkillVisuals;
+    return {'schema':1, 'useBorrowedSkillVisuals':borrowedVisuals, 'shopAcquisitionOverride':shopOverride};
   }
   @override
   Future<bool> testingMaxMr() async => maxMr;
@@ -558,6 +565,28 @@ void main() {
     app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
     expect(tester.widget<SwitchListTile>(survival).onChanged, isNull);
     await expectLater(app.setSurviveAtOne(false), throwsStateError);
+  });
+
+  testWidgets('1-gil shop toggle preserves recipes and visual mode and retains its state on errors', (tester) async {
+    final before=clone(api.roster);
+    await show(tester);
+    final control=find.byKey(const Key('sephira-shop-override'));
+    await tester.ensureVisible(control);
+    expect(app.sephiraShopOverride,isFalse);
+    await tester.tap(control); await wait(tester,()=>app.sephiraShopOverride);
+    expect(api.shopOverride,isTrue);
+    await app.setSephiraBorrowedVisuals(false);
+    expect(app.sephiraShopOverride,isTrue);
+    api.failVisualSettings=true;
+    await expectLater(app.setSephiraShopOverride(false),throwsStateError);
+    expect(app.sephiraShopOverride,isTrue);
+    api.failVisualSettings=false;
+    await app.setSephiraShopOverride(false);
+    expect(app.useSephiraBorrowedVisuals,isFalse);
+    expect(api.roster,before); expect(app.units,before);
+    app.buildState={'running':true}; app.notifyListeners(); await tester.pump();
+    expect(tester.widget<SwitchListTile>(control).onChanged,isNull);
+    await expectLater(app.setSephiraShopOverride(true),throwsStateError);
   });
 
   testWidgets('Sephira visuals switch independently without resetting saved kits', (tester) async {

@@ -116,6 +116,9 @@ class _MrStepState extends State<MrStep> {
     final skillDescriptions = catalogDescriptions(cat, 'skills');
     final skillSummaries = catalogAbilitySummaries(cat);
     final passiveDescriptions = catalogDescriptions(cat, 'passives');
+    for (final entry in (widget.unit['sephiraPassiveText'] as Map? ?? {}).entries) {
+      passiveDescriptions[int.parse(entry.key.toString())] = entry.value['desc'] as String;
+    }
     final visibleSkills = {
       for (final s in catalogSelectableLibrary(cat, 'skills', [
         ...app.units,

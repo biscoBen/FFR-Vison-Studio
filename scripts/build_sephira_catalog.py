@@ -10,6 +10,7 @@ from pathlib import Path
 from sephira_kit_expansion import EXPANSIONS, AWAKENING_EXPANSIONS, PLAYER_EFFECT_REPLACEMENTS, MASTERY_FILLERS
 from sephira_mastery import schedule as schedule_mastery
 from sephira_journey import acquisition as journey_acquisition
+from sephira_reward_sources import revise as revise_reward_sources, describe_changes
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -116,7 +117,8 @@ def player_recipe(unit, slot, spec, native, english, effects):
         heal=effective['parameterVariationType']=='Increase'
         calc=effective['damageCalcType']; power=effective['magnification']
         if heal:
-            amount=f'{power}% max HP' if calc in ['TargetMaxHPRatio','SelfMaxHPRatio'] else f'{power} HP' if calc=='Fixed' else f'healing power {power}'
+            resource = 'MP' if effective['parameterType']=='MagicPoint' else 'HP'
+            amount=f'{power}% max {resource}' if calc in ['TargetMaxHPRatio','SelfMaxHPRatio'] else f'{power} {resource}' if calc=='Fixed' else f'healing power {power}'
             desc.append('Restore '+amount+'.')
         elif calc=='MPAbsorb': desc.append(f'Drain MP; power {power}.')
         else: desc.append(f"{effective['element'] if effective['element']!='None' else 'Non-elemental'} {'physical' if effective['DamageType']=='Physic' else 'magic'} damage; power {power}.")
@@ -409,6 +411,8 @@ def generate(reference):
                   'statRewards':[[rank,*g] for rank,t in enumerate(native[vid]['synchro']) for g in t if g[0]=='BaseParameter']}
         for vid in {p['balance']['nativeBudget'] for p in presets}},
         'grantUnlocks':{f'{kind}:{sid}':[[f,r] for f,r in options] for (kind,sid),options in pool.items()}}
+    catalog['excludedVisionIds'] = [v['id'] for v in audit['excludedVisions']]
+    revise_reward_sources(catalog, rows, english, player_recipe)
     (ROOT/'assets/sephira_visions/catalog.json').write_text(json.dumps(catalog,indent=2)+'\n')
     write_visual_policy(catalog)
     describe(catalog, reference)
@@ -417,8 +421,11 @@ def generate(reference):
 
 def describe(catalog, reference):
     english=json.loads((reference/'user-animation-reference/inspection/data/ffr_catalog.json').read_text())
+    describe_changes(catalog, english)
     skill={x['id']:x['name'] for x in english['skills']}
     passive={x['id']:x['name'] for x in english['passives']}
+    for p in catalog['presets']:
+        passive.update({int(k): v['name'] for k,v in p['profile'].get('sephiraPassiveText',{}).items()})
     lines=['# Sephira’s Visions','',
         '30 optional, editable presets using the requested FFBE forms. Enable the section on the home page, then build/install. First enable downloads only the missing selected artwork and adds the profiles after all preparations succeed.', '',
         'Turning the section off keeps edits and removed entries; its units and acquisition caves are omitted by the next build. **Restore missing** adds removed presets without resetting existing ones. **Reset all presets** or a card’s **Reset to preset** replaces its kit and appearance, preserves its IDs and acquisition location, and backs up the previous roster in Studio’s character-config backups.', '',
@@ -430,15 +437,16 @@ def describe(catalog, reference):
         '- Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.',
         '- Each revised kit has 20–28 awakening abilities/bonuses; learned MR abilities and bonuses are additional. Permanent MR stats, the Spirit wrapper and LB are excluded from both skill counts. Current recipes have 20–24 awakening grants and five additional learned MR rewards each. Clive’s Eikon/fire bundle remains together on Reberta. They specialize without being restricted to one action type: healers and debuffers also have attacks. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s shrine, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.',
         '- Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.',
-        '- New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. New passives retain native magnitudes/equip costs and required skill dependencies. Revision 4 redistributes existing learned rewards into the native MR pattern. All previously learned abilities remain available through awakening or MR. Eight low-tier attacks keep the awakening quota after redistribution. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. Permanent MR rewards follow the same role-based three-stat budget for every preset. Alice’s three earth slams become ice slams with unchanged power/cost.',
+        '- New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. Replacement bonuses retain native effects and equip costs, with a 20-AP floor for item bonuses that originally cost zero. Revision 5 replaces 52 reused rewards from kept visions with equipment/enemy bonuses and bounded enemy skills. Those protected MR rewards are absent from both awakening and MR; all excluded-vision grants remain allocated. Eight low-tier attacks keep the awakening quota after redistribution. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. Permanent MR rewards follow the same role-based three-stat budget for every preset. Alice’s three earth slams become ice slams with unchanged power/cost.',
         '- Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.', '',
         'The excluded originals are Tronn, Wilhelm, Warrior of Light, Firion, Onion Knight, Cecil, Bartz, Cloud, Squall, Zidane, Tidus, Shantotto, Vaan, Noctis and Clive. Their exact grants, native ranks, descriptions, mechanics and allocations are retained in `assets/sephira_visions/native_coverage.json`.', '',
         '## Acquiring the visions', '',
         'After obtaining the matched original, talk to its crystal again and select Challenge. The original replay remains available. Ownership or the original’s individual completion flag is checked before the menu, immediately before battle, and before rewards. Wilhelm uses his final quest step, not quest acceptance. Winning grants only missing team members; leaving, escaping or losing grants none. There are no farmable boss drops or XP. Each team shares one local-level boss budget, with staggered eight-action rotations and bounded healing. These are authored starting values; live balance still needs playtesting.', '',
         'Tronn → Christine; Wilhelm → Barusa/Ariana; Warrior of Light → Lenneth/Crystal Fina; Firion → Lila/Fran; Onion Knight → Minfilia/Primm; Cecil → Snow White/Lilith/Mystea; Bartz → Fryevia/Lunera; Cloud → Nalu/Jade; Squall → A2/Alice; Zidane → Lunafreya/Eiko; Tidus → Elza/Mog; Shantotto → Trance Terra/Relm; Vaan → Rikku/Elephim; Noctis → Freya; Clive → Reberta.', '',
         'Levels come from ordinary enemies in the encounter volume containing each shrine entrance (Earth Shrine’s inner floor for Tronn). See `assets/existing_visions/payload/sephira_challenges.json` for the native source tables, unlock evidence and local levels.', '',
+        '**Sephira visions: 1-gil Mitra shop** temporarily sells every enabled collection vision in Mitra’s item shop, without its normal story/challenge gate. Rebuild/install after switching. Turning it off restores the saved cave, crystal or shop assignments and prices; saved recipes and locations are never rewritten. Already purchased visions remain owned.', '',
         '## Kit sizes', '',
-        'Use **Apply MR and acquisition update** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, stats, combat recipes and custom learned abilities. It changes MR scheduling and assigns the requested challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.', '',
+        'Use **Apply MR and acquisition update** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, stats, combat recipes and unrelated learned abilities. It replaces the protected rewards in place; saved revision-4 acquisition choices are preserved. Earlier recipes also receive the MR schedule and challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.', '',
         '| Vision | Awakening abilities | Awakening bonuses | Awakening total | Additional MR abilities | Additional MR bonuses |',
         '|---|---:|---:|---:|---:|---:|']
     for p in catalog['presets']:
@@ -470,7 +478,7 @@ def describe(catalog, reference):
             lines.append('')
     lines += ['## Research and validation limits','',
         'Selected hosted packs were checked against their published SHA-256 values, including base packs for shifted forms. Unit records, selected-form sprite motions and LB profiles were inspected. FFBE themes are references, not imported combat numbers. The archived Global datamine is `aEnigmatic/ffbe` at `95727376e82d27acc1290b6dc8ad27ce3c89ea71`; hosted merged records also cover Japanese and post-archive forms. Reberta’s Japanese hosted record has no translated skill list; her requested physical dragoon role and the original Reberta elemental/jump theme guide that kit.', '',
-        'Automated checks cover portable configs, unique allocation, native base stats, MR scheduling and role budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. Library repairs use the existing unverified-skill controls. The separate **Use borrowed Sephira skill visuals** toggle defaults on; turn it off and rebuild/install to restore the 217 preset source visual mappings without changing mechanics or saved kits. Turn it on and rebuild/install to restore borrowed visuals. Explicit visual donor edits and authored sequences are preserved; missing demo source animations may stay blank.', '',
+        'Automated checks cover portable configs, unique allocation, native base stats, MR scheduling and role budgets, mastery caps, owner-condition rebinding, native table patch serialization, and optional-pack lifecycle. They do not establish live-game balance or prove every animation exists in the demo. Library repairs use the existing unverified-skill controls. The separate **Use borrowed Sephira skill visuals** toggle defaults on; turn it off and rebuild/install to restore the 226 preset source visual mappings without changing mechanics or saved kits. Turn it on and rebuild/install to restore borrowed visuals. Explicit visual donor edits and authored sequences are preserved; missing demo source animations may stay blank.', '',
         '## Full-game release review','',
         'Re-audit native stats, level curves, skill mechanics and unlock ranks; private command/LB conditions and IDs; summon availability; selected form/LB presentation; and vendor/acquisition availability. Preserve user edits; apply MR/acquisition revisions through the backed-up progression update. See README’s running full-release checklist.','']
     (ROOT/'SEPHIRAS_VISIONS.md').write_text('\n'.join(lines))

@@ -195,6 +195,8 @@ List<String> catalogDefaultOwners(
 }
 
 String catalogEntryTitle(Map<String, dynamic> catalog, String kind, Map row, {bool? verified, Map? nativeUnit}) {
+  final translated = (nativeUnit?['sephiraPassiveText'] as Map?)?['${row['id']}'];
+  if (kind == 'passives' && translated is Map) return translated['name'] as String;
   final name = (row['name'] ?? '').toString();
   final label = name.isEmpty
       ? '${kind == 'skills' ? 'skill' : 'passive'} ${row['id']}'

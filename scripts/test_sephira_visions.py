@@ -119,8 +119,9 @@ class SephiraTests(unittest.TestCase):
                        if g[0] in ('ActiveSkill', 'PassiveSkill')}
             previous = {tuple(g) for tier in baseline[p['id']] for g in tier
                         if g[0] in ('ActiveSkill', 'PassiveSkill')}
-            self.assertLessEqual(previous, learned, p['id'])
-            self.assertEqual(p['profile']['sephiraRecipe'],4)
+            replaced = {(r['oldKind'], r['oldId'], -1) for r in p['rewardReplacements']}
+            self.assertLessEqual(previous - replaced, learned, p['id'])
+            self.assertEqual(p['profile']['sephiraRecipe'],5)
 
     def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
@@ -134,7 +135,7 @@ class SephiraTests(unittest.TestCase):
         self.assertNotIn(20001,copies[570610]['effects'])
         by_key={p['id']:p['profile'] for p in catalog['presets']}
         def skills(key): return {g[1] for f in ['awakening','synchro'] for t in by_key[key][f] for g in t}
-        self.assertLessEqual({1441,1464},skills('ariana')) # Scion + Skill Flow
+        self.assertLessEqual({1441,1518},skills('ariana')) # Scion + equipment-sourced focus
         self.assertLessEqual({1450,414600,414610},skills('lilith')) # Shield + guard commands
 
     def test_retired_dragon_is_excluded_even_in_older_enabled_rosters(self):

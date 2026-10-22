@@ -200,11 +200,16 @@ void main() {
     final presets = await SephiraVisions.bundled;
     final previous = json.decode(File('scripts/fixtures/sephira_revision3_grants.json').readAsStringSync()) as Map;
     final occupied = presets.map((p) => p['profile']).toList();
+    final revision4 = json.decode(File('scripts/fixtures/sephira_revision4_grants.json').readAsStringSync()) as Map;
     for (final preset in presets) {
       final old = CharacterConfig.copy(preset['profile'] as Map<String, dynamic>);
       old['awakening'] = previous[preset['id']]['awakening'];
       old['synchro'] = previous[preset['id']]['synchro'];
       old['sephiraRecipe'] = 3;
+      (old['skills'] as Map).addAll(revision4[preset['id']]['skills'] as Map);
+      for (final r in preset['rewardReplacements'] as List) {
+        if (r['newGrant'][0] == 'ActiveSkill') (old['skills'] as Map).remove(r['newGrant'][1].toString());
+      }
       for (final id in preset['masteryFillers'] as List) { (old['skills'] as Map).remove(id.toString()); }
       final saved = CharacterConfig.restore(old, occupied);
       saved[SephiraVisions.field] = {'version': 1, 'preset': preset['id'], 'enabled': false};
@@ -216,16 +221,20 @@ void main() {
         for (final tier in value[field] as List) for (final g in tier as List)
           if (g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill') '${g[0]}:${g[1]}'};
       final next = SephiraVisions.updateProgression(saved, preset);
-      expect(grants(next).containsAll(grants(before)), isTrue, reason: preset['id'] as String);
+      final removed = {for (final r in preset['rewardReplacements'] as List)
+        '${r['oldKind']}:${r['oldKind'] == 'ActiveSkill' && r['oldId'] != r['oldSource'] ? CharacterConfig.skillBase(saved['id'] as int) + (r['oldId'] as int) - CharacterConfig.skillBase(preset['profile']['id'] as int) : r['oldId']}'};
+      expect(grants(next).containsAll(grants(before).difference(removed)), isTrue, reason: preset['id'] as String);
       expect(saved, before);
       expect(next['id'], saved['id']);
       expect(next['ffbe'], saved['ffbe']);
       expect(next['stats'], saved['stats']);
       expect(next[SephiraVisions.field], saved[SephiraVisions.field]);
       for (final entry in (saved['skills'] as Map).entries) {
-        expect(next['skills'][entry.key], entry.value);
+        if (!(preset['rewardReplacements'] as List).any((r) => r['oldKind'] == 'ActiveSkill' && r['oldSource'] == (entry.value as Map)['from'])) {
+          expect(next['skills'][entry.key], entry.value);
+        }
       }
-      expect(next['sephiraRecipe'], 4);
+      expect(next['sephiraRecipe'], 5);
       expect((next['awakening'] as List).expand((t) => t as List).length, inInclusiveRange(20, 28));
       expect((next['synchro'] as List).map((t) => (t as List).length).toList(), [0,1,1,1,1,1,1,1,1,3]);
       final portable = CharacterConfig.decode(CharacterConfig.encode(next));
@@ -233,6 +242,51 @@ void main() {
       // Applying the update again must not add another filler or alter a kit.
       expect(SephiraVisions.updateProgression(next, preset), next);
     }
+  });
+
+  test('revision 4 source correction replaces all protected grants in place and keeps custom acquisition and IDs', () async {
+    final presets = await SephiraVisions.bundled;
+    final previous = json.decode(File('scripts/fixtures/sephira_revision4_grants.json').readAsStringSync()) as Map;
+    final occupied = presets.map((p) => p['profile']).toList();
+    var replacements = 0;
+    for (final preset in presets) {
+      final old = CharacterConfig.copy(preset['profile'] as Map<String, dynamic>);
+      old['awakening'] = previous[preset['id']]['awakening'];
+      old['synchro'] = previous[preset['id']]['synchro'];
+      old['sephiraRecipe'] = 4;
+      (old['skills'] as Map).addAll(previous[preset['id']]['skills'] as Map);
+      for (final r in preset['rewardReplacements'] as List) {
+        if (r['newGrant'][0] == 'ActiveSkill') (old['skills'] as Map).remove(r['newGrant'][1].toString());
+      }
+      final saved = CharacterConfig.restore(old, occupied);
+      saved[SephiraVisions.field] = {'version':1, 'preset':preset['id'], 'enabled':true};
+      saved['studioAcquisition'] = {'version':2, 'location':'shop_3', 'random':false, 'hideSpoilers':true, 'cave':null};
+      saved['stats']['Attack'] = 123;
+      final firstActive = (preset['rewardReplacements'] as List).where((r) => r['newGrant'][0] == 'ActiveSkill').firstOrNull;
+      int? customId;
+      if (firstActive != null) {
+        customId = CharacterConfig.skillBase(saved['id'] as int) + (firstActive['newGrant'][1] as int) - CharacterConfig.skillBase(old['id'] as int);
+        saved['skills'][customId.toString()] = {'from':220010, 'en':'My custom spell', 'jp':'MyCustom', 'desc':'My edited spell.', 'set':{'Cost':7}};
+      }
+      final before = CharacterConfig.copy(saved);
+      final updated = SephiraVisions.updateProgression(saved, preset);
+      for (final r in preset['rewardReplacements'] as List) {
+        replacements++;
+        final grant = updated[r['field']][r['rank']].firstWhere((g) => g[0] == r['newGrant'][0] &&
+            (g[0] == 'PassiveSkill' ? g[1] == r['source'] : updated['skills'][g[1].toString()]['from'] == r['source']));
+        expect(grant, isNotNull, reason:preset['id'] as String);
+      }
+      expect(updated['studioAcquisition'], saved['studioAcquisition']);
+      expect(updated['id'], saved['id']);
+      expect(updated['stats'], saved['stats']);
+      expect(updated['ffbe'], saved['ffbe']);
+      expect(updated['lb_custom'], saved['lb_custom']);
+      if (customId != null) expect(updated['skills'][customId.toString()], saved['skills'][customId.toString()]);
+      expect(saved, before);
+      expect(SephiraVisions.updateProgression(updated,preset),updated);
+      CharacterConfig.decode(CharacterConfig.encode(updated));
+    }
+    expect(replacements,52);
   });
 
   test('progression update backs up the old roster and commits atomically', () async {
@@ -248,7 +302,7 @@ void main() {
     expect(app.units.single['sephiraRecipe'], 3);
     api.fail = false;
     await app.updateSephiraProgression();
-    expect(app.units.single['sephiraRecipe'], 4);
+    expect(app.units.single['sephiraRecipe'], 5);
     expect(app.units.single['stats']['Attack'], 123);
     final backups = Directory(app.paths.configBackups).listSync().whereType<File>();
     expect(backups, isNotEmpty);

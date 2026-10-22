@@ -42,7 +42,7 @@ class SephiraVisualTests(unittest.TestCase):
                             {'schema': 1, 'useBorrowedSkillVisuals': True, 'extra': False}):
                 with self.assertRaises(ValueError): pack.validate_settings(invalid)
 
-    def test_all_217_substitutions_round_trip_without_changes_to_combat_grants_or_lbs(self):
+    def test_all_226_substitutions_round_trip_without_changes_to_combat_grants_or_lbs(self):
         roster = presets(); before = copy.deepcopy(roster)
         policy = json.loads((ROOT / 'assets/existing_visions/payload/sephira_visuals.json').read_bytes())
         expected = {u[pack.FIELD]['preset']: {str(s['from']): s['visuals'] for s in u['skills'].values()
@@ -61,7 +61,7 @@ class SephiraVisualTests(unittest.TestCase):
                         self.assertTrue(s.pop('_sephiraSourceVisuals'))
                         s['visuals'] = source['visuals']; count += 1
                 self.assertEqual(unit, original)
-            self.assertEqual(count, 217)
+            self.assertEqual(count, 226)
             self.assertEqual(roster, before)
             write(root, True)
             self.assertEqual(pack.visual_units(roster, root), before)

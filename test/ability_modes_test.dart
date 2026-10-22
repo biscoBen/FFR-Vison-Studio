@@ -75,4 +75,14 @@ void main() {
           {'schema': 1, 'useBorrowedSkillVisuals': false});
     }, () => client);
   });
+  test('Sephira shop override API preserves the selected visual mode', () async {
+    final client = MockClient((request) async {
+      expect(request.url.path, '/api/sephira/settings');
+      expect(jsonDecode(request.body), {'schema':1, 'useBorrowedSkillVisuals':false, 'shopAcquisitionOverride':true});
+      return http.Response(request.body, 200);
+    });
+    await http.runWithClient(() async {
+      expect((await Api('http://studio').saveSephiraShopOverride(enabled:true, useBorrowedSkillVisuals:false))['shopAcquisitionOverride'],true);
+    }, () => client);
+  });
 }

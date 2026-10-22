@@ -119,6 +119,15 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 SwitchListTile(
+                  key: const Key('sephira-shop-override'), contentPadding: EdgeInsets.zero,
+                  title: Text('Sephira visions: 1-gil Mitra shop', style: Guide.text()),
+                  subtitle: Text('Sell enabled Sephira visions for 1 gil each in Mitra’s item shop. Turn off and rebuild/install to restore their saved acquisition locations.', style: Guide.small()),
+                  value: app.sephiraShopOverride,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setSephiraShopOverride(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
                   key: const Key('field-leader-cycle'), contentPadding: EdgeInsets.zero,
                   title: Text('Cycle walking character (LB / L1)', style: Guide.text()),
                   subtitle: Text('Cycles the active party’s field appearances while freely walking. F6 also works. Battle models stay separate; story appearances return for events. Requires the UE4SS loader prepared by the field-reference helper. Rebuild/install after switching.', style: Guide.small()),
