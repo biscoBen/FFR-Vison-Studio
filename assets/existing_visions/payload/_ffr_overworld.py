@@ -164,7 +164,8 @@ def verify(root, tool, usmap, units):
         decoded = work / (label + '-rows.json')
         subprocess.run(tool + ['rows', str(path), str(decoded), '--usmap', usmap], check=True, capture_output=True)
         views.append(json.loads(decoded.read_text(encoding='utf-8-sig'))['rows'])
-    def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    import _ffr_game_tables
+    rows = _ffr_game_tables.reader(root)
     operations = _ffr_testing.verification_operations(root, units, rows)
     if TABLE not in operations: prepare(operations, selected, rows)
     _ffr_testing.check_rows(*views, operations[TABLE])

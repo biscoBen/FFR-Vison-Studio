@@ -11,6 +11,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Full-game table support
+
+- Resolve demo composite names to the selected game's production packages using its official asset inventory.
+  Read shared and production parents together; write custom clones into the parent that actually owns the donor
+  and update the production composite. Preserve prepared source dumps and saved units/settings.
+- Apply the same resolution to practice battles, native-vision grants, caves, skill visuals and sound registration.
+  Verification recomputes physical table operations and still rejects unrelated changes. Refresh production skill
+  routes when loading an already-prepared catalog, without requiring another full preparation.
+- Include production bindings in native-reference reports, deduplicate parent/composite copies and expand future
+  collection to the map, shop, stage, dialogue and UI tables used by these features. If the optional FFBE Needles
+  test remains enabled, retain the full game's native timeline when present without changing the saved switch.
+- Offline validation uses the supplied full-game skill assets and the pinned native patcher: 38 sampled bindings,
+  76 added routing rows, exact readback of all three physical tables, and every original row preserved. Production
+  fixture tests cover practice/grants, split donors, conflicting parent rows, stale demo caches and strict verification.
+  The supplied ZIP omits actual full-game cave/menu table rows; live installation and gameplay still need testing.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

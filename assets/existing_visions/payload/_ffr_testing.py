@@ -553,13 +553,15 @@ def check_rows(original, built, operation, plan=None, finalize=None):
 
 
 def verification_operations(root, units, rows):
+    import _ffr_game_tables
+    rows = _ffr_game_tables.reader(root, rows)
     operations = prepare({}, units, root, rows)
     import _ffr_overworld
     # The cave adds its NPC to the same table as party field replacements.
     # Verify their complete combined result rather than treating either as unrelated.
     if _ffr_overworld.TABLE in operations:
         _ffr_overworld.prepare(operations, [u for u in units if u.get('party')], rows)
-    return operations
+    return _ffr_game_tables.normalize(root, operations, rows)
 
 
 def verify(root, tool, usmap):

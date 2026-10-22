@@ -272,13 +272,15 @@ def expected_edits(root):
     units = _ffr_sephira.active_units(units)
     import _ffr_animation_repair
     units = [_ffr_animation_repair.retire_comparison_skills(u) for u in units]
-    def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    import _ffr_game_tables
+    rows = _ffr_game_tables.reader(root)
     native_units = [u for u in units if u.get('native') is not None]
     tables = {}
     if native_units:
         split(native_units, rows); prepare(tables, [], native_units, root, rows)
     import _ffr_crystal_cave
     _ffr_crystal_cave.prepare_shops(tables, units, rows)
+    _ffr_game_tables.normalize(root, tables, rows)
     expected = {(rel, entry['row']): entry['set'] for rel, table in tables.items() for entry in table['set']}
     import _ffr_ability_modes
     modes = _ffr_ability_modes.settings(root)
@@ -316,6 +318,9 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
 
 
 def register(app, env):
+    import _ffr_game_tables
+    if env.get('ffr_catalog') is not None:
+        _ffr_game_tables.install_catalog(env['ffr_catalog'], env['ROOT'])
     if env.get('build_icons') is not None:
         import _ffr_build_icons
         _ffr_build_icons.install_preview(env)

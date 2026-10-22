@@ -30,7 +30,16 @@ MAX_BACKUP = 32 * 1024**2
 INPUTS = tuple('mods/EstherTsukiko/' + n for n in transfer.STUDIO_INPUTS)
 TABLE_SCOPE = ('Datatable/Skill/', 'Datatable/Asset/Skill/', 'Datatable/Battle/Sequencer/',
                'Datatable/Unit/', 'Datatable/Item/Vision/', 'Datatable/Asset/Sound/',
-               'Datatable/Battle/Unit/', 'Datatable/Asset/Battle/Unit/')
+               'Datatable/Battle/Unit/', 'Datatable/Asset/Battle/Unit/',
+               'Datatable/Asset/Battle/Stage/', 'Datatable/Asset/Battle/AI/',
+               'Datatable/Shop/DT_ShopList', 'Datatable/Shop/DT_VariousShopsList',
+               'Datatable/Map/MapData/', 'Datatable/Map/CDT_MapData_',
+               'Datatable/Asset/Map/DT_MapUnitAsset', 'Datatable/Asset/Map/DT_MapUnitPlacementAsset',
+               'Datatable/Encount/DT_BattleGroup', 'Datatable/Event/TalkEvent/',
+               'Datatable/Event/BattleEvent/DT_BtlCmnEventDataBundle',
+               'Datatable/UI/Common/Dialog/DT_DIalogChoice',
+               'Datatable/UI/Skill/', 'Datatable/UI/Vision/DT_VisionUpgrade_VisionUpgradeData',
+               'Datatable/PostProcess/DT_ColorGradingParameter')
 REFERENCE_SCOPE = (*TABLE_SCOPE, 'Sequencer/Battle/', 'Sequencer/Skill/')
 _job = {'running': False, 'result': None, 'message': '', 'log': []}
 
@@ -298,14 +307,22 @@ def summarize(root, identity, catalog=None):
     raw_skills = {}
     assets = {}
     links = {}
+    route_tables = {}
     for path in (root / 'extracted/rows').rglob('*.json'):
         name = path.stem
-        if name not in ('DT_SkillData', 'DT_SkillAsset', 'DT_SkillLinkSequencerData', 'CDT_SkillAsset_Demo'): continue
+        if name not in ('DT_SkillData', 'DT_SkillAsset', 'DT_SkillAsset_Prod',
+                        'DT_SkillLinkSequencerData', 'CDT_SkillAsset_Demo', 'CDT_SkillAsset_Prod'): continue
         rows = json.loads(path.read_text(encoding='utf-8-sig')).get('rows', {})
         if name == 'DT_SkillData': raw_skills = {str(r['ID']): r for r in rows.values()}
         elif name == 'DT_SkillLinkSequencerData': links = {str(r['SkillId']): r for r in rows.values()}
-        else:
-            for r in rows.values(): assets.setdefault(str(r['ID']), []).append(r)
+        else: route_tables[name] = rows
+    # Read the authoritative composite when available, including production-only
+    # routes. The same binding in parent and composite is one route.
+    if 'CDT_SkillAsset_Prod' in route_tables: native = [route_tables['CDT_SkillAsset_Prod']]
+    elif 'CDT_SkillAsset_Demo' in route_tables: native = [route_tables['CDT_SkillAsset_Demo']]
+    else: native = list(route_tables.values())
+    for table in native:
+        for r in table.values(): assets.setdefault(str(r['ID']), {})[digest(r)] = r
     names = {str(s['id']): s.get('name') for s in (catalog or {}).get('skills', [])}
     skills = {}
     for sid, row in raw_skills.items():
@@ -313,7 +330,7 @@ def summarize(root, identity, catalog=None):
         for key in ('playSequencerId', 'sequencerIdWhenTargetFriendlies'):
             if type(row.get(key)) is int and row[key] > 0: candidates.add(str(row[key]))
         candidates.update(str(v) for k, v in links.get(sid, {}).items() if k != 'SkillId' and type(v) is int and v > 0)
-        routes = sorted([r for key in sorted(candidates) for r in assets.get(key, [])], key=digest)
+        routes = sorted([r for key in sorted(candidates) for r in assets.get(key, {}).values()], key=digest)
         skills[sid] = {'name': names.get(sid), 'definitionSha256': digest(row), 'routes': routes,
                        'referencedSequenceAssets': {canonical_asset(r[k]).split('.')[0] + '.uasset':
                                                    canonical_asset(r[k]).split('.')[0] + '.uasset' in paths
@@ -341,10 +358,14 @@ def compare(before, after):
             tables[name] = {'added': added, 'removed': removed, 'changed': edits,
                             'schemaChanged': a.get('schemaSha256') != b.get('schemaSha256')}
     a, b = before.get('inventory', []), after.get('inventory', [])
+    def skill_record(record):
+        value = {k: v for k, v in (record or {}).items() if k != 'name'}
+        if 'routes' in value:
+            value['routes'] = sorted({digest(r) for r in value['routes']})
+        return value
     skills = {sid: {'before': before.get('skills', {}).get(sid), 'after': after.get('skills', {}).get(sid)}
               for sid in sorted(set(before.get('skills', {})) | set(after.get('skills', {})))
-              if {k: v for k, v in (before.get('skills', {}).get(sid) or {}).items() if k != 'name'}
-                 != {k: v for k, v in (after.get('skills', {}).get(sid) or {}).items() if k != 'name'}}
+              if skill_record(before.get('skills', {}).get(sid)) != skill_record(after.get('skills', {}).get(sid))}
     old, new = before.get('timelineFiles', {}), after.get('timelineFiles', {})
     return {'schema': 1, 'before': before['gameIdentity'], 'after': after['gameIdentity'],
             'tables': tables, 'skills': skills,

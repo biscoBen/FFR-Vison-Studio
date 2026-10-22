@@ -1166,6 +1166,16 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 ## Full-game release checklist
 
+Full-game table support is being packaged in extension **1.2.58**. Studio resolves production composites and split
+parent tables from the prepared official inventory, including custom skill donors and sound registration. It also
+uses these physical paths for practice/grant/cave recipes and their verification. Existing full-game preparation
+can be reused; the catalog refreshes its production routes when loaded. Saved roster edits and testing preferences
+are retained. The optional FFBE Needles import defers to a native full-game route when one exists.
+This is not a live compatibility pass: the supplied full-game reference lacks the actual map/menu table rows and
+no full-game installation is running in this workspace. Keep the rollback backup and use the existing per-build
+review/test sheet when installing. A native patcher/readback check preserves all original rows while adding 76
+routes from 38 sampled bindings across the shared, production and composite skill tables.
+
 This is the running project list for the full game's release, started **2026-10-04** from the `Sephira's-Update`
 demo baseline `b15a4c0`. These are areas to review when the full game is available, not confirmed future bugs.
 The October 22 full-game preparation finished **ready** after **2,618** tables, a quiet retry pass for **191** tables,
@@ -1187,9 +1197,9 @@ The full game replaces the demo skill composite with **CDT_SkillAsset_Prod**: it
 rows with 942 production rows, including 15 identical shared rows. Auditing that actual composite with definition
 pointers and character links finds candidate routes for **1,074 of 1,167 skill definitions**, compared with **286**
 in the demo: **788** definitions gain routes, none lose all routes, and **798** have changed distinct route sets.
-These are candidate routes, not verified visual counts. The currently exported comparison omits the production-only
-skill tables from its skill-route summary; its **286 changed-skills** count is incomplete. Original rows and packages
-in the ZIP remain available and were used directly for this audit. Do not use that partial count as the full comparison.
+These are candidate routes, not verified visual counts. The **1.2.57** collection omits production-only skill tables
+from its skill-route summary; its **286 changed-skills** count is incomplete. Version **1.2.58** includes production
+routes and compares distinct bindings, reproducing **798** changed skill records from the original captured rows.
 
 All **21 named missing-visual test cases** now have native candidate routes with both visual and sound timeline
 packages present, covering **22 candidate skill IDs** and **36 distinct routing rows**. Preserve the unresolved Waterga
@@ -1205,11 +1215,10 @@ variant and the earlier observations separately from this new asset evidence:
 | Bomb / Wood Eyes / White Peak | Self-Destruct `500720`; Constrict `500590`; White Wind `500810` |
 | Earlier imported-vision tests only | Blighted Gloom `407050`; Carmine Inferno `505340` |
 
-Studio's builder and several extensions still select `_Demo` composites and generic-only skill donors. Production
-donor rows require proper table resolution; changing the composite name alone is insufficient. The captured scopes
-also omit map, shop, stage, dialogue and UI table rows, so this ZIP cannot establish cave, practice-menu or acquisition
-compatibility. No source assets from the archive are published, no native visuals are marked verified, no gameplay
-switches are changed, and the pre-upstream rollback checkpoint remains intact.
+The audit identified `_Demo` composite and generic-only donor assumptions addressed by **1.2.58**. The returned ZIP's
+scopes omit map, shop, stage, dialogue and UI table rows, so it cannot establish cave, practice-menu or acquisition
+compatibility. Future collection includes those feature tables. Source assets remain local, no native visuals are
+marked verified by this audit, and the pre-upstream rollback checkpoint remains intact.
 
 Keep user cave placements, character configs, concise descriptions and source labels. Add new demo-dependent
 features here as work continues. Mark an item complete only with the tested game version, Studio commit and evidence;

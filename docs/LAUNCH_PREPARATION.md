@@ -79,6 +79,12 @@ On an unreviewed build, listed enabled patches require either the original-game 
 page. Review is remembered only for that game fingerprint; it is the user's choice to test, not proof of compatibility.
 The source-specific guards inside individual repairs remain in effect.
 
+Production-table support uses the selected game's official inventory to resolve demo composite names. Shared and
+production skill donors remain available, and custom rows are written into their actual registered parent tables as
+well as the composite. Saved recipes and native prepared dumps are preserved. Updating from a prepared full-game
+setup does not require preparing it again solely for this change; its catalog routes refresh when loaded. The optional
+FFBE Needles test yields to the full game's native route if present, while retaining the saved switch for demo use.
+
 ## Original-game test preset
 
 **Back up & apply original-game preset** turns off library changes, native repairs, borrowed Sephira visuals, FFBE
@@ -91,6 +97,7 @@ Restore its automatic Studio backup to return to your former switch/grant select
 
 **Collect current game reference** reads fresh official containers, excluding all installed mods. It gathers the
 scoped skill/unit/MR/asset/sound-reference tables, battle/skill timeline packages and complete native asset inventory.
+It also captures the map, shop, stage, dialogue, AI and UI table scopes used by cave, acquisition and practice features.
 It decodes tables with the installed reader/mappings and records schema/row hashes, exact IDs, primary/offset/pointer/
 character-specific sequence links, sequence/sound asset presence and timeline-byte hashes. Original rows and packages
 are kept in the local reference ZIP. Containers may need a temporary copy if a hard link is unavailable.

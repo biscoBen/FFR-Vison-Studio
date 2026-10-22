@@ -100,6 +100,12 @@ def prepare_audio(tables, root, extract):
 def prepare(tables, clones, jobs, root, rows, extract):
     import _ffr_testing
     if not _ffr_testing.settings(root)['ffbeNeedles']: return
+    import _ffr_game_tables
+    native = _ffr_game_tables.reader(root, rows)
+    if native.available('Asset/Skill/DT_SkillAsset_Prod') and any(
+            r['ID'] in (500270, 500271, 500272) for r in native(RELS[0]).values()):
+        print('  1,000 Needles: using the full game native timeline; optional FFBE test import skipped.')
+        return
     import ffbe_resonance
     definitions = [v for v in rows('Skill/DT_SkillData').values() if v.get('ID') == 500270]
     expected = ('Ability', 'Physic', 'Fixed', 'Single', 'Enemies')
