@@ -28,6 +28,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   the highest other inventory price. Locations and gates come from the supplied full-game maps, quests and tables.
 - Fix Crystal Fina’s material verification after Restore missing assigns a new ID: verify the intended texture-name
   rename while still requiring the original cooked shader/export bytes. No extra extraction is needed for this fix.
+- Keep standalone sprite conversion independent of challenge helpers when no saved roster is present.
 - Validation covers portable migration, original event preservation, all unlocks, native table serialization and AI
   execution. Gameplay balance, controller interaction and all shrine fights still require live full-game testing.
 
