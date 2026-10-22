@@ -1180,6 +1180,12 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 ## Full-game release checklist
 
+The user's subsequent full-game install log confirms successful packing and table verification, including production
+skill/sound tables, practice/grant/dialogue tables and the assigned Crystal Fina cave. Installation then stopped at the
+legacy runtime's previous-folder guard. The **1.2.59** update scopes package/runtime ownership and backups per game,
+preserving the demo records. It can copy an existing managed loader into a destination that lacks one, while preserving
+unrelated mods and existing different loaders. The user's full-game installation and live gameplay still need a retry.
+
 Full-game table support is available in the [verified package](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39825612562/Sephira-Studio-Test.zip), extension **1.2.58**. Studio resolves production composites and split
 parent tables from the prepared official inventory, including custom skill donors and sound registration. It also
 uses these physical paths for practice/grant/cave recipes and their verification. Existing full-game preparation

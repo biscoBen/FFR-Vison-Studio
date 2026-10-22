@@ -6,6 +6,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import struct
 import tempfile
 
@@ -244,6 +245,93 @@ def checked(root, relative):
     return path
 
 
+def game_key(game):
+    return os.path.normcase(str(Path(game).resolve()))
+
+
+def state_path(root, game, filename):
+    """Keep the legacy ledger with its original game; scope later installations."""
+    legacy = checked(root, filename)
+    if not game: return legacy
+    key = game_key(game)
+    scoped = checked(root, 'game-installs/' + hashlib.sha256(key.encode()).hexdigest() + '/' + filename)
+    if scoped.is_file(): return scoped
+    owners = set()
+    if legacy.is_file():
+        value = json.loads(legacy.read_bytes())
+        if value.get('game'): owners.add(game_key(value['game']))
+        owners.update(game_key(v['game']) for v in value.get('installs', []) if v.get('game'))
+    # An older package ledger can be absent, or omit its game on restore entries.
+    # The legacy runtime ledger still identifies its installation.
+    if not owners:
+        runtime = checked(root, STATE)
+        if runtime.is_file():
+            value = json.loads(runtime.read_bytes())
+            if value.get('game'): owners.add(game_key(value['game']))
+    if not owners or owners == {key}: return legacy
+    scoped.parent.mkdir(parents=True, exist_ok=True)
+    return scoped
+
+
+def game_state_path(root, game):
+    return str(state_path(root, game, 'game_state.json'))
+
+
+def backup_root(root, game):
+    return str(checked(state_path(root, game, 'game_state.json').parent, 'backups'))
+
+
+def runtime_backup(root, game, name):
+    return checked(state_path(root, game, STATE).parent, 'field-leader-backups/' + name + '.json')
+
+
+def loader_plan(root, game, previous, enabled):
+    """Copy only the loader allowlist from an existing managed installation."""
+    import _ffr_deck_sync as sync
+    owned = previous.get('loader', {})
+    if (not isinstance(owned, dict) or any(not sync.allowed(k) or k in sync.PAKS + sync.LEADER_FILES
+            or not isinstance(v, str) or not re.fullmatch('[0-9a-f]{64}', v) for k, v in owned.items())):
+        raise RuntimeError('Unknown Studio loader ownership record.')
+    before = {}; changes = {}
+    for relative, digest in owned.items():
+        path = checked(game, relative)
+        raw = path.read_bytes() if path.is_file() else None
+        if raw is not None and hashlib.sha256(raw).hexdigest() != digest:
+            raise RuntimeError('Preserving an edited Studio loader file: ' + str(path))
+        before[relative] = raw
+        if not enabled: changes[relative] = None
+    if not enabled: return before, changes, {}
+    required = sync.LOADER_FILES[:2]
+    if all(checked(game, name).is_file() for name in required): return before, changes, owned
+    candidates = [checked(root, STATE), *sorted(checked(root, 'game-installs').glob('*/' + STATE))]
+    for record in candidates:
+        if not record.is_file(): continue
+        original = json.loads(record.read_bytes())
+        if original.get('schema') != 1 or not original.get('files') or not original.get('game'): continue
+        source = Path(original['game'])
+        if game_key(source) == game_key(game): continue
+        if not all(checked(source, name).is_file() for name in sync.REQUIRED_LOADER): continue
+        names = [name for name in sync.LOADER_FILES if checked(source, name).is_file()]
+        signatures = checked(source, sync.BINARY + 'ue4ss/UE4SS_Signatures')
+        if signatures.is_dir():
+            names.extend(p.relative_to(source).as_posix() for p in sorted(signatures.iterdir())
+                         if p.is_file() and sync.allowed(p.relative_to(source).as_posix()))
+        copied = dict(owned)
+        for relative in names:
+            raw = checked(source, relative).read_bytes()
+            if not raw: raise RuntimeError('The previous installation has an empty loader file: ' + relative)
+            target = checked(game, relative)
+            current = target.read_bytes() if target.is_file() else None
+            if current is not None and current != raw:
+                raise RuntimeError('Preserving a different runtime loader in the selected game: ' + str(target))
+            before[relative] = current
+            if current is None:
+                changes[relative] = raw
+                copied[relative] = hashlib.sha256(raw).hexdigest()
+        return before, changes, copied
+    raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field cycling and native Crystal Fina battle effects. Prepare it before installing.')
+
+
 def install_plan(root, game, payload=None):
     """Preflight before any game packages change; use the BUILT configuration."""
     root = Path(root); game = Path(game)
@@ -254,12 +342,12 @@ def install_plan(root, game, payload=None):
     if (payload.get('schema') != 1 or set(payload.get('files', {})) not in (set(), allowed)
             or any(not isinstance(v, str) for v in payload['files'].values())):
         raise RuntimeError('Invalid built field leader payload; rebuild before installing.')
-    state = checked(root, STATE)
+    state = state_path(root, game, STATE)
     previous = json.loads(state.read_bytes()) if state.is_file() else {'schema': 1, 'files': {}, 'game': str(game)}
     if previous.get('schema') != 1 or set(previous.get('files', {})) - allowed:
         raise RuntimeError('Unknown field leader ownership record.')
-    if previous['files'] and Path(previous['game']).resolve() != game.resolve():
-        raise RuntimeError('Restore the field leader runtime in the previous game folder first.')
+    if game_key(previous.get('game', game)) != game_key(game):
+        raise RuntimeError('The selected game has a mismatched runtime ownership record.')
     before = {}; changes = {}
     for relative in allowed:
         path = checked(game, REL + '/' + relative)
@@ -269,37 +357,51 @@ def install_plan(root, game, payload=None):
             raise RuntimeError('Preserving an unowned or edited field leader file: ' + str(path))
         before[relative] = current
         changes[relative] = payload['files'][relative].encode('utf-8') if relative in payload['files'] else None
-    if payload['files']:
-        binary = checked(game, 'FFRS/Binaries/Win64')
-        if not (binary / 'dwmapi.dll').is_file() or not (binary / 'ue4ss/UE4SS.dll').is_file():
-            raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field cycling and native Crystal Fina battle effects. Prepare it before installing.')
+    loader_before, loader_changes, loader_owned = loader_plan(root, game, previous, bool(payload['files']))
     return {'root': root, 'game': game, 'before': before, 'changes': changes, 'state': state,
+            'loaderBefore': loader_before, 'loaderChanges': loader_changes, 'loaderOwned': loader_owned,
             'previous': state.read_bytes() if state.is_file() else None}
 
 
 def deploy(plan, backup=None):
     changes = plan['changes']; before = plan['before']; game = plan['game']
     if backup:
-        payload = {'schema': 1, 'files': {k: v.decode('utf-8') for k, v in before.items() if v is not None}}
+        payload = {'schema': 1, 'game': str(game), 'files': {k: v.decode('utf-8') for k, v in before.items() if v is not None}}
         # The engine restores every file inside its pak backup directory to
         # ~mods. Keep runtime snapshots separate so no JSON is copied there.
-        atomic(checked(plan['root'], 'field-leader-backups/' + Path(backup).name + '.json'), json.dumps(payload).encode())
+        atomic(runtime_backup(plan['root'], game, Path(backup).name), json.dumps(payload).encode())
     written = []
+    loader_written = []
+    # Disable first; publish enabled.txt last after its scripts are in place.
+    for relative in ('enabled.txt', 'Scripts/config.lua', 'Scripts/main.lua'):
+        path = checked(game, REL + '/' + relative)
+        if (path.read_bytes() if path.is_file() else None) != before[relative]:
+            raise RuntimeError('The field leader runtime changed during installation.')
+    if (plan['state'].read_bytes() if plan['state'].is_file() else None) != plan['previous']:
+        raise RuntimeError('The runtime ownership record changed during installation.')
+    for relative, current in plan['loaderBefore'].items():
+        path = checked(game, relative)
+        if (path.read_bytes() if path.is_file() else None) != current:
+            raise RuntimeError('The runtime loader changed during installation.')
     try:
-        # Disable first; publish enabled.txt last after its scripts are in place.
-        for relative in ('enabled.txt', 'Scripts/config.lua', 'Scripts/main.lua'):
-            path = checked(game, REL + '/' + relative)
-            if (path.read_bytes() if path.is_file() else None) != before[relative]:
-                raise RuntimeError('The field leader runtime changed during installation.')
         checked(game, REL + '/enabled.txt').unlink(missing_ok=True)
+        for relative, data in plan['loaderChanges'].items():
+            path = checked(game, relative)
+            loader_written.append(relative)
+            if data is None: path.unlink(missing_ok=True)
+            else: atomic(path, data)
         for relative in ('Scripts/config.lua', 'Scripts/main.lua', 'enabled.txt'):
             path = checked(game, REL + '/' + relative)
             written.append(relative)
             if changes[relative] is None: path.unlink(missing_ok=True)
             else: atomic(path, changes[relative])
-        atomic(plan['state'], json.dumps({'schema': 1, 'game': str(game), 'files': {
+        atomic(plan['state'], json.dumps({'schema': 1, 'game': str(game), 'loader': plan['loaderOwned'], 'files': {
             k: hashlib.sha256(v).hexdigest() for k, v in changes.items() if v is not None}}).encode())
     except BaseException:
+        for relative in reversed(loader_written):
+            path = checked(game, relative)
+            if plan['loaderBefore'][relative] is None: path.unlink(missing_ok=True)
+            else: atomic(path, plan['loaderBefore'][relative])
         for relative in set(written) | {'enabled.txt'}:
             path = checked(game, REL + '/' + relative)
             if before[relative] is None: path.unlink(missing_ok=True)
@@ -310,6 +412,8 @@ def deploy(plan, backup=None):
 
 
 def restore_plan(root, game, backup=None):
-    path = checked(root, 'field-leader-backups/' + backup + '.json') if backup else None
+    path = runtime_backup(root, game, backup) if backup else None
     payload = json.loads(path.read_bytes()) if path and path.is_file() else {'schema': 1, 'files': {}}
+    if payload.get('game') and game_key(payload['game']) != game_key(game):
+        raise RuntimeError('The runtime backup belongs to another game folder.')
     return install_plan(root, game, payload)

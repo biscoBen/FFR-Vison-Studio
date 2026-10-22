@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Installing after switching from demo to full game
+
+- Fix installation stopping at “Restore the field leader runtime in the previous game folder first.”
+  Keep the legacy runtime/package ownership records and backups with their original game. Later game folders
+  use separate records under `game-installs/`, so full-game installs and restores cannot reuse the demo's backups.
+- When runtime effects are needed and the destination lacks a loader, copy only the loader DLLs/settings/layouts
+  and allowlisted signature files from an existing Studio-managed installation. Preserve the source game and
+  unrelated mods; refuse conflicting destination files. Track newly copied files and remove only unchanged owned
+  copies on restore. Existing destination loaders remain unowned and are preserved.
+- Check runtime/loader ownership again before deployment and roll back added files if a runtime write fails.
+  Keep native prepared data and saved recipes. The supplied full-game log confirms its mod packed and passed
+  table verification, then stopped before installation; it does not establish live gameplay behavior.
+- Regression covers both folders through the actual pinned installer source, including legacy records, identical
+  backup timestamps, independent restores, loader conflicts, edited files, races and failed state writes.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

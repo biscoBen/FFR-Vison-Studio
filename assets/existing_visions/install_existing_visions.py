@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.58'
+VERSION = '1.2.59'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -260,6 +260,17 @@ def hook_builder(raw):
 
 def hook_server(raw):
     text = raw.decode('utf-8-sig'); tree = ast.parse(text)
+    # The upstream server has one package ledger and backup directory for every
+    # selected game. Resolve all reads/writes against the selected installation.
+    source_lines = text.splitlines(keepends=True)
+    for node in sorted((n for n in ast.walk(tree) if isinstance(n, ast.Name)
+                        and isinstance(n.ctx, ast.Load) and n.id in ('GAME_STATE', 'BACKUPS')),
+                       key=lambda n: (n.lineno, n.col_offset), reverse=True):
+        method = 'game_state_path' if node.id == 'GAME_STATE' else 'backup_root'
+        line = source_lines[node.lineno - 1].encode('utf-8')
+        replacement = ('_ffr_field_leader.' + method + '(ROOT, ffrenv.detect_game())').encode()
+        source_lines[node.lineno - 1] = (line[:node.col_offset] + replacement + line[node.end_col_offset:]).decode('utf-8')
+    text = ''.join(source_lines); tree = ast.parse(text)
     app, = [n for n in tree.body if isinstance(n, ast.Assign) and any(ast.unparse(t) == 'app' for t in n.targets)]
     if not isinstance(app.value, ast.Call) or ast.unparse(app.value.func) != 'FastAPI':
         raise RuntimeError('Unsupported native vision server layout.')
@@ -319,7 +330,7 @@ def hook_server(raw):
     for returned in [n for n in ast.walk(restore) if isinstance(n, ast.Return)]:
         indent = ' ' * returned.col_offset
         lines[returned.lineno - 1] = indent + '_ffr_field_leader.deploy(leader_plan)' + nl + lines[returned.lineno - 1]
-    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions, _ffr_launch', '_ffr_existingvisions.register(app, globals())', '']))
+    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions, _ffr_launch, _ffr_field_leader', '_ffr_existingvisions.register(app, globals())', '']))
     result = ''.join(lines); compile(result, 'server.py', 'exec')
     return (b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'') + result.encode('utf-8')
 

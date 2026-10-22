@@ -85,6 +85,13 @@ well as the composite. Saved recipes and native prepared dumps are preserved. Up
 setup does not require preparing it again solely for this change; its catalog routes refresh when loaded. The optional
 FFBE Needles test yields to the full game's native route if present, while retaining the saved switch for demo use.
 
+Switching between the demo and full-game folders keeps separate PC installation records and backups. Older records
+stay with the game named in their history; a new installation uses `engine/game-installs/<folder-hash>/`. The **Your
+game files** list and restore buttons show the selected game's records. Neither preparation nor switching folders
+restores or removes the other game's files. When needed, Studio can carry over the existing managed UE4SS loader's
+DLLs, settings, layouts and signature files, without copying other mods or logs. Conflicting destination files stop
+installation. Restoring removes only unchanged loader files that Studio copied; pre-existing loaders stay in place.
+
 ## Original-game test preset
 
 **Back up & apply original-game preset** turns off library changes, native repairs, borrowed Sephira visuals, FFBE
