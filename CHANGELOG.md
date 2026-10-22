@@ -11,22 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Full-game table support
-
-- Resolve demo composite names to the selected game's production packages using its official asset inventory.
-  Read shared and production parents together; write custom clones into the parent that actually owns the donor
-  and update the production composite. Preserve prepared source dumps and saved units/settings.
-- Apply the same resolution to practice battles, native-vision grants, caves, skill visuals and sound registration.
-  Verification recomputes physical table operations and still rejects unrelated changes. Refresh production skill
-  routes when loading an already-prepared catalog, without requiring another full preparation.
-- Include production bindings in native-reference reports, deduplicate parent/composite copies and expand future
-  collection to the map, shop, stage, dialogue and UI tables used by these features. If the optional FFBE Needles
-  test remains enabled, retain the full game's native timeline when present without changing the saved switch.
-- Offline validation uses the supplied full-game skill assets and the pinned native patcher: 38 sampled bindings,
-  76 added routing rows, exact readback of all three physical tables, and every original row preserved. Production
-  fixture tests cover practice/grants, split donors, conflicting parent rows, stale demo caches and strict verification.
-  The supplied ZIP omits actual full-game cave/menu table rows; live installation and gameplay still need testing.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -95,6 +79,50 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published full-game table support — 2026-10-22
+
+Code: [`db66b58`](https://github.com/biscoBen/FFR-Vison-Studio/commit/db66b583f3774596cc24f27e799564718f931df7), extension **1.2.58**.
+Windows package: [run 39825612562](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39825612562/Sephira-Studio-Test.zip). **47,477,843 bytes** (47.5 MB).
+SHA-256: `11dbb300153b8c2333e7e745c8b43eddb04f22f5ef025b0c97b34cf971d97a3d`.
+
+- Resolve demo composite names to the selected game's production packages using its official asset inventory.
+  Read shared and production parents together; write custom clones into the parent that actually owns the donor
+  and update the production composite. Preserve prepared source dumps and saved units/settings.
+- Apply the same resolution to practice battles, native-vision grants, caves, skill visuals and sound registration.
+  Verification recomputes physical table operations and still rejects unrelated changes. Refresh production skill
+  routes when loading an already-prepared catalog, without requiring another full preparation.
+- Include production bindings in native-reference reports, deduplicate parent/composite copies and expand future
+  collection to the map, shop, stage, dialogue and UI tables used by these features. If the optional FFBE Needles
+  test remains enabled, retain the full game's native timeline when present without changing the saved switch.
+- Offline validation uses the supplied full-game skill assets and the pinned native patcher: 38 sampled bindings,
+  76 added routing rows, exact readback of all three physical tables, and every original row preserved. Production
+  fixture tests cover practice/grants, split donors, conflicting parent rows, stale demo caches and strict verification.
+  The supplied ZIP omits actual full-game cave/menu table rows; live installation and gameplay still need testing.
+
+Update Studio while preserving **Studio Test Data**, retain the full-game folder selected and retry **Install to game**.
+The successful full-game preparation can be reused. Existing per-build review and source-specific guards remain active;
+this update does not certify untested full-game visuals, direction, timing, caves or menus.
+
+Validation: **109 focused local Python tests**, **55 passing Flutter tests** plus one Windows-only skip, and static
+analysis pass. The pinned native patcher/readback also registers a private bank in both full-game sound tables,
+preserving every native row. All **30** preset unit IDs and **292** custom skill sources have no full-game definition/
+route-ID conflicts. Full Windows analysis/tests, fresh frozen-engine setup, Python suite, bundle checks, launcher/updater
+checks and compilation pass for the same commit. The separate Linux launcher and Windows snapshot-transfer checks
+pass. Downloaded provenance/SHA-256, all **53** extension and **16** Crystal Fina file hashes, and the standalone Deck
+installer match source. Native source files remain local; the archived FFBE library is not included in the update.
+
+Measured timing: first complete candidate **2026-10-22 17:44:26.540 UTC** → verified package
+**18:01:33.907 UTC**, **17m 07s**, including focused checks, a corrected local test-import invocation,
+additional native audio verification, CI waits and download verification. Timer not restarted. One matching automatic
+Windows build was reused, plus the expected Deck workflow; no manual or duplicate build was dispatched.
+
+| Workflow | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | ---: | ---: | ---: |
+| Windows 39825612562 | 13m 45s | 16m 57s | 4m 46s |
+| Deck 39825612576 | 2m 11s | 2m 11s | 1m 43s |
+
+Summed runner usage: **25m 37s** (**19m 08s Windows**, **6m 29s Linux**), separate from elapsed delivery time.
 
 ## Published native reference collection fix — 2026-10-22
 

@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Full-game table support — 2026-10-22
+
+[Verified Windows download / run 39825612562](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39825612562/Sephira-Studio-Test.zip)
+(code `db66b58`, extension **1.2.58**; **47.5 MB**).
+
+Use the full game's production composites and split parent tables for skills, sounds, practice battles, native-vision
+grants and cave recipes. Prepared full-game catalogs now include production skill routes. Keep **Studio Test Data**,
+update Studio, keep the full-game folder selected and retry **Install to game**. Your successful preparation can be
+reused; saved recipes and testing preferences are preserved. The pre-upstream rollback kit below remains available.
+
+Full Windows validation/compilation and Deck transfer checks pass; the downloaded package matches source. Native
+patcher/readback tests preserve all original rows across sampled full-game skill and sound tables. Actual full-game
+cave/menu rows were absent from the supplied reference, and live gameplay still needs testing on the user's PC.
+
 ### Native reference collection fix — 2026-10-22
 
 [Verified Windows download / run 39815956581](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39815956581/Sephira-Studio-Test.zip)
@@ -16,7 +30,7 @@ error plus table name on failure. No upstream engine or mappings update is inclu
 Close Studio, update its existing folder while keeping **Studio Test Data**, reopen it and retry **Collect current
 game reference**. Your successful game preparation can be reused. Choose **Download latest reference** after collection
 finishes. Windows native-reader, collection/download regression and full build checks pass; the downloaded files match
-source. Collection from the user's actual full-game installation still needs a retry.
+source. The subsequently returned full-game reference confirms collection succeeded; see the release checklist.
 
 ### Backup before upstream changes — 2026-10-22
 
@@ -1166,7 +1180,7 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 ## Full-game release checklist
 
-Full-game table support is being packaged in extension **1.2.58**. Studio resolves production composites and split
+Full-game table support is available in the [verified package](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39825612562/Sephira-Studio-Test.zip), extension **1.2.58**. Studio resolves production composites and split
 parent tables from the prepared official inventory, including custom skill donors and sound registration. It also
 uses these physical paths for practice/grant/cave recipes and their verification. Existing full-game preparation
 can be reused; the catalog refreshes its production routes when loaded. Saved roster edits and testing preferences
