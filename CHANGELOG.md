@@ -11,6 +11,21 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Returned full-game reference audit — 2026-10-22
+
+- Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
+  7,087 timeline files from full-game fingerprint `8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4`.
+  Record archive provenance and the comparison in the README release checklist. Captured unit, AI, skill/passive,
+  vision and mastery data match the demo; this does not establish runtime compatibility.
+- Audit the actual production skill composite, including definition pointers and character links. Candidate route
+  coverage grows from 286 to 1,074 of 1,167 definitions; 788 gain routes, none lose all routes, and 798 distinct route
+  sets change. All 21 named missing-visual cases (22 candidate IDs) have visual and sound timeline packages present.
+  Retain the Waterga variant uncertainty and require live direction, sound and timing tests.
+- Identify remaining migration work: builder/extensions select demo composites and generic-only donors; the reference
+  omits map, shop, stage, dialogue and UI table rows. The collector's skill-route report also overlooks production-only
+  tables, so its 286 changed-skills count is incomplete; this audit uses the original captured rows instead.
+  Documentation only: no code/engine update, gameplay changes, asset publication or new binary. Rollback checkpoint retained.
+
 ### Full-game preparation observation — 2026-10-22
 
 - Record the user's full-game preparation: 2,618 tables, followed by retries for 191 unread tables. The follow-up

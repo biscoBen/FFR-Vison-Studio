@@ -1174,6 +1174,43 @@ globally before extraction; restarting is not required to change paths. Referenc
 and can run after preparation stops, even if preparation failed, but may encounter the same table-reader issue.
 The [launch-preparation tools](docs/LAUNCH_PREPARATION.md) provide native comparisons, a reversible original-game
 test preset, editable/compiled snapshots and a per-build test sheet; they do not mark the items below complete.
+
+The returned **Resonance-Native-Reference.zip** collected with extension **1.2.57** successfully captures full-game
+fingerprint `8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4`.
+Archive SHA-256: `4208fcecda16a7f88506d9fab2c353d0c96595bf7596386cd4f691ba47c14da1`.
+The October 22 audit finds **106 scoped tables**, **58,035 inventory assets** and **7,087 timeline files**.
+Of the 88 table names shared with the demo reference, 87 have identical schema/row metadata; the remaining shared
+skill-asset table loses two Drain variants. Captured unit parameters, AI, skill/passive definitions, vision items,
+awakening/MR and synchro mastery data match the demo. This is an offline comparison, not a full-game install or play pass.
+
+The full game replaces the demo skill composite with **CDT_SkillAsset_Prod**: its 1,355 rows combine 428 generic
+rows with 942 production rows, including 15 identical shared rows. Auditing that actual composite with definition
+pointers and character links finds candidate routes for **1,074 of 1,167 skill definitions**, compared with **286**
+in the demo: **788** definitions gain routes, none lose all routes, and **798** have changed distinct route sets.
+These are candidate routes, not verified visual counts. The currently exported comparison omits the production-only
+skill tables from its skill-route summary; its **286 changed-skills** count is incomplete. Original rows and packages
+in the ZIP remain available and were used directly for this audit. Do not use that partial count as the full comparison.
+
+All **21 named missing-visual test cases** now have native candidate routes with both visual and sound timeline
+packages present, covering **22 candidate skill IDs** and **36 distinct routing rows**. Preserve the unresolved Waterga
+variant and the earlier observations separately from this new asset evidence:
+
+| Original comparison source | Newly available native test cases / exact skill IDs |
+| --- | --- |
+| Cactuar / Gigantuar | 1,000 Needles `500270`; 10,000 Needles `505110` |
+| Watcher / Ganymede | Megavolt `500180`; Atomic Ray `500380` |
+| Malbodoom / Malboro Marquis | Bad Breath `505020`; Pollen `500690`; Flatten `500190` |
+| Sheratan | Alluring Pollen `503770`; Octo-Strike `501070`; Branch Spear `503780`; Stonega `255170`; Aeroga `250190` |
+| Alpherg | Bubble Breath `501680`; Reflectga `503800`; Waterga `250150` or `255110`; Flare `250330` |
+| Bomb / Wood Eyes / White Peak | Self-Destruct `500720`; Constrict `500590`; White Wind `500810` |
+| Earlier imported-vision tests only | Blighted Gloom `407050`; Carmine Inferno `505340` |
+
+Studio's builder and several extensions still select `_Demo` composites and generic-only skill donors. Production
+donor rows require proper table resolution; changing the composite name alone is insufficient. The captured scopes
+also omit map, shop, stage, dialogue and UI table rows, so this ZIP cannot establish cave, practice-menu or acquisition
+compatibility. No source assets from the archive are published, no native visuals are marked verified, no gameplay
+switches are changed, and the pre-upstream rollback checkpoint remains intact.
+
 Keep user cave placements, character configs, concise descriptions and source labels. Add new demo-dependent
 features here as work continues. Mark an item complete only with the tested game version, Studio commit and evidence;
 retain unresolved cases and record the date/source fingerprints when refreshing catalogs.
