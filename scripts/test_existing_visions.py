@@ -388,7 +388,8 @@ class NativeVisionTests(unittest.TestCase):
                    'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
                    'ffbe_audio': SimpleNamespace(banks=lambda a: [])}
             fina = SimpleNamespace(prepare=lambda *args: None, copy_material=lambda *args: None)
-            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}):
+            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}), \
+                    mock.patch.object(sys.modules['_ffr_testing'], 'verify_table_recipe'):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'native_builder_fixture', 'exec'), env)
                 env['main']()
             result = json.loads((build / 'patch.json').read_text())
@@ -422,7 +423,8 @@ class NativeVisionTests(unittest.TestCase):
                    'ffrenv': SimpleNamespace(py=lambda *a: list(a), MOD_NAME='fixture'),
                    'ffbe_audio': SimpleNamespace(banks=lambda a: [])}
             fina = SimpleNamespace(prepare=lambda *args: None, copy_material=lambda *args: None)
-            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}):
+            with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_crystalfina': fina, '_ffr_animation_repair': animation}), \
+                    mock.patch.object(sys.modules['_ffr_testing'], 'verify_table_recipe'):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'restored_builder_fixture', 'exec'), env)
                 env['main']()
             result = json.loads((build / 'patch.json').read_text())

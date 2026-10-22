@@ -6,7 +6,7 @@ import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
 
-const _stages = ['Starting', 'Preparing the game tables', 'Writing game tables and copying battle sequences', 'Applying Resonance and animation edits', 'Converting sprites and icons', 'Packing the mod', 'Verifying the game tables', 'Done'];
+const _stages = ['Starting', 'Preparing the game tables', 'Writing game tables and copying battle sequences', 'Checking game tables before sprite conversion', 'Applying Resonance and animation edits', 'Converting sprites and icons', 'Packing the mod', 'Verifying the game tables', 'Done'];
 
 /// Build progress as a guide "notes" box: stage, bar, outcome, and the console on demand.
 class BuildStatus extends StatefulWidget {
@@ -43,7 +43,7 @@ class _BuildStatusState extends State<BuildStatus> {
           if (running) ...[
             LinearProgressIndicator(value: pct, minHeight: 8, color: Guide.blue, backgroundColor: Guide.paper3),
             const SizedBox(height: 8),
-            Text('A full build takes a few minutes: sprites are converted for every unit each time.', style: Guide.small()),
+            Text('Game tables are checked before sprite conversion. A full build still takes a few minutes.', style: Guide.small()),
           ],
           if (!running && st['message'] != null) Text(st['message'] as String, style: Guide.text(ok ? Guide.green : Guide.red)),
           if (open) ...[

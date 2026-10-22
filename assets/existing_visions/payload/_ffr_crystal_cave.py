@@ -237,16 +237,28 @@ def verify_shops(root, tool, usmap):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
     import _ffr_sephira
-    units = _ffr_sephira.active_units(units)
-    def rows(rel): return json.loads((root / 'extracted/rows' / (rel + '.json')).read_bytes())['rows']
+    import _ffr_game_tables
+    rows = _ffr_game_tables.reader(root)
+    units = _ffr_sephira.visual_units(_ffr_sephira.active_units(units), root, rows)
     operations = prepare_shops({}, units, rows)
-    if not operations: return
+    # Normal routes can add Folka to Olderion as well as Aria/user visions to
+    # Mitra. Check the complete inventory, including its story condition.
+    import _ffr_shrine_challenges
+    def table(rel):
+        return operations.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+    _ffr_shrine_challenges.prepare_shop(table, rows, units)
     import _ffr_testing
-    rel = 'Shop/DT_ShopList'; operation = operations[rel]
+    rel = 'Shop/DT_ShopList'
+    operation = operations.get(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+    asset = root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')
+    if not operations and not asset.is_file(): return
     target = root / 'build/vision-testing/shops-verified.json'; target.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
+    subprocess.run(tool + ['rows', str(asset),
                            str(target), '--usmap', usmap], check=True, capture_output=True)
-    _ffr_testing.check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+    try:
+        _ffr_testing.check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)
+    except ValueError as error:
+        raise ValueError(f'{rel}: {error}') from error
     print('OK: selected native vendor inventories and unrelated rows verified')
 
 

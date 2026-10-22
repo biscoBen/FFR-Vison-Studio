@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.61'
+VERSION = '1.2.62'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -215,7 +215,10 @@ def hook_builder(raw):
                    '_ffr_fina_battle.build(native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))',
                    'import _ffr_field_leader',
                    '_ffr_field_leader.build(party_units + native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))']
-    additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch, pack.lineno - 1: before_pack}
+    early_check = ['stage("Checking game tables before sprite conversion")',
+                   '_ffr_testing.verify_table_recipe(ROOT, FFRDT, USMAP)']
+    additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch,
+                 timeline_loop.lineno - 1: early_check, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
     lines[layout_source.lineno - 1] = '    layout = _ffr_existingvisions.menu_layout(dict(globals(), LEGACY=LEGACY), UNITS)' + nl
     # Party specs describe only appearance. The legacy vision loader adds

@@ -539,6 +539,17 @@ def apply_fields(row, fields):
     return result
 
 
+def equivalent(a, b):
+    """The native serializer can emit signed floating zero as a string."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(equivalent(a[k], b[k]) for k in a)
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(equivalent(x, y) for x, y in zip(a, b))
+    if type(a) is str and a in ('+0', '-0') and type(b) in (int, float): return b == 0
+    if type(b) is str and b in ('+0', '-0') and type(a) in (int, float): return a == 0
+    return a == b
+
+
 def check_rows(original, built, operation, plan=None, finalize=None):
     expected = copy.deepcopy(original)
     # The shared table also contains imported visions, native edits and private
@@ -550,13 +561,50 @@ def check_rows(original, built, operation, plan=None, finalize=None):
     for e in operation['add']: expected[e['row']] = apply_fields(original[e['cloneFrom']], e['set'])
     for e in operation['set']: expected[e['row']] = apply_fields(expected[e['row']], e['set'])
     if finalize is not None: expected = finalize(expected)
-    if built != expected:
+    if not equivalent(built, expected):
         missing = sorted(expected.keys() - built.keys())
         extra = sorted(built.keys() - expected.keys())
-        changed = sorted(k for k in expected.keys() & built.keys() if expected[k] != built[k])
+        changed = sorted(k for k in expected.keys() & built.keys() if not equivalent(expected[k], built[k]))
         detail = '; '.join(f'{label}: {", ".join(keys[:5])}'
                            for label, keys in (('missing', missing), ('extra', extra), ('changed', changed)) if keys)
         raise ValueError('Studio testing changed an unrelated row or lost its grant/reward/battle settings. ' + detail)
+
+
+def verify_table_recipe(root, tool, usmap):
+    """Read back patched tables before generating sprites, effects or the pack.
+
+    Later scene builders intentionally finalize some rows; the existing final
+    verifier still checks those after all assets are complete.
+    """
+    root = Path(root)
+    patch = json.loads((root / 'build/visions_mod/patch.json').read_text(encoding='utf-8-sig'))
+    work = root / 'build/vision-testing/early'; work.mkdir(parents=True, exist_ok=True)
+    prefix = 'FFRS/Content/Datatable/'
+    def exported_rows(rel, expected):
+        # Hard class imports are written with a package path but exported by
+        # object name. This is also required by the final boss AI verifier.
+        if rel in ('Asset/Battle/AI/DT_BtlUnitAIAsset', 'Asset/Battle/AI/DT_CompositeBtlUnitAIAsset'):
+            for row in expected.values():
+                value = row.get('UnitAIClass')
+                if isinstance(value, str) and value.startswith('/Game/') and '.' in value:
+                    row['UnitAIClass'] = value.rsplit('.', 1)[1]
+        return expected
+    for operation in patch['tables']:
+        asset = operation['asset']
+        if not asset.startswith(prefix): raise ValueError('Unexpected game table package: ' + asset)
+        rel = asset.removeprefix(prefix)
+        target = work / (rel.replace('/', '_') + '.json')
+        try:
+            original = json.loads((root / 'extracted/rows' / (rel + '.json')).read_text(encoding='utf-8-sig'))['rows']
+            subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (asset + '.uasset')),
+                                   str(target), '--usmap', usmap], check=True, capture_output=True)
+            check_rows(original, json.loads(target.read_text(encoding='utf-8-sig'))['rows'],
+                       {'add': [], 'set': []}, operation, lambda expected: exported_rows(rel, expected))
+        except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
+            raise ValueError(f'Early game-table check failed for {rel}: {error}') from error
+    import _ffr_crystal_cave
+    _ffr_crystal_cave.verify_shops(root, tool, usmap)
+    print('OK: game tables checked before sprite conversion and packing', flush=True)
 
 
 def verification_operations(root, units, rows):
