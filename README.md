@@ -1,12 +1,29 @@
 # FFR Vision Studio (Windows app)
 
-Work in progress: Sephira’s MR/acquisition revision adds guarded shrine challenges and a backed-up
-**Apply MR and acquisition update** button. See [the complete vision guide](SEPHIRAS_VISIONS.md).
-This revision is awaiting its Windows test package; downloads below remain the previous verified build.
-
 This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), separately from the original project's
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
+
+### Sephira MR rewards and vision challenges — 2026-10-22
+
+[Verified Windows download / run 39857881255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39857881255/Sephira-Studio-Test.zip)
+(code `3fc7cdb`, extension **1.2.60**; **47.5 MB**).
+
+Rework all 30 presets’ MR rewards to follow native progression, preserve their learned skills and awakening budgets,
+and add guarded, locally scaled boss challenges for 28 visions. Each opposing team shares one boss budget.
+Aria is sold in Mitra; Folka unlocks in Olderion after its guardian story scene. Barusa/Ariana have a separate
+Zoldaad cave requiring Wilhelm’s completed quest. Original shrine rewards and repeat memories are preserved.
+Crystal Fina also builds correctly after **Restore missing** allocates a new unit ID.
+
+Close Studio, update while keeping **Studio Test Data**, then click **Apply MR and acquisition update** in
+**Sephira’s visions** and rebuild/install. The update backs up the roster and retains identities, artwork, custom
+skills and learned abilities. Successful preparation for the same game build can be reused. See
+[the complete vision guide](SEPHIRAS_VISIONS.md) for locations, prerequisites, rewards and boss teams.
+
+Full Windows validation and compilation pass; the downloaded package’s provenance, checksums and bundled recipes
+match source. Native readback checks cover 29 full-game tables, all challenge AI/dialogues and the added Tronn
+interaction. Actual battle difficulty, controller flow and every shrine encounter still need live playtesting.
+See [validation and measured timings](CHANGELOG.md#published-sephira-mr-progression-and-guarded-vision-challenges--2026-10-22).
 
 ### Install after switching game folders — 2026-10-22
 

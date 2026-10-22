@@ -11,27 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Sephira MR progression, guarded vision challenges and Crystal Fina restore fix
-
-- Give all 30 presets five learned MR rewards at 1/3/5/7/9, one permanent role stat at 2/6/8,
-  AP at 4, and Spirit mastery plus AP alongside the MR9 ability. Keep MR0 as the native starting rank.
-  Preserve all earlier learned abilities and the 20–28 awakening quota; eight low-tier attacks fill the short kits.
-- Add **Apply MR and acquisition update** for saved presets. Back up the roster before saving and retain identities,
-  sprites, stats, custom skill mechanics and learned abilities. Already-updated presets keep later edits.
-- Add the requested 28 challenge rewards at the matched originals’ crystals; Barusa/Ariana use a separate Zoldaad
-  cave. Check each original’s ownership or actual completion state before the menu, before battle and before rewards.
-  Tronn uses his story grant; Wilhelm uses final quest progress 48/50. Keep original shrine memories available.
-- Share one local-level boss budget across each opposing team, including Cecil’s three visions. Add private enemy
-  copies of learned active skills, generic attacks, staggered eight-action AI, bounded recovery and native visuals/sounds.
-  Winning grants missing visions only; cancel/escape/loss never grant them. Add no farmable experience, gil or drops.
-- Place Aria in Mitra’s shop and Folka in Olderion’s item shop after its guardian story scene. Folka costs twice
-  the highest other inventory price. Locations and gates come from the supplied full-game maps, quests and tables.
-- Fix Crystal Fina’s material verification after Restore missing assigns a new ID: verify the intended texture-name
-  rename while still requiring the original cooked shader/export bytes. No extra extraction is needed for this fix.
-- Keep standalone sprite conversion independent of challenge helpers when no saved roster is present.
-- Validation covers portable migration, original event preservation, all unlocks, native table serialization and AI
-  execution. Gameplay balance, controller interaction and all shrine fights still require live full-game testing.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -100,6 +79,63 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Sephira MR progression and guarded vision challenges — 2026-10-22
+
+Code: [`3fc7cdb`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3fc7cdb313ba2419673133c321307c8986c487f6), extension **1.2.60**.
+Windows package: [run 39857881255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39857881255/Sephira-Studio-Test.zip). **47,513,201 bytes** (47.5 MB).
+SHA-256: `73fa2d10de15878f48b2e87ca6d4557cb28bdf494eb365d24d5ea7c4addfa503`.
+
+- Give all 30 presets five learned MR rewards at 1/3/5/7/9, one permanent role stat at 2/6/8,
+  AP at 4, and Spirit mastery plus AP alongside the MR9 ability. Keep MR0 as the native starting rank.
+  Preserve all earlier learned abilities and the 20–28 awakening quota; eight low-tier attacks fill the short kits.
+- Add **Apply MR and acquisition update** for saved presets. Back up the roster before saving and retain identities,
+  sprites, stats, custom skill mechanics and learned abilities. Already-updated presets keep later edits.
+- Add the requested 28 challenge rewards at the matched originals’ crystals; Barusa/Ariana use a separate Zoldaad
+  cave. Check each original’s ownership or actual completion state before the menu, before battle and before rewards.
+  Tronn uses his story grant; Wilhelm uses final quest progress 48/50. Keep original shrine memories available.
+- Share one local-level boss budget across each opposing team, including Cecil’s three visions. Add private enemy
+  copies of learned active skills, generic attacks, staggered eight-action AI, bounded recovery and native visuals/sounds.
+  Winning grants missing visions only; cancel/escape/loss never grant them. Add no farmable experience, gil or drops.
+- Place Aria in Mitra’s shop and Folka in Olderion’s item shop after its guardian story scene. Folka costs twice
+  the highest other inventory price. Locations and gates come from the supplied full-game maps, quests and tables.
+- Fix Crystal Fina’s material verification after Restore missing assigns a new ID: verify the intended texture-name
+  rename while still requiring the original cooked shader/export bytes. No extra extraction is needed for this fix.
+- Keep standalone sprite conversion independent of challenge helpers when no saved roster is present.
+- Validation covers portable migration, original event preservation, all unlocks, native table serialization and AI
+  execution. Gameplay balance, controller interaction and all shrine fights still require live full-game testing.
+
+Close Studio, update while keeping **Studio Test Data**, then use **Apply MR and acquisition update** in
+**Sephira’s visions** before rebuilding/installing. Keep the full-game folder selected. Preparation for the same
+build is reusable. See [the complete vision guide](SEPHIRAS_VISIONS.md) for the final kits, MR rewards, all original
+acquisition gates, encounter levels and teams. This package includes the Restore missing Crystal Fina fix.
+
+Validation: local static analysis, **268 Flutter passes** plus one skip, and **542 Python checks** with 22 skips
+pass. Native patch/readback verifies **3,071 operations across 29 full-game tables**, preserves unrelated rows and
+original vision grants, and roundtrips all **28 AI classes**, **45 choice sequences**, the reward sequence and Tronn’s
+private interaction/streaming assets. Actual pinned material serialization passes with reassigned Fina IDs 13500 and
+13514 while retaining identical cooked export bytes. Migration checks preserve earlier learned abilities and edits.
+The initial Windows build compiled but found three standalone converter tests loading a challenge dependency without
+a roster. The import is now conditional, and those tests pass with an isolated subprocess environment.
+Final full Windows analysis/tests, fresh frozen-engine setup, Python suite, bundle checks, launcher/updater checks
+and compilation all pass for the same code commit. The companion Deck workflow passes; its files are unchanged by
+the converter correction. The downloaded release matches provenance/SHA-256, all **55** extension and **16** Crystal
+Fina file hashes, the 30 preset recipes and the standalone Deck installer. The optional FFBE library remains separate.
+Offline checks do not establish live battle balance, controller interaction or every shrine encounter.
+
+Measured timing: first complete candidate **2026-10-22 21:12:10.885 UTC** → verified package
+**21:45:34.312 UTC**, **33m 23s**, including local checks, the Windows converter correction, user approval wait,
+both builds, CI waits and download verification. Timer not restarted. The helper reused each exact-commit automatic
+push run; no manual or duplicate build was dispatched. The README/CHANGELOG publication commit uses the cheap
+checks and does not rebuild or relabel this binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Windows 39856415003 | failure | 10m 02s | 12m 47s | 3m 05s |
+| Deck 39856414858 | success | 2m 10s | 2m 10s | 1m 50s |
+| Windows 39857881255 | success | 13m 23s | 13m 45s | 4m 27s |
+
+Summed runner usage: **38m 04s** (**28m 42s Windows**, **9m 22s Linux**), separate from elapsed delivery time.
 
 ## Published installation records for separate game folders — 2026-10-22
 
