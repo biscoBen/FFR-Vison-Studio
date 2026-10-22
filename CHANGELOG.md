@@ -11,22 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Installing after switching from demo to full game
-
-- Fix installation stopping at “Restore the field leader runtime in the previous game folder first.”
-  Keep the legacy runtime/package ownership records and backups with their original game. Later game folders
-  use separate records under `game-installs/`, so full-game installs and restores cannot reuse the demo's backups.
-- When runtime effects are needed and the destination lacks a loader, copy only the loader DLLs/settings/layouts
-  and allowlisted signature files from an existing Studio-managed installation. Preserve the source game and
-  unrelated mods; refuse conflicting destination files. Track newly copied files and remove only unchanged owned
-  copies on restore. Existing destination loaders remain unowned and are preserved.
-- Check runtime/loader ownership again before deployment and roll back added files if a runtime write fails.
-  Bind package records/backups to the folder captured by the operation, even if the selected folder changes mid-copy.
-  Keep native prepared data and saved recipes. The supplied full-game log confirms its mod packed and passed
-  table verification, then stopped before installation; it does not establish live gameplay behavior.
-- Regression covers both folders through the actual pinned installer source, including legacy records, identical
-  backup timestamps, independent restores, loader conflicts, edited files, races and failed state writes.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -95,6 +79,56 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published installation records for separate game folders — 2026-10-22
+
+Code: [`3c0b1aa`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3c0b1aa4345ff4c37b42d68de80b0bed0a4dc91f), extension **1.2.59**.
+Windows package: [run 39833304270](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39833304270/Sephira-Studio-Test.zip). **47,479,720 bytes** (47.5 MB).
+SHA-256: `bb430d4ee5ae1fd3e2b98e11d0284a958f71bc65c85aeab891c153ff0ed4e7af`.
+
+- Fix installation stopping at “Restore the field leader runtime in the previous game folder first.”
+  Keep the legacy runtime/package ownership records and backups with their original game. Later game folders
+  use separate records under `game-installs/`, so full-game installs and restores cannot reuse the demo's backups.
+- When runtime effects are needed and the destination lacks a loader, copy only the loader DLLs/settings/layouts
+  and allowlisted signature files from an existing Studio-managed installation. Preserve the source game and
+  unrelated mods; refuse conflicting destination files. Track newly copied files and remove only unchanged owned
+  copies on restore. Existing destination loaders remain unowned and are preserved.
+- Check runtime/loader ownership again before deployment and roll back added files if a runtime write fails.
+  Bind package records/backups to the folder captured by the operation, even if the selected folder changes mid-copy.
+  Keep native prepared data and saved recipes. The supplied full-game log confirms its mod packed and passed
+  table verification, then stopped before installation; it does not establish live gameplay behavior.
+- Regression covers both folders through the actual pinned installer source, including legacy records, identical
+  backup timestamps, independent restores, loader conflicts, edited files, races and failed state writes.
+
+Update Studio while keeping **Studio Test Data** and the full-game folder selected. The returned log shows a
+successfully built and verified mod; use **Install the last build** if the game/settings are still the same.
+No new game preparation is required solely for this fix. The user's actual installation and runtime playback still
+need a retry; copying an existing loader does not establish live full-game compatibility.
+
+Validation: **107 focused local Python checks** (one platform skip) and **28 Flutter passes** plus one Windows-only
+skip; static analysis passes. After binding the operation to its captured folder, **50 focused Python checks** pass.
+All **nine migration cases** also pass after making their filesystem snapshot comparison portable on Windows.
+Exercise the actual pinned server's install/restore functions using independent temporary game folders, legacy
+ledgers, equal backup timestamps, mid-copy selection changes and unrelated files. Check runtime loader copy,
+conflict refusal, edited-file preservation and rollback after failed state writes. Full Windows analysis/tests,
+fresh frozen-engine setup, Python suite, bundle checks, launcher/updater checks and compilation pass for the same
+final commit. Downloaded provenance/SHA-256, all **53** extension and **16** Crystal Fina file hashes, and the unchanged
+standalone Deck installer match source. No native assets or personal installation records are published.
+
+Measured timing: first complete candidate **2026-10-22 18:23:32.763 UTC** → verified package
+**18:53:21.275 UTC**, **29m 48s**, including local checks, the folder-binding correction,
+a Windows test-path correction, superseded builds, queue waits and download verification. Timer not restarted.
+Three automatic push runs were used; the first two were superseded and cancellation was requested. The helper reused
+the final exact-commit run; no manual or duplicate workflow was dispatched. No separate Deck workflow was triggered
+by these paths; the standalone installer source is unchanged.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| 39831313547 | cancelled | 7m 20s | 7m 44s | 3m 21s |
+| 39831972601 | cancelled | 11m 39s | 12m 47s | 3m 19s |
+| 39833304270 | success | 13m 19s | 14m 19s | 4m 51s |
+
+Summed runner usage: **46m 21s** (**34m 50s Windows**, **11m 31s Linux**), separate from elapsed delivery time.
 
 ## Published full-game table support — 2026-10-22
 

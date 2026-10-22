@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Install after switching game folders — 2026-10-22
+
+[Verified Windows download / run 39833304270](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39833304270/Sephira-Studio-Test.zip)
+(code `3c0b1aa`, extension **1.2.59**; **47.5 MB**).
+
+Fix installation stopping because the runtime record belongs to the demo. Keep separate package/runtime records and
+backups for the full-game folder, preserving the demo's files and restore history. Carry over an existing managed
+loader when the destination lacks one, without copying other mods or overwriting conflicting destination files.
+
+Close Studio, update while keeping **Studio Test Data**, then use **Install the last build** with the full-game folder
+selected if your settings/game have not changed. The supplied log confirms its mod built and passed verification;
+no new preparation is needed for this installer fix. Windows validation/compilation and install/restore regression
+checks pass, and the downloaded package matches source. The user's actual game installation still needs a retry.
+
 ### Full-game table support — 2026-10-22
 
 [Verified Windows download / run 39825612562](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39825612562/Sephira-Studio-Test.zip)
