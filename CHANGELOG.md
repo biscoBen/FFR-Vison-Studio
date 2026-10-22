@@ -21,6 +21,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   unrelated mods; refuse conflicting destination files. Track newly copied files and remove only unchanged owned
   copies on restore. Existing destination loaders remain unowned and are preserved.
 - Check runtime/loader ownership again before deployment and roll back added files if a runtime write fails.
+  Bind package records/backups to the folder captured by the operation, even if the selected folder changes mid-copy.
   Keep native prepared data and saved recipes. The supplied full-game log confirms its mod packed and passed
   table verification, then stopped before installation; it does not establish live gameplay behavior.
 - Regression covers both folders through the actual pinned installer source, including legacy records, identical

@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -160,10 +161,18 @@ class GameFolderInstallTests(unittest.TestCase):
                'ffrenv': SimpleNamespace(detect_game=lambda: str(selected[0])),
                '_ffr_launch': SimpleNamespace(guard=lambda *a, **k: None), '_ffr_field_leader': leader}
         exec(compile(ast.Module(body=methods, type_ignores=[]), 'pinned_install_server', 'exec'), env)
-        self.assertEqual(env['install_files']()['files'], 3)
+        original_copy = shutil.copy2
+        def select_demo_during_copy(source, target, *args, **kwargs):
+            result = original_copy(source, target, *args, **kwargs)
+            if Path(target) == self.full / sync.PAKS[-1]: selected[0] = self.demo
+            return result
+        with mock.patch.object(shutil, 'copy2', side_effect=select_demo_during_copy):
+            self.assertEqual(env['install_files']()['files'], 3)
+        self.assertEqual(selected[0], self.demo)
         self.assertEqual(files(self.demo), previous)
         self.assertEqual(legacy.read_bytes(), legacy_bytes)
         self.assertEqual(old_backup.read_bytes(), b'demo original pak')
+        selected[0] = self.full
         current = env['game_files']()
         self.assertEqual(current['record']['installs'][-1]['game'], str(self.full))
         self.assertEqual([v['id'] for v in current['backups']], ['same-stamp'])

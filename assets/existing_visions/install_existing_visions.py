@@ -263,13 +263,36 @@ def hook_server(raw):
     # The upstream server has one package ledger and backup directory for every
     # selected game. Resolve all reads/writes against the selected installation.
     source_lines = text.splitlines(keepends=True)
-    for node in sorted((n for n in ast.walk(tree) if isinstance(n, ast.Name)
-                        and isinstance(n.ctx, ast.Load) and n.id in ('GAME_STATE', 'BACKUPS')),
-                       key=lambda n: (n.lineno, n.col_offset), reverse=True):
-        method = 'game_state_path' if node.id == 'GAME_STATE' else 'backup_root'
-        line = source_lines[node.lineno - 1].encode('utf-8')
-        replacement = ('_ffr_field_leader.' + method + '(ROOT, ffrenv.detect_game())').encode()
-        source_lines[node.lineno - 1] = (line[:node.col_offset] + replacement + line[node.end_col_offset:]).decode('utf-8')
+    edits = []
+    functions = [n for n in tree.body if isinstance(n, ast.FunctionDef)]
+    ledger_functions = {f.name for f in functions} & {'_game_state', '_save_game_state'}
+    for function in functions:
+        # Bind mutations to the paks folder captured by the operation, even if
+        # the selected folder changes while its files are being copied.
+        game = ('_game_root(paks)' if function.name in ('install_files', 'restore_game') else
+                '(_game_root(paks) if paks else None)' if function.name in ('game_files', 'status') else
+                '(game or ffrenv.detect_game())' if function.name in ledger_functions else 'ffrenv.detect_game()')
+        if function.name in ledger_functions:
+            line = source_lines[function.lineno - 1].encode('utf-8')
+            closing = line.index(b'):')
+            edits.append((function.lineno, closing, closing,
+                          (', game=None' if function.args.args else 'game=None').encode()))
+        for node in ast.walk(function):
+            replacement = None
+            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and node.id in ('GAME_STATE', 'BACKUPS'):
+                method = 'game_state_path' if node.id == 'GAME_STATE' else 'backup_root'
+                replacement = '_ffr_field_leader.' + method + '(ROOT, ' + game + ')'
+            elif (function.name not in ledger_functions and isinstance(node, ast.Call)
+                  and isinstance(node.func, ast.Name) and node.func.id in ledger_functions):
+                if node.lineno != node.end_lineno: raise RuntimeError('Unsupported installation ledger call.')
+                arguments = [ast.get_source_segment(text, arg) for arg in node.args]
+                replacement = node.func.id + '(' + ', '.join([*arguments, game]) + ')'
+            if replacement is not None:
+                if node.lineno != node.end_lineno: raise RuntimeError('Unsupported installation ledger reference.')
+                edits.append((node.lineno, node.col_offset, node.end_col_offset, replacement.encode('utf-8')))
+    for lineno, start, stop, replacement in sorted(edits, key=lambda e: e[:3], reverse=True):
+        line = source_lines[lineno - 1].encode('utf-8')
+        source_lines[lineno - 1] = (line[:start] + replacement + line[stop:]).decode('utf-8')
     text = ''.join(source_lines); tree = ast.parse(text)
     app, = [n for n in tree.body if isinstance(n, ast.Assign) and any(ast.unparse(t) == 'app' for t in n.targets)]
     if not isinstance(app.value, ast.Call) or ast.unparse(app.value.func) != 'FastAPI':
