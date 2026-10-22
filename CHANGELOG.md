@@ -11,20 +11,11 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Native reference collection mappings lock
-
-- Give each parallel reference reader a private temporary copy of the mappings file. The pinned reader opens
-  mappings with exclusive sharing; the previous workers competed for one file and could abort collection.
-  Preserve the original mapping bytes and prepared game data. No upstream engine or mapping replacement is applied.
-- Check the mapping path before extraction, log decoded tables, and retain the leading error cause plus the table
-  name if a native read fails. A failed collection still cannot publish a complete reference.
-- Reproduce the native sharing failure and check parallel isolation plus the finished reference download.
-  Windows publication and collection from the user's full-game installation still need verification.
-
 ### Full-game preparation observation — 2026-10-22
 
-- Record the user's first full-game preparation screenshot: 2,618 tables, followed by retries for 191 unread tables.
-  No final error or confirmed hang is supplied. The existing retry loop does not log each table individually.
+- Record the user's full-game preparation: 2,618 tables, followed by retries for 191 unread tables. The follow-up
+  screenshot finished **ready**, with 118 unread tables outside the setup's required set. No hang is confirmed.
+  The existing preparation retry loop does not log each table individually. Preparation success is not a live mod pass.
 - Verify that preparation writes the selected folder to global engine config before reading tables; collection
   reads that same saved path. Restarting is not needed to switch from the demo. Collection can start after the
   preparation worker stops without requiring a successful preparation, though the native reader may still fail.
@@ -73,6 +64,42 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native reference collection fix — 2026-10-22
+
+Code: [`1a430dd`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1a430dd18fd3c651073cd8940dfa32b638c3a494), extension **1.2.57**.
+Windows package: [run 39815956581](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39815956581/Sephira-Studio-Test.zip). **47,474,944 bytes** (47.5 MB).
+SHA-256: `af239b060eefc50e07382201c675227b7cb271c59eff9cc12e77e6a8089a075c`.
+
+- Give each parallel reference reader a private temporary copy of the mappings file. The pinned reader opens
+  mappings with exclusive sharing; the previous workers competed for one file and could abort collection.
+  Preserve the original mapping bytes and prepared game data. No upstream engine or mapping replacement is applied.
+- Check the mapping path before extraction, log decoded tables, and retain the leading error cause plus the table
+  name if a native read fails. A failed collection stops and cannot publish a complete reference.
+- Update Studio and retry **Collect current game reference**. The successful preparation can be reused;
+  **Download latest reference** becomes available after a successful collection.
+
+Validation: **49 focused local Python checks** (two platform skips), **28 passing local Flutter tests** plus
+one Windows-only skip, and the actual pinned mappings reader exercised locally. Native regression uses a valid
+minimal usmap: opening the locked shared path fails with IOException, while identical private copies parse successfully.
+Windows CI repeats that contract using its checksum-verified engine. A concurrent collection fixture forces all four
+workers to overlap, checks private mapping bytes/cleanup, and downloads a complete reference through the real API.
+Also check a failed job stops without enabling download, missing mappings stop before extraction, and long errors retain
+their leading cause. Full Windows analysis/tests, fresh frozen-engine setup, Python suite, bundle checks, launcher/updater
+checks and compilation pass. Separate Linux launcher and Windows transfer checks pass. Downloaded provenance/SHA-256,
+all **52** extension and **16** Crystal Fina hashes, and standalone Deck helper match source. Native game files from the
+user's full-game installation were not collected here; that live collection still needs a retry.
+
+Measured timing: first complete candidate **2026-10-22 16:38:53.996 UTC** → verified release download
+**16:53:49.853 UTC**, **14m 56s**, including local checks, queue/CI waits and verification. One automatic Windows
+run was reused plus the expected Deck workflow; no duplicate or manual build was dispatched. Timer not restarted.
+
+| Workflow | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | ---: | ---: | ---: |
+| Windows 39815956581 | 12m 19s | 13m 28s | 4m 10s |
+| Deck 39815956546 | 3m 11s | 1m 51s | 1m 27s |
+
+Summed runner usage: **20m 56s** (**15m 19s Windows**, **5m 37s Linux**), separate from elapsed delivery time.
 
 ## Published backup before upstream changes — 2026-10-22
 

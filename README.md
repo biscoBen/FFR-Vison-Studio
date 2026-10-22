@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native reference collection fix — 2026-10-22
+
+[Verified Windows download / run 39815956581](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39815956581/Sephira-Studio-Test.zip)
+(code `1a430dd`, extension 1.2.57; **47.5 MB**).
+
+Fix parallel native-reference readers competing for an exclusive lock on the same mappings file. Each worker now
+uses a private temporary copy of the original bytes. Collection logs decoded tables and preserves the actual leading
+error plus table name on failure. No upstream engine or mappings update is included.
+
+Close Studio, update its existing folder while keeping **Studio Test Data**, reopen it and retry **Collect current
+game reference**. Your successful game preparation can be reused. Choose **Download latest reference** after collection
+finishes. Windows native-reader, collection/download regression and full build checks pass; the downloaded files match
+source. Collection from the user's actual full-game installation still needs a retry.
+
 ### Backup before upstream changes — 2026-10-22
 
 [Download the rollback kit](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/pre-full-game-upstream-2026-10-22/Sephira-Studio-Pre-Upstream-2026-10-22.zip)
@@ -1154,8 +1168,8 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 This is the running project list for the full game's release, started **2026-10-04** from the `Sephira's-Update`
 demo baseline `b15a4c0`. These are areas to review when the full game is available, not confirmed future bugs.
-The October 22 full-game preparation screenshot reaches **2,618** tables and a quiet retry pass for **191** tables;
-it does not include a final error or prove the process is hung. Starting preparation saves the selected game folder
+The October 22 full-game preparation finished **ready** after **2,618** tables, a quiet retry pass for **191** tables,
+and **118** unread tables outside the setup's required set. It was not a confirmed hang. Starting preparation saves the selected game folder
 globally before extraction; restarting is not required to change paths. Reference collection uses that saved path
 and can run after preparation stops, even if preparation failed, but may encounter the same table-reader issue.
 The [launch-preparation tools](docs/LAUNCH_PREPARATION.md) provide native comparisons, a reversible original-game
