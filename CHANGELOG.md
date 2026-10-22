@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Native reference collection mappings lock
+
+- Give each parallel reference reader a private temporary copy of the mappings file. The pinned reader opens
+  mappings with exclusive sharing; the previous workers competed for one file and could abort collection.
+  Preserve the original mapping bytes and prepared game data. No upstream engine or mapping replacement is applied.
+- Check the mapping path before extraction, log decoded tables, and retain the leading error cause plus the table
+  name if a native read fails. A failed collection still cannot publish a complete reference.
+- Reproduce the native sharing failure and check parallel isolation plus the finished reference download.
+  Windows publication and collection from the user's full-game installation still need verification.
+
 ### Full-game preparation observation — 2026-10-22
 
 - Record the user's first full-game preparation screenshot: 2,618 tables, followed by retries for 191 unread tables.

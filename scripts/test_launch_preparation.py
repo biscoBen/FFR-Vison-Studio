@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from unittest import mock
@@ -242,6 +243,79 @@ class LaunchTests(unittest.TestCase):
         self.assertEqual(set(difference['skills']),{'500270'})
         self.assertIn('ActualNewNeedles',difference['assetsAdded'][0])
         self.assertFalse(difference['inGameValidated'])
+
+    def test_collection_decodes_parallel_tables_with_private_maps_and_downloads_the_reference(self):
+        mapping = self.root/'extracted/Mappings.usmap'
+        mapping.parent.mkdir(parents=True); mapping.write_bytes(b'explicit mapping fixture')
+        self.env['ffrenv'].USMAP = str(mapping)
+        self.env['ffrenv'].RETOC = 'retoc'
+        self.env['ffrenv'].FFRDT = ['reader']
+        barrier = threading.Barrier(4); lock = threading.Lock()
+        active, seen, workers = set(), set(), set()
+        main = threading.get_ident(); decoded = []
+        def run(command, log):
+            command = list(map(str,command))
+            if command[0] == 'retoc':
+                if command[1] == 'list': return 'native\tFFRS/Content/Datatable/Skill/DT_SkillData.uasset'
+                if command[command.index('--filter')+1] == 'Datatable/Skill/':
+                    legacy = Path(command[-1])/'FFRS/Content/Datatable/Skill'
+                    legacy.mkdir(parents=True)
+                    for name in ['DT_SkillData',*[f'Test_{i}' for i in range(8)]]:
+                        (legacy/(name+'.uasset')).write_bytes(b'explicit native asset fixture')
+                return ''
+            self.assertEqual(command[:2],['reader','rows'])
+            usmap = Path(command[command.index('--usmap')+1])
+            self.assertNotEqual(usmap,mapping)
+            self.assertEqual(usmap.read_bytes(),mapping.read_bytes())
+            with lock:
+                self.assertNotIn(usmap,active,'Concurrent readers shared a mappings file')
+                active.add(usmap); seen.add(usmap)
+                first = threading.get_ident() not in workers
+                workers.add(threading.get_ident())
+            try:
+                if threading.get_ident() != main and first: barrier.wait(timeout=5)
+                transfer.json_write(Path(command[3]),{'rows':{'fixture':{'ID':500270}},'_asset':command[2]})
+                decoded.append(command[2])
+            finally:
+                with lock: active.remove(usmap)
+            return ''
+        with mock.patch.object(launch,'run',side_effect=run):
+            result = launch.collect(self.env,lambda _:None)
+        self.assertEqual(len(decoded),9); self.assertEqual(len(seen),4)
+        self.assertTrue(all(not path.exists() for path in seen))
+        self.assertEqual(mapping.read_bytes(),b'explicit mapping fixture')
+        self.assertEqual(launch.record(self.root,launch.HOME+'/latest-reference.json')['folder'],result['folder'])
+        with self.client() as client:
+            self.assertTrue(client.get('/api/launch/status').json()['latestReference'])
+            response = client.get('/api/launch/reference')
+            self.assertEqual(response.status_code,200,response.text[:200])
+            with zipfile.ZipFile(io.BytesIO(response.content)) as bundle:
+                self.assertIn('comparison.json',bundle.namelist())
+                self.assertEqual(len(json.loads(bundle.read('reference.json'))['tables']),9)
+
+    def test_missing_collection_mapping_stops_before_extracting_and_command_errors_keep_the_cause(self):
+        self.env['ffrenv'].USMAP = str(self.root/'extracted/Mappings.usmap')
+        with mock.patch.object(launch,'run',side_effect=AssertionError('Must not start extraction')):
+            with self.assertRaisesRegex(ValueError,'mappings file is unavailable'): launch.collect(self.env,lambda _:None)
+        message = 'System.IO.IOException: Mappings.usmap is being used by another process.\n'+'stack frame\n'*200+'Usmap.PathToStream'
+        result = subprocess.CompletedProcess(['reader'],1,stdout='',stderr=message)
+        with mock.patch.object(launch.subprocess,'run',return_value=result):
+            with self.assertRaises(ValueError) as error: launch.run(['reader'],lambda _:None)
+        self.assertIn('being used by another process',str(error.exception))
+        self.assertIn('Usmap.PathToStream',str(error.exception))
+
+    def test_failed_reference_job_stops_and_leaves_download_unavailable(self):
+        with self.client() as client, mock.patch.object(launch,'collect',side_effect=ValueError('Mappings.usmap sharing failure')):
+            self.assertEqual(client.post('/api/launch/collect').status_code,200)
+            for _ in range(100):
+                state = client.get('/api/launch/status').json()
+                if not state['job']['running']: break
+                time.sleep(.01)
+            self.assertFalse(state['job']['running'])
+            self.assertEqual(state['job']['result'],'failed')
+            self.assertIn('sharing failure',state['job']['message'])
+            self.assertFalse(state['latestReference'])
+            self.assertEqual(client.get('/api/launch/reference').status_code,409)
 
     def test_game_preparation_moves_stale_data_and_ignores_mods_and_shipped_native_catalog(self):
         from types import SimpleNamespace

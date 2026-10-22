@@ -355,7 +355,11 @@ def compare(before, after):
 
 def run(command, log):
     result = subprocess.run(list(map(str, command)), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=600)
-    if result.returncode: raise ValueError('Native reference command failed: ' + (result.stderr or result.stdout)[-700:])
+    if result.returncode:
+        detail = (result.stderr or result.stdout).strip()
+        # Keep the exception's leading cause as well as its last stack frames.
+        if len(detail) > 1400: detail = detail[:800] + '\n...\n' + detail[-600:]
+        raise ValueError('Native reference command failed: ' + detail)
     if result.stdout: log(result.stdout[-300:])
     return result.stdout
 
@@ -363,10 +367,13 @@ def run(command, log):
 def collect(env, log):
     """Fresh read-only source view excludes every ~mods file."""
     root, source = Path(env['ROOT']), game(env)
+    tool = env['ffrenv']
+    mapping = Path(tool.USMAP)
+    if not mapping.is_file():
+        raise ValueError('The mappings file is unavailable: ' + str(mapping) + '. Prepare the selected game first.')
     identity = native_identity(env)
     destination = transfer.checked(root, HOME + '/references/' + uuid.uuid4().hex)
     destination.mkdir(parents=True)
-    tool = env['ffrenv']
     with tempfile.TemporaryDirectory(prefix='ffr-native-view-') as folder:
         view = Path(folder)
         for path in (source / 'FFRS/Content/Paks').iterdir():
@@ -385,15 +392,26 @@ def collect(env, log):
     legacy = destination / 'extracted/legacy/FFRS/Content/Datatable'
     jobs = list(legacy.rglob('*.uasset'))
     if not jobs: raise ValueError('The fresh game reference contains no readable tables.')
-    def dump(path):
+    def dump(path, usmap):
         relative = path.relative_to(legacy).with_suffix('.json')
         out = destination / 'extracted/rows' / relative
         out.parent.mkdir(parents=True, exist_ok=True)
-        run([*tool.FFRDT, 'rows', path, out, '--usmap', tool.USMAP], lambda _: None)
+        try: run([*tool.FFRDT, 'rows', path, out, '--usmap', usmap], lambda _: None)
+        except ValueError as error: raise ValueError('Could not decode ' + relative.as_posix() + ': ' + str(error)) from error
         json.loads(out.read_text(encoding='utf-8-sig'))
-    # Initialize the bundled single-file table reader once before parallel use.
-    dump(jobs[0])
-    with ThreadPoolExecutor(max_workers=4) as pool: list(pool.map(dump, jobs[1:]))
+        log('Decoded ' + relative.as_posix())
+    # UAssetAPI opens a .usmap with exclusive sharing. Separate copies let the
+    # parallel readers run without competing for the same mappings file.
+    with tempfile.TemporaryDirectory(prefix='ffr-reference-maps-') as folder:
+        maps = [Path(folder) / (str(i) + '.usmap') for i in range(4)]
+        for path in maps: shutil.copyfile(mapping, path)
+        log('Decoding ' + str(len(jobs)) + ' native tables with separate mappings files...')
+        # Initialize the single-file reader before starting the parallel pass.
+        dump(jobs[0], maps[0])
+        remaining = jobs[1:]
+        def batch(index):
+            for path in remaining[index::4]: dump(path, maps[index])
+        with ThreadPoolExecutor(max_workers=4) as pool: list(pool.map(batch, range(4)))
     if native_identity(env) != identity: raise ValueError('Game updated during collection. Collect again after the update finishes.')
     result = summarize(destination, identity)
     transfer.json_write(destination / 'reference.json', result)
