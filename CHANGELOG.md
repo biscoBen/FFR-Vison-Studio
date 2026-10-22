@@ -16,8 +16,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Fix the final Mitra inventory check when the temporary 1-gil Sephira shop override is enabled. Verify the
   effective build locations and include Folka's story-gated Olderion inventory when normal acquisition is selected.
   Keep checks for unrelated stock, purchase limits, conditions and missing entries.
-- Read back every patched game table and independently check shop routing immediately after writing tables,
-  before building skill effects, converting unit sprites or packing. Stop at the first failed table with its name;
+- Run the existing acquisition/testing table checks and independently check shop routing immediately after writing tables,
+  before building skill effects, converting unit sprites or packing. Stop at the first failed checked table with its name;
   retain final verification for later scene edits and generated assets. Sprite/packing failures can still occur later.
 - Native serialization and Windows package validation pending; live installation requires a new test.
 

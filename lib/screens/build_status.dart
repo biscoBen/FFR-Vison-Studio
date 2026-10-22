@@ -43,7 +43,7 @@ class _BuildStatusState extends State<BuildStatus> {
           if (running) ...[
             LinearProgressIndicator(value: pct, minHeight: 8, color: Guide.blue, backgroundColor: Guide.paper3),
             const SizedBox(height: 8),
-            Text('Game tables are checked before sprite conversion. A full build still takes a few minutes.', style: Guide.small()),
+            Text('Acquisition and shop tables are checked before sprite conversion. A full build still takes a few minutes.', style: Guide.small()),
           ],
           if (!running && st['message'] != null) Text(st['message'] as String, style: Guide.text(ok ? Guide.green : Guide.red)),
           if (open) ...[

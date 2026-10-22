@@ -571,40 +571,17 @@ def check_rows(original, built, operation, plan=None, finalize=None):
 
 
 def verify_table_recipe(root, tool, usmap):
-    """Read back patched tables before generating sprites, effects or the pack.
+    """Run acquisition/testing and shop checks before expensive asset work.
 
-    Later scene builders intentionally finalize some rows; the existing final
-    verifier still checks those after all assets are complete.
+    Reuse the independent validators rather than interpreting every upstream
+    patch field: native row export flattens hard references and wraps vectors.
+    Later scene builders intentionally finalize some rows; the final verifier
+    still checks their completed presentation and generated assets.
     """
-    root = Path(root)
-    patch = json.loads((root / 'build/visions_mod/patch.json').read_text(encoding='utf-8-sig'))
-    work = root / 'build/vision-testing/early'; work.mkdir(parents=True, exist_ok=True)
-    prefix = 'FFRS/Content/Datatable/'
-    def exported_rows(rel, expected):
-        # Hard class imports are written with a package path but exported by
-        # object name. This is also required by the final boss AI verifier.
-        if rel in ('Asset/Battle/AI/DT_BtlUnitAIAsset', 'Asset/Battle/AI/DT_CompositeBtlUnitAIAsset'):
-            for row in expected.values():
-                value = row.get('UnitAIClass')
-                if isinstance(value, str) and value.startswith('/Game/') and '.' in value:
-                    row['UnitAIClass'] = value.rsplit('.', 1)[1]
-        return expected
-    for operation in patch['tables']:
-        asset = operation['asset']
-        if not asset.startswith(prefix): raise ValueError('Unexpected game table package: ' + asset)
-        rel = asset.removeprefix(prefix)
-        target = work / (rel.replace('/', '_') + '.json')
-        try:
-            original = json.loads((root / 'extracted/rows' / (rel + '.json')).read_text(encoding='utf-8-sig'))['rows']
-            subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (asset + '.uasset')),
-                                   str(target), '--usmap', usmap], check=True, capture_output=True)
-            check_rows(original, json.loads(target.read_text(encoding='utf-8-sig'))['rows'],
-                       {'add': [], 'set': []}, operation, lambda expected: exported_rows(rel, expected))
-        except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
-            raise ValueError(f'Early game-table check failed for {rel}: {error}') from error
+    verify(root, tool, usmap, before_assets=True)
     import _ffr_crystal_cave
     _ffr_crystal_cave.verify_shops(root, tool, usmap)
-    print('OK: game tables checked before sprite conversion and packing', flush=True)
+    print('OK: acquisition/testing and shop tables checked before sprite conversion and packing', flush=True)
 
 
 def verification_operations(root, units, rows):
@@ -619,7 +596,7 @@ def verification_operations(root, units, rows):
     return _ffr_game_tables.normalize(root, operations, rows)
 
 
-def verify(root, tool, usmap):
+def verify(root, tool, usmap, *, before_assets=False):
     root = Path(root)
     units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
     import _ffr_sephira
@@ -646,9 +623,13 @@ def verify(root, tool, usmap):
         try:
             import _ffr_fina_boss
             import _ffr_shrine_challenges
-            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation, matches[0],
-                       lambda expected: _ffr_shrine_challenges.final_rows(rel,
-                           _ffr_fina_boss.final_rows(rel, expected, units, root), units, root))
+            def finalize(expected):
+                if before_assets and rel not in _ffr_fina_boss.AI_ASSETS:
+                    return expected
+                return _ffr_shrine_challenges.final_rows(rel,
+                    _ffr_fina_boss.final_rows(rel, expected, units, root), units, root)
+            check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'],
+                       operation, matches[0], finalize)
         except ValueError as error:
             raise ValueError(f'{rel}: {error}') from error
     if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')

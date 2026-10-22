@@ -32,22 +32,31 @@ def apply(original, operation):
 
 
 class EarlyTableChecks(unittest.TestCase):
-    def test_early_ai_check_accepts_exported_class_names_but_rejects_a_different_class(self):
-        rel = 'Asset/Battle/AI/DT_BtlUnitAIAsset'
+    def test_early_check_defers_only_later_presentation_edits(self):
+        import _ffr_fina_boss as fina
+        rel = 'Battle/Unit/DT_BtlUnitDesignParameter'
         operation = {'asset': 'FFRS/Content/Datatable/'+rel, 'add': [{
-            'row': 'private', 'cloneFrom': 'native', 'set': {
-                'ID': 2, 'UnitAIClass': '/Game/BP/Studio/BP_Test.BP_Test_C'}}], 'set': []}
+            'row': 'private', 'cloneFrom': 'native', 'set': {'ID': 2}}], 'set': []}
+        independent = dict(operation, add=[])
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             save(root/'build/visions_mod/patch.json', {'tables': [operation]})
-            save(root/'extracted/rows'/(rel+'.json'), {'rows': {'native': {'ID': 1, 'UnitAIClass': 'Native_C'}}})
+            original = {'native': {'ID': 1, 'Scale': 1.0}}
+            save(root/'extracted/rows'/(rel+'.json'), {'rows': original})
             save(root/'mods/EstherTsukiko/units.json', [])
-            built = {'native': {'ID': 1, 'UnitAIClass': 'Native_C'}, 'private': {'ID': 2, 'UnitAIClass': 'BP_Test_C'}}
-            with mock.patch.object(testing.subprocess, 'run', side_effect=lambda command, **k: save(Path(command[3]), {'rows': built})):
+            built = apply(original, operation)
+            def finalize(name, rows, units, folder):
+                rows['private']['Scale'] = 2.0
+                return rows
+            with mock.patch.object(testing, 'verification_operations', return_value={rel: independent}), \
+                    mock.patch.object(fina, 'final_rows', side_effect=finalize) as finishing, \
+                    mock.patch.object(testing.subprocess, 'run', side_effect=lambda command, **k: save(Path(command[3]), {'rows': built})):
                 testing.verify_table_recipe(root, ['tool'], 'mapping')
-                built['private']['UnitAIClass'] = 'Wrong_C'
-                with self.assertRaisesRegex(ValueError, 'Early game-table check failed for Asset/Battle/AI/DT_BtlUnitAIAsset'):
-                    testing.verify_table_recipe(root, ['tool'], 'mapping')
+                finishing.assert_not_called()
+                with self.assertRaisesRegex(ValueError, rel+':'):
+                    testing.verify(root, ['tool'], 'mapping')
+                built['private']['Scale'] = 2.0
+                testing.verify(root, ['tool'], 'mapping')
 
     def test_shop_verifier_covers_override_normal_folka_and_unrelated_stock(self):
         _, native, units = inputs()
@@ -115,7 +124,8 @@ class EarlyTableChecks(unittest.TestCase):
             built = apply(original, operation); built['donor']['value'] = '-0'
             environment = {'_ffr_testing': testing, 'ROOT': root, 'FFRDT': ['tool'], 'USMAP': 'mapping',
                            'stage': mock.Mock(), 'continuation': continuation}
-            with mock.patch.object(testing.subprocess, 'run', side_effect=lambda command, **k: save(Path(command[3]), {'rows': built})):
+            with mock.patch.object(testing, 'verification_operations', return_value={rel: dict(operation, add=[])}), \
+                    mock.patch.object(testing.subprocess, 'run', side_effect=lambda command, **k: save(Path(command[3]), {'rows': built})):
                 exec(compile(block, 'installed-builder', 'exec'), environment)
                 continuation.assert_called_once()
                 continuation.reset_mock()
@@ -126,7 +136,7 @@ class EarlyTableChecks(unittest.TestCase):
                         elif corrupt == 'missing': failed.pop('copy')
                         else: failed['surprise'] = {'ID': 999}
                         with mock.patch.object(testing.subprocess, 'run', side_effect=lambda command, **k: save(Path(command[3]), {'rows': failed})):
-                            with self.assertRaisesRegex(ValueError, 'Early game-table check failed for Skill/DT_SkillData'):
+                            with self.assertRaisesRegex(ValueError, 'Skill/DT_SkillData:'):
                                 exec(compile(block, 'installed-builder', 'exec'), environment)
                         continuation.assert_not_called()
 
