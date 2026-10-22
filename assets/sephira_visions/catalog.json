@@ -587,7 +587,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -695,17 +695,27 @@
               "PassiveSkill",
               1424,
               -1
+            ],
+            [
+              "ActiveSkill",
+              400500,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400690,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400300,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
           [
-            [
-              "ActiveSkill",
-              400500,
-              -1
-            ],
             [
               "PassiveSkill",
               1421,
@@ -715,16 +725,11 @@
           [
             [
               "BaseParameter",
-              8,
-              5
+              1,
+              30
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              400690,
-              -1
-            ],
             [
               "PassiveSkill",
               1278,
@@ -748,8 +753,8 @@
           [
             [
               "BaseParameter",
-              2,
-              20
+              9,
+              10
             ]
           ],
           [
@@ -767,11 +772,6 @@
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              400300,
-              -1
-            ],
             [
               "ActiveSkill",
               400710,
@@ -819,18 +819,32 @@
           "desc": "Native Squall resonance mechanics; A2's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13116",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13116",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13116,
         "nativeName": "Squall",
         "growthDonor": 13110,
-        "activeCount": 15,
+        "activeCount": 18,
         "passiveCount": 5,
-        "kitCount": 20,
-        "mrActiveCount": 4,
+        "kitCount": 23,
+        "mrActiveCount": 1,
         "mrPassiveCount": 4,
-        "mrSkillCount": 8,
+        "mrSkillCount": 5,
         "totalSkillCount": 28,
         "previousCount": 13,
         "additionalPassives": [
@@ -2037,6 +2051,38 @@
               0
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -2044,7 +2090,8 @@
         "label": "5",
         "sha256": "11e32f650ef69e6e4b3bdc2bf4ff117ff94985755df6128489f66c5afc9faf86",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "christine",
@@ -2340,7 +2387,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -2446,7 +2493,7 @@
           [
             [
               "PassiveSkill",
-              1406,
+              1115,
               -1
             ]
           ]
@@ -2498,7 +2545,7 @@
           [
             [
               "PassiveSkill",
-              1115,
+              1406,
               -1
             ]
           ],
@@ -2555,6 +2602,20 @@
           "desc": "Native Tronn resonance mechanics; Christine's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13024",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13024",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -3158,6 +3219,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -3165,7 +3258,8 @@
         "label": "6",
         "sha256": "f098757c935fc3e7c74f90c508b92cb39ac9a40a60a1c9930f04dcf35c1afc97",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "crystal_fina",
@@ -3416,7 +3510,7 @@
           "passives": {}
         },
         "menuScale": 2.52,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -3501,11 +3595,6 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1456,
-              -1
-            ],
-            [
               "ActiveSkill",
               485203,
               -1
@@ -3524,23 +3613,34 @@
               "ActiveSkill",
               485230,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1043,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1252,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              8,
-              5
+              1,
+              30
             ]
           ],
           [
             [
               "PassiveSkill",
-              1252,
+              1393,
               -1
             ]
           ],
@@ -3561,33 +3661,28 @@
           [
             [
               "BaseParameter",
-              8,
-              10
-            ]
-          ],
-          [
-            [
-              "PassiveSkill",
-              1393,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1043,
-              -1
-            ]
-          ],
-          [
-            [
-              "BaseParameter",
               2,
-              30
+              20
             ]
           ],
           [
             [
               "PassiveSkill",
               1397,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              8,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1456,
               -1
             ],
             [
@@ -3657,6 +3752,20 @@
           "descAuto": false,
           "ffbe_lb_id": "99887755552703",
           "ffbe_lb": "units/custom/crystal_fina_2/resonance.json"
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13100",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13100",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -4155,6 +4264,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            8,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -4162,7 +4303,8 @@
         "label": "Custom",
         "sha256": null,
         "source": "CUSTOM"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "barusa",
@@ -4433,6 +4575,58 @@
                 }
               ]
             }
+          },
+          "485333": {
+            "from": 500030,
+            "visuals": 500030,
+            "jp": "Sephira_barusa_Kit_11",
+            "en": "Granite Slam",
+            "desc": "Earth physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                323
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                323,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Earth"
+            }
+          },
+          "485336": {
+            "from": 500550,
+            "visuals": 500550,
+            "jp": "Sephira_barusa_Kit_12",
+            "en": "Stone Horn",
+            "desc": "Earth physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                323
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                323,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Earth"
+            }
           }
         },
         "ffbeMap": {
@@ -4440,7 +4634,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -4471,6 +4665,16 @@
             [
               "ActiveSkill",
               485312,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              485333,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              485336,
               -1
             ]
           ],
@@ -4536,16 +4740,6 @@
           [
             [
               "PassiveSkill",
-              1453,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1454,
-              -1
-            ],
-            [
-              "PassiveSkill",
               1346,
               -1
             ]
@@ -4563,16 +4757,8 @@
           [
             [
               "BaseParameter",
-              6,
-              5
-            ]
-          ],
-          [],
-          [
-            [
-              "BaseParameter",
-              11,
-              8
+              1,
+              30
             ]
           ],
           [
@@ -4585,8 +4771,8 @@
           [
             [
               "BaseParameter",
-              1,
-              60
+              11,
+              8
             ]
           ],
           [
@@ -4600,10 +4786,29 @@
             [
               "BaseParameter",
               6,
+              10
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1454,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              5,
               15
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1453,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -4644,19 +4849,33 @@
           "desc": "Native Wilhelm resonance mechanics; Barusa's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13062",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13062",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13062,
         "nativeName": "Wilhelm",
         "growthDonor": 13110,
-        "activeCount": 13,
-        "passiveCount": 7,
+        "activeCount": 15,
+        "passiveCount": 5,
         "kitCount": 20,
         "mrActiveCount": 1,
-        "mrPassiveCount": 2,
-        "mrSkillCount": 3,
-        "totalSkillCount": 23,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
+        "totalSkillCount": 25,
         "previousCount": 15,
         "additionalPassives": [
           1249,
@@ -5175,7 +5394,159 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485333,
+            "source": 500030,
+            "name": "Granite Slam",
+            "originalName": "Slam",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "None"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                323
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                323,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Earth"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Earth",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
+          },
+          {
+            "id": 485336,
+            "source": 500550,
+            "name": "Stone Horn",
+            "originalName": "Horn",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "None"
+            },
+            "adjusted": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                323
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                323,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Earth"
+            },
+            "combat": {
+              "Cost": 10,
+              "magnification": 18,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Earth",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            6,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -5183,7 +5554,11 @@
         "label": "6",
         "sha256": "13190d67a9dbafa6501645ce06ce5638ae5e9fbb65e5fef40380b0f176fadfc9",
         "source": "GL"
-      }
+      },
+      "masteryFillers": [
+        485333,
+        485336
+      ]
     },
     {
       "id": "fran",
@@ -5407,6 +5782,56 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "485439": {
+            "from": 500110,
+            "visuals": 500110,
+            "jp": "Sephira_fran_Kit_13",
+            "en": "Snipe",
+            "desc": "Non-elemental physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "485442": {
+            "from": 500190,
+            "visuals": 400530,
+            "jp": "Sephira_fran_Kit_14",
+            "en": "Flurry Arrow",
+            "desc": "Non-elemental physical damage; power 18. Single enemies; MP 10; hits 2; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
           }
         },
         "ffbeMap": {
@@ -5414,7 +5839,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -5433,11 +5858,6 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1443,
-              -1
-            ],
-            [
               "ActiveSkill",
               485403,
               -1
@@ -5450,6 +5870,11 @@
             [
               "ActiveSkill",
               485430,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              485439,
               -1
             ]
           ],
@@ -5488,6 +5913,11 @@
               "ActiveSkill",
               485436,
               -1
+            ],
+            [
+              "ActiveSkill",
+              485442,
+              -1
             ]
           ],
           [
@@ -5517,28 +5947,28 @@
               -1
             ]
           ],
-          [
-            [
-              "PassiveSkill",
-              1444,
-              -1
-            ]
-          ]
+          []
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "ActiveSkill",
+              400450,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              8,
+              9,
               5
             ]
           ],
           [
             [
-              "ActiveSkill",
-              400450,
+              "PassiveSkill",
+              1127,
               -1
             ]
           ],
@@ -5566,18 +5996,23 @@
           [
             [
               "PassiveSkill",
-              1127,
+              1443,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              6,
+              5,
               15
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1444,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -5620,19 +6055,33 @@
           "desc": "Native Firion resonance mechanics; Blue Sky Belle Fran's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13101",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13101",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13101,
         "nativeName": "Firion",
         "growthDonor": 13110,
-        "activeCount": 14,
-        "passiveCount": 6,
+        "activeCount": 16,
+        "passiveCount": 4,
         "kitCount": 20,
         "mrActiveCount": 1,
-        "mrPassiveCount": 2,
-        "mrSkillCount": 3,
-        "totalSkillCount": 23,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
+        "totalSkillCount": 25,
         "previousCount": 15,
         "additionalPassives": [
           1444,
@@ -6060,7 +6509,155 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485439,
+            "source": 500110,
+            "name": "Snipe",
+            "originalName": "Snipe",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
+          },
+          {
+            "id": 485442,
+            "source": 500190,
+            "name": "Flurry Arrow",
+            "originalName": "Flatten",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                324
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                324,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 10,
+              "magnification": 18,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 2,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              1
+            ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            1,
+            60
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -6068,7 +6665,11 @@
         "label": "6",
         "sha256": "d5dfd33ed084580300c322522554216adb5e1014b9c4a51555218b5281d1983d",
         "source": "GL"
-      }
+      },
+      "masteryFillers": [
+        485439,
+        485442
+      ]
     },
     {
       "id": "lunafreya",
@@ -6343,7 +6944,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -6466,14 +7067,14 @@
           [
             [
               "BaseParameter",
-              6,
+              9,
               5
             ]
           ],
           [
             [
               "PassiveSkill",
-              1425,
+              1298,
               -1
             ]
           ],
@@ -6494,8 +7095,8 @@
           [
             [
               "BaseParameter",
-              1,
-              60
+              2,
+              20
             ]
           ],
           [
@@ -6503,21 +7104,21 @@
               "PassiveSkill",
               1468,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1298,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              9,
+              7,
               15
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1425,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -6563,6 +7164,20 @@
           "desc": "Native Zidane resonance mechanics; Oracle Maiden Lunafreya's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -7136,6 +7751,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -7143,7 +7790,8 @@
         "label": "NV Brave Shift",
         "sha256": "cf0ae932aefc10e48bd6863f00d9c5a18afd6380e634d6476d89aafef6293578",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "minfilia",
@@ -7505,7 +8153,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -7606,12 +8254,12 @@
             ],
             [
               "PassiveSkill",
-              1410,
+              1362,
               -1
             ],
             [
               "PassiveSkill",
-              1362,
+              1312,
               -1
             ]
           ]
@@ -7628,7 +8276,7 @@
           [
             [
               "BaseParameter",
-              7,
+              5,
               5
             ]
           ],
@@ -7665,11 +8313,6 @@
               "PassiveSkill",
               1343,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1312,
-              -1
             ]
           ],
           [
@@ -7680,6 +8323,11 @@
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1410,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -7720,6 +8368,20 @@
           "desc": "Native Onion Knight resonance mechanics; Minfilia's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13102",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13102",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -8421,6 +9083,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            5,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -8428,7 +9122,8 @@
         "label": "4",
         "sha256": "8f772a287b1b2e6696b90fb7a303f1a8223a880ff4b60070e2d6da2de58c97da",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "folka",
@@ -8893,7 +9588,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -9001,28 +9696,39 @@
               "ActiveSkill",
               485742,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1108,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1348,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1254,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              9,
+              8,
               5
             ]
           ],
           [
             [
-              "PassiveSkill",
-              1445,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1254,
+              "ActiveSkill",
+              400680,
               -1
             ]
           ],
@@ -9034,11 +9740,6 @@
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              400680,
-              -1
-            ],
             [
               "PassiveSkill",
               1307,
@@ -9055,7 +9756,7 @@
           [
             [
               "PassiveSkill",
-              1108,
+              1445,
               -1
             ]
           ],
@@ -9070,11 +9771,6 @@
             [
               "ActiveSkill",
               400360,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1348,
               -1
             ],
             [
@@ -9119,6 +9815,20 @@
           "desc": "Native Tronn resonance mechanics; Folka's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_folka_shop",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_folka_shop",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -9126,11 +9836,11 @@
         "nativeName": "Tronn",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 3,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 2,
-        "mrPassiveCount": 5,
-        "mrSkillCount": 7,
+        "mrPassiveCount": 3,
+        "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 14,
         "additionalPassives": [
@@ -10073,6 +10783,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            8,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -10080,7 +10822,8 @@
         "label": "6",
         "sha256": "ce0cdfa15d5ed9844c4db434d862741f73c2d986be92e79bf843228a2cb877f8",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "fryevia",
@@ -10437,6 +11180,32 @@
               "DamageType": "Physic",
               "damageCalcType": "Physic"
             }
+          },
+          "485842": {
+            "from": 500040,
+            "visuals": 500040,
+            "jp": "Sephira_fryevia_Kit_14",
+            "en": "Frozen Slash",
+            "desc": "Ice physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                328
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                328,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Ice"
+            }
           }
         },
         "ffbeMap": {
@@ -10444,7 +11213,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -10470,6 +11239,11 @@
             [
               "PassiveSkill",
               1463,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              485842,
               -1
             ]
           ],
@@ -10518,11 +11292,6 @@
             ],
             [
               "PassiveSkill",
-              1415,
-              -1
-            ],
-            [
-              "PassiveSkill",
               1357,
               -1
             ],
@@ -10557,7 +11326,13 @@
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1344,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -10565,7 +11340,13 @@
               5
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1071,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -10583,19 +11364,14 @@
           [
             [
               "BaseParameter",
-              2,
-              20
+              1,
+              60
             ]
           ],
           [
             [
               "PassiveSkill",
-              1414,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1071,
+              1415,
               -1
             ]
           ],
@@ -10609,7 +11385,7 @@
           [
             [
               "PassiveSkill",
-              1344,
+              1414,
               -1
             ],
             [
@@ -10654,19 +11430,33 @@
           "desc": "Native Bartz resonance mechanics; Fryevia's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13105",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13105",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13105,
         "nativeName": "Bartz",
         "growthDonor": 13110,
-        "activeCount": 15,
-        "passiveCount": 5,
+        "activeCount": 16,
+        "passiveCount": 4,
         "kitCount": 20,
         "mrActiveCount": 1,
-        "mrPassiveCount": 3,
-        "mrSkillCount": 4,
-        "totalSkillCount": 24,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
+        "totalSkillCount": 25,
         "previousCount": 11,
         "additionalPassives": [
           1463,
@@ -11404,7 +12194,99 @@
               "awakening",
               1
             ]
+          },
+          {
+            "id": 485842,
+            "source": 500040,
+            "name": "Frozen Slash",
+            "originalName": "Slash",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "None"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                328
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                328,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Ice"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Ice",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            1,
+            60
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -11412,7 +12294,10 @@
         "label": "5",
         "sha256": "cbcf2062858203fd235747f49fa5978bdc48a58695951efbd2fb0318352ce220",
         "source": "GL"
-      }
+      },
+      "masteryFillers": [
+        485842
+      ]
     },
     {
       "id": "lenneth",
@@ -12079,7 +12964,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -12187,6 +13072,16 @@
               "ActiveSkill",
               445030,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1072,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1110,
+              -1
             ]
           ]
         ],
@@ -12202,7 +13097,7 @@
           [
             [
               "BaseParameter",
-              6,
+              8,
               5
             ]
           ],
@@ -12210,11 +13105,6 @@
             [
               "ActiveSkill",
               400390,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1072,
               -1
             ]
           ],
@@ -12235,8 +13125,8 @@
           [
             [
               "BaseParameter",
-              5,
-              10
+              1,
+              60
             ]
           ],
           [
@@ -12244,18 +13134,13 @@
               "PassiveSkill",
               1409,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1110,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              1,
-              90
+              6,
+              15
             ]
           ],
           [
@@ -12304,6 +13189,20 @@
           "desc": "Native Warrior of Light resonance mechanics; Lenneth's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13100",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13100",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -12311,11 +13210,11 @@
         "nativeName": "Warrior of Light",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 2,
-        "kitCount": 20,
+        "passiveCount": 4,
+        "kitCount": 22,
         "mrActiveCount": 1,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 7,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 13,
         "additionalPassives": [
@@ -13673,6 +14572,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            8,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            1,
+            60
+          ],
+          [
+            8,
+            "BaseParameter",
+            6,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -13680,7 +14611,8 @@
         "label": "6",
         "sha256": "8fbb6ad9c8c3f194f8aea49e2b778f2d6d3a83326229a0d73d08de11fa2e8ec3",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "lila",
@@ -13926,7 +14858,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -14049,16 +14981,11 @@
           [
             [
               "BaseParameter",
-              8,
-              5
+              1,
+              30
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              400440,
-              -1
-            ],
             [
               "PassiveSkill",
               1322,
@@ -14072,12 +14999,18 @@
               8
             ]
           ],
-          [],
+          [
+            [
+              "ActiveSkill",
+              400440,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              1,
-              60
+              9,
+              10
             ]
           ],
           [
@@ -14090,7 +15023,7 @@
           [
             [
               "BaseParameter",
-              6,
+              5,
               15
             ]
           ],
@@ -14140,6 +15073,20 @@
           "desc": "Native Firion resonance mechanics; Lila's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13101",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13101",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -14632,6 +15579,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -14639,7 +15618,8 @@
         "label": "6",
         "sha256": "bab5c62752ce64644743eefc67aec79ac164d59d3b79afc958ab13a864feb00f",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "mystea",
@@ -15066,7 +16046,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -15182,6 +16162,20 @@
           [
             [
               "PassiveSkill",
+              1314,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              1,
+              30
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
               1395,
               -1
             ]
@@ -15189,8 +16183,8 @@
           [
             [
               "BaseParameter",
-              6,
-              5
+              11,
+              8
             ]
           ],
           [
@@ -15203,32 +16197,14 @@
           [
             [
               "BaseParameter",
-              11,
-              8
-            ]
-          ],
-          [],
-          [
-            [
-              "BaseParameter",
-              1,
-              60
+              6,
+              10
             ]
           ],
           [
-            [
-              "PassiveSkill",
-              1402,
-              -1
-            ],
             [
               "ActiveSkill",
               486106,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1314,
               -1
             ]
           ],
@@ -15240,6 +16216,11 @@
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1402,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -15280,6 +16261,20 @@
           "desc": "Native Cecil resonance mechanics; Mystea's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -16162,6 +17157,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            6,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            8,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -16169,7 +17196,8 @@
         "label": "5",
         "sha256": "93e4d2dc35a032465a3f18fc2f1d37857a6797281dfa119983998e0502eb3483",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "reberta",
@@ -16416,7 +17444,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -16524,6 +17552,21 @@
               "PassiveSkill",
               1359,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1377,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400670,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1010,
+              -1
             ]
           ]
         ],
@@ -16548,21 +17591,6 @@
               "ActiveSkill",
               400210,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1257,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1437,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1377,
-              -1
             ]
           ],
           [
@@ -16572,28 +17600,24 @@
               8
             ]
           ],
-          [],
           [
             [
-              "BaseParameter",
-              1,
-              60
+              "PassiveSkill",
+              1257,
+              -1
             ]
           ],
           [
             [
-              "ActiveSkill",
-              400670,
-              -1
-            ],
+              "BaseParameter",
+              9,
+              10
+            ]
+          ],
+          [
             [
               "PassiveSkill",
               1335,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1010,
               -1
             ]
           ],
@@ -16605,6 +17629,11 @@
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1437,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -16645,18 +17674,32 @@
           "desc": "Native Clive resonance mechanics; Reberta (JP)'s own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13130",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13130",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13130,
         "nativeName": "Clive",
         "growthDonor": 13110,
-        "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
-        "mrActiveCount": 2,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 8,
+        "activeCount": 17,
+        "passiveCount": 6,
+        "kitCount": 23,
+        "mrActiveCount": 1,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 28,
         "previousCount": 14,
         "additionalPassives": [
@@ -17130,6 +18173,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -17137,7 +18212,8 @@
         "label": "5",
         "sha256": "d2dd3833fb6339d9e52c59515173b01ec39fca0972c67753ed777fac11d05d32",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "snow_white",
@@ -17599,7 +18675,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -17707,11 +18783,35 @@
               "PassiveSkill",
               1293,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1431,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1067,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
+          [
+            [
+              "PassiveSkill",
+              1318,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              1,
+              30
+            ]
+          ],
           [
             [
               "ActiveSkill",
@@ -17722,53 +18822,11 @@
           [
             [
               "BaseParameter",
-              6,
-              5
-            ]
-          ],
-          [
-            [
-              "PassiveSkill",
-              1431,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1318,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1067,
-              -1
-            ]
-          ],
-          [
-            [
-              "BaseParameter",
               11,
               8
             ]
           ],
-          [],
           [
-            [
-              "BaseParameter",
-              1,
-              60
-            ]
-          ],
-          [
-            [
-              "PassiveSkill",
-              1405,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1358,
-              -1
-            ],
             [
               "PassiveSkill",
               1302,
@@ -17778,11 +18836,30 @@
           [
             [
               "BaseParameter",
-              8,
+              6,
+              10
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1358,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              5,
               15
             ]
           ],
           [
+            [
+              "PassiveSkill",
+              1405,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -17825,6 +18902,20 @@
           "desc": "Native Cecil resonance mechanics; Snow White's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -17832,11 +18923,11 @@
         "nativeName": "Cecil",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 2,
-        "kitCount": 20,
+        "passiveCount": 4,
+        "kitCount": 22,
         "mrActiveCount": 1,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 7,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 13,
         "additionalPassives": [
@@ -18787,6 +19878,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            6,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -18794,7 +19917,8 @@
         "label": "7",
         "sha256": "64ac0dc9da613e8f3d3b6f50ffc69a881fedf207100dc2227388af5ba4515c52",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "aria",
@@ -19117,7 +20241,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -19225,16 +20349,6 @@
               "PassiveSkill",
               1352,
               -1
-            ]
-          ]
-        ],
-        "synchro": [
-          [],
-          [
-            [
-              "ActiveSkill",
-              400550,
-              -1
             ],
             [
               "PassiveSkill",
@@ -19243,26 +20357,31 @@
             ],
             [
               "PassiveSkill",
-              1356,
+              1365,
+              -1
+            ]
+          ]
+        ],
+        "synchro": [
+          [],
+          [
+            [
+              "PassiveSkill",
+              1282,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              8,
-              5
+              2,
+              10
             ]
           ],
           [
             [
               "PassiveSkill",
-              1282,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1256,
+              1356,
               -1
             ]
           ],
@@ -19273,18 +20392,24 @@
               8
             ]
           ],
-          [],
+          [
+            [
+              "ActiveSkill",
+              400550,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              2,
-              20
+              7,
+              10
             ]
           ],
           [
             [
               "PassiveSkill",
-              1365,
+              1256,
               -1
             ]
           ],
@@ -19341,6 +20466,18 @@
           "desc": "Native Leah resonance mechanics; Aria's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 1,
+          "location": "mitra_shop",
+          "random": false,
+          "hideSpoilers": true
+        },
+        "studioAcquisition": {
+          "version": 1,
+          "location": "mitra_shop",
+          "random": false,
+          "hideSpoilers": true
         }
       },
       "balance": {
@@ -19348,11 +20485,11 @@
         "nativeName": "Leah",
         "growthDonor": 13108,
         "activeCount": 18,
-        "passiveCount": 2,
-        "kitCount": 20,
+        "passiveCount": 4,
+        "kitCount": 22,
         "mrActiveCount": 1,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 7,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 14,
         "additionalPassives": [
@@ -20012,6 +21149,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            2,
+            10
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            7,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            8,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -20019,7 +21188,8 @@
         "label": "5",
         "sha256": "0568f66d46df89606a85dcf6522efac436de98b70f4f4c29803c9db61150cc37",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "eiko",
@@ -20315,7 +21485,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -20423,12 +21593,23 @@
               "ActiveSkill",
               486542,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1053,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1479,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -20439,7 +21620,7 @@
           [
             [
               "PassiveSkill",
-              1479,
+              1338,
               -1
             ]
           ],
@@ -20460,38 +21641,28 @@
           [
             [
               "BaseParameter",
-              8,
-              10
+              2,
+              20
             ]
           ],
           [
             [
               "PassiveSkill",
-              1338,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1053,
+              1047,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              2,
-              30
+              7,
+              15
             ]
           ],
           [
             [
               "PassiveSkill",
               1031,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1047,
               -1
             ],
             [
@@ -20536,6 +21707,20 @@
           "desc": "Native Ayaka resonance mechanics; Eiko's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -20543,11 +21728,11 @@
         "nativeName": "Ayaka",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 3,
-        "kitCount": 20,
+        "passiveCount": 4,
+        "kitCount": 21,
         "mrActiveCount": 0,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 5,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
@@ -21135,6 +22320,38 @@
               3
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            8,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -21142,7 +22359,8 @@
         "label": "7",
         "sha256": "faad10eeda9f145546d67d1df5ab9d0f20ec3268e43adecf6ad4a8859df4e885",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "alice",
@@ -21584,7 +22802,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -21696,23 +22914,24 @@
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1324,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              8,
-              5
+              1,
+              30
             ]
           ],
           [
             [
               "ActiveSkill",
               400530,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1330,
               -1
             ]
           ],
@@ -21723,23 +22942,24 @@
               8
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1330,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              2,
-              20
+              9,
+              10
             ]
           ],
           [
             [
               "PassiveSkill",
               1388,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1324,
               -1
             ]
           ],
@@ -21801,6 +23021,20 @@
           "desc": "Native Squall resonance mechanics; Alice/Half Nightmare's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13116",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13116",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -22236,7 +23470,11 @@
               "hitCount": 1,
               "breakDamageValue": 25
             },
-            "effects": []
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
           },
           {
             "id": 486663,
@@ -22292,7 +23530,11 @@
               "hitCount": 1,
               "breakDamageValue": 28
             },
-            "effects": []
+            "effects": [],
+            "unlock": [
+              "awakening",
+              1
+            ]
           },
           {
             "id": 486666,
@@ -22348,7 +23590,11 @@
               "hitCount": 1,
               "breakDamageValue": 30
             },
-            "effects": []
+            "effects": [],
+            "unlock": [
+              "awakening",
+              2
+            ]
           },
           {
             "id": 486630,
@@ -22730,6 +23976,38 @@
               0
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -22737,7 +24015,8 @@
         "label": "NV Brave Shift",
         "sha256": "852c433596c252e225c92105d5432ebc6c89bd05a809e8292d54d792a32a2943",
         "source": "JP"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "mog",
@@ -22987,7 +24266,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -23083,17 +24362,17 @@
           [
             [
               "ActiveSkill",
-              230140,
-              -1
-            ],
-            [
-              "ActiveSkill",
               230160,
               -1
             ],
             [
               "PassiveSkill",
               1477,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1052,
               -1
             ]
           ]
@@ -23102,27 +24381,22 @@
           [],
           [
             [
-              "ActiveSkill",
-              400760,
+              "PassiveSkill",
+              1316,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              9,
+              7,
               5
             ]
           ],
           [
             [
-              "PassiveSkill",
-              1049,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1052,
+              "ActiveSkill",
+              400760,
               -1
             ]
           ],
@@ -23136,11 +24410,6 @@
           [
             [
               "PassiveSkill",
-              1316,
-              -1
-            ],
-            [
-              "PassiveSkill",
               1004,
               -1
             ]
@@ -23148,11 +24417,17 @@
           [
             [
               "BaseParameter",
-              5,
-              10
+              2,
+              20
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1049,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -23161,6 +24436,11 @@
             ]
           ],
           [
+            [
+              "ActiveSkill",
+              230140,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -23205,17 +24485,31 @@
           "desc": "Native Tidus resonance mechanics; Moogle of Narshe Mog's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13120,
         "nativeName": "Tidus",
         "growthDonor": 13108,
-        "activeCount": 15,
-        "passiveCount": 5,
+        "activeCount": 14,
+        "passiveCount": 6,
         "kitCount": 20,
-        "mrActiveCount": 1,
-        "mrPassiveCount": 4,
+        "mrActiveCount": 2,
+        "mrPassiveCount": 3,
         "mrSkillCount": 5,
         "totalSkillCount": 25,
         "previousCount": 14,
@@ -23705,6 +24999,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            7,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            9,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -23712,7 +25038,8 @@
         "label": "5",
         "sha256": "8792e512faf0883b717965ec556ab82d751e7d8dc9817b499d1fa7f98dfd4d45",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "lilith",
@@ -24093,7 +25420,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -24206,23 +25533,24 @@
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1036,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              6,
-              5
+              1,
+              30
             ]
           ],
           [
             [
               "ActiveSkill",
               400380,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1036,
               -1
             ]
           ],
@@ -24233,23 +25561,10 @@
               8
             ]
           ],
-          [],
-          [
-            [
-              "BaseParameter",
-              1,
-              60
-            ]
-          ],
           [
             [
               "PassiveSkill",
               1333,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1259,
               -1
             ]
           ],
@@ -24257,13 +25572,27 @@
             [
               "BaseParameter",
               8,
-              15
+              10
             ]
           ],
           [
             [
               "PassiveSkill",
               1339,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              6,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1259,
               -1
             ],
             [
@@ -24306,6 +25635,20 @@
           "desc": "Native Cecil resonance mechanics; Lilith's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -25086,6 +26429,38 @@
               3
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            8,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            6,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -25093,7 +26468,8 @@
         "label": "5",
         "sha256": "4f0085f2a226f3c51a4458d53fd9a115c829d99362c2f3d36f200d0022db0475",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "freya",
@@ -25452,7 +26828,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -25560,19 +26936,16 @@
               "PassiveSkill",
               1466,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1334,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
-          [
-            [
-              "BaseParameter",
-              5,
-              5
-            ]
-          ],
           [
             [
               "PassiveSkill",
@@ -25583,8 +26956,8 @@
           [
             [
               "BaseParameter",
-              11,
-              8
+              1,
+              30
             ]
           ],
           [
@@ -25597,16 +26970,11 @@
           [
             [
               "BaseParameter",
-              8,
-              10
+              11,
+              8
             ]
           ],
           [
-            [
-              "PassiveSkill",
-              1438,
-              -1
-            ],
             [
               "PassiveSkill",
               1349,
@@ -25616,19 +26984,28 @@
           [
             [
               "BaseParameter",
-              1,
-              90
+              9,
+              10
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1438,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              5,
+              15
             ]
           ],
           [
             [
               "PassiveSkill",
               1340,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1334,
               -1
             ],
             [
@@ -25673,6 +27050,20 @@
           "desc": "Native Noctis resonance mechanics; Dragon Knight Freya's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13128",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13128",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -25680,11 +27071,11 @@
         "nativeName": "Noctis",
         "growthDonor": 13110,
         "activeCount": 17,
-        "passiveCount": 3,
-        "kitCount": 20,
+        "passiveCount": 4,
+        "kitCount": 21,
         "mrActiveCount": 1,
-        "mrPassiveCount": 5,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 12,
         "additionalPassives": [
@@ -26418,6 +27809,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -26425,7 +27848,8 @@
         "label": "5",
         "sha256": "6768c6263a9d1a079cf2faee3af96911ad486f4d02319ce0d41f111188c2ee45",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "trance_terra",
@@ -26597,7 +28021,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -26705,6 +28129,11 @@
               "PassiveSkill",
               1433,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1430,
+              -1
             ]
           ]
         ],
@@ -26715,21 +28144,22 @@
               "PassiveSkill",
               1319,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1430,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              7,
+              9,
               5
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1038,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -26737,7 +28167,13 @@
               8
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1351,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -26746,11 +28182,6 @@
             ]
           ],
           [
-            [
-              "PassiveSkill",
-              1351,
-              -1
-            ],
             [
               "PassiveSkill",
               1065,
@@ -26768,11 +28199,6 @@
             [
               "ActiveSkill",
               400730,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1038,
               -1
             ],
             [
@@ -26815,6 +28241,20 @@
           "desc": "Native Shantotto resonance mechanics; Trance Terra's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13123",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13123",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -26822,11 +28262,11 @@
         "nativeName": "Shantotto",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 1,
-        "mrPassiveCount": 5,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 15,
         "additionalPassives": [
@@ -27126,6 +28566,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -27133,7 +28605,8 @@
         "label": "5",
         "sha256": "90d07946ae04acb2715a74e2208bc31e5b3249fd4972b8505e3d26b1c4f52579",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "ariana",
@@ -27454,7 +28927,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -27562,6 +29035,16 @@
               "PassiveSkill",
               1441,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1368,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1391,
+              -1
             ]
           ]
         ],
@@ -27569,32 +29052,22 @@
           [],
           [
             [
-              "ActiveSkill",
-              400460,
-              -1
-            ],
-            [
               "PassiveSkill",
-              1464,
+              1476,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              8,
+              7,
               5
             ]
           ],
           [
             [
               "ActiveSkill",
-              400540,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1368,
+              400460,
               -1
             ]
           ],
@@ -27605,28 +29078,10 @@
               8
             ]
           ],
-          [],
-          [
-            [
-              "BaseParameter",
-              8,
-              10
-            ]
-          ],
           [
             [
               "PassiveSkill",
               1392,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1391,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1476,
               -1
             ]
           ],
@@ -27634,10 +29089,29 @@
             [
               "BaseParameter",
               2,
-              30
+              20
             ]
           ],
           [
+            [
+              "ActiveSkill",
+              400540,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              8,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1464,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -27678,6 +29152,20 @@
           "desc": "Native Ayaka resonance mechanics; Charming Kitty Ariana's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13062",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13062",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -27685,11 +29173,11 @@
         "nativeName": "Ayaka",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
+        "passiveCount": 6,
+        "kitCount": 22,
         "mrActiveCount": 2,
-        "mrPassiveCount": 5,
-        "mrSkillCount": 7,
+        "mrPassiveCount": 3,
+        "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 13,
         "additionalPassives": [
@@ -28345,6 +29833,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            7,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            8,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -28352,7 +29872,8 @@
         "label": "5",
         "sha256": "070d69846431acde6eff75626622435fac59099b250d66328f13e6a1b73ff75c",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "elephim",
@@ -28591,6 +30112,84 @@
               "voiceLabel": "None",
               "selfSkillActivateVoiceLabel": "None"
             }
+          },
+          "487327": {
+            "from": 500060,
+            "visuals": 500060,
+            "jp": "Sephira_elephim_Kit_9",
+            "en": "Resonant Notes",
+            "desc": "Non-elemental magic damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Magic",
+              "damageCalcType": "Magic"
+            }
+          },
+          "487330": {
+            "from": 500340,
+            "visuals": 500340,
+            "jp": "Sephira_elephim_Kit_10",
+            "en": "Flame Chant",
+            "desc": "Fire magic damage; power 12. Group enemies; MP 6; hits 1; accuracy 100; stagger 12.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487333": {
+            "from": 500070,
+            "visuals": 500070,
+            "jp": "Sephira_elephim_Kit_11",
+            "en": "Harp Volley",
+            "desc": "Wind physical damage; power 12. Single enemies; MP 6; hits 2; accuracy 100; stagger 25.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Wind"
+            }
           }
         },
         "ffbeMap": {
@@ -28598,7 +30197,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -28622,11 +30221,6 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1295,
-              -1
-            ],
-            [
               "ActiveSkill",
               487303,
               -1
@@ -28634,6 +30228,11 @@
             [
               "ActiveSkill",
               487306,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487327,
               -1
             ]
           ],
@@ -28654,11 +30253,6 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1235,
-              -1
-            ],
-            [
               "ActiveSkill",
               487309,
               -1
@@ -28671,6 +30265,11 @@
             [
               "ActiveSkill",
               487315,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487330,
               -1
             ]
           ],
@@ -28696,22 +30295,12 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1304,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1074,
+              "ActiveSkill",
+              487333,
               -1
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              487318,
-              -1
-            ],
             [
               "ActiveSkill",
               487321,
@@ -28721,7 +30310,13 @@
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1295,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -28729,7 +30324,13 @@
               5
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1235,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -28737,23 +30338,40 @@
               8
             ]
           ],
-          [],
           [
             [
-              "BaseParameter",
-              6,
-              10
-            ]
-          ],
-          [],
-          [
-            [
-              "BaseParameter",
-              1,
-              90
+              "PassiveSkill",
+              1304,
+              -1
             ]
           ],
           [
+            [
+              "BaseParameter",
+              2,
+              20
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1074,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              9,
+              15
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              487318,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -28794,19 +30412,33 @@
           "desc": "Native Vaan resonance mechanics; Elephim's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13124",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13124",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13124,
         "nativeName": "Vaan",
         "growthDonor": 13108,
-        "activeCount": 14,
-        "passiveCount": 8,
-        "kitCount": 22,
-        "mrActiveCount": 0,
-        "mrPassiveCount": 0,
-        "mrSkillCount": 0,
-        "totalSkillCount": 22,
+        "activeCount": 16,
+        "passiveCount": 4,
+        "kitCount": 20,
+        "mrActiveCount": 1,
+        "mrPassiveCount": 4,
+        "mrSkillCount": 5,
+        "totalSkillCount": 25,
         "previousCount": 12,
         "additionalPassives": [
           1304,
@@ -29170,8 +30802,8 @@
               16109
             ],
             "unlock": [
-              "awakening",
-              3
+              "synchro",
+              9
             ]
           },
           {
@@ -29296,7 +30928,219 @@
               "awakening",
               2
             ]
+          },
+          {
+            "id": 487327,
+            "source": 500060,
+            "name": "Resonant Notes",
+            "originalName": "Cut",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Physic",
+              "damageCalcType": "Physic"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Magic",
+              "damageCalcType": "Magic"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "None",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              0
+            ]
+          },
+          {
+            "id": 487330,
+            "source": 500340,
+            "name": "Flame Chant",
+            "originalName": "Flame",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "element": "Fire",
+              "TargetType": "Group",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 1,
+              "breakDamageValue": 12
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              1
+            ]
+          },
+          {
+            "id": 487333,
+            "source": 500070,
+            "name": "Harp Volley",
+            "originalName": "Swing",
+            "sourceCategory": "enemy",
+            "original": {
+              "Cost": 0,
+              "accuracy": 100,
+              "belongCommandList": [
+                912
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                912,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "None"
+            },
+            "adjusted": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                343
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                343,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Wind"
+            },
+            "combat": {
+              "Cost": 6,
+              "magnification": 12,
+              "DamageType": "Physic",
+              "damageCalcType": "Physic",
+              "element": "Wind",
+              "TargetType": "Single",
+              "defaultTargetRelation": "Enemies",
+              "parameterVariationType": "Decrease",
+              "hitCount": 2,
+              "breakDamageValue": 25
+            },
+            "effects": [],
+            "unlock": [
+              "awakening",
+              2
+            ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            8,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            9,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -29304,7 +31148,12 @@
         "label": "7",
         "sha256": "e7552c58717c31bc6d5605f783c99bd6102ef3fce7b384fcd32cddc6656c2ada",
         "source": "GL"
-      }
+      },
+      "masteryFillers": [
+        487327,
+        487330,
+        487333
+      ]
     },
     {
       "id": "jade",
@@ -29650,7 +31499,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -29758,6 +31607,11 @@
               "PassiveSkill",
               1366,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1035,
+              -1
             ]
           ]
         ],
@@ -29768,24 +31622,19 @@
               "PassiveSkill",
               1323,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1371,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              9,
-              5
+              1,
+              30
             ]
           ],
           [
             [
-              "ActiveSkill",
-              400310,
+              "PassiveSkill",
+              1371,
               -1
             ]
           ],
@@ -29799,26 +31648,21 @@
           [
             [
               "ActiveSkill",
-              400700,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1385,
+              400310,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              6,
+              9,
               10
             ]
           ],
           [
             [
               "PassiveSkill",
-              1035,
+              1385,
               -1
             ]
           ],
@@ -29830,6 +31674,11 @@
             ]
           ],
           [
+            [
+              "ActiveSkill",
+              400700,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -29870,6 +31719,20 @@
           "desc": "Native Cloud resonance mechanics; Jade's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13110",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13110",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -29877,11 +31740,11 @@
         "nativeName": "Cloud",
         "growthDonor": 13110,
         "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 2,
-        "mrPassiveCount": 4,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 3,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
@@ -30573,6 +32436,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -30580,7 +32475,8 @@
         "label": "5",
         "sha256": "35f43154ad1b695c99b33643d98d32f0cf3e3c89f5d0b36276e2c7550936ccce",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "primm",
@@ -30857,7 +32753,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -30965,30 +32861,31 @@
               "ActiveSkill",
               487509,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1382,
+              -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
           [
             [
-              "BaseParameter",
-              7,
-              5
+              "PassiveSkill",
+              1310,
+              -1
             ]
           ],
           [
             [
-              "ActiveSkill",
-              400660,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1370,
-              -1
-            ],
+              "BaseParameter",
+              5,
+              5
+            ]
+          ],
+          [
             [
               "PassiveSkill",
               1329,
@@ -31005,12 +32902,7 @@
           [
             [
               "ActiveSkill",
-              400770,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1310,
+              400660,
               -1
             ]
           ],
@@ -31024,7 +32916,7 @@
           [
             [
               "PassiveSkill",
-              1382,
+              1370,
               -1
             ]
           ],
@@ -31036,6 +32928,11 @@
             ]
           ],
           [
+            [
+              "ActiveSkill",
+              400770,
+              -1
+            ],
             [
               "BaseParameter",
               11,
@@ -31079,6 +32976,20 @@
           "desc": "Native Onion Knight resonance mechanics; Spirited Heart Primm's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13102",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13102",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -31086,11 +32997,11 @@
         "nativeName": "Onion Knight",
         "growthDonor": 13125,
         "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 2,
-        "mrPassiveCount": 4,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 3,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
@@ -31632,6 +33543,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            5,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -31639,7 +33582,8 @@
         "label": "NV Super Limit Burst",
         "sha256": "d16662043f0611685821643da65015064543d5adfa6f33ea622b4df372a43fe0",
         "source": "GLW"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "relm",
@@ -31986,7 +33930,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -32094,6 +34038,11 @@
               "ActiveSkill",
               487621,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1364,
+              -1
             ]
           ]
         ],
@@ -32109,7 +34058,7 @@
           [
             [
               "BaseParameter",
-              7,
+              9,
               5
             ]
           ],
@@ -32145,11 +34094,6 @@
             [
               "PassiveSkill",
               1332,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1364,
               -1
             ]
           ],
@@ -32208,6 +34152,20 @@
           "desc": "Native Shantotto resonance mechanics; Relm's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13123",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13123",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -32215,11 +34173,11 @@
         "nativeName": "Shantotto",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 4,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 2,
-        "mrPassiveCount": 4,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 3,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 12,
         "additionalPassives": [
@@ -32933,6 +34891,38 @@
               1
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            2,
+            20
+          ],
+          [
+            8,
+            "BaseParameter",
+            7,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -32940,7 +34930,8 @@
         "label": "5",
         "sha256": "5c2b6d5d50745aa02b194e9fc5e9f80dc506953fc65a8c34c22e9dd020b8ead1",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "rikku",
@@ -33265,7 +35256,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -33373,6 +35364,26 @@
               "PassiveSkill",
               1436,
               -1
+            ],
+            [
+              "ActiveSkill",
+              400400,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1386,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1055,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400250,
+              -1
             ]
           ]
         ],
@@ -33383,29 +35394,19 @@
               "ActiveSkill",
               400260,
               -1
-            ],
-            [
-              "ActiveSkill",
-              400400,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              8,
-              5
+              1,
+              30
             ]
           ],
           [
             [
               "PassiveSkill",
-              1386,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1055,
+              1044,
               -1
             ]
           ],
@@ -33421,43 +35422,33 @@
               "ActiveSkill",
               400270,
               -1
-            ],
-            [
-              "ActiveSkill",
-              400250,
-              -1
             ]
           ],
           [
             [
               "BaseParameter",
-              6,
+              5,
               10
             ]
           ],
           [
             [
               "PassiveSkill",
-              1044,
+              1050,
               -1
             ]
           ],
           [
             [
               "BaseParameter",
-              1,
-              90
+              9,
+              15
             ]
           ],
           [
             [
               "ActiveSkill",
               400750,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1050,
               -1
             ],
             [
@@ -33500,18 +35491,32 @@
           "desc": "Native Vaan resonance mechanics; Rikku (FFX-2)'s own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13124",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13124",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
         "nativeBudget": 13124,
         "nativeName": "Vaan",
         "growthDonor": 13110,
-        "activeCount": 15,
-        "passiveCount": 5,
-        "kitCount": 20,
-        "mrActiveCount": 5,
-        "mrPassiveCount": 4,
-        "mrSkillCount": 9,
+        "activeCount": 17,
+        "passiveCount": 7,
+        "kitCount": 24,
+        "mrActiveCount": 3,
+        "mrPassiveCount": 2,
+        "mrSkillCount": 5,
         "totalSkillCount": 29,
         "previousCount": 16,
         "additionalPassives": [
@@ -34185,6 +36190,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            5,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            9,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -34192,7 +36229,8 @@
         "label": "6",
         "sha256": "f776e4581bd235e29ca061273557ae38dc06036aa3c5667f498d35248b99cc34",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "nalu",
@@ -34504,7 +36542,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -34610,14 +36648,25 @@
           [
             [
               "PassiveSkill",
-              1418,
+              1028,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1347,
               -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1124,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -34625,7 +36674,13 @@
               5
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1399,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -34636,11 +36691,6 @@
           [
             [
               "PassiveSkill",
-              1399,
-              -1
-            ],
-            [
-              "PassiveSkill",
               1400,
               -1
             ]
@@ -34648,19 +36698,14 @@
           [
             [
               "BaseParameter",
-              6,
-              10
+              1,
+              60
             ]
           ],
           [
             [
               "PassiveSkill",
-              1124,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1028,
+              1404,
               -1
             ]
           ],
@@ -34674,12 +36719,7 @@
           [
             [
               "PassiveSkill",
-              1347,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1404,
+              1418,
               -1
             ],
             [
@@ -34722,6 +36762,20 @@
           "desc": "Native Cloud resonance mechanics; Nalu's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13110",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13110",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -34729,11 +36783,11 @@
         "nativeName": "Cloud",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 2,
-        "kitCount": 20,
+        "passiveCount": 3,
+        "kitCount": 21,
         "mrActiveCount": 0,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 5,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
@@ -35357,6 +37411,38 @@
               2
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            1,
+            60
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -35364,7 +37450,8 @@
         "label": "5",
         "sha256": "ea55081c95e0f5e0232422ce74b0686e7761d8dc3f244cd015162fa3e8b28675",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "elza",
@@ -35749,7 +37836,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -35857,6 +37944,11 @@
               "ActiveSkill",
               487942,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1350,
+              -1
             ]
           ]
         ],
@@ -35872,11 +37964,17 @@
           [
             [
               "BaseParameter",
-              9,
-              5
+              1,
+              30
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1389,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -35884,30 +37982,21 @@
               8
             ]
           ],
-          [],
           [
-            [
-              "BaseParameter",
-              5,
-              10
-            ]
-          ],
-          [
-            [
-              "PassiveSkill",
-              1428,
-              -1
-            ],
             [
               "PassiveSkill",
               1403,
               -1
-            ],
+            ]
+          ],
+          [
             [
-              "PassiveSkill",
-              1389,
-              -1
-            ],
+              "BaseParameter",
+              9,
+              10
+            ]
+          ],
+          [
             [
               "PassiveSkill",
               1398,
@@ -35917,14 +38006,14 @@
           [
             [
               "BaseParameter",
-              9,
+              5,
               15
             ]
           ],
           [
             [
               "PassiveSkill",
-              1350,
+              1428,
               -1
             ],
             [
@@ -35969,6 +38058,20 @@
           "desc": "Native Tidus resonance mechanics; Elza's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -35976,11 +38079,11 @@
         "nativeName": "Tidus",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 2,
-        "kitCount": 20,
+        "passiveCount": 3,
+        "kitCount": 21,
         "mrActiveCount": 0,
-        "mrPassiveCount": 6,
-        "mrSkillCount": 6,
+        "mrPassiveCount": 5,
+        "mrSkillCount": 5,
         "totalSkillCount": 26,
         "previousCount": 15,
         "additionalPassives": [
@@ -36752,6 +38855,38 @@
               3
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            1,
+            30
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            9,
+            10
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -36759,7 +38894,8 @@
         "label": "5",
         "sha256": "b1a4be9f34308d7dc1726ba06b13c6f18de1a7d6f0df8313605e1825b19feadc",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     },
     {
       "id": "lunera",
@@ -37105,7 +39241,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 3,
+        "sephiraRecipe": 4,
         "awakening": [
           [
             [
@@ -37205,20 +39341,26 @@
               -1
             ],
             [
-              "PassiveSkill",
-              1449,
+              "ActiveSkill",
+              488030,
               -1
             ],
             [
-              "ActiveSkill",
-              488030,
+              "PassiveSkill",
+              1054,
               -1
             ]
           ]
         ],
         "synchro": [
           [],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1066,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
@@ -37229,17 +39371,7 @@
           [
             [
               "PassiveSkill",
-              1066,
-              -1
-            ],
-            [
-              "PassiveSkill",
               1258,
-              -1
-            ],
-            [
-              "PassiveSkill",
-              1345,
               -1
             ]
           ],
@@ -37250,18 +39382,24 @@
               8
             ]
           ],
-          [],
+          [
+            [
+              "PassiveSkill",
+              1345,
+              -1
+            ]
+          ],
           [
             [
               "BaseParameter",
-              2,
-              20
+              1,
+              60
             ]
           ],
           [
             [
               "PassiveSkill",
-              1054,
+              1341,
               -1
             ]
           ],
@@ -37275,7 +39413,7 @@
           [
             [
               "PassiveSkill",
-              1341,
+              1449,
               -1
             ],
             [
@@ -37318,6 +39456,20 @@
           "desc": "Native Bartz resonance mechanics; Lunera's own sprite animation.",
           "descAuto": false,
           "nameAuto": false
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13105",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13105",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
         }
       },
       "balance": {
@@ -38021,6 +40173,38 @@
               0
             ]
           }
+        ],
+        "masteryStats": [
+          [
+            2,
+            "BaseParameter",
+            9,
+            5
+          ],
+          [
+            4,
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            6,
+            "BaseParameter",
+            1,
+            60
+          ],
+          [
+            8,
+            "BaseParameter",
+            5,
+            15
+          ],
+          [
+            9,
+            "BaseParameter",
+            11,
+            8
+          ]
         ]
       },
       "form": {
@@ -38028,7 +40212,8 @@
         "label": "6",
         "sha256": "255daab2f7fe66a6d685bbeb757d7314816fe5c9abfe6e991b83ac3a61796cbf",
         "source": "GL"
-      }
+      },
+      "masteryFillers": []
     }
   ],
   "nativeReservations": {

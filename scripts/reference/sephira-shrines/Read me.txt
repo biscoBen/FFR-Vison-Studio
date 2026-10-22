@@ -1,0 +1,12 @@
+Reference collectors for the full-game shrine audit. These helpers do not install a mod or collect saves/settings.
+
+Collect Sephira Shrine Reference: copies already-prepared map/NPC/gimmick/encounter rows from the selected Studio.
+Collect Shrine World Placement: extracts official interaction maps, shrine persistent levels and placement metadata.
+  It reads global ScriptObjects plus the complete official patch set using temporary same-volume hard links.
+  It excludes installed mods and removes only its temporary links afterward. Shrine filters exclude scenery/lighting.
+Collect Shrine Schemas: extracts map Blueprint declarations, native shop-price tables and Olderion story text rows.
+Repack Shrine World Placement: makes small upload parts from an older large extracted folder. It excludes scenery,
+  preserves small map files, and splits large individual files with a manifest for restore_reference_chunks.py.
+
+Run the matching .cmd, select the current Studio folder, and attach the output ZIP when requested. Outputs default
+  to Downloads\FFR Mod. Always prepare the currently selected game first; a changed container identity is rejected.

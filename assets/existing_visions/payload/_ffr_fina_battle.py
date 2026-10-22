@@ -186,7 +186,8 @@ def build(units, env):
         original_spec = json.loads((root / 'build/sprites' / unit['key'] / 'battle/spec.json').read_bytes())
         sheet = root / unit['ffbe']['dir'] / ('unit_anime_' + SPRITE + '.png')
     import _ffr_testing
-    if _ffr_testing.settings(root)['practiceBattle'] and not any(a['name'] == 'atk' for a in original_spec['animations']):
+    import _ffr_shrine_challenges as challenges
+    if (_ffr_testing.settings(root)['practiceBattle'] or challenges.needs_enemy_motion(unit)) and not any(a['name'] == 'atk' for a in original_spec['animations']):
         # The native enemy sequencer uses atk; imported vision templates use
         # attack_A. A shared body must support both animation contracts.
         original_spec['animations'].append({'name': 'atk', 'frameCount': motion.RELEASE_FRAMES})

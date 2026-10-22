@@ -40,6 +40,12 @@ spec_file = Path(sys.argv[4]) / 'battle/spec.json'
 if spec_file.is_file() and '--menu-only' not in sys.argv:
     spec = json.loads(spec_file.read_bytes())
     aliases = _ffr_animation_repair.native_caster_motions(spec, _ffr_ability_modes.settings(tools.parent))
+    import _ffr_shrine_challenges as challenges
+    roster = tools.parent / 'mods/EstherTsukiko/units.json'
+    if not aliases and roster.is_file() and challenges.enemy_motion_for(
+            json.loads(roster.read_bytes()), sys.argv[3]):
+        aliases = _ffr_animation_repair.native_caster_motions(spec,
+            {'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True})
     if aliases: print('  Native caster motion: atk uses this character\'s attack_A clip; no substitute effects.')
     if trial.is_file():
         _ffr_animation_repair.add_barrage_animation(spec, json.loads(trial.read_bytes()), sys.argv[3])

@@ -39,6 +39,7 @@ def skill_ids():
 def final_rows(rel, expected, units, root):
     """Account for the existing native-body postprocessor in shared tables."""
     if rel in AI_ASSETS:
+        if NAME not in expected: return expected
         expected = copy.deepcopy(expected)
         # The row exporter renders hard class imports by object name, whereas
         # the patcher requires a full package/class path to create the import.
@@ -157,7 +158,7 @@ def size(node):
     raise ValueError('Unsupported boss AI bytecode: ' + op)
 
 
-def author_ai(asset):
+def author_ai(asset, rotation=None):
     """Use the early boss's native think clock and native target routing."""
     asset = copy.deepcopy(asset)
     think, = [e for e in asset['Exports'] if e['ObjectName'] == 'ThinkInner']
@@ -172,6 +173,10 @@ def author_ai(asset):
     ids = skill_ids()
     actions = [(1, ids[210250]), (2, ids[485212]), (3, ids[485230]),
                (5, ids[485215]), (6, ids[210260]), (7, ids[485203])]
+    if rotation is not None:
+        if len(rotation) != 8 or any(type(r.get('id')) is not int for r in rotation):
+            raise ValueError('A vision boss needs eight reviewed actions.')
+        actions = [(i, r['id']) for i, r in enumerate(rotation)]
     labels, pending = {}, []
     def jump(label, condition=None):
         n = expr('EX_JumpIfNot', CodeOffset=0, BooleanExpression=condition) if condition else expr('EX_Jump', CodeOffset=0)
@@ -180,10 +185,10 @@ def author_ai(asset):
     def cast(identity): code.append(expr('EX_FinalFunction', StackNode=schedule, Parameters=[expr('EX_IntConst', Value=identity)]))
     for turn, _ in actions:
         jump(str(turn), expr('EX_CallMath', StackNode=compare, Parameters=[copy.deepcopy(remainder), expr('EX_IntConst', Value=turn)]))
-    label('basic'); cast(ids[0]); jump('end')
+    label('basic'); cast(rotation[0]['id'] if rotation is not None else ids[0]); jump('end')
     for turn, identity in actions:
         label(str(turn))
-        if turn == 5:
+        if (rotation[turn]['healing'] if rotation is not None else turn == 5):
             jump('basic', expr('EX_LocalVirtualFunction', VirtualFunctionName='HP判定',
                 Parameters=[expr('EX_DoubleConst', Value=.5), expr('EX_True')]))
         cast(identity); jump('end')

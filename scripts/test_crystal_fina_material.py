@@ -258,7 +258,14 @@ class FreshBuildMaterialTests(unittest.TestCase):
         with mock.patch.object(helper, 'run_asset_tool', side_effect=self.serializer):
             result = helper.retarget_material(self.root, helper.materials(self.root), 13514)
         helper.verify_material_view(self.serialized, 13514)
-        self.assertEqual(original['Exports'][0]['Data'], self.serialized['Exports'][0]['Data'])
+        expected = copy.deepcopy(original['Exports'][0]['Data'])
+        # Material CachedExpressionData contains the resolved texture FName.
+        def renamed(value):
+            if isinstance(value, str): return value.replace('13503', '13514')
+            if isinstance(value, list): return [renamed(v) for v in value]
+            if isinstance(value, dict): return {k: renamed(v) for k, v in value.items()}
+            return value
+        self.assertEqual(renamed(expected), self.serialized['Exports'][0]['Data'])
         self.assertEqual(original['Exports'][0]['Extras'], self.serialized['Exports'][0]['Extras'])
         self.assertEqual(result[0][1], helper.ASSET.replace('13503', '13514') + '.uasset')
         self.assertEqual(result[1][0].read_bytes(), (self.private / helper.MATERIAL_FILES[1]).read_bytes())

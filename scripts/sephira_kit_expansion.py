@@ -249,6 +249,20 @@ AWAKENING_EXPANSIONS = {
                 skill(500120, 'Twin Gale Shot', 8, element='Wind')], []),
 }
 
+# Small, low-tier alternatives keep awakening kits at 20+ after five rewards
+# move to the corrected MR track. These add no passives or permanent stats.
+MASTERY_FILLERS = {
+    'barusa': [skill(500030, 'Granite Slam', 6, element='Earth'),
+               skill(500550, 'Stone Horn', 10, element='Earth')],
+    'fran': [skill(500110, 'Snipe', 6), skill(500190, 'Flurry Arrow', 10)],
+    'fryevia': [skill(500040, 'Frozen Slash', 6, element='Ice')],
+    'elephim': [skill(500060, 'Resonant Notes', 6, DamageType='Magic', damageCalcType='Magic'),
+                skill(500340, 'Flame Chant', 6),
+                skill(500070, 'Harp Volley', 6, element='Wind')],
+}
+for _key, _skills in MASTERY_FILLERS.items():
+    AWAKENING_EXPANSIONS[_key][0].extend(_skills)
+
 # Replacements on these private copies only. Positive boss-only effects must
 # use finite player equivalents; drain may restore at most damage dealt.
 PLAYER_EFFECT_REPLACEMENTS = {

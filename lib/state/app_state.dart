@@ -574,6 +574,34 @@ class AppState extends ChangeNotifier {
     }
   });
 
+  Future<void> updateSephiraProgression() => _withRoster(() async {
+    _checkSephiraChange();
+    _saveTimer?.cancel();
+    await _savePending();
+    try {
+      sephiraWorking = true;
+      sephiraProgress = 'Updating MR rewards and acquisition…';
+      notifyListeners();
+      if (sephiraPresets.isEmpty) sephiraPresets = await SephiraVisions.bundled;
+      final current = _mergePending(await api!.spec());
+      final revision = _rosterRevision;
+      final next = [for (final raw in current)
+        if (SephiraVisions.member(raw as Map) && !SephiraVisions.retiredMember(raw))
+          SephiraVisions.updateProgression(raw as JsonMap,
+              sephiraPresets.singleWhere((p) => p['id'] == SephiraVisions.presetId(raw)))
+        else raw,
+      ];
+      final backup = File(p.join(paths.configBackups, 'sephira-progression-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(current), flush: true);
+      if (revision != _rosterRevision) throw StateError('A character changed during the update. Retry; your edits were kept.');
+      await _commitSephira(next, enabled: sephiraEnabled);
+      showNotice('MR rewards and acquisition updated. Previous roster backed up. Build/install to apply.');
+    } finally {
+      sephiraWorking = false; sephiraProgress = null; notifyListeners();
+    }
+  });
+
   void _checkSephiraChange() {
     if (building) throw StateError('Wait for the current build to finish.');
     if (api == null || engineDown) throw StateError('The engine is not running.');

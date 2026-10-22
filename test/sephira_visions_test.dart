@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
@@ -192,6 +193,66 @@ void main() {
         }
       }
     }
+  });
+
+
+  test('MR migration retains every saved ability and combat edit after identity remapping', () async {
+    final presets = await SephiraVisions.bundled;
+    final previous = json.decode(File('scripts/fixtures/sephira_revision3_grants.json').readAsStringSync()) as Map;
+    final occupied = presets.map((p) => p['profile']).toList();
+    for (final preset in presets) {
+      final old = CharacterConfig.copy(preset['profile'] as Map<String, dynamic>);
+      old['awakening'] = previous[preset['id']]['awakening'];
+      old['synchro'] = previous[preset['id']]['synchro'];
+      old['sephiraRecipe'] = 3;
+      for (final id in preset['masteryFillers'] as List) { (old['skills'] as Map).remove(id.toString()); }
+      final saved = CharacterConfig.restore(old, occupied);
+      saved[SephiraVisions.field] = {'version': 1, 'preset': preset['id'], 'enabled': false};
+      saved['stats']['Attack'] = 123;
+      final customSkill = (saved['skills'] as Map).values.first as Map;
+      customSkill['set']['Cost'] = 27;
+      final before = CharacterConfig.copy(saved);
+      Set<String> grants(Map value) => {for (final field in ['awakening', 'synchro'])
+        for (final tier in value[field] as List) for (final g in tier as List)
+          if (g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill') '${g[0]}:${g[1]}'};
+      final next = SephiraVisions.updateProgression(saved, preset);
+      expect(grants(next).containsAll(grants(before)), isTrue, reason: preset['id'] as String);
+      expect(saved, before);
+      expect(next['id'], saved['id']);
+      expect(next['ffbe'], saved['ffbe']);
+      expect(next['stats'], saved['stats']);
+      expect(next[SephiraVisions.field], saved[SephiraVisions.field]);
+      for (final entry in (saved['skills'] as Map).entries) {
+        expect(next['skills'][entry.key], entry.value);
+      }
+      expect(next['sephiraRecipe'], 4);
+      expect((next['awakening'] as List).expand((t) => t as List).length, inInclusiveRange(20, 28));
+      expect((next['synchro'] as List).map((t) => (t as List).length).toList(), [0,1,1,1,1,1,1,1,1,3]);
+      final portable = CharacterConfig.decode(CharacterConfig.encode(next));
+      expect(portable['studioAcquisition'], next['studioAcquisition']);
+      // Applying the update again must not add another filler or alter a kit.
+      expect(SephiraVisions.updateProgression(next, preset), next);
+    }
+  });
+
+  test('progression update backs up the old roster and commits atomically', () async {
+    final presets = await SephiraVisions.bundled;
+    final unit = CharacterConfig.copy(presets.first['profile'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': presets.first['id'], 'enabled': true};
+    unit['sephiraRecipe'] = 3;
+    unit['stats']['Attack'] = 123;
+    api.roster = [unit]; app.units = clone(api.roster) as List; app.sephiraPresets = presets;
+    api.fail = true;
+    await expectLater(app.updateSephiraProgression(), throwsStateError);
+    expect(api.roster.single['sephiraRecipe'], 3);
+    expect(app.units.single['sephiraRecipe'], 3);
+    api.fail = false;
+    await app.updateSephiraProgression();
+    expect(app.units.single['sephiraRecipe'], 4);
+    expect(app.units.single['stats']['Attack'], 123);
+    final backups = Directory(app.paths.configBackups).listSync().whereType<File>();
+    expect(backups, isNotEmpty);
+    expect(CharacterConfig.decodeAll(backups.first.readAsStringSync()).single['sephiraRecipe'], 3);
   });
 
   test('all selected presets prepare with separate Alice shift and base owners', () async {

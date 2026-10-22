@@ -157,6 +157,8 @@ def prepare(tables, units, root, rows):
         prepare_practice(table, rows, value)
     import _ffr_crystal_cave
     _ffr_crystal_cave.prepare(tables, units, root, rows)
+    import _ffr_shrine_challenges
+    _ffr_shrine_challenges.prepare(tables, units, root, rows)
     import _ffr_field_leader
     _ffr_field_leader.prepare(tables, units, root, rows)
     return tables
@@ -424,17 +426,23 @@ def build_practice(env):
     if not settings(env['ROOT'])['practiceBattle']: return
     import _ffr_fina_boss
     _ffr_fina_boss.build(env)
+    build_choices(env, [PRACTICE + '_Menu_' + chr(65 + page)
+        for page in range((len(OPPONENTS)+1)//2)], CHOICE_FOLDER, 'practice-dialog')
+    print(f'  Shop practice: {(len(OPPONENTS)+1)//2} native choice pages, {len(OPPONENTS)} opponents, cancel without battle.')
+
+
+def build_choices(env, names, folder, work_label):
+    """Build private native dialogs and verify their cooked director bindings."""
     import ffbe_resonance as seq
-    legacy, out, work = Path(env['LEGACY']), Path(env['OUT']), Path(env['BUILD']) / 'practice-dialog'
+    legacy, out, work = Path(env['LEGACY']), Path(env['OUT']), Path(env['BUILD']) / work_label
     shell = legacy / (seq.SHELL + '.uasset')
     if not shell.is_file():
         env['run'](env['ffrenv'].py(str(Path(env['ROOT'])/'tools/extract_legacy.py'),
                                    '--filter', 'Sequencer/Battle/Skill/440110/440111/'))
     if not shell.is_file(): raise ValueError('The practice choice sequence template is unavailable.')
     work.mkdir(parents=True, exist_ok=True)
-    for page in range((len(OPPONENTS)+1)//2):
-        name = PRACTICE + '_Menu_' + chr(65 + page)
-        destination = CHOICE_FOLDER + 'SEQ_' + name
+    for name in names:
+        destination = folder + 'SEQ_' + name
         patch = work / (name + '-clone.json')
         patch.write_text(json.dumps({'legacyRoot': str(legacy), 'outRoot': str(out), 'clones': [{
             'from': seq.SHELL, 'to': destination, 'rename': [['SEQ_Battle_440111_Cut_000', 'SEQ_' + name]]}]}), encoding='utf-8')
@@ -446,7 +454,6 @@ def build_practice(env):
         env['run']([*env['FFRDT'], 'fromjson', str(dump), str(out/(destination+'.uasset')), '--usmap', env['USMAP']])
         env['run']([*env['FFRDT'], 'tojson', str(out/(destination+'.uasset')), str(dump), '--usmap', env['USMAP']])
         verify_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')), 'UI.Dialog.Choice.' + name)
-    print(f'  Shop practice: {(len(OPPONENTS)+1)//2} native choice pages, {len(OPPONENTS)} opponents, cancel without battle.')
 
 
 def verify_practice_choice(asset, tag):
@@ -586,8 +593,10 @@ def verify(root, tool, usmap):
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         try:
             import _ffr_fina_boss
+            import _ffr_shrine_challenges
             check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation, matches[0],
-                       lambda expected: _ffr_fina_boss.final_rows(rel, expected, units, root))
+                       lambda expected: _ffr_shrine_challenges.final_rows(rel,
+                           _ffr_fina_boss.final_rows(rel, expected, units, root), units, root))
         except ValueError as error:
             raise ValueError(f'{rel}: {error}') from error
     if operations: print('OK: original vision acquisition, MR and shop battle testing tables verified')

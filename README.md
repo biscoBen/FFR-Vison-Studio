@@ -1,5 +1,9 @@
 # FFR Vision Studio (Windows app)
 
+Work in progress: Sephira’s MR/acquisition revision adds guarded shrine challenges and a backed-up
+**Apply MR and acquisition update** button. See [the complete vision guide](SEPHIRAS_VISIONS.md).
+This revision is awaiting its Windows test package; downloads below remain the previous verified build.
+
 This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), separately from the original project's
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.

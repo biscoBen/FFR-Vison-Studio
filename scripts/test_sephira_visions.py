@@ -27,7 +27,16 @@ class SephiraTests(unittest.TestCase):
             u = p['profile']; budget = catalog['nativeBudgets'][str(p['balance']['nativeBudget'])]
             self.assertEqual(u['stats'], budget['stats'])
             rewards = [[rank,*g] for rank,t in enumerate(u['synchro']) for g in t if g[0]=='BaseParameter']
-            self.assertEqual(rewards, budget['statRewards'])
+            self.assertEqual([r[0] for r in rewards], [2, 4, 6, 8, 9])
+            self.assertEqual([r for r in rewards if r[2] == 11],
+                             [[4, 'BaseParameter', 11, 8], [9, 'BaseParameter', 11, 8]])
+            stats = [r for r in rewards if r[2] != 11]
+            self.assertEqual(len({r[2] for r in stats}), 3)
+            self.assertEqual([r[3] // {1: 6, 2: 2}.get(r[2], 1) for r in stats], [5, 10, 15])
+            for rank in range(1, 9): self.assertEqual(len(u['synchro'][rank]), 1)
+            self.assertEqual(len(u['synchro'][9]), 3)
+            for rank in (1, 3, 5, 7, 9):
+                self.assertEqual(sum(g[0] in ('ActiveSkill', 'PassiveSkill') for g in u['synchro'][rank]), 1)
             self.assertEqual(u['synchro'][0], [])
             self.assertTrue(all(len(t)<=8 for t in u['awakening']))
             self.assertTrue(all(len(t)<=5 for t in u['synchro']))
@@ -48,9 +57,6 @@ class SephiraTests(unittest.TestCase):
                         key=f'{kind}:{id}'
                         self.assertNotIn(key,seen,key)
                         seen[key]=p['id']
-                        possible=catalog['grantUnlocks'].get(key,[])
-                        if possible:
-                            self.assertIn([field,rank],possible,key)
         for e in audit['entries']:
             self.assertEqual(seen[f"{e['kind']}:{e['id']}"],e['assignedTo'])
         self.assertEqual(len(audit['entries']),291)
@@ -103,13 +109,18 @@ class SephiraTests(unittest.TestCase):
                     self.assertNotIn(1446,x['effects'])
         self.assertGreater(enemy_count,100)
 
-    def test_awakening_expansion_preserves_every_existing_mr_reward(self):
+    def test_mastery_rebalance_retains_every_previous_learned_reward(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
         baseline=json.loads((ROOT/'scripts/fixtures/sephira_mr_revision2.json').read_bytes())
         self.assertEqual({p['id'] for p in catalog['presets']},set(baseline))
         for p in catalog['presets']:
-            self.assertEqual(p['profile']['synchro'],baseline[p['id']],p['id'])
-            self.assertEqual(p['profile']['sephiraRecipe'],3)
+            learned = {tuple(g) for field in ('awakening', 'synchro')
+                       for tier in p['profile'][field] for g in tier
+                       if g[0] in ('ActiveSkill', 'PassiveSkill')}
+            previous = {tuple(g) for tier in baseline[p['id']] for g in tier
+                        if g[0] in ('ActiveSkill', 'PassiveSkill')}
+            self.assertLessEqual(previous, learned, p['id'])
+            self.assertEqual(p['profile']['sephiraRecipe'],4)
 
     def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())

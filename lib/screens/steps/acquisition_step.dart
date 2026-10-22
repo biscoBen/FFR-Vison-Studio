@@ -216,12 +216,32 @@ class _AcquisitionStepState extends State<AcquisitionStep> {
         animation: widget.locations,
         builder: (context, _) {
           final preferences = _preferences!;
+          final defaultRoute = widget.unit['sephiraAcquisition'];
+          if (preferences.isChallenge) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(preferences.challengeLabel!, style: Guide.h2()),
+                const SizedBox(height: 12),
+                Text(preferences.location == 'sephira_folka_shop'
+                    ? 'Available in Olderion after the guardian story scene. Her price is twice the most expensive other item in that shop.'
+                    : 'Obtain the original vision first, then interact with its crystal and win the challenge. The whole opposing team shares one boss encounter budget.',
+                    style: Guide.text()),
+                const SizedBox(height: 12),
+                TextButton(onPressed: () => _change(preferences.choose(catalog.vendor(catalog.mitraShop)!, random: false)),
+                    child: const Text('Choose a different acquisition')),
+              ]),
+            );
+          }
           final selected = widget.locations.site(preferences, catalog);
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (Acquisition.valid(defaultRoute) && (defaultRoute as Map)['version'] == 3)
+                  TextButton(onPressed: () => _change(Acquisition.fromJson(defaultRoute)),
+                      child: const Text('Use the preset crystal challenge / story shop')),
                 SwitchListTile(
                   key: const ValueKey('acquisition-hide'),
                   contentPadding: EdgeInsets.zero,

@@ -1,0 +1,24 @@
+# Full-game shrine challenge fixtures
+
+These scoped rows and two small interaction maps come from the user's official full-game references,
+collected on 2026-10-22. They are test inputs, not installable game overrides.
+
+Game fingerprint: `8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4`.
+The native reference ZIP SHA-256 is `09fc7c7d31047bb5c89a0dde20ed81d0ad0efc950af8dce63efc9dd34609537f`;
+the prepared shrine-table ZIP SHA-256 is `a393967156ad5d9a1bcc0712cfb96f30e9131138934971f00a311e199b79dc3b`.
+World interactions and Blueprint declarations were subsequently supplied in the small world and schema packs.
+
+`rows.json.gz` retains the native donors used by the challenge builder, original grant/replay rows, boss curve
+anchors and item prices. `tronn-room.json.gz` is the original Com_00Com_237_PL, with its two dynamic streams.
+`crystal-interaction.json.gz` is the decoded native WoL repeat-crystal interaction, Com_00Com_223_EV.
+All gzip streams have deterministic timestamps. The boss bytecode fixture is shared with the earlier Fina test.
+
+The entrance-to-encounter-volume audit applied the native 32-unit box half-extents/sphere radii, cooked overrides,
+scale and rotation, then used the highest-priority enclosing volume's weighted ordinary-enemy median level.
+Cactuar/gil/metal specials and boss-category actors do not set ordinary area levels. Tronn uses the Earth Shrine's
+inner-floor encounter table; Wilhelm's new cave uses Zoldaad's fifth area. The resulting runtime manifest records
+native encounter tables, ordinary enemy IDs/levels and the original individual quest/flag unlock evidence.
+
+Native verification also patched all 29 physical full-game tables through the pinned engine's real ffr-dt,
+read back every row, and checked all generated AI, dialog, grant and Tronn-interaction packages. This verifies
+serialization and original-row preservation, not controller behavior or combat balance in a running game.

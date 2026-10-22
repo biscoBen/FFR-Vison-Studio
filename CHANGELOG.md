@@ -11,6 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Sephira MR progression, guarded vision challenges and Crystal Fina restore fix
+
+- Give all 30 presets five learned MR rewards at 1/3/5/7/9, one permanent role stat at 2/6/8,
+  AP at 4, and Spirit mastery plus AP alongside the MR9 ability. Keep MR0 as the native starting rank.
+  Preserve all earlier learned abilities and the 20–28 awakening quota; eight low-tier attacks fill the short kits.
+- Add **Apply MR and acquisition update** for saved presets. Back up the roster before saving and retain identities,
+  sprites, stats, custom skill mechanics and learned abilities. Already-updated presets keep later edits.
+- Add the requested 28 challenge rewards at the matched originals’ crystals; Barusa/Ariana use a separate Zoldaad
+  cave. Check each original’s ownership or actual completion state before the menu, before battle and before rewards.
+  Tronn uses his story grant; Wilhelm uses final quest progress 48/50. Keep original shrine memories available.
+- Share one local-level boss budget across each opposing team, including Cecil’s three visions. Add private enemy
+  copies of learned active skills, generic attacks, staggered eight-action AI, bounded recovery and native visuals/sounds.
+  Winning grants missing visions only; cancel/escape/loss never grant them. Add no farmable experience, gil or drops.
+- Place Aria in Mitra’s shop and Folka in Olderion’s item shop after its guardian story scene. Folka costs twice
+  the highest other inventory price. Locations and gates come from the supplied full-game maps, quests and tables.
+- Fix Crystal Fina’s material verification after Restore missing assigns a new ID: verify the intended texture-name
+  rename while still requiring the original cooked shader/export bytes. No extra extraction is needed for this fix.
+- Validation covers portable migration, original event preservation, all unlocks, native table serialization and AI
+  execution. Gameplay balance, controller interaction and all shrine fights still require live full-game testing.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

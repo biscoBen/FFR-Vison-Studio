@@ -9,6 +9,7 @@ COMPOSITES = {
     'Asset/Skill/DT_SkillAsset': 'Asset/Skill/CDT_SkillAsset_Demo',
     'Asset/Battle/Stage/DT_BtlStageAsset': 'Asset/Battle/Stage/CDT_BtlStageAsset_Demo',
     'Event/TalkEvent/MainEvent/DT_TalkEventData_Chapter01': 'Event/TalkEvent/CDT_TalkEventData_Demo',
+    'Event/TalkEvent/LegendEvent/DT_TalkEventData_LegendEvent': 'Event/TalkEvent/CDT_TalkEventData_Demo',
     'Map/MapData/DT_MapData_00Com': 'Map/CDT_MapData_Demo',
 }
 

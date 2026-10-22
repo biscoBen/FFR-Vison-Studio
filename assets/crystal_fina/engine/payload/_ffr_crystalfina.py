@@ -205,7 +205,10 @@ def retarget_material(root, sources, vid):
         if output.with_suffix('.uexp').read_bytes() != sources[1][0].read_bytes():
             fail('the serializer changed the cooked material export payload.')
         for field in ('Data', 'Extras'):
-            if result['Exports'][0].get(field) != original['Exports'][0].get(field):
+            # Resolved FNames in the material properties must follow the same
+            # rename as the imports. Their serialized indices (and the entire
+            # cooked export payload checked above) remain unchanged.
+            if result['Exports'][0].get(field) != edited['Exports'][0].get(field):
                 fail('the serializer changed the material shader/export data.')
         result_files = []
         for suffix in ('.uasset', '.uexp'):

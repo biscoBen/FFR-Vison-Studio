@@ -185,6 +185,10 @@ def prepare_shops(tables, units, rows):
     """
     selected = {}
     for unit in units:
+        if (unit.get('studioAcquisition') or {}).get('version') == 3:
+            import _ffr_shrine_challenges as challenges
+            challenges.route(unit)
+            continue
         if unit.get('native') or unit.get('party') or assignment(unit) is not None:
             continue
         uid = unit.get('id')
@@ -253,6 +257,9 @@ def assignment(unit):
     # Older Studio versions exposed planning preferences on original visions.
     # They keep their native acquisition rather than becoming custom cave NPCs.
     if unit.get('native') or unit.get('party'): return None
+    if isinstance(value, dict) and value.get('version') == 3:
+        import _ffr_shrine_challenges as challenges
+        return challenges.cave_snapshot() if challenges.route(unit) == 13062 else None
     if (not isinstance(value, dict) or type(value.get('random')) is not bool
             or type(value.get('hideSpoilers')) is not bool):
         raise ValueError('Invalid saved acquisition choice for ' + unit.get('en', str(unit.get('id'))))

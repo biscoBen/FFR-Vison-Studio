@@ -23,6 +23,24 @@ class Acquisition {
     this.cave,
   });
   static const field = 'studioAcquisition';
+  static const challengeNames = <String, String>{
+    'sephira_13024': 'Tronn crystal — Christine',
+    'sephira_13062': 'Zoldaad challenge cave — Barusa and Ariana',
+    'sephira_13100': 'Warrior of Light crystal — Lenneth and Crystal Fina',
+    'sephira_13101': 'Firion crystal — Lila and Fran',
+    'sephira_13102': 'Onion Knight crystal — Minfilia and Primm',
+    'sephira_13103': 'Cecil crystal — Snow White, Lilith and Mystea',
+    'sephira_13105': 'Bartz crystal — Fryevia and Lunera',
+    'sephira_13110': 'Cloud crystal — Nalu and Jade',
+    'sephira_13116': 'Squall crystal — A2 and Alice',
+    'sephira_13118': 'Zidane crystal — Lunafreya and Eiko',
+    'sephira_13120': 'Tidus crystal — Elza and Mog',
+    'sephira_13123': 'Shantotto crystal — Trance Terra and Relm',
+    'sephira_13124': 'Vaan crystal — Rikku and Elephim',
+    'sephira_13128': 'Noctis crystal — Freya',
+    'sephira_13130': 'Clive crystal — Reberta',
+    'sephira_folka_shop': 'Folka — story-unlocked item shop',
+  };
   // Compatibility anchors for configurations saved before the shared cave pool.
   static const sites = [
     AcquisitionSite('mitra_shop', 'Mitra shop', 16598, 21654),
@@ -38,6 +56,8 @@ class Acquisition {
   final String location;
   final bool random, hideSpoilers;
   final Map<String, dynamic>? cave;
+  bool get isChallenge => challengeNames.containsKey(location);
+  String? get challengeLabel => challengeNames[location];
   AcquisitionSite get site => sites.firstWhere((s) => s.id == location);
 
   static bool valid(dynamic value) {
@@ -48,6 +68,10 @@ class Acquisition {
     }
     if (value['version'] == 1) {
       return value.length == 4 && sites.any((s) => s.id == value['location']);
+    }
+    if (value['version'] == 3) {
+      return value.length == 5 && value['cave'] == null &&
+          value['random'] == false && challengeNames.containsKey(value['location']);
     }
     if (value['version'] != 2 || value.length != 5) return false;
     final location = value['location'];
@@ -152,10 +176,10 @@ class Acquisition {
   }
 
   Map<String, dynamic> toJson() => {
-    'version': cave != null || location.startsWith('shop_') ? 2 : 1,
+    'version': isChallenge ? 3 : cave != null || location.startsWith('shop_') ? 2 : 1,
     'random': random,
     'hideSpoilers': hideSpoilers,
     'location': location,
-    if (cave != null || location.startsWith('shop_')) 'cave': cave,
+    if (isChallenge || cave != null || location.startsWith('shop_')) 'cave': cave,
   };
 }

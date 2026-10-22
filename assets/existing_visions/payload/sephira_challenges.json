@@ -1,0 +1,721 @@
+{
+  "schema": 1,
+  "gameFingerprint": "8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4",
+  "encounters": [
+    {
+      "origin": 13024,
+      "index": 0,
+      "name": "Tronn",
+      "presets": [
+        "christine"
+      ],
+      "map": 10237,
+      "mapRow": "00Com_237",
+      "mapTable": "Map/MapData/DT_MapData_01Gra",
+      "retry": null,
+      "grantEvent": "C01_014_03",
+      "unlock": "{item:13024}>0|{flag:147}",
+      "level": 2,
+      "stage": 9,
+      "region": "Earth Shrine, inner chamber",
+      "encounterTable": "DT_01Gra_40_02_Encount",
+      "nearbyEnemies": {
+        "2": 1,
+        "10": 3,
+        "3": 2
+      }
+    },
+    {
+      "origin": 13062,
+      "index": 1,
+      "name": "Wilhelm",
+      "presets": [
+        "barusa",
+        "ariana"
+      ],
+      "map": null,
+      "retry": null,
+      "grantEvent": "ChrEv_2630_005_01",
+      "unlock": "{item:13062}>0|{progress:48}>=50",
+      "level": 26,
+      "stage": 9,
+      "region": "Zoldaad",
+      "encounterTable": "DT_06Zol_Wld_05_Encount",
+      "nearbyEnemies": {
+        "100": 26,
+        "38": 30,
+        "123": 27,
+        "98": 21,
+        "140": 26,
+        "126": 28,
+        "84": 26,
+        "198": 26,
+        "101": 26
+      }
+    },
+    {
+      "origin": 13100,
+      "index": 2,
+      "name": "Warrior of Light",
+      "presets": [
+        "lenneth",
+        "crystal_fina"
+      ],
+      "legend": 1,
+      "map": 10223,
+      "mapRow": "00Com_223",
+      "mapTable": "Map/MapData/DT_MapData_02Lan",
+      "retry": "Int_LegendEV_Retry_Start_01_01",
+      "grantEvent": "Int_LegendEV_01_07",
+      "unlock": "{item:13100}>0|{flag:1003}",
+      "level": 7,
+      "stage": 9,
+      "region": "Wld_02Lan_GD-actors",
+      "position": [
+        13649.762418326674,
+        14398.024684886226,
+        26.0
+      ],
+      "encounterTable": "DT_02Lan_Wld_01_Encount",
+      "encounterActor": "BP_MapEncountBox_C_2",
+      "nearbyEnemies": {
+        "20": 7,
+        "22": 8,
+        "37": 7,
+        "33": 6
+      }
+    },
+    {
+      "origin": 13101,
+      "index": 3,
+      "name": "Firion",
+      "presets": [
+        "lila",
+        "fran"
+      ],
+      "legend": 2,
+      "map": 10225,
+      "mapRow": "00Com_225",
+      "mapTable": "Map/MapData/DT_MapData_05Old",
+      "retry": "Int_LegendEV_Retry_Start_02_01",
+      "grantEvent": "Int_LegendEV_02_07",
+      "unlock": "{item:13101}>0|{flag:1007}",
+      "level": 18,
+      "stage": 9,
+      "region": "Wld_05Old_GD-actors",
+      "position": [
+        -1335.0,
+        -350.0,
+        15.0
+      ],
+      "encounterTable": "DT_05Old_Wld_01_Encount",
+      "encounterActor": "BP_MapEncountBox_C_1",
+      "nearbyEnemies": {
+        "35": 18,
+        "53": 18,
+        "47": 18
+      }
+    },
+    {
+      "origin": 13102,
+      "index": 4,
+      "name": "Onion Knight",
+      "presets": [
+        "minfilia",
+        "primm"
+      ],
+      "legend": 3,
+      "map": 10227,
+      "mapRow": "00Com_227",
+      "mapTable": "Map/MapData/DT_MapData_04Dir",
+      "retry": "Int_LegendEV_Retry_Start_03_01",
+      "grantEvent": "Int_LegendEV_03_07",
+      "unlock": "{item:13102}>0|{flag:1008}",
+      "level": 17,
+      "stage": 9,
+      "region": "Wld_04Dir_GD-actors",
+      "position": [
+        13292.267949188375,
+        -1719.0000000070254,
+        -20.0
+      ],
+      "encounterTable": "DT_04Dir_Wld_05_Encount",
+      "encounterActor": "BP_MapEncountBox_C_39",
+      "nearbyEnemies": {
+        "13": 18,
+        "46": 17,
+        "107": 18,
+        "284": 15
+      }
+    },
+    {
+      "origin": 13103,
+      "index": 5,
+      "name": "Cecil",
+      "presets": [
+        "snow_white",
+        "lilith",
+        "mystea"
+      ],
+      "legend": 4,
+      "map": 10231,
+      "mapRow": "00Com_231",
+      "mapTable": "Map/MapData/DT_MapData_06Zol",
+      "retry": "Int_LegendEV_Retry_Start_04_01",
+      "grantEvent": "Int_LegendEV_04_07",
+      "unlock": "{item:13103}>0|{flag:1011}",
+      "level": 26,
+      "stage": 9,
+      "region": "Wld_06Zol_GD-actors",
+      "position": [
+        -8110.0,
+        11920.0,
+        90.0
+      ],
+      "encounterTable": "DT_06Zol_Wld_05_Encount",
+      "encounterActor": "BP_MapEncountBox_C_14",
+      "nearbyEnemies": {
+        "100": 26,
+        "38": 30,
+        "123": 27,
+        "98": 21,
+        "140": 26,
+        "126": 28,
+        "84": 26,
+        "198": 26,
+        "101": 26
+      }
+    },
+    {
+      "origin": 13105,
+      "index": 6,
+      "name": "Bartz",
+      "presets": [
+        "fryevia",
+        "lunera"
+      ],
+      "legend": 5,
+      "map": 10233,
+      "mapRow": "00Com_233",
+      "mapTable": "Map/MapData/DT_MapData_07Mys",
+      "retry": "Int_LegendEV_Retry_Start_05_01",
+      "grantEvent": "Int_LegendEV_05_07",
+      "unlock": "{item:13105}>0|{flag:1013}",
+      "level": 35,
+      "stage": 9,
+      "region": "Wld_GD-actors",
+      "position": [
+        -16122.32233,
+        -7684.038059,
+        260.0
+      ],
+      "encounterTable": "DT_07Mys_Wld_03_Encount",
+      "encounterActor": "BP_MapEncountBox_C_11",
+      "nearbyEnemies": {
+        "242": 36,
+        "132": 35,
+        "260": 35,
+        "125": 37
+      }
+    },
+    {
+      "origin": 13110,
+      "index": 7,
+      "name": "Cloud",
+      "presets": [
+        "nalu",
+        "jade"
+      ],
+      "legend": 7,
+      "map": 10228,
+      "mapRow": "00Com_228",
+      "mapTable": "Map/MapData/DT_MapData_02Lan",
+      "retry": "Int_LegendEV_Retry_Start_07_01",
+      "grantEvent": "Int_LegendEV_07_07",
+      "unlock": "{item:13110}>0|{flag:1005}",
+      "level": 8,
+      "stage": 9,
+      "region": "Wld_02Lan_GD-actors",
+      "position": [
+        13585.0,
+        10300.0,
+        12.0
+      ],
+      "encounterTable": "DT_02Lan_Wld_02_Encount",
+      "encounterActor": "BP_MapEncountBox_C_3",
+      "nearbyEnemies": {
+        "37": 7,
+        "33": 6,
+        "22": 8,
+        "34": 9,
+        "128": 16,
+        "39": 16
+      }
+    },
+    {
+      "origin": 13116,
+      "index": 8,
+      "name": "Squall",
+      "presets": [
+        "a2",
+        "alice"
+      ],
+      "legend": 8,
+      "map": 10229,
+      "mapRow": "00Com_229",
+      "mapTable": "Map/MapData/DT_MapData_05Old",
+      "retry": "Int_LegendEV_Retry_Start_08_01",
+      "grantEvent": "Int_LegendEV_08_07",
+      "unlock": "{item:13116}>0|{flag:1006}",
+      "level": 18,
+      "stage": 9,
+      "region": "Wld_05Old_GD-actors",
+      "position": [
+        2594.0,
+        7850.0,
+        149.0
+      ],
+      "encounterTable": "DT_05Old_Wld_03_Encount",
+      "encounterActor": "BP_MapEncountBox_C_4",
+      "nearbyEnemies": {
+        "83": 19,
+        "42": 19,
+        "67": 18,
+        "35": 18
+      }
+    },
+    {
+      "origin": 13118,
+      "index": 9,
+      "name": "Zidane",
+      "presets": [
+        "lunafreya",
+        "eiko"
+      ],
+      "legend": 9,
+      "map": 10226,
+      "mapRow": "00Com_226",
+      "mapTable": "Map/MapData/DT_MapData_04Dir",
+      "retry": "Int_LegendEV_Retry_Start_09_01",
+      "grantEvent": "Int_LegendEV_09_07",
+      "unlock": "{item:13118}>0|{flag:1009}",
+      "level": 12,
+      "stage": 9,
+      "region": "Wld_04Dir_GD-actors",
+      "position": [
+        16486.13629669274,
+        1498.9647238274256,
+        533.0
+      ],
+      "encounterTable": "DT_04Dir_Wld_04_Encount",
+      "encounterActor": "BP_MapEncountBox_C_23",
+      "nearbyEnemies": {
+        "81": 13,
+        "41": 14,
+        "219": 12,
+        "87": 12,
+        "86": 13,
+        "24": 12
+      }
+    },
+    {
+      "origin": 13120,
+      "index": 10,
+      "name": "Tidus",
+      "presets": [
+        "elza",
+        "mog"
+      ],
+      "legend": 10,
+      "map": 10220,
+      "mapRow": "00Com_220",
+      "mapTable": "Map/MapData/DT_MapData_05Old",
+      "retry": "Int_LegendEV_Retry_Start_10_01",
+      "grantEvent": "Int_LegendEV_10_07",
+      "unlock": "{item:13120}>0|{flag:1000}",
+      "level": 22,
+      "stage": 9,
+      "region": "Wld_05Old_GD-actors",
+      "position": [
+        995.714674,
+        -5023.580089,
+        25.0
+      ],
+      "encounterTable": "DT_05Old_Wld_05_Encount",
+      "encounterActor": "BP_MapEncountBox_C_17",
+      "nearbyEnemies": {
+        "75": 22,
+        "63": 24,
+        "108": 23,
+        "98": 21
+      }
+    },
+    {
+      "origin": 13123,
+      "index": 11,
+      "name": "Shantotto",
+      "presets": [
+        "trance_terra",
+        "relm"
+      ],
+      "legend": 11,
+      "map": 10230,
+      "mapRow": "00Com_230",
+      "mapTable": "Map/MapData/DT_MapData_06Zol",
+      "retry": "Int_LegendEV_Retry_Start_11_01",
+      "grantEvent": "Int_LegendEV_11_07",
+      "unlock": "{item:13123}>0|{flag:1010}",
+      "level": 28,
+      "stage": 9,
+      "region": "Wld_06Zol_GD-actors",
+      "position": [
+        -3230.0,
+        16310.0,
+        440.0
+      ],
+      "encounterTable": "DT_06Zol_Wld_01_Encount",
+      "encounterActor": "BP_MapEncountBox_C_0",
+      "nearbyEnemies": {
+        "29": 28,
+        "218": 28,
+        "82": 26,
+        "104": 25,
+        "148": 26
+      }
+    },
+    {
+      "origin": 13124,
+      "index": 12,
+      "name": "Vaan",
+      "presets": [
+        "rikku",
+        "elephim"
+      ],
+      "legend": 12,
+      "map": 10235,
+      "mapRow": "00Com_235",
+      "mapTable": "Map/MapData/DT_MapData_07Mys",
+      "retry": "Int_LegendEV_Retry_Start_12_01",
+      "grantEvent": "Int_LegendEV_12_07",
+      "unlock": "{item:13124}>0|{flag:1015}",
+      "level": 35,
+      "stage": 9,
+      "region": "Wld_GD-actors",
+      "position": [
+        -17190.0,
+        -10880.0,
+        -10.0
+      ],
+      "encounterTable": "DT_07Mys_Wld_03_Encount",
+      "encounterActor": "BP_MapEncountBox_C_10",
+      "nearbyEnemies": {
+        "242": 36,
+        "132": 35,
+        "260": 35,
+        "125": 37
+      }
+    },
+    {
+      "origin": 13128,
+      "index": 13,
+      "name": "Noctis",
+      "presets": [
+        "freya"
+      ],
+      "legend": 15,
+      "map": 10222,
+      "mapRow": "00Com_222",
+      "mapTable": "Map/MapData/DT_MapData_04Dir",
+      "retry": "Int_LegendEV_Retry_Start_15_01",
+      "grantEvent": "Int_LegendEV_15_07",
+      "unlock": "{item:13128}>0|{flag:1002}",
+      "level": 14,
+      "stage": 9,
+      "region": "Wld_04Dir_GD-actors",
+      "position": [
+        18469.0,
+        -2958.0,
+        88.0
+      ],
+      "encounterTable": "DT_04Dir_Wld_09_Encount",
+      "encounterActor": "BP_MapEncountBox_C_49",
+      "nearbyEnemies": {
+        "92": 15,
+        "78": 14,
+        "15": 14,
+        "55": 14
+      }
+    },
+    {
+      "origin": 13130,
+      "index": 14,
+      "name": "Clive",
+      "presets": [
+        "reberta"
+      ],
+      "legend": 16,
+      "map": 10236,
+      "mapRow": "00Com_236",
+      "mapTable": "Map/MapData/DT_MapData_01Gra",
+      "retry": "Int_LegendEV_Retry_Start_16_01",
+      "grantEvent": "Int_LegendEV_16_07",
+      "unlock": "{item:13130}>0|{flag:1016}",
+      "level": 4,
+      "stage": 9,
+      "region": "Wld_GD-actors",
+      "position": [
+        15615.0,
+        20360.0,
+        230.0
+      ],
+      "encounterTable": "DT_01Gra_Wld_01_Encount",
+      "encounterActor": "BP_MapEncountBox_C_3",
+      "nearbyEnemies": {
+        "5": 4,
+        "282": 4,
+        "10": 3,
+        "65": 4,
+        "19": 4
+      }
+    }
+  ],
+  "kits": {
+    "a2": {
+      "attacks": [
+        446600,
+        446610,
+        500150
+      ],
+      "utility": 505420
+    },
+    "christine": {
+      "attacks": [
+        220050,
+        220060,
+        220080
+      ],
+      "utility": 500570
+    },
+    "crystal_fina": {
+      "attacks": [
+        210250,
+        503630,
+        210190
+      ],
+      "utility": 501930
+    },
+    "barusa": {
+      "attacks": [
+        421340,
+        414700,
+        414810
+      ],
+      "utility": 414710
+    },
+    "fran": {
+      "attacks": [
+        421250,
+        421100,
+        500210
+      ],
+      "utility": 0
+    },
+    "lunafreya": {
+      "attacks": [
+        446800,
+        446820,
+        501420
+      ],
+      "utility": 500500
+    },
+    "minfilia": {
+      "attacks": [
+        220210,
+        445200,
+        220240
+      ],
+      "utility": 230040
+    },
+    "fryevia": {
+      "attacks": [
+        421070,
+        421080,
+        420270
+      ],
+      "utility": 500920
+    },
+    "lenneth": {
+      "attacks": [
+        445010,
+        445020,
+        500020
+      ],
+      "utility": 505530
+    },
+    "lila": {
+      "attacks": [
+        445100,
+        445110,
+        445120
+      ],
+      "utility": 502230
+    },
+    "mystea": {
+      "attacks": [
+        255260,
+        500310,
+        503980
+      ],
+      "utility": 230060
+    },
+    "reberta": {
+      "attacks": [
+        448000,
+        448010,
+        500460
+      ],
+      "utility": 0
+    },
+    "snow_white": {
+      "attacks": [
+        420300,
+        570710,
+        500510
+      ],
+      "utility": 0
+    },
+    "eiko": {
+      "attacks": [
+        225290,
+        225020,
+        225050
+      ],
+      "utility": 245020
+    },
+    "alice": {
+      "attacks": [
+        446300,
+        421370,
+        446310
+      ],
+      "utility": 501700
+    },
+    "mog": {
+      "attacks": [
+        500430,
+        500410,
+        505280
+      ],
+      "utility": 230130
+    },
+    "lilith": {
+      "attacks": [
+        220390,
+        445310,
+        506040
+      ],
+      "utility": 505570
+    },
+    "freya": {
+      "attacks": [
+        447810,
+        447800,
+        421190
+      ],
+      "utility": 0
+    },
+    "trance_terra": {
+      "attacks": [
+        220010,
+        447300,
+        220350
+      ],
+      "utility": 0
+    },
+    "ariana": {
+      "attacks": [
+        503620,
+        250170,
+        503910
+      ],
+      "utility": 215000
+    },
+    "elephim": {
+      "attacks": [
+        414200,
+        414210,
+        570420
+      ],
+      "utility": 230110
+    },
+    "jade": {
+      "attacks": [
+        421160,
+        420070,
+        500180
+      ],
+      "utility": 0
+    },
+    "primm": {
+      "attacks": [
+        421280,
+        420160,
+        445300
+      ],
+      "utility": 240010
+    },
+    "relm": {
+      "attacks": [
+        220090,
+        500970,
+        220330
+      ],
+      "utility": 250300
+    },
+    "rikku": {
+      "attacks": [
+        447400,
+        447410,
+        501020
+      ],
+      "utility": 501290
+    },
+    "nalu": {
+      "attacks": [
+        446000,
+        446010,
+        447500
+      ],
+      "utility": 0
+    },
+    "elza": {
+      "attacks": [
+        447000,
+        447010,
+        422050
+      ],
+      "utility": 0
+    },
+    "lunera": {
+      "attacks": [
+        445500,
+        445510,
+        420130
+      ],
+      "utility": 0
+    }
+  },
+  "folkaUnlock": "{progress:0}>=3150",
+  "folkaEvent": "C03_322_01",
+  "wilhelmCave": {
+    "version": 2,
+    "id": "cave_sephira_wilhelm",
+    "name": "Zoldaad Challenge Cave",
+    "entrance": "rock_cave",
+    "worldX": -7870.0,
+    "worldY": 11580.0,
+    "worldZ": 90.0,
+    "yaw": 0.0,
+    "scale": 1.0
+  }
+}
