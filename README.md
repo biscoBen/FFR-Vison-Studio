@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Backup before upstream changes — 2026-10-22
+
+[Download the rollback kit](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/pre-full-game-upstream-2026-10-22/Sephira-Studio-Pre-Upstream-2026-10-22.zip)
+(**133.0 MB**). [Source checkpoint](https://github.com/biscoBen/FFR-Vison-Studio/tree/pre-full-game-upstream-2026-10-22):
+`6c7c15e`, also saved in `backup/pre-full-game-upstream-2026-10-22`.
+
+Preserve the tested app from run **39507226508** (extension **1.2.56**), exact engine **1.0.0.15**, matching core
+packs, captured host manifest, checksums and rollback instructions. No upstream changes were integrated.
+The published ZIP was downloaded again and verified. This reuses the existing tested binary; it is not a new app build.
+
+Personal configurations and saves are not uploaded. Before updating your own installation, close Studio and copy
+its entire folder, including **Studio Test Data**, to a separate location. A Studio backup preserves recorded settings
+but does not include every downloaded source artwork pack. The kit is not a one-click offline restore of that private setup.
+
 ### Crystal Fina boss installation check — 2026-10-20
 
 [Verified Windows download / run 39507226508](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39507226508/Sephira-Studio-Test.zip)
@@ -1140,6 +1154,10 @@ compatible updates, alongside Crystal Fina's transparency integration. No separa
 
 This is the running project list for the full game's release, started **2026-10-04** from the `Sephira's-Update`
 demo baseline `b15a4c0`. These are areas to review when the full game is available, not confirmed future bugs.
+The October 22 full-game preparation screenshot reaches **2,618** tables and a quiet retry pass for **191** tables;
+it does not include a final error or prove the process is hung. Starting preparation saves the selected game folder
+globally before extraction; restarting is not required to change paths. Reference collection uses that saved path
+and can run after preparation stops, even if preparation failed, but may encounter the same table-reader issue.
 The [launch-preparation tools](docs/LAUNCH_PREPARATION.md) provide native comparisons, a reversible original-game
 test preset, editable/compiled snapshots and a per-build test sheet; they do not mark the items below complete.
 Keep user cave placements, character configs, concise descriptions and source labels. Add new demo-dependent

@@ -11,6 +11,15 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Full-game preparation observation — 2026-10-22
+
+- Record the user's first full-game preparation screenshot: 2,618 tables, followed by retries for 191 unread tables.
+  No final error or confirmed hang is supplied. The existing retry loop does not log each table individually.
+- Verify that preparation writes the selected folder to global engine config before reading tables; collection
+  reads that same saved path. Restarting is not needed to switch from the demo. Collection can start after the
+  preparation worker stops without requiring a successful preparation, though the native reader may still fail.
+  Documentation only; no compatibility pass, new extraction, parser fix or new Studio binary is claimed.
+
 ### Consolidated original-enemy missing visuals — 2026-10-17
 
 - Record that all targeted practice-comparison skills show no animation on their original enemies. Add the
@@ -54,6 +63,35 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published backup before upstream changes — 2026-10-22
+
+Source checkpoint: [`6c7c15e`](https://github.com/biscoBen/FFR-Vison-Studio/tree/pre-full-game-upstream-2026-10-22),
+preserved in annotated tag **pre-full-game-upstream-2026-10-22** and branch **backup/pre-full-game-upstream-2026-10-22**.
+[Rollback kit](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/pre-full-game-upstream-2026-10-22/Sephira-Studio-Pre-Upstream-2026-10-22.zip):
+**132,962,159 bytes** (133.0 MB). SHA-256: `352e2fdcf15e7fffe9344797df29e5c58b1571a152a3815983a7178171c2fa31`.
+
+- Preserve the existing verified Windows package (code `9493d9b`, run **39507226508**, extension **1.2.56**),
+  exact frozen engine **1.0.0.15**, matching base/icons/common/catalog packs, captured host manifest and rollback notes.
+  Source/history remain available through the remote checkpoint; the optional archival library is not duplicated in the kit.
+- No upstream code was integrated. The checked original repository's default branch is `990f2cc`, five commits
+  beyond the inherited `d94c685` baseline; the currently hosted manifest still advertises **1.0.0.15** with the same
+  pinned engine SHA-256. This does not establish full-game compatibility or rule out updates elsewhere.
+- Personal configurations, saves and optional downloaded artwork are not uploaded. Keep a closed local copy of
+  the whole Studio folder, including **Studio Test Data**, for the user's complete working setup. The kit preserves
+  published components but is not an automatic offline reconstruction of private files.
+
+Validation: remote tag and backup branch both resolve to `6c7c15e`; app, engine and core-pack hashes match their
+published values. Download the newly published kit again, check its whole-file SHA-256 and ZIP CRCs, then verify all
+eight recorded input-file hashes and source identity. No new Windows app was compiled; its prior validation is retained.
+Direct asset upload authentication failed, so isolated Actions run **39813336244** published the same deterministic
+archive. A redundant helper revision/run **39813529373** stopped at the already-existing release; its temporary branch
+was removed. The saved checkpoint refs were not changed.
+
+Measured archive-candidate timing: **2026-10-22 16:16:39.133 UTC** → downloaded/verified backup
+**16:24:06.736 UTC**, **7m 28s**, including upload recovery, extra helper attempt and verification; timer not restarted.
+Archive helper CI wall times: **24s** successful publication and **16s** redundant attempt. Total Linux runner usage:
+**34s** (**22s + 12s**); no Windows runner usage for this backup. These are separate from elapsed delivery time.
 
 ## Published Crystal Fina boss scale verification — 2026-10-20
 
