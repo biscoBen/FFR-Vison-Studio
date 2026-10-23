@@ -11,39 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Sephira roster runtime corrections — 2026-10-22
-
-- Review all 30 visions, every awakening tier and MR rank. Move 47 private passives into stable native passive
-  IDs to fix blank rewards. Make all 15 private learned MR abilities available as character commands, including
-  Crystal Renewal and Folka's Tidal Invocation/Waterga Surge. Give pure HP healing copies field-recovery metadata.
-  Preserve saved recipes, explicit availability edits, power, costs, target grouping and permanent stat budgets.
-- Give 312 private skills their own original player routes and sounds. Prefer 190 complete native player variants,
-  restore 81 checked caster-motion tracks, resolve aliased impact rows, and teach imported models the native motion names their skills request using their
-  own FFBE clips. Run independently of borrowed visuals. Keep original/global rows and enemy routes unchanged.
-- Check all written reward names, passive IDs, ranks and learned-command availability before converting sprites.
-  Stop early on changed audited source files. Record three original presentations still needing individual review
-  in [the roster audit](docs/SEPHIRA_RUNTIME_REVIEW.md); do not silently substitute other skill visuals.
-- Restore both of Fina's casing visibility flags after battle transitions. Retain the queued runtime callback and
-  recover from removed attachments or transient actor errors per instance. Preserve the accepted glass and timing.
-  Native serialization and fixture checks do not replace a live retest of the vision and boss.
-
-### Snow White's approved FFBE Blood Recovery test — 2026-10-22
-
-- Assign Scartio's FFBE Blood Recovery to Snow White's private heal, as requested, including its front/back layers,
-  red flash and original healing sound. Retain one native heal and existing power, MP cost and targets. Works with
-  borrowed visuals off; no new toggle or full-library download is needed. Keep explicit user presentation edits.
-- Retain all 3,037 source sprite frames without cropping/dropping. Resample mesh texture cells while keeping world
-  sizes. Check the native projects, atlases, audio and exact event/cleanup schedule. Layering, scale and the
-  target-anchored source flash remain an in-game experiment, rather than a claim of exact FFBE render parity.
-
-### Crystal Fina full-game diagnostics — 2026-10-22
-
-- Update the standalone Fina runtime collector to select the full game, ignore demo paths, find Steam libraries
-  and desktop Studio installations, and include the selected game's runtime install record. Show the resolved
-  folders before collection. Keep the existing read-only file allowlist; no game assets or saves are collected.
-- Supply only the Fina collector, launcher and instructions as a small standalone ZIP. It does not require
-  rebuilding or updating Studio. Collection checks use fixture installations; live Fina rendering remains unverified.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -112,6 +79,84 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published complete Sephira runtime pass and FFBE heal test — 2026-10-22
+
+Code: [`0b7a2c3`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0b7a2c33f364793067f083ccfe66982349214a3c), extension **1.2.64**.
+Windows package: [run 39889024440](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39889024440/Sephira-Studio-Test.zip). **57,079,338 bytes** (57.1 MB).
+SHA-256: `bd472ba78ec76db36047ea9016467e0d4d431f876a434235eb455bc6e0d62068`.
+
+### Sephira roster runtime corrections — 2026-10-22
+
+- Review all 30 visions, every awakening tier and MR rank. Move 47 private passives into stable native passive
+  IDs to fix blank rewards. Make all 15 private learned MR abilities available as character commands, including
+  Crystal Renewal and Folka's Tidal Invocation/Waterga Surge. Give pure HP healing copies field-recovery metadata.
+  Preserve saved recipes, explicit availability edits, power, costs, target grouping and permanent stat budgets.
+- Give 312 private skills their own original player routes and sounds. Prefer 190 complete native player variants,
+  restore 81 checked caster-motion tracks, resolve aliased impact rows, and teach imported models the native motion names their skills request using their
+  own FFBE clips. Run independently of borrowed visuals. Keep original/global rows and enemy routes unchanged.
+- Check all written reward names, passive IDs, ranks and learned-command availability before converting sprites.
+  Stop early on changed audited source files. Record three original presentations still needing individual review
+  in [the roster audit](docs/SEPHIRA_RUNTIME_REVIEW.md); do not silently substitute other skill visuals.
+- Restore both of Fina's casing visibility flags after battle transitions. Retain the queued runtime callback and
+  recover from removed attachments or transient actor errors per instance. Preserve the accepted glass and timing.
+  Native serialization and fixture checks do not replace a live retest of the vision and boss.
+
+### Snow White's approved FFBE Blood Recovery test — 2026-10-22
+
+- Assign Scartio's FFBE Blood Recovery to Snow White's private heal, as requested, including its front/back layers,
+  red flash and original healing sound. Retain one native heal and existing power, MP cost and targets. Works with
+  borrowed visuals off; no new toggle or full-library download is needed. Keep explicit user presentation edits.
+- Retain all 3,037 source sprite frames without cropping/dropping. Resample mesh texture cells while keeping world
+  sizes. Check the native projects, atlases, audio and exact event/cleanup schedule. Layering, scale and the
+  target-anchored source flash remain an in-game experiment, rather than a claim of exact FFBE render parity.
+
+### Crystal Fina full-game diagnostics — 2026-10-22
+
+- Update the standalone Fina runtime collector to select the full game, ignore demo paths, find Steam libraries
+  and desktop Studio installations, and include the selected game's runtime install record. Show the resolved
+  folders before collection. Keep the existing read-only file allowlist; no game assets or saves are collected.
+- Supply only the Fina collector, launcher and instructions as a small standalone ZIP. It does not require
+  rebuilding or updating Studio. Collection checks use fixture installations; live Fina rendering remains unverified.
+
+Keep **Studio Test Data**, update Studio, rebuild/install and restart the game. The current roster and successful
+preparation for the same full-game build can be reused. Borrowed visuals can stay off. Existing saved recipes are
+not rewritten by the runtime normalization. Final rendering, already-earned reward behavior and gameplay still
+need live testing; no save edits or rank resets are performed.
+
+Validation: **579 local Python tests** (10 platform/dependency skips), **46 focused Flutter passes** (one skip),
+static analysis and bundle integrity pass. Native tools write/read all 30 visions' reward and ability tables,
+clone **1,264 original timeline packages**, apply **339 private object edits / 1,303 bytecode edits**, and reparse
+them. Deliberately wrong Folka learned-command metadata and a blank Fina passive name fail the early table check;
+restored tables pass. Blood Recovery additionally passes native writing/readback of all three SS6 projects,
+textures, the original HCA bank, private player/enemy routes, exact healing/sound/cleanup events and original-row
+preservation. The audio/SS6 donor-shell checks use the earlier compatible capture; the live full-game bank and
+rendering still need confirmation. Its separate 9.6 MB payload retains every drawable source frame; source screen flash placement and
+world scale remain unverified in-game. Three original presentations remain flagged in the roster audit.
+
+Full Windows analysis/tests, frozen-engine setup, Python checks, extension integrity, launcher/updater checks and
+compilation pass for the same final commit. Package verification checks provenance, SHA-256, all **59** managed
+extension and **16** Crystal Fina file hashes, version **1.2.64**, the approved art payload and unchanged 30-preset
+catalog. The complete optional animation library is not included. The previous passing **1.2.63** candidate was
+superseded after the user explicitly requested the FFBE heal import; it was not delivered as the final update.
+
+Measured timing: first complete roster candidate **2026-10-22 18:07:03 PDT** → verified package
+**19:32:27 PDT**, **85m 24s**. This includes local/native checks and corrections,
+the approved FFBE addition, CI waiting, both roster builds and package verification. The timer was not restarted.
+The earlier standalone collector candidate was **2026-10-22 17:28:09 PDT**; including that work, elapsed
+time to the verified package was **124m 18s**. Its two earlier Windows
+runs failed path-related collector checks; the final Windows run includes their corrected tests. Each helper joined
+the exact matching automatic push run; no duplicate manual workflow was dispatched. Publication notes change
+README/CHANGELOG only and do not produce or relabel another binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| 39878309861 (collector: short/long Windows path guard) | failure | 8m 08s | 10m 30s | 1m 35s |
+| 39879508254 (collector: test path comparison) | failure | 8m 44s | 12m 05s | 1m 22s |
+| 39886839777 (base runtime pass; superseded after approved import) | success | 16m 51s | 18m 50s | 2m 13s |
+| 39889024440 (final, including approved FFBE heal) | success | 10m 36s | 12m 19s | 2m 02s |
+
+Summed runner usage: **60m 56s**, separate from elapsed delivery time.
 
 ## Published shop verification and earlier table checks — 2026-10-22
 

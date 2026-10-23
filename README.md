@@ -4,6 +4,27 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Complete Sephira runtime pass and FFBE Blood Recovery test — 2026-10-22
+
+[Verified Windows download / run 39889024440](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39889024440/Sephira-Studio-Test.zip)
+(code `0b7a2c3`, extension **1.2.64**; **57.1 MB**).
+
+Review all 30 visions across every awakening tier and MR rank. Correct blank private passive rewards, learned
+abilities missing from character commands and field-healing availability. Give private skills their original player
+presentations and sounds independently of borrowed visuals. Recover Fina's casing after battle visibility transitions
+and transient attachment errors. Keep accepted glass, animation timing and gameplay budgets.
+
+Add the explicitly selected **Scartio FFBE Blood Recovery** presentation to Snow White's existing private heal,
+including separate front/back layers, red flash and original sound. Her healing strength and MP cost are retained.
+Blood Recovery is on her second awakening tier. Its layering and scale remain an in-game test.
+
+Keep **Studio Test Data**, update Studio, rebuild/install and restart the game. Existing prepared full-game data and
+the current roster can be reused; corrections apply during building. **Use borrowed Sephira skill visuals** may stay
+off. Native serialization, Windows validation/compilation and package checks pass. Every final visual still needs live
+confirmation: Fina's boss/vision casing, the reported skills, and the three flagged original presentations in
+[the complete roster audit](docs/SEPHIRA_RUNTIME_REVIEW.md). The full optional FFBE library stays separate.
+See [validation and measured timings](CHANGELOG.md#published-complete-sephira-runtime-pass-and-ffbe-heal-test--2026-10-22).
+
 ### Shop check fix and earlier build errors — 2026-10-22
 
 [Verified Windows download / run 39871672325](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39871672325/Sephira-Studio-Test.zip)
