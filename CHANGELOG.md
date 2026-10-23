@@ -11,32 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina cinematic display and handoff — 2026-10-23
-
-- Follow the native resonance movie's battle-UI transition while retaining movie visibility, then
-  restore the battle UI for Fina's existing sprite LB. The runtime trace confirms her selected movie
-  opens and advances frames with the cinematic manager enabled, despite staying invisible.
-- Refresh the private movie/spawn evaluation signatures after changing their ranges. The trace shows
-  a second movie pass continuing during the sprite LB; the old donor cache retained a longer window.
-  Keep the exact selected movie/score and the sprite LB's healing, reaction and cure-sound alignment.
-- Local checks: 52 focused Python checks, native asset reparse/packaging, six refreshed signatures,
-  preserved binding data and the two native UI transitions pass. This is a candidate for another
-  in-game test; visible playback and the corrected live handoff are not yet confirmed.
-
-### Crystal Fina movie-player reference — 2026-10-23
-
-- Confirm that the user's revision 2 installed movie pak matches the verified corrected package, while
-  resonance playback still stays blank. Record the returned private sequence and package evidence; the
-  browser preview works, but the in-game failure remains unresolved.
-- Add a separate small, read-only collector for the game's shared movie player, display actor,
-  texture/material and native movie sequence. It needs no new cast, paused battle, rebuild or install.
-  Nine collector checks pass locally. The returned Windows reference successfully includes all nine
-  requested native assets and confirms the actor's cinematic-manager toggle and alpha-based UI display.
-- Add an optional, separate UE4SS movie observer to distinguish decoder/frame progress from display
-  state during the current build's resonance. It logs read-only getters, requires a game restart and
-  can be disabled separately. Four installer/Lua/archive checks pass locally; the live trace is pending.
-  These diagnostics do not change the selected artwork or claim a new playback fix.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -105,6 +79,52 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina movie display and handoff test — 2026-10-23
+
+Code: [`449fd0a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/449fd0aab2e879ed83080701923ce8b260427220), extension **1.2.72**.
+Windows package: [run 40024946811](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40024946811/Sephira-Studio-Test.zip).
+**72,025,149 bytes** (72.0 MB).
+SHA-256: `b70967454e968eb194b84a1e354f990015a2e8d5c98ee70dac4b175bb8e5b138`.
+
+- Follow the native resonance movie's battle-UI transition, retaining movie visibility, then restore
+  battle UI for Fina's existing sprite LB. The returned trace confirms her movie opens and advances
+  frames with the cinematic manager enabled, despite staying invisible in the released test.
+- Refresh the private movie/spawn evaluation signatures after shortening their ranges. The trace
+  shows a second movie pass continuing during the sprite LB; the donor's longer evaluation cache
+  survived the earlier range edits. Keep the exact selected movie/score and existing sprite LB,
+  healing, reaction and cure-sound alignment. Align Studio's loader and startup checks with 1.2.72.
+- Provide separate native-player reference and read-only runtime-observer downloads. The returned
+  Windows collection successfully includes all nine requested native assets. The observer confirms
+  decoding and distinguishes movie progress from the independent sprite animation. It is optional
+  and does not automatically activate with the Studio update.
+- Local checks: 52 focused Python checks and 31 Flutter checks pass (one Windows-only local skip).
+  Native readback/package checks confirm all six refreshed signatures, the 2.0–8.4 second movie/spawn
+  window, native UI transitions, preserved binding data and unchanged media. All Windows validation,
+  compilation, frozen-engine startup, Python checks, shortcut/updater and publication checks pass.
+- The downloaded package matches all 63 managed-extension files and 16 Fina files, executable
+  provenance and the exact selected preview/USM hashes. **Visible playback and the corrected live
+  handoff still need the user's game test.** No updated artwork or in-game success is claimed.
+
+Close Studio/game and update while keeping **Studio Test Data**. Include Crystal Fina, enable
+**Test Crystal Fina cinematic**, rebuild/install and restart Resonance. Expect one 6.4-second movie
+followed by the existing sprite LB. No MR/acquisition update or kit reset is required.
+
+First complete correction candidate: **14:01:10 PDT**. The downloaded release was verified at
+**14:23:38 PDT**, **22m 29s** later, including local checks, the missed loader-version correction,
+failed startup builds, waiting, publication and download verification. The helper automatically
+retried the first failed commit before the corrected push; that protected manual run was retained
+and also failed. The clock was not restarted after correcting the loader. These are separate from
+the earlier artwork/selected-movie delivery timings recorded below.
+
+| Workflow | Outcome | Measured CI wall time | Windows job time | Linux job time |
+| --- | --- | ---: | ---: | ---: |
+| 40023696526 | startup failure | 6m 23s | 8m 55s | 1m 16s |
+| 40024507462 | automatic helper retry; startup failure | 6m 44s | 9m 32s | 1m 38s |
+| 40024946811 | success | 9m 49s | 11m 39s | 2m 19s |
+
+Summed measured job time: **35m 19s** (Windows **30m 06s**, Linux **5m 13s**), not billing.
+Publication notes change README/CHANGELOG only; the verified binary remains commit `449fd0a`.
 
 ## Published selected Crystal Fina movie and playback correction — 2026-10-23
 

@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina movie display and handoff test — 2026-10-23
+
+[Verified Windows download / run 40024946811](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40024946811/Sephira-Studio-Test.zip)
+(code `449fd0a`, extension **1.2.72**; **72.0 MB**).
+
+The runtime trace confirms the selected movie opens and advances frames, while its display stays hidden.
+This test update uses the native battle/movie UI transition and refreshes cached evaluation after shortening
+movie/spawn timing. It targets the invisible movie and the unintended replay over Fina's sprite LB.
+The exact selected **Crystal-Fina-Rotating-Lighter.mp4**, score, sprite animation, healing and cure sound remain.
+
+Close Studio/game and update while keeping **Studio Test Data**. Include Crystal Fina, enable
+**Test Crystal Fina cinematic**, rebuild/install and restart Resonance. Check for one **6.4-second movie**
+followed by her existing sprite LB, then repeat in a second battle. No MR/acquisition update or kit reset is required.
+
+Full Windows validation, compilation, frozen-engine startup and downloaded-package checks passed.
+The package matches the source files and selected movie hashes. **Visible game playback and the corrected
+handoff remain an in-game test.** See [implementation/evidence](docs/CRYSTAL_FINA_CINEMATIC.md) and
+[measured delivery/CI timings](CHANGELOG.md#published-crystal-fina-movie-display-and-handoff-test--2026-10-23).
+
 ### Crystal Fina lighter movie and playback correction — 2026-10-23
 
 [Verified Windows download / run 40014034193](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40014034193/Sephira-Studio-Test.zip)
