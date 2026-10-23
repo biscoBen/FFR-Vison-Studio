@@ -15,7 +15,7 @@ import 'catalog_visibility_test.dart' show CatalogState;
 import 'character_config_test.dart' show ConfigApi;
 
 Map<String, dynamic> fina() =>
-    json.decode(File('assets/crystal_fina/profile.json').readAsStringSync())
+    json.decode(File('scripts/fixtures/crystal_fina_legacy_profile.json').readAsStringSync())
         as Map<String, dynamic>;
 dynamic copy(dynamic value) => json.decode(json.encode(value));
 

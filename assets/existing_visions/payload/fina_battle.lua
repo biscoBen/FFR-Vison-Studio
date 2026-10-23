@@ -4,7 +4,7 @@
 -- Normal action clocks and their body playback slow together, scoped to Fina.
 local config = require('config').fina
 if not config then return end
-local states, assets, queued, scans, errors = {}, nil, false, 0, {}
+local states, assets, pending, scans, errors = {}, nil, nil, 0, {}
 local function valid(o) return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid() end
 local function name(o) return type(o) == 'string' and o or o:ToString() end
 local function log(s) print('[FFR Fina] ' .. s .. '\n') end
@@ -35,18 +35,31 @@ local function destroy(o, actor)
     end
 end
 local function restore_rates(s)
-    for _, entry in pairs(s.rates or {}) do
-        -- Restore only our own value; preserve a later native/other-mod change.
-        if valid(entry.object) and math.abs(entry.object:GetPlayRate()-entry.applied) < .00001 then
-            entry.object:SetPlayRate(entry.original)
-        end
-    end
+    local rates, firstError = s.rates or {}, nil
     s.rates = {}
+    for _, entry in pairs(rates) do
+        -- Restore only our own value; preserve a later native/other-mod change.
+        local ok, message = pcall(function()
+            if valid(entry.object) and math.abs(entry.object:GetPlayRate()-entry.applied) < .00001 then
+                entry.object:SetPlayRate(entry.original)
+            end
+        end)
+        if not ok and not firstError then firstError = message end
+    end
+    if firstError then error(firstError, 0) end
 end
 local function clear(s)
-    restore_rates(s)
-    destroy(s.glow, s.actor); s.glow = nil
-    destroy(s.mesh, s.actor); s.mesh = nil; s.material = nil
+    -- A native action clock can be torn down before its actor. Cleanup of one
+    -- stale object must not retain this state or prevent the other cleanup.
+    local ok, error = pcall(restore_rates, s)
+    s.rates = {}
+    if not ok then log('Released stale action clocks: ' .. tostring(error)) end
+    for _, field in ipairs({'glow', 'mesh'}) do
+        local object = s[field]; s[field] = nil
+        local cleaned, message = pcall(destroy, object, s.actor)
+        if not cleaned then log('Released stale ' .. field .. ': ' .. tostring(message)) end
+    end
+    s.material = nil
 end
 local function now(sprite) return native('Engine.Default__GameplayStatics'):GetTimeSeconds(sprite) end
 local function motion(s)
@@ -84,7 +97,7 @@ local function motion(s)
     -- Observe the renderer, not an actor's cached animation-name property.
     return playing
 end
-local function create(sprite, actor, isUnit)
+local function create(sprite, actor, isUnit, key)
     -- A project can be assigned before its first animation is initialized.
     if not sprite:DoesSocketExist(FName('NULL_Crystal')) or not sprite:DoesSocketExist(FName('NULL_Aura')) then return end
     assets = {mesh=asset(config.mesh), material=asset(config.material), glow=asset(config.glow)}
@@ -93,7 +106,7 @@ local function create(sprite, actor, isUnit)
     assert(valid(mesh), 'Could not create the crystal mesh component')
     local s = {actor=actor, sprite=sprite, mesh=mesh, unit=isUnit, last='', logged=0}
     -- Keep a reference immediately so an initialization error can clean up.
-    states[sprite:GetFullName()] = s
+    states[key] = s
     mesh:SetMobility(2); mesh:SetCollisionEnabled(0); mesh:SetGenerateOverlapEvents(false); mesh:SetCastShadow(false)
     assert(mesh:SetStaticMesh(assets.mesh), 'Could not assign crystal mesh')
     s.material = mesh:CreateDynamicMaterialInstance(0, assets.material, FName('StudioFinaGlass'))
@@ -226,7 +239,7 @@ local function is_action(n)
     return n and (action_motions[n] or n:match('^attack_') or n:match('^m_attack') or n:match('^ffbe_'))
 end
 local function same_actor(a, b)
-    return valid(a) and a:GetFullName() == b:GetFullName()
+    return valid(a) and valid(b) and a:GetAddress() == b:GetAddress()
 end
 local function each(array, callback)
     array:ForEach(function(_, value) callback(value:get()) end)
@@ -348,41 +361,52 @@ local function update(s)
 end
 local function recover(key, error)
     local s = states[key]
-    if s then pcall(clear, s); states[key] = nil end
+    states[key] = nil
+    if s then pcall(clear, s) end
     local message = tostring(error)
     if errors[key] ~= message then
         errors[key] = message
         log('Retrying presentation for ' .. key .. ': ' .. message)
     end
 end
+local function discover(sprite)
+    if not valid(sprite) then return end
+    -- A later battle can reuse a component name for a different UObject.
+    local key = sprite:GetFullName() .. '@' .. tostring(sprite:GetAddress())
+    if states[key] or not valid(sprite.SsProject)
+        or not sprite.SsProject:GetFullName():find(config.project, 1, true) then return end
+    local actor = sprite:GetOwner()
+    -- UI renderers, map sprites and cinematics are excluded.
+    if valid(actor) then
+        local unit = actor:IsA(native('mucha.CPP_BtlUnit'))
+        if unit or actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then
+            local ok, error = pcall(create, sprite, actor, unit, key)
+            if not ok then recover(key, error) end
+        end
+    end
+end
+local function refresh(key, s)
+    if not valid(s.sprite) or not valid(s.actor) or not valid(s.mesh) or not valid(s.material)
+        or not valid(s.sprite.SsProject) or not s.sprite.SsProject:GetFullName():find(config.project, 1, true) then
+        states[key] = nil
+        clear(s)
+    else update(s) end
+end
 local function tick()
     scans = scans + 1
     if scans == 1 or scans % 15 == 0 then
         for _, class in ipairs({'SsPlayerComponent', 'CPP_MuchaSsPlayerComponent'}) do
             for _, sprite in ipairs(FindAllOf(class) or {}) do
-                local key = sprite:GetFullName()
-                if not states[key] and valid(sprite.SsProject) and sprite.SsProject:GetFullName():find(config.project, 1, true) then
-                    local actor = sprite:GetOwner()
-                    -- UI renderers, map sprites and cinematics are excluded.
-                    if valid(actor) then
-                        local unit = actor:IsA(native('mucha.CPP_BtlUnit'))
-                        if unit or actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then
-                            local ok, error = pcall(create, sprite, actor, unit)
-                            if not ok then recover(key, error) end
-                        end
-                    end
-                end
+                -- FindAllOf can include an object being destroyed by another
+                -- vision. Isolate each probe so later Fina actors are scanned.
+                local ok, error = pcall(discover, sprite)
+                if not ok then recover('scan:' .. class, error) end
             end
         end
     end
     for key, s in pairs(states) do
-        if not valid(s.sprite) or not valid(s.actor) or not valid(s.mesh) or not valid(s.sprite.SsProject)
-            or not s.sprite.SsProject:GetFullName():find(config.project, 1, true) then
-            clear(s); states[key] = nil
-        else
-            local ok, error = pcall(update, s)
-            if not ok then recover(key, error) else errors[key] = nil end
-        end
+        local ok, error = pcall(refresh, key, s)
+        if not ok then recover(key, error) else errors[key] = nil end
     end
 end
 assert(config.schema == 1, 'Unsupported Fina battle runtime config')
@@ -390,16 +414,37 @@ assert(type(config.attackPlayRate) == 'number' and config.attackPlayRate >= .5 a
 -- Keep the queued callback reachable between native game-thread invocations.
 -- Actor/model transitions must not permanently stop all later Fina instances.
 local function run_tick()
-    queued = false
     local ok, error = pcall(tick)
     if not ok then recover('scan', error) else errors.scan = nil end
-end
-LoopAsync(33, function()
-    if not queued then
-        queued = true
-        local ok, error = pcall(ExecuteInGameThread, run_tick)
-        if not ok then queued = false; recover('queue', error) end
-    end
     return false
-end)
-log('Battle presentation ready (body-ray refraction; single resonance glow; linked attack timing); waiting for custom Crystal Fina')
+end
+-- Current UE4SS can own a repeating game-thread callback directly, avoiding
+-- per-frame cross-thread registry churn. Older loaders retain the guarded
+-- async bridge below. Both schedulers keep Unreal calls on the game thread.
+local nativeLoop = false
+if type(LoopInGameThreadWithDelay) == 'function' then
+    local ok, error = pcall(LoopInGameThreadWithDelay, 33, run_tick)
+    if ok then nativeLoop = true; log('Using persistent game-thread presentation loop')
+    else log('Persistent loop unavailable; using recoverable callback bridge: ' .. tostring(error)) end
+end
+if not nativeLoop then LoopAsync(33, function()
+    if pending then
+        pending.waits = pending.waits + 1
+        if pending.waits < 90 then return false end
+        -- A lost native callback used to leave queued=true for the whole game
+        -- session. Retry after ~3 seconds; a late old callback is inert. No
+        -- UObject is read or changed on this async scheduling thread.
+        recover('queue', 'Game-thread callback timed out; scheduling a fresh scan')
+    end
+    local request = {waits=0}
+    request.run = function()
+        if pending ~= request then return end
+        pending = nil
+        run_tick()
+    end
+    pending = request
+    local ok, error = pcall(ExecuteInGameThread, request.run)
+    if not ok then pending = nil; recover('queue', error) end
+    return false
+end) end
+log('Battle presentation ready (session recovery; body-ray refraction; single resonance glow; linked attack timing); waiting for custom Crystal Fina')

@@ -1,0 +1,319 @@
+{
+  "key": "crystal_fina_2",
+  "jp": "Crystal Fina 2",
+  "en": "Crystal Fina",
+  "id": 13503,
+  "sort": 13573,
+  "desc": "An original vision.",
+  "donor": 13108,
+  "ffbe": {
+    "dir": "units/custom/crystal_fina_2/sprites/99887755552703",
+    "id": "99887755552703",
+    "source": "CUSTOM",
+    "base": "99887755552703"
+  },
+  "attackType": "Magic",
+  "roles": [
+    "eUnitRole::Healer"
+  ],
+  "stats": {
+    "MaxHitPoint": 600,
+    "MaxMagicPoint": 100,
+    "Attack": 30,
+    "Defence": 30,
+    "Intelligence": 40,
+    "Mind": 50,
+    "Agility": 30
+  },
+  "elemRes": {
+    "eElement::Light": "eResistance::Halved"
+  },
+  "command": {
+    "id": 323,
+    "en": "Crystal Fina Skills",
+    "desc": "Skills unique to Crystal Fina 2."
+  },
+  "master": {
+    "id": 1350300,
+    "en": "Spirit of Crystal Fina",
+    "desc": "Crystal Fina's resonance flows into the wearer."
+  },
+  "price": 1,
+  "menuScale": 2.52,
+  "icon": {
+    "style": "border",
+    "rarity": "NV"
+  },
+  "lb": 440090,
+  "lb_custom": {
+    "from": 412510,
+    "presentation": "ffbe",
+    "field_color_mode": "element",
+    "audio": "native",
+    "audio_codec": "host",
+    "visuals": 440110,
+    "target_effect": null,
+    "clone_sequence": true,
+    "mute": [
+      "VO_"
+    ],
+    "caption_from": 440280,
+    "jp": "Crystal Fina 2_LB",
+    "en": "Crystal Restoration",
+    "nameAuto": false,
+    "desc": "Restore HP to all allies and cures status",
+    "set": {
+      "element": "None",
+      "hitCount": 1,
+      "DamageType": "Magic",
+      "damageCalcType": "Magic"
+    },
+    "sequence_edits": {},
+    "effect_swaps": [],
+    "mechanics": "custom",
+    "descAuto": false,
+    "ffbe_lb_id": "99887755552703",
+    "ffbe_lb": "units/custom/crystal_fina_2/resonance.json"
+  },
+  "skills": {
+    "485300": {
+      "from": 445020,
+      "visuals": 445020,
+      "jp": "Crystal Fina 2_Raegen Blast",
+      "en": "Raegen Blast",
+      "desc": "Staggers every enemy instantly. No damage.",
+      "descAuto": false,
+      "set": {
+        "magnification": 0,
+        "breakDamageValue": 9999,
+        "accuracy": 500,
+        "Cost": 0,
+        "element": "Thunder",
+        "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder",
+        "effectBundleList[0].effectId": -1,
+        "effectBundleList[1].effectId": -1,
+        "totalDamageDisplayRule": "Hidden"
+      },
+      "studio": "raegen_blast"
+    }
+  },
+  "awakening": [
+    [
+      [
+        "ActiveSkill",
+        240230
+      ],
+      [
+        "ActiveSkill",
+        240010
+      ],
+      [
+        "ActiveSkill",
+        210050
+      ],
+      [
+        "ActiveSkill",
+        230040
+      ],
+      [
+        "PassiveSkill",
+        1304
+      ],
+      [
+        "PassiveSkill",
+        1352
+      ],
+      [
+        "PassiveSkill",
+        1282
+      ]
+    ],
+    [
+      [
+        "ActiveSkill",
+        210260
+      ],
+      [
+        "ActiveSkill",
+        210120
+      ],
+      [
+        "ActiveSkill",
+        210020
+      ],
+      [
+        "ActiveSkill",
+        230060
+      ],
+      [
+        "ActiveSkill",
+        210140
+      ],
+      [
+        "PassiveSkill",
+        1401
+      ],
+      [
+        "PassiveSkill",
+        1391
+      ],
+      [
+        "PassiveSkill",
+        1283
+      ]
+    ],
+    [
+      [
+        "ActiveSkill",
+        445020
+      ],
+      [
+        "ActiveSkill",
+        210030
+      ],
+      [
+        "ActiveSkill",
+        230050
+      ],
+      [
+        "ActiveSkill",
+        230070
+      ],
+      [
+        "PassiveSkill",
+        1353
+      ],
+      [
+        "PassiveSkill",
+        1408
+      ],
+      [
+        "PassiveSkill",
+        1375
+      ]
+    ],
+    [
+      [
+        "ActiveSkill",
+        230140
+      ],
+      [
+        "ActiveSkill",
+        300110
+      ],
+      [
+        "PassiveSkill",
+        1349
+      ],
+      [
+        "PassiveSkill",
+        1355
+      ],
+      [
+        "PassiveSkill",
+        1045
+      ],
+      [
+        "PassiveSkill",
+        1256
+      ],
+      [
+        "PassiveSkill",
+        1456
+      ]
+    ]
+  ],
+  "synchro": [
+    [],
+    [
+      [
+        "BaseParameter",
+        1,
+        50
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        5,
+        5
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        6,
+        5
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        2,
+        10
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        7,
+        5
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        8,
+        5
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        9,
+        3
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        1,
+        50
+      ]
+    ],
+    [
+      [
+        "BaseParameter",
+        5,
+        8
+      ],
+      [
+        "BaseParameter",
+        11,
+        8
+      ],
+      [
+        "MasterSkill",
+        1350300
+      ]
+    ]
+  ],
+  "ffbeMap": {
+    "skills": {},
+    "passives": {}
+  },
+  "custom": {
+    "schema": 1,
+    "animations": [
+      "idle",
+      "atk",
+      "limitatk"
+    ],
+    "warnings": [
+      "move was not supplied; the idle animation will be used.",
+      "magic was not supplied; the idle animation will be used.",
+      "down was not supplied; the idle animation will be used.",
+      "victory was not supplied; the idle animation will be used."
+    ]
+  }
+}

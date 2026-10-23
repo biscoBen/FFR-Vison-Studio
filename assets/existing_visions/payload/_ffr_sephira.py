@@ -54,7 +54,7 @@ def visual_units(units, root, rows=None):
         raise ValueError('Unsupported Sephira visual policy.')
     sources = {v['ID']: v for v in rows('Skill/DT_SkillData').values()} if rows else {}
     for unit in result:
-        value = membership(unit)
+        value = runtime_membership(unit)
         if value is None:
             continue
         donors = policy['presets'].get(value['preset'], {})
@@ -152,7 +152,7 @@ def player_units(units, rows):
     Explicit edits to these presentation/availability fields retain precedence.
     """
     result = copy.deepcopy(units)
-    selected = [u for u in result if membership(u) is not None and u.get('skills')]
+    selected = [u for u in result if runtime_membership(u) is not None and u.get('skills')]
     if not selected: return result
     native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     for unit in selected:
@@ -195,6 +195,22 @@ def membership(unit):
     return value
 
 
+def runtime_membership(unit):
+    """The independent bundled Fina needs the same runtime reward fixes.
+
+    This does not enroll her in the collection or its acquisition overrides.
+    """
+    value = membership(unit)
+    if value is not None: return value
+    ffbe = unit.get('ffbe') or {}
+    if (unit.get('native') is None and unit.get('party') is None
+            and ffbe.get('source') == 'CUSTOM'
+            and '99887755552703' in (str(ffbe.get('id')), str(ffbe.get('base')))
+            and (unit.get('bundledPreset') == 'custom.crystal_fina.v1' or unit.get('key') == 'crystal_fina_2')):
+        return {'version': 1, 'preset': 'crystal_fina', 'enabled': True}
+    return None
+
+
 def active_units(units):
     """Filter before sprite generation, acquisition, animations and verification.
 
@@ -216,12 +232,12 @@ def active_units(units):
 
 
 def native_motion_for(units, identity):
-    return any(str(u.get('id')) == str(identity) and membership(u) is not None
+    return any(str(u.get('id')) == str(identity) and runtime_membership(u) is not None
                for u in active_units(units))
 
 
 def native_motion_names(unit):
-    value = membership(unit)
+    value = runtime_membership(unit)
     if value is None: return []
     policy = json.loads(Path(__file__).with_name('sephira_native_presentations.json').read_bytes())
     return policy.get('modelMotions', {}).get(value['preset'], [])
@@ -229,7 +245,7 @@ def native_motion_names(unit):
 
 def verify_runtime_rows(root, tool, usmap, units, rows):
     """Read back every selected kit's grants before converting any sprites."""
-    selected = [u for u in units if membership(u) is not None]
+    selected = [u for u in units if runtime_membership(u) is not None]
     if not selected: return
     root = Path(root); work = root / 'build/sephira-reward-check'; work.mkdir(parents=True, exist_ok=True)
     rels = ('Skill/DT_SkillData', PASSIVE, 'Skill/DT_MasterSkillData',
@@ -273,13 +289,13 @@ def bind_units(units, rows):
     parameters, skill-specific bonuses and equip costs are retained verbatim.
     """
     result = copy.deepcopy(units)
-    if not any(membership(u) is not None for u in result): return result
+    if not any(runtime_membership(u) is not None for u in result): return result
     passives = {v['ID']: (k, v) for k, v in rows(PASSIVE).items()}
     effects = {v['ID']: (k, v) for k, v in rows(EFFECT).items()}
     native_skills = {v['ID'] for v in rows('Skill/DT_SkillData').values()}
     allocated = {}
     for u in result:
-        value = membership(u)
+        value = runtime_membership(u)
         if value is None: continue
         owned = {int(sid) for sid in u.get('skills', {})}
         if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)

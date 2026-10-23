@@ -29,6 +29,16 @@ def verify(update=False):
     profile = json.loads((ROOT / 'profile.json').read_text(encoding='utf-8'))
     assert profile['ffbe']['id'] == '99887755552703'
     assert profile['lb_custom']['en'] == 'Crystal Restoration'
+    # The independent import must not drift back to its obsolete stat-only MR
+    # schedule when the collection's preset is corrected.
+    catalog = json.loads((ROOT.parent / 'sephira_visions/catalog.json').read_bytes())
+    canonical = next(p['profile'] for p in catalog['presets'] if p['id'] == 'crystal_fina')
+    def rewards(unit):
+        return [[['MasterSkill', 0] if g[0] == 'MasterSkill' else
+                 ['ActiveSkill', unit['skills'][str(g[1])]['from'], *g[2:]] if g[0] == 'ActiveSkill' else g
+                 for g in tier] for tier in unit['synchro']]
+    assert rewards(profile) == rewards(canonical), 'Standalone Crystal Fina MR rewards diverged from the collection'
+    assert profile['sephiraPassiveText'] == canonical['sephiraPassiveText']
     return len(manifest(ROOT)['files'])
 
 

@@ -346,6 +346,7 @@ void main() {
   });
 
   test('recipe update notice preserves saved edits until explicit reset', () async {
+    app.sephiraPresets.first['profile'].remove('sephiraRecipe');
     await app.setSephiraEnabled(true);
     final edited = CharacterConfig.copy(app.sephiraUnits.first);
     edited['stats']['Attack'] = 47;

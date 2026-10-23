@@ -17,7 +17,7 @@ POLICY = 'sephira_native_presentations.json'
 def selections(units):
     import _ffr_sephira
     for unit in units:
-        if _ffr_sephira.membership(unit) is None: continue
+        if _ffr_sephira.runtime_membership(unit) is None: continue
         for identity, recipe in (unit.get('skills') or {}).items():
             if (not recipe or recipe.get('visuals', recipe['from']) != recipe['from']
                     or recipe.get('clone_sequence') or recipe.get('tint') is not None

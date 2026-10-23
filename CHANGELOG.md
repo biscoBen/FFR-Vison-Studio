@@ -11,6 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina battle-session recovery and standalone MR rewards — 2026-10-22
+
+- Prefer one persistent game-thread presentation loop on supporting loaders. Recover crystal updates after an
+  older loader's native callback is lost; late callbacks cannot supersede the new request. Isolate invalid or unloading renderers, identify successive battle objects by their native addresses,
+  and release stale action clocks/components independently so one failed cleanup cannot block later battles.
+  Preserve the accepted glass, resonance glow and linked attack/damage speed.
+- Correct the independent Crystal Fina preset's old stats-only MR layout to match her collection rewards. Detect
+  that exact obsolete layout on opening Studio, importing, adopting or building; back up the previous roster and
+  repair only her rewards and required learned healing skill. Preserve identities, artwork, acquisition, combat
+  edits and deliberately edited reward layouts. Move an existing awakening grant to MR rather than duplicate it.
+- Apply the private passive labels, learned-command availability, field healing and original animation handling
+  to independent bundled Fina without enrolling her in Sephira's collection or its shop override. Verify standalone
+  MR parity against the collection during bundle validation, and remap the learned skill's command on allocation.
+- Local Flutter/Python regression checks and native table readback pass; Windows checks are pending. The exact
+  intermittent game-session trigger has not been captured; successive-battle testing in the game is still needed
+  to confirm the disappearance is resolved.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

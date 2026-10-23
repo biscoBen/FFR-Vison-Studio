@@ -19,6 +19,39 @@ def inputs():
 
 
 class SephiraRuntimeRewardTests(unittest.TestCase):
+    def test_independent_fina_keeps_reward_labels_and_learned_healing_without_collection_membership(self):
+        import tempfile
+        import _ffr_sephira_sequences as sequences
+        _, native, _ = inputs()
+        unit = json.loads((ROOT / 'assets/crystal_fina/profile.json').read_bytes())
+        unit['bundledPreset'] = 'custom.crystal_fina.v1'
+        before = copy.deepcopy(unit)
+        self.assertIsNone(pack.membership(unit))
+        self.assertEqual(pack.active_units([unit]), [unit])
+        with tempfile.TemporaryDirectory() as temp:
+            from pathlib import Path
+            settings = Path(temp) / pack.CONFIG
+            settings.parent.mkdir(parents=True)
+            settings.write_text(json.dumps({'schema':1,'useBorrowedSkillVisuals':False,'shopAcquisitionOverride':True}))
+            visual, = pack.visual_units([unit], temp, native.__getitem__)
+        self.assertEqual(visual.get('studioAcquisition'), unit.get('studioAcquisition'))
+        self.assertEqual(visual['price'], unit['price'], 'Collection shop override must not enroll independent Fina')
+        player, = pack.player_units([visual], native.__getitem__)
+        learned = player['synchro'][5][0][1]
+        fields = player['skills'][str(learned)]['set']
+        self.assertEqual(fields['belongCommandList'], [1])
+        self.assertEqual(fields['availableLocation'], 'Anywhere')
+        self.assertEqual(fields['mapEffectType'], 'RecoveryHP')
+        self.assertIn(learned, [s for s, _, _ in sequences.selections([player])])
+        bound, = pack.bind_units([player], native.__getitem__)
+        for rank in (3,7):
+            kind, identity, _ = bound['synchro'][rank][0]
+            self.assertEqual(kind, 'PassiveSkill')
+            self.assertTrue(1000 <= identity < 2000)
+            self.assertTrue(any(b['passive']['set']['ID']==identity for b in bound['_sephiraBindings']))
+        self.assertEqual(unit, before)
+        self.assertNotIn(pack.FIELD,bound)
+
     def test_every_private_passive_has_a_unique_runtime_passive_id(self):
         _, native, units = inputs()
         before = copy.deepcopy(units)
@@ -102,7 +135,8 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         for recipe in fina['skills'].values():
             if recipe['en'] == 'Crystal Renewal':
                 recipe['set'].update(availableLocation='BattleOnly', mapEffectType='None', isTargetIgnoreSelf=True)
-        untagged = copy.deepcopy(fina); untagged.pop(pack.FIELD)
+        untagged = copy.deepcopy(next(u for u in units if u[pack.FIELD]['preset']=='folka'))
+        untagged.pop(pack.FIELD)
         actual, ordinary = pack.player_units([fina, untagged], native.__getitem__)
         self.assertEqual(ordinary, untagged)
         for recipe in actual['skills'].values():

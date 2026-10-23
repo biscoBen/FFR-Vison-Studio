@@ -95,6 +95,33 @@
         "totalDamageDisplayRule": "Hidden"
       },
       "studio": "raegen_blast"
+    },
+    "485318": {
+      "from": 506110,
+      "visuals": 210020,
+      "jp": "CrystalFina_MR_485318",
+      "en": "Crystal Renewal",
+      "desc": "Restore healing power 400. Group friendlies; MP 50; hits 1; accuracy 100; stagger 50.",
+      "descAuto": false,
+      "set": {
+        "Cost": 50,
+        "accuracy": 100,
+        "belongCommandList": [
+          323
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          323,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None",
+        "magnification": 400,
+        "defaultTargetRelation": "Friendlies"
+      }
     }
   },
   "awakening": [
@@ -216,10 +243,6 @@
       [
         "PassiveSkill",
         1256
-      ],
-      [
-        "PassiveSkill",
-        1456
       ]
     ]
   ],
@@ -227,65 +250,65 @@
     [],
     [
       [
+        "PassiveSkill",
+        1252,
+        -1
+      ]
+    ],
+    [
+      [
         "BaseParameter",
         1,
-        50
+        30
+      ]
+    ],
+    [
+      [
+        "PassiveSkill",
+        1551,
+        -1
       ]
     ],
     [
       [
         "BaseParameter",
-        5,
-        5
+        11,
+        8
       ]
     ],
     [
       [
-        "BaseParameter",
-        6,
-        5
+        "ActiveSkill",
+        485318,
+        -1
       ]
     ],
     [
       [
         "BaseParameter",
         2,
-        10
+        20
       ]
     ],
     [
       [
-        "BaseParameter",
-        7,
-        5
+        "PassiveSkill",
+        1552,
+        -1
       ]
     ],
     [
       [
         "BaseParameter",
         8,
-        5
+        15
       ]
     ],
     [
       [
-        "BaseParameter",
-        9,
-        3
-      ]
-    ],
-    [
-      [
-        "BaseParameter",
-        1,
-        50
-      ]
-    ],
-    [
-      [
-        "BaseParameter",
-        5,
-        8
+        "PassiveSkill",
+        1456,
+        -1
       ],
       [
         "BaseParameter",
@@ -294,7 +317,8 @@
       ],
       [
         "MasterSkill",
-        1350300
+        1350300,
+        -1
       ]
     ]
   ],
@@ -315,5 +339,16 @@
       "down was not supplied; the idle animation will be used.",
       "victory was not supplied; the idle animation will be used."
     ]
-  }
+  },
+  "sephiraPassiveText": {
+    "1551": {
+      "name": "Magic Evasion +15%",
+      "desc": "Evade magic attacks with a 15% chance."
+    },
+    "1552": {
+      "name": "LB Charge on Action",
+      "desc": "Fill the LB gauge by 10% at the start of each action."
+    }
+  },
+  "sephiraRecipe": 5
 }

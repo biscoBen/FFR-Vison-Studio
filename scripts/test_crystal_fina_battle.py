@@ -56,7 +56,7 @@ class FinaBattleTests(unittest.TestCase):
             key['Value'][1]['Value'][0]['Value'] = False
             with self.assertRaisesRegex(ValueError, 'bool cache'): motion.verify_image_mirroring(view, spec)
 
-    def runtime(self):
+    def runtime(self, before=''):
         from lupa.lua54 import LuaRuntime
         import _ffr_field_leader as leader
         lua = LuaRuntime()
@@ -64,6 +64,7 @@ class FinaBattleTests(unittest.TestCase):
         lua.execute('package.preload.config = function() return ' + leader.lua({'schema': 1, 'actors': {}, 'fina': config}) + ' end')
         root = Path(__file__).resolve().parent.parent
         lua.execute((root / 'scripts/fixtures/fina_battle_runtime.lua').read_text())
+        if before: lua.execute(before)
         lua.execute((root / 'assets/existing_visions/payload/fina_battle.lua').read_text())
         return lua
 
@@ -109,6 +110,94 @@ class FinaBattleTests(unittest.TestCase):
             assert(tick()==false and #meshes==0)
             ExecuteInGameThread=original
             assert(tick()==false and #meshes==1 and meshes[1].visible)
+        """)
+
+    def test_available_native_loop_keeps_repeating_without_an_async_callback_bridge(self):
+        lua = self.runtime("""
+            function LoopInGameThreadWithDelay(ms,fn) assert(ms==33); tick=fn; return 19 end
+            function LoopAsync() error('Do not install a second loop') end
+            function ExecuteInGameThread() error('Native loop already runs on the game thread') end
+        """)
+        lua.execute('run_fina_tests()')
+        lua.execute("""
+            sprite.playing='Idle'
+            sprite.SsProject=runtime_object({GetFullName=function() return 'Ss6Project '..require('config').fina.project end})
+            for _=1,15 do tick() end
+            assert(#meshes==2 and meshes[2].visible)
+        """)
+
+    def test_native_loop_registration_failure_uses_the_older_loader_bridge(self):
+        lua = self.runtime("""
+            function LoopInGameThreadWithDelay() error('Loop capability unavailable') end
+        """)
+        lua.execute('tick(); assert(#meshes==1 and meshes[1].visible)')
+
+    def test_lost_callback_recovers_and_a_late_callback_cannot_clear_the_new_request(self):
+        lua = self.runtime()
+        lua.execute("""
+            local original=ExecuteInGameThread
+            local waiting={}
+            ExecuteInGameThread=function(fn) waiting[#waiting+1]=fn end
+            tick(); assert(#waiting==1 and #meshes==0)
+            for _=1,89 do tick() end
+            assert(#waiting==1, 'Do not flood a busy game thread')
+            tick(); assert(#waiting==2)
+            waiting[1](); assert(#meshes==0, 'Timed-out callbacks must be inert')
+            tick(); assert(#waiting==2, 'Late callback must not release the new request')
+            waiting[2](); assert(#meshes==1 and meshes[1].visible)
+            ExecuteInGameThread=original
+            tick(); assert(meshes[1].visible)
+        """)
+
+    def test_stale_unrelated_renderer_does_not_block_fina_in_later_battles(self):
+        lua = self.runtime()
+        lua.execute("""
+            tick()
+            local original=FindAllOf
+            local stale=runtime_object({GetFullName=function() error('unrelated actor is unloading') end})
+            FindAllOf=function(class)
+                if class=='CPP_BtlJobSkill' then return {} end
+                return {stale, sprite}
+            end
+            meshes[1].invalid=true
+            for _=1,30 do tick() end
+            assert(#meshes==2 and meshes[2].visible)
+            FindAllOf=original
+        """)
+
+    def test_dead_action_clock_cleanup_cannot_poison_the_next_battle(self):
+        lua = self.runtime()
+        lua.execute("""
+            local hit=clock('OldBattleHit'); local sound=clock('StillLiveSound')
+            jobs={job(actor,{hit},nil,sound)}; sprite.playing='magic_idle'; tick()
+            assert(hit.rate==.64)
+            hit.GetPlayRate=function() error('clock destroyed during transition') end
+            sprite.SsProject.invalid=true
+            tick(); assert(meshes[1].invalid)
+            assert(sound.rate==1 and sprite.rate==1, 'Other clocks must restore despite one stale clock')
+            sprite.SsProject.invalid=false; jobs={}; sprite.playing='Idle'
+            for _=1,15 do tick() end
+            assert(#meshes==2 and meshes[2].visible)
+        """)
+
+    def test_second_battle_with_reused_component_name_gets_its_own_crystal(self):
+        lua = self.runtime()
+        lua.execute("""
+            tick(); local old=sprite
+            local replacement={}
+            for k,v in pairs(old) do replacement[k]=v end
+            sprite=runtime_object(replacement)
+            old.invalid=true
+            old.GetFullName=function() error('first battle has unloaded') end
+            local original=FindAllOf
+            FindAllOf=function(class)
+                if class=='CPP_BtlJobSkill' then return {} end
+                return {old,sprite}
+            end
+            for _=1,30 do tick() end
+            assert(meshes[1].invalid and #meshes==2 and meshes[2].visible)
+            assert(meshes[2].parent==sprite)
+            FindAllOf=original
         """)
 
     def test_attack_slows_actual_event_clocks_and_body_together_without_compounding(self):

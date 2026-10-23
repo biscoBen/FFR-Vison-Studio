@@ -9,6 +9,7 @@ import 'package:ffr_vision_studio/screens/add_unit_dialog.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
 import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/bundled_features.dart';
+import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/crystal_fina.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
@@ -20,6 +21,7 @@ import 'package:provider/provider.dart';
 
 dynamic clone(dynamic value) => json.decode(json.encode(value));
 Map<String, dynamic> suppliedProfile() => json.decode(File('${CrystalFina.assetRoot}/profile.json').readAsStringSync()) as Map<String, dynamic>;
+Map<String, dynamic> legacyProfile() => json.decode(File('scripts/fixtures/crystal_fina_legacy_profile.json').readAsStringSync()) as Map<String, dynamic>;
 Future<Uint8List> diskAsset(String path) => File(path).readAsBytes();
 
 // File installation is tested separately; keep the picker in Flutter's test zone.
@@ -98,7 +100,10 @@ void main() {
     result['stats']['MaxHitPoint'] = 999;
     expect(source['stats']['MaxHitPoint'], 600);
     expect(result['lb_custom']['en'], 'Crystal Restoration');
-    expect(result['awakening'].map((tier) => tier.length).toList(), [7, 8, 7, 7]);
+    expect(result['awakening'].map((tier) => tier.length).toList(), [7, 8, 7, 6]);
+    expect(result['synchro'][3].single[0], 'PassiveSkill');
+    expect(result['synchro'][7].single[0], 'PassiveSkill');
+    expect(result['skills'][result['synchro'][5].single[1].toString()]['en'], 'Crystal Renewal');
   });
 
   test('each allocated namespace avoids collisions without changing borrowed references', () {
@@ -115,13 +120,69 @@ void main() {
       expect(result['sort'], id + 70);
       expect(result['command']['id'], 320 + id - 13500);
       expect(result['master']['id'], id * 100);
-      expect(result['synchro'].last.last, ['MasterSkill', id * 100]);
-      expect(result['skills'].values.single, source['skills']['485300']);
+      expect(result['synchro'].last.last, ['MasterSkill', id * 100, -1]);
+      final base = 445000 + (id - 13100) * 100;
+      expect(result['skills'][base.toString()], source['skills']['485300']);
+      expect(result['skills']['${base + 18}']['set']['belongCommandList'], [result['command']['id']]);
       for (final field in ['awakening', 'lb', 'lb_custom', 'stats', 'elemRes', 'ffbe', 'custom', 'donor']) {
         expect(result[field], source[field], reason: 'Preserve borrowed references and settings: $field');
       }
       expect(roster, before);
     }
+  });
+
+  test('known old Fina rewards repair once without resetting identity, artwork or kit edits', () {
+    for (final tagged in [false, true]) {
+      final unit = CrystalFina.instantiate(legacyProfile(), [{'id':13503}, {'id':13514}]);
+      if (tagged) unit[SephiraVisions.field] = {'version':1, 'preset':'crystal_fina', 'enabled':false};
+      unit['stats']['Mind'] = 83;
+      unit['custom'] = {'artwork':'my artwork'};
+      unit['studioAcquisition'] = {'version':1, 'random':false, 'hideSpoilers':false, 'location':'mitra_shop'};
+      (unit['skills'] as Map).values.first['set']['Cost'] = 19;
+      final before = clone(unit);
+      expect(CrystalFina.needsRewardRepair(unit), isTrue);
+      final fixed = CrystalFina.repairRewards(unit, suppliedProfile());
+      expect(unit, before);
+      for (final field in ['id','key','command','master','ffbe','lb','lb_custom','stats','custom','studioAcquisition',SephiraVisions.field]) {
+        expect(fixed[field], unit[field], reason:field);
+      }
+      for (final entry in (unit['skills'] as Map).entries) { expect(fixed['skills'][entry.key], entry.value); }
+      expect(fixed['synchro'][3].single, ['PassiveSkill',1551,-1]);
+      expect(fixed['synchro'][7].single, ['PassiveSkill',1552,-1]);
+      final learned = fixed['synchro'][5].single[1];
+      expect(fixed['skills'][learned.toString()]['from'],506110);
+      expect(fixed['skills'][learned.toString()]['set']['belongCommandList'], [unit['command']['id']]);
+      expect(fixed['synchro'][9].last, ['MasterSkill',unit['master']['id'],-1]);
+      expect((fixed['awakening'] as List).expand((t) => t as List).where((g) => g[0]=='PassiveSkill' && g[1]==1456),isEmpty);
+      expect(CrystalFina.needsRewardRepair(fixed),isFalse);
+      expect(identical(CrystalFina.repairRewards(fixed,suppliedProfile()),fixed),isTrue);
+    }
+  });
+
+  test('reward repair allocates around custom skills and preserves edited reward layouts', () {
+    final unit = legacyProfile();
+    unit['skills']['485318'] = clone(unit['skills']['485300']);
+    final repaired = CrystalFina.repairRewards(unit,suppliedProfile());
+    expect(repaired['skills']['485318'], unit['skills']['485318']);
+    expect(repaired['synchro'][5].single[1], isNot(485318));
+    unit['synchro'][3] = [['ActiveSkill',210010]];
+    expect(CrystalFina.needsRewardRepair(unit),isFalse);
+    expect(identical(CrystalFina.repairRewards(unit,suppliedProfile()),unit),isTrue);
+    for (final field in ['native','party']) {
+      final original = legacyProfile()..[field] = {'id':1};
+      expect(CrystalFina.needsRewardRepair(original),isFalse);
+    }
+  });
+
+  test('build backs up and repairs the old standalone rewards before the engine reads them', () async {
+    final api = RosterApi([legacyProfile()]);
+    final app = PickerApp(paths)..api=api..units=clone(api.roster) as List;
+    addTearDown(app.dispose);
+    await app.startBuild(install:true);
+    expect(api.calls, ['save','build']);
+    expect(api.roster.single['synchro'][3].single, ['PassiveSkill',1551,-1]);
+    final backup = Directory(paths.configBackups).listSync().whereType<File>().single;
+    expect(CharacterConfig.decodeAll(backup.readAsStringSync()).single['synchro'], legacyProfile()['synchro']);
   });
 
   test('owned granted skills and map references follow remapping; borrowed grants do not', () {
@@ -188,7 +249,7 @@ void main() {
             File('assets/existing_visions/payload/$resource').readAsBytesSync());
         }
       }
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.65' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.66' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -224,7 +285,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.65' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.66' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));

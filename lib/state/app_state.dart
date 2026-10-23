@@ -363,6 +363,9 @@ class AppState extends ChangeNotifier {
     catalog = await api!.catalog();
     units = await api!.spec();
     sephiraPresets = await SephiraVisions.bundled;
+    final repaired = await _repairKnownFinaRewards(units);
+    if (!identical(repaired, units)) dirty = true;
+    units = repaired;
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);
@@ -439,6 +442,18 @@ class AppState extends ChangeNotifier {
       await api!.saveSpec(snapshot);
       if (_rosterRevision == revision) { dirty = false; _pendingEdits.clear(); }
     }
+  }
+
+  Future<JsonMap> _currentFinaRewards(JsonMap unit) async => CrystalFina.needsRewardRepair(unit)
+      ? CrystalFina.repairRewards(unit, await features.profile()) : unit;
+
+  Future<List<dynamic>> _repairKnownFinaRewards(List<dynamic> current) async {
+    if (!current.any((u) => CrystalFina.needsRewardRepair(u as Map))) return current;
+    final next = [for (final u in current) await _currentFinaRewards(u as JsonMap)];
+    final backup = File(p.join(paths.configBackups, 'crystal-fina-rewards-${DateTime.now().microsecondsSinceEpoch}.json'));
+    await backup.parent.create(recursive: true);
+    await backup.writeAsString(CharacterConfig.encodeAll(current), flush: true);
+    return next;
   }
   void _saveSoon() {
     _saveTimer?.cancel();
@@ -609,6 +624,7 @@ class AppState extends ChangeNotifier {
 
   Future<List<dynamic>> _prepareSephira(List<dynamic> current, {String? presetId, bool reset = false}) async {
     if (sephiraPresets.isEmpty) sephiraPresets = await SephiraVisions.bundled;
+    current = await _repairKnownFinaRewards(current);
     if (reset && presetId == null) {
       current = current.where((u) => !SephiraVisions.retiredMember(u as Map)).toList();
     }
@@ -869,7 +885,8 @@ class AppState extends ChangeNotifier {
     if (!listEquals(targets.map((u) => u?['key'] as String?).toList(), expectedTargetKeys)) {
       throw StateError('The roster changed while choosing the file. Load it again to review the characters being restored.');
     }
-    final loaded = CharacterConfig.restoreAll(saved, current, targets);
+    final restored = CharacterConfig.restoreAll(saved, current, targets);
+    final loaded = [for (final unit in restored) await _currentFinaRewards(unit)];
     final backup = File(p.join(paths.configBackups, 'roster-${DateTime.now().microsecondsSinceEpoch}.json'));
     await backup.parent.create(recursive: true);
     await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
@@ -902,7 +919,7 @@ class AppState extends ChangeNotifier {
     final current = _mergePending(await api!.spec());
     final target = CharacterConfig.target(saved, current);
     if (target?['key'] != expectedTargetKey) { throw StateError('The roster changed while choosing the file. Load it again to review the character being restored.'); }
-    final unit = CharacterConfig.restore(saved, current, replacing: target);
+    final unit = await _currentFinaRewards(CharacterConfig.restore(saved, current, replacing: target));
     final backup = File(p.join(paths.configBackups, 'roster-${DateTime.now().microsecondsSinceEpoch}.json'));
     await backup.parent.create(recursive: true);
     await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
@@ -933,7 +950,7 @@ class AppState extends ChangeNotifier {
     await _savePending();
     onStep?.call('Preparing Crystal Fina');
     await features.ensureUnitAssets(paths);
-    final current = _mergePending(await api!.spec());
+    final current = await _repairKnownFinaRewards(_mergePending(await api!.spec()));
     final existing = current.cast<JsonMap>().where((u) =>
         u['native'] == null && u['party'] == null && CrystalFina.matches(u)).toList();
     if (existing.length > 1) { throw StateError('More than one Crystal Fina is in the roster. Keep one before adding her.'); }
@@ -943,7 +960,7 @@ class AppState extends ChangeNotifier {
     // creating a second Crystal Fina that conflicts when the collection returns.
     final unit = existing.isEmpty
         ? CrystalFina.instantiate(await features.profile(), current)
-        : (CharacterConfig.copy(existing.single)..remove(SephiraVisions.field));
+        : (await _currentFinaRewards(CharacterConfig.copy(existing.single))..remove(SephiraVisions.field));
     final next = [for (final u in current) u['key'] == unit['key'] ? unit : u,
       if (existing.isEmpty) unit];
     final revision = _rosterRevision;
@@ -1314,6 +1331,8 @@ class AppState extends ChangeNotifier {
         throw StateError('Set up and enable your private Deck sync first.');
       }
       await _migrateCrystalCaveOptions();
+      final repaired = await _repairKnownFinaRewards(units);
+      if (!identical(repaired, units)) { units = repaired; dirty = true; }
       await _savePending();
       await api!.build(install: install);
     } catch (e) {

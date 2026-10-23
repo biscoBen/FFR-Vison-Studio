@@ -439,12 +439,14 @@ void main() {
         'ActiveSkill',
         CharacterConfig.skillBase(id),
       ]);
-      expect(loaded['synchro'].last.last, ['MasterSkill', id * 100]);
+      expect(loaded['synchro'].last.last, ['MasterSkill', id * 100, -1]);
       expect(
         loaded['ffbeMap']['skills']['custom'],
         CharacterConfig.skillBase(id),
       );
-      expect(loaded['skills'].values.single, saved['skills'].values.single);
+      expect(loaded['skills'][CharacterConfig.skillBase(id).toString()], saved['skills']['485300']);
+      expect(loaded['skills']['${CharacterConfig.skillBase(id) + 18}']['from'], 506110);
+      expect(loaded['skills']['${CharacterConfig.skillBase(id) + 18}']['set']['belongCommandList'], [loaded['command']['id']]);
       for (final setting in [
         'lb',
         'lb_custom',
@@ -491,14 +493,14 @@ void main() {
     'conflicting table row names are unique without changing displayed names',
     () {
       final duplicate = other()..['jp'] = saved['jp'];
-      duplicate['skills'].values.single['jp'] =
-          saved['skills'].values.single['jp'];
+      duplicate['skills'].values.first['jp'] =
+          saved['skills'].values.first['jp'];
       duplicate['lb_custom']['jp'] = saved['lb_custom']['jp'];
       final result = CharacterConfig.restore(saved, [duplicate]);
       expect(result['jp'], '${saved['jp']}_2');
       expect(
-        result['skills'].values.single['jp'],
-        '${saved['skills'].values.single['jp']}_2',
+        result['skills'].values.first['jp'],
+        '${saved['skills'].values.first['jp']}_2',
       );
       expect(result['lb_custom']['jp'], '${saved['lb_custom']['jp']}_2');
       expect(result['en'], saved['en']);

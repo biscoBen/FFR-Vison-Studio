@@ -2,9 +2,15 @@
 -- It validates scope, timing and cleanup, not actual Unreal rendering.
 local config = require('config').fina
 messages, meshes, glows, materials, time = {}, {}, {}, {}, 0
-local function obj(t)
-    t=t or {}; t.IsValid=function(s) return not s.invalid end; return t
+local nextAddress = 0
+function runtime_object(t)
+    nextAddress = nextAddress + 1
+    t=t or {}; t.address=nextAddress
+    t.GetAddress=function(s) return s.address end
+    t.IsValid=function(s) return not s.invalid end
+    return t
 end
+local obj = runtime_object
 function FName(s) return {ToString=function() return s end} end
 function print(s) messages[#messages+1]=s end
 camera=obj({location={X=10000,Y=0,Z=0}})
