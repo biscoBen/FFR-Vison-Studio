@@ -87,6 +87,20 @@ class SephiraVisions {
     return result;
   }
 
+  /// Independent bundled Fina shares the collection's additive bonus repair.
+  /// Already-updated entries and deliberate later edits are left alone.
+  static Map<String, dynamic> repairIndependentBonuses(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (member(unit) || !CrystalFina.matches(unit) || unit['native'] != null ||
+        unit['party'] != null || unit['sephiraRecipe'] != 6) { return unit; }
+    final preset = presets.where((p) => p['id'] == 'crystal_fina').firstOrNull;
+    if (preset == null) return unit;
+    // An edited standalone kit must remain openable even when it is full.
+    try { return updateProgression(unit, preset); }
+    on StateError { return unit; }
+  }
+
   static Map<String, dynamic> setEnabled(Map<String, dynamic> unit, bool enabled) => {
     ...unit,
     field: {...unit[field] as Map, 'enabled': enabled},
@@ -119,6 +133,36 @@ class SephiraVisions {
     final latest = preset['profile']['sephiraRecipe'] as int;
     if ((unit['sephiraRecipe'] as int? ?? 0) >= latest) {
       return CharacterConfig.copy(unit);
+    }
+    if (latest >= 7) {
+      var previous = unit;
+      if ((unit['sephiraRecipe'] as int? ?? 0) < 6) {
+        // Revision 6 owns the MR curation; applying only revision 7 must never
+        // reset an already-curated (and possibly edited) mastery schedule.
+        final legacy = CharacterConfig.copy(preset);
+        legacy['profile']['sephiraRecipe'] = 6;
+        previous = updateProgression(unit, legacy);
+      }
+      final result = CharacterConfig.copy(previous);
+      final learned = {for (final field in ['awakening','synchro'])
+        for (final tier in result[field] as List) for (final grant in tier as List)
+          '${grant[0]}:${grant[1]}'};
+      final additions = preset['awakeningBalance']['grants'] as List;
+      for (final bonus in additions) {
+        final identity = bonus['id'] as int;
+        if (!learned.add('PassiveSkill:$identity')) continue;
+        final start = bonus['rank'] as int;
+        final awakening = result['awakening'] as List;
+        final rank = [for (var r = start; r < 4; r++) r]
+            .where((r) => (awakening[r] as List).length < 8).firstOrNull;
+        if (rank == null) {
+          throw StateError('${unit['en']} has no room for its awakening bonuses. Free an awakening slot before applying the update.');
+        }
+        (awakening[rank] as List).add(['PassiveSkill', identity, -1]);
+      }
+      result['sephiraRecipe'] = 7;
+      CharacterConfig.validate(result);
+      return result;
     }
     if (latest >= 6) {
       var previous = unit;

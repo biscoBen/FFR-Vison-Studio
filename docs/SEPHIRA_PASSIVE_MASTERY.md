@@ -1,5 +1,7 @@
 # Sephira passive mastery allocation
 
+This table remains the current MR allocation. [Revision 7](SEPHIRA_AWAKENING_BALANCE.md) adds a separate awakening bonus layer without removing these rewards.
+
 Revision 6 preserves every one of the 131 distinct passives from the 15 excluded original visions, once each. The other 19 slots retain distinctive equipment bonuses and Knight of the Sacred Frost. Each vision has exactly one passive at MR 1, 3, 5, 7 and 9. Active MR skills return to awakening; all active recipes, permanent stat budgets and Spirit rewards are retained. Passives are native individual effects, without combined effects or extra grants at a rank.
 
 Some passives move between visions to make room for the complete original collection. Lenneth keeps Physical Counter with Lustrous Shield; Fryevia keeps her spellblade trio and gains Knight of the Sacred Frost. Redundant permanent imbues are omitted where the kit already earns the same elemental imbue through attacks.

@@ -47,6 +47,18 @@ def build(source, engine_tools, converted, output):
                                    'groupId': gid, 'groupFrame': int(offset),
                                    'cueFrame': int(frame), 'flags': flags})
             sounds.sort(key=lambda e: e['frame'])
+        adaptation = None
+        if preset['id'] == 'ariana':
+            # Explicitly requested soundtrack from the original Touch It form.
+            # Keep the full clean recording rather than lifting narrated audio.
+            sounds = [{'frame': 0, 'cueId': 617, 'flags': ['1']}]
+            adaptation = {'kind': 'requested_soundtrack', 'sourceForm': '401000106',
+                          'sourceName': 'Touch It', 'timing': 'LB1'}
+        elif preset['id'] == 'crystal_fina':
+            sounds = [{'frame': 0, 'cueId': 102, 'flags': ['1']},
+                      {'frame': 0, 'cueId': 25, 'flags': ['1'], 'alignment': 'reaction'}]
+            adaptation = {'kind': 'requested_healing', 'sourceName': 'Accumulate + Cure',
+                          'timing': 'Buildup at LB1; Cure at the existing healing marker'}
         # Flag 2 is a stop instruction, not a recording to play. In these LBs
         # every stop refers to a cue never started by the selected variant.
         starts = {s['cueId'] for s in sounds if s['flags'] == ['1']}
@@ -57,7 +69,8 @@ def build(source, engine_tools, converted, output):
         profiles[preset['id']] = {'form': form, 'lbId': form, 'name': preset['name'],
             'sourceName': lb['G4L0YIB2'] if lb else None, 'variant': variant,
             'timeline': timeline, 'sounds': sounds,
-            'status': 'original_cues' if starts else 'opening_only',
+            'adaptation': adaptation,
+            'status': 'requested_adaptation' if adaptation else 'original_cues' if starts else 'opening_only',
             'reason': None if starts else ('The custom Crystal Fina sequence has no original FFBE LB audio.'
                 if preset['id'] == 'crystal_fina' else 'This exact form/LB is absent from the supplied Memorial masters.')}
     for bank_name, ids in [('SE', selected), ('System', {45})]:
@@ -106,7 +119,7 @@ def build(source, engine_tools, converted, output):
             files['audio/samples/' + digest + '.hca'] = sample
         files['audio/' + bank_name + '.json'] = json.dumps(manifest, separators=(',', ':')).encode()
         banks[bank_name] = manifest['sourceBankSha256']
-    metadata = {'schema': 1, 'revision': 'memorial-v208-lb-1', 'sourceApkSha256': APK_SHA,
+    metadata = {'schema': 1, 'revision': 'memorial-v208-lb-2', 'sourceApkSha256': APK_SHA,
                 'sourceMasters': {name: hashlib.sha256((source / (name + '-memorial.json')).read_bytes()).hexdigest()
                                   for name in ('F_LIMITBURST_MST', 'F_EFFECT_GROUP_MST')},
                 'sourceBanks': banks, 'profiles': profiles,

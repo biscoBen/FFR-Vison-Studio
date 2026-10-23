@@ -30,7 +30,7 @@
     "_ffr_party_voices.py": "7dd587b6298595ae06eb25b0fbd50c7aa3172a86774bb222d089feb3ac87ac34",
     "_ffr_sephira.py": "27cbe01c6c87b105455c6005689274783568c3fb9eff75ff8734cef451cd74c2",
     "_ffr_sephira_ffbe.py": "11e159b088c21a846b500ee097453eaa50ccaac4e41c89e66fad940622a2c2b0",
-    "_ffr_sephira_lb_audio.py": "3ef55d229300ee9595779f77e7ba589c1f91ded65b995968787f0d8e95a4eed8",
+    "_ffr_sephira_lb_audio.py": "501a44c65dbebb5668b0553336e926e64cb7e80dc55002296912b5a96468c50c",
     "_ffr_sephira_sequences.py": "ab6d3836368a65b27eafdda64df7af59bf23513ec0773a69f75c3c9cc104ecd8",
     "_ffr_shrine_challenges.py": "dc5f62b8661eb9e2fb494037bad8c10c829cacd433272520fa000116a0eb6567",
     "_ffr_testing.py": "0b8bab16e6acd6da0cf26a30dd0d6c2a886d8caceb9fd8f81c131846277690d6",
@@ -56,7 +56,7 @@
     "party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",
     "sephira_blood_recovery.zip": "0b87caf4af4e3ac2ea80ef40908ea30a39d66df03b6ca4fcc56b2b523d3b4883",
     "sephira_challenges.json": "07ac3dd3e8c07c87b43c88ace3463f8feda9a351e6af1e6b6f27c6b081d09480",
-    "sephira_lb_audio.zip": "bc9cc023dd8e1dabc27765a6763ab1405019ee66f46e2d9b797daf8d202faba6",
+    "sephira_lb_audio.zip": "9753b91affa28561428f4a9be6af3ef6c7c491ded484380523891bee5c82c815",
     "sephira_native_presentations.json": "5ed610592815a408180283122aa7608567ec2b5d1fded4a32d653ef72c2fdeed",
     "sephira_visuals.json": "501de528645c5827eb05797bdf76414f510b2af4d759ffa541ef80483d3a91ed",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"

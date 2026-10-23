@@ -25,9 +25,13 @@ class LbAudioTests(unittest.TestCase):
         self.assertEqual(len(metadata['profiles']), 30)
         self.assertEqual(sum(p['status'] == 'original_cues' for p in metadata['profiles'].values()), 23)
         self.assertEqual({k for k, p in metadata['profiles'].items() if p['status'] == 'opening_only'},
-                         {'christine', 'crystal_fina', 'barusa', 'fryevia', 'lilith', 'ariana', 'elza'})
+                         {'christine', 'barusa', 'fryevia', 'lilith', 'elza'})
+        self.assertEqual({k for k,p in metadata['profiles'].items() if p['status']=='requested_adaptation'},
+                         {'ariana','crystal_fina'})
         se = json.loads(files['audio/SE.json']); system = json.loads(files['audio/System.json'])
-        self.assertEqual(len(se['cues']), 55)
+        self.assertEqual(len(se['cues']), 56)
+        self.assertEqual(se['cues']['617']['name'],'se_limitburst_ariana_6')
+        self.assertEqual(metadata['profiles']['ariana']['adaptation']['sourceName'],'Touch It')
         self.assertEqual(system['cues']['45']['name'], 'se_battle_limitopen_1')
         self.assertEqual([r['variation'] for r in se['recordings'] if r['sourceCueId'] == 355], [0, 1, 2])
         for rec in se['recordings'] + system['recordings']:
@@ -90,6 +94,25 @@ class LbAudioTests(unittest.TestCase):
         self.assertNotIn('ffbe_audio.prepare', calls)
         self.assertIn('ffbe_lb.resolve', calls)
         self.assertIn('ffbe_resonance.schedule', calls)
+        self.assertIn('_ffr_sephira_lb_audio.align_reactions', calls)
+
+    def test_cure_clip_follows_actual_application_markers_without_changing_combat_events(self):
+        fina = next(u for u in units() if u['sephiraVision']['preset']=='crystal_fina')
+        sound = {'alignment':'reaction','bank':'clean','cueName':'cure','durationMs':2176}
+        plan = {'duration':90000,'events':[
+            {'time':12000,'set':{'EventType':'SoundPlayHitSound',
+                'Sound_PlayHitSound_CueSheetName':'clean','Sound_PlayHitSound_playLabel':'cure'}},
+            {'time':91237,'set':{'EventType':'OtherReaction','Other_Reaction_Id':444010}},
+            {'time':91238,'set':{'EventType':'UnitPlayAnimByName','Unit_PlayAnimByName_AnimationName':'idle'}}]}
+        before = copy.deepcopy(plan)
+        result = audio.align_reactions(plan,fina,fina['lb_custom'],[sound])
+        self.assertEqual(plan,before)
+        self.assertEqual([e for e in result['events'] if e['set']['EventType']!='SoundPlayHitSound'],
+                         [e for e in plan['events'] if e['set']['EventType']!='SoundPlayHitSound'])
+        self.assertEqual([e['time'] for e in result['events'] if e['set']['EventType']=='SoundPlayHitSound'],[91237])
+        self.assertGreaterEqual(result['duration'],91237+2176*24)
+        self.assertIs(audio.align_reactions(plan,fina,dict(fina['lb_custom'],audio='none'),[sound]),plan)
+        self.assertIs(audio.align_reactions(plan,fina,fina['lb_custom'],[]),plan)
 
 
 if __name__ == '__main__': unittest.main()

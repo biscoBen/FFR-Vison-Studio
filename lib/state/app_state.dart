@@ -366,6 +366,15 @@ class AppState extends ChangeNotifier {
     final repaired = await _repairKnownFinaRewards(units);
     if (!identical(repaired, units)) dirty = true;
     units = repaired;
+    final bonuses = [for (final u in units)
+      SephiraVisions.repairIndependentBonuses(u as JsonMap, sephiraPresets)];
+    if (bonuses.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'crystal-fina-bonuses-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = bonuses;
+      dirty = true;
+    }
     final audio = [for (final u in units)
       SephiraVisions.repairLbAudio(u as JsonMap, sephiraPresets)];
     if (audio.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {

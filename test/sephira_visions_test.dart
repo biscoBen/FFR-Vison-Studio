@@ -333,7 +333,9 @@ void main() {
       (saved['skills'] as Map).values.first['set']['Cost'] = 27;
       saved['stats']['Attack'] = 123;
       final before = CharacterConfig.copy(saved);
-      final next = SephiraVisions.updateProgression(saved, preset);
+      final revision6 = CharacterConfig.copy(preset);
+      revision6['profile']['sephiraRecipe'] = 6;
+      final next = SephiraVisions.updateProgression(saved, revision6);
       final active = {for (final field in ['awakening','synchro']) for (final tier in saved[field] as List)
         for (final g in tier as List) if (g[0]=='ActiveSkill') g[1]};
       expect({for (final tier in next['awakening'] as List) for (final g in tier as List) g[1]}, active);
@@ -352,7 +354,7 @@ void main() {
       }
       expect(saved, before);
       expect(next['sephiraRecipe'],6);
-      expect(SephiraVisions.updateProgression(next,preset),next);
+      expect(SephiraVisions.updateProgression(next,revision6),next);
       CharacterConfig.decode(CharacterConfig.encode(next));
     }
     expect(passiveIds,hasLength(150));
@@ -361,6 +363,59 @@ void main() {
     final originals = (coverage['entries'] as List).where((e) => e['kind']=='PassiveSkill').map((e) => e['id']).toSet();
     expect(originals,hasLength(131));
     expect(passiveIds.toSet().containsAll(originals),isTrue);
+  });
+
+  test('revision 7 adds awakening bonuses without resetting edited MR or active skills', () async {
+    final presets = await SephiraVisions.bundled;
+    var additions = 0;
+    for (final preset in presets) {
+      final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      unit[SephiraVisions.field] = {'version':1,'preset':preset['id'],'enabled':false};
+      unit['sephiraRecipe'] = 6;
+      unit['awakening'] = [for (final tier in unit['awakening'] as List)
+        [for (final g in tier as List) if (g[0]!='PassiveSkill') g]];
+      unit['synchro'][2][0][2] = 77;
+      unit['stats']['Attack'] = 123;
+      (unit['skills'] as Map).values.first['set']['Cost'] = 27;
+      final before = CharacterConfig.copy(unit);
+      final next = SephiraVisions.updateProgression(unit,preset);
+      for (final field in unit.keys.where((k) => k!='awakening' && k!='sephiraRecipe')) {
+        expect(next[field],unit[field],reason:'${preset['id']}: $field');
+      }
+      expect((next['awakening'] as List).expand((t)=>t as List).where((g)=>g[0]=='ActiveSkill').toList(),
+          (unit['awakening'] as List).expand((t)=>t as List).where((g)=>g[0]=='ActiveSkill').toList());
+      final bonus = (next['awakening'] as List).expand((t)=>t as List).where((g)=>g[0]=='PassiveSkill').toList();
+      additions += bonus.length;
+      expect(bonus.length,(preset['awakeningBalance']['grants'] as List).length);
+      expect((next['awakening'] as List).every((t)=>(t as List).length<=8),isTrue);
+      expect(next['sephiraRecipe'],7);
+      expect(unit,before);
+      expect(SephiraVisions.updateProgression(next,preset),next);
+      CharacterConfig.decode(CharacterConfig.encode(next));
+    }
+    expect(additions,160);
+    final full = CharacterConfig.copy(presets.first['profile'] as Map<String,dynamic>);
+    full['sephiraRecipe']=6;
+    full['awakening']=[for (var tier=0;tier<4;tier++)
+      [for (var i=0;i<8;i++) ['ActiveSkill',220010+tier*100+i,-1]]];
+    final before = CharacterConfig.copy(full);
+    expect(()=>SephiraVisions.updateProgression(full,presets.first),throwsStateError);
+    expect(full,before);
+  });
+
+  test('independent Fina receives awakening bonuses once and preserves edited full kits', () async {
+    final presets=await SephiraVisions.bundled;
+    final unit=json.decode(File('assets/crystal_fina/profile.json').readAsStringSync()) as Map<String,dynamic>;
+    unit['sephiraRecipe']=6;
+    unit['awakening']=[for(final tier in unit['awakening'] as List)
+      [for(final g in tier as List) if(g[0]!='PassiveSkill') g]];
+    final next=SephiraVisions.repairIndependentBonuses(unit,presets);
+    expect(next['sephiraRecipe'],7);
+    expect((next['awakening'] as List).expand((t)=>t as List).where((g)=>g[0]=='PassiveSkill'),hasLength(5));
+    expect(next['synchro'],unit['synchro']);
+    expect(SephiraVisions.repairIndependentBonuses(next,presets),same(next));
+    unit['awakening']=[for(var t=0;t<4;t++) [for(var i=0;i<8;i++) ['ActiveSkill',220010+t*100+i,-1]]];
+    expect(SephiraVisions.repairIndependentBonuses(unit,presets),same(unit));
   });
 
   test('progression update backs up the old roster and commits atomically', () async {
@@ -376,7 +431,7 @@ void main() {
     expect(app.units.single['sephiraRecipe'], 3);
     api.fail = false;
     await app.updateSephiraProgression();
-    expect(app.units.single['sephiraRecipe'], 6);
+    expect(app.units.single['sephiraRecipe'], 7);
     expect(app.units.single['stats']['Attack'], 123);
     final backups = Directory(app.paths.configBackups).listSync().whereType<File>();
     expect(backups, isNotEmpty);

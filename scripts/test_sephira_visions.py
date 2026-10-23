@@ -54,6 +54,9 @@ class SephiraTests(unittest.TestCase):
                     for kind,id,*_ in tier:
                         if kind not in ['ActiveSkill','PassiveSkill']: continue
                         if kind=='ActiveSkill': id=u['skills'].get(str(id),{}).get('from',id)
+                        # The preserved original collection is allocated once
+                        # in MR; supplementary awakening choices may be shared.
+                        if kind=='PassiveSkill' and field=='awakening': continue
                         key=f'{kind}:{id}'
                         self.assertNotIn(key,seen,key)
                         seen[key]=p['id']
@@ -81,7 +84,7 @@ class SephiraTests(unittest.TestCase):
             self.assertEqual(sum(g[0]=='PassiveSkill' for g in mr),b['mrPassiveCount'])
             self.assertEqual(len(mr),b['mrSkillCount'])
             self.assertEqual(len(grants)+len(mr),b['totalSkillCount'])
-            self.assertEqual(b['passiveCount'], 0)
+            self.assertEqual(b['passiveCount'], len(p['awakeningBalance']['grants']))
             self.assertEqual(b['mrPassiveCount'], 5)
             visual_ids=set()
             for sid in map(int,u['skills']):
@@ -122,7 +125,7 @@ class SephiraTests(unittest.TestCase):
                         if g[0] in ('ActiveSkill', 'PassiveSkill')}
             replaced = {(r['oldKind'], r['oldId'], -1) for r in p['rewardReplacements']}
             self.assertLessEqual({g for g in previous - replaced if g[0] == 'ActiveSkill'}, learned, p['id'])
-            self.assertEqual(p['profile']['sephiraRecipe'],6)
+            self.assertEqual(p['profile']['sephiraRecipe'],7)
 
     def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())

@@ -18,19 +18,45 @@ class PassiveMasteryTests(unittest.TestCase):
         required = {e['id'] for e in audit['entries'] if e['kind'] == 'PassiveSkill'}
         actual = []
         for preset, unit in zip(catalog['presets'], units):
-            self.assertTrue(all(g[0] == 'ActiveSkill' for tier in unit['awakening'] for g in tier))
             choices = [unit['synchro'][rank][0] for rank in (1, 3, 5, 7, 9)]
             self.assertTrue(all(g[0] == 'PassiveSkill' for g in choices))
             self.assertEqual([g[1] for g in choices], REWARDS[preset['id']])
             actual.extend(g[1] for g in choices)
             previous = {g[1] for field in ('awakening','synchro')
                         for tier in preset['revision5Progression'][field] for g in tier if g[0]=='ActiveSkill'}
-            self.assertEqual({g[1] for tier in unit['awakening'] for g in tier}, previous)
+            self.assertEqual({g[1] for tier in unit['awakening'] for g in tier if g[0]=='ActiveSkill'}, previous)
         self.assertEqual(len(required), 131)
         self.assertEqual(len(actual), len(set(actual)))
         self.assertEqual(len(actual), 150)
         self.assertLessEqual(required, set(actual))
         self.assertEqual(len(set(actual) - required), 19)
+
+    def test_complete_passive_kits_match_native_budgets_without_duplicate_stat_tiers(self):
+        catalog, rows, units = inputs()
+        reference = json.loads((ROOT/'scripts/fixtures/sephira_awakening_budgets.json').read_bytes())
+        stat_tiers = [(1273,1309), (1275,1311,1310), (1378,1379), (1380,1381),
+                      (1316,1277,1317), (1312,1313,1274), (1314,1315,1276),
+                      (1279,1376), (1283,1375), (1321,1247)]
+        for preset, unit in zip(catalog['presets'],units):
+            original = reference[str(preset['balance']['nativeBudget'])]
+            ids = [g[1] for field in ('awakening','synchro') for tier in unit[field]
+                   for g in tier if g[0]=='PassiveSkill']
+            self.assertEqual(len(ids),len(set(ids)),unit['key'])
+            self.assertEqual(len(ids),len(original['passives']),unit['key'])
+            self.assertEqual(preset['awakeningBalance']['nativePassives'],original['passives'])
+            mastery = {g[1] for tier in unit['synchro'] for g in tier if g[0]=='PassiveSkill'}
+            for group in stat_tiers:
+                # Mog already preserves two native Speed rewards in MR. The
+                # additive pass must not create another stacked stat tier.
+                self.assertLessEqual(len(set(ids)&set(group)),max(1,len(mastery&set(group))),
+                                     (unit['key'],group))
+            self.assertTrue(all(len(t)<=8 for t in unit['awakening']))
+            native_passives = {p['ID']:p for p in rows[pack.PASSIVE].values()}
+            cost = sum(native_passives[s]['equipCost'] or 20 for s in ids)
+            self.assertTrue(.8*original['cost'] <= cost <= 1.2*original['cost'],unit['key'])
+        tronn = next(p for p in catalog['presets'] if p['id']=='christine')['profile']
+        self.assertEqual(sum(g[0]!='ActiveSkill' for f in ('awakening','synchro')
+                             for tier in tronn[f] for g in tier),16)
 
     def test_all_elemental_damage_icons_match_damage_with_explicit_user_overrides_preserved(self):
         _, rows, units = inputs()

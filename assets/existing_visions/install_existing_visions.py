@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.68'
+VERSION = '1.2.69'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -279,6 +279,10 @@ def hook_builder(raw):
         raise RuntimeError('Unsupported FFBE LB audio preparation layout.')
     i = audio_call.lineno - 1
     lines[i] = '    import _ffr_sephira_lb_audio' + nl + lines[i].replace('ffbe_audio.prepare(', '_ffr_sephira_lb_audio.prepare(')
+    schedule, = [n for n in ast.walk(resonance) if isinstance(n, ast.Assign)
+                 and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'ffbe_resonance.schedule']
+    additions.setdefault(schedule.end_lineno, []).append(
+        'plan = _ffr_sephira_lb_audio.align_reactions(plan, u, s, sounds)')
     indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
     lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
     lines[icon_loop.lineno - 1] = indent + '_ffr_existingvisions.prepare_command_icon(tables, u, rows)' + nl

@@ -3,11 +3,13 @@ from functools import lru_cache
 import hashlib
 import io
 import json
+import math
+import copy
 from pathlib import Path
 import re
 import zipfile
 
-REVISION = 'memorial-v208-lb-1'
+REVISION = 'memorial-v208-lb-2'
 
 
 def validate(raw):
@@ -77,7 +79,36 @@ def prepare(unit, skill, source, table):
     audible = [s for s in profile['sounds'] if s['flags'] == ['1']]
     sound_source = dict(source or {}, sounds=audible)
     bank, events = ffbe_audio.prepare(unit, settings, sound_source, table)
-    print(f"  {unit['key']}: original FFBE LB audio, {len(audible)} attack cues + " +
+    print(f"  {unit['key']}: FFBE LB audio, {len(audible)} attack cues + " +
           ('opening cue' if skill.get('lb_charge', True) else 'opening disabled'))
     if profile['status'] == 'opening_only': print('  ! ' + unit['key'] + ': ' + profile['reason'])
     return bank, events
+
+
+def align_reactions(plan, unit, skill, sounds):
+    """Place approved impact clips on existing application keys, never add hits.
+
+    An alignment hint survives the engine audio adapter's recording selection.
+    All ordinary source soundtracks and non-managed units retain their clocks.
+    """
+    if selected(unit, skill) is None: return plan
+    aligned = [s for s in sounds if s.get('alignment') == 'reaction']
+    if not aligned: return plan
+    result = copy.deepcopy(plan)
+    reactions = sorted({e['time'] for e in result['events'] if e['set']['EventType'] == 'OtherReaction'})
+    if not reactions: raise ValueError('No existing LB application marker for the requested sound.')
+    for sound in aligned:
+        def matches(event):
+            fields = event['set']
+            return (fields['EventType'] == 'SoundPlayHitSound'
+                    and fields['Sound_PlayHitSound_CueSheetName'] == sound['bank']
+                    and fields['Sound_PlayHitSound_playLabel'] == sound['cueName'])
+        result['events'] = [e for e in result['events'] if not matches(e)]
+        for tick in reactions:
+            result['events'].append({'time': tick, 'set': {'EventType': 'SoundPlayHitSound',
+                'Sound_PlayHitSound_CueSheetName': sound['bank'],
+                'Sound_PlayHitSound_playLabel': sound['cueName']}})
+        end = reactions[-1] + math.ceil(sound['durationMs'] * 24)
+        result['duration'] = max(result['duration'], end + 2400)
+    result['events'].sort(key=lambda e: e['time'])
+    return result

@@ -98,6 +98,7 @@ def revise(catalog, audit, rows, english):
     catalog['passiveCuration'] = {'revision': 6, 'originalCount': len(mandatory),
                                  'extraCount': len(set(selected) - mandatory), 'totalCount': len(selected)}
     lines = ['# Sephira passive mastery allocation', '',
+             'This table remains the current MR allocation. [Revision 7](SEPHIRA_AWAKENING_BALANCE.md) adds a separate awakening bonus layer without removing these rewards.', '',
              'Revision 6 preserves every one of the 131 distinct passives from the 15 excluded original visions, once each. '
              'The other 19 slots retain distinctive equipment bonuses and Knight of the Sacred Frost. '
              'Each vision has exactly one passive at MR 1, 3, 5, 7 and 9. Active MR skills return to awakening; '

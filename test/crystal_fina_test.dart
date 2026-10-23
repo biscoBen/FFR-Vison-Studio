@@ -100,7 +100,7 @@ void main() {
     result['stats']['MaxHitPoint'] = 999;
     expect(source['stats']['MaxHitPoint'], 600);
     expect(result['lb_custom']['en'], 'Crystal Restoration');
-    expect(result['awakening'].map((tier) => tier.length).toList(), [5, 5, 4, 2]);
+    expect(result['awakening'].map((tier) => tier.length).toList(), [7, 6, 5, 3]);
     expect(result['synchro'][3].single[0], 'PassiveSkill');
     expect(result['synchro'][7].single[0], 'PassiveSkill');
     expect((result['awakening'] as List).expand((t) => t as List).any((g) => g[0]=='ActiveSkill' && result['skills'][g[1].toString()]?['from']==506110),isTrue);
@@ -153,7 +153,7 @@ void main() {
       expect(fixed['skills'][learned.toString()]['from'],506110);
       expect(fixed['skills'][learned.toString()]['set']['belongCommandList'], [unit['command']['id']]);
       expect(fixed['synchro'][9].last, ['MasterSkill',unit['master']['id'],-1]);
-      expect((fixed['awakening'] as List).expand((t) => t as List).where((g) => g[0]=='PassiveSkill' && g[1]==1456),isEmpty);
+      expect((fixed['awakening'] as List).expand((t) => t as List).where((g) => g[0]=='PassiveSkill' && g[1]==1456),hasLength(1));
       expect(CrystalFina.needsRewardRepair(fixed),isFalse);
       expect(identical(CrystalFina.repairRewards(fixed,suppliedProfile()),fixed),isTrue);
     }
@@ -249,7 +249,7 @@ void main() {
             File('assets/existing_visions/payload/$resource').readAsBytesSync());
         }
       }
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.68' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.69' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -285,7 +285,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.68' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.69' : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));

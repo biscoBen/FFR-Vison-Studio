@@ -612,7 +612,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -638,6 +638,16 @@
             [
               "ActiveSkill",
               485051,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1105,
               -1
             ]
           ],
@@ -671,6 +681,11 @@
               "ActiveSkill",
               485036,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1124,
+              -1
             ]
           ],
           [
@@ -693,6 +708,11 @@
               "ActiveSkill",
               485048,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
+              -1
             ]
           ],
           [
@@ -714,6 +734,11 @@
             [
               "ActiveSkill",
               400710,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1376,
               -1
             ]
           ]
@@ -848,12 +873,12 @@
         "nativeName": "Squall",
         "growthDonor": 13110,
         "activeCount": 19,
-        "passiveCount": 0,
-        "kitCount": 19,
+        "passiveCount": 5,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 24,
+        "totalSkillCount": 29,
         "previousCount": 13,
         "additionalPassives": [],
         "playerCopies": [
@@ -2398,6 +2423,49 @@
           1424
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13116,
+        "nativeName": "Squall",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 305,
+        "equipCost": 290,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1378
+          },
+          {
+            "rank": 0,
+            "id": 1105
+          },
+          {
+            "rank": 1,
+            "id": 1124
+          },
+          {
+            "rank": 2,
+            "id": 1247
+          },
+          {
+            "rank": 3,
+            "id": 1376
+          }
+        ],
+        "nativePassives": [
+          1273,
+          1131,
+          1275,
+          1105,
+          1378,
+          1424,
+          1423,
+          1421,
+          1422,
+          1124
+        ]
       }
     },
     {
@@ -2703,7 +2771,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -2734,6 +2802,16 @@
             [
               "ActiveSkill",
               485130,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1380,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1033,
               -1
             ]
           ],
@@ -2772,6 +2850,11 @@
               "ActiveSkill",
               400630,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -2789,9 +2872,20 @@
               "ActiveSkill",
               485142,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1285,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1280,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -2921,12 +3015,12 @@
         "nativeName": "Tronn",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 26,
         "previousCount": 13,
         "additionalPassives": [],
         "playerCopies": [
@@ -3760,6 +3854,49 @@
           1045
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13024,
+        "nativeName": "Tronn",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 300,
+        "equipCost": 290,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1380
+          },
+          {
+            "rank": 0,
+            "id": 1033
+          },
+          {
+            "rank": 1,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1285
+          },
+          {
+            "rank": 3,
+            "id": 1280
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1380,
+          1407,
+          1285,
+          1277,
+          1406,
+          1281,
+          1280,
+          1279,
+          1045
+        ]
       }
     },
     {
@@ -4041,7 +4178,7 @@
           "passives": {}
         },
         "menuScale": 2.52,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -4052,6 +4189,16 @@
             [
               "ActiveSkill",
               210250,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
               -1
             ]
           ],
@@ -4085,6 +4232,11 @@
               "ActiveSkill",
               485218,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -4106,6 +4258,11 @@
             [
               "ActiveSkill",
               485233,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1455,
               -1
             ]
           ],
@@ -4133,6 +4290,11 @@
             [
               "ActiveSkill",
               485230,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1456,
               -1
             ]
           ]
@@ -4300,12 +4462,12 @@
         "nativeName": "Ayaka",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 27,
         "previousCount": 15,
         "additionalPassives": [
           1551,
@@ -5209,6 +5371,49 @@
           1551,
           1552
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13051,
+        "nativeName": "Ayaka",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 275,
+        "equipCost": 290,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1381
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 1,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1455
+          },
+          {
+            "rank": 3,
+            "id": 1456
+          }
+        ],
+        "nativePassives": [
+          1375,
+          1455,
+          1107,
+          1277,
+          1325,
+          1381,
+          1456,
+          1401,
+          1393,
+          1397
+        ]
       }
     },
     {
@@ -5545,7 +5750,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -5582,6 +5787,11 @@
               "ActiveSkill",
               400640,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1313,
+              -1
             ]
           ],
           [
@@ -5609,6 +5819,16 @@
               "ActiveSkill",
               485330,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1106,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1290,
+              -1
             ]
           ],
           [
@@ -5631,9 +5851,25 @@
               "ActiveSkill",
               485306,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1379,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1331,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1333,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -5768,12 +6004,12 @@
         "nativeName": "Wilhelm",
         "growthDonor": 13110,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 6,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 27,
         "previousCount": 15,
         "additionalPassives": [
           1526
@@ -6662,6 +6898,54 @@
         "extraPassives": [
           1526
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13062,
+        "nativeName": "Wilhelm",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 325,
+        "equipCost": 305,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1313
+          },
+          {
+            "rank": 1,
+            "id": 1106
+          },
+          {
+            "rank": 1,
+            "id": 1290
+          },
+          {
+            "rank": 2,
+            "id": 1379
+          },
+          {
+            "rank": 2,
+            "id": 1331
+          },
+          {
+            "rank": 3,
+            "id": 1333
+          }
+        ],
+        "nativePassives": [
+          1313,
+          1452,
+          1290,
+          1321,
+          1106,
+          1379,
+          1453,
+          1454,
+          1336,
+          1333,
+          1339
+        ]
       }
     },
     {
@@ -6970,7 +7254,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -7039,6 +7323,16 @@
               "ActiveSkill",
               485442,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -7061,9 +7355,20 @@
               "ActiveSkill",
               485433,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1338,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1376,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -7195,12 +7500,12 @@
         "nativeName": "Firion",
         "growthDonor": 13110,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 4,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 26,
         "previousCount": 15,
         "additionalPassives": [],
         "playerCopies": [
@@ -8070,6 +8375,44 @@
           1337
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13101,
+        "nativeName": "Firion",
+        "nativePassiveCount": 9,
+        "totalPassiveCount": 9,
+        "nativeEquipCost": 245,
+        "equipCost": 275,
+        "grants": [
+          {
+            "rank": 1,
+            "id": 1309
+          },
+          {
+            "rank": 1,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1338
+          },
+          {
+            "rank": 3,
+            "id": 1376
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1353,
+          1288,
+          1325,
+          1128,
+          1077,
+          1331,
+          1337,
+          1338
+        ]
       }
     },
     {
@@ -8349,7 +8692,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -8365,6 +8708,16 @@
             [
               "ActiveSkill",
               485509,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1380,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
               -1
             ]
           ],
@@ -8430,6 +8783,26 @@
               "ActiveSkill",
               485506,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1251,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1315,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1336,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1281,
+              -1
             ]
           ],
           [
@@ -8441,6 +8814,11 @@
             [
               "ActiveSkill",
               485530,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
               -1
             ]
           ]
@@ -8578,12 +8956,12 @@
         "nativeName": "Zidane",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 7,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 29,
         "previousCount": 14,
         "additionalPassives": [],
         "playerCopies": [
@@ -9452,6 +9830,59 @@
           1468
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13118,
+        "nativeName": "Zidane",
+        "nativePassiveCount": 12,
+        "totalPassiveCount": 12,
+        "nativeEquipCost": 325,
+        "equipCost": 305,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1380
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 2,
+            "id": 1251
+          },
+          {
+            "rank": 2,
+            "id": 1315
+          },
+          {
+            "rank": 2,
+            "id": 1336
+          },
+          {
+            "rank": 2,
+            "id": 1281
+          },
+          {
+            "rank": 3,
+            "id": 1277
+          }
+        ],
+        "nativePassives": [
+          1311,
+          1426,
+          1125,
+          1056,
+          1321,
+          1277,
+          1128,
+          1104,
+          1237,
+          1387,
+          1425,
+          1468
+        ]
       }
     },
     {
@@ -9819,7 +10250,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -9856,6 +10287,11 @@
               "ActiveSkill",
               400240,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
+              -1
             ]
           ],
           [
@@ -9877,6 +10313,16 @@
             [
               "ActiveSkill",
               485636,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1116,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
               -1
             ]
           ],
@@ -9900,12 +10346,27 @@
               "ActiveSkill",
               485633,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1313,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               485690,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1336,
               -1
             ]
           ]
@@ -10038,12 +10499,12 @@
         "nativeName": "Onion Knight",
         "growthDonor": 13125,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 6,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 27,
         "previousCount": 14,
         "additionalPassives": [],
         "playerCopies": [
@@ -10975,6 +11436,54 @@
           1412
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13102,
+        "nativeName": "Onion Knight",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 310,
+        "equipCost": 315,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1311
+          },
+          {
+            "rank": 1,
+            "id": 1116
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1313
+          },
+          {
+            "rank": 3,
+            "id": 1336
+          }
+        ],
+        "nativePassives": [
+          1311,
+          1411,
+          1116,
+          1381,
+          1277,
+          1412,
+          1410,
+          1258,
+          1465,
+          1358,
+          1031
+        ]
       }
     },
     {
@@ -11535,7 +12044,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -11556,6 +12065,16 @@
             [
               "ActiveSkill",
               485718,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1275,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
               -1
             ]
           ],
@@ -11583,6 +12102,11 @@
             [
               "ActiveSkill",
               485745,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1281,
               -1
             ]
           ],
@@ -11621,6 +12145,11 @@
               "ActiveSkill",
               485736,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1293,
+              -1
             ]
           ],
           [
@@ -11637,6 +12166,11 @@
             [
               "ActiveSkill",
               485721,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1315,
               -1
             ]
           ]
@@ -11776,12 +12310,12 @@
         "nativeName": "Tronn",
         "growthDonor": 13108,
         "activeCount": 19,
-        "passiveCount": 0,
-        "kitCount": 19,
+        "passiveCount": 5,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 24,
+        "totalSkillCount": 29,
         "previousCount": 14,
         "additionalPassives": [
           1524
@@ -13240,6 +13774,49 @@
         "extraPassives": [
           1524
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13024,
+        "nativeName": "Tronn",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 300,
+        "equipCost": 290,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1275
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 1,
+            "id": 1281
+          },
+          {
+            "rank": 2,
+            "id": 1293
+          },
+          {
+            "rank": 3,
+            "id": 1315
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1380,
+          1407,
+          1285,
+          1277,
+          1406,
+          1281,
+          1280,
+          1279,
+          1045
+        ]
       }
     },
     {
@@ -13703,7 +14280,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -13729,6 +14306,11 @@
             [
               "ActiveSkill",
               485842,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
               -1
             ]
           ],
@@ -13789,12 +14371,27 @@
               "ActiveSkill",
               485806,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1033,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               420270,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
               -1
             ]
           ]
@@ -13934,12 +14531,12 @@
         "nativeName": "Bartz",
         "growthDonor": 13110,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 4,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 26,
         "previousCount": 11,
         "additionalPassives": [
           1463,
@@ -15180,6 +15777,44 @@
           1463,
           1539
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13105,
+        "nativeName": "Bartz",
+        "nativePassiveCount": 9,
+        "totalPassiveCount": 9,
+        "nativeEquipCost": 270,
+        "equipCost": 280,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 2,
+            "id": 1033
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 3,
+            "id": 1378
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1458,
+          1277,
+          1248,
+          1415,
+          1416,
+          1066,
+          1316,
+          1414
+        ]
       }
     },
     {
@@ -15849,7 +16484,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -15886,6 +16521,11 @@
               "ActiveSkill",
               400390,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1313,
+              -1
             ]
           ],
           [
@@ -15907,6 +16547,16 @@
             [
               "ActiveSkill",
               485948,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1299,
               -1
             ]
           ],
@@ -15945,12 +16595,27 @@
               "ActiveSkill",
               485945,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1235,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               445030,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1253,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1042,
               -1
             ]
           ]
@@ -16083,12 +16748,12 @@
         "nativeName": "Warrior of Light",
         "growthDonor": 13110,
         "activeCount": 19,
-        "passiveCount": 0,
-        "kitCount": 19,
+        "passiveCount": 6,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 24,
+        "totalSkillCount": 30,
         "previousCount": 13,
         "additionalPassives": [],
         "playerCopies": [
@@ -17697,6 +18362,54 @@
           1409
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13100,
+        "nativeName": "Warrior of Light",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 325,
+        "equipCost": 295,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1313
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 1,
+            "id": 1299
+          },
+          {
+            "rank": 2,
+            "id": 1235
+          },
+          {
+            "rank": 3,
+            "id": 1253
+          },
+          {
+            "rank": 3,
+            "id": 1042
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1313,
+          1299,
+          1235,
+          1253,
+          1408,
+          1369,
+          1284,
+          1029,
+          1409,
+          1042
+        ]
       }
     },
     {
@@ -17943,7 +18656,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -17964,6 +18677,11 @@
             [
               "ActiveSkill",
               486033,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
               -1
             ]
           ],
@@ -18002,6 +18720,11 @@
               "ActiveSkill",
               400440,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
+              -1
             ]
           ],
           [
@@ -18019,6 +18742,11 @@
               "ActiveSkill",
               486039,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -18030,6 +18758,11 @@
             [
               "ActiveSkill",
               400650,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1331,
               -1
             ]
           ]
@@ -18162,12 +18895,12 @@
         "nativeName": "Firion",
         "growthDonor": 13110,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 4,
+        "kitCount": 20,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 25,
         "previousCount": 14,
         "additionalPassives": [],
         "playerCopies": [
@@ -18891,6 +19624,44 @@
           1353
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13101,
+        "nativeName": "Firion",
+        "nativePassiveCount": 9,
+        "totalPassiveCount": 9,
+        "nativeEquipCost": 245,
+        "equipCost": 245,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 1,
+            "id": 1247
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 3,
+            "id": 1331
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1353,
+          1288,
+          1325,
+          1128,
+          1077,
+          1331,
+          1337,
+          1338
+        ]
       }
     },
     {
@@ -19298,7 +20069,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -19324,6 +20095,16 @@
             [
               "ActiveSkill",
               486136,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1379,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1253,
               -1
             ]
           ],
@@ -19352,6 +20133,11 @@
               "ActiveSkill",
               486139,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1042,
+              -1
             ]
           ],
           [
@@ -19374,12 +20160,22 @@
               "ActiveSkill",
               486133,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1338,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               220510,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1336,
               -1
             ]
           ]
@@ -19517,12 +20313,12 @@
         "nativeName": "Cecil",
         "growthDonor": 13108,
         "activeCount": 15,
-        "passiveCount": 0,
-        "kitCount": 15,
+        "passiveCount": 5,
+        "kitCount": 20,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 20,
+        "totalSkillCount": 25,
         "previousCount": 12,
         "additionalPassives": [
           1530
@@ -20697,6 +21493,49 @@
         "extraPassives": [
           1530
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13103,
+        "nativeName": "Cecil",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 370,
+        "equipCost": 315,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1379
+          },
+          {
+            "rank": 0,
+            "id": 1253
+          },
+          {
+            "rank": 1,
+            "id": 1042
+          },
+          {
+            "rank": 2,
+            "id": 1338
+          },
+          {
+            "rank": 3,
+            "id": 1336
+          }
+        ],
+        "nativePassives": [
+          1273,
+          1457,
+          1313,
+          1283,
+          1378,
+          1315,
+          1413,
+          1030,
+          1405,
+          1369
+        ]
       }
     },
     {
@@ -20977,7 +21816,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -20998,6 +21837,16 @@
             [
               "ActiveSkill",
               486215,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1011,
               -1
             ]
           ],
@@ -21030,6 +21879,16 @@
             [
               "ActiveSkill",
               486236,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1286,
               -1
             ]
           ],
@@ -21068,12 +21927,27 @@
               "ActiveSkill",
               486239,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1293,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               400670,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1376,
               -1
             ]
           ]
@@ -21211,12 +22085,12 @@
         "nativeName": "Clive",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 7,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 30,
         "previousCount": 14,
         "additionalPassives": [
           1507
@@ -22064,6 +22938,59 @@
         "extraPassives": [
           1507
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13130,
+        "nativeName": "Clive",
+        "nativePassiveCount": 12,
+        "totalPassiveCount": 12,
+        "nativeEquipCost": 365,
+        "equipCost": 385,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 0,
+            "id": 1011
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 1,
+            "id": 1286
+          },
+          {
+            "rank": 2,
+            "id": 1293
+          },
+          {
+            "rank": 3,
+            "id": 1247
+          },
+          {
+            "rank": 3,
+            "id": 1376
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1460,
+          1378,
+          1011,
+          1286,
+          1442,
+          1362,
+          1293,
+          1371,
+          1318,
+          1385,
+          1038
+        ]
       }
     },
     {
@@ -22533,7 +23460,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -22569,6 +23496,11 @@
             [
               "ActiveSkill",
               400490,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
               -1
             ]
           ],
@@ -22634,9 +23566,30 @@
               "ActiveSkill",
               486342,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1253,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1313,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1077,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -22768,12 +23721,12 @@
         "nativeName": "Cecil",
         "growthDonor": 13110,
         "activeCount": 19,
-        "passiveCount": 0,
-        "kitCount": 19,
+        "passiveCount": 5,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 24,
+        "totalSkillCount": 29,
         "previousCount": 13,
         "additionalPassives": [],
         "playerCopies": [
@@ -23975,6 +24928,49 @@
           1457
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13103,
+        "nativeName": "Cecil",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 370,
+        "equipCost": 310,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 2,
+            "id": 1253
+          },
+          {
+            "rank": 2,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1313
+          },
+          {
+            "rank": 3,
+            "id": 1077
+          }
+        ],
+        "nativePassives": [
+          1273,
+          1457,
+          1313,
+          1283,
+          1378,
+          1315,
+          1413,
+          1030,
+          1405,
+          1369
+        ]
       }
     },
     {
@@ -24383,7 +25379,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -24419,6 +25415,11 @@
             [
               "ActiveSkill",
               486421,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1375,
               -1
             ]
           ],
@@ -24489,12 +25490,32 @@
               "ActiveSkill",
               486424,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1111,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1300,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1301,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               486427,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1352,
               -1
             ]
           ]
@@ -24630,12 +25651,12 @@
         "nativeName": "Leah",
         "growthDonor": 13108,
         "activeCount": 21,
-        "passiveCount": 0,
-        "kitCount": 21,
+        "passiveCount": 5,
+        "kitCount": 26,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 26,
+        "totalSkillCount": 31,
         "previousCount": 14,
         "additionalPassives": [
           1527
@@ -25861,6 +26882,49 @@
         "extraPassives": [
           1527
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13045,
+        "nativeName": "Leah",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 270,
+        "equipCost": 270,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1375
+          },
+          {
+            "rank": 2,
+            "id": 1111
+          },
+          {
+            "rank": 2,
+            "id": 1300
+          },
+          {
+            "rank": 2,
+            "id": 1301
+          },
+          {
+            "rank": 3,
+            "id": 1352
+          }
+        ],
+        "nativePassives": [
+          1375,
+          1111,
+          1315,
+          1104,
+          1300,
+          1301,
+          1352,
+          1282,
+          1044,
+          1305
+        ]
       }
     },
     {
@@ -26166,7 +27230,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -26177,6 +27241,16 @@
             [
               "ActiveSkill",
               486530,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1375,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1106,
               -1
             ]
           ],
@@ -26189,6 +27263,11 @@
             [
               "ActiveSkill",
               210140,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
               -1
             ]
           ],
@@ -26227,6 +27306,11 @@
               "ActiveSkill",
               486539,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -26258,6 +27342,11 @@
             [
               "ActiveSkill",
               486542,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1455,
               -1
             ]
           ]
@@ -26401,12 +27490,12 @@
         "nativeName": "Ayaka",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 27,
         "previousCount": 14,
         "additionalPassives": [
           1009,
@@ -27314,6 +28403,49 @@
           1009,
           1498
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13051,
+        "nativeName": "Ayaka",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 275,
+        "equipCost": 285,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1375
+          },
+          {
+            "rank": 0,
+            "id": 1106
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 3,
+            "id": 1455
+          }
+        ],
+        "nativePassives": [
+          1375,
+          1455,
+          1107,
+          1277,
+          1325,
+          1381,
+          1456,
+          1401,
+          1393,
+          1397
+        ]
       }
     },
     {
@@ -27766,7 +28898,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -27825,6 +28957,21 @@
               "ActiveSkill",
               486633,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1105,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
             ]
           ],
           [
@@ -27857,9 +29004,20 @@
               "ActiveSkill",
               486636,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1124,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1376,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -27994,12 +29152,12 @@
         "nativeName": "Squall",
         "growthDonor": 13110,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 27,
         "previousCount": 12,
         "additionalPassives": [],
         "playerCopies": [
@@ -29249,6 +30407,49 @@
           1388
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13116,
+        "nativeName": "Squall",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 305,
+        "equipCost": 310,
+        "grants": [
+          {
+            "rank": 1,
+            "id": 1309
+          },
+          {
+            "rank": 1,
+            "id": 1105
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1124
+          },
+          {
+            "rank": 3,
+            "id": 1376
+          }
+        ],
+        "nativePassives": [
+          1273,
+          1131,
+          1275,
+          1105,
+          1378,
+          1424,
+          1423,
+          1421,
+          1422,
+          1124
+        ]
       }
     },
     {
@@ -29503,7 +30704,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -29535,6 +30736,16 @@
               "ActiveSkill",
               400760,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1251,
+              -1
             ]
           ],
           [
@@ -29556,6 +30767,11 @@
             [
               "ActiveSkill",
               486736,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
               -1
             ]
           ],
@@ -29579,6 +30795,11 @@
               "ActiveSkill",
               486730,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1286,
+              -1
             ]
           ],
           [
@@ -29590,6 +30811,11 @@
             [
               "ActiveSkill",
               230140,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1320,
               -1
             ]
           ]
@@ -29731,12 +30957,12 @@
         "nativeName": "Tidus",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 26,
         "previousCount": 14,
         "additionalPassives": [
           1511
@@ -30502,6 +31728,49 @@
         "extraPassives": [
           1511
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13120,
+        "nativeName": "Tidus",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 300,
+        "equipCost": 260,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1311
+          },
+          {
+            "rank": 0,
+            "id": 1251
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1286
+          },
+          {
+            "rank": 3,
+            "id": 1320
+          }
+        ],
+        "nativePassives": [
+          1279,
+          1309,
+          1277,
+          1251,
+          1292,
+          1367,
+          1359,
+          1049,
+          1428,
+          1348
+        ]
       }
     },
     {
@@ -30887,7 +32156,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -30903,6 +32172,16 @@
             [
               "ActiveSkill",
               400380,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1313,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1252,
               -1
             ]
           ],
@@ -30925,6 +32204,11 @@
             [
               "ActiveSkill",
               486815,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
               -1
             ]
           ],
@@ -30958,6 +32242,11 @@
               "ActiveSkill",
               486809,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1331,
+              -1
             ]
           ],
           [
@@ -30974,6 +32263,11 @@
             [
               "ActiveSkill",
               486839,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1042,
               -1
             ]
           ]
@@ -31111,12 +32405,12 @@
         "nativeName": "Cecil",
         "growthDonor": 13110,
         "activeCount": 16,
-        "passiveCount": 0,
-        "kitCount": 16,
+        "passiveCount": 5,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 21,
+        "totalSkillCount": 26,
         "previousCount": 13,
         "additionalPassives": [
           1513
@@ -32130,6 +33424,49 @@
         "extraPassives": [
           1513
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13103,
+        "nativeName": "Cecil",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 370,
+        "equipCost": 335,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1313
+          },
+          {
+            "rank": 0,
+            "id": 1252
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1331
+          },
+          {
+            "rank": 3,
+            "id": 1042
+          }
+        ],
+        "nativePassives": [
+          1273,
+          1457,
+          1313,
+          1283,
+          1378,
+          1315,
+          1413,
+          1030,
+          1405,
+          1369
+        ]
       }
     },
     {
@@ -32522,7 +33859,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -32553,6 +33890,16 @@
             [
               "ActiveSkill",
               486921,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
               -1
             ]
           ],
@@ -32591,6 +33938,11 @@
               "ActiveSkill",
               486942,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
+              -1
             ]
           ],
           [
@@ -32618,9 +33970,40 @@
               "ActiveSkill",
               486945,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1279,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1335,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1320,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1360,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -32752,12 +34135,12 @@
         "nativeName": "Noctis",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 9,
+        "kitCount": 27,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 32,
         "previousCount": 12,
         "additionalPassives": [],
         "playerCopies": [
@@ -33959,6 +35342,69 @@
           1357
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13128,
+        "nativeName": "Noctis",
+        "nativePassiveCount": 14,
+        "totalPassiveCount": 14,
+        "nativeEquipCost": 410,
+        "equipCost": 415,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 0,
+            "id": 1311
+          },
+          {
+            "rank": 1,
+            "id": 1247
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1279
+          },
+          {
+            "rank": 2,
+            "id": 1378
+          },
+          {
+            "rank": 3,
+            "id": 1335
+          },
+          {
+            "rank": 3,
+            "id": 1320
+          },
+          {
+            "rank": 3,
+            "id": 1360
+          }
+        ],
+        "nativePassives": [
+          1309,
+          1311,
+          1126,
+          1294,
+          1277,
+          1361,
+          1247,
+          1360,
+          1466,
+          1279,
+          1320,
+          1257,
+          1399,
+          1335
+        ]
       }
     },
     {
@@ -34134,7 +35580,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -34145,6 +35591,16 @@
             [
               "ActiveSkill",
               220010,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1275,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
               -1
             ]
           ],
@@ -34167,6 +35623,11 @@
             [
               "ActiveSkill",
               220030,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
               -1
             ]
           ],
@@ -34226,6 +35687,16 @@
             [
               "ActiveSkill",
               400730,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1315,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1307,
               -1
             ]
           ]
@@ -34358,12 +35829,12 @@
         "nativeName": "Shantotto",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 27,
         "previousCount": 15,
         "additionalPassives": [],
         "playerCopies": [
@@ -34943,6 +36414,49 @@
           1433
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13123,
+        "nativeName": "Shantotto",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 310,
+        "equipCost": 340,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1275
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 3,
+            "id": 1315
+          },
+          {
+            "rank": 3,
+            "id": 1307
+          }
+        ],
+        "nativePassives": [
+          1275,
+          1432,
+          1315,
+          1107,
+          1381,
+          1433,
+          1319,
+          1431,
+          1307,
+          1351
+        ]
       }
     },
     {
@@ -35295,7 +36809,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -35327,6 +36841,16 @@
               "ActiveSkill",
               400460,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1375,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
+              -1
             ]
           ],
           [
@@ -35353,6 +36877,11 @@
             [
               "ActiveSkill",
               487242,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
               -1
             ]
           ],
@@ -35381,6 +36910,11 @@
               "ActiveSkill",
               487221,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -35392,6 +36926,11 @@
             [
               "ActiveSkill",
               220290,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1455,
               -1
             ]
           ]
@@ -35529,12 +37068,12 @@
         "nativeName": "Ayaka",
         "growthDonor": 13108,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 5,
+        "kitCount": 23,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 28,
         "previousCount": 13,
         "additionalPassives": [
           1499
@@ -36629,6 +38168,49 @@
         "extraPassives": [
           1499
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13051,
+        "nativeName": "Ayaka",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 275,
+        "equipCost": 250,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1375
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 3,
+            "id": 1455
+          }
+        ],
+        "nativePassives": [
+          1375,
+          1455,
+          1107,
+          1277,
+          1325,
+          1381,
+          1456,
+          1401,
+          1393,
+          1397
+        ]
       }
     },
     {
@@ -36955,7 +38537,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -36992,6 +38574,11 @@
               "ActiveSkill",
               487327,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
+              -1
             ]
           ],
           [
@@ -37019,6 +38606,16 @@
               "ActiveSkill",
               487330,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
+              -1
             ]
           ],
           [
@@ -37036,6 +38633,11 @@
               "ActiveSkill",
               487333,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1336,
+              -1
             ]
           ],
           [
@@ -37047,6 +38649,11 @@
             [
               "ActiveSkill",
               487318,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
               -1
             ]
           ]
@@ -37179,12 +38786,12 @@
         "nativeName": "Vaan",
         "growthDonor": 13108,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 5,
+        "kitCount": 22,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 27,
         "previousCount": 12,
         "additionalPassives": [],
         "playerCopies": [
@@ -38105,6 +39712,49 @@
           1386
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13124,
+        "nativeName": "Vaan",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 290,
+        "equipCost": 245,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1311
+          },
+          {
+            "rank": 1,
+            "id": 1107
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1336
+          },
+          {
+            "rank": 3,
+            "id": 1277
+          }
+        ],
+        "nativePassives": [
+          1279,
+          1434,
+          1317,
+          1114,
+          1287,
+          1435,
+          1436,
+          1386,
+          1343,
+          1050
+        ]
       }
     },
     {
@@ -38459,7 +40109,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -38490,6 +40140,16 @@
             [
               "ActiveSkill",
               487433,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1250,
               -1
             ]
           ],
@@ -38523,6 +40183,11 @@
               "ActiveSkill",
               400310,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
+              -1
             ]
           ],
           [
@@ -38550,12 +40215,27 @@
               "ActiveSkill",
               487445,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               400700,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1234,
               -1
             ]
           ]
@@ -38688,12 +40368,12 @@
         "nativeName": "Cloud",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 6,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 29,
         "previousCount": 14,
         "additionalPassives": [],
         "playerCopies": [
@@ -39632,6 +41312,54 @@
           1359
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13110,
+        "nativeName": "Cloud",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 345,
+        "equipCost": 310,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 0,
+            "id": 1250
+          },
+          {
+            "rank": 1,
+            "id": 1247
+          },
+          {
+            "rank": 2,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 3,
+            "id": 1234
+          }
+        ],
+        "nativePassives": [
+          1247,
+          1420,
+          1279,
+          1250,
+          1309,
+          1357,
+          1418,
+          1366,
+          1323,
+          1388,
+          1234
+        ]
       }
     },
     {
@@ -39943,7 +41671,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -39959,6 +41687,16 @@
             [
               "ActiveSkill",
               487503,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1116,
               -1
             ]
           ],
@@ -39997,6 +41735,11 @@
               "ActiveSkill",
               487518,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
+              -1
             ]
           ],
           [
@@ -40029,6 +41772,16 @@
               "ActiveSkill",
               487539,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1293,
+              -1
             ]
           ],
           [
@@ -40040,6 +41793,11 @@
             [
               "ActiveSkill",
               400770,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1284,
               -1
             ]
           ]
@@ -40180,12 +41938,12 @@
         "nativeName": "Onion Knight",
         "growthDonor": 13125,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 6,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 29,
         "previousCount": 14,
         "additionalPassives": [
           1531
@@ -41128,6 +42886,54 @@
         "extraPassives": [
           1531
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13102,
+        "nativeName": "Onion Knight",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 310,
+        "equipCost": 330,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1311
+          },
+          {
+            "rank": 0,
+            "id": 1116
+          },
+          {
+            "rank": 1,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1293
+          },
+          {
+            "rank": 3,
+            "id": 1284
+          }
+        ],
+        "nativePassives": [
+          1311,
+          1411,
+          1116,
+          1381,
+          1277,
+          1412,
+          1410,
+          1258,
+          1465,
+          1358,
+          1031
+        ]
       }
     },
     {
@@ -41537,7 +43343,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -41568,6 +43374,16 @@
             [
               "ActiveSkill",
               487624,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1275,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1107,
               -1
             ]
           ],
@@ -41623,6 +43439,16 @@
               "ActiveSkill",
               487639,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1315,
+              -1
             ]
           ],
           [
@@ -41639,6 +43465,11 @@
             [
               "ActiveSkill",
               400330,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1307,
               -1
             ]
           ]
@@ -41773,12 +43604,12 @@
         "nativeName": "Shantotto",
         "growthDonor": 13108,
         "activeCount": 19,
-        "passiveCount": 0,
-        "kitCount": 19,
+        "passiveCount": 5,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 24,
+        "totalSkillCount": 29,
         "previousCount": 12,
         "additionalPassives": [],
         "playerCopies": [
@@ -42934,6 +44765,49 @@
           1280
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13123,
+        "nativeName": "Shantotto",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 310,
+        "equipCost": 310,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1275
+          },
+          {
+            "rank": 0,
+            "id": 1107
+          },
+          {
+            "rank": 2,
+            "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1315
+          },
+          {
+            "rank": 3,
+            "id": 1307
+          }
+        ],
+        "nativePassives": [
+          1275,
+          1432,
+          1315,
+          1107,
+          1381,
+          1433,
+          1319,
+          1431,
+          1307,
+          1351
+        ]
       }
     },
     {
@@ -43260,7 +45134,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -43292,6 +45166,16 @@
               "ActiveSkill",
               400260,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1317,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1114,
+              -1
             ]
           ],
           [
@@ -43313,6 +45197,11 @@
             [
               "ActiveSkill",
               400270,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
               -1
             ]
           ],
@@ -43351,6 +45240,11 @@
               "ActiveSkill",
               487751,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1287,
+              -1
             ]
           ],
           [
@@ -43367,6 +45261,11 @@
             [
               "ActiveSkill",
               400750,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1124,
               -1
             ]
           ]
@@ -43499,12 +45398,12 @@
         "nativeName": "Vaan",
         "growthDonor": 13110,
         "activeCount": 20,
-        "passiveCount": 0,
-        "kitCount": 20,
+        "passiveCount": 5,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 25,
+        "totalSkillCount": 30,
         "previousCount": 16,
         "additionalPassives": [],
         "playerCopies": [
@@ -44473,6 +46372,49 @@
           1436
         ],
         "extraPassives": []
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13124,
+        "nativeName": "Vaan",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 290,
+        "equipCost": 295,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1317
+          },
+          {
+            "rank": 0,
+            "id": 1114
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 2,
+            "id": 1287
+          },
+          {
+            "rank": 3,
+            "id": 1124
+          }
+        ],
+        "nativePassives": [
+          1279,
+          1434,
+          1317,
+          1114,
+          1287,
+          1435,
+          1436,
+          1386,
+          1343,
+          1050
+        ]
       }
     },
     {
@@ -44794,7 +46736,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -44826,6 +46768,16 @@
               "ActiveSkill",
               487836,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1250,
+              -1
             ]
           ],
           [
@@ -44852,6 +46804,11 @@
             [
               "ActiveSkill",
               487839,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1247,
               -1
             ]
           ],
@@ -44890,9 +46847,25 @@
               "ActiveSkill",
               487845,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
             ]
           ],
-          []
+          [
+            [
+              "PassiveSkill",
+              1279,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1234,
+              -1
+            ]
+          ]
         ],
         "synchro": [
           [],
@@ -45027,12 +47000,12 @@
         "nativeName": "Cloud",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 6,
+        "kitCount": 24,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 29,
         "previousCount": 14,
         "additionalPassives": [
           1523
@@ -46008,6 +47981,54 @@
         "extraPassives": [
           1523
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13110,
+        "nativeName": "Cloud",
+        "nativePassiveCount": 11,
+        "totalPassiveCount": 11,
+        "nativeEquipCost": 345,
+        "equipCost": 345,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 0,
+            "id": 1250
+          },
+          {
+            "rank": 1,
+            "id": 1247
+          },
+          {
+            "rank": 2,
+            "id": 1378
+          },
+          {
+            "rank": 3,
+            "id": 1279
+          },
+          {
+            "rank": 3,
+            "id": 1234
+          }
+        ],
+        "nativePassives": [
+          1247,
+          1420,
+          1279,
+          1250,
+          1309,
+          1357,
+          1418,
+          1366,
+          1323,
+          1388,
+          1234
+        ]
       }
     },
     {
@@ -46400,7 +48421,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -46416,6 +48437,16 @@
             [
               "ActiveSkill",
               421220,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1251,
               -1
             ]
           ],
@@ -46438,6 +48469,11 @@
             [
               "ActiveSkill",
               487909,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
               -1
             ]
           ],
@@ -46497,6 +48533,16 @@
             [
               "ActiveSkill",
               487942,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1124,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1320,
               -1
             ]
           ]
@@ -46636,12 +48682,12 @@
         "nativeName": "Tidus",
         "growthDonor": 13110,
         "activeCount": 18,
-        "passiveCount": 0,
-        "kitCount": 18,
+        "passiveCount": 5,
+        "kitCount": 23,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 23,
+        "totalSkillCount": 28,
         "previousCount": 15,
         "additionalPassives": [
           1528
@@ -47806,6 +49852,49 @@
         "extraPassives": [
           1528
         ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13120,
+        "nativeName": "Tidus",
+        "nativePassiveCount": 10,
+        "totalPassiveCount": 10,
+        "nativeEquipCost": 300,
+        "equipCost": 295,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 0,
+            "id": 1251
+          },
+          {
+            "rank": 1,
+            "id": 1378
+          },
+          {
+            "rank": 3,
+            "id": 1124
+          },
+          {
+            "rank": 3,
+            "id": 1320
+          }
+        ],
+        "nativePassives": [
+          1279,
+          1309,
+          1277,
+          1251,
+          1292,
+          1367,
+          1359,
+          1049,
+          1428,
+          1348
+        ]
       }
     },
     {
@@ -48161,7 +50250,7 @@
           "passives": {}
         },
         "menuScale": 2.0,
-        "sephiraRecipe": 6,
+        "sephiraRecipe": 7,
         "awakening": [
           [
             [
@@ -48177,6 +50266,11 @@
             [
               "ActiveSkill",
               488042,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1309,
               -1
             ]
           ],
@@ -48215,6 +50309,11 @@
               "ActiveSkill",
               488039,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
             ]
           ],
           [
@@ -48247,12 +50346,22 @@
               "ActiveSkill",
               488036,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1281,
+              -1
             ]
           ],
           [
             [
               "ActiveSkill",
               488030,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1376,
               -1
             ]
           ]
@@ -48394,12 +50503,12 @@
         "nativeName": "Bartz",
         "growthDonor": 13110,
         "activeCount": 17,
-        "passiveCount": 0,
-        "kitCount": 17,
+        "passiveCount": 4,
+        "kitCount": 21,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 22,
+        "totalSkillCount": 26,
         "previousCount": 13,
         "additionalPassives": [
           1510,
@@ -49370,6 +51479,44 @@
         "extraPassives": [
           1510,
           1051
+        ]
+      },
+      "awakeningBalance": {
+        "revision": 7,
+        "nativeBudget": 13105,
+        "nativeName": "Bartz",
+        "nativePassiveCount": 9,
+        "totalPassiveCount": 9,
+        "nativeEquipCost": 270,
+        "equipCost": 300,
+        "grants": [
+          {
+            "rank": 0,
+            "id": 1309
+          },
+          {
+            "rank": 1,
+            "id": 1277
+          },
+          {
+            "rank": 2,
+            "id": 1281
+          },
+          {
+            "rank": 3,
+            "id": 1376
+          }
+        ],
+        "nativePassives": [
+          1376,
+          1458,
+          1277,
+          1248,
+          1415,
+          1416,
+          1066,
+          1316,
+          1414
         ]
       }
     }

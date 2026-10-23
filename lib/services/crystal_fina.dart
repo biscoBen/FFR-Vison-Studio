@@ -85,6 +85,16 @@ class CrystalFina {
       final rank = (result['awakening'] as List).cast<List>().where((t) => t.length < 8).first;
       rank.add(grant);
     }
+    for (var start = 0; start < 4; start++) {
+      for (final grant in template['awakening'][start] as List) {
+        if (grant[0] != 'PassiveSkill') continue;
+        final awakening = result['awakening'] as List;
+        final target = [for (var r = start; r < 4; r++) r]
+            .where((r) => (awakening[r] as List).length < 8).firstOrNull;
+        if (target == null) throw StateError('Crystal Fina has no room for her awakening bonuses.');
+        (awakening[target] as List).add(List<dynamic>.from(grant as List));
+      }
+    }
     result['synchro'] = rewards;
     result['sephiraPassiveText'] = {
       ...?result['sephiraPassiveText'] as Map?, ...template['sephiraPassiveText'] as Map,

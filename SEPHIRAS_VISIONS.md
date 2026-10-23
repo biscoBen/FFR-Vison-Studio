@@ -10,9 +10,9 @@ An existing custom Crystal Fina is adopted with her current edits and acquisitio
 
 - Every preset copies a native level-one stat profile with five learned MR rewards at ranks 1, 3, 5, 7 and 9. MR 2/6/8 give three relevant permanent stats (normalized 5/10/15 points; HP ×6, MP ×2); MR 4 and 9 each give +8 AP. MR 9 also grants the Spirit mastery. MR 0 is the native empty starting rank; every rank from 1 to 9 has a reward. Native physical or magic growth curves are used.
 - Existing native grants retain their mechanics. Supplemental skills come from the wider native/enemy catalog on private player copies: zero-MP enemy attacks receive MP costs; excessive accuracy, multipliers and hit counts are reduced. Group spells/healing cost more than comparable single-target spells. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role.
-- All 160 distinct active skills and 131 passives from the 15 excluded original visions are allocated. Within the pack, each exact active/passive appears once; permanent MR stats may repeat. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.
+- All 160 distinct active skills and 131 passives from the 15 excluded original visions are allocated. Each excluded active has one canonical allocation, and each excluded passive remains in one MR slot; supplementary awakening choices may repeat across visions. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.
 - Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.
-- Revision 6 gives each vision 15–21 awakening active skills and exactly five MR passives, one at MR1/3/5/7/9. All 131 original passives are preserved once, with 19 additional bonuses; excessive extra passives are removed. Former MR active skills return to awakening. Permanent MR stats, the Spirit wrapper and LB are excluded from both skill counts. Clive’s Eikon attacks and limit-break bonus remain on Reberta. They specialize without being restricted to one action type: healers and debuffers also have attacks. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s shrine, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
+- Revision 7 retains 15–21 awakening active skills and exactly five MR passives, one at MR1/3/5/7/9, and adds 4–9 themed awakening bonuses per vision. Complete passive counts match the native stat/Resonance counterpart, with combined AP costs within 20%. All 131 original passives remain preserved in MR with 19 additional MR choices. See [the awakening balance report](docs/SEPHIRA_AWAKENING_BALANCE.md). Former MR active skills return to awakening. Permanent MR stats, the Spirit wrapper and LB are excluded from both skill counts. Clive’s Eikon attacks and limit-break bonus remain on Reberta. They specialize without being restricted to one action type: healers and debuffers also have attacks. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s shrine, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
 - Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.
 - New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. Replacement bonuses retain native effects and equip costs, with a 20-AP floor for item bonuses that originally cost zero. Revision 5 replaces 52 reused rewards from kept visions with equipment/enemy bonuses and bounded enemy skills. Those protected MR rewards are absent from both awakening and MR; all excluded-vision grants remain allocated. The eight earlier low-tier alternatives remain available. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. Permanent MR rewards follow the same role-based three-stat budget for every preset. Alice’s three earth slams become ice slams with unchanged power/cost.
 - Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.
@@ -31,40 +31,40 @@ Levels come from ordinary enemies in the encounter volume containing each shrine
 
 ## Kit sizes
 
-Use **Apply MR and acquisition update** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, permanent stat rewards, combat recipes and active learned abilities. It replaces the passive selection with five curated MR rewards and moves MR active skills to awakening. Saved acquisition choices are preserved. See [the complete passive allocation](docs/SEPHIRA_PASSIVE_MASTERY.md). Earlier recipes also receive the MR schedule and challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.
+Use **Apply MR and acquisition update** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, permanent stat rewards, combat recipes and active learned abilities. For revision 6 entries, it adds only the missing awakening bonuses and retains edited MR rewards. Older entries first receive the five-passive MR curation and move MR actives to awakening. Saved acquisition choices are preserved. See [the complete passive allocation](docs/SEPHIRA_PASSIVE_MASTERY.md). Earlier recipes also receive the MR schedule and challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.
 
 | Vision | Awakening abilities | Awakening bonuses | Awakening total | Additional MR abilities | Additional MR bonuses |
 |---|---:|---:|---:|---:|---:|
-| A2 | 19 | 0 | 19 | 0 | 5 |
-| Christine | 16 | 0 | 16 | 0 | 5 |
-| Crystal Fina | 17 | 0 | 17 | 0 | 5 |
-| Barusa | 16 | 0 | 16 | 0 | 5 |
-| Blue Sky Belle Fran | 17 | 0 | 17 | 0 | 5 |
-| Oracle Maiden Lunafreya | 17 | 0 | 17 | 0 | 5 |
-| Minfilia | 16 | 0 | 16 | 0 | 5 |
-| Folka | 19 | 0 | 19 | 0 | 5 |
-| Fryevia | 17 | 0 | 17 | 0 | 5 |
-| Lenneth | 19 | 0 | 19 | 0 | 5 |
-| Lila | 16 | 0 | 16 | 0 | 5 |
-| Mystea | 15 | 0 | 15 | 0 | 5 |
-| Reberta (JP) | 18 | 0 | 18 | 0 | 5 |
-| Snow White | 19 | 0 | 19 | 0 | 5 |
-| Aria | 21 | 0 | 21 | 0 | 5 |
-| Eiko | 17 | 0 | 17 | 0 | 5 |
-| Alice/Half Nightmare | 17 | 0 | 17 | 0 | 5 |
-| Moogle of Narshe Mog | 16 | 0 | 16 | 0 | 5 |
-| Lilith | 16 | 0 | 16 | 0 | 5 |
-| Dragon Knight Freya | 18 | 0 | 18 | 0 | 5 |
-| Trance Terra | 17 | 0 | 17 | 0 | 5 |
-| Charming Kitty Ariana | 18 | 0 | 18 | 0 | 5 |
-| Elephim | 17 | 0 | 17 | 0 | 5 |
-| Jade | 18 | 0 | 18 | 0 | 5 |
-| Spirited Heart Primm | 18 | 0 | 18 | 0 | 5 |
-| Relm | 19 | 0 | 19 | 0 | 5 |
-| Rikku (FFX-2) | 20 | 0 | 20 | 0 | 5 |
-| Nalu | 18 | 0 | 18 | 0 | 5 |
-| Elza | 18 | 0 | 18 | 0 | 5 |
-| Lunera | 17 | 0 | 17 | 0 | 5 |
+| A2 | 19 | 5 | 24 | 0 | 5 |
+| Christine | 16 | 5 | 21 | 0 | 5 |
+| Crystal Fina | 17 | 5 | 22 | 0 | 5 |
+| Barusa | 16 | 6 | 22 | 0 | 5 |
+| Blue Sky Belle Fran | 17 | 4 | 21 | 0 | 5 |
+| Oracle Maiden Lunafreya | 17 | 7 | 24 | 0 | 5 |
+| Minfilia | 16 | 6 | 22 | 0 | 5 |
+| Folka | 19 | 5 | 24 | 0 | 5 |
+| Fryevia | 17 | 4 | 21 | 0 | 5 |
+| Lenneth | 19 | 6 | 25 | 0 | 5 |
+| Lila | 16 | 4 | 20 | 0 | 5 |
+| Mystea | 15 | 5 | 20 | 0 | 5 |
+| Reberta (JP) | 18 | 7 | 25 | 0 | 5 |
+| Snow White | 19 | 5 | 24 | 0 | 5 |
+| Aria | 21 | 5 | 26 | 0 | 5 |
+| Eiko | 17 | 5 | 22 | 0 | 5 |
+| Alice/Half Nightmare | 17 | 5 | 22 | 0 | 5 |
+| Moogle of Narshe Mog | 16 | 5 | 21 | 0 | 5 |
+| Lilith | 16 | 5 | 21 | 0 | 5 |
+| Dragon Knight Freya | 18 | 9 | 27 | 0 | 5 |
+| Trance Terra | 17 | 5 | 22 | 0 | 5 |
+| Charming Kitty Ariana | 18 | 5 | 23 | 0 | 5 |
+| Elephim | 17 | 5 | 22 | 0 | 5 |
+| Jade | 18 | 6 | 24 | 0 | 5 |
+| Spirited Heart Primm | 18 | 6 | 24 | 0 | 5 |
+| Relm | 19 | 5 | 24 | 0 | 5 |
+| Rikku (FFX-2) | 20 | 5 | 25 | 0 | 5 |
+| Nalu | 18 | 6 | 24 | 0 | 5 |
+| Elza | 18 | 5 | 23 | 0 | 5 |
+| Lunera | 17 | 4 | 21 | 0 | 5 |
 
 ## Selected forms and kits
 
@@ -76,10 +76,10 @@ Physical combo attacker.
 
 Sprite `310000505` (GL); base-stat budget: Squall. Growth: Cloud.
 
-- Awakening 1: Rend [485003]; Venom Skewer [485006]; Blade Volley [485015]; Guard Mode [485045]; Charging Blade [485051].
-- Awakening 2: Rough Divide [446600]; Grand Slash [485009]; Perforate [485012]; Colossal Cleave [485030]; Quad Blade [485033]; Binding Assault [485036].
-- Awakening 3: Fated Circle [446610]; Rending Edge [485039]; Offensive Calibration [485042]; Relentless Blade [485048].
-- Awakening 4: Numbing Slash [485018]; Gut Rip [400690]; Barrage [400300]; Double Action [400710].
+- Awakening 1: Rend [485003]; Venom Skewer [485006]; Blade Volley [485015]; Guard Mode [485045]; Charging Blade [485051]; HP +20% [1378]; Nullify Blind [1105].
+- Awakening 2: Rough Divide [446600]; Grand Slash [485009]; Perforate [485012]; Colossal Cleave [485030]; Quad Blade [485033]; Binding Assault [485036]; Restore MP on Attack [1124].
+- Awakening 3: Fated Circle [446610]; Rending Edge [485039]; Offensive Calibration [485042]; Relentless Blade [485048]; Critical Hit Rate +10% [1247].
+- Awakening 4: Numbing Slash [485018]; Gut Rip [400690]; Barrage [400300]; Double Action [400710]; Stagger Power +30% [1376].
 - MR 1: Physical Attack +20% [1309].
 - MR 2: HP +30 (permanent).
 - MR 3: Improvement [1421].
@@ -113,9 +113,10 @@ Ice magic and stagger.
 
 Sprite `401002606` (GL); base-stat budget: Tronn. Growth: Terra.
 
-- Awakening 1: Blizzard [220050]; Silence [230030]; Dispel [210200]; Blizzard Beam [485109]; Frost Wave [485115]; Frozen Needle [485130].
-- Awakening 2: Blizzara [220060]; Blizzaga [220070]; Absolute Zero [485106]; Slumber Mist [485112]; Frozen Needle II [485133]; Snowstorm [485139]; Focus Magic [400630].
-- Awakening 3: Freezing Spike [485103]; Frozen Needle III [485136]; Frostspike [485142].
+- Awakening 1: Blizzard [220050]; Silence [230030]; Dispel [210200]; Blizzard Beam [485109]; Frost Wave [485115]; Frozen Needle [485130]; MP +10% [1380]; Resist Ice [1033].
+- Awakening 2: Blizzara [220060]; Blizzaga [220070]; Absolute Zero [485106]; Slumber Mist [485112]; Frozen Needle II [485133]; Snowstorm [485139]; Focus Magic [400630]; Speed +10% [1277].
+- Awakening 3: Freezing Spike [485103]; Frozen Needle III [485136]; Frostspike [485142]; Deshell on Stagger [1285].
+- Awakening 4: Fill LB on Stagger [1280].
 - MR 1: Restore MP on Stagger [1281].
 - MR 2: Agility +5 (permanent).
 - MR 3: Stagger Power +30% [1376].
@@ -145,10 +146,10 @@ Healing, cleansing and light magic.
 
 Sprite `99887755552703` (CUSTOM); base-stat budget: Ayaka. Growth: Terra.
 
-- Awakening 1: Cure [210010]; Banish [210250].
-- Awakening 2: Cura [210020]; Banishra [210260]; Crystal Ray [485212]; Restore [485215]; Purify [485236]; Crystal Renewal [485218].
-- Awakening 3: Curaga [210030]; Banishga [210270]; Arise [210150]; Crystal Renewal [485233].
-- Awakening 4: Esunaga [210130]; Holy [485203]; Reraise [485206]; Radiant Restoration [485209]; Crystal Sanctification [485230].
+- Awakening 1: Cure [210010]; Banish [210250]; MP +20% [1381]; Nullify Silence [1107].
+- Awakening 2: Cura [210020]; Banishra [210260]; Crystal Ray [485212]; Restore [485215]; Purify [485236]; Crystal Renewal [485218]; Speed +10% [1277].
+- Awakening 3: Curaga [210030]; Banishga [210270]; Arise [210150]; Crystal Renewal [485233]; Alabastrine Blessing [1455].
+- Awakening 4: Esunaga [210130]; Holy [485203]; Reraise [485206]; Radiant Restoration [485209]; Crystal Sanctification [485230]; Divine Tidings [1456].
 - MR 1: Healing Magic +20% [1283].
 - MR 2: HP +30 (permanent).
 - MR 3: Magic Evasion +15% [1551].
@@ -177,9 +178,10 @@ Earth physical bruiser and protection.
 
 Sprite `401003006` (GL); base-stat budget: Wilhelm. Growth: Cloud.
 
-- Awakening 1: Stone Surge [421400]; Stone Slam [421340]; Quicksand [485309]; Granite Claw [485312]; Granite Slam [485333]; Stone Horn [485336]; Guard [400640].
-- Awakening 2: Stonera Surge [421410]; Stonera Slam [421350]; D Sword Breaker [414700]; Crust Driver [485303]; Granite Shell Strike [485330].
-- Awakening 3: Stonega Surge [421420]; Stonega Slam [421360]; Supreme Defense [414710]; Mantle Driver [485306].
+- Awakening 1: Stone Surge [421400]; Stone Slam [421340]; Quicksand [485309]; Granite Claw [485312]; Granite Slam [485333]; Stone Horn [485336]; Guard [400640]; Physical Defense +20% [1313].
+- Awakening 2: Stonera Surge [421410]; Stonera Slam [421350]; D Sword Breaker [414700]; Crust Driver [485303]; Granite Shell Strike [485330]; Nullify Sleep [1106]; Protect Opener [1290].
+- Awakening 3: Stonega Surge [421420]; Stonega Slam [421360]; Supreme Defense [414710]; Mantle Driver [485306]; HP +30% [1379]; Fill LB when Taking Damage [1331].
+- Awakening 4: Critical Counter [1333].
 - MR 1: Imbue Earth [1526].
 - MR 2: HP +30 (permanent).
 - MR 3: Strategic Acumen [1336].
@@ -207,8 +209,9 @@ Ranged physical and disabling arrows.
 Sprite `212001706` (GL); base-stat budget: Firion. Growth: Cloud.
 
 - Awakening 1: Aero Knife [421250]; Thunder Knife [421100]; Sleep Knife [422010]; Poison Arrow [485403]; Binding Arrow [485406]; Triple Arrow [485430]; Snipe [485439]; Focused Arrow [485412].
-- Awakening 2: Aerora Knife [421260]; Thundara Knife [421110]; Blind Knife [422030]; Windfeather Volley [485436]; Flurry Arrow [485442].
-- Awakening 3: Aeroga Knife [421270]; Thundaga Knife [421120]; Arrow Tempest [485409]; Roving Volley [485433].
+- Awakening 2: Aerora Knife [421260]; Thundara Knife [421110]; Blind Knife [422030]; Windfeather Volley [485436]; Flurry Arrow [485442]; Physical Attack +20% [1309]; Speed +10% [1277].
+- Awakening 3: Aeroga Knife [421270]; Thundaga Knife [421120]; Arrow Tempest [485409]; Roving Volley [485433]; Recuperate LB [1338].
+- Awakening 4: Stagger Power +30% [1376].
 - MR 1: Add Poison [1125].
 - MR 2: Agility +5 (permanent).
 - MR 3: Add Blind [1128].
@@ -237,10 +240,10 @@ Debuff specialist with water/wind magic.
 
 Sprite `215002417` (GL); base-stat budget: Zidane. Growth: Terra.
 
-- Awakening 1: Free Energy [446800]; Deprotect [230080]; Slowing Tide [485509].
+- Awakening 1: Free Energy [446800]; Deprotect [230080]; Slowing Tide [485509]; MP +10% [1380]; Nullify Silence [1107].
 - Awakening 2: Meo Twister [446820]; Steal Vitality [446860]; Deshell [230090]; Confusega [485512]; Maelstrom [485515]; Blinding Light [485518]; Weakening Tide [485533]; Fading Tide [485536].
-- Awakening 3: Free Energy+ [446810]; Steal Magic [446870]; Sundering Wind [485503]; Graceful Deluge [485506].
-- Awakening 4: Meo Twister+ [446830]; Oracle’s Censure [485530].
+- Awakening 3: Free Energy+ [446810]; Steal Magic [446870]; Sundering Wind [485503]; Graceful Deluge [485506]; Resist Water [1251]; Magic Defense +20% [1315]; Strategic Acumen [1336]; Restore MP on Stagger [1281].
+- Awakening 4: Meo Twister+ [446830]; Oracle’s Censure [485530]; Speed +10% [1277].
 - MR 1: Add Deprotect [1131].
 - MR 2: Agility +5 (permanent).
 - MR 3: Regen on Stagger [1286].
@@ -269,10 +272,10 @@ Mixed earth/wind offense and party protection.
 
 Sprite `214000304` (GL); base-stat budget: Onion Knight. Growth: Lightning.
 
-- Awakening 1: Stone [220210]; Protect [230040]; Gale [485606]; Sandstorm [485609]; Quiet Recovery [485615]; Earthward [485630]; Throw [400240].
-- Awakening 2: Stonera [220220]; Protectga [230050]; Petrifying Gaze [485612]; Warrior’s Blessing [485636].
-- Awakening 3: Stonega [220230]; Blade Torrent [445200]; Calamity [485603]; Stonefall [485633].
-- Awakening 4: Dual Jobs [485690].
+- Awakening 1: Stone [220210]; Protect [230040]; Gale [485606]; Sandstorm [485609]; Quiet Recovery [485615]; Earthward [485630]; Throw [400240]; Magic Attack +20% [1311].
+- Awakening 2: Stonera [220220]; Protectga [230050]; Petrifying Gaze [485612]; Warrior’s Blessing [485636]; Nullify Slow [1116]; MP +20% [1381].
+- Awakening 3: Stonega [220230]; Blade Torrent [445200]; Calamity [485603]; Stonefall [485633]; Speed +10% [1277]; Physical Defense +20% [1313].
+- Awakening 4: Dual Jobs [485690]; Strategic Acumen [1336].
 - MR 1: Observe and Recover HP [1465].
 - MR 2: Attack +5 (permanent).
 - MR 3: Observe and Attack [1343].
@@ -300,10 +303,10 @@ Water magic with restorative utility.
 
 Sprite `100018306` (GL); base-stat budget: Tronn. Growth: Terra.
 
-- Awakening 1: Water [220130]; Syphon [220310]; Bio [485712]; Tidal Invocation [485718].
-- Awakening 2: Watera [220140]; Aqua Breath [485703]; Poisonga [485715]; Rushing Tide [485739]; Oracle’s Blessing [485745].
-- Awakening 3: Waterga [220150]; Regen [210050]; Hi Regen [414510]; Tidal Wave [485706]; Watera Tide [485709]; Sundering Deluge [485733]; Piercing Current [485736].
-- Awakening 4: Waterga Tide [485730]; Restoring Mist [485742]; Waterga Surge [485721].
+- Awakening 1: Water [220130]; Syphon [220310]; Bio [485712]; Tidal Invocation [485718]; Magic Attack +30% [1275]; Nullify Silence [1107].
+- Awakening 2: Watera [220140]; Aqua Breath [485703]; Poisonga [485715]; Rushing Tide [485739]; Oracle’s Blessing [485745]; Restore MP on Stagger [1281].
+- Awakening 3: Waterga [220150]; Regen [210050]; Hi Regen [414510]; Tidal Wave [485706]; Watera Tide [485709]; Sundering Deluge [485733]; Piercing Current [485736]; Regen Opener [1293].
+- Awakening 4: Waterga Tide [485730]; Restoring Mist [485742]; Waterga Surge [485721]; Magic Defense +20% [1315].
 - MR 1: MP +10% [1380].
 - MR 2: Mind +5 (permanent).
 - MR 3: MP Stroll [1307].
@@ -336,10 +339,10 @@ Ice spellblade and precision physical.
 
 Sprite `302001405` (GL); base-stat budget: Bartz. Growth: Cloud.
 
-- Awakening 1: Froststrike [421070]; Frozen Slumber Cut [485809]; Frostbind Cut [485812]; True Strike [485815]; Frozen Slash [485842].
+- Awakening 1: Froststrike [421070]; Frozen Slumber Cut [485809]; Frostbind Cut [485812]; True Strike [485815]; Frozen Slash [485842]; Physical Attack +20% [1309].
 - Awakening 2: Froststrike II [421080]; Golden Thrust [485818]; Dark Edge [485821]; Diamond Bind [485830]; Frozen Fang [485833]; Frost Pierce [485836]; Frost Sweep [485839]; Frost Dance [485824].
-- Awakening 3: Froststrike III [421090]; Glint of Verglas [485803]; Stormbound Smite [485806].
-- Awakening 4: Flare Blade [420270].
+- Awakening 3: Froststrike III [421090]; Glint of Verglas [485803]; Stormbound Smite [485806]; Resist Ice [1033]; Speed +10% [1277].
+- Awakening 4: Flare Blade [420270]; HP +20% [1378].
 - MR 1: Knight of the Sacred Frost [1463].
 - MR 2: Agility +5 (permanent).
 - MR 3: Critical Focus [1539].
@@ -372,10 +375,10 @@ Physical cover tank with light attacks.
 
 Sprite `330000106` (GL); base-stat budget: Warrior of Light. Growth: Cloud.
 
-- Awakening 1: Vanguard Glaive [445010]; Banish Blade [420330]; Shield Crush [485903]; Repose [485915]; Guarding Bash [485936]; Shield Thrust [485939]; Multi-Cover [400390].
-- Awakening 2: Banishra Blade [420340]; Guarding Smite [485906]; Lance Breaker [485912]; Valkyrie Ward [485948].
-- Awakening 3: Sacred Wave [445020]; Banishga Blade [420350]; Sword Strike [485909]; Dawn Judgment [485930]; Luminant Purifier [485933]; Valkyrie Cleansing [485942]; Brave Lance [485945].
-- Awakening 4: Vanguard Glaive+ [445030].
+- Awakening 1: Vanguard Glaive [445010]; Banish Blade [420330]; Shield Crush [485903]; Repose [485915]; Guarding Bash [485936]; Shield Thrust [485939]; Multi-Cover [400390]; Physical Defense +20% [1313].
+- Awakening 2: Banishra Blade [420340]; Guarding Smite [485906]; Lance Breaker [485912]; Valkyrie Ward [485948]; HP +20% [1378]; Shell at Half HP [1299].
+- Awakening 3: Sacred Wave [445020]; Banishga Blade [420350]; Sword Strike [485909]; Dawn Judgment [485930]; Luminant Purifier [485933]; Valkyrie Cleansing [485942]; Brave Lance [485945]; Deprotect on Stagger [1235].
+- Awakening 4: Vanguard Glaive+ [445030]; Resist Dark [1253]; Grit [1042].
 - MR 1: Protect Opener [1290].
 - MR 2: Mind +5 (permanent).
 - MR 3: Physical Counter [1029].
@@ -407,10 +410,10 @@ Martial physical damage and self recovery.
 
 Sprite `100013806` (GL); base-stat budget: Firion. Growth: Cloud.
 
-- Awakening 1: Fire Slam [421010]; Fulminating Strike [445100]; Fist of Vigor [486003]; Heavy Palm [486033].
-- Awakening 2: Fira Slam [421020]; Fist of Fortification [486006]; Fist of Fury [486009]; Crushing Grasp [486012]; Martial Reprisal [486030]; Sweeping Fists [486036]; Chakra [400440].
-- Awakening 3: Firaga Slam [421030]; Saber of Adversity [445110]; Binding Grapple [486039].
-- Awakening 4: Fulminating Strike+ [445120]; Arms Akimbo [400650].
+- Awakening 1: Fire Slam [421010]; Fulminating Strike [445100]; Fist of Vigor [486003]; Heavy Palm [486033]; Physical Attack +20% [1309].
+- Awakening 2: Fira Slam [421020]; Fist of Fortification [486006]; Fist of Fury [486009]; Crushing Grasp [486012]; Martial Reprisal [486030]; Sweeping Fists [486036]; Chakra [400440]; Critical Hit Rate +10% [1247].
+- Awakening 3: Firaga Slam [421030]; Saber of Adversity [445110]; Binding Grapple [486039]; Speed +10% [1277].
+- Awakening 4: Fulminating Strike+ [445120]; Arms Akimbo [400650]; Fill LB when Taking Damage [1331].
 - MR 1: HP +30% [1379].
 - MR 2: HP +30 (permanent).
 - MR 3: Restore HP on Stagger [1284].
@@ -438,10 +441,10 @@ Magic tank, barriers and counter magic.
 
 Sprite `100011005` (GL); base-stat budget: Cecil. Growth: Terra.
 
-- Awakening 1: Shell [230060]; Light Ray [486112]; Dazing Mist [486118]; Magic Ward [486130]; Dark Pulse [486136].
-- Awakening 2: Shellga [230070]; Manaward [220410]; Evasion Ward [486109]; Banishra Ray [486121]; Focused Dark Pulse [486139].
-- Awakening 3: Reflect [230120]; Mighty Guard [486103]; Dystopia [486115]; Barrier Burst [486133].
-- Awakening 4: Foul of the Seventh Dawn [220510].
+- Awakening 1: Shell [230060]; Light Ray [486112]; Dazing Mist [486118]; Magic Ward [486130]; Dark Pulse [486136]; HP +30% [1379]; Resist Dark [1253].
+- Awakening 2: Shellga [230070]; Manaward [220410]; Evasion Ward [486109]; Banishra Ray [486121]; Focused Dark Pulse [486139]; Grit [1042].
+- Awakening 3: Reflect [230120]; Mighty Guard [486103]; Dystopia [486115]; Barrier Burst [486133]; Recuperate LB [1338].
+- Awakening 4: Foul of the Seventh Dawn [220510]; Strategic Acumen [1336].
 - MR 1: Physical Defense +20% [1313].
 - MR 2: HP +30 (permanent).
 - MR 3: Magic Defense +20% [1315].
@@ -471,10 +474,10 @@ Dragoon with fire/wind spear attacks.
 
 Sprite `100014405` (GL); base-stat budget: Clive. Growth: Cloud.
 
-- Awakening 1: Fire Surge [421040]; Aero Surge [421310]; Breath Wing [486203]; Dragoon Cleave [486215].
-- Awakening 2: Fira Surge [421050]; Aerora Surge [421320]; Rising Flames [448000]; Flame Lance [486212]; Flame Lance Volley [486230]; Carmine Lance [486236].
-- Awakening 3: Firaga Surge [421060]; Aeroga Surge [421330]; Heatwave [448010]; Silver Lance [486206]; Branch Spear [486209]; Blistering Hellfire [486233]; Dragonfire Breath [486239].
-- Awakening 4: Mirage [400670].
+- Awakening 1: Fire Surge [421040]; Aero Surge [421310]; Breath Wing [486203]; Dragoon Cleave [486215]; Physical Attack +20% [1309]; Resist Fire [1011].
+- Awakening 2: Fira Surge [421050]; Aerora Surge [421320]; Rising Flames [448000]; Flame Lance [486212]; Flame Lance Volley [486230]; Carmine Lance [486236]; HP +20% [1378]; Regen on Stagger [1286].
+- Awakening 3: Firaga Surge [421060]; Aeroga Surge [421330]; Heatwave [448010]; Silver Lance [486206]; Branch Spear [486209]; Blistering Hellfire [486233]; Dragonfire Breath [486239]; Regen Opener [1293].
+- Awakening 4: Mirage [400670]; Critical Hit Rate +10% [1247]; Stagger Power +30% [1376].
 - MR 1: Opening Honed Senses [1507].
 - MR 2: HP +30 (permanent).
 - MR 3: Reflex [1257].
@@ -503,9 +506,10 @@ Dark physical drain and risk/reward.
 
 Sprite `336000207` (GL); base-stat budget: Cecil. Growth: Cloud.
 
-- Awakening 1: Dark Blade [420300]; Leech [486303]; Crimson Bite [486330]; Venom Gash [486333]; Nightcut [486336]; Slumber Gash [486339]; Darkness [400490].
+- Awakening 1: Dark Blade [420300]; Leech [486303]; Crimson Bite [486330]; Venom Gash [486333]; Nightcut [486336]; Slumber Gash [486339]; Darkness [400490]; Physical Attack +20% [1309].
 - Awakening 2: Darkra Blade [420310]; Sleep Slam [422020]; Drain [220300]; Predation [486306]; Revenge Strike [486312]; Binding Sweep [486315]; Crimson Sweep [486345]; Blood Recovery [486348].
-- Awakening 3: Drain Knife [422040]; Darkga Blade [420320]; Purging Blade [486309]; Hell Gate [486342].
+- Awakening 3: Drain Knife [422040]; Darkga Blade [420320]; Purging Blade [486309]; Hell Gate [486342]; Resist Dark [1253]; HP +20% [1378]; Physical Defense +20% [1313].
+- Awakening 4: Auto-Regen [1077].
 - MR 1: Restore HP on Defeating Foes [1318].
 - MR 2: HP +30 (permanent).
 - MR 3: Vigorous Attacks [1358].
@@ -537,10 +541,10 @@ Water support, healing and water blade.
 
 Sprite `203000905` (GL); base-stat budget: Leah. Growth: Terra.
 
-- Awakening 1: Water Blade [420100]; Cure of the Seventh Dawn [220480]; Healing Rain [486403]; Rejuvenate [486409]; Banish Ray [486418]; Water Chorus [486430]; Aether Current [486421].
+- Awakening 1: Water Blade [420100]; Cure of the Seventh Dawn [220480]; Healing Rain [486403]; Rejuvenate [486409]; Banish Ray [486418]; Water Chorus [486430]; Aether Current [486421]; Healing Magic +30% [1375].
 - Awakening 2: Watera Blade [420110]; Cure II of the Seventh Dawn [220490]; Purify [414500]; Soothing Rain [486406]; Undertow [486412]; Bubble Breath [486415]; Cleansing Miasma [486436]; Mist Veil [486442].
-- Awakening 3: Waterga Blade [420120]; Cure III of the Seventh Dawn [220500]; Ocean Requiem [486433]; Radiant Pulse [486439]; Waterdrop [486424].
-- Awakening 4: Soothing Current [486427].
+- Awakening 3: Waterga Blade [420120]; Cure III of the Seventh Dawn [220500]; Ocean Requiem [486433]; Radiant Pulse [486439]; Waterdrop [486424]; Nullify Charm [1111]; Protect at Half HP [1300]; Haste at Half HP [1301].
+- Awakening 4: Soothing Current [486427]; Preventive Care [1352].
 - MR 1: Nullify Poison [1104].
 - MR 2: MP +10 (permanent).
 - MR 3: Resist Water [1251].
@@ -574,10 +578,10 @@ Summoner with wind magic and revival.
 
 Sprite `209000707` (GL); base-stat budget: Ayaka. Growth: Terra.
 
-- Awakening 1: Aero of the Seventh Dawn [220450]; Light of the Eidolons [486530].
-- Awakening 2: Aero II of the Seventh Dawn [220460]; Raise [210140].
-- Awakening 3: Ifrit [430990]; Shiva [431000]; Aero III of the Seventh Dawn [220470]; Banishga Ray [486509]; Aerora Gust [486512]; Healing Breeze [486515]; Focused Gale [486539].
-- Awakening 4: Reraise [210160]; Firaga Burst [486503]; Blizzaga Burst [486506]; Eidolon Radiance [486533]; Guardian’s Earth [486536]; Guardian’s Lightning [486542].
+- Awakening 1: Aero of the Seventh Dawn [220450]; Light of the Eidolons [486530]; Healing Magic +30% [1375]; Nullify Sleep [1106].
+- Awakening 2: Aero II of the Seventh Dawn [220460]; Raise [210140]; MP +20% [1381].
+- Awakening 3: Ifrit [430990]; Shiva [431000]; Aero III of the Seventh Dawn [220470]; Banishga Ray [486509]; Aerora Gust [486512]; Healing Breeze [486515]; Focused Gale [486539]; Speed +10% [1277].
+- Awakening 4: Reraise [210160]; Firaga Burst [486503]; Blizzaga Burst [486506]; Eidolon Radiance [486533]; Guardian’s Earth [486536]; Guardian’s Lightning [486542]; Alabastrine Blessing [1455].
 - MR 1: Double EXP [1009].
 - MR 2: Mind +5 (permanent).
 - MR 3: Nullify Silence [1107].
@@ -608,8 +612,9 @@ Ice physical with burst and HP tradeoffs.
 Sprite `336000127` (JP); base-stat budget: Squall. Growth: Cloud.
 
 - Awakening 1: Ice Slam [486660]; Boundless Void [446300]; Rage [486606]; Throat Strike [486609]; Binding Cut [486618]; Hail Cut [486639]; Twin Frost Blades [486642]; Deathblow [400530].
-- Awakening 2: Icera Slam [486663]; Disorienting Cut [486615]; Frost Reprisal [486633].
-- Awakening 3: Icega Slam [486666]; Purging Blade [446310]; Absolving Hail [486603]; Ruthless Rampage [486612]; Nightmare Flurry [486630]; Frozen Finale [486636].
+- Awakening 2: Icera Slam [486663]; Disorienting Cut [486615]; Frost Reprisal [486633]; Physical Attack +20% [1309]; Nullify Blind [1105]; HP +20% [1378].
+- Awakening 3: Icega Slam [486666]; Purging Blade [446310]; Absolving Hail [486603]; Ruthless Rampage [486612]; Nightmare Flurry [486630]; Frozen Finale [486636]; Restore MP on Attack [1124].
+- Awakening 4: Stagger Power +30% [1376].
 - MR 1: Nullify Sleep [1106].
 - MR 2: HP +30 (permanent).
 - MR 3: Critical Hit Rate +10% [1247].
@@ -643,10 +648,10 @@ Wind magic, dance and speed support.
 
 Sprite `206003005` (GL); base-stat budget: Tidus. Growth: Terra.
 
-- Awakening 1: Aero [220170]; Haste [230130]; Gust Dance [486703]; Mystery Waltz [486709]; Berserker Step [486733]; Wait [400760].
-- Awakening 2: Aerora [220180]; Cyclone [486706]; Mega Berserk [486715]; Gale Dance [486736].
-- Awakening 3: Aeroga [220190]; Slow [230150]; Alluring Dance [486712]; Heavenly Wind [486730].
-- Awakening 4: Slowga [230160]; Hastega [230140].
+- Awakening 1: Aero [220170]; Haste [230130]; Gust Dance [486703]; Mystery Waltz [486709]; Berserker Step [486733]; Wait [400760]; Magic Attack +20% [1311]; Resist Water [1251].
+- Awakening 2: Aerora [220180]; Cyclone [486706]; Mega Berserk [486715]; Gale Dance [486736]; HP +20% [1378].
+- Awakening 3: Aeroga [220190]; Slow [230150]; Alluring Dance [486712]; Heavenly Wind [486730]; Regen on Stagger [1286].
+- Awakening 4: Slowga [230160]; Hastega [230140]; Fill LB on Defeating Foes [1320].
 - MR 1: Speed +5% [1316].
 - MR 2: Magic +5 (permanent).
 - MR 3: Haste on Stagger [1287].
@@ -674,10 +679,10 @@ Dark counter tank and protective magic.
 
 Sprite `401005905` (GL); base-stat budget: Cecil. Growth: Cloud.
 
-- Awakening 1: Dark [220390]; Vampiric Lash [486836]; Cover [400380].
-- Awakening 2: Darkra [220520]; Power Stagger [414600]; Poison Mist [486812]; Shock Claw [486815].
-- Awakening 3: Darkga [220400]; Shadowbringer [445310]; Royal Guard [414610]; Seal of Conviction [486803]; Dark Sunder [486806]; Dark Aegis [486809].
-- Awakening 4: Nihilistic Solitude [486830]; Obsidian Vortex [486833]; Dark Feast [486839].
+- Awakening 1: Dark [220390]; Vampiric Lash [486836]; Cover [400380]; Physical Defense +20% [1313]; Resist Light [1252].
+- Awakening 2: Darkra [220520]; Power Stagger [414600]; Poison Mist [486812]; Shock Claw [486815]; HP +20% [1378].
+- Awakening 3: Darkga [220400]; Shadowbringer [445310]; Royal Guard [414610]; Seal of Conviction [486803]; Dark Sunder [486806]; Dark Aegis [486809]; Fill LB when Taking Damage [1331].
+- Awakening 4: Nihilistic Solitude [486830]; Obsidian Vortex [486833]; Dark Feast [486839]; Grit [1042].
 - MR 1: Damage Reduction +20% [1513].
 - MR 2: HP +30 (permanent).
 - MR 3: Dark Immunity [1369].
@@ -706,9 +711,10 @@ Aerial light physical and water lance.
 
 Sprite `209001805` (GL); base-stat budget: Noctis. Growth: Cloud.
 
-- Awakening 1: Water Surge [421190]; Flash Flood [486906]; Sonic Boom [486918]; Lance Thrust [486930]; Splash Lance [486939]; Mana Lance [486921].
-- Awakening 2: Warp-Strike [447810]; Watera Surge [421200]; Crystal Lance [486903]; Venom Lance [486915]; Lance Storm [486933]; Cleansing Lance [486936]; Tidal Lance [486942].
-- Awakening 3: Plunge [447800]; Waterga Surge [421210]; Gungnir [486909]; Hydro Lance [486912]; Ocean Lance [486945].
+- Awakening 1: Water Surge [421190]; Flash Flood [486906]; Sonic Boom [486918]; Lance Thrust [486930]; Splash Lance [486939]; Mana Lance [486921]; Physical Attack +20% [1309]; Magic Attack +20% [1311].
+- Awakening 2: Warp-Strike [447810]; Watera Surge [421200]; Crystal Lance [486903]; Venom Lance [486915]; Lance Storm [486933]; Cleansing Lance [486936]; Tidal Lance [486942]; Critical Hit Rate +10% [1247].
+- Awakening 3: Plunge [447800]; Waterga Surge [421210]; Gungnir [486909]; Hydro Lance [486912]; Ocean Lance [486945]; Speed +10% [1277]; Stagger Power +20% [1279]; HP +20% [1378].
+- Awakening 4: Bonus Damage [1335]; Fill LB on Defeating Foes [1320]; Phase Echo [1360].
 - MR 1: Nullify Slow [1116].
 - MR 2: HP +30 (permanent).
 - MR 3: Fire Immunity [1362].
@@ -741,10 +747,10 @@ Dark/fire magic, poison and costly finishers.
 
 Sprite `206000125` (GL); base-stat budget: Shantotto. Growth: Terra.
 
-- Awakening 1: Poison [220250]; Fire [220010].
-- Awakening 2: Nightmare Scythe [447300]; Bio [220260]; Fira [220020]; Firaga [220030].
+- Awakening 1: Poison [220250]; Fire [220010]; Magic Attack +30% [1275]; Nullify Silence [1107].
+- Awakening 2: Nightmare Scythe [447300]; Bio [220260]; Fira [220020]; Firaga [220030]; MP +20% [1381].
 - Awakening 3: Salvation Scythe [447310]; Death [220320]; Meltdown [220380]; Spill [487103]; Trance Judgment [487106]; Judgment Shadow [487109]; Hell Pillar [487112]; Trance Apocalypse [487130].
-- Awakening 4: Meteor [220350]; Ultima [220340]; Dualcast [400730].
+- Awakening 4: Meteor [220350]; Ultima [220340]; Dualcast [400730]; Magic Defense +20% [1315]; MP Stroll [1307].
 - MR 1: Fire Eater [1038].
 - MR 2: Agility +5 (permanent).
 - MR 3: Restore MP on Defeating Foes [1319].
@@ -769,10 +775,10 @@ Healing singer with control and arcane attacks.
 
 Sprite `401002405` (GL); base-stat budget: Ayaka. Growth: Terra.
 
-- Awakening 1: Esuna [210120]; Bravery [230100]; Healing Refrain [487203]; Lullaby [487209]; Wind Aria [487233]; Focus [400460].
-- Awakening 2: Blindga [487212]; Silencega [487215]; Starlight Refrain [487218]; Wind Refrain [487236]; Flame Refrain [487242].
-- Awakening 3: Gravity [220280]; Restoring Refrain [487206]; Dimming Refrain [487230]; Winter Refrain [487239]; Dazzling Refrain [487221].
-- Awakening 4: Confuse [230180]; Graviga [220290].
+- Awakening 1: Esuna [210120]; Bravery [230100]; Healing Refrain [487203]; Lullaby [487209]; Wind Aria [487233]; Focus [400460]; Healing Magic +30% [1375]; Nullify Silence [1107].
+- Awakening 2: Blindga [487212]; Silencega [487215]; Starlight Refrain [487218]; Wind Refrain [487236]; Flame Refrain [487242]; MP +20% [1381].
+- Awakening 3: Gravity [220280]; Restoring Refrain [487206]; Dimming Refrain [487230]; Winter Refrain [487239]; Dazzling Refrain [487221]; Speed +10% [1277].
+- Awakening 4: Confuse [230180]; Graviga [220290]; Alabastrine Blessing [1455].
 - MR 1: Nullify Blind [1105].
 - MR 2: Magic +5 (permanent).
 - MR 3: Nullify Berserk [1114].
@@ -804,10 +810,10 @@ Buff/debuff bard with ranged attacks.
 
 Sprite `100017107` (GL); base-stat budget: Vaan. Growth: Terra.
 
-- Awakening 1: Debrave [230190]; Blind [230020]; Faith [230110]; Berserk [230170]; Sleep [487303]; Defaith [487306]; Resonant Notes [487327].
-- Awakening 2: Rapid Fire [414200]; Debravega [487309]; Defaithga [487312]; Sleepga [487315]; Flame Chant [487330].
-- Awakening 3: Disorder [414210]; Berserker Samba [487324]; Harp Volley [487333].
-- Awakening 4: Inspire [487321]; Rallying Song [487318].
+- Awakening 1: Debrave [230190]; Blind [230020]; Faith [230110]; Berserk [230170]; Sleep [487303]; Defaith [487306]; Resonant Notes [487327]; Magic Attack +20% [1311].
+- Awakening 2: Rapid Fire [414200]; Debravega [487309]; Defaithga [487312]; Sleepga [487315]; Flame Chant [487330]; Nullify Silence [1107]; MP +20% [1381].
+- Awakening 3: Disorder [414210]; Berserker Samba [487324]; Harp Volley [487333]; Strategic Acumen [1336].
+- Awakening 4: Inspire [487321]; Rallying Song [487318]; Speed +10% [1277].
 - MR 1: Resist Lightning [1250].
 - MR 2: Mind +5 (permanent).
 - MR 3: Deshell on Stagger [1285].
@@ -838,10 +844,10 @@ Lightning martial attacker and crowd damage.
 
 Sprite `337001205` (GL); base-stat budget: Cloud. Growth: Cloud.
 
-- Awakening 1: Thunder Blade [420070]; Sparkstrike [421160]; Rocket Punch [487409]; Charge [487412]; Volt Kick [487430]; Thunder Palm [487433].
-- Awakening 2: Thundara Blade [420080]; Sparkstrike II [421170]; Volt Palm [487403]; Gigavolt Strike [487406]; Thunder Palm II [487436]; Bladeblitz [400310].
-- Awakening 3: Thundaga Blade [420090]; Sparkstrike III [421180]; Thunder Palm III [487439]; Storm Flurry [487442]; Fist of the Storm [487445].
-- Awakening 4: Reckless Abandonment [400700].
+- Awakening 1: Thunder Blade [420070]; Sparkstrike [421160]; Rocket Punch [487409]; Charge [487412]; Volt Kick [487430]; Thunder Palm [487433]; Physical Attack +20% [1309]; Resist Lightning [1250].
+- Awakening 2: Thundara Blade [420080]; Sparkstrike II [421170]; Volt Palm [487403]; Gigavolt Strike [487406]; Thunder Palm II [487436]; Bladeblitz [400310]; Critical Hit Rate +10% [1247].
+- Awakening 3: Thundaga Blade [420090]; Sparkstrike III [421180]; Thunder Palm III [487439]; Storm Flurry [487442]; Fist of the Storm [487445]; HP +20% [1378]; Speed +10% [1277].
+- Awakening 4: Reckless Abandonment [400700]; Critical Boost [1234].
 - MR 1: Restore MP on Critical Hit [1323].
 - MR 2: HP +30 (permanent).
 - MR 3: Lightning Immunity [1366].
@@ -871,10 +877,10 @@ Mixed elemental sabers and support.
 
 Sprite `304000717` (GLW); base-stat budget: Onion Knight. Growth: Lightning.
 
-- Awakening 1: Slice & Dice - Wind [421280]; Stone Blade [420160]; Cure [487503].
-- Awakening 2: Slice & Dice - Wind II [421290]; Stonera Blade [420170]; Cura [487506]; Firestorm Saber [487512]; Atomic Saber [487515]; Flame Saber [487530]; Blazing Saber [487518].
-- Awakening 3: Slice & Dice - Wind III [421300]; Stonega Blade [420180]; Moonlightbringer [445300]; Gale Saber [487533]; Spiritlight Saber [487536]; Mana Burst [487539].
-- Awakening 4: Curaga [487509]; Fill Gauge [400770].
+- Awakening 1: Slice & Dice - Wind [421280]; Stone Blade [420160]; Cure [487503]; Magic Attack +20% [1311]; Nullify Slow [1116].
+- Awakening 2: Slice & Dice - Wind II [421290]; Stonera Blade [420170]; Cura [487506]; Firestorm Saber [487512]; Atomic Saber [487515]; Flame Saber [487530]; Blazing Saber [487518]; MP +20% [1381].
+- Awakening 3: Slice & Dice - Wind III [421300]; Stonega Blade [420180]; Moonlightbringer [445300]; Gale Saber [487533]; Spiritlight Saber [487536]; Mana Burst [487539]; Speed +10% [1277]; Regen Opener [1293].
+- Awakening 4: Curaga [487509]; Fill Gauge [400770]; Restore HP on Stagger [1284].
 - MR 1: Resist Fire [1011].
 - MR 2: Attack +5 (permanent).
 - MR 3: HP +20% [1378].
@@ -904,10 +910,10 @@ Painter with lightning magic and mimicry.
 
 Sprite `206001005` (GL); base-stat budget: Shantotto. Growth: Terra.
 
-- Awakening 1: Thunder [220090]; Fire Beam [487606]; Drain [487615]; Earth Canvas [487630]; Frost Canvas [487636]; Aether Palette [487624].
+- Awakening 1: Thunder [220090]; Fire Beam [487606]; Drain [487615]; Earth Canvas [487630]; Frost Canvas [487636]; Aether Palette [487624]; Magic Attack +30% [1275]; Nullify Silence [1107].
 - Awakening 2: Thundara [220100]; Thundaga [220110]; Bioblaster [487603]; El Nino [487609]; Banishra Canvas [487618]; Earth Canvas II [487633]; Stone Stroke [487642]; Storm Canvas [487627].
-- Awakening 3: Forbidden Ars Magna [487612]; Erase Canvas [487639].
-- Awakening 4: Flare [220330]; Mind Blast [487621]; Mimic [400330].
+- Awakening 3: Forbidden Ars Magna [487612]; Erase Canvas [487639]; MP +20% [1381]; Magic Defense +20% [1315].
+- Awakening 4: Flare [220330]; Mind Blast [487621]; Mimic [400330]; MP Stroll [1307].
 - MR 1: HP Stroll [1066].
 - MR 2: Agility +5 (permanent).
 - MR 3: Add Confuse [1237].
@@ -941,10 +947,10 @@ Thief, item utility and fire physical breaks.
 
 Sprite `249000206` (GL); base-stat budget: Vaan. Growth: Cloud.
 
-- Awakening 1: Steal Strength [446840]; Steal Speed [446850]; Flash Bomb [487703]; Sleep Needle [487706]; Poison Needle [487709]; Steal [400260].
-- Awakening 2: Red Spiral [447400]; Acid Grenade [487736]; Incendiary Sphere [487739]; Mug [400270].
-- Awakening 3: White Whorl [447410]; Blinding Flash [487730]; Mustard Bomb [487733]; Wave Cannon [487742]; Trickshot [487745]; Emergency Protocol [487748]; Quick Repair [487751].
-- Awakening 4: Gil Farmer [400400]; Gil Toss [400250]; Misfortune [400750].
+- Awakening 1: Steal Strength [446840]; Steal Speed [446850]; Flash Bomb [487703]; Sleep Needle [487706]; Poison Needle [487709]; Steal [400260]; Speed +20% [1317]; Nullify Berserk [1114].
+- Awakening 2: Red Spiral [447400]; Acid Grenade [487736]; Incendiary Sphere [487739]; Mug [400270]; HP +20% [1378].
+- Awakening 3: White Whorl [447410]; Blinding Flash [487730]; Mustard Bomb [487733]; Wave Cannon [487742]; Trickshot [487745]; Emergency Protocol [487748]; Quick Repair [487751]; Haste on Stagger [1287].
+- Awakening 4: Gil Farmer [400400]; Gil Toss [400250]; Misfortune [400750]; Restore MP on Attack [1124].
 - MR 1: Discerning Eye [1056].
 - MR 2: HP +30 (permanent).
 - MR 3: Treasure Hunter [1387].
@@ -975,9 +981,10 @@ Lightning physical, criticals and analysis.
 
 Sprite `100015405` (GL); base-stat budget: Cloud. Growth: Cloud.
 
-- Awakening 1: Thunder Surge [421130]; Libra [210220]; Thunder Spear [487803]; Lightning Sweep [487806]; Needle [487812]; Lance Launcher [487836].
-- Awakening 2: Braver [446000]; Thundara Surge [421140]; Lightning Strike [447500]; Lightning Lance Sweep [487830]; Shock Lance [487839].
-- Awakening 3: Cross-Slash [446010]; Thundaga Surge [421150]; Thunderfall [447510]; Chain Lance [487809]; Thunderstorm Lance [487833]; Numbing Spark [487842]; Thunder Javelin [487845].
+- Awakening 1: Thunder Surge [421130]; Libra [210220]; Thunder Spear [487803]; Lightning Sweep [487806]; Needle [487812]; Lance Launcher [487836]; Physical Attack +20% [1309]; Resist Lightning [1250].
+- Awakening 2: Braver [446000]; Thundara Surge [421140]; Lightning Strike [447500]; Lightning Lance Sweep [487830]; Shock Lance [487839]; Critical Hit Rate +10% [1247].
+- Awakening 3: Cross-Slash [446010]; Thundaga Surge [421150]; Thunderfall [447510]; Chain Lance [487809]; Thunderstorm Lance [487833]; Numbing Spark [487842]; Thunder Javelin [487845]; HP +20% [1378].
+- Awakening 4: Stagger Power +20% [1279]; Critical Boost [1234].
 - MR 1: Restore MP on Attack [1124].
 - MR 2: Agility +5 (permanent).
 - MR 3: Imbue Lightning [1523].
@@ -1007,10 +1014,10 @@ Dark/water physical and sustained pressure.
 
 Sprite `302000605` (GL); base-stat budget: Tidus. Growth: Cloud.
 
-- Awakening 1: Dark Surge [422050]; Spiral Cut [447000]; Slice & Dice - Water [421220].
-- Awakening 2: Darkra Surge [422060]; Slice & Dice - Water II [421230]; Queenly Rend [487903]; Venom Sweep [487909].
+- Awakening 1: Dark Surge [422050]; Spiral Cut [447000]; Slice & Dice - Water [421220]; Physical Attack +20% [1309]; Resist Water [1251].
+- Awakening 2: Darkra Surge [422060]; Slice & Dice - Water II [421230]; Queenly Rend [487903]; Venom Sweep [487909]; HP +20% [1378].
 - Awakening 3: Darkga Surge [422070]; Energy Rain [447010]; Spiral Cut+ [447020]; Slice & Dice - Water III [421240]; Shred [487906]; Black Tide [487912]; Rabid Claw [487930]; Abyssal Rend [487933].
-- Awakening 4: Ferocious Strike [487936]; Crushing Tide [487939]; Judgment Claw [487942].
+- Awakening 4: Ferocious Strike [487936]; Crushing Tide [487939]; Judgment Claw [487942]; Restore MP on Attack [1124]; Fill LB on Defeating Foes [1320].
 - MR 1: Resist Dark [1253].
 - MR 2: HP +30 (permanent).
 - MR 3: Speed +20% [1317].
@@ -1039,10 +1046,10 @@ Wind physical and stagger support.
 
 Sprite `100007506` (GL); base-stat budget: Bartz. Growth: Cloud.
 
-- Awakening 1: Aero Blade [420130]; Gale Sweep [488033]; Twin Gale Shot [488042].
-- Awakening 2: Aerora Blade [420140]; Crushing Blade [445500]; Torrential Hew [414400]; Shamshir [488003]; Gale Volley [488006]; Venom Gale [488015]; Gale Reprisal [488039].
-- Awakening 3: Aeroga Blade [420150]; Wind Cutter Blade [445510]; Aquatic Synergy [414410]; Merciless Gale [488009]; Star Volley [488012]; Silencing Gale [488036].
-- Awakening 4: Tempest Volley [488030].
+- Awakening 1: Aero Blade [420130]; Gale Sweep [488033]; Twin Gale Shot [488042]; Physical Attack +20% [1309].
+- Awakening 2: Aerora Blade [420140]; Crushing Blade [445500]; Torrential Hew [414400]; Shamshir [488003]; Gale Volley [488006]; Venom Gale [488015]; Gale Reprisal [488039]; Speed +10% [1277].
+- Awakening 3: Aeroga Blade [420150]; Wind Cutter Blade [445510]; Aquatic Synergy [414410]; Merciless Gale [488009]; Star Volley [488012]; Silencing Gale [488036]; Restore MP on Stagger [1281].
+- Awakening 4: Tempest Volley [488030]; Stagger Power +30% [1376].
 - MR 1: Resist Wind [1248].
 - MR 2: Agility +5 (permanent).
 - MR 3: Spry Steps [1258].

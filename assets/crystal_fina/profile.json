@@ -147,6 +147,16 @@
         "ActiveSkill",
         485318,
         -1
+      ],
+      [
+        "PassiveSkill",
+        1381,
+        -1
+      ],
+      [
+        "PassiveSkill",
+        1107,
+        -1
       ]
     ],
     [
@@ -169,6 +179,11 @@
       [
         "ActiveSkill",
         210140
+      ],
+      [
+        "PassiveSkill",
+        1277,
+        -1
       ]
     ],
     [
@@ -187,6 +202,11 @@
       [
         "ActiveSkill",
         230070
+      ],
+      [
+        "PassiveSkill",
+        1455,
+        -1
       ]
     ],
     [
@@ -197,6 +217,11 @@
       [
         "ActiveSkill",
         300110
+      ],
+      [
+        "PassiveSkill",
+        1456,
+        -1
       ]
     ]
   ],
@@ -304,5 +329,5 @@
       "desc": "Fill the LB gauge by 10% at the start of each action."
     }
   },
-  "sephiraRecipe": 6
+  "sephiraRecipe": 7
 }

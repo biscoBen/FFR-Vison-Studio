@@ -11,6 +11,13 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Sephira awakening bonuses and requested LB audio
+
+- Restore 160 themed awakening bonuses across all 30 Sephira visions. Each complete passive kit now matches its original stat/Resonance counterpart's passive count; native effects and equip costs remain, with combined AP totals within 20% of that counterpart. Preserve all 131 excluded-original passives in MR, all active skills, permanent stats and acquisition settings. Avoid duplicate tiers of the same main stat bonus and kept originals' MR rewards.
+- Saved-roster revision 7 adds missing bonuses through the backed-up progression update, preserving edited MR schedules and combat recipes. Full edited tiers fail before saving. Independent bundled Fina receives the same additive repair when there is room.
+- Add the requested clean Touch It soundtrack for Ariana and Accumulate/Cure for both Fina versions. Cure follows the existing healing marker without adding an application event. The five unverified Global LB soundtracks remain flagged; a different Barusa LB and partial video matches are not presented as exact originals.
+- Local validation: 601 Python tests (10 skips), 278 Flutter passes (one skip), clean analyzer; native writing/readback for all 30 kits and LB timelines, 26 private banks and 83 host recordings. Original table rows remain unchanged. Windows package validation is pending. Live play is still needed to assess combined passive balance and perceived audio timing.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
