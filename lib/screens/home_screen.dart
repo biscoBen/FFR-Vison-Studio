@@ -324,9 +324,9 @@ class HomeScreen extends StatelessWidget {
     final native = u['native'] != null;
     final party = u['party'] != null;
     final edited = app.units.any((x) => x['key'] == u['key']);
-    final aw = (u['awakening'] as List? ?? []).cast<List>();
-    final abilities = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] == 'ActiveSkill').length);
-    final bonuses = aw.fold<int>(0, (n, t) => n + t.where((g) => g[0] != 'ActiveSkill').length);
+    final rewards = [...u['awakening'] as List? ?? [], ...u['synchro'] as List? ?? []].cast<List>();
+    final abilities = rewards.fold<int>(0, (n, t) => n + t.where((g) => g[0] == 'ActiveSkill').length);
+    final bonuses = rewards.fold<int>(0, (n, t) => n + t.where((g) => g[0] != 'ActiveSkill').length);
     final lb = u['lb_custom'] as Map?;
     final card = Material(
       color: Guide.paper,

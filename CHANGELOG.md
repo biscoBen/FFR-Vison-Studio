@@ -22,6 +22,8 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Back up and upgrade the old audio-off preset defaults once without resetting MR rewards, combat edits or artwork.
   Later explicit mutes and custom sound banks remain editable. Native bank/timeline checks and live listening results
   are reported separately; the game still needs a listening pass for volume, misses and synchronization.
+- Include MR rewards in the home-screen bonus count, so visions whose passives moved into mastery no longer show
+  zero bonuses. Their saved rewards and in-game behavior are unchanged.
 
 ### Returned full-game reference audit — 2026-10-22
 

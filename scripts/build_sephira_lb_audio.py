@@ -96,7 +96,7 @@ def build(source, engine_tools, converted, output):
                 if sample[12] != recording['channels'] or rate != recording['sampleRate'] or samples != recording['samples']:
                     raise ValueError('Converted recording changed channels/rate/sample count')
                 recording['conversion'] = {'sourceSha256': original_hash,
-                    'method': 'FFmpeg PCM decode; VGAudio 2.2.1 Highest HCA encode without HFR',
+                    'method': 'VGAudio 2.2.1 cipher-aware HCA decode and Highest encode without HFR',
                     'sourceDelaySamples': 128, 'sampleCount': samples}
                 recording['sourceEncodeType'] = 2
                 recording['durationMs'] = math.ceil(samples * 1000 / rate)

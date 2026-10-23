@@ -63,7 +63,10 @@ volume and perceived synchronization still need an in-game listening pass.
 
 The developer packer is `scripts/build_sephira_lb_audio.py`. Its inputs are the
 verified APK/extracted masters, compatible engine audio tools, and reviewed
-offline conversions. Conversions use FFmpeg PCM decoding with the original
-128-sample encoder delay trimmed, followed by VGAudio 2.2.1's `HcaWriter` with
-`Quality=Highest` and `LimitBitrate=false`. The player does not need these tools
+offline conversions. VGAudio 2.2.1's `HcaReader` decodes the original HCA,
+including the opening recording's type-1 cipher and encoder delay. `HcaWriter`
+then encodes PCM with `Quality=Highest` and `LimitBitrate=false`. FFmpeg mixes
+the already-decoded PCM layers for Fran. A second readback confirms matching
+sample counts and waveform polarity; the encrypted source is never decoded by
+FFmpeg. The player does not need these tools
 or a new download. The optional full animation library remains separate.
