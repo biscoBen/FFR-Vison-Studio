@@ -30,6 +30,7 @@ sys.modules['_ffr_field_leader'] = module('_ffr_field_leader', ROOT / 'assets/ex
 sys.modules['_ffr_ffbe_needles'] = module('_ffr_ffbe_needles', ROOT / 'assets/existing_visions/payload/_ffr_ffbe_needles.py')
 sys.modules['_ffr_sephira_ffbe'] = module('_ffr_sephira_ffbe', ROOT / 'assets/existing_visions/payload/_ffr_sephira_ffbe.py')
 sys.modules['_ffr_testing'] = module('_ffr_testing', ROOT / 'assets/existing_visions/payload/_ffr_testing.py')
+sys.modules['_ffr_fina_cinematic'] = module('_ffr_fina_cinematic', ROOT / 'assets/existing_visions/payload/_ffr_fina_cinematic.py')
 sys.modules['_ffr_deck_sync'] = module('_ffr_deck_sync', ROOT / 'assets/existing_visions/payload/_ffr_deck_sync.py')
 sys.modules['_ffr_crystal_mesh'] = module('_ffr_crystal_mesh', ROOT / 'assets/existing_visions/payload/_ffr_crystal_mesh.py')
 sys.modules['_ffr_crystal_cave'] = module('_ffr_crystal_cave', ROOT / 'assets/existing_visions/payload/_ffr_crystal_cave.py')

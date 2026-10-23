@@ -82,7 +82,8 @@ def prepare(unit, skill, source, table):
     print(f"  {unit['key']}: FFBE LB audio, {len(audible)} attack cues + " +
           ('opening cue' if skill.get('lb_charge', True) else 'opening disabled'))
     if profile['status'] == 'opening_only': print('  ! ' + unit['key'] + ': ' + profile['reason'])
-    return bank, events
+    import _ffr_fina_cinematic
+    return _ffr_fina_cinematic.attach_audio(unit, skill, bank, events, table)
 
 
 def align_reactions(plan, unit, skill, sounds):

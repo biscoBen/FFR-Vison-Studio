@@ -65,6 +65,15 @@ class NativeApi extends ConfigApi {
   bool practiceBattle = false;
   bool survival = false;
   bool ffbeNeedlesValue = false;
+  bool cinematicValue = false;
+  bool failCinematic = false;
+  @override
+  Future<bool> finaCinematic() async => cinematicValue;
+  @override
+  Future<void> saveFinaCinematic(bool value) async {
+    if (failCinematic) throw StateError('Cinematic setting write failed.');
+    cinematicValue = value;
+  }
   bool failNeedles = false;
   @override
   Future<bool> ffbeNeedles() async => ffbeNeedlesValue;
@@ -524,6 +533,21 @@ void main() {
     await wait(tester, () => !app.testingPracticeBattle);
     expect(api.practiceBattle, isFalse);
     expect(api.maxMr, isTrue);
+  });
+
+  testWidgets('cinematic toggle saves independently and keeps failed edits out of UI state', (tester) async {
+    await show(tester);
+    final control = find.byKey(const Key('testing-fina-cinematic'));
+    await tester.ensureVisible(control); await tester.tap(control);
+    await wait(tester, () => app.finaCinematic);
+    expect(api.cinematicValue, isTrue);
+    api.failCinematic = true;
+    await tester.tap(control);
+    await wait(tester, () => app.notice?.contains('Cinematic setting write failed') == true);
+    expect(app.finaCinematic, isTrue);
+    await tester.pump(const Duration(seconds: 6));
+    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
+    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
   });
 
   testWidgets('FFBE visual test saves independently and waits for successful saves', (tester) async {

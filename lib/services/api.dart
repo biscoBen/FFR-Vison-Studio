@@ -48,6 +48,8 @@ class Api {
   Future<void> saveSurviveAtOne(bool value) => _saveTestingFlag('surviveAtOne', value);
   Future<bool> ffbeNeedles() async => (await get('/api/testing'))['ffbeNeedles'] == true;
   Future<void> saveFfbeNeedles(bool value) => _saveTestingFlag('ffbeNeedles', value);
+  Future<bool> finaCinematic() async => (await get('/api/testing'))['finaCinematic'] == true;
+  Future<void> saveFinaCinematic(bool value) => _saveTestingFlag('finaCinematic', value);
   Future<bool> crystalCave() async => (await get('/api/testing'))['crystalCave'] == true;
   Future<bool> crystalCaveTest() async => (await get('/api/testing'))['crystalCaveTest'] == true;
   Future<bool> fieldLeader() async => (await get('/api/testing'))['fieldLeader'] == true;
@@ -78,6 +80,7 @@ class Api {
       'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
       'surviveAtOne': current['surviveAtOne'] == true,
       'ffbeNeedles': current['ffbeNeedles'] == true,
+      'finaCinematic': current['finaCinematic'] == true,
       'crystalCave': current['crystalCave'] == true,
       'crystalCaveTest': current['crystalCaveTest'] == true,
       'fieldLeader': current['fieldLeader'] == true, name: value,

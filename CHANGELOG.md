@@ -11,6 +11,17 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina illustrated cinematic test
+
+- Add an optional, default-off **Test Crystal Fina cinematic** switch and a read-only browser preview. The
+  6.4-second illustrated intro uses the approved crystal refraction/light appearance, camera movement, healing
+  glow and a glass release with an original synthesized score. It leads into her existing LB and cure sound.
+- Keep Fina’s healing, reaction timing relative to her LB animation, kit, MR rewards and crystal presentation.
+  Package the movie inside the normal three-file mod/snapshot; disabling and rebuilding removes the intro.
+- Verify media decoding/demux, native movie/spawn descriptors, preserved compiled bindings, companion-pak
+  transport and opt-out behavior. Native playback, synchronization, repeated battles and Steam Deck playback
+  remain untested in game. See [the test instructions and limits](docs/CRYSTAL_FINA_CINEMATIC.md).
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
