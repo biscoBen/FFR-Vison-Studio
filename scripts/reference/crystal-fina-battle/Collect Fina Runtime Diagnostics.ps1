@@ -11,7 +11,8 @@ function Find-Game([string]$Candidate) {
         $path = $Candidate
         if ($suffix) { $path = Join-Path $Candidate $suffix }
         if (Test-Path -LiteralPath (Join-Path $path 'FFRS\Binaries\Win64') -PathType Container) {
-            $resolved = (Resolve-Path -LiteralPath $path).Path
+            # Match output normalization even when TEMP uses an 8.3 alias.
+            $resolved = [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $path).Path)
             if ((Split-Path -Leaf $resolved) -match '(?i)\bDEMO\b') { return $null }
             return $resolved
         }
