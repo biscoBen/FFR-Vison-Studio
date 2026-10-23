@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Original Sephira limit-burst audio
+
+- Enable original FFBE LB recordings with source frame timing for 23 added visions, including the regional
+  presentation metadata and layered Fran cue the previous audio adapter omitted. Supply the original charging
+  recording for all 30. List the seven exact forms/custom sequences without an original soundtrack in
+  `docs/SEPHIRA_LB_AUDIO.md`; no unrelated LB recording is substituted.
+- Include only the small selected recording pack, independent of the optional animation library. Convert unsupported
+  HFR/encrypted recordings for the installed game's audio adapter, retain complete sound tails, and use private banks.
+- Back up and upgrade the old audio-off preset defaults once without resetting MR rewards, combat edits or artwork.
+  Later explicit mutes and custom sound banks remain editable. Native bank/timeline checks and live listening results
+  are reported separately; the game still needs a listening pass for volume, misses and synchronization.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

@@ -366,6 +366,15 @@ class AppState extends ChangeNotifier {
     final repaired = await _repairKnownFinaRewards(units);
     if (!identical(repaired, units)) dirty = true;
     units = repaired;
+    final audio = [for (final u in units)
+      SephiraVisions.repairLbAudio(u as JsonMap, sephiraPresets)];
+    if (audio.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'sephira-lb-audio-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = audio;
+      dirty = true;
+    }
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);

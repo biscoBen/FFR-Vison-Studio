@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "c74376873995ae4bb5704f3717e81bd91519200ea0d460ba3bb1cebd2a8d3bea",
+    "install_existing_visions.py": "01c4d894a8c2a551d8aefd6455d098cb1b724353007214efa91b02a2972bb0ec",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
     "payload/_ffr_build_icons.py": "b6e48223d9d79dc376651a219cf6aed5a167f8fa7bc5da2f4187bb2fa22d714b",
@@ -31,6 +31,7 @@
     "payload/_ffr_party_voices.py": "7dd587b6298595ae06eb25b0fbd50c7aa3172a86774bb222d089feb3ac87ac34",
     "payload/_ffr_sephira.py": "27cbe01c6c87b105455c6005689274783568c3fb9eff75ff8734cef451cd74c2",
     "payload/_ffr_sephira_ffbe.py": "11e159b088c21a846b500ee097453eaa50ccaac4e41c89e66fad940622a2c2b0",
+    "payload/_ffr_sephira_lb_audio.py": "3ef55d229300ee9595779f77e7ba589c1f91ded65b995968787f0d8e95a4eed8",
     "payload/_ffr_sephira_sequences.py": "ab6d3836368a65b27eafdda64df7af59bf23513ec0773a69f75c3c9cc104ecd8",
     "payload/_ffr_shrine_challenges.py": "dc5f62b8661eb9e2fb494037bad8c10c829cacd433272520fa000116a0eb6567",
     "payload/_ffr_testing.py": "0b8bab16e6acd6da0cf26a30dd0d6c2a886d8caceb9fd8f81c131846277690d6",
@@ -50,13 +51,14 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "636617535be021e59ec3890fd8fba1828df923fa076c43438aed29aea0220dbf",
+    "payload/manifest.json": "74e462c6ee83f08964b5d9b247797fa8dafaa2d6da43786ccc924bf5cebfc161",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "a973e72e927d417748d578a90b56b53bd6d2d96c48f62fe6a216d740df78eac1",
     "payload/sephira_blood_recovery.zip": "0b87caf4af4e3ac2ea80ef40908ea30a39d66df03b6ca4fcc56b2b523d3b4883",
     "payload/sephira_challenges.json": "07ac3dd3e8c07c87b43c88ace3463f8feda9a351e6af1e6b6f27c6b081d09480",
+    "payload/sephira_lb_audio.zip": "ec27564e71645dffb25770585221ea943bbbfb4f3d98adfbf106a340e0bfb0e4",
     "payload/sephira_native_presentations.json": "5ed610592815a408180283122aa7608567ec2b5d1fded4a32d653ef72c2fdeed",
     "payload/sephira_visuals.json": "501de528645c5827eb05797bdf76414f510b2af4d759ffa541ef80483d3a91ed",
     "payload/vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"

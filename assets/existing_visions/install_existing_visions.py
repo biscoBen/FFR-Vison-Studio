@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.67'
+VERSION = '1.2.68'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -272,6 +272,13 @@ def hook_builder(raw):
     timeline_build, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'ffbe_resonance.build']
     lines[timeline_build.lineno - 1] = stage_indent + 'job = _ffr_fina_battle.prepare_job(job, native_units + UNITS, lb_id)' + nl + stage_indent + '(_ffr_animation_repair.build_effect_sequence if job.get("kind") == "skill_effect" else ffbe_resonance.build)(job, OUT, BUILD, FFRDT, USMAP, run)' + nl
+    resonance, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'prepare_ffbe_resonance']
+    audio_call, = [n for n in ast.walk(resonance) if isinstance(n, ast.Call)
+                   and ast.unparse(n.func) == 'ffbe_audio.prepare']
+    if audio_call.lineno != audio_call.end_lineno:
+        raise RuntimeError('Unsupported FFBE LB audio preparation layout.')
+    i = audio_call.lineno - 1
+    lines[i] = '    import _ffr_sephira_lb_audio' + nl + lines[i].replace('ffbe_audio.prepare(', '_ffr_sephira_lb_audio.prepare(')
     indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
     lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
     lines[icon_loop.lineno - 1] = indent + '_ffr_existingvisions.prepare_command_icon(tables, u, rows)' + nl
@@ -474,6 +481,10 @@ def run(root, action):
         elif name == 'fina_battle_preview.zip': validate_preview_archive(raw)
         elif name == 'ffbe_needles.zip': validate_needles_archive(raw)
         elif name == 'sephira_blood_recovery.zip': validate_blood_archive(raw)
+        elif name == 'sephira_lb_audio.zip':
+            namespace = {}
+            exec(compile(resource_data['_ffr_sephira_lb_audio.py'], '_ffr_sephira_lb_audio.py', 'exec'), namespace)
+            namespace['validate'](raw)
         elif name == 'ffbe_library_browser.zip': validate_library_browser(raw)
         else: raise RuntimeError('Unsupported existing vision resource: ' + name)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}

@@ -73,7 +73,8 @@
     "mechanics": "custom",
     "descAuto": false,
     "ffbe_lb_id": "99887755552703",
-    "ffbe_lb": "units/custom/crystal_fina_2/resonance.json"
+    "ffbe_lb": "units/custom/crystal_fina_2/resonance.json",
+    "sephiraAudio": 1
   },
   "skills": {
     "485300": {

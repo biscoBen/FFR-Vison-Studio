@@ -805,7 +805,7 @@
           "from": 440170,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -823,7 +823,9 @@
           "en": "A2 Resonance",
           "desc": "Native Squall resonance mechanics; A2's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -2878,7 +2880,7 @@
           "from": 414090,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -2894,7 +2896,9 @@
           "en": "Christine Resonance",
           "desc": "Native Tronn resonance mechanics; Christine's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -4263,7 +4267,8 @@
           "mechanics": "custom",
           "descAuto": false,
           "ffbe_lb_id": "99887755552703",
-          "ffbe_lb": "units/custom/crystal_fina_2/resonance.json"
+          "ffbe_lb": "units/custom/crystal_fina_2/resonance.json",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -5717,7 +5722,7 @@
           "from": 412620,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -5733,7 +5738,9 @@
           "en": "Barusa Resonance",
           "desc": "Native Wilhelm resonance mechanics; Barusa's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -7145,7 +7152,7 @@
           "from": 440020,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -7163,7 +7170,9 @@
           "en": "Blue Sky Belle Fran Resonance",
           "desc": "Native Firion resonance mechanics; Blue Sky Belle Fran's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -8526,7 +8535,7 @@
           "from": 440190,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -8544,7 +8553,9 @@
           "en": "Oracle Maiden Lunafreya Resonance",
           "desc": "Native Zidane resonance mechanics; Oracle Maiden Lunafreya's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -9986,7 +9997,7 @@
           "from": 440030,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -10002,7 +10013,9 @@
           "en": "Minfilia Resonance",
           "desc": "Native Onion Knight resonance mechanics; Minfilia's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -11715,7 +11728,7 @@
           "from": 414090,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -11733,7 +11746,9 @@
           "en": "Folka Resonance",
           "desc": "Native Tronn resonance mechanics; Folka's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -13871,7 +13886,7 @@
           "from": 440060,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -13889,7 +13904,9 @@
           "en": "Fryevia Resonance",
           "desc": "Native Bartz resonance mechanics; Fryevia's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -16025,7 +16042,7 @@
           "from": 440010,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -16041,7 +16058,9 @@
           "en": "Lenneth Resonance",
           "desc": "Native Warrior of Light resonance mechanics; Lenneth's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -18102,7 +18121,7 @@
           "from": 440020,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -18118,7 +18137,9 @@
           "en": "Lila Resonance",
           "desc": "Native Firion resonance mechanics; Lila's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -19450,7 +19471,7 @@
           "from": 412620,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -19466,7 +19487,9 @@
           "en": "Mystea Resonance",
           "desc": "Native Cecil resonance mechanics; Mystea's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -21142,7 +21165,7 @@
           "from": 440310,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -21158,7 +21181,9 @@
           "en": "Reberta (JP) Resonance",
           "desc": "Native Clive resonance mechanics; Reberta (JP)'s own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -22700,7 +22725,7 @@
           "from": 440040,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -22718,7 +22743,9 @@
           "en": "Snow White Resonance",
           "desc": "Native Cecil resonance mechanics; Snow White's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -24559,7 +24586,7 @@
           "from": 414100,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -24575,7 +24602,9 @@
           "en": "Aria Resonance",
           "desc": "Native Leah resonance mechanics; Aria's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 1,
@@ -26320,7 +26349,7 @@
           "from": 440090,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -26338,7 +26367,9 @@
           "en": "Eiko Resonance",
           "desc": "Native Ayaka resonance mechanics; Eiko's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -27920,7 +27951,7 @@
           "from": 440170,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -27938,7 +27969,9 @@
           "en": "Alice/Half Nightmare Resonance",
           "desc": "Native Squall resonance mechanics; Alice/Half Nightmare's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -29648,7 +29681,7 @@
           "from": 440210,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -29668,7 +29701,9 @@
           "en": "Moogle of Narshe Mog Resonance",
           "desc": "Native Tidus resonance mechanics; Moogle of Narshe Mog's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -31030,7 +31065,7 @@
           "from": 440040,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -31046,7 +31081,9 @@
           "en": "Lilith Resonance",
           "desc": "Native Cecil resonance mechanics; Lilith's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -32672,7 +32709,7 @@
           "from": 440290,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -32690,7 +32727,9 @@
           "en": "Dragon Knight Freya Resonance",
           "desc": "Native Noctis resonance mechanics; Dragon Knight Freya's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -34278,7 +34317,7 @@
           "from": 440240,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -34294,7 +34333,9 @@
           "en": "Trance Terra Resonance",
           "desc": "Native Shantotto resonance mechanics; Trance Terra's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -35442,7 +35483,7 @@
           "from": 412510,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -35458,7 +35499,9 @@
           "en": "Charming Kitty Ariana Resonance",
           "desc": "Native Ayaka resonance mechanics; Charming Kitty Ariana's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -37095,7 +37138,7 @@
           "from": 412620,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -37111,7 +37154,9 @@
           "en": "Elephim Resonance",
           "desc": "Native Vaan resonance mechanics; Elephim's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -38602,7 +38647,7 @@
           "from": 440110,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -38618,7 +38663,9 @@
           "en": "Jade Resonance",
           "desc": "Native Cloud resonance mechanics; Jade's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -40087,7 +40134,7 @@
           "from": 440030,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -40103,7 +40150,9 @@
           "en": "Spirited Heart Primm Resonance",
           "desc": "Native Onion Knight resonance mechanics; Spirited Heart Primm's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -41681,7 +41730,7 @@
           "from": 440240,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -41699,7 +41748,9 @@
           "en": "Relm Resonance",
           "desc": "Native Shantotto resonance mechanics; Relm's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -43407,7 +43458,7 @@
           "from": 440250,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -43423,7 +43474,9 @@
           "en": "Rikku (FFX-2) Resonance",
           "desc": "Native Vaan resonance mechanics; Rikku (FFX-2)'s own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -44928,7 +44981,7 @@
           "from": 440110,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -44944,7 +44997,9 @@
           "en": "Nalu Resonance",
           "desc": "Native Cloud resonance mechanics; Nalu's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -46533,7 +46588,7 @@
           "from": 440210,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -46551,7 +46606,9 @@
           "en": "Elza Resonance",
           "desc": "Native Tidus resonance mechanics; Elza's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,
@@ -48287,7 +48344,7 @@
           "from": 440060,
           "presentation": "ffbe",
           "mechanics": "custom",
-          "audio": "none",
+          "audio": "native",
           "visuals": 440110,
           "clone_sequence": true,
           "mute": [
@@ -48303,7 +48360,9 @@
           "en": "Lunera Resonance",
           "desc": "Native Bartz resonance mechanics; Lunera's own sprite animation.",
           "descAuto": false,
-          "nameAuto": false
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
         },
         "sephiraAcquisition": {
           "version": 3,

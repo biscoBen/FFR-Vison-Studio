@@ -56,6 +56,31 @@ void main() {
   });
   tearDown(() { app.dispose(); dir.deleteSync(recursive: true); });
 
+  test('LB audio repairs old defaults once and preserves kits and later explicit mutes', () async {
+    final presets = await SephiraVisions.bundled;
+    for (final p in presets) {
+      final old = CharacterConfig.copy(p['profile'] as Map<String, dynamic>);
+      old[SephiraVisions.field] = {'version': 1, 'preset': p['id'], 'enabled': true};
+      (old['lb_custom'] as Map)..remove('sephiraAudio')..['audio'] = 'none';
+      final before = CharacterConfig.copy(old);
+      final next = SephiraVisions.repairLbAudio(old, presets);
+      expect(next['lb_custom']['audio'], 'native');
+      expect(next['lb_custom']['audio_codec'], 'host');
+      expect(next['lb_custom']['sephiraAudio'], 1);
+      expect(old, before);
+      for (final field in old.keys.where((k) => k != 'lb_custom')) {
+        expect(next[field], old[field]);
+      }
+      expect(SephiraVisions.repairLbAudio(next, presets), same(next));
+      next['lb_custom']['audio'] = 'none';
+      expect(SephiraVisions.repairLbAudio(next, presets), same(next));
+      old['lb_custom']['audio_bank'] = 'my-recordings.json';
+      expect(SephiraVisions.repairLbAudio(old, presets), same(old));
+      old.remove(SephiraVisions.field);
+      if (p['id'] != 'crystal_fina') expect(SephiraVisions.repairLbAudio(old, presets), same(old));
+    }
+  });
+
   test('enable allocates collision-free identities and keeps unrelated units', () async {
     final original = clone(app.units.single);
     await app.setSephiraEnabled(true);

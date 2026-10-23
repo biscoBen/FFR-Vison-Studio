@@ -277,7 +277,7 @@ def generate(reference):
             if shift:
                 unit['ffbe'].update({'baseForm':shift['base'],'baseDir':f"units/ffbe/sephira_{key}/sprites/{shift['base']}", 'shift':shift['kind']})
             lb={'from':by_id('Item/Vision/DT_VisionItemData',budget)['finishBlowSkill'],
-                'presentation':'ffbe','mechanics':'custom','audio':'none','visuals':440110,
+                'presentation':'ffbe','mechanics':'custom','audio':'native','audio_codec':'host','sephiraAudio':1,'visuals':440110,
                 'clone_sequence':True,'mute':['VO_'],'field_color_mode':'element',
                 'ffbe_lb_id':form,'movement':{'enabled':False},'set':{}}
         # Element/type changes express the requested role without increasing the

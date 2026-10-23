@@ -256,6 +256,8 @@ class BundledFeatures {
           'payload/ffbe_library.html',
           'payload/_ffr_deck_sync.py',
           'payload/_ffr_sephira.py',
+          'payload/_ffr_sephira_lb_audio.py',
+          'payload/sephira_lb_audio.zip',
           'payload/_ffr_sephira_ffbe.py',
           'payload/sephira_blood_recovery.zip',
           'payload/_ffr_sephira_sequences.py',
@@ -297,7 +299,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 59) {
+        (manifest['files'] as Map).length != 61) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -343,7 +345,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.67' ||
+    if (status['patchVersion'] != '1.2.68' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

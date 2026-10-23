@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 import 'character_config.dart';
 import 'acquisition.dart';
+import 'crystal_fina.dart';
 
 /// Optional, editable presets. Membership lives in portable character configs;
 /// disabled entries retain their IDs and edits but are omitted by the builder.
@@ -62,6 +63,29 @@ class SephiraVisions {
   static bool valid(dynamic value) => value is Map && value.length == 3 &&
       value['version'] == 1 && value['preset'] is String &&
       (value['preset'] as String).isNotEmpty && value['enabled'] is bool;
+
+  /// Replace the shipped audio-off default once, without resetting the kit.
+  /// The marker lets a later explicit mute remain muted across restarts.
+  static Map<String, dynamic> repairLbAudio(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (unit['native'] != null || unit['party'] != null) return unit;
+    final id = presetId(unit) ?? (CrystalFina.matches(unit) ? 'crystal_fina' : null);
+    final expected = presets.where((p) => p['id'] == id).firstOrNull?['profile'];
+    final lb = unit['lb_custom'];
+    if (expected is! Map || lb is! Map || lb['sephiraAudio'] == 1 ||
+        unit['ffbe']?['id'] != expected['ffbe']?['id'] ||
+        lb['ffbe_lb_id'] != expected['lb_custom']?['ffbe_lb_id'] ||
+        lb['presentation'] != 'ffbe' ||
+        !['none', 'native'].contains(lb['audio']) ||
+        lb['audio_bank'] != null || lb['audio_system_bank'] != null) {
+      return unit;
+    }
+    final result = CharacterConfig.copy(unit);
+    (result['lb_custom'] as Map).addAll(
+        <String, dynamic>{'audio': 'native', 'audio_codec': 'host', 'sephiraAudio': 1});
+    return result;
+  }
 
   static Map<String, dynamic> setEnabled(Map<String, dynamic> unit, bool enabled) => {
     ...unit,
