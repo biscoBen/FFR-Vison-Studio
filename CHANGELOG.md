@@ -11,19 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Sephira passive mastery, elemental attacks and vision command icons
-
-- Preserve all 131 distinct passives from the 15 excluded original visions, once each, plus 19 curated extras. Each
-  added vision has one passive at MR1/3/5/7/9; former MR active skills return to awakening. Keep permanent stat/AP
-  and Spirit rewards. The backed-up MR update preserves active skill edits, IDs, artwork and acquisition choices.
-- Correct all 39 neutral-source elemental skill icon mismatches. Give those custom attacks matching native hit
-  particles at their original damage timing, preserving motion, sounds, hit counts and special-hit feedback.
-  Native elemental borrowed presentations keep their effects; explicit user visual overrides remain intact.
-- Give every added vision its own battle-command and Spirit icon. Remove the 16-slot donor fallback that showed
-  Cloud/Terra icons on later imports, and preserve the original game's icon rows. Covers both Rain and Lasswell.
-- Native asset writing/readback checks pass for all 30 kits, 39 elemental impacts and 30 command/master icon pairs.
-  Live rendering and the revised passive balance still need playtesting; no missing original source is silently replaced.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -92,6 +79,67 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Sephira passive mastery and vision command icons — 2026-10-22
+
+Code: [`08a5195`](https://github.com/biscoBen/FFR-Vison-Studio/commit/08a51958152721af53b2cefdb9d31b4b7fe81ca9), extension **1.2.67**.
+Windows package: [run 39907648685](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39907648685/Sephira-Studio-Test.zip). **57,106,526 bytes** (57.1 MB).
+SHA-256: `eb8c377a9b9ecf749512819767f218f582d46f93900c43f1e3c81c0a8d726539`.
+
+- Preserve all 131 distinct passives from the 15 excluded original visions, once each, plus 19 curated extras. Each
+  added vision has one passive at MR1/3/5/7/9; former MR active skills return to awakening. Keep permanent stat/AP
+  and Spirit rewards. The backed-up MR update preserves active skill edits, IDs, artwork and acquisition choices.
+- Correct all 39 neutral-source elemental skill icon mismatches. Give those custom attacks matching native hit
+  particles at their original damage timing, preserving motion, sounds, hit counts and special-hit feedback.
+  Native elemental borrowed presentations keep their effects; explicit user visual overrides remain intact.
+- Give every added vision its own battle-command and Spirit icon. Remove the 16-slot donor fallback that showed
+  Cloud/Terra icons on later imports, and preserve the original game's icon rows. Covers both Rain and Lasswell.
+- Native asset writing/readback checks pass for all 30 kits, 39 elemental impacts and 30 command/master icon pairs.
+  Live rendering and the revised passive balance still need playtesting; no missing original source is silently replaced.
+
+The curated allocation contains **150 unique passives**: all 131 required originals and 19 extras, including
+Knight of the Sacred Frost. Active grants and recipes remain; awakening has 15–21 active skills per vision and
+no passive grants. Existing revision-3/4 source and acquisition migrations still run against their historical
+layout before revision 6. Saved revision-5 profiles receive the curated MR rewards while retaining active
+skills, permanent stat rewards, IDs, artwork, combat edits and acquisition settings. Standalone Fina keeps the
+same MR allocation and Crystal Renewal in awakening; the known legacy reward repair remains backed up.
+The level-10 practice Fina also retains the newly moved healing skill as a bounded 20%-HP boss copy.
+
+The elemental effects use the original private reaction and native cosmetic hit-particle tables. No timeline
+keys, damage hits, sounds, slowdown or flashes are added. Original critical/weakness/additional/miss/death
+settings remain; three default-sentinel sources receive private generic feedback rows. Target body position
+comes from the native reaction. With borrowed visuals off, all 39 get the new impact; with borrowed visuals on,
+21 retain their existing elemental spell presentation and 18 use their recovered original attack plus impact.
+Explicit user visual/icon edits remain authoritative. Command icons use separate per-vision serialized UI tags
+and brush rows, avoiding the old 16-placeholder limit without replacing native tags or textures.
+
+Validation: **595 local Python tests** (10 platform/dependency skips), **275 Flutter passes** (one skip), static
+analysis and bundle integrity. Native writing/readback covers **30 kits**, **314 private skill definitions**,
+**26 private passive identities**, **312 original player routes / 1,264 packages**, **39 elemental impacts** and
+**30 command/master icon pairs** across 14 written tables. All original rows checked in ten definition, mastery,
+feedback and UI tables are unchanged. Independent Fina reward and healing-route readback passes. Windows
+validation, compilation, frozen-engine and release checks pass for the same code commit. Download verification
+checks provenance, SHA-256, all **59** managed extension and **16** Fina file hashes, the actual catalog, all 150
+passive selections and the shipped runtime helpers. The optional FFBE animation library remains separate.
+These checks do not establish live appearance or balance; the three pre-existing original presentation reviews
+remain flagged rather than silently substituted.
+
+Update while keeping **Studio Test Data**, apply **MR and acquisition update**, rebuild/install and restart the
+game. Preparation/review remains optional. Later edits to an already migrated recipe are preserved.
+
+Measured timing: first complete candidate **2026-10-22 22:41:01 PDT** → verified package delivered
+**22:58:14 PDT**, **17m 13s**, including local checks, the capacity-fixture and practice-boss
+corrections, CI, waiting, download and verification. The timer was not restarted. The helper initially dispatched
+before the automatic push run was visible; that duplicate was cancelled and the resumed helper joined the
+matching push run. No second binary was delivered. README/CHANGELOG-only publication notes create no binary and
+do not relabel the verified package.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Automatic Windows push / 39907648685 | success | 9m 44s | 12m 00s | 2m 05s |
+| Raced duplicate dispatch / 39907651801 | cancelled | 3m 57s | 5m 11s | 1m 16s |
+
+Summed runner usage: **20m 32s**, separate from elapsed delivery time.
 
 ## Published Crystal Fina battle recovery and MR repair — 2026-10-22
 

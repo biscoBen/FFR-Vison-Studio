@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Sephira MR rewards, elemental attacks and vision icons — 2026-10-22
+
+[Verified Windows download / run 39907648685](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39907648685/Sephira-Studio-Test.zip)
+(code `08a5195`, extension **1.2.67**; **57.1 MB**).
+
+All **131 original passives** from the 15 excluded visions are preserved once, with 19 selected extras. Each
+Sephira vision now has one passive at MR1/3/5/7/9; former MR active skills move to awakening. Permanent stat/AP
+and Spirit rewards stay intact. See [all 150 MR choices](docs/SEPHIRA_PASSIVE_MASTERY.md).
+
+39 custom elemental attacks get the correct elemental icon and a matching native impact at their existing
+hit timing. Their original movement, sounds and damage events remain. Each added vision also has its own
+battle-command and Spirit icon, fixing the Cloud/Terra donor fallback on later imports for Rain and Lasswell.
+Original game icon rows are preserved.
+
+Close Studio/game and update while keeping **Studio Test Data**. Reopen Studio, click **Apply MR and acquisition
+update** once, then rebuild/install and restart the game. The migration backs up the roster and preserves
+active skill edits, artwork, IDs, permanent rewards and acquisition settings. New/restored presets include it.
+Windows checks, package integrity and native readback pass; final rendering and the revised passive balance
+still need in-game testing. Existing individual source exceptions remain in the [runtime review](docs/SEPHIRA_RUNTIME_REVIEW.md).
+
 ### Crystal Fina battle recovery and MR repair — 2026-10-22
 
 [Verified Windows download / run 39900403407](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39900403407/Sephira-Studio-Test.zip)
