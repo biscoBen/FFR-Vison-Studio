@@ -11,17 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina illustrated cinematic test
-
-- Add an optional, default-off **Test Crystal Fina cinematic** switch and a read-only browser preview. The
-  6.4-second illustrated intro uses the approved crystal refraction/light appearance, camera movement, healing
-  glow and a glass release with an original synthesized score. It leads into her existing LB and cure sound.
-- Keep Fina’s healing, reaction timing relative to her LB animation, kit, MR rewards and crystal presentation.
-  Package the movie inside the normal three-file mod/snapshot; disabling and rebuilding removes the intro.
-- Verify media decoding/demux, native movie/spawn descriptors, preserved compiled bindings, companion-pak
-  transport and opt-out behavior. Native playback, synchronization, repeated battles and Steam Deck playback
-  remain untested in game. See [the test instructions and limits](docs/CRYSTAL_FINA_CINEMATIC.md).
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -90,6 +79,50 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina illustrated cinematic test — 2026-10-23
+
+Code: [`aab0431`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aab04319c58edb6ad4b6c6309fca38c0b06e4155), extension **1.2.70**.
+Windows package: [run 39986827052](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39986827052/Sephira-Studio-Test.zip).
+**63,464,413 bytes** (63.5 MB).
+SHA-256: `b91a0e396143b573c6b005e64338868254dffaef2a71b1c39b6479289adb22a7`.
+
+- Add an optional, default-off **Test Crystal Fina cinematic** switch and a read-only browser preview. The
+  6.4-second illustrated intro uses the approved crystal refraction/light appearance, camera movement, healing
+  glow and a glass release with an original synthesized score. It leads into her existing LB and cure sound.
+- Keep Fina’s healing, reaction timing relative to her LB animation, kit, MR rewards and crystal presentation.
+  Package the movie inside the normal three-file mod/snapshot; disabling and rebuilding removes the intro.
+- Verify media decoding/demux, native movie/spawn descriptors, preserved compiled bindings, companion-pak
+  transport and opt-out behavior. Native playback, synchronization, repeated battles and Steam Deck playback
+  remain untested in game. See [the test instructions and limits](docs/CRYSTAL_FINA_CINEMATIC.md).
+
+The approved source artwork is pinned by SHA-256 in the small media archive. The movie’s CRI container
+recovers the exact fully decodable VP9 stream. Native writing/readback verifies 1280×720 / 30 fps / 192 frames,
+the 2.0–8.4-second movie window, three sound banks, the existing cure/application alignment, private child
+routes, inert donor battle events and byte-identical opaque compiled data. retoc packages the native assets
+without changing the USM companion pak. The movie therefore uses the existing installer/snapshot transport.
+
+Validation: **607 Python tests** (10 local platform/dependency skips), **279 Flutter passes** (one skip), clean
+static analysis and all bundled manifests. Windows full validation, frozen-engine startup and compilation pass
+for this exact commit. Download provenance, release SHA-256, **63 managed extension / 16 Fina files**, all
+30 existing presets and the delivered movie/score archive are verified. The game itself has not been run here;
+CRI decoder acceptance, UI restoration, synchronization and repeat playback remain user tests.
+
+Close Studio/game, update while keeping **Studio Test Data**, enable **Test Crystal Fina cinematic**, then
+rebuild/install and restart. The browser preview is included. No kit reset, mandatory game preparation or MR
+update is introduced. Disabling the test and rebuilding returns to the normal LB. Other visions are unchanged.
+
+First complete candidate: **2026-10-23 09:21:50 PDT**. Downloaded package fully verified at **09:35:55 PDT**:
+**14m 05s** including local checks, corrections, CI, waiting, download and verification. The helper reused the
+matching automatic push run and dispatched no additional build. Publication notes change only README/CHANGELOG;
+they do not rebuild or relabel this binary. A separate preview upload was rejected by GitHub authentication;
+the same MP4 remains included in Studio’s read-only preview.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| 39986827052 | success | 8m 39s | 10m 30s | 2m 20s |
+
+Summed runner usage: **12m 50s**, separate from elapsed verification/delivery time.
 
 ## Published Sephira awakening bonuses and requested LB audio — 2026-10-23
 

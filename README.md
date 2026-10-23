@@ -4,6 +4,24 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina cinematic test — 2026-10-23
+
+[Verified Windows download / run 39986827052](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39986827052/Sephira-Studio-Test.zip)
+(code `aab0431`, extension **1.2.70**; **63.5 MB**).
+
+An optional **6.4-second illustrated cinematic** now leads into Crystal Fina’s existing LB. It uses the approved
+crystal refraction/light appearance and an original chime/glass score. Open **Preview Crystal Fina cinematic**
+in Studio to watch it without entering a battle.
+
+Update while keeping **Studio Test Data**. Include Crystal Fina, turn on **Test Crystal Fina cinematic**,
+rebuild/install and restart the game, then use her resonance. Check the transition, sound and a second battle.
+Turn the switch off and rebuild/install to remove it. **No MR/acquisition update or kit reset is required.**
+Her healing, rewards, existing LB and accepted crystal material are retained.
+
+Windows compilation/validation, media decoding and native timeline/package checks pass. Actual CRI playback,
+synchronization, repeated battles and Steam Deck playback still need testing. See [the implementation and test
+limits](docs/CRYSTAL_FINA_CINEMATIC.md). The large optional FFBE animation library remains a separate download.
+
 ### Sephira awakening bonuses and requested LB audio — 2026-10-23
 
 [Verified Windows download / run 39921373217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39921373217/Sephira-Studio-Test.zip)
