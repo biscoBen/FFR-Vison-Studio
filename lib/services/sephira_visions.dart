@@ -96,6 +96,19 @@ class SephiraVisions {
     if ((unit['sephiraRecipe'] as int? ?? 0) >= latest) {
       return CharacterConfig.copy(unit);
     }
+    if (latest >= 6) {
+      var previous = unit;
+      if ((unit['sephiraRecipe'] as int? ?? 0) < 5) {
+        // Apply earlier source/acquisition migrations against their own layout,
+        // before curating passives. A new allocation is not an old MR template.
+        final legacy = CharacterConfig.copy(preset);
+        (legacy['profile'] as Map).addAll(
+            CharacterConfig.copy(preset['revision5Progression'] as Map<String, dynamic>));
+        legacy['profile']['sephiraRecipe'] = 5;
+        previous = updateProgression(unit, legacy);
+      }
+      return _passiveMastery(previous, preset);
+    }
     final template = CharacterConfig.restore(
         preset['profile'] as Map<String, dynamic>, [], replacing: unit);
     final result = CharacterConfig.copy(unit);
@@ -179,6 +192,55 @@ class SephiraVisions {
       result['sephiraAcquisition'] = template['sephiraAcquisition'];
       result[Acquisition.field] = template['sephiraAcquisition'];
     }
+    CharacterConfig.validate(result);
+    return result;
+  }
+
+  static Map<String, dynamic> _passiveMastery(
+      Map<String, dynamic> unit, Map<String, dynamic> preset) {
+    final template = CharacterConfig.restore(
+        preset['profile'] as Map<String, dynamic>, [], replacing: unit);
+    final result = CharacterConfig.copy(unit);
+    final awakening = [for (final tier in result['awakening'] as List)
+      [for (final raw in tier as List) if (raw[0] != 'PassiveSkill') List<dynamic>.from(raw as List)]];
+    final retained = {for (final tier in awakening) for (final g in tier) '${g[0]}:${g[1]}'};
+    for (final tier in result['synchro'] as List) {
+      for (final raw in tier as List) {
+        final grant = List<dynamic>.from(raw as List);
+        if (grant[0] != 'ActiveSkill' || !retained.add('${grant[0]}:${grant[1]}')) continue;
+        final preferred = (template['awakening'] as List).indexWhere((t) =>
+            (t as List).any((g) => g[0] == grant[0] && g[1] == grant[1]));
+        final start = preferred < 0 ? 0 : preferred;
+        final rank = [start, for (var r = start + 1; r < 4; r++) r,
+          for (var r = 0; r < start; r++) r].where((r) => awakening[r].length < 8).firstOrNull;
+        if (rank == null) throw StateError('${unit['en']} has no room for its retained active MR skills.');
+        awakening[rank].add(grant);
+      }
+    }
+    final rewards = [for (final tier in result['synchro'] as List)
+      [for (final raw in tier as List)
+        if (raw[0] != 'PassiveSkill' && raw[0] != 'ActiveSkill') List<dynamic>.from(raw as List)]];
+    for (final rank in [1, 3, 5, 7, 9]) {
+      rewards[rank].insert(0, List<dynamic>.from((template['synchro'][rank] as List)
+          .singleWhere((g) => g[0] == 'PassiveSkill') as List));
+    }
+    // Retain command recipes and deliberate icon choices. Old inherited attack
+    // icons get the element of the saved skill, rather than the donor weapon.
+    for (final recipe in (result['skills'] as Map).values.cast<Map>()) {
+      final fields = recipe['set'] as Map?;
+      if (fields == null || fields.containsKey('SkillIcon.TagName') || fields.containsKey('SkillIcon')) continue;
+      final source = (template['skills'] as Map).values.cast<Map>()
+          .where((r) => r['from'] == recipe['from']).firstOrNull;
+      final tag = source?['set']?['SkillIcon.TagName'];
+      final element = fields['element'];
+      if (tag is String) { fields['SkillIcon.TagName'] =
+          ['Fire', 'Ice', 'Thunder', 'Water', 'Wind', 'Earth', 'Light', 'Dark'].contains(element)
+              ? 'UI.Skill.Action.Icon.$element' : tag; }
+    }
+    result['awakening'] = awakening;
+    result['synchro'] = rewards;
+    result['sephiraPassiveText'] = CharacterConfig.copy(template['sephiraPassiveText'] as Map<String, dynamic>);
+    result['sephiraRecipe'] = 6;
     CharacterConfig.validate(result);
     return result;
   }

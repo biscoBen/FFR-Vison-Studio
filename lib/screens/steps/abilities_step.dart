@@ -159,7 +159,14 @@ class _AbilitiesStepState extends State<AbilitiesStep> {
           render: (g, i, j) {
             final custom = (widget.unit['skills'] as Map?)?['${g[1]}'] as Map?;
             final x = byId[g[1] as num];
-            final tag = (custom?['set'] as Map?)?['SkillIcon.TagName'] as String? ?? x?['icon'] as String?;
+            final source = custom == null ? x : byId[custom['from'] as num?];
+            final fields = custom?['set'] as Map?;
+            final element = fields?['element'] ?? source?['element'];
+            final elementalDamage = ['Fire', 'Ice', 'Thunder', 'Water', 'Wind', 'Earth', 'Light', 'Dark'].contains(element) &&
+                (fields?['parameterVariationType'] ?? source?['parameterVariationType']) == 'Decrease' &&
+                (fields?['parameterType'] ?? source?['parameterType']) == 'HitPoint';
+            final tag = fields?['SkillIcon.TagName'] as String? ??
+                (elementalDamage ? 'UI.Skill.Action.Icon.$element' : source?['icon'] as String?);
             final png = iconPng(cat, tag);
             return Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

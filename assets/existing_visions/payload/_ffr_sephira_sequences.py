@@ -14,15 +14,25 @@ RELS = ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')
 POLICY = 'sephira_native_presentations.json'
 
 
-def selections(units):
+def selections(units, *, impact_sources=(), definitions=None):
     import _ffr_sephira
+    borrowed = json.loads(Path(_ffr_sephira.__file__).with_name('sephira_visuals.json').read_bytes())['presets'] if impact_sources else {}
     for unit in units:
         if _ffr_sephira.runtime_membership(unit) is None: continue
         for identity, recipe in (unit.get('skills') or {}).items():
-            if (not recipe or recipe.get('visuals', recipe['from']) != recipe['from']
-                    or recipe.get('clone_sequence') or recipe.get('tint') is not None
+            if (not recipe or recipe.get('clone_sequence') or recipe.get('tint') is not None
                     or recipe.get('motion') or recipe.get('sequence_edits')):
                 continue
+            visual = recipe.get('visuals', recipe['from'])
+            if visual != recipe['from']:
+                # An optional elemental spell already supplies its own effect.
+                # A stock non-elemental substitute can now use the recovered
+                # original attack plus the authored burst. User overrides win.
+                preset = _ffr_sephira.runtime_membership(unit)['preset']
+                if (str(recipe['from']) not in impact_sources or
+                        borrowed.get(preset, {}).get(str(recipe['from'])) != visual or
+                        (definitions or {}).get(visual, {}).get('element') != 'None'):
+                    continue
             yield int(identity), recipe, unit
 
 
@@ -60,11 +70,14 @@ def direction_edits(rule, recipe, native):
 
 
 def prepare(tables, clones, units, root, rows, extract, support):
-    chosen = list(selections(units))
-    if not chosen: return []
+    import _ffr_sephira
+    if not any(_ffr_sephira.runtime_membership(u) is not None for u in units): return []
     policy = json.loads(Path(__file__).with_name(POLICY).read_bytes())
     if policy.get('schema') != 1: raise ValueError('Unsupported Sephira native presentation policy.')
     definitions = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
+    impacts = policy.get('elementalImpacts', {})
+    chosen = list(selections(units, impact_sources=impacts.get('sources', {}), definitions=definitions))
+    if not chosen: return []
     assets = {rel: {r['ID']: (k, r) for k, r in rows(rel).items()} for rel in RELS}
     reactions = {r['ID']: (k, r) for k, r in rows('Battle/Sequencer/DT_BtlHitEffectData').items()}
     verified = set(); reports = []
@@ -121,11 +134,15 @@ def prepare(tables, clones, units, root, rows, extract, support):
         if any(target in data for data in assets.values()):
             raise ValueError('A Sephira private player route overlaps an original skill: ' + str(target))
         edits = None
-        if len(rule['reactionIds']) == 1 and rule['reactionIds'][0] in reactions:
+        element = recipe.get('set', {}).get('element', native.get('element'))
+        elemental = (str(source) in impacts.get('sources', {}) and native.get('element') == 'None'
+                     and element in impacts.get('elements', {}))
+        if len(rule['reactionIds']) == 1 and (rule['reactionIds'][0] in reactions or
+                elemental and rule['reactionIds'][0] == -1 and 449999 in reactions):
             reaction_id, = rule['reactionIds']
             edits = {kind: [{'match': {'EventType': 'OtherReaction', 'Other_Reaction_Id': reaction_id},
                              'set': {'Other_Reaction_Id': sid}}] for kind in ('master', 'cut', 'effect', 'sound')}
-            replace_added(tables, 'Battle/Sequencer/DT_BtlHitEffectData', reactions[reaction_id][0], sid,
+            replace_added(tables, 'Battle/Sequencer/DT_BtlHitEffectData', reactions.get(reaction_id, reactions.get(449999))[0], sid,
                           f'Studio_Sephira_Impact_{sid}', {'ID': sid})
         binding = support['clone'](donors[RELS[0]][1], rule['sourceSequence'], sid, target, (), clones,
                                     support['objects'], (), edits, support['bytecode'])
@@ -157,6 +174,23 @@ def prepare(tables, clones, units, root, rows, extract, support):
             skill['set']['sequencerIdWhenTargetFriendlies'] = -1
         entry.update(status='own_source_player_route', sequence=target, enabledMotionTracks=len(rule['enableTracks']),
                      nativePlayerVariant=rule.get('nativePlayerVariant', False), directionEdits=len(directions), sourceFlags=rule['flags'])
+        if elemental:
+            effective = dict(native, **recipe.get('set', {}))
+            if (effective.get('skillEffectType') == 'DamageAndRecovery' and
+                    effective.get('parameterVariationType') == 'Decrease' and effective.get('parameterType') == 'HitPoint'):
+                asset_rel = 'Battle/Sequencer/DT_BtlHitAssetData'
+                hit_assets = rows(asset_rel)
+                if any(r['ID'] == sid for r in hit_assets.values()):
+                    raise ValueError('An elemental impact ID overlaps an original hit asset: ' + str(sid))
+                donor = next((k for k, r in hit_assets.items() if r['ID'] == 0), None)
+                if donor is None: raise ValueError('The native cosmetic hit-effect template is unavailable.')
+                replace_added(tables, asset_rel, donor, sid, f'Studio_Sephira_Element_{sid}',
+                              {'niagaraAsset': impacts['elements'][element]['path']})
+                reaction = next(r for r in tables['Battle/Sequencer/DT_BtlHitEffectData']['add']
+                                if r['set'].get('ID') == sid)
+                reaction['set']['NormalEffectID'] = sid
+                entry['elementalImpact'] = {'element': element, 'additionalHits': 0,
+                                            'timing': 'original reaction', 'target': 'original recipient'}
     report = Path(root) / 'build/sephira-animation-report.json'
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps({'schema': 1, 'inGameValidated': False, 'skills': reports}, indent=2) + '\n', encoding='utf-8')

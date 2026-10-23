@@ -15,6 +15,33 @@ from test_animation_and_library import motion
 
 
 class SephiraOriginalSequenceTests(unittest.TestCase):
+    def test_elemental_finish_uses_cosmetic_hit_data_and_preserves_original_feedback_and_timing(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); unit, game, tables, support = self.fixture(root)
+            source = game['Skill/DT_SkillData']['Rend source']
+            source.update(element='None', skillEffectType='DamageAndRecovery',
+                          parameterVariationType='Decrease', parameterType='HitPoint')
+            unit['skills']['485003']['set']['element'] = 'Ice'
+            policy = json.loads((root / sequences.POLICY).read_bytes())
+            policy['skills']['501510']['definitionSha256'] = digest(source)
+            particle = '/Game/Effect/03_SKL/skl220050/NS_EF_SKL220050_001'
+            policy['elementalImpacts'] = {'sources': {'501510': True}, 'elements': {'Ice': {'path': particle}}}
+            (root / sequences.POLICY).write_text(json.dumps(policy))
+            game['Battle/Sequencer/DT_BtlHitAssetData'] = {'Neutral': {'ID':0, 'HitSlowDilation':1.0}}
+            before = copy.deepcopy(game)
+            with mock.patch.object(sequences, '__file__', str(root / 'module.py')):
+                report = sequences.prepare(tables, [], [unit], root, game.__getitem__, mock.Mock(), support)
+            self.assertEqual(report[0]['elementalImpact']['additionalHits'], 0)
+            asset, = tables['Battle/Sequencer/DT_BtlHitAssetData']['add']
+            self.assertEqual(asset['set'], {'ID':485003, 'niagaraAsset':particle})
+            hit, = tables['Battle/Sequencer/DT_BtlHitEffectData']['add']
+            self.assertEqual(hit['set'], {'ID':485003, 'NormalEffectID':485003})
+            edits = support['clone'].call_args.args[-2]
+            self.assertEqual(set(edits), {'master','cut','effect','sound'})
+            self.assertTrue(all(len(ops)==1 for ops in edits.values()))
+            self.assertTrue(all(op['set']=={'Other_Reaction_Id':485003} for ops in edits.values() for op in ops))
+            self.assertEqual(game,before)
+
     def fixture(self, root):
         source = {'ID': 501510, 'playSequencerId': -1, 'sequencerIdWhenTargetFriendlies': -1}
         binding = {'ID': 501512, 'LevelSequence': '/Game/Sequencer/Battle/EnemySkill/500130/500132/SEQ_Battle_500132_Master',

@@ -72,7 +72,7 @@ class SephiraTests(unittest.TestCase):
             u=p['profile']; b=p['balance']
             grants=[g for t in u['awakening'] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
             mr=[g for t in u['synchro'] for g in t if g[0] in ['ActiveSkill','PassiveSkill']]
-            self.assertGreaterEqual(len(grants),20,p['id'])
+            self.assertGreaterEqual(len(grants),15,p['id'])
             self.assertLessEqual(len(grants),28,p['id'])
             self.assertEqual(len(grants),b['kitCount'])
             self.assertEqual(sum(g[0]=='ActiveSkill' for g in grants),b['activeCount'])
@@ -81,7 +81,8 @@ class SephiraTests(unittest.TestCase):
             self.assertEqual(sum(g[0]=='PassiveSkill' for g in mr),b['mrPassiveCount'])
             self.assertEqual(len(mr),b['mrSkillCount'])
             self.assertEqual(len(grants)+len(mr),b['totalSkillCount'])
-            self.assertGreater(b['kitCount'],b['previousCount'])
+            self.assertEqual(b['passiveCount'], 0)
+            self.assertEqual(b['mrPassiveCount'], 5)
             visual_ids=set()
             for sid in map(int,u['skills']):
                 self.assertFalse(visual_ids & {sid,sid+1,sid+2})
@@ -120,8 +121,8 @@ class SephiraTests(unittest.TestCase):
             previous = {tuple(g) for tier in baseline[p['id']] for g in tier
                         if g[0] in ('ActiveSkill', 'PassiveSkill')}
             replaced = {(r['oldKind'], r['oldId'], -1) for r in p['rewardReplacements']}
-            self.assertLessEqual(previous - replaced, learned, p['id'])
-            self.assertEqual(p['profile']['sephiraRecipe'],5)
+            self.assertLessEqual({g for g in previous - replaced if g[0] == 'ActiveSkill'}, learned, p['id'])
+            self.assertEqual(p['profile']['sephiraRecipe'],6)
 
     def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
@@ -135,8 +136,10 @@ class SephiraTests(unittest.TestCase):
         self.assertNotIn(20001,copies[570610]['effects'])
         by_key={p['id']:p['profile'] for p in catalog['presets']}
         def skills(key): return {g[1] for f in ['awakening','synchro'] for t in by_key[key][f] for g in t}
-        self.assertLessEqual({1441,1518},skills('ariana')) # Scion + equipment-sourced focus
-        self.assertLessEqual({1450,414600,414610},skills('lilith')) # Shield + guard commands
+        self.assertIn(1499, skills('ariana')) # Good Luck grows with actions
+        self.assertLessEqual({414600,414610},skills('lilith')) # Both guard commands retained
+        self.assertLessEqual({1029,1408},skills('lenneth')) # Counter with its Light bonus
+        self.assertIn(1463, skills('fryevia')) # Knight of the Sacred Frost is an MR passive
 
     def test_retired_dragon_is_excluded_even_in_older_enabled_rosters(self):
         old=member('great_dragon',True)

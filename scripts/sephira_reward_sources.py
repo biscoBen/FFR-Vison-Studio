@@ -79,6 +79,8 @@ LABELS = {
     1506: ('Critical Rate +50%', 'Increase critical hit rate by 50%.'),
     1276: ('Magic Defense +30%', 'Reduce magic damage taken by 30%.'),
     1051: ('Double MRP', 'Double MRP gained.'),
+    1524: ('Imbue Water', 'Add water to non-elemental standard attacks and battle skills.'),
+    1526: ('Imbue Earth', 'Add earth to non-elemental standard attacks and battle skills.'),
 }
 
 
@@ -239,6 +241,7 @@ def describe_changes(catalog, english):
     passives = {s['id']: s['name'] for s in english['passives']}
     visions = {s['id']: s['name'] for s in english['visions']}
     lines = ['# Sephira reward source correction', '',
+        'Historical revision-5 source audit. Revision 6 subsequently curates these bonuses into five passives per vision; some extras below are intentionally removed. See [the current passive allocation](SEPHIRA_PASSIVE_MASTERY.md). Active recipes and the protected-source exclusions are retained.', '',
         'Recipe revision 5 replaces 52 rewards from the original visions you are keeping: 44 MR grants and eight awakening grants. The replacement keeps each grant in its existing rank. All 291 grants from the 15 excluded originals remain available, alongside the existing awakening quotas, five learned MR rewards, permanent stats and challenge budgets.', '',
         'The protected pool includes all 55 learned MR rewards from Amelia, Victoria, Camille, Leah, Ayaka, Charlotte, Aileen, Terra, Lightning, Y’shtola and Sephiroth. No active copy or passive grant in the presets uses one of those sources.', '',
         'Replacements use 36 equipment bonuses, one enemy defense bonus and 15 bounded enemy skills. Bonus effects retain native parameters and conditions; private copies supply English text and a 20-AP minimum for formerly zero-cost equipment bonuses. Active copies retain the player limits and native visual-mode controls. These are starting balance values; live testing remains necessary.', '',

@@ -2,6 +2,18 @@
 
 Full-game reference: `8ce7a0746d0cc1b2`, collected 2026-10-22. This is a structural/native serialization audit; it does not certify the final appearance of every skill in a running game.
 
+## Current revision 6
+
+All 131 excluded-original passives are now allocated once across the 30 visions, with 19 curated extras. Each odd MR rank has one passive, every awakening grant is active, and all active recipes and permanent stat budgets remain. [The full allocation](SEPHIRA_PASSIVE_MASTERY.md) lists all 150 choices and the saved-roster migration.
+
+39 neutral-source custom elemental attacks now use private native hit-particle rows at their original reaction times. The cosmetic rows add no damage events, sounds, hit slowdown or screen flash. Original motion/sound tracks and critical, weakness, additional, miss and death settings are retained. Three sources whose original reaction uses the default sentinel receive a private generic hit-feedback row. The standard native hit system supplies the actual recipient and body position. Borrowed elemental spell presentations retain their existing effects; stock neutral substitutes use the recovered original attack and its authored impact. Explicit user visual overrides remain authoritative.
+
+All 39 inherited icon mismatches are corrected to the actual damage element. Every added vision gets its own command and Spirit icon tag/brush, including entries beyond the old 16-slot limit. No original command icon is overwritten, and the icon does not depend on Rain or Lasswell.
+
+Native writing/readback passes for all 30 kits, 314 private definitions, 26 private passive identities, 312 original player routes, all 39 impacts and all 30 command/master icon pairs. The separate 131-passive coverage and saved-roster migration checks pass. These establish table and routing correctness; appearance in a running game still needs playtesting.
+
+The earlier review below records the revision-5 fixes, which remain available for unmigrated saved profiles.
+
 ## Coverage and corrections
 
 - All 30 presets, all four awakening tiers and MR0–9 were reviewed. The audit resolves 526 original active-skill sources; 523 have direct sequence bindings. Including the original player variants and their canonical aliases, 1,728 distinct timeline packages were inspected.

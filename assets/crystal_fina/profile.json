@@ -143,16 +143,9 @@
         230040
       ],
       [
-        "PassiveSkill",
-        1304
-      ],
-      [
-        "PassiveSkill",
-        1352
-      ],
-      [
-        "PassiveSkill",
-        1282
+        "ActiveSkill",
+        485318,
+        -1
       ]
     ],
     [
@@ -175,18 +168,6 @@
       [
         "ActiveSkill",
         210140
-      ],
-      [
-        "PassiveSkill",
-        1401
-      ],
-      [
-        "PassiveSkill",
-        1391
-      ],
-      [
-        "PassiveSkill",
-        1283
       ]
     ],
     [
@@ -205,18 +186,6 @@
       [
         "ActiveSkill",
         230070
-      ],
-      [
-        "PassiveSkill",
-        1353
-      ],
-      [
-        "PassiveSkill",
-        1408
-      ],
-      [
-        "PassiveSkill",
-        1375
       ]
     ],
     [
@@ -227,22 +196,6 @@
       [
         "ActiveSkill",
         300110
-      ],
-      [
-        "PassiveSkill",
-        1349
-      ],
-      [
-        "PassiveSkill",
-        1355
-      ],
-      [
-        "PassiveSkill",
-        1045
-      ],
-      [
-        "PassiveSkill",
-        1256
       ]
     ]
   ],
@@ -251,7 +204,7 @@
     [
       [
         "PassiveSkill",
-        1252,
+        1283,
         -1
       ]
     ],
@@ -278,8 +231,8 @@
     ],
     [
       [
-        "ActiveSkill",
-        485318,
+        "PassiveSkill",
+        1077,
         -1
       ]
     ],
@@ -307,7 +260,7 @@
     [
       [
         "PassiveSkill",
-        1456,
+        1042,
         -1
       ],
       [
@@ -350,5 +303,5 @@
       "desc": "Fill the LB gauge by 10% at the start of each action."
     }
   },
-  "sephiraRecipe": 5
+  "sephiraRecipe": 6
 }

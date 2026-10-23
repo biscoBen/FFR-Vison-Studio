@@ -142,7 +142,8 @@ def kit(unit, rows, team_size):
         source = recipe.get('from', identity) if identity else 500010
         if source not in native: raise ValueError('Missing vision boss skill source: ' + str(source))
         key, original = native[source]
-        row = {**copy.deepcopy(original), **copy.deepcopy(recipe.get('set', {}))}
+        import _ffr_testing as testing
+        row = testing.apply_fields(original, recipe.get('set', {}))
         enemy_id = skill_base(unit) + index * 10
         if enemy_id in native: raise ValueError('Sephira enemy skill identity is occupied.')
         row.update(ID=enemy_id, SortId=enemy_id, Cost=0, hasUnit='All', belongCommandList=[912],

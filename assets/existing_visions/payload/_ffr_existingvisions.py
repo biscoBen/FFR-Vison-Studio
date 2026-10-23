@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import tempfile
 
 UNIT = 'Unit/DT_UnitParameter'
@@ -192,18 +193,52 @@ def ensure_sprite_templates(unit, legacy, extract):
 
 
 def command_icon(unit, added, reserved, rows):
-    """Use a registered donor command icon once the spare icon tags run out.
+    """A local UI lookup tag per added vision, independent of caster/donor.
 
-    Only the small command/master icon is shared. Portraits and the unit's
-    model, identity, skills and progression still belong to that unit.
+    Serialized gameplay tags carry their FName; this UI brush lookup does not
+    use network tag indices. Do not consume another original vision's icon tag.
     """
-    index = added.index(unit)
-    if index < len(reserved): return f'UI.Skill.Command.Icon.{reserved[index]}'
-    _, donor = one(rows, 'Skill/DT_CommandSkillData', 'unitIdToUseSkill', unit['donor'])
-    tag = (donor.get('SkillIcon') or {}).get('TagName')
-    if not isinstance(tag, str) or not tag.startswith('UI.Skill.Command.Icon.'):
-        raise ValueError('The command icon donor has no registered command icon.')
-    return tag
+    return f'UI.Skill.Command.Icon.Studio.{unit["id"]}'
+
+
+def prepare_command_icon(tables, unit, rows):
+    tag = command_icon(unit, (), (), rows)
+    package = f'/Game/UI/Textures/Icon/menu/ICON_Ability_summon{unit["id"]}'
+    for rel in ('UI/Skill/DT_CommandSkillIcon', 'UI/Skill/CDT_SkillIcon'):
+        original = rows(rel)
+        donor = next((key for key, value in original.items()
+                      if (value.get('Tag') or {}).get('TagName', '').startswith('UI.Skill.Command.Icon.')), None)
+        if donor is None: raise ValueError('The command icon brush template is unavailable.')
+        plan = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+        fields = {'Tag.TagName': tag, 'Brush.ResourceObject': package,
+                  'Brush.ImageSize': {'X': 64.0, 'Y': 64.0}, 'Brush.bIsDynamicallyLoaded': True,
+                  'Brush.ResourceName': package + '.ICON_Ability_summon' + str(unit['id'])}
+        plan['add'].append({'row': 'Studio_Command_Icon_' + str(unit['id']), 'cloneFrom': donor, 'set': fields})
+
+
+def verify_command_icons(root, tool, usmap, units):
+    """Check all private command/master tags and their own brush textures."""
+    if not units: return
+    root = Path(root); work = root / 'build/command-icon-check'; work.mkdir(parents=True, exist_ok=True)
+    data = {}
+    for rel in ('Skill/DT_CommandSkillData', 'Skill/DT_MasterSkillData',
+                'UI/Skill/DT_CommandSkillIcon', 'UI/Skill/CDT_SkillIcon'):
+        target = work / (rel.replace('/', '_') + '.json')
+        subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets/FFRS/Content/Datatable' / (rel + '.uasset')),
+                               str(target), '--usmap', usmap], check=True, capture_output=True)
+        data[rel] = json.loads(target.read_text(encoding='utf-8-sig'))['rows']
+    for unit in units:
+        tag = command_icon(unit, (), (), None)
+        for field, rel in (('command', 'Skill/DT_CommandSkillData'), ('master', 'Skill/DT_MasterSkillData')):
+            matches = [r for r in data[rel].values() if r['ID'] == unit[field]['id']]
+            if len(matches) != 1 or matches[0].get('SkillIcon', {}).get('TagName') != tag:
+                raise ValueError(f'{unit["en"]}: its {field} icon still points at another vision.')
+        expected = f'ICON_Ability_summon{unit["id"]}'
+        for rel in ('UI/Skill/DT_CommandSkillIcon', 'UI/Skill/CDT_SkillIcon'):
+            matches = [r for r in data[rel].values() if r.get('Tag', {}).get('TagName') == tag]
+            if len(matches) != 1 or matches[0].get('Brush', {}).get('ResourceObject') != expected:
+                raise ValueError(f'{unit["en"]}: its battle command icon brush is missing or shared.')
+    print(f'OK: {len(units)} added visions have their own command and Spirit icons')
 
 
 def prepare(tables, objects, units, root, rows):

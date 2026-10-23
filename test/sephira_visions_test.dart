@@ -33,6 +33,13 @@ class CatalogConfigApi extends ConfigApi {
   }
 }
 
+Map<String, dynamic> revision5Preset(Map<String, dynamic> value) {
+  final result = CharacterConfig.copy(value);
+  (result['profile'] as Map).addAll(CharacterConfig.copy(result['revision5Progression'] as Map<String, dynamic>));
+  result['profile']['sephiraRecipe'] = 5;
+  return result;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory dir;
@@ -181,7 +188,7 @@ void main() {
       final mr = (u['synchro'] as List).expand((tier) => tier as List)
           .where((g) => g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill').length;
       final preset = presets.singleWhere((p) => p['profile']['en'] == u['en']);
-      expect(awakening, inInclusiveRange(20, 28), reason: u['en'] as String);
+      expect(awakening, inInclusiveRange(15, 28), reason: u['en'] as String);
       expect(awakening, preset['balance']['kitCount']);
       expect(mr, preset['balance']['mrSkillCount']);
       expect(awakening + mr, preset['balance']['totalSkillCount']);
@@ -197,7 +204,7 @@ void main() {
 
 
   test('MR migration retains every saved ability and combat edit after identity remapping', () async {
-    final presets = await SephiraVisions.bundled;
+    final presets = [for (final p in await SephiraVisions.bundled) revision5Preset(p)];
     final previous = json.decode(File('scripts/fixtures/sephira_revision3_grants.json').readAsStringSync()) as Map;
     final occupied = presets.map((p) => p['profile']).toList();
     final revision4 = json.decode(File('scripts/fixtures/sephira_revision4_grants.json').readAsStringSync()) as Map;
@@ -245,7 +252,7 @@ void main() {
   });
 
   test('revision 4 source correction replaces all protected grants in place and keeps custom acquisition and IDs', () async {
-    final presets = await SephiraVisions.bundled;
+    final presets = [for (final p in await SephiraVisions.bundled) revision5Preset(p)];
     final previous = json.decode(File('scripts/fixtures/sephira_revision4_grants.json').readAsStringSync()) as Map;
     final occupied = presets.map((p) => p['profile']).toList();
     var replacements = 0;
@@ -289,6 +296,48 @@ void main() {
     expect(replacements,52);
   });
 
+  test('revision 6 curates all 131 original passives and keeps active skills, edits and permanent stats', () async {
+    final presets = await SephiraVisions.bundled;
+    final occupied = presets.map((p) => p['profile']).toList();
+    final passiveIds = <int>[];
+    for (final preset in presets) {
+      final previous = revision5Preset(preset);
+      final saved = CharacterConfig.restore(previous['profile'] as Map<String, dynamic>, occupied);
+      saved[SephiraVisions.field] = {'version':1, 'preset':preset['id'], 'enabled':false};
+      saved['studioAcquisition'] = {'version':1, 'random':false, 'hideSpoilers':false, 'location':'mitra_shop'};
+      (saved['skills'] as Map).values.first['set']['Cost'] = 27;
+      saved['stats']['Attack'] = 123;
+      final before = CharacterConfig.copy(saved);
+      final next = SephiraVisions.updateProgression(saved, preset);
+      final active = {for (final field in ['awakening','synchro']) for (final tier in saved[field] as List)
+        for (final g in tier as List) if (g[0]=='ActiveSkill') g[1]};
+      expect({for (final tier in next['awakening'] as List) for (final g in tier as List) g[1]}, active);
+      expect((next['awakening'] as List).expand((t) => t as List).every((g) => g[0]=='ActiveSkill'), isTrue);
+      for (final rank in [1,3,5,7,9]) {
+        final chosen = (next['synchro'][rank] as List).where((g) => g[0]=='PassiveSkill').single;
+        expect(chosen, preset['profile']['synchro'][rank][0]);
+        passiveIds.add(chosen[1] as int);
+      }
+      for (final field in ['id','key','ffbe','stats','skills','lb_custom','studioAcquisition',SephiraVisions.field]) {
+        expect(next[field], saved[field], reason:'${preset['id']}: $field');
+      }
+      for (var rank = 0; rank < 10; rank++) {
+        expect((next['synchro'][rank] as List).where((g) => g[0]=='BaseParameter' || g[0]=='MasterSkill').toList(),
+            (saved['synchro'][rank] as List).where((g) => g[0]=='BaseParameter' || g[0]=='MasterSkill').toList());
+      }
+      expect(saved, before);
+      expect(next['sephiraRecipe'],6);
+      expect(SephiraVisions.updateProgression(next,preset),next);
+      CharacterConfig.decode(CharacterConfig.encode(next));
+    }
+    expect(passiveIds,hasLength(150));
+    expect(passiveIds.toSet(),hasLength(150));
+    final coverage = json.decode(File('assets/sephira_visions/native_coverage.json').readAsStringSync()) as Map;
+    final originals = (coverage['entries'] as List).where((e) => e['kind']=='PassiveSkill').map((e) => e['id']).toSet();
+    expect(originals,hasLength(131));
+    expect(passiveIds.toSet().containsAll(originals),isTrue);
+  });
+
   test('progression update backs up the old roster and commits atomically', () async {
     final presets = await SephiraVisions.bundled;
     final unit = CharacterConfig.copy(presets.first['profile'] as Map<String, dynamic>);
@@ -302,7 +351,7 @@ void main() {
     expect(app.units.single['sephiraRecipe'], 3);
     api.fail = false;
     await app.updateSephiraProgression();
-    expect(app.units.single['sephiraRecipe'], 5);
+    expect(app.units.single['sephiraRecipe'], 6);
     expect(app.units.single['stats']['Attack'], 123);
     final backups = Directory(app.paths.configBackups).listSync().whereType<File>();
     expect(backups, isNotEmpty);

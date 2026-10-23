@@ -11709,5 +11709,76 @@
       "attack_C_pose"
     ]
   },
-  "selection": "Prefer the original source player binding or its exact same-family canonical player sequence when its enabled effects are present; preserve enemy +2 routes."
+  "selection": "Prefer the original source player binding or its exact same-family canonical player sequence when its enabled effects are present; preserve enemy +2 routes.",
+  "elementalImpacts": {
+    "schema": 1,
+    "sources": {
+      "500030": true,
+      "500040": true,
+      "500070": true,
+      "500120": true,
+      "500510": true,
+      "500550": true,
+      "500580": true,
+      "500620": true,
+      "500630": true,
+      "500640": true,
+      "500880": true,
+      "501070": true,
+      "501300": true,
+      "501340": true,
+      "501670": true,
+      "501900": true,
+      "502040": true,
+      "502200": true,
+      "502270": true,
+      "502380": true,
+      "502620": true,
+      "503130": true,
+      "503610": true,
+      "503650": true,
+      "503670": true,
+      "503680": true,
+      "503700": true,
+      "505400": true,
+      "505610": true,
+      "505970": true,
+      "570610": true,
+      "570640": true,
+      "570650": true,
+      "570660": true,
+      "570670": true,
+      "570680": true,
+      "571110": true,
+      "571140": true,
+      "571530": true
+    },
+    "elements": {
+      "Fire": {
+        "path": "/Game/Effect/03_SKL/skl220010/NS_EF_SKL220010_Root"
+      },
+      "Ice": {
+        "path": "/Game/Effect/03_SKL/skl220050/NS_EF_SKL220050_001"
+      },
+      "Thunder": {
+        "path": "/Game/Effect/03_SKL/skl220090/NS_EF_SKL220090_001_Root"
+      },
+      "Water": {
+        "path": "/Game/Effect/03_SKL/skl220130/NS_EF_SKL220130_Root"
+      },
+      "Wind": {
+        "path": "/Game/Effect/03_SKL/skl220170/NS_EF_SKL220170_Root"
+      },
+      "Earth": {
+        "path": "/Game/Effect/03_SKL/skl220210/NS_EF_SKL220211_Center"
+      },
+      "Light": {
+        "path": "/Game/Effect/03_SKL/skl210250/NS_EF_SKL210250_Vanish_001_Center"
+      },
+      "Dark": {
+        "path": "/Game/Effect/03_SKL/skl408050/NS_EF_SKL408050_Dystpia_001_PosAll"
+      }
+    },
+    "note": "Native cosmetic hit assets on the original private reaction row. No new timeline keys, damage, sound, slowdown or flash events. Native critical/weakness/additional/miss/death feedback and target binding are retained."
+  }
 }

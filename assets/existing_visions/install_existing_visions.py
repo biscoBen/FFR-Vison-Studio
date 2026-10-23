@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.66'
+VERSION = '1.2.67'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -235,6 +235,7 @@ def hook_builder(raw):
                    '_ffr_field_leader.build(party_units + native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))']
     early_check = ['stage("Checking game tables before sprite conversion")',
                    '_ffr_testing.verify_table_recipe(ROOT, FFRDT, USMAP)',
+                   '_ffr_existingvisions.verify_command_icons(ROOT, FFRDT, USMAP, UNITS)',
                    '_ffr_sephira.verify_runtime_rows(ROOT, FFRDT, USMAP, UNITS, rows)']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch,
                  timeline_loop.lineno - 1: early_check, pack.lineno - 1: before_pack}
@@ -273,8 +274,8 @@ def hook_builder(raw):
     lines[timeline_build.lineno - 1] = stage_indent + 'job = _ffr_fina_battle.prepare_job(job, native_units + UNITS, lb_id)' + nl + stage_indent + '(_ffr_animation_repair.build_effect_sequence if job.get("kind") == "skill_effect" else ffbe_resonance.build)(job, OUT, BUILD, FFRDT, USMAP, run)' + nl
     indent = lines[icon_tag.lineno - 1][:len(lines[icon_tag.lineno - 1]) - len(lines[icon_tag.lineno - 1].lstrip())]
     lines[icon_tag.lineno - 1] = indent + 'icon_tag = _ffr_existingvisions.command_icon(u, UNITS, UNUSED_ICON_TAGS, rows)' + nl
-    for i in range(icon_loop.lineno - 1, icon_loop.end_lineno): lines[i] = '    ' + lines[i]
-    lines[icon_loop.lineno - 1] = indent + 'if UNITS.index(u) < len(UNUSED_ICON_TAGS):' + nl + lines[icon_loop.lineno - 1]
+    lines[icon_loop.lineno - 1] = indent + '_ffr_existingvisions.prepare_command_icon(tables, u, rows)' + nl
+    for i in range(icon_loop.lineno, icon_loop.end_lineno): lines[i] = ''
     for i, line in enumerate(lines, 1):
         out.append(line)
         if i in additions: out.append(nl.join('    ' + s for s in additions[i]) + nl)
@@ -392,7 +393,7 @@ def hook_verifier(raw):
     if ast.unparse(expected.value) != 'expected_rows()' or count.lineno != count.end_lineno or unexpected.lineno != unexpected.end_lineno:
         raise RuntimeError('Unsupported native vision verifier layout.')
     nl = '\r\n' if '\r\n' in text else '\n'; lines = text.splitlines(keepends=True)
-    lines[count.lineno - 1] = '    import _ffr_sephira' + nl + '    n = len([u for u in _ffr_sephira.active_units(json.load(open(spec, encoding="utf-8"))) if u.get("native") is None and u.get("party") is None]) if os.path.exists(spec) else 5' + nl
+    lines[count.lineno - 1] = '    return set()  # Private icon rows never replace original brushes.' + nl
     finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
     lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_crystal_cave' + nl + '    _ffr_crystal_cave.verify_shops(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
     additions = {

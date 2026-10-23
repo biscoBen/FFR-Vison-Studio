@@ -50,9 +50,9 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         self.assertEqual(visual.get('studioAcquisition'), unit.get('studioAcquisition'))
         self.assertEqual(visual['price'], unit['price'], 'Collection shop override must not enroll independent Fina')
         player, = pack.player_units([visual], native.__getitem__)
-        learned = player['synchro'][5][0][1]
+        learned = next(int(sid) for sid, recipe in player['skills'].items() if recipe['en'] == 'Crystal Renewal')
         fields = player['skills'][str(learned)]['set']
-        self.assertEqual(fields['belongCommandList'], [1])
+        self.assertEqual(fields['belongCommandList'], [unit['command']['id']])
         self.assertEqual(fields['availableLocation'], 'Anywhere')
         self.assertEqual(fields['mapEffectType'], 'RecoveryHP')
         self.assertIn(learned, [s for s, _, _ in sequences.selections([player])])
@@ -72,8 +72,8 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         private = [b['passive'] for u in bound for b in u['_sephiraBindings']]
         identities = [r['set']['ID'] for r in private]
         native_ids = {r['ID'] for r in native[pack.PASSIVE].values()}
-        self.assertEqual(len(identities), 47)
-        self.assertEqual(len(set(identities)), 47)
+        self.assertEqual(len(identities), 26)
+        self.assertEqual(len(set(identities)), 26)
         self.assertTrue(all(1000 <= sid < 2000 for sid in identities))
         self.assertFalse(set(identities) & native_ids)
         for unit in bound:
@@ -108,10 +108,12 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
             self.assertTrue(1000 <= identity < 2000, (preset, rank, identity))
         minfilia = result['minfilia']
         self.assertTrue(any(g[0] == 'PassiveSkill' and 1600 <= g[1] < 2000
-                            for g in minfilia['awakening'][0]))
+                            for tier in minfilia['synchro'] for g in tier))
 
     def test_every_private_mr_active_is_a_learnable_general_command(self):
-        _, native, units = inputs()
+        catalog, native, units = inputs()
+        for unit, preset in zip(units, catalog['presets']):
+            unit.update(copy.deepcopy(preset['revision5Progression']))
         before = copy.deepcopy(units)
         result = pack.player_units(units, native.__getitem__)
         fixed = []

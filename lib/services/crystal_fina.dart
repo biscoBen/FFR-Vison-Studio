@@ -49,7 +49,10 @@ class CrystalFina {
     final result = CharacterConfig.copy(unit);
     final rewards = template['synchro'] as List;
     final owned = result['skills'] as Map;
-    for (final tier in rewards) {
+    final renewal = (template['skills'] as Map).entries
+        .where((e) => e.value['from'] == 506110 && e.value['en'] == 'Crystal Renewal').firstOrNull;
+    final activeRepairs = [if (renewal != null) ['ActiveSkill', int.parse(renewal.key.toString()), -1]];
+    for (final tier in [...rewards, activeRepairs]) {
       for (final grant in tier as List) {
         if (grant[0] == 'MasterSkill') grant[1] = unit['master']['id'];
         if (grant[0] != 'ActiveSkill') continue;
@@ -74,7 +77,14 @@ class CrystalFina {
     final moved = {for (final tier in rewards) for (final g in tier)
       if (g[0] == 'ActiveSkill' || g[0] == 'PassiveSkill') '${g[0]}:${g[1]}'};
     result['awakening'] = [for (final tier in result['awakening'] as List)
-      [for (final g in tier as List) if (!moved.contains('${g[0]}:${g[1]}')) g]];
+      [for (final g in tier as List)
+        if (g[0] != 'PassiveSkill' && !moved.contains('${g[0]}:${g[1]}')) g]];
+    for (final grant in activeRepairs) {
+      if ((result['awakening'] as List).expand((t) => t as List)
+          .any((g) => g[0] == grant[0] && g[1] == grant[1])) { continue; }
+      final rank = (result['awakening'] as List).cast<List>().where((t) => t.length < 8).first;
+      rank.add(grant);
+    }
     result['synchro'] = rewards;
     result['sephiraPassiveText'] = {
       ...?result['sephiraPassiveText'] as Map?, ...template['sephiraPassiveText'] as Map,

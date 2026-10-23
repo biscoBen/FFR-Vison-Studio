@@ -11,6 +11,19 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Sephira passive mastery, elemental attacks and vision command icons
+
+- Preserve all 131 distinct passives from the 15 excluded original visions, once each, plus 19 curated extras. Each
+  added vision has one passive at MR1/3/5/7/9; former MR active skills return to awakening. Keep permanent stat/AP
+  and Spirit rewards. The backed-up MR update preserves active skill edits, IDs, artwork and acquisition choices.
+- Correct all 39 neutral-source elemental skill icon mismatches. Give those custom attacks matching native hit
+  particles at their original damage timing, preserving motion, sounds, hit counts and special-hit feedback.
+  Native elemental borrowed presentations keep their effects; explicit user visual overrides remain intact.
+- Give every added vision its own battle-command and Spirit icon. Remove the 16-slot donor fallback that showed
+  Cloud/Terra icons on later imports, and preserve the original game's icon rows. Covers both Rain and Lasswell.
+- Native asset writing/readback checks pass for all 30 kits, 39 elemental impacts and 30 command/master icon pairs.
+  Live rendering and the revised passive balance still need playtesting; no missing original source is silently replaced.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

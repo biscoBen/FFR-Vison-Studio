@@ -254,6 +254,35 @@
         "TargetType": "Group",
         "magnification": 40
       }
+    },
+    {
+      "from": 506110,
+      "visuals": 210020,
+      "jp": "Sephira_crystal_fina_Kit_6",
+      "en": "Crystal Renewal",
+      "desc": "Restore healing power 400. Group friendlies; MP 50; hits 1; accuracy 100; stagger 50.",
+      "descAuto": false,
+      "set": {
+        "Cost": 50,
+        "accuracy": 100,
+        "belongCommandList": [
+          322
+        ],
+        "commandIdBelongDebuggingAllSkills": [
+          322,
+          -1
+        ],
+        "skillIdAfterModeChange": -1,
+        "isApplyAllMag": false,
+        "playSequencerId": -1,
+        "sequencerIdWhenTargetFriendlies": -1,
+        "voiceLabel": "None",
+        "selfSkillActivateVoiceLabel": "None",
+        "magnification": 20,
+        "defaultTargetRelation": "Friendlies",
+        "damageCalcType": "TargetMaxHPRatio"
+      },
+      "source": 485218
     }
   ],
   "animations": [

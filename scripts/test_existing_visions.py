@@ -343,7 +343,7 @@ class NativeVisionTests(unittest.TestCase):
                    'ffrenv': SimpleNamespace(FFRDT=['fixture serializer'])}
             with mock.patch.dict('sys.modules', {'_ffr_existingvisions': native, '_ffr_animation_repair': animation}):
                 exec(compile(ast.Module(body=functions, type_ignores=[]), 'native_verifier_fixture', 'exec'), env)
-                self.assertEqual(env['icon_rows']('UI/Skill/DT_CommandSkillIcon'), {'first'})
+                self.assertEqual(env['icon_rows']('UI/Skill/DT_CommandSkillIcon'), set())
                 for code, built in ((0, changed), (1, {**changed, 'Cloud': {**changed['Cloud'], 'SaveId': 999}}), (1, {})):
                     changed = built
                     with contextlib.redirect_stdout(io.StringIO()), mock.patch.object(sys.modules['_ffr_crystal_cave'], 'verify_shops'), self.assertRaises(SystemExit) as exit:

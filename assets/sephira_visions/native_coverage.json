@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "All excluded native grants allocated once; owner bindings applied by build helper.",
+  "status": "All 160 active skills and 131 original passives allocated once; every passive is an odd-rank MR reward.",
   "sourceTableSha256": {
     "Skill/DT_SkillData.json": "7f2e12526d1658dd08d25ef7b91a0b7ac1e1f5da5bb8c4f20173af3bc9bb1b4e",
     "Skill/DT_PassiveSkillData.json": "8de894e26c1511d0a8856e7a0e52f8ab63a5d7e3be2519ef7e9b899cb4eb508b",
@@ -1351,7 +1351,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "christine",
+      "assignedTo": "elephim",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -2293,7 +2293,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "barusa",
+      "assignedTo": "mystea",
       "equipCost": 40,
       "effectBundles": [
         {
@@ -3081,7 +3081,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "barusa",
+      "assignedTo": "lila",
       "equipCost": 60,
       "effectBundles": [
         {
@@ -4347,7 +4347,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "lilith",
+      "assignedTo": "elza",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -5060,7 +5060,7 @@
           "rank": 9
         }
       ],
-      "assignedTo": "lenneth",
+      "assignedTo": "crystal_fina",
       "equipCost": 40,
       "effectBundles": [
         {
@@ -5937,7 +5937,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "lila",
+      "assignedTo": "crystal_fina",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -6457,7 +6457,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "minfilia",
+      "assignedTo": "aria",
       "equipCost": 40,
       "effectBundles": [
         {
@@ -6816,7 +6816,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "trance_terra",
+      "assignedTo": "aria",
       "equipCost": 40,
       "effectBundles": [
         {
@@ -7755,7 +7755,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "lila",
+      "assignedTo": "primm",
       "equipCost": 60,
       "effectBundles": [
         {
@@ -8317,7 +8317,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "a2",
+      "assignedTo": "primm",
       "equipCost": 40,
       "effectBundles": [
         {
@@ -9124,7 +9124,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "mog",
+      "assignedTo": "lunera",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -9539,7 +9539,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "lunera",
+      "assignedTo": "relm",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -10231,7 +10231,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "jade",
+      "assignedTo": "elephim",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -10549,7 +10549,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "fryevia",
+      "assignedTo": "freya",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -11472,7 +11472,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "trance_terra",
+      "assignedTo": "lunafreya",
       "equipCost": 60,
       "effectBundles": [
         {
@@ -11565,7 +11565,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "a2",
+      "assignedTo": "ariana",
       "equipCost": 10,
       "effectBundles": [
         {
@@ -12902,7 +12902,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "relm",
+      "assignedTo": "aria",
       "equipCost": 10,
       "effectBundles": [
         {
@@ -13676,7 +13676,7 @@
           "rank": 1
         }
       ],
-      "assignedTo": "folka",
+      "assignedTo": "aria",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -13903,7 +13903,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "mog",
+      "assignedTo": "elephim",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -14127,7 +14127,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "reberta",
+      "assignedTo": "jade",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -16485,7 +16485,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "rikku",
+      "assignedTo": "elephim",
       "equipCost": 25,
       "effectBundles": [
         {
@@ -16704,7 +16704,7 @@
           "rank": 9
         }
       ],
-      "assignedTo": "rikku",
+      "assignedTo": "ariana",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -17151,7 +17151,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "reberta",
+      "assignedTo": "relm",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -17813,7 +17813,7 @@
           "rank": 0
         }
       ],
-      "assignedTo": "reberta",
+      "assignedTo": "primm",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -18200,7 +18200,7 @@
           "rank": 2
         }
       ],
-      "assignedTo": "lila",
+      "assignedTo": "lunafreya",
       "equipCost": 20,
       "effectBundles": [
         {
@@ -18386,7 +18386,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "minfilia",
+      "assignedTo": "freya",
       "equipCost": 30,
       "effectBundles": [
         {
@@ -18479,7 +18479,7 @@
           "rank": 3
         }
       ],
-      "assignedTo": "snow_white",
+      "assignedTo": "ariana",
       "equipCost": 20,
       "effectBundles": [
         {

@@ -14,7 +14,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "210240": {
       "ID": 210240,
@@ -28,7 +32,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "215000": {
       "ID": 215000,
@@ -42,7 +50,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "RecoveryHP",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "215010": {
       "ID": 215010,
@@ -56,7 +68,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "RecoveryHP",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "215020": {
       "ID": 215020,
@@ -70,7 +86,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "RecoveryHP",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "220080": {
       "ID": 220080,
@@ -84,7 +104,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "220120": {
       "ID": 220120,
@@ -98,7 +122,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "220240": {
       "ID": 220240,
@@ -112,7 +140,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "220420": {
       "ID": 220420,
@@ -126,7 +158,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "220430": {
       "ID": 220430,
@@ -140,7 +176,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "220440": {
       "ID": 220440,
@@ -154,7 +194,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "225020": {
       "ID": 225020,
@@ -168,7 +212,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "225030": {
       "ID": 225030,
@@ -182,7 +230,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "225050": {
       "ID": 225050,
@@ -196,7 +248,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "225060": {
       "ID": 225060,
@@ -210,7 +266,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "225080": {
       "ID": 225080,
@@ -224,7 +284,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "225090": {
       "ID": 225090,
@@ -238,7 +302,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "225100": {
       "ID": 225100,
@@ -252,7 +320,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "225110": {
       "ID": 225110,
@@ -266,7 +338,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "225120": {
       "ID": 225120,
@@ -280,7 +356,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "225130": {
       "ID": 225130,
@@ -294,7 +374,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "225140": {
       "ID": 225140,
@@ -308,7 +392,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "225150": {
       "ID": 225150,
@@ -322,7 +410,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "225170": {
       "ID": 225170,
@@ -336,7 +428,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "225180": {
       "ID": 225180,
@@ -350,7 +446,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "225290": {
       "ID": 225290,
@@ -364,7 +464,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "225300": {
       "ID": 225300,
@@ -378,7 +482,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "225310": {
       "ID": 225310,
@@ -392,7 +500,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "230010": {
       "ID": 230010,
@@ -406,7 +518,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "230200": {
       "ID": 230200,
@@ -420,7 +536,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235000": {
       "ID": 235000,
@@ -434,7 +554,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235010": {
       "ID": 235010,
@@ -448,7 +572,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235020": {
       "ID": 235020,
@@ -462,7 +590,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235050": {
       "ID": 235050,
@@ -476,7 +608,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235060": {
       "ID": 235060,
@@ -490,7 +626,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235070": {
       "ID": 235070,
@@ -504,7 +644,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "235080": {
       "ID": 235080,
@@ -518,7 +662,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "240010": {
       "ID": 240010,
@@ -532,7 +680,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "240020": {
       "ID": 240020,
@@ -546,7 +698,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "240030": {
       "ID": 240030,
@@ -560,7 +716,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "240190": {
       "ID": 240190,
@@ -574,7 +734,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "240230": {
       "ID": 240230,
@@ -588,7 +752,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "240240": {
       "ID": 240240,
@@ -602,7 +770,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "240250": {
       "ID": 240250,
@@ -616,7 +788,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "245000": {
       "ID": 245000,
@@ -630,7 +806,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "245010": {
       "ID": 245010,
@@ -644,7 +824,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "245020": {
       "ID": 245020,
@@ -658,7 +842,11 @@
       "DamageType": "Magic",
       "availableLocation": "Anywhere",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "245300": {
       "ID": 245300,
@@ -672,7 +860,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "250060": {
       "ID": 250060,
@@ -686,7 +878,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "250110": {
       "ID": 250110,
@@ -700,7 +896,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "250130": {
       "ID": 250130,
@@ -714,7 +914,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "250140": {
       "ID": 250140,
@@ -728,7 +932,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "250150": {
       "ID": 250150,
@@ -742,7 +950,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "250170": {
       "ID": 250170,
@@ -756,7 +968,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "250180": {
       "ID": 250180,
@@ -770,7 +986,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "250190": {
       "ID": 250190,
@@ -784,7 +1004,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "250220": {
       "ID": 250220,
@@ -798,7 +1022,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "250260": {
       "ID": 250260,
@@ -812,7 +1040,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "250300": {
       "ID": 250300,
@@ -826,7 +1058,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "250360": {
       "ID": 250360,
@@ -840,7 +1076,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "250520": {
       "ID": 250520,
@@ -854,7 +1094,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "255000": {
       "ID": 255000,
@@ -868,7 +1112,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "255010": {
       "ID": 255010,
@@ -882,7 +1130,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "255030": {
       "ID": 255030,
@@ -896,7 +1148,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "255040": {
       "ID": 255040,
@@ -910,7 +1166,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "255050": {
       "ID": 255050,
@@ -924,7 +1184,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "255060": {
       "ID": 255060,
@@ -938,7 +1202,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "255070": {
       "ID": 255070,
@@ -952,7 +1220,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "255080": {
       "ID": 255080,
@@ -966,7 +1238,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "255090": {
       "ID": 255090,
@@ -980,7 +1256,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "255100": {
       "ID": 255100,
@@ -994,7 +1274,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "255110": {
       "ID": 255110,
@@ -1008,7 +1292,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "255120": {
       "ID": 255120,
@@ -1022,7 +1310,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "255130": {
       "ID": 255130,
@@ -1036,7 +1328,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "255150": {
       "ID": 255150,
@@ -1050,7 +1346,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "255160": {
       "ID": 255160,
@@ -1064,7 +1364,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "255170": {
       "ID": 255170,
@@ -1078,7 +1382,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "255190": {
       "ID": 255190,
@@ -1092,7 +1400,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "255260": {
       "ID": 255260,
@@ -1106,7 +1418,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "255280": {
       "ID": 255280,
@@ -1120,7 +1436,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "414300": {
       "ID": 414300,
@@ -1134,7 +1454,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "414800": {
       "ID": 414800,
@@ -1148,7 +1472,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "414810": {
       "ID": 414810,
@@ -1162,7 +1490,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "421370": {
       "ID": 421370,
@@ -1176,7 +1508,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "421380": {
       "ID": 421380,
@@ -1190,7 +1526,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "421390": {
       "ID": 421390,
@@ -1204,7 +1544,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "445210": {
       "ID": 445210,
@@ -1218,7 +1562,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "500020": {
       "ID": 500020,
@@ -1232,7 +1580,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500030": {
       "ID": 500030,
@@ -1246,7 +1598,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500040": {
       "ID": 500040,
@@ -1260,7 +1616,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500050": {
       "ID": 500050,
@@ -1274,7 +1634,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500060": {
       "ID": 500060,
@@ -1288,7 +1652,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500070": {
       "ID": 500070,
@@ -1302,7 +1670,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500090": {
       "ID": 500090,
@@ -1316,7 +1688,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500110": {
       "ID": 500110,
@@ -1330,7 +1706,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500120": {
       "ID": 500120,
@@ -1344,7 +1724,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500130": {
       "ID": 500130,
@@ -1358,7 +1742,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500150": {
       "ID": 500150,
@@ -1372,7 +1760,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500170": {
       "ID": 500170,
@@ -1386,7 +1778,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500180": {
       "ID": 500180,
@@ -1400,7 +1796,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "500190": {
       "ID": 500190,
@@ -1414,7 +1814,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500210": {
       "ID": 500210,
@@ -1428,7 +1832,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500220": {
       "ID": 500220,
@@ -1442,7 +1850,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "500230": {
       "ID": 500230,
@@ -1456,7 +1868,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "500250": {
       "ID": 500250,
@@ -1470,7 +1886,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500260": {
       "ID": 500260,
@@ -1484,7 +1904,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500280": {
       "ID": 500280,
@@ -1498,7 +1922,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500290": {
       "ID": 500290,
@@ -1512,7 +1940,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500300": {
       "ID": 500300,
@@ -1526,7 +1958,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500310": {
       "ID": 500310,
@@ -1540,7 +1976,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "500320": {
       "ID": 500320,
@@ -1554,7 +1994,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "500330": {
       "ID": 500330,
@@ -1568,7 +2012,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "500340": {
       "ID": 500340,
@@ -1582,7 +2030,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "500350": {
       "ID": 500350,
@@ -1596,7 +2048,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "500360": {
       "ID": 500360,
@@ -1610,7 +2066,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "500370": {
       "ID": 500370,
@@ -1624,7 +2084,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "500380": {
       "ID": 500380,
@@ -1638,7 +2102,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "500390": {
       "ID": 500390,
@@ -1652,7 +2120,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "500400": {
       "ID": 500400,
@@ -1666,7 +2138,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "500410": {
       "ID": 500410,
@@ -1680,7 +2156,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "500430": {
       "ID": 500430,
@@ -1694,7 +2174,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "500440": {
       "ID": 500440,
@@ -1708,7 +2192,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "500450": {
       "ID": 500450,
@@ -1722,7 +2210,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "500460": {
       "ID": 500460,
@@ -1736,7 +2228,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "500470": {
       "ID": 500470,
@@ -1750,7 +2246,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "500480": {
       "ID": 500480,
@@ -1764,7 +2264,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500490": {
       "ID": 500490,
@@ -1778,7 +2282,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500500": {
       "ID": 500500,
@@ -1792,7 +2300,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500510": {
       "ID": 500510,
@@ -1806,7 +2318,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500520": {
       "ID": 500520,
@@ -1820,7 +2336,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500540": {
       "ID": 500540,
@@ -1834,7 +2354,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500550": {
       "ID": 500550,
@@ -1848,7 +2372,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500560": {
       "ID": 500560,
@@ -1862,7 +2390,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500570": {
       "ID": 500570,
@@ -1876,7 +2408,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500580": {
       "ID": 500580,
@@ -1890,7 +2426,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500600": {
       "ID": 500600,
@@ -1904,7 +2444,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500620": {
       "ID": 500620,
@@ -1918,7 +2462,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500630": {
       "ID": 500630,
@@ -1932,7 +2480,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500640": {
       "ID": 500640,
@@ -1946,7 +2498,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500690": {
       "ID": 500690,
@@ -1960,7 +2516,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500700": {
       "ID": 500700,
@@ -1974,7 +2534,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "500730": {
       "ID": 500730,
@@ -1988,7 +2552,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500750": {
       "ID": 500750,
@@ -2002,7 +2570,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "500760": {
       "ID": 500760,
@@ -2016,7 +2588,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "500770": {
       "ID": 500770,
@@ -2030,7 +2606,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "500800": {
       "ID": 500800,
@@ -2044,7 +2624,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "500810": {
       "ID": 500810,
@@ -2058,7 +2642,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "500820": {
       "ID": 500820,
@@ -2072,7 +2660,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "500860": {
       "ID": 500860,
@@ -2086,7 +2678,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "500870": {
       "ID": 500870,
@@ -2100,7 +2696,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500880": {
       "ID": 500880,
@@ -2114,7 +2714,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500890": {
       "ID": 500890,
@@ -2128,7 +2732,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500900": {
       "ID": 500900,
@@ -2142,7 +2750,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500910": {
       "ID": 500910,
@@ -2156,7 +2768,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500920": {
       "ID": 500920,
@@ -2170,7 +2786,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500930": {
       "ID": 500930,
@@ -2184,7 +2804,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500970": {
       "ID": 500970,
@@ -2198,7 +2822,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "500980": {
       "ID": 500980,
@@ -2212,7 +2840,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "500990": {
       "ID": 500990,
@@ -2226,7 +2858,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "501000": {
       "ID": 501000,
@@ -2240,7 +2876,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "501010": {
       "ID": 501010,
@@ -2254,7 +2894,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501020": {
       "ID": 501020,
@@ -2268,7 +2912,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501030": {
       "ID": 501030,
@@ -2282,7 +2930,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501040": {
       "ID": 501040,
@@ -2296,7 +2948,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501050": {
       "ID": 501050,
@@ -2310,7 +2966,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501070": {
       "ID": 501070,
@@ -2324,7 +2984,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501120": {
       "ID": 501120,
@@ -2338,7 +3002,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": true
+      "isTargetIgnoreSelf": true,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "501170": {
       "ID": 501170,
@@ -2352,7 +3020,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501260": {
       "ID": 501260,
@@ -2366,7 +3038,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501290": {
       "ID": 501290,
@@ -2380,7 +3056,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "501300": {
       "ID": 501300,
@@ -2394,7 +3074,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501310": {
       "ID": 501310,
@@ -2408,7 +3092,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501340": {
       "ID": 501340,
@@ -2422,7 +3110,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501400": {
       "ID": 501400,
@@ -2436,7 +3128,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501410": {
       "ID": 501410,
@@ -2450,7 +3146,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501420": {
       "ID": 501420,
@@ -2464,7 +3164,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501440": {
       "ID": 501440,
@@ -2478,7 +3182,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501510": {
       "ID": 501510,
@@ -2492,7 +3200,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501530": {
       "ID": 501530,
@@ -2506,7 +3218,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "501600": {
       "ID": 501600,
@@ -2520,7 +3236,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501610": {
       "ID": 501610,
@@ -2534,7 +3254,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501630": {
       "ID": 501630,
@@ -2548,7 +3272,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501650": {
       "ID": 501650,
@@ -2562,7 +3290,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501670": {
       "ID": 501670,
@@ -2576,7 +3308,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501680": {
       "ID": 501680,
@@ -2590,7 +3326,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "501700": {
       "ID": 501700,
@@ -2604,7 +3344,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "501720": {
       "ID": 501720,
@@ -2618,7 +3362,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501780": {
       "ID": 501780,
@@ -2632,7 +3380,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "501790": {
       "ID": 501790,
@@ -2646,7 +3398,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501850": {
       "ID": 501850,
@@ -2660,7 +3416,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501880": {
       "ID": 501880,
@@ -2674,7 +3434,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "501900": {
       "ID": 501900,
@@ -2688,7 +3452,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "501930": {
       "ID": 501930,
@@ -2702,7 +3470,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "502010": {
       "ID": 502010,
@@ -2716,7 +3488,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "502020": {
       "ID": 502020,
@@ -2730,7 +3506,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "502030": {
       "ID": 502030,
@@ -2744,7 +3524,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502040": {
       "ID": 502040,
@@ -2758,7 +3542,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502080": {
       "ID": 502080,
@@ -2772,7 +3560,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "502200": {
       "ID": 502200,
@@ -2786,7 +3578,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502220": {
       "ID": 502220,
@@ -2800,7 +3596,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502230": {
       "ID": 502230,
@@ -2814,7 +3614,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502240": {
       "ID": 502240,
@@ -2828,7 +3632,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502270": {
       "ID": 502270,
@@ -2842,7 +3650,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502370": {
       "ID": 502370,
@@ -2856,7 +3668,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502380": {
       "ID": 502380,
@@ -2870,7 +3686,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502470": {
       "ID": 502470,
@@ -2884,7 +3704,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "502600": {
       "ID": 502600,
@@ -2898,7 +3722,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502610": {
       "ID": 502610,
@@ -2912,7 +3740,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "502620": {
       "ID": 502620,
@@ -2926,7 +3758,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "502710": {
       "ID": 502710,
@@ -2940,7 +3776,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "502730": {
       "ID": 502730,
@@ -2954,7 +3794,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "503120": {
       "ID": 503120,
@@ -2968,7 +3812,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503130": {
       "ID": 503130,
@@ -2982,7 +3830,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503170": {
       "ID": 503170,
@@ -2996,7 +3848,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "503190": {
       "ID": 503190,
@@ -3010,7 +3866,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503200": {
       "ID": 503200,
@@ -3024,7 +3884,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503210": {
       "ID": 503210,
@@ -3038,7 +3902,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": true
+      "isTargetIgnoreSelf": true,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "503240": {
       "ID": 503240,
@@ -3052,7 +3920,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503250": {
       "ID": 503250,
@@ -3066,7 +3938,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503260": {
       "ID": 503260,
@@ -3080,7 +3956,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503580": {
       "ID": 503580,
@@ -3094,7 +3974,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503610": {
       "ID": 503610,
@@ -3108,7 +3992,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503620": {
       "ID": 503620,
@@ -3122,7 +4010,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "503630": {
       "ID": 503630,
@@ -3136,7 +4028,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "503640": {
       "ID": 503640,
@@ -3150,7 +4046,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503650": {
       "ID": 503650,
@@ -3164,7 +4064,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503660": {
       "ID": 503660,
@@ -3178,7 +4082,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "503670": {
       "ID": 503670,
@@ -3192,7 +4100,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503680": {
       "ID": 503680,
@@ -3206,7 +4118,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503690": {
       "ID": 503690,
@@ -3220,7 +4136,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503700": {
       "ID": 503700,
@@ -3234,7 +4154,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503720": {
       "ID": 503720,
@@ -3248,7 +4172,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "503770": {
       "ID": 503770,
@@ -3262,7 +4190,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503780": {
       "ID": 503780,
@@ -3276,7 +4208,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Earth",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Earth"
+      }
     },
     "503810": {
       "ID": 503810,
@@ -3290,7 +4226,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503820": {
       "ID": 503820,
@@ -3304,7 +4244,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503830": {
       "ID": 503830,
@@ -3318,7 +4262,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "503840": {
       "ID": 503840,
@@ -3332,7 +4280,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503870": {
       "ID": 503870,
@@ -3346,7 +4298,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "503880": {
       "ID": 503880,
@@ -3360,7 +4316,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "503910": {
       "ID": 503910,
@@ -3374,7 +4334,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "503920": {
       "ID": 503920,
@@ -3388,7 +4352,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "503930": {
       "ID": 503930,
@@ -3402,7 +4370,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503970": {
       "ID": 503970,
@@ -3416,7 +4388,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "503980": {
       "ID": 503980,
@@ -3430,7 +4406,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505030": {
       "ID": 505030,
@@ -3444,7 +4424,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505060": {
       "ID": 505060,
@@ -3458,7 +4442,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505100": {
       "ID": 505100,
@@ -3472,7 +4460,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505120": {
       "ID": 505120,
@@ -3486,7 +4478,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505130": {
       "ID": 505130,
@@ -3500,7 +4496,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "505260": {
       "ID": 505260,
@@ -3514,7 +4514,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505270": {
       "ID": 505270,
@@ -3528,7 +4532,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "505280": {
       "ID": 505280,
@@ -3542,7 +4550,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "505320": {
       "ID": 505320,
@@ -3556,7 +4568,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "505330": {
       "ID": 505330,
@@ -3570,7 +4586,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "505340": {
       "ID": 505340,
@@ -3584,7 +4604,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "505350": {
       "ID": 505350,
@@ -3598,7 +4622,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "505360": {
       "ID": 505360,
@@ -3612,7 +4640,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "505370": {
       "ID": 505370,
@@ -3626,7 +4658,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Light",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Light"
+      }
     },
     "505380": {
       "ID": 505380,
@@ -3640,7 +4676,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "505390": {
       "ID": 505390,
@@ -3654,7 +4694,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "505400": {
       "ID": 505400,
@@ -3668,7 +4712,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505410": {
       "ID": 505410,
@@ -3682,7 +4730,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505420": {
       "ID": 505420,
@@ -3696,7 +4748,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "505430": {
       "ID": 505430,
@@ -3710,7 +4766,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "505450": {
       "ID": 505450,
@@ -3724,7 +4784,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505470": {
       "ID": 505470,
@@ -3738,7 +4802,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "505530": {
       "ID": 505530,
@@ -3752,7 +4820,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "505540": {
       "ID": 505540,
@@ -3766,7 +4838,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505550": {
       "ID": 505550,
@@ -3780,7 +4856,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "505560": {
       "ID": 505560,
@@ -3794,7 +4874,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "505570": {
       "ID": 505570,
@@ -3808,7 +4892,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "505580": {
       "ID": 505580,
@@ -3822,7 +4910,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505600": {
       "ID": 505600,
@@ -3836,7 +4928,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505610": {
       "ID": 505610,
@@ -3850,7 +4946,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505810": {
       "ID": 505810,
@@ -3864,7 +4964,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505840": {
       "ID": 505840,
@@ -3878,7 +4982,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "505860": {
       "ID": 505860,
@@ -3892,7 +5000,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505910": {
       "ID": 505910,
@@ -3906,7 +5018,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505940": {
       "ID": 505940,
@@ -3920,7 +5036,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505950": {
       "ID": 505950,
@@ -3934,7 +5054,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "505960": {
       "ID": 505960,
@@ -3948,7 +5072,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "505970": {
       "ID": 505970,
@@ -3962,7 +5090,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "506040": {
       "ID": 506040,
@@ -3976,7 +5108,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Dark",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Dark"
+      }
     },
     "506110": {
       "ID": 506110,
@@ -3990,7 +5126,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "506120": {
       "ID": 506120,
@@ -4004,7 +5144,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Fire",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Fire"
+      }
     },
     "506130": {
       "ID": 506130,
@@ -4018,7 +5162,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Ice",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Ice"
+      }
     },
     "506140": {
       "ID": 506140,
@@ -4032,7 +5180,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Thunder",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Thunder"
+      }
     },
     "506150": {
       "ID": 506150,
@@ -4046,7 +5198,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Wind",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Wind"
+      }
     },
     "570130": {
       "ID": 570130,
@@ -4060,7 +5216,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": true
+      "isTargetIgnoreSelf": true,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "570410": {
       "ID": 570410,
@@ -4074,7 +5234,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570420": {
       "ID": 570420,
@@ -4088,7 +5252,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570430": {
       "ID": 570430,
@@ -4102,7 +5270,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570440": {
       "ID": 570440,
@@ -4116,7 +5288,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570450": {
       "ID": 570450,
@@ -4130,7 +5306,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "570610": {
       "ID": 570610,
@@ -4144,7 +5324,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "570620": {
       "ID": 570620,
@@ -4158,7 +5342,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "RecoveryHP",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "570630": {
       "ID": 570630,
@@ -4172,7 +5360,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "RecoveryHP",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "570640": {
       "ID": 570640,
@@ -4186,7 +5378,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570650": {
       "ID": 570650,
@@ -4200,7 +5396,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "570660": {
       "ID": 570660,
@@ -4214,7 +5414,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570670": {
       "ID": 570670,
@@ -4228,7 +5432,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "570680": {
       "ID": 570680,
@@ -4242,7 +5450,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "570690": {
       "ID": 570690,
@@ -4256,7 +5468,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Heal"
+      }
     },
     "570710": {
       "ID": 570710,
@@ -4270,7 +5486,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "570820": {
       "ID": 570820,
@@ -4284,7 +5504,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      }
     },
     "571110": {
       "ID": 571110,
@@ -4298,7 +5522,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "571140": {
       "ID": 571140,
@@ -4312,7 +5540,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "571330": {
       "ID": 571330,
@@ -4326,7 +5558,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "571450": {
       "ID": 571450,
@@ -4340,7 +5576,11 @@
       "DamageType": "Magic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "Water",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Water"
+      }
     },
     "571520": {
       "ID": 571520,
@@ -4354,7 +5594,11 @@
       "DamageType": "None",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      }
     },
     "571530": {
       "ID": 571530,
@@ -4368,7 +5612,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "571540": {
       "ID": 571540,
@@ -4382,7 +5630,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     },
     "571550": {
       "ID": 571550,
@@ -4396,7 +5648,11 @@
       "DamageType": "Physic",
       "availableLocation": "BattleOnly",
       "mapEffectType": "None",
-      "isTargetIgnoreSelf": false
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      }
     }
   }
 }

@@ -129,7 +129,7 @@ BINDINGS = {
 # lookups classify IDs before searching their respective native tables.
 _PASSIVE_PRESETS = ('a2', 'christine', 'crystal_fina', 'barusa', 'fran', 'lunafreya', 'minfilia', 'folka', 'fryevia', 'lenneth', 'lila', 'mystea', 'reberta', 'snow_white', 'aria', 'eiko', 'alice', 'mog', 'lilith', 'freya', 'trance_terra', 'ariana', 'elephim', 'jade', 'primm', 'relm', 'rikku', 'nalu', 'elza', 'lunera')
 _PASSIVE_CONDITIONALS = (1406, 1410, 1411, 1418, 1420, 1432, 1433, 1443, 1448, 1454)
-_PASSIVE_LABELS = (('crystal_fina', 1551), ('crystal_fina', 1552), ('lunafreya', 1510), ('lunafreya', 1517), ('folka', 1535), ('fryevia', 1522), ('mystea', 1530), ('mystea', 1274), ('mystea', 1513), ('reberta', 1507), ('aria', 1527), ('aria', 1519), ('eiko', 1498), ('eiko', 1373), ('alice', 1481), ('alice', 1531), ('mog', 1511), ('freya', 1529), ('freya', 1516), ('freya', 1497), ('freya', 1539), ('trance_terra', 1532), ('ariana', 1515), ('ariana', 1499), ('ariana', 1518), ('primm', 1521), ('primm', 1525), ('relm', 1500), ('rikku', 1009), ('nalu', 1523), ('nalu', 1537), ('nalu', 1496), ('elza', 1528), ('elza', 1495), ('elza', 1506), ('elza', 1276), ('lunera', 1051))
+_PASSIVE_LABELS = (('crystal_fina', 1551), ('crystal_fina', 1552), ('lunafreya', 1510), ('lunafreya', 1517), ('folka', 1535), ('fryevia', 1522), ('mystea', 1530), ('mystea', 1274), ('mystea', 1513), ('reberta', 1507), ('aria', 1527), ('aria', 1519), ('eiko', 1498), ('eiko', 1373), ('alice', 1481), ('alice', 1531), ('mog', 1511), ('freya', 1529), ('freya', 1516), ('freya', 1497), ('freya', 1539), ('trance_terra', 1532), ('ariana', 1515), ('ariana', 1499), ('ariana', 1518), ('primm', 1521), ('primm', 1525), ('relm', 1500), ('rikku', 1009), ('nalu', 1523), ('nalu', 1537), ('nalu', 1496), ('elza', 1528), ('elza', 1495), ('elza', 1506), ('elza', 1276), ('lunera', 1051), ('folka', 1524), ('barusa', 1526), ('lilith', 1513), ('eiko', 1009), ('fryevia', 1539), ('primm', 1531), ('lunera', 1510))
 _PASSIVE_KEYS = [(preset, sid) for preset in _PASSIVE_PRESETS for sid in _PASSIVE_CONDITIONALS] + list(_PASSIVE_LABELS)
 _PRIVATE_PASSIVES = {key: 1600 + index for index, key in enumerate(_PASSIVE_KEYS)}
 _FALLBACK_FIRST = 1970
@@ -164,6 +164,16 @@ def player_units(units, rows):
             import _ffr_sephira_ffbe
             if _ffr_sephira_ffbe.selected(unit, recipe): recipe['visuals'] = recipe['from']
             fields = recipe.setdefault('set', {})
+            # Enemy attack donors commonly keep the generic weapon icon even
+            # after the private player copy gains an element. Damage and its
+            # menu icon are independent native fields. Explicit icon edits win.
+            effective = dict(source, **fields)
+            if ('SkillIcon.TagName' not in fields and 'SkillIcon' not in fields
+                    and effective.get('skillEffectType') == 'DamageAndRecovery'
+                    and effective.get('parameterVariationType') == 'Decrease'
+                    and effective.get('parameterType') == 'HitPoint'
+                    and effective.get('element') in ('Fire', 'Ice', 'Thunder', 'Water', 'Wind', 'Earth', 'Light', 'Dark')):
+                fields['SkillIcon.TagName'] = 'UI.Skill.Action.Icon.' + effective['element']
             if int(identity) in learned and fields.get('belongCommandList') == [command]:
                 fields['belongCommandList'] = [1]
                 if fields.get('commandIdBelongDebuggingAllSkills') == [command, -1]:
@@ -279,6 +289,27 @@ def verify_runtime_rows(root, tool, usmap, units, rows):
             for field in ('belongCommandList', 'availableLocation', 'mapEffectType', 'isTargetIgnoreSelf'):
                 if field in recipe.get('set', {}) and actual.get(field) != recipe['set'][field]:
                     raise ValueError(f'{unit["en"]} / {recipe["en"]}: {field} did not survive serialization.')
+            icon = recipe.get('set', {}).get('SkillIcon.TagName')
+            if icon and actual.get('SkillIcon', {}).get('TagName') != icon:
+                raise ValueError(f'{unit["en"]} / {recipe["en"]}: its elemental icon did not survive serialization.')
+    report = root / 'build/sephira-animation-report.json'
+    impacts = [e for e in json.loads(report.read_bytes())['skills'] if e.get('elementalImpact')] if report.is_file() else []
+    if impacts:
+        data = {}
+        for rel in ('Battle/Sequencer/DT_BtlHitEffectData', 'Battle/Sequencer/DT_BtlHitAssetData'):
+            target = work / (rel.replace('/', '_') + '.json')
+            subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets/FFRS/Content/Datatable' / (rel + '.uasset')),
+                                  str(target), '--usmap', usmap], check=True, capture_output=True)
+            data[rel] = {r['ID']: r for r in json.loads(target.read_text(encoding='utf-8-sig'))['rows'].values()}
+        policy = json.loads(Path(__file__).with_name('sephira_native_presentations.json').read_bytes())['elementalImpacts']
+        for entry in impacts:
+            reaction = data['Battle/Sequencer/DT_BtlHitEffectData'].get(entry['id'], {})
+            effect = data['Battle/Sequencer/DT_BtlHitAssetData'].get(entry['id'], {})
+            expected = policy['elements'][entry['elementalImpact']['element']]['path']
+            if reaction.get('NormalEffectID') != entry['id'] or effect.get('niagaraAsset') != expected:
+                raise ValueError(f'{entry["vision"]} / {entry["name"]}: its cosmetic elemental impact did not serialize.')
+            if effect.get('CueSheetName') or effect.get('playLabel') or effect.get('HitSlowDilation') != 1:
+                raise ValueError('A cosmetic elemental impact unexpectedly changes sound or battle speed.')
     print(f'OK: all awakening/MR rewards, skill names and learned-command availability checked for {len(selected)} Sephira visions')
 
 

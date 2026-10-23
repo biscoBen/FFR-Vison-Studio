@@ -38,16 +38,17 @@ class CapacityTests(unittest.TestCase):
             game[rel]['Lightning'] = {'Tag': {'TagName': 'UI.Skill.Command.Icon.13125'}, 'Brush': {'ResourceObject': 'OriginalLightningIcon'}}
         before = copy.deepcopy(game); tables = {}
         def row_by(rel, field, value): return next((k, v) for k, v in game[rel].items() if v.get(field) == value)
-        env = {'_ffr_existingvisions': native, 'UNITS': units, 'UNUSED_ICON_TAGS': tags, 'rows': lambda rel: copy.deepcopy(game[rel]),
+        env = {'tables': tables, '_ffr_existingvisions': native, 'UNITS': units, 'UNUSED_ICON_TAGS': tags, 'rows': lambda rel: copy.deepcopy(game[rel]),
                'row_by': row_by, 'text': lambda s: s, 'tbl': lambda rel: tables.setdefault(rel, {'add': [], 'set': []}), 'donor_cmd': ('Lightning', game['Skill/DT_CommandSkillData']['Lightning'])}
         for unit in units:
             env.update(u=unit, vid=unit['id']); exec(compile(block, 'command_icon_fixture', 'exec'), env)
         commands = tables['Skill/DT_CommandSkillData']['add']
         self.assertEqual(len(commands), 64); self.assertEqual(len({r['set']['ID'] for r in commands}), 64)
         self.assertEqual([r['set']['unitIdToUseSkill'] for r in commands], [u['id'] for u in units])
-        self.assertTrue(all(r['set']['SkillIcon.TagName'] == 'UI.Skill.Command.Icon.13125' for r in commands[16:]))
+        self.assertEqual(len({r['set']['SkillIcon.TagName'] for r in commands}),64)
         for rel in ('UI/Skill/DT_CommandSkillIcon', 'UI/Skill/CDT_SkillIcon'):
-            self.assertEqual(len(tables[rel]['set']), 16)
+            self.assertEqual(tables[rel]['set'], [])
+            self.assertEqual(len(tables[rel]['add']),64)
             self.assertNotIn('Lightning', [r['row'] for r in tables[rel]['set']])
         self.assertEqual(game, before)
 

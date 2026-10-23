@@ -1,5 +1,7 @@
 # Sephira reward source correction
 
+Historical revision-5 source audit. Revision 6 subsequently curates these bonuses into five passives per vision; some extras below are intentionally removed. See [the current passive allocation](SEPHIRA_PASSIVE_MASTERY.md). Active recipes and the protected-source exclusions are retained.
+
 Recipe revision 5 replaces 52 rewards from the original visions you are keeping: 44 MR grants and eight awakening grants. The replacement keeps each grant in its existing rank. All 291 grants from the 15 excluded originals remain available, alongside the existing awakening quotas, five learned MR rewards, permanent stats and challenge budgets.
 
 The protected pool includes all 55 learned MR rewards from Amelia, Victoria, Camille, Leah, Ayaka, Charlotte, Aileen, Terra, Lightning, Y’shtola and Sephiroth. No active copy or passive grant in the presets uses one of those sources.
