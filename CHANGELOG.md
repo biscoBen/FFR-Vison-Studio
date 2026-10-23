@@ -11,6 +11,34 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Party voice/survival verification and reachable Christine challenge
+
+- Fix the install-blocking Lasswell table error when a party voice override is
+  combined with **Survive at 1 HP**. Merge authorized changes by field instead
+  of replacing a row's expected voice edit with its survival edit. Verify the
+  complete composed row while still requiring the exact saved voice and rejecting
+  unrelated stat/identity changes or incorrect/missing survival passives.
+- Check party voice parameters before sprite conversion and sequence generation,
+  using the same expected edits as the final verifier. Errors name the character
+  and mismatched fields. Keep the selected voice, survival mechanics and all
+  appearances; no game reinstall or disabling those settings is needed after updating.
+- Move Christine's normal challenge to the **secret cave behind Rain's house in
+  Grandshelt**, on the path to Tronn/Leah, as requested. Entering it offers the
+  level-2 challenge after obtaining Tronn (or the original completion flag),
+  with a Leave/cancel option. Winning grants her once; the entry prompt stops
+  after acquisition. Preserve original startup events, story grants and flags.
+  Use an instance-loaded copy of the room's native battle stage. Stop changing
+  the blocked Tronn crystal-room interaction. The 1-gil shop override and removed
+  or moved profiles suppress the challenge as before; no MR/kit update is needed.
+- Extension 1.2.74. Local regressions cover all eight party targets with survival
+  on/off and both verifier paths; native readback reproduces the returned log's
+  643-row table and 11 survival targets. All 70 focused Python checks and 41 Flutter
+  checks pass (one Windows-only local skip). Native write/readback verifies 19
+  Christine challenge tables, including the new startup struct and string-table
+  name restoration. Entry conditions, victory-only rewards and all unrelated map
+  fields are preserved. Live menu/battle behavior and visible
+  Fina movie playback still require game tests; Fina's movie payload is unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

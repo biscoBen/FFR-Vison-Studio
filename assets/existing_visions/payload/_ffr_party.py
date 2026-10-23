@@ -141,13 +141,19 @@ def prepare_voices(tables, units, rows):
         table['set'].append({'row': u['jp'], 'set': {'BattleVoiceLabel': label}})
 
 
-def check_voice_rows(original, built, units):
+def check_voice_rows(original, built, units, *, expected=None):
+    import _ffr_testing
     replacements = {u['id']: u['battleVoice'] for u in units if u.get('battleVoice') is not None}
-    for id, jp, _, _ in CHARACTERS:
-        desired = copy.deepcopy(original[jp])
-        if id in replacements: desired['BattleVoiceLabel'] = voice_label(replacements[id])
+    for id, jp, en, _ in CHARACTERS:
+        desired = _ffr_testing.apply_fields(original[jp], (expected or {}).get((VOICE_TABLE, jp), {}))
+        # Even the composed plan must obey the saved voice selection. Other
+        # fields (such as test survival) must match their exact intended values.
+        desired['BattleVoiceLabel'] = voice_label(replacements[id]) if id in replacements else original[jp]['BattleVoiceLabel']
         if built.get(jp) != desired:
-            raise ValueError('Party battle voice did not match the selection, or an unrelated character property changed.')
+            actual = built.get(jp)
+            fields = ', '.join(sorted(k for k in desired if not isinstance(actual, dict) or actual.get(k) != desired[k]))
+            raise ValueError(f'Party battle voice/table check failed for {en}: {fields or "unexpected fields"}. '
+                             'The voice must match its selection and other properties must match the enabled edits.')
 
 
 def check_rows(original, built, units):
@@ -274,24 +280,37 @@ def build(units, env):
         generate(u, env)
 
 
-def verify(root, tool, usmap):
+def verify_voice_parameters(root, tool, usmap, units, *, expected=None):
+    """Check shared character rows before sprites as well as after packing."""
     import subprocess
-    root = Path(root); units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
+    root = Path(root)
     party = [validate(u) for u in units if u.get('party')]
-    import _ffr_overworld
-    _ffr_overworld.verify(root, tool, usmap, units)
     voiced = [u for u in party if u.get('battleVoice') is not None and u['battleVoice'] != u['id']]
     if voiced:
+        if expected is None:
+            import _ffr_existingvisions
+            expected = _ffr_existingvisions.expected_edits(root)
         work = root / 'build/party-voices'; work.mkdir(parents=True, exist_ok=True)
         original = work / 'verify-original.json'; built = work / 'verify-built.json'
         for source, target in ((root / 'extracted/legacy', original), (root / 'build/visions_mod/assets', built)):
             subprocess.run(tool + ['rows', str(source / (VOICE_ASSET + '.uasset')), str(target), '--usmap', usmap],
                            check=True, capture_output=True)
         check_voice_rows(json.loads(original.read_text(encoding='utf-8-sig'))['rows'],
-                         json.loads(built.read_text(encoding='utf-8-sig'))['rows'], party)
+                         json.loads(built.read_text(encoding='utf-8-sig'))['rows'], party, expected=expected)
+    return voiced
+
+
+def verify(root, tool, usmap, *, expected=None):
+    import subprocess
+    root = Path(root); units = json.loads((root / 'mods/EstherTsukiko/units.json').read_bytes())
+    party = [validate(u) for u in units if u.get('party')]
+    import _ffr_overworld
+    _ffr_overworld.verify(root, tool, usmap, units)
+    voiced = verify_voice_parameters(root, tool, usmap, party, expected=expected)
+    if voiced:
         import _ffr_party_voices
         _ffr_party_voices.verify(root, tool, usmap, voiced)
-        print('OK: native party battle voice labels and unchanged original character properties verified')
+        print('OK: native party battle voices and composed character table edits verified')
     selected = [u for u in party if u.get('ffbe')]
     if not selected: return
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)

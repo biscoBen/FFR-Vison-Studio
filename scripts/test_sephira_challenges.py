@@ -40,6 +40,52 @@ class SephiraChallengeTests(unittest.TestCase):
             for edit in plan['set']:
                 cls.built[rel][edit['row']] = testing.apply_fields(cls.built[rel][edit['row']], edit['set'])
 
+    def test_christine_is_offered_behind_rains_house_only_after_tronn_and_until_won(self):
+        name = challenge.PREFIX + '13024'
+        entry = name + '_Return'
+        unit = next(u for u in self.units if u['sephiraVision']['preset'] == 'christine')
+        branches = self.built[challenge.COMPOSITE][entry]['ContinuousEventList']
+        def matches(condition, items, flags):
+            def token(text):
+                item = re.fullmatch(r'\{item:(\d+)\}(>0|==0)', text)
+                if item: return (int(item[1]) in items) == (item[2] == '>0')
+                flag = re.fullmatch(r'(!?)\{flag:(\d+)\}', text)
+                self.assertIsNotNone(flag, text)
+                return (int(flag[2]) in flags) != bool(flag[1])
+            return any(all(token(part) for part in alternative.split('&')) for alternative in condition.split('|'))
+        for owns_tronn in (False, True):
+            for story_flag in (False, True):
+                for owns_christine in (False, True):
+                    items = ({13024} if owns_tronn else set()) | ({unit['id']} if owns_christine else set())
+                    flags = {147} if story_flag else set()
+                    active = [b['EventId'] for b in branches if matches(b['Condition'], items, flags)]
+                    should_offer = (owns_tronn or story_flag) and not owns_christine
+                    self.assertEqual(active, [name + ('_Menu' if should_offer else '_Close')])
+        for rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
+            original = self.native[rel]['01Gra_44']
+            self.assertEqual(self.built[rel]['01Gra_44'], {
+                **original, 'startupEventList': [*original['startupEventList'],
+                    {'Condition': branches[0]['Condition'], 'EventId': entry}], 'battleStage': 27500})
+            self.assertEqual(self.built[rel]['01Gra_44']['battleStage'], 27500)
+        event = self.built[challenge.COMPOSITE][entry]
+        self.assertEqual(event['ObtainItemList'] + event['OnFlagList'] + event['ProgressList'], [])
+        menu = self.built[challenge.CHOICES][name + '_Menu']
+        self.assertEqual(menu['ChoiceTextList'][-1], 'Leave')
+        self.assertEqual(menu['CancelIndex'], len(menu['ChoiceTextList']) - 1)
+
+    def test_christine_return_prompt_is_absent_when_removed_or_moved_to_the_shop(self):
+        for moved in (False, True):
+            units = copy.deepcopy(self.units)
+            christine = next(u for u in units if u['sephiraVision']['preset'] == 'christine')
+            if moved: christine['studioAcquisition'] = {'version': 1, 'location': 'mitra_shop', 'random': False, 'hideSpoilers': True}
+            else: units.remove(christine)
+            with tempfile.TemporaryDirectory() as root:
+                operations = testing.prepare({}, units, root, lambda rel: self.native[rel])
+            for rel, plan in operations.items():
+                self.assertFalse(any(e['row'] == challenge.PREFIX + '13024_Return' for e in plan['add']))
+                if rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
+                    self.assertFalse(any(e['row'] == '01Gra_44' for kind in ('set', 'add') for e in plan[kind]))
+
     def test_all_original_grants_and_native_replay_targets_are_preserved(self):
         for spec, units in challenge.plans(self.units):
             event = spec['grantEvent']

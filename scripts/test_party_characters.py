@@ -80,7 +80,99 @@ def knockout_spec():
                               'Posx': [[0, -2.0]], 'Posy': [[0, 5.0]], 'Hide': [[0, 0.0]]}}}]}
 
 
+def voice_survival_tables():
+    bundle = {'effectId': 1359, 'passiveSkillAddTiming': 'SpawnUnit'}
+    return {
+        party.VOICE_TABLE: {jp: {'ID': uid, 'Category': 'Playable', 'SaveId': uid,
+            'BattleVoiceLabel': party.voice_label(uid), 'passiveSkillList': [uid],
+            'stats': {'Attack': 50}} for uid, jp, _, _ in party.CHARACTERS},
+        party.VOICE_BANK_TABLE: {'VO_BTL_' + party.voice_label(uid)[:-1]: {
+            'CueSheetName': 'VO_BTL_' + party.voice_label(uid),
+            'pCueSheet': f'/Game/Sound/Cri/Voice/VO_BTL/VO_BTL_{party.voice_label(uid)}/VO_BTL_{party.voice_label(uid)}'}
+            for uid, _, _, _ in party.CHARACTERS},
+        'Skill/DT_PassiveSkillData': {'reprieve': {'ID': 1259,
+            'effectBundleList': [bundle, dict(bundle)]}},
+        'Skill/DT_SkillEffectData': {
+            'reprieve': {'ID': 1359, 'EffectType': 'Reprieve', 'ParamList': [0, -1],
+                'activationCondition': {'Condition': 'None'}, 'activationProbability': 100,
+                'effectEndActionNum': -1},
+            'death': {'ID': 1411, 'EffectType': 'AddStatusConditionRegist', 'ParamList': [13, 1000]}}}
+
+
 class PartyCharacterTests(unittest.TestCase):
+    def test_early_voice_parameter_check_reports_the_character_and_blocks_a_bad_row(self):
+        data = voice_survival_tables()[party.VOICE_TABLE]
+        chosen = unit(1002); chosen.pop('ffbe'); chosen['battleVoice'] = 1008
+        expected = {(party.VOICE_TABLE, chosen['jp']): {
+            'BattleVoiceLabel': 'CHR0080', 'passiveSkillList': [1002, 29660]}}
+        built = copy.deepcopy(data)
+        built[chosen['jp']].update(expected[(party.VOICE_TABLE, chosen['jp'])])
+        with tempfile.TemporaryDirectory() as directory:
+            def read(command, **kwargs):
+                value = built if 'build/visions_mod/assets' in command[2].replace('\\', '/') else data
+                Path(command[3]).write_text(json.dumps({'rows': value}))
+            with mock.patch('subprocess.run', side_effect=read) as reader:
+                self.assertEqual(party.verify_voice_parameters(directory, ['reader'], 'mapping', [chosen],
+                    expected=expected), [chosen])
+                self.assertEqual(reader.call_count, 2)
+                built[chosen['jp']]['passiveSkillList'] = [1002]
+                with self.assertRaisesRegex(ValueError, 'Lasswell: passiveSkillList'):
+                    party.verify_voice_parameters(directory, ['reader'], 'mapping', [chosen], expected=expected)
+                reader.reset_mock()
+                self.assertEqual(party.verify_voice_parameters(directory, ['reader'], 'mapping', []), [])
+                reader.assert_not_called()
+
+    def test_voice_and_survival_compose_for_every_character_without_allowing_other_changes(self):
+        from test_existing_visions import native
+        import _ffr_testing as testing
+        data = voice_survival_tables()
+        original = data[party.VOICE_TABLE]
+        for survive in (False, True):
+            for uid, jp, _, _ in party.CHARACTERS:
+                with self.subTest(survive=survive, character=uid), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    chosen = unit(uid); chosen.pop('ffbe')
+                    chosen['battleVoice'] = 1008 if uid != 1008 else 1001
+                    def save(path, value):
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_text(json.dumps(value))
+                    save(root / 'mods/EstherTsukiko/units.json', [chosen])
+                    save(root / testing.CONFIG, {'schema': 1, 'maxMr': False, 'surviveAtOne': survive})
+                    for rel, rows in data.items(): save(root / 'extracted/rows' / (rel + '.json'), {'rows': rows})
+                    rows = lambda rel: copy.deepcopy(data[rel])
+                    tables = {}; party.prepare_voices(tables, [chosen], rows)
+                    testing.prepare(tables, [chosen], root, rows)
+                    built = copy.deepcopy(original)
+                    for edit in tables[party.VOICE_TABLE]['set']:
+                        built[edit['row']] = testing.apply_fields(built[edit['row']], edit['set'])
+                    expected = native.expected_edits(root)
+                    self.assertEqual(expected[(party.VOICE_TABLE, jp)]['BattleVoiceLabel'],
+                                     party.voice_label(chosen['battleVoice']))
+                    for row in original:
+                        if built[row] != original[row]:
+                            self.assertTrue(native.expected_row_change(party.VOICE_TABLE, row,
+                                original[row], built[row], expected, lambda a, b: a == b))
+                    party.check_voice_rows(original, built, [chosen], expected=expected)
+                    corruptions = [('BattleVoiceLabel', party.voice_label(uid)), ('SaveId', 9999),
+                                   ('stats', {'Attack': 9999}), ('passiveSkillList', [9999])]
+                    for field, value in corruptions:
+                        wrong = copy.deepcopy(built); wrong[jp][field] = value
+                        with self.assertRaises(ValueError):
+                            party.check_voice_rows(original, wrong, [chosen], expected=expected)
+                    if survive:
+                        wrong = copy.deepcopy(built); wrong[jp]['passiveSkillList'] = original[jp]['passiveSkillList']
+                        with self.assertRaises(ValueError):
+                            party.check_voice_rows(original, wrong, [chosen], expected=expected)
+                    else:
+                        wrong = copy.deepcopy(built); wrong[jp]['passiveSkillList'].append(29660)
+                        with self.assertRaises(ValueError):
+                            party.check_voice_rows(original, wrong, [chosen], expected=expected)
+                    other = next(key for key in original if key != jp)
+                    wrong = copy.deepcopy(built); wrong[other]['SaveId'] = 9999
+                    with self.assertRaises(ValueError): party.check_voice_rows(original, wrong, [chosen], expected=expected)
+                    wrong = copy.deepcopy(built); del wrong[jp]
+                    with self.assertRaises(ValueError): party.check_voice_rows(original, wrong, [chosen], expected=expected)
+
     def test_native_knockout_names_keep_fall_and_final_pose_without_changing_recovery(self):
         spec = knockout_spec(); original = copy.deepcopy(spec['animations'])
         party.party_motions(spec)

@@ -109,6 +109,9 @@ class EarlyTableChecks(unittest.TestCase):
         sequence = next(i for i, n in enumerate(main.body) if isinstance(n, ast.For) and ast.unparse(n.iter) == 'authored_sequences')
         sprites = next(i for i, n in enumerate(main.body) if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'todo')
         self.assertLess(check, sequence); self.assertLess(sequence, sprites)
+        voice_check = next(i for i, n in enumerate(main.body)
+                           if '_ffr_party.verify_voice_parameters(' in ast.unparse(n))
+        self.assertLess(check, voice_check); self.assertLess(voice_check, sequence)
         continuation = mock.Mock()
         block = ast.Module(body=main.body[check-1:check+1] + ast.parse('continuation()').body, type_ignores=[])
         rel = 'Skill/DT_SkillData'; asset = 'FFRS/Content/Datatable/'+rel

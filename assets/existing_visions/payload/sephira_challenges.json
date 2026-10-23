@@ -9,15 +9,20 @@
       "presets": [
         "christine"
       ],
-      "map": 10237,
-      "mapRow": "00Com_237",
+      "map": 10001,
+      "mapRow": "01Gra_44",
       "mapTable": "Map/MapData/DT_MapData_01Gra",
       "retry": null,
       "grantEvent": "C01_014_03",
       "unlock": "{item:13024}>0|{flag:147}",
       "level": 2,
       "stage": 9,
-      "region": "Earth Shrine, inner chamber",
+      "region": "Secret cave behind Rain's house (Grandshelt)",
+      "returnEntry": {
+        "map": 10001,
+        "mapRow": "01Gra_44",
+        "mapTable": "Map/MapData/DT_MapData_01Gra"
+      },
       "encounterTable": "DT_01Gra_40_02_Encount",
       "nearbyEnemies": {
         "2": 1,

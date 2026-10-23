@@ -13,6 +13,12 @@ anchors and item prices. The source-correction regression additionally retains a
 `crystal-interaction.json.gz` is the decoded native WoL repeat-crystal interaction, Com_00Com_223_EV.
 All gzip streams have deterministic timestamps. The boss bytecode fixture is shared with the earlier Fina test.
 
+The accessibility regression also retains the native `01Gra_44` secret-cave row
+from both physical map tables. It is the room/path behind Rain's house requested
+for Christine, replacing the blocked Tronn crystal-room placement. The private
+challenge appends its guarded entry prompt and instance-loads the same native
+battle stage; original map startup events and story state remain intact.
+
 The entrance-to-encounter-volume audit applied the native 32-unit box half-extents/sphere radii, cooked overrides,
 scale and rotation, then used the highest-priority enclosing volume's weighted ordinary-enemy median level.
 Cactuar/gil/metal specials and boss-category actors do not set ordinary area levels. Tronn uses the Earth Shrine's

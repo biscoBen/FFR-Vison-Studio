@@ -377,6 +377,38 @@ def _events(table, rows, spec, units, group_id, root, roster):
     labels, targets = ['These visions have already joined you'], [name + '_Close']
     if memory: labels.append('Recall ' + spec['name']); targets.append(memory)
     menu('_Done', labels + ['Leave'], targets + [name + '_Close'])
+    if spec.get('returnEntry'):
+        # Tronn's crystal room is blocked on the user's revisit. Offer the
+        # guarded challenge in the secret cave behind Rain's house instead.
+        # Distribute the conjunction over the native OR alternatives so both
+        # ownership and original completion flags require a missing reward.
+        ready = '|'.join(f'{gate}&{reward}' for gate in unlock.split('|') for reward in missing.split('|'))
+        entry = name + '_Return'
+        event(entry, {'ContinuousEventList': links(ready, name + '_Menu',
+            locked + '|' + complete, name + '_Close')}, 'link')
+        destination = spec['returnEntry']
+        for rel in (destination['mapTable'], caves.COMPOSITE):
+            original = rows(rel).get(destination['mapRow'], {})
+            starts = original.get('startupEventList')
+            if (original.get('ID') != destination['map'] or not isinstance(starts, list)
+                    or any(not isinstance(s, dict) or s.get('EventId') == entry for s in starts)):
+                raise ValueError('The secret cave behind Rain\'s house changed; collect a new native reference.')
+            # startupEventList is a native struct array, even though the row
+            # dump hides its type when empty. Clone a populated row, restore
+            # every field of the cave and then append the conditional entry.
+            donor = '01Gra_20'
+            template = rows(rel).get(donor, {})
+            if not template.get('startupEventList'):
+                raise ValueError('The native map startup-event template is unavailable.')
+            desired = copy.deepcopy(original)
+            desired['startupEventList'] = [*starts, {'Condition': ready, 'EventId': entry}]
+            fields = testing.field_delta(template, desired)
+            # Row dumps represent string-table FText as a dictionary. Native
+            # Name is a TextProperty, so restore it whole, never Name.key.
+            fields = {k: v for k, v in fields.items() if not k.startswith('Name.')}
+            fields['Name'] = copy.deepcopy(desired['Name'])
+            table(rel)['add'].append({'row': destination['mapRow'], 'cloneFrom': donor,
+                                     'set': fields})
     if replay:
         if replay not in parent or parent[replay] != composite[replay]:
             raise ValueError('The original shrine repeat event changed: ' + replay)
@@ -528,7 +560,8 @@ def build(units, env):
     env['run']([*env['FFRDT'], 'fromjson', str(dump), str(destination), '--usmap', env['USMAP']])
     env['run']([*env['FFRDT'], 'tojson', str(destination), str(dump), '--usmap', env['USMAP']])
     caves.check_level(grant, json.loads(dump.read_text(encoding='utf-8-sig')))
-    if any(spec['origin'] == 13024 for spec, _ in selected): build_tronn_interaction(env, work, read)
+    if any(spec['origin'] == 13024 and not spec.get('returnEntry') for spec, _ in selected):
+        build_tronn_interaction(env, work, read)
     for spec, members in selected:
         stats = team_stats(env['rows'], spec['level'], members)
         print(f'  {spec["name"]} challenge: level {spec["level"]}, ' + ', '.join(u['en'] for u in members)

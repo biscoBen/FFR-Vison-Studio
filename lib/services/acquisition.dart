@@ -24,7 +24,7 @@ class Acquisition {
   });
   static const field = 'studioAcquisition';
   static const challengeNames = <String, String>{
-    'sephira_13024': 'Tronn crystal — Christine',
+    'sephira_13024': 'Behind Rain’s house — Christine (after Tronn)',
     'sephira_13062': 'Zoldaad challenge cave — Barusa and Ariana',
     'sephira_13100': 'Warrior of Light crystal — Lenneth and Crystal Fina',
     'sephira_13101': 'Firion crystal — Lila and Fran',
