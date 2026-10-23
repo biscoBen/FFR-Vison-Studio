@@ -11,10 +11,47 @@ function Find-Game([string]$Candidate) {
         $path = $Candidate
         if ($suffix) { $path = Join-Path $Candidate $suffix }
         if (Test-Path -LiteralPath (Join-Path $path 'FFRS\Binaries\Win64') -PathType Container) {
-            return (Resolve-Path -LiteralPath $path).Path
+            $resolved = (Resolve-Path -LiteralPath $path).Path
+            if ((Split-Path -Leaf $resolved) -match '(?i)\bDEMO\b') { return $null }
+            return $resolved
         }
     }
     return $null
+}
+function Get-SteamGames {
+    $roots = @()
+    foreach ($key in @('HKCU:\Software\Valve\Steam', 'HKLM:\SOFTWARE\WOW6432Node\Valve\Steam')) {
+        $entry = Get-ItemProperty -LiteralPath $key -ErrorAction SilentlyContinue
+        if ($entry) {
+            foreach ($name in @('SteamPath', 'InstallPath')) {
+                $property = $entry.PSObject.Properties[$name]
+                if ($null -ne $property -and $property.Value) { $roots += [string]$property.Value }
+            }
+        }
+    }
+    if (${env:ProgramFiles(x86)}) { $roots += Join-Path ${env:ProgramFiles(x86)} 'Steam' }
+    foreach ($drive in @('G', 'D', 'C', 'E', 'F')) { $roots += $drive + ':\Steam' }
+    foreach ($root in @($roots | Select-Object -Unique)) {
+        if (-not (Test-Path -LiteralPath $root -PathType Container)) { continue }
+        $libraries = @($root)
+        $vdf = Join-Path $root 'steamapps\libraryfolders.vdf'
+        if (Test-Path -LiteralPath $vdf -PathType Leaf) {
+            $text = Get-Content -LiteralPath $vdf -Raw
+            foreach ($match in [regex]::Matches($text, '"(?:path|\d+)"\s+"([^"\r\n]+)"')) {
+                $libraries += $match.Groups[1].Value.Replace('\\', '\')
+            }
+        }
+        foreach ($library in @($libraries | Select-Object -Unique)) {
+            Join-Path $library 'steamapps\common\FINAL FANTASY RESONANCE'
+        }
+    }
+}
+function Get-InstallKey([string]$Game) {
+    $key = [System.IO.Path]::GetFullPath($Game)
+    if ([System.IO.Path]::DirectorySeparatorChar -eq '\') { $key = $key.Replace('/', '\').ToLowerInvariant() }
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($key)))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
 }
 function Find-Engine([string]$Candidate) {
     if (-not $Candidate) { return $null }
@@ -43,35 +80,48 @@ function Copy-Shared([string]$Source, [string]$Destination) {
 
 try {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
-    Write-Host 'Crystal Fina battle runtime diagnostics' -ForegroundColor Cyan
+    Write-Host 'Crystal Fina FULL GAME runtime diagnostics' -ForegroundColor Cyan
     Write-Host 'After testing one Fina attack and resonance, collect the installed runtime and UE4SS log.'
     Write-Host 'No game changes, save files, credentials or game assets are collected.'
     $engine = Find-Engine $EnginePath
     if ($EnginePath -and -not $engine) { throw 'The supplied Studio engine folder was not found.' }
     if (-not $engine) {
-        $candidates = @((Join-Path $env:USERPROFILE 'Downloads\Sephira-Studio-Test'),
+        $desktop = [Environment]::GetFolderPath('Desktop')
+        $candidates = @()
+        if ($desktop) { $candidates += Join-Path $desktop 'Sephira-Studio-Test' }
+        $candidates += @((Join-Path $env:USERPROFILE 'Desktop\Sephira-Studio-Test'),
+            (Join-Path $env:USERPROFILE 'Downloads\Sephira-Studio-Test'),
             (Join-Path $env:USERPROFILE 'Downloads\FFR Mod\Sephira-Studio-Test'))
         if ($env:LOCALAPPDATA) { $candidates += (Join-Path $env:LOCALAPPDATA 'FFR Vision Studio') }
         foreach ($candidate in $candidates) { $engine = Find-Engine $candidate; if ($engine) { break } }
     }
+    if (-not $engine -and -not $NoPrompt) {
+        $entered = Read-Host 'Studio folder (Sephira-Studio-Test, or Enter to collect installed runtime only)'
+        if ($entered) {
+            $engine = Find-Engine $entered
+            if (-not $engine) { throw 'The supplied Studio folder does not contain its engine.' }
+        }
+    }
     $game = Find-Game $GamePath
-    if ($GamePath -and -not $game) { throw 'The supplied game folder must contain FFRS\Binaries\Win64.' }
+    if ($GamePath -and -not $game) { throw 'Select the FULL game folder containing FFRS\Binaries\Win64, not the demo.' }
     if (-not $game -and $engine -and (Test-Path -LiteralPath (Join-Path $engine 'config.json'))) {
         $saved = Get-Content -LiteralPath (Join-Path $engine 'config.json') -Raw | ConvertFrom-Json
         $property = $saved.PSObject.Properties['gameRoot']
         if ($null -ne $property) { $game = Find-Game ([string]$property.Value) }
     }
-    if (-not $game) { $game = Find-Game 'D:\Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO' }
-    if (-not $game -and ${env:ProgramFiles(x86)}) {
-        $game = Find-Game (Join-Path ${env:ProgramFiles(x86)} 'Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO')
+    if (-not $game) {
+        foreach ($candidate in @(Get-SteamGames)) { $game = Find-Game $candidate; if ($game) { break } }
     }
     if (-not $NoPrompt) {
-        $prompt = 'Resonance game folder'
+        $prompt = 'FULL Resonance game folder (not the demo)'
         if ($game) { $prompt += ' (Enter for ' + $game + ')' }
         $entered = Read-Host $prompt
         if ($entered) { $game = Find-Game $entered }
     }
-    if (-not $game) { throw 'Could not find Resonance. Supply its game folder, containing FFRS.' }
+    if (-not $game) { throw 'Could not find the FULL game. Supply its folder, containing FFRS (not the demo).' }
+    Write-Host ('Full game: ' + $game) -ForegroundColor Cyan
+    if ($engine) { Write-Host ('Studio engine: ' + $engine) }
+    else { Write-Host 'Studio engine not found; collecting the installed runtime and logs only.' -ForegroundColor Yellow }
     if (-not $OutputRoot) { $OutputRoot = Join-Path $env:USERPROFILE 'Downloads\FFR Mod' }
     $OutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)
     $prefix = $game.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
@@ -104,7 +154,9 @@ try {
         $records += [pscustomobject]$record
     }
     if ($engine) {
-        foreach ($relative in @('field-leader-state.json', 'build\field-leader\payload.json', 'build\crystal-fina-battle\runtime.json', 'existing-visions-state.json')) {
+        $ledger = 'game-installs\' + (Get-InstallKey $game) + '\field-leader-state.json'
+        if (-not (Test-Path -LiteralPath (Join-Path $engine $ledger) -PathType Leaf)) { $ledger = 'field-leader-state.json' }
+        foreach ($relative in @($ledger, 'build\field-leader\payload.json', 'build\crystal-fina-battle\runtime.json', 'existing-visions-state.json')) {
             $path = Join-Path $engine $relative
             if (Test-Path -LiteralPath $path -PathType Leaf) {
                 try { Copy-Shared $path (Join-Path (Join-Path $root 'engine') $relative) }
@@ -112,7 +164,7 @@ try {
             }
         }
     }
-    [pscustomobject]@{schema=1; collectedUtc=[DateTime]::UtcNow.ToString('o'); game=$game;
+    [pscustomobject]@{schema=2; gameEdition='full'; collectedUtc=[DateTime]::UtcNow.ToString('o'); game=$game;
         engine=$engine; files=$records; errors=$errors} | ConvertTo-Json -Depth 8 |
         Set-Content -LiteralPath (Join-Path $root 'report.json') -Encoding UTF8
     $logs = @(Get-ChildItem -LiteralPath $root -Filter 'UE4SS.log' -Recurse -File)

@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina full-game diagnostics — 2026-10-22
+
+- Update the standalone Fina runtime collector to select the full game, ignore demo paths, find Steam libraries
+  and desktop Studio installations, and include the selected game's runtime install record. Show the resolved
+  folders before collection. Keep the existing read-only file allowlist; no game assets or saves are collected.
+- Supply only the Fina collector, launcher and instructions as a small standalone ZIP. It does not require
+  rebuilding or updating Studio. Collection checks use fixture installations; live Fina rendering remains unverified.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

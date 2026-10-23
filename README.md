@@ -711,6 +711,9 @@ installed. Studio's updated preview (native-fina-10) remains a lighting approxim
 The [runtime diagnostics helper](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.cmd)
 and [companion PowerShell file](scripts/reference/crystal-fina-battle/Collect%20Fina%20Runtime%20Diagnostics.ps1)
 collect allowlisted runtime files/log under Downloads\FFR Mod without changing the game.
+The [standalone full-game Fina diagnostics ZIP](scripts/reference/crystal-fina-battle/Crystal-Fina-Full-Game-Diagnostics.zip)
+contains both files and instructions. It finds desktop Studio installations and full-game Steam libraries,
+ignores saved demo paths, and includes the selected game's runtime install record. No Studio update is required.
 
 [Verified standalone Crystal Fina / slower-attack update / run 38968721767](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-38968721767/Sephira-Studio-Test.zip)
 (code `bde5f38`, published 2026-10-16; extension 1.2.28). Update Studio, rebuild/install the mod and restart Resonance.
