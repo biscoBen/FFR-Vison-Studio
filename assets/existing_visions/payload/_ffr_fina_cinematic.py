@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 import zipfile
 
-REVISION = 'crystal-fina-film-1'
+REVISION = 'crystal-fina-film-2'
 SPRITE = '99887755552703'
 START = 48000
 END = START + 192 * 800
@@ -22,7 +22,9 @@ NATIVE = 'FFRS/Content/Sequencer/Battle/Skill/440110/440111/'
 MASTER = NATIVE + 'SEQ_Battle_440111_Master'
 MOVIE = 'FFRS/Content/Movies/Skill/MV_Skill440110'
 PRIVATE = 'FFRS/Content/Movies/Studio/CrystalFina_Test'
-VIDEO = PRIVATE + '.usm'
+# FileManaMovie paths are relative to CRI's Streams directory, not Content.
+# Verified against the installed Cloud movie in the returned full-game pak.
+VIDEO = 'FFRS/Content/Streams/Movies/Studio/CrystalFina_Test.usm'
 SCORE = 'studio_crystal_fina_intro'
 MASTER_HASHES = {'.uasset': '1bde55f872f45d69527802dac5cfb0a7b6aacab22852d3cbb99f3e897d655550',
                  '.uexp': '4db420158204dde62c0f0892667209c726e454f97457dfa2af3855eb49da474e'}
@@ -144,6 +146,8 @@ def prepare_pak(root, ffrenv, run, video=None):
     marker = folder / 'pak-managed.json'
     if video is None and not marker.is_file(): return
     stage = folder / 'pak-input'
+    obsolete = stage / (PRIVATE + '.usm')
+    if obsolete.is_file(): obsolete.unlink()
     target = stage / VIDEO
     target.parent.mkdir(parents=True, exist_ok=True)
     if video is None:
@@ -254,7 +258,7 @@ def register(app):
         return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina cinematic test</title>
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
         <h1>Crystal Fina cinematic test</h1><video controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
-        <p>A 6.4-second illustrated intro with camera movement, healing light and a crystal release. In game it leads into Fina’s existing LB animation and cure sound.</p>
+        <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. In game it leads into Fina’s existing LB animation and cure sound.</p>
         <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
         <p>The browser shows the movie and its original score. In-game timing, playback and transitions still need testing.</p>''')
     @app.get('/api/testing/fina-cinematic/preview')

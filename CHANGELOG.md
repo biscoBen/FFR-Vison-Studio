@@ -11,6 +11,23 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina selected movie and playback correction
+
+- Use the user's selected `Crystal-Fina-Rotating-Lighter.mp4` for the optional cinematic test. Keep Studio's
+  preview byte-identical to that 1080p file; encode the game copy at 720p/30 fps for the same 6.4 seconds.
+  Retain its continuous crystal rotation, camera approach, red-eye ending and matching original score.
+- Correct the companion-pak movie path to `Content/Streams/Movies/Studio`, matching the returned native
+  game reference. Remove the obsolete owned staged movie on migration. Match native USM alignment,
+  metadata byte counts, maximum chunk size, declared length and seek offsets without changing video packets.
+- Preserve Fina's existing LB/heal behavior and audio offsets. Keep the test off by default; enabling it
+  requires rebuilding/installing and restarting the game. Bump the managed extension to 1.2.71.
+- Add a bounded, read-only movie diagnostic collector and developer import tool. Checksum-pin the exact
+  selected preview and packaged stream. Alternate artwork remains local; no new frames are generated.
+- Revision 1's blank movie is still awaiting an in-game retest. Native readback, package checks and full
+  video decoding verify the candidate files; they do not prove playback inside Resonance.
+- Local checks: 50 focused Python checks and 31 Flutter checks pass (one Windows-only local skip).
+  Native readback, source-preview checksum, full VP9 decode and byte-identical USM/IVF roundtrip pass.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
