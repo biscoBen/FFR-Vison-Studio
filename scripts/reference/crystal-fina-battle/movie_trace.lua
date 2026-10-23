@@ -42,7 +42,13 @@ local function observe(force)
         end
     end
     for _, a in ipairs(FindAllOf('BP_BtlSequencerMovieActor_C') or {}) do
-        if valid(a) and not full(a):find('Default__', 1, true) then actors = actors + 1 end
+        if valid(a) and not full(a):find('Default__', 1, true) then
+            -- FindAllOf also returns actor templates embedded in sequences.
+            -- Record their names but count only actors owned by a runtime level.
+            local path = full(a)
+            log('actor:' .. path, 'movieActorObject=' .. path, force)
+            if path:find('PersistentLevel.', 1, true) then actors = actors + 1 end
+        end
     end
     log('counts', 'players=' .. players .. '; components=' .. components
         .. '; managers=' .. managers .. '; movieActors=' .. actors, force)

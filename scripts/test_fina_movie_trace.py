@@ -101,7 +101,9 @@ class TraceRuntimeTests(unittest.TestCase):
                 assert(inThread)
                 if class=='ManaPlayer' then return {player,empty} end
                 if class=='CPP_UI_BtlCinematicManager' then return {manager} end
-                if class=='BP_BtlSequencerMovieActor_C' then return {object('MovieActor Runtime')} end
+                if class=='BP_BtlSequencerMovieActor_C' then
+                    return {object('MovieActor World:PersistentLevel.Runtime'),
+                            object('MovieActor Master:MovieScene_0.Template')} end
                 error('Unexpected class')
             end
             function LoopInGameThreadWithDelay(delay,fn) assert(delay==250); tick=fn end
@@ -117,6 +119,7 @@ class TraceRuntimeTests(unittest.TestCase):
             assert(not table.concat(messages):find('Unsafe uninitialized'))
             assert(table.concat(messages):find('bUseMovie=true'))
             assert(table.concat(messages):find('movieActors=1'))
+            assert(table.concat(messages):find('MovieScene_0.Template',1,true))
             assert(table.concat(messages):find('frameBucket=2'))
             frame=45; run(); assert(table.concat(messages):find('frameBucket=3'))
             managerFields.bUseMovie=false; run(); assert(table.concat(messages):find('bUseMovie=false'))
