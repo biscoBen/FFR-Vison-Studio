@@ -11,13 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Sephira awakening bonuses and requested LB audio
-
-- Restore 160 themed awakening bonuses across all 30 Sephira visions. Each complete passive kit now matches its original stat/Resonance counterpart's passive count; native effects and equip costs remain, with combined AP totals within 20% of that counterpart. Preserve all 131 excluded-original passives in MR, all active skills, permanent stats and acquisition settings. Avoid duplicate tiers of the same main stat bonus and kept originals' MR rewards.
-- Saved-roster revision 7 adds missing bonuses through the backed-up progression update, preserving edited MR schedules and combat recipes. Full edited tiers fail before saving. Independent bundled Fina receives the same additive repair when there is room.
-- Add the requested clean Touch It soundtrack for Ariana and Accumulate/Cure for both Fina versions. Cure follows the existing healing marker without adding an application event. The five unverified Global LB soundtracks remain flagged; a different Barusa LB and partial video matches are not presented as exact originals.
-- Local validation: 601 Python tests (10 skips), 278 Flutter passes (one skip), clean analyzer; native writing/readback for all 30 kits and LB timelines, 26 private banks and 83 host recordings. Original table rows remain unchanged. Windows package validation is pending. Live play is still needed to assess combined passive balance and perceived audio timing.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -86,6 +79,65 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Sephira awakening bonuses and requested LB audio — 2026-10-23
+
+Code: [`3d295a6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/3d295a6b2775874e8afe8d1a45e8d874957fbaac), extension **1.2.69**.
+Windows package: [run 39921373217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39921373217/Sephira-Studio-Test.zip). **58,671,798 bytes** (58.7 MB).
+SHA-256: `46ce8c95207461b151d693be33365a2872135b91a54ee0af983bf6456828862e`.
+
+- Restore 160 themed awakening bonuses across all 30 Sephira visions. Each complete passive kit now matches its original stat/Resonance counterpart's passive count; native effects and equip costs remain, with combined AP totals within 20% of that counterpart. Preserve all 131 excluded-original passives in MR, all active skills, permanent stats and acquisition settings. Avoid duplicate tiers of the same main stat bonus and kept originals' MR rewards.
+- Saved-roster revision 7 adds missing bonuses through the backed-up progression update, preserving edited MR schedules and combat recipes. Full edited tiers fail before saving. Independent bundled Fina receives the same additive repair when there is room.
+- Add the requested clean Touch It soundtrack for Ariana and Accumulate/Cure for both Fina versions. Cure follows the existing healing marker without adding an application event. The five unverified Global LB soundtracks remain flagged; a different Barusa LB and partial video matches are not presented as exact originals.
+- Local validation: 601 Python tests (10 skips), 278 Flutter passes (one skip), clean analyzer; native writing/readback for all 30 kits and LB timelines, 26 private banks and 83 host recordings. Original table rows remain unchanged. Windows compilation and validation pass for the exact code commit. Live play is still needed to assess combined passive balance and perceived audio timing.
+
+The balance pass retains 15–21 active skills and adds 4–9 awakening passives per vision, bringing complete
+passive kits to 9–14 choices, equal to their native counterparts. Existing five-passive MR layouts and all
+160 canonical excluded-original active grants remain. Shared awakening choices do not remove or relocate
+the 131 canonical original MR passive allocations. They remain ordinary learned AP options; no free or
+combined passive effects are introduced. Kept originals' MR rewards remain excluded. The original native
+base stats, total Resonance mechanics, MP costs and permanent MR/AP budgets remain. This is a reasoned
+starting balance, not a claim that equal passive counts or AP costs guarantee equal combat strength.
+
+Revision 7 migrates revision 6 entries additively, preserving edited MR rewards, active skills, IDs, artwork,
+locations and membership state. Earlier entries first receive their historical migrations, then the added
+bonuses. Full edited awakening tiers fail before saving. Independent bundled Fina receives the additive
+repair on load with a backup when it fits; full edited standalone kits remain openable and unchanged.
+New/restored presets already include the added bonuses.
+
+The two audio adaptations are explicitly requested. Ariana uses clean SE cue 617 from Touch It form
+401000106 at LB1. Fina layers Accumulate (102) with the original common opening, then plays Cure (25) at
+her existing reaction tick. The post-schedule alignment changes sound events only, leaving gameplay
+application and cleanup events intact. The source recording pack remains about 1.6 MB and independent of
+the optional animation library. Native writing/readback verifies 30 LB timelines, 258 sound events,
+26 private banks and 83 host-format recordings with valid header/frame CRCs. Original rows remain
+unchanged in seven physically read-back skill, sound, feedback and grading tables. All 30 complete kits,
+314 private definitions, 26 private passive identities, 312 player presentation routes, 39 elemental
+impacts and 30 command/Spirit icon pairs retain native readback coverage.
+
+The exact Global LB audio routing remains unresolved for Christine, Barusa, Fryevia, Lilith and Elza.
+Both the supplied Memorial master and the older JP master lack those exact identities. JP Barusa has a
+different four-hit LB, while the selected Global form has two hits; partial matches in the narrated
+Christine clip do not identify her full original soundtrack. Those are documented, not silently replaced
+with unverified recordings. The existing original-skill review flags also remain in the runtime report.
+
+Local validation: **601 Python tests** (10 platform/dependency skips), **278 Flutter passes** (one skip),
+clean analyzer and bundle manifests. Windows compilation, complete validation, frozen engine startup and
+launcher/updater checks pass for this exact commit. Package provenance, SHA-256, all **61 managed extension /
+16 Fina files**, all 30 catalog profiles, 160 added bonuses and the embedded audio archive are verified.
+Native serialized data and automated checks do not replace live-game balance and listening tests.
+
+Measured delivery: first complete candidate **2026-10-23 00:54:41 PDT** → verified package
+**01:10:42 PDT**, **16m 02s**, including local checks, CI, waiting, download and
+verification. Earlier investigation precedes this candidate-to-verification timer. The helper joined the
+matching automatic push run without dispatching another build. Publication changes only README/CHANGELOG
+and does not rebuild or relabel the verified binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| 39921373217 | success | 10m 30s | 14m 27s | 2m 15s |
+
+Summed runner usage: **16m 42s**, separate from elapsed delivery time.
 
 ## Published Sephira LB audio and bonus-count correction — 2026-10-22
 

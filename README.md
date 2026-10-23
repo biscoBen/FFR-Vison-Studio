@@ -4,6 +4,28 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Sephira awakening bonuses and requested LB audio — 2026-10-23
+
+[Verified Windows download / run 39921373217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39921373217/Sephira-Studio-Test.zip)
+(code `3d295a6`, extension **1.2.69**; **58.7 MB**).
+
+All 30 Sephira visions gain a themed awakening bonus layer: **160 supplementary bonuses**, with complete
+passive counts matching their native stat/Resonance counterparts. All **131 excluded-original passives** remain
+in the MR allocation. Active skills, edited MR rewards, permanent stats, identities and acquisition choices
+are retained. Native effects/AP costs stay intact; combined passive AP budgets stay within 20% of the original.
+Christine now has 16 displayed bonuses like Tronn. See [the complete allocation and balance limits](docs/SEPHIRA_AWAKENING_BALANCE.md).
+
+Close Studio/game and update while keeping **Studio Test Data**. Reopen Studio, click **Apply MR and acquisition
+update** once, then rebuild/install and restart the game. The update backs up the roster and adds missing
+awakening bonuses; no kit reset is needed. Independent bundled Fina receives the same additive repair where
+there is room. A full edited kit is preserved instead of deleting abilities.
+
+Audio includes the requested **Touch It** soundtrack for Ariana and **Accumulate + Cure** for both Fina versions.
+Cure follows the existing healing marker. The other 23 original soundtracks remain; five exact Global LB
+soundtracks are still unverified, as listed in [the audio report](docs/SEPHIRA_LB_AUDIO.md). Native readback,
+Windows validation and package integrity checks pass. Final combat balance and audio synchronization still
+need in-game testing. The optional animation library stays separate from Studio updates.
+
 ### Sephira LB audio and home-screen bonus counts — 2026-10-22
 
 [Verified Windows download / run 39912426219](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39912426219/Sephira-Studio-Test.zip)
