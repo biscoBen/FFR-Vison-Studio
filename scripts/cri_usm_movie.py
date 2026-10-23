@@ -1,7 +1,7 @@
 """Normalize our movie USM to the native movie's chunk/seek conventions.
 
 No video data is decoded or changed. This is deliberately limited to one
-unencrypted VP9 channel and optional matching opacity channel. It must never be
+unencrypted VP9 channel, matching opacity and a mono HCA soundtrack. It must never be
 used to rewrite arbitrary game movies.
 """
 import struct
@@ -71,11 +71,24 @@ def put(payload, row, name, number):
     struct.pack_into(fmt, payload, position, number)
 
 
-def normalize(raw, *, opaque_alpha=False):
+def pack_chunks(items):
+    result = bytearray()
+    for c in items:
+        header, payload = bytearray(c['header']), c['payload']
+        size = max(2048 if c['type'] == b'CRID' else 0, (len(header)+len(payload)+31)//32*32)
+        padding = size-len(header)-len(payload)
+        struct.pack_into('>I', header, 4, size-8)
+        struct.pack_into('>H', header, 10, padding)
+        result.extend(header); result.extend(payload); result.extend(bytes(padding))
+    return bytes(result)
+
+
+def normalize(raw, *, opaque_alpha=False, soundtrack=False):
     items = chunks(raw)
     kinds = (b'CRID', b'@SFV', b'@ALP') if opaque_alpha else (b'CRID', b'@SFV')
+    if soundtrack: kinds += (b'@SFA',)
     if any(c['type'] not in kinds or c['channel'] != 0 for c in items):
-        raise ValueError('Only our video-only channel-zero movie is supported')
+        raise ValueError('Only our video-only or explicitly enabled soundtrack channel-zero movie is supported')
     position = 0
     for c in items:
         size = len(c['header']) + len(c['payload'])
@@ -109,17 +122,72 @@ def normalize(raw, *, opaque_alpha=False):
     for row in integer_rows(crid):
         if value(crid, row, 'stmid') == 0:
             put(crid, row, 'filesize', position)
-    result = bytearray()
-    for c in items:
-        header, payload = c['header'], c['payload']
-        padding = c['size']-len(header)-len(payload)
-        struct.pack_into('>I', header, 4, c['size']-8)
-        struct.pack_into('>H', header, 10, padding)
-        result.extend(header); result.extend(payload); result.extend(bytes(padding))
-    return bytes(result), {'containerBytes':len(result), 'videoPackets':reports[b'@SFV']['packets'],
+    result = pack_chunks(items)
+    return result, {'containerBytes':len(result), 'videoPackets':reports[b'@SFV']['packets'],
                            'alphaPackets':reports.get(b'@ALP', {}).get('packets', 0),
                            'metadataChunkBytes':sum(r['metadata'] for r in reports.values()),
                            'maxPictureDataSize':max(r['max'] for r in reports.values()), 'chunkAlignment':32}
+
+
+def with_soundtrack(raw, hca):
+    """Mux the matching 6.4-second score without changing any color/alpha packet.
+
+    HCA blocks decode 1,024 samples, not one video frame. Timestamp and interleave
+    them by sample position; WannaCRI's default audio frame clock drifts here.
+    """
+    from wannacri.usm.page import get_pages, pack_pages, UsmPage
+    from wannacri.usm.types import ElementType as T
+    import hashlib
+    if (hca[:8] != b'HCA\0\x02\0\0\x60' or hca[8:12] != b'fmt\0'
+            or hca[24:28] != b'comp' or hca[40:46] != b'ciph\0\0'):
+        raise ValueError('Expected our unencrypted HCA 2.0 score')
+    channels, rate = hca[12], int.from_bytes(hca[13:16], 'big')
+    frames, inserted, appended = struct.unpack_from('>IHH', hca, 16)
+    block = int.from_bytes(hca[28:30], 'big')
+    samples = frames*1024-inserted-appended
+    if (channels, rate, samples, len(hca)) != (1, 48000, 307200, 96+frames*block):
+        raise ValueError('Expected the complete mono 48-kHz 6.4-second score')
+    parts = chunks(raw)
+    if any(c['type'] not in (b'CRID', b'@SFV', b'@ALP') or c['channel'] != 0 for c in parts):
+        raise ValueError('Expected one silent color/opacity movie')
+    pages = get_pages(parts[0]['payload'])
+    audio = UsmPage('CRIUSF_DIR_STREAM')
+    for name, typ, val in [('fmtver',T.I32,pages[0]['fmtver'].val), ('filename',T.STRING,'score.hca'),
+            ('filesize',T.I32,len(hca)), ('datasize',T.I32,0), ('stmid',T.I32,int.from_bytes(b'@SFA','big')),
+            ('chno',T.I16,0), ('minchk',T.I16,1), ('minbuf',T.I32,27860),
+            ('avbps',T.I32,round((len(hca)-96)*8/(samples/rate)))]:
+        audio.update(name, typ, val)
+    parts[0]['payload'] = bytearray(pack_pages([*pages,audio], 'UTF-8'))
+    info = UsmPage('AUDIO_HDRINFO')
+    for name, typ, val in [('audio_codec',T.I8,4), ('sampling_rate',T.I32,rate),
+            ('total_samples',T.I32,samples), ('num_channels',T.I32,channels),
+            ('metadata_count',T.I32,0), ('metadata_size',T.I32,0), ('ixsize',T.I32,27860),
+            ('ambisonics',T.I8,0), ('channel_config',T.I32,0)]:
+        info.update(name, typ, val)
+    def chunk(kind, payload, tick=0):
+        header = bytearray(32);header[:4] = b'@SFA';header[9] = 24;header[15] = kind
+        struct.pack_into('>II', header, 16, tick, 3000)
+        return {'type':b'@SFA','kind':kind,'channel':0,'header':header,'payload':payload}
+    # Header and header end precede all seek metadata/data, following the native layout.
+    first_end = next(i for i,p in enumerate(parts) if p['kind']==2)
+    parts.insert(first_end, chunk(1,pack_pages([info],'UTF-8')))
+    metadata = next(i for i,p in enumerate(parts) if p['kind']==3)
+    parts.insert(metadata, chunk(2,b'#HEADER END     ===============\0'))
+    first_data = next(i for i,p in enumerate(parts) if p['kind']==0)
+    prefix, stream = parts[:first_data], parts[first_data:]
+    # HCA header is its own first data packet, matching CRI's codec framing.
+    audio_packets = [chunk(0,hca[:96])]
+    for index in range(frames):
+        tick = max(0,index*1024-inserted)*3000//rate
+        audio_packets.append(chunk(0,hca[96+index*block:96+(index+1)*block],tick))
+    media = [p for p in stream if p['kind']==0] + audio_packets
+    media.sort(key=lambda p: struct.unpack_from('>I',p['header'],16)[0] /
+               struct.unpack_from('>I',p['header'],20)[0])
+    ending = [p for p in stream if p['kind']!=0]
+    ending.append(chunk(2,b'#CONTENTS END   ===============\0'))
+    result, report = normalize(pack_chunks([*prefix,*media,*ending]), opaque_alpha=True, soundtrack=True)
+    return result, {**report, 'audioPackets':len(audio_packets), 'audioSamples':samples,
+                    'audioSha256':hashlib.sha256(hca).hexdigest()}
 
 
 def with_opaque_alpha(raw, fixture):

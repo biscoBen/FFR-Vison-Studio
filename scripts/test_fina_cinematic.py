@@ -1,13 +1,14 @@
 """Movie transport, audio synchronization and opt-out behavior."""
 import copy
+import base64
 import hashlib
 import io
 import json
 from pathlib import Path
+import struct
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest import mock
 import zipfile
 
 from test_existing_visions import ROOT
@@ -66,13 +67,34 @@ class CinematicTests(unittest.TestCase):
                 usm.put(part['payload'], row, 'ixsize', 8)
                 start = part['position'] + len(part['header'])
                 broken[start:start+len(part['payload'])] = part['payload']
-        fixed, report = usm.normalize(bytes(broken), opaque_alpha=True)
+        fixed, report = usm.normalize(bytes(broken), opaque_alpha=True, soundtrack=True)
         self.assertEqual(fixed, raw)
         self.assertEqual(report['chunkAlignment'], 32)
         self.assertEqual([p['payload'] for p in usm.chunks(fixed) if p['kind'] == 0],
                          [p['payload'] for p in usm.chunks(bytes(broken)) if p['kind'] == 0])
         with self.assertRaisesRegex(ValueError, 'bounds|Truncated'):
-            usm.normalize(raw[:-1], opaque_alpha=True)
+            usm.normalize(raw[:-1], opaque_alpha=True, soundtrack=True)
+
+    def test_movie_contains_the_complete_score_at_its_sample_clock(self):
+        spec, files = film.payload(); parts = usm.chunks(files['movie.usm'])
+        self.assertEqual(spec['embeddedAudio'],
+            {'codec':'HCA','channels':1,'sampleRate':48000,'samples':307200})
+        header, = [p for p in parts if p['type']==b'@SFA' and p['kind']==1]
+        row, = usm.integer_rows(header['payload'])
+        self.assertEqual({k:usm.value(header['payload'],row,k) for k in row},
+            {'audio_codec':4,'sampling_rate':48000,'total_samples':307200,'num_channels':1,
+             'metadata_count':0,'metadata_size':0,'ixsize':27860,'ambisonics':0,'channel_config':0})
+        packets = [p for p in parts if p['type']==b'@SFA' and p['kind']==0]
+        self.assertEqual(b''.join(p['payload'] for p in packets),files['score.hca'])
+        self.assertEqual(hashlib.sha256(files['score.hca']).hexdigest(),
+            '3b76ce143df2fdba023506a999ae3eae8fd382cfdadf81fe9095834439344567')
+        self.assertEqual(len(packets),302)
+        self.assertEqual([struct.unpack_from('>II',p['header'],16) for p in packets],
+            [(0,3000)]+[(max(0,i*1024-128)*3000//48000,3000) for i in range(301)])
+        # Sound and picture packets advance on one clock, with no accumulating
+        # 30-fps assumption for HCA's 1,024-sample blocks.
+        times=[struct.unpack_from('>I',p['header'],16)[0] for p in parts if p['kind']==0]
+        self.assertEqual(times,sorted(times))
 
     def test_every_frame_has_native_opacity_with_matching_presentation_time(self):
         spec, files = film.payload()
@@ -157,6 +179,33 @@ class CinematicTests(unittest.TestCase):
             'MovieSceneManaSection_1','MovieSceneManaTrack_1','MovieSceneSpawnSection_0','MovieSceneSpawnTrack_1'})
         self.assertTrue(all(u['asset']==asset and u['set']=={'Signature':'new'} for u in updates))
 
+    def test_cooked_movie_window_ends_before_the_sprite_and_preserves_native_bindings(self):
+        raw=(ROOT/'scripts/fixtures/fina_compiled/compiled.bin').read_bytes()
+        fixed=film.retime_compiled(raw,403200)
+        self.assertEqual(len(fixed),len(raw))
+        touched=set()
+        for offsets,before,after in ((film.COMPILED_MOVIE_ENDS,363200,201600),
+                                     (film.COMPILED_ROOT_ENDS,480000,403200)):
+            for offset in offsets:
+                self.assertEqual(struct.unpack_from('<i',raw,offset)[0],before)
+                self.assertEqual(struct.unpack_from('<i',fixed,offset)[0],after)
+                touched.update(range(offset,offset+4))
+        self.assertEqual(bytes(b for i,b in enumerate(raw) if i not in touched),
+                         bytes(b for i,b in enumerate(fixed) if i not in touched))
+        for value in (363200,480000):self.assertNotIn(struct.pack('<i',value),fixed)
+        for changed in (raw[:-1],b'x'+raw[1:]):
+            with self.assertRaisesRegex(ValueError,'template'):film.retime_compiled(changed,403200)
+        with self.assertRaises(ValueError):film.retime_compiled(raw,480001)
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)/'private.uasset';binary=path.with_suffix('.uexp');binary.write_bytes(b'prefix'+raw+b'suffix')
+            description=Path(root)/'private.json'
+            description.write_text(json.dumps({'Exports':[{'ObjectName':'CompiledData','Data':base64.b64encode(raw).decode()}]}))
+            film.patch_compiled(path,description,403200)
+            self.assertEqual(binary.read_bytes(),b'prefix'+fixed+b'suffix')
+            binary.write_bytes(raw+raw)
+            with self.assertRaisesRegex(ValueError,'unique'):film.patch_compiled(path,description,403200)
+            self.assertEqual(binary.read_bytes(),raw+raw)
+
     def test_pak_includes_movie_and_disabling_replaces_only_its_companion(self):
         calls=[]
         with tempfile.TemporaryDirectory() as root:
@@ -179,25 +228,13 @@ class CinematicTests(unittest.TestCase):
             self.assertEqual(other.read_bytes(),b'other')
             film.prepare_pak(root,environment,lambda _:self.fail('Already disabled should do no work'))
 
-    def test_score_augments_existing_banks_and_honors_mute(self):
+    def test_movie_score_does_not_add_a_hit_gated_or_duplicate_sound(self):
         unit={'ffbe':{'id':film.SPRITE},'lb_custom':{'presentation':'ffbe'}}
         bank={'name':'existing','additionalBanks':[{'name':'opening'}]};events=[{'frame':20}]
         before=copy.deepcopy((unit,bank,events))
-        with tempfile.TemporaryDirectory() as root:
-            config=Path(root)/testing.CONFIG;config.parent.mkdir(parents=True)
-            config.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':True}))
-            def prepare(u, skill, source, table):
-                self.assertFalse(skill['lb_charge'])
-                self.assertEqual(source['sounds'][0]['role'],'fina_cinematic')
-                self.assertTrue(Path(skill['audio_bank']).is_file())
-                return {'name':'intro'},[{'frame':0,'role':'fina_cinematic'}]
-            audio=SimpleNamespace(ROOT=root,prepare=prepare)
-            with mock.patch.dict('sys.modules',{'ffbe_audio':audio}):
-                result,sounds=film.attach_audio(unit,{},bank,events,lambda _:None)
-                self.assertEqual([b['name'] for b in result['additionalBanks']],['opening','intro'])
-                self.assertEqual(len(sounds),2)
-                with mock.patch.object(audio,'prepare',side_effect=AssertionError('Muted')):
-                    self.assertEqual(film.attach_audio(unit,{'audio':'none','sephiraAudio':1},bank,events,None),(bank,events))
+        for skill in ({},{'audio':'native'},{'audio':'none','sephiraAudio':1}):
+            result,sounds=film.attach_audio(unit,skill,bank,events,lambda _:self.fail('No new bank'))
+            self.assertIs(result,bank);self.assertIs(sounds,events)
         self.assertEqual((unit,bank,events),before)
 
     def test_browser_preview_is_read_only(self):

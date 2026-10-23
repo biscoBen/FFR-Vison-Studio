@@ -4,17 +4,15 @@ The current runtime-test candidate uses the exact existing **Crystal-Fina-Rotati
 selected by the user, without rerendering the artwork. Alternate artwork work is paused. The source
 MP4 is 1920×1080, 30 fps, 192 frames (6.4 seconds); Studio's preview is byte-identical to it. Its SHA-256
 is `680e099c04a03f5e0e7206e2a2d5b8bb843613e218f7ee213d390b66a6b649c5`.
-The in-game copy is converted to the tested 1280×720 VP9/USM format. It retains the same shot, timing
+The in-game copy uses 1920×1080 VP9/USM with native opaque Sofdec alpha. It retains the same shot, timing
 and matching original chime/air score. The intact crystal rotates continuously and the camera moves
 closer, ending with Fina opening ruby-red eyes. There is no shattering or breaking sound.
 
-Revisions 1 and 2 delayed the LB but displayed no movie in the user's battle tests, although the browser
-preview works. Revision 2 corrected an observed movie pak path mismatch and USM header differences;
-it passed Windows checks and was published at `58dac32`. Those corrections did not resolve the runtime
-failure. The latest runtime trace confirms that the selected movie opens and advances frames with the
-cinematic manager enabled. The next candidate uses the native battle-UI transition and invalidates
-the donor's cached evaluation after shortening the movie/spawn window. It preserves the exact movie
-and sprite LB, and still requires an in-game visibility/handoff test.
+The user confirms the opacity update now displays the movie. It still repeats over the sprite LB,
+and only the battle theme is audible during the movie; sprite/heal audio works. The current candidate
+retimes the checksum-pinned cooked evaluation export, whose old movie endpoints survived the typed
+range/signature changes. It also embeds the matching HCA score in the Mana stream. Native readback
+and local container checks pass; the corrected handoff and audible movie score still need a game test.
 
 In Studio, use **Preview Crystal Fina cinematic** to view the movie with sound. To test the game path:
 
@@ -31,26 +29,30 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 
 ## Playback and transport
 
-- VP9, 1280×720, 30 fps, 192 frames, unencrypted CRI USM; no alpha or embedded audio track.
+- VP9, 1920×1080, 30 fps, 192 frames; native opaque Sofdec alpha and embedded mono 48-kHz HCA score.
 - A private native `PlatformManaMovie`/`FileManaMovie` pair points at `Movies/Studio/CrystalFina_Test.usm`.
   CRI resolves that relative to `Content/Streams`: the companion pak must contain
   `FFRS/Content/Streams/Movies/Studio/CrystalFina_Test.usm`.
-- The original Cloud movie master supplies the native Mana/spawn bindings. Its compiled opaque data and director
-  locator are retained through binary cloning. Its donor battle events are neutralized. Three private event-only
+- The original Cloud movie master supplies the native Mana/spawn bindings. Its compiled bindings and director
+  locator are retained through binary cloning; only validated cached frame bounds are shortened. Its donor battle events are neutralized. Three private event-only
   children supply Fina’s continuation and inert effect/sound subtracks.
 - After timing changes, the private sequence, scene, Mana track/section and actor spawn track/section receive
-  fresh signatures. This invalidates the old cooked evaluation schedule without rewriting opaque binding data.
+  fresh signatures. Shipping playback still consumed the cooked evaluation export, so its four movie
+  endpoints and nine root/subsequence endpoints now change alongside the typed ranges. Every other byte
+  remains native. A length/SHA-256 check rejects unknown layouts before patching the private clone.
   The native `UISetVisibility` transition hides battle UI while keeping movie visibility, then restores battle UI
   at the movie end. The earlier separate movie-widget toggle did not reproduce that native transition.
 - The movie window is 2.0–8.4 seconds. Fina’s existing LB, reaction, cleanup and sounds shift together, with LB1
   beginning at 8.4 seconds. Her cure recording stays on the original heal application marker. The common opening
   cue moves to the start, and the original score begins with the movie.
-- The score uses a separate native HCA sound bank and honors the existing explicit mute/custom-audio choices.
-  The game’s audio adapter applies its own host profile. No game-wide sound bank or movie asset is replaced.
+- The matching original score is embedded in the movie as a single mono HCA track: 48 kHz, 307,200
+  samples. Both movie descriptors declare that track. HCA packets use sample-based timestamps; they
+  are not timed as 30-fps video frames. No duplicate hit-sound score event is added. Movie sound is
+  independent of the sprite LB audio choice, like original CG audio. No shared sound/movie asset is replaced.
 - The USM travels in Studio’s normal companion `.pak`; retoc writes the `.utoc`/`.ucas` and preserves that pak.
   The existing three-file installer and Steam Deck snapshot format therefore carry the movie too. Disabling the
   test empties the owned companion movie pak on the next build. Other mods are untouched.
-- The developer encoder normalizes video-only USM chunk alignment, metadata byte counts, maximum chunk
+- The developer encoder normalizes USM chunk alignment, metadata byte counts, maximum chunk
   size, declared file size and seek offsets to the captured native conventions. Compressed video packets
   remain byte-identical; no additional image or audio conversion occurs in that step.
 - An early template check applies only when this test is enabled. A changed native movie master stops this
@@ -59,8 +61,8 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 ## Verification and limits
 
 The MP4 and VP9 stream decode fully. Demuxing the CRI container recovers the exact original IVF stream. Native
-readback verifies movie dimensions, duration, spawn times, absence of donor gameplay events and intact opaque
-compiled data. The legacy assets reparse, and retoc packages them while retaining the checksum-verified USM pak.
+readback verifies movie dimensions, duration, spawn times, absence of donor gameplay events and retimed cooked
+ranges with all other compiled bytes preserved. The legacy assets reparse, and retoc packages them while retaining the checksum-verified USM pak.
 Regression tests cover the default-off switch, independent settings, audio/feedback alignment, archive integrity,
 read-only preview and removal of the movie on disable.
 
@@ -70,8 +72,8 @@ approach, closed eyes through frame 156 and fully open eyes from frame 177. MP4/
 recovers the identical IVF, and native readback/package checks pass. The local movie candidate finished at
 2026-10-23 10:18 America/Los_Angeles. The selected lighter movie now proceeds through the Windows checks before publication.
 
-These are file/timeline/package checks, **not an in-game playback pass**. The reported blank movie
-remains unresolved in revision 2. CRI decoder acceptance, startup delay,
+These are file/timeline/package checks, **not an in-game playback pass**. The user confirms visible playback in the opacity update. The subsequent repeat/silent-score
+correction still needs a listening and handoff test. Startup delay,
 audio/movie synchronization, battle transitions, repeated playback, controller behavior and Steam Deck playback
 still need the user’s test. Browser preview validates the movie content independently of the CRI game path.
 
@@ -301,3 +303,25 @@ source, 2.0–8.4 second movie window, three score/LB sound banks and preserved 
 corrected Streams movie entry survives retoc packaging. The original revision 2 code candidate was
 ready at 2026-10-23 10:18 America/Los_Angeles; artwork review and this selected-movie import followed.
 Windows CI and actual game playback are separate checks; the latter still needs the user's test.
+
+### Single-pass timing and embedded movie score
+
+The visible opacity build still used 363,200-tick movie endpoints inside the native 3,073-byte
+`CompiledData` RawExport, despite the edited typed endpoint of 201,600 ticks. At 24,000 ticks per
+second that left the six-second movie active for the donor's thirteen-second window. The private
+clone now changes exactly four movie endpoints and nine root/subsequence endpoints. The fixture in
+`scripts/fixtures/fina_compiled/` pins the donor layout. All bindings, locators and other bytes remain
+unchanged; signatures continue to refresh as well. Native UAsset readback and retoc cooking pass.
+
+The score is now part of the USM, rather than a `SoundPlayHitSound` event during the movie. The
+`@SFA` track recovers the exact 154,208-byte source HCA (SHA-256
+`3b76ce143df2fdba023506a999ae3eae8fd382cfdadf81fe9095834439344567`). Its 301 blocks
+plus header use the 48-kHz sample clock and encoder delay, interleaved with the unchanged 192 color
+and 192 opacity packets. Both descriptors read back as mono, 48 kHz, 307,200 samples, type `HCA`.
+No duplicate score bank/event is added; Fina's opening/build-up and cure banks still accompany the
+sprite/healing timeline. The private USM SHA-256 is
+`60eb3c5866361c9eec901e80cb6213d22705183edf3eeb7de42721c7ef124581`.
+
+The exact selected browser MP4 remains unchanged. These corrections require a rebuild/install and
+restart; they need no kit/MR/acquisition update. One movie followed by the sprite LB, audible movie
+music and reuse in a second battle remain live checks.

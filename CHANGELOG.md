@@ -11,7 +11,7 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Party voice/survival verification and reachable Christine challenge
+### Crystal Fina movie timing/audio, install verification and Christine challenge
 
 - Fix the install-blocking Lasswell table error when a party voice override is
   combined with **Survive at 1 HP**. Merge authorized changes by field instead
@@ -30,14 +30,27 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   Use an instance-loaded copy of the room's native battle stage. Stop changing
   the blocked Tronn crystal-room interaction. The 1-gil shop override and removed
   or moved profiles suppress the challenge as before; no MR/kit update is needed.
-- Extension 1.2.74. Local regressions cover all eight party targets with survival
+- Retain the now-visible 1080p Fina movie and its native opacity track. Shorten the
+  cooked Mana/evaluation-tree endpoints as well as typed section/spawn ranges:
+  fresh signatures alone had left the donor's longer playback window active.
+  Preserve every other compiled byte and reject unknown templates by SHA-256.
+  The target is one 6.4-second pass followed by the existing sprite LB.
+- Put the exact matching original score directly in the movie as mono 48-kHz HCA,
+  with sample-based packet timing and matching native movie descriptors. Remove
+  the separate hit-sound score event so it cannot be gated during the cinematic
+  or double the soundtrack. Keep the selected MP4/artwork unchanged, and retain
+  sprite/heal/cure timing. The user confirms only movie sound is missing; the
+  battle theme and sprite/healing sounds already work.
+- Extension 1.2.75. Local regressions cover all eight party targets with survival
   on/off and both verifier paths; native readback reproduces the returned log's
-  643-row table and 11 survival targets. All 70 focused Python checks and 41 Flutter
-  checks pass (one Windows-only local skip). Native write/readback verifies 19
-  Christine challenge tables, including the new startup struct and string-table
-  name restoration. Entry conditions, victory-only rewards and all unrelated map
-  fields are preserved. Live menu/battle behavior and visible
-  Fina movie playback still require game tests; Fina's movie payload is unchanged.
+  643-row table and 11 survival targets. Native write/readback verifies 19
+  Christine challenge tables, preserving original startup/story/map fields.
+  Fina's native sequence readback verifies cooked/typed bounds, opaque bindings,
+  mono HCA descriptors, unchanged sprite/heal cues and successful retoc cooking;
+  movie packets recover the exact score. All 96 focused Python checks and 41
+  Flutter checks pass (one Windows-only local skip). Windows package validation
+  is recorded at publication. Live Christine entry/menu/battle and
+  Fina's single-pass handoff/movie audio remain game tests.
 
 ### Returned full-game reference audit — 2026-10-22
 

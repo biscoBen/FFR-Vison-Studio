@@ -13,7 +13,7 @@ import shutil
 import subprocess
 
 from build_crystal_fina_cinematic import FPS, FRAMES, ROOT, SECONDS, package
-from cri_usm_movie import with_opaque_alpha
+from cri_usm_movie import with_opaque_alpha, with_soundtrack
 
 WIDTH, HEIGHT = 1920, 1080
 
@@ -52,6 +52,7 @@ def import_movie(source, scene_path, score_hca, output, destination):
     movie = Usm(videos=[video], version=video.crid_page['fmtver'].val)
     raw = b''.join(movie.stream(OpMode.NONE))
     raw, container = with_opaque_alpha(raw, ROOT / 'scripts/fixtures/fina_opaque_alpha')
+    raw, container = with_soundtrack(raw, score_hca.read_bytes())
     (output / 'crystal-fina.usm').write_bytes(raw)
     report = {
         **scene, 'width': WIDTH, 'height': HEIGHT,
@@ -59,7 +60,8 @@ def import_movie(source, scene_path, score_hca, output, destination):
         'eyeColor': 'red', 'audioEnding': 'soft awakening chord; no breaking sound',
         'usmCodec': 'VP9', 'alphaCodec': 'SofdecPrime', 'opaqueAlpha': True,
         'alphaFrameSha256': '5d7aecb273db8cebabf70319bdd35c11731bb85312330034dfc45f93994067d3',
-        'audio': 'Matching original score in a separate native HCA bank',
+        'audio': 'Matching original score embedded in the native Mana movie',
+        'embeddedAudio': {'codec': 'HCA', 'channels': 1, 'sampleRate': 48000, 'samples': 307200},
         'maxPictureDataSize': container['maxPictureDataSize'], 'container': container,
         'sourceMovie': {'name': source.name, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                         'width': videos[0]['width'], 'height': videos[0]['height'],

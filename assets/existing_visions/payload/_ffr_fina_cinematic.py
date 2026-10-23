@@ -4,12 +4,14 @@ Native movie/spawn/compiled bindings are cloned in binary. Only the private
 children contain battle events. The source heal, motion and audio move together.
 """
 import copy
+import base64
 from functools import lru_cache
 import hashlib
 import io
 import json
 import os
 from pathlib import Path
+import struct
 import zipfile
 
 REVISION = 'crystal-fina-film-2'
@@ -28,6 +30,44 @@ VIDEO = 'FFRS/Content/Streams/Movies/Studio/CrystalFina_Test.usm'
 SCORE = 'studio_crystal_fina_intro'
 MASTER_HASHES = {'.uasset': '1bde55f872f45d69527802dac5cfb0a7b6aacab22852d3cbb99f3e897d655550',
                  '.uexp': '4db420158204dde62c0f0892667209c726e454f97457dfa2af3855eb49da474e'}
+# Cooked Mana template, evaluation-tree bounds and subsequence/root ranges.
+# This layout belongs only to the checksum-pinned native Cloud master above.
+COMPILED_SHA = '8bb3c2d3538db74709bebad68b4d5f1ab6132934dada1e32b66baa7f70250a3b'
+COMPILED_MOVIE_ENDS = (110, 962, 2719, 2724)
+COMPILED_ROOT_ENDS = (264, 430, 440, 580, 590, 730, 740, 936, 3030)
+
+
+def retime_compiled(raw, duration):
+    """Retain native bindings; shorten all cached ranges with their typed peers.
+
+    Shipping builds can consume this cooked export despite fresh signatures.
+    Updating just SectionRange left the original 13-second Mana window active,
+    so the 6.4-second clip started again during the sprite LB.
+    """
+    if (len(raw) != 3073 or hashlib.sha256(raw).hexdigest() != COMPILED_SHA
+            or not END < duration <= NATIVE_DURATION):
+        raise ValueError('Unsupported Crystal Fina compiled movie template or duration.')
+    result = bytearray(raw)
+    for offsets, before, after in ((COMPILED_MOVIE_ENDS, NATIVE_END, END),
+                                   (COMPILED_ROOT_ENDS, NATIVE_DURATION, duration)):
+        for offset in offsets:
+            if struct.unpack_from('<i', result, offset)[0] != before:
+                raise ValueError('Crystal Fina compiled movie range changed.')
+            struct.pack_into('<i', result, offset, after)
+    return bytes(result)
+
+
+def patch_compiled(asset, description, duration):
+    """Patch only the validated RawExport in our private clone, without JSON rewriting bindings."""
+    view = json.loads(Path(description).read_text(encoding='utf-8-sig'))
+    export, = [e for e in view['Exports'] if e['ObjectName'] == 'CompiledData']
+    raw = base64.b64decode(export['Data'], validate=True)
+    replacement = retime_compiled(raw, duration)
+    path = Path(asset).with_suffix('.uexp')
+    cooked = path.read_bytes()
+    if cooked.count(raw) != 1:
+        raise ValueError('Crystal Fina compiled movie export is not unique.')
+    path.write_bytes(cooked.replace(raw, replacement, 1))
 
 
 def validate(raw):
@@ -45,6 +85,7 @@ def validate(raw):
     spec = json.loads(files['spec.json'])
     if (spec.get('revision') != REVISION or (spec.get('width'), spec.get('height'), spec.get('fps'), spec.get('frames')) != (1920, 1080, 30, 192)
             or spec.get('opaqueAlpha') is not True or spec.get('alphaCodec') != 'SofdecPrime'
+            or spec.get('embeddedAudio') != {'codec': 'HCA', 'channels': 1, 'sampleRate': 48000, 'samples': 307200}
             or not files['movie.usm'].startswith(b'CRID') or not files['score.hca'].startswith(b'HCA\0\x02\0')
             or files['preview.mp4'][4:8] != b'ftyp' or not files['poster.jpg'].startswith(b'\xff\xd8')):
         raise ValueError('Unsupported Crystal Fina movie format.')
@@ -79,33 +120,9 @@ def ensure_assets(root, extract):
             raise ValueError('The native movie template changed. Turn off Test Crystal Fina cinematic until this game build is checked.')
 
 
-def cache(root):
-    spec, files = payload()
-    folder = Path(root) / 'build/fina-cinematic/media'
-    digest = hashlib.sha256(files['score.hca']).hexdigest()
-    for name in ('audio.json', 'score.hca'):
-        target = folder / ('samples/' + digest + '.hca' if name == 'score.hca' else name)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        if not target.is_file() or target.read_bytes() != files[name]: target.write_bytes(files[name])
-    return folder
-
-
 def attach_audio(unit, skill, bank, events, table):
-    import ffbe_audio
-    if (not matches(unit) or not enabled(ffbe_audio.ROOT)
-            or skill.get('audio') == 'none' and skill.get('sephiraAudio') == 1
-            or skill.get('audio') == 'experimental'
-            or any(skill.get(k) for k in ('audio_bank', 'audio_system_bank'))):
-        return bank, events
-    settings = dict(skill, audio='native', audio_codec='host', lb_charge=False,
-                    audio_bank=str(cache(ffbe_audio.ROOT) / 'audio.json'))
-    intro, sounds = ffbe_audio.prepare(unit, settings,
-        {'sounds': [{'frame': 0, 'cueId': 1, 'role': 'fina_cinematic'}]}, table)
-    if not intro or not sounds: raise ValueError('Crystal Fina cinematic score could not be prepared.')
-    if bank:
-        bank = {**bank, 'additionalBanks': [*bank.get('additionalBanks', []), intro]}
-    else: bank = intro
-    return bank, [*events, *sounds]
+    """Compatibility hook: movie score now travels in Mana, not hit-sound events."""
+    return bank, events
 
 
 def continuation(plan):
@@ -143,9 +160,8 @@ def continuation(plan):
 def evaluation_updates(asset):
     """Invalidate donor evaluation caches after changing movie/spawn timing.
 
-    Preserve opaque compiled bytes and binding locators, but give the edited
-    sequence/tracks/sections fresh signatures so Unreal rebuilds evaluation.
-    The ordinary engine movie-removal path uses this same native mechanism.
+    Refresh editor-side signatures as well as the explicitly retimed cooked
+    export. Signatures alone do not rebuild cooked shipping evaluation data.
     """
     exports = (Path(asset).name, 'MovieScene_0', 'MovieSceneManaSection_1',
                'MovieSceneManaTrack_1', 'MovieSceneSpawnSection_0', 'MovieSceneSpawnTrack_1')
@@ -235,6 +251,10 @@ def build(units, env):
     shortened = NATIVE_DURATION + END - NATIVE_END
     patch('lb-duration', frames=[{'asset': job['asset'], 'after': shortened, 'delta': plan['duration'] - shortened}])
     patch('refresh-evaluation', objects=evaluation_updates(job['asset']))
+    compiled = work / 'compiled-template.json'
+    root_asset = out / (job['asset'] + '.uasset')
+    run([*tool, 'tojson', str(root_asset), str(compiled), '--usmap', usmap])
+    patch_compiled(root_asset, compiled, plan['duration'])
     for suffix in ('', '_vp9'):
         source = native(MOVIE + suffix)
         clone(source, PRIVATE + suffix, [('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
@@ -259,7 +279,10 @@ def build(units, env):
                 prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
-        fields = {'AudioTracks': [], 'bIsAlpha': True}
+        audio, = prop(data, 'AudioTracks')['Value']
+        for name, value in (('NumChannels', 1), ('SamplingRate', 48000), ('TotalSamples', 307200), ('Type', 'HCA')):
+            prop(audio['Value'], name)['Value'] = value
+        fields = {'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
             fields.update(FilePath='Movies/Studio/CrystalFina_Test.usm', MinBufferSize=maximum * 4,
