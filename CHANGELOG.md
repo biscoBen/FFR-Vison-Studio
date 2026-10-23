@@ -18,8 +18,12 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   browser preview works, but the in-game failure remains unresolved.
 - Add a separate small, read-only collector for the game's shared movie player, display actor,
   texture/material and native movie sequence. It needs no new cast, paused battle, rebuild or install.
-  Nine collector checks pass locally; the actual Windows game extraction awaits the returned reference.
-  This collection does not change the selected artwork or claim a new playback fix.
+  Nine collector checks pass locally. The returned Windows reference successfully includes all nine
+  requested native assets and confirms the actor's cinematic-manager toggle and alpha-based UI display.
+- Add an optional, separate UE4SS movie observer to distinguish decoder/frame progress from display
+  state during the current build's resonance. It logs read-only getters, requires a game restart and
+  can be disabled separately. Four installer/Lua/archive checks pass locally; the live trace is pending.
+  These diagnostics do not change the selected artwork or claim a new playback fix.
 
 ### Returned full-game reference audit — 2026-10-22
 

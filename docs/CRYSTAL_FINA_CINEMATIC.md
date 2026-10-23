@@ -102,8 +102,33 @@ existing mappings if available and checks for the display actor, player, texture
 cut sequence. The game can be running or closed; no further cast, pause, rebuild, original vision
 unlock or installation is needed. Each extraction is limited to 60 seconds. Nine focused collector
 checks pass locally, including read-only scope, exact archive contents and failed-asset reporting even
-when the reader exits zero. Native Windows extraction of these assets remains to be checked with
-the user's return. No new cinematic or Studio runtime package was published for this collection.
+when the reader exits zero. The subsequent Windows return successfully collected all requested assets.
+No new cinematic or Studio runtime package was published for this collection.
+
+### Returned shared player and display assets
+
+`Fina-Movie-Player-Reference-20261023-133927-365eb1.zip` has SHA-256
+`1bae3899894a336fad7974942c6029042f21a38780dcfd7157a277eaa5d7f66f`. Both scoped native extractions
+succeeded on Windows: five shared movie assets and four Cloud timeline assets, with no reported
+failures. The Cloud master hashes match the pinned template. All five shared assets reparse locally.
+
+The display actor's BeginPlay sets `CPP_UI_BattleSubsystem.CinematicManager.bUseMovie` true; Destroyed
+sets it false. It does not contain a world-space screen mesh. The shared player references the shared
+Mana texture, whose four component textures include an alpha component and whose clear alpha is zero.
+The display material uses the UI domain with translucent blending. Native Cloud has a separate alpha
+track; the selected Fina USM currently has none. This is a display compatibility hypothesis, not proof
+that the Fina decoder has started or that a missing alpha track caused the failure.
+
+The standalone `Crystal-Fina-Movie-Trace.zip` installs a separate `FFRStudioMovieTrace` UE4SS observer.
+It logs Mana status/frame progress, source/texture, alpha-track selection, movie actor counts and the
+manager's `bUseMovie` flag. Native getters run on the game thread, and ManaPlayer getters are skipped
+when its component is uninitialized. It does not open/play/stop a movie or modify native state. A
+restart is required to load it; no Studio update/rebuild is required. After one resonance/F8 bookmark,
+its collection command uses the existing diagnostics collector. Its disable command removes only its
+owned `enabled.txt`; an unknown same-named folder is refused. Four focused checks pass locally,
+including executable Lua observations against native-object proxies that reject writes. Windows live
+API availability and the actual playback state still require the user's trace. No playback fix or
+updated Studio runtime package is claimed.
 
 ### Returned playback diagnostics — 2026-10-23
 
