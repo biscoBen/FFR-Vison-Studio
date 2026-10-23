@@ -1,6 +1,7 @@
 # Windows PowerShell 5.1. Read-only movie playback collection; no installation or game changes.
 [CmdletBinding()]
-param([string]$GamePath, [string]$EnginePath, [string]$OutputRoot, [switch]$NoPrompt)
+param([string]$GamePath, [string]$EnginePath, [string]$OutputRoot, [switch]$NoPrompt,
+      [switch]$PlayerReference)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
@@ -83,6 +84,87 @@ function Copy-Shared([string]$Source, [string]$Destination) {
 # converts bytes to text on Windows PowerShell 5.1 and would corrupt a USM.
 function Quote-Argument([string]$Value) {
     return '"' + ([regex]::Replace([regex]::Replace($Value, '(\\*)"', '$1$1\"'), '(\\+)$', '$1$1')) + '"'
+}
+
+function Collect-PlayerReference([string]$Engine, [string]$Game) {
+    # Read the native display/player assets from the complete container directory:
+    # retoc needs global.utoc there to resolve script objects. Never extract into
+    # the game or Studio, and never run a builder or modify installed packages.
+    $retoc = Join-Path $Engine 'tools/retoc/retoc.exe'
+    if (-not (Test-Path -LiteralPath $retoc -PathType Leaf)) {
+        throw 'Studio retoc reader was not found: ' + $retoc
+    }
+    $paks = Join-Path $Game 'FFRS/Content/Paks'
+    $legacy = Join-Path $script:root 'native/legacy'
+    [void][IO.Directory]::CreateDirectory($legacy)
+    $attempts = New-Object 'Collections.Generic.List[object]'
+    $filters = @('Movies/Sequencer/', 'Sequencer/Battle/Skill/440110/440111/')
+    foreach ($filter in $filters) {
+        Write-Host ('Reading native movie player: ' + $filter) -ForegroundColor Cyan
+        $process = New-Object Diagnostics.Process
+        $process.StartInfo = New-Object Diagnostics.ProcessStartInfo
+        $process.StartInfo.FileName = $retoc
+        $process.StartInfo.Arguments = (@('to-legacy', '--no-shaders', '--filter', $filter, $paks, $legacy) |
+            ForEach-Object { Quote-Argument $_ }) -join ' '
+        $process.StartInfo.UseShellExecute = $false
+        $process.StartInfo.CreateNoWindow = $true
+        $process.StartInfo.RedirectStandardOutput = $true
+        $process.StartInfo.RedirectStandardError = $true
+        $started = $false
+        $record = [ordered]@{filter=$filter; timeoutSeconds=60}
+        try {
+            $started = $process.Start()
+            $stdout = $process.StandardOutput.ReadToEndAsync()
+            $stderr = $process.StandardError.ReadToEndAsync()
+            $watch = [Diagnostics.Stopwatch]::StartNew()
+            while (-not $process.WaitForExit(250)) {
+                if ($watch.Elapsed.TotalSeconds -gt 60) { throw 'Native extraction timed out after 60 seconds.' }
+            }
+            $message = $stdout.GetAwaiter().GetResult() + $stderr.GetAwaiter().GetResult()
+            $record['exitCode'] = $process.ExitCode
+            $record['log'] = $message
+            Write-Host $message
+            if ($process.ExitCode -ne 0 -or $message -match '\([1-9][0-9]* failed\)') {
+                $script:errors.Add('Native player extraction failed for ' + $filter + '; see extraction report.')
+            }
+        } catch {
+            $record['error'] = $_.Exception.Message
+            $script:errors.Add($filter + ': ' + $_.Exception.Message)
+        } finally {
+            if ($started -and -not $process.HasExited) { $process.Kill(); [void]$process.WaitForExit(5000) }
+            $process.Dispose()
+        }
+        $attempts.Add([pscustomobject]$record)
+    }
+    $expected = @('Movies/Sequencer/BP_BtlSequencerMovieActor', 'Movies/Sequencer/MP_BtlManaPlayer',
+                  'Movies/Sequencer/MSB_BtlSequencer_Texture', 'Movies/Sequencer/MSB_BtlSequencer_Texture_Mat',
+                  'Sequencer/Battle/Skill/440110/440111/SEQ_Battle_440111_Master',
+                  'Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000')
+    foreach ($stem in $expected) {
+        if (-not (Test-Path -LiteralPath (Join-Path $legacy ('FFRS/Content/' + $stem + '.uasset')) -PathType Leaf)) {
+            $script:errors.Add('Missing native player reference: ' + $stem)
+        }
+    }
+    foreach ($relative in @('extracted/Mappings.usmap', 'data/Mappings.usmap')) {
+        $candidate = Join-Path $Engine $relative
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            Copy-Shared $candidate (Join-Path $script:root 'native/Mappings.usmap')
+            break
+        }
+    }
+    $files = @(Get-ChildItem -LiteralPath $legacy -Recurse -File | ForEach-Object {
+        [pscustomobject]@{path=$_.FullName.Substring($legacy.Length + 1).Replace('\', '/');
+            bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
+    })
+    [pscustomobject]@{schema=1; purpose='native-movie-player'; gameEdition='full';
+        collectedUtc=[DateTime]::UtcNow.ToString('o'); game=$Game; engine=$Engine;
+        extraction=$attempts.ToArray(); files=$files; errors=$script:errors.ToArray()} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $script:root 'report.json') -Encoding UTF8
+    $zip = $script:root + '.zip'
+    [IO.Compression.ZipFile]::CreateFromDirectory($script:root, $zip)
+    Write-Host ('Attach this ZIP in the chat: ' + $zip) -ForegroundColor Green
+    if ($script:errors.Count) { Write-Host 'Some assets were unavailable. Send the ZIP anyway; the report lists them.' -ForegroundColor Yellow }
+    Write-Output $zip
 }
 function Export-PakEntry([string]$Tool, [string]$Pak, [string]$Entry, [string]$Destination) {
     $process = New-Object System.Diagnostics.Process
@@ -211,7 +293,8 @@ function Copy-MoviePrefix([string]$Source, [string]$Destination) {
 try {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     Write-Host 'Crystal Fina movie playback diagnostics (FULL GAME)' -ForegroundColor Cyan
-    Write-Host 'Collects movie metadata, small CRI movie samples and recent game logs.'
+    if ($PlayerReference) { Write-Host 'Collects the native movie display actor, player, texture/material and Cloud movie sequence.' }
+    else { Write-Host 'Collects movie metadata, small CRI movie samples and recent game logs.' }
     Write-Host 'Does not install, change or start the game. No saves or credentials are collected.'
     $engine = Find-Engine $EnginePath
     if ($EnginePath -and -not $engine) { throw 'The supplied Studio engine folder was not found.' }
@@ -253,11 +336,13 @@ try {
     }
     Write-Host ('Full game: ' + $game) -ForegroundColor Cyan
     Write-Host ('Studio engine: ' + $engine)
-    $tag = 'Fina-Movie-Diagnostics-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,6)
+    $prefix = if ($PlayerReference) { 'Fina-Movie-Player-Reference-' } else { 'Fina-Movie-Diagnostics-' }
+    $tag = $prefix + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,6)
     $script:root = Join-Path $OutputRoot $tag
     [void][IO.Directory]::CreateDirectory($script:root)
     $script:errors = New-Object 'Collections.Generic.List[string]'
     $script:records = New-Object 'Collections.Generic.List[object]'
+    if ($PlayerReference) { Collect-PlayerReference $engine $game; return }
     $samples = New-Object 'Collections.Generic.List[object]'
     $profiles = New-Object 'Collections.Generic.List[object]'
     $nativeAttempts = New-Object 'Collections.Generic.List[object]'

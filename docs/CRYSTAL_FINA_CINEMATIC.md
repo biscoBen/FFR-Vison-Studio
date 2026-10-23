@@ -8,11 +8,11 @@ The in-game copy is converted to the tested 1280×720 VP9/USM format. It retains
 and matching original chime/air score. The intact crystal rotates continuously and the camera moves
 closer, ending with Fina opening ruby-red eyes. There is no shattering or breaking sound.
 
-Revision 1 delayed the LB but displayed no movie. The returned native diagnostics revealed an incorrect
-movie pak path, now corrected together with concrete USM header differences. File and native asset
-checks do not establish playback inside Resonance; that still needs the user's in-game test. The
-revision 2 candidate passes through Windows checks before publication; the verified download is linked
-in the fork changelog. Until that package is published, the existing download remains revision 1.
+Revisions 1 and 2 delayed the LB but displayed no movie in the user's battle tests, although the browser
+preview works. Revision 2 corrected an observed movie pak path mismatch and USM header differences;
+it passed Windows checks and was published at `58dac32`. Those corrections did not resolve the runtime
+failure. The latest return confirms the corrected companion pak is installed. Investigation now needs
+the native shared movie player and display actor; no further playback fix is claimed.
 
 In Studio, use **Preview Crystal Fina cinematic** to view the movie with sound. To test the game path:
 
@@ -64,8 +64,8 @@ approach, closed eyes through frame 156 and fully open eyes from frame 177. MP4/
 recovers the identical IVF, and native readback/package checks pass. The local movie candidate finished at
 2026-10-23 10:18 America/Los_Angeles. The selected lighter movie now proceeds through the Windows checks before publication.
 
-These are file/timeline/package checks, **not an in-game playback pass**. The reported revision 1 blank movie
-remains unresolved. CRI decoder acceptance, startup delay,
+These are file/timeline/package checks, **not an in-game playback pass**. The reported blank movie
+remains unresolved in revision 2. CRI decoder acceptance, startup delay,
 audio/movie synchronization, battle transitions, repeated playback, controller behavior and Steam Deck playback
 still need the user’s test. Browser preview validates the movie content independently of the CRI game path.
 
@@ -76,6 +76,34 @@ and movie-related settings. It neither updates the cinematic nor requires owning
 marked `prefixOnly` are incomplete and intended for container/header comparisons. The collector's synthetic
 fixture checks cover exact binary extraction, the sample cap, missing movies, scoped collection and unchanged
 game/engine trees. Windows PowerShell 5.1 has not yet been exercised for this new collector locally.
+
+### Third return: current package installed, battle playback still blank
+
+`Fina-Movie-Diagnostics-20261023-132758-0c369a.zip` has SHA-256
+`62a797821d366cce53bb4b69fd8d7aa06377cee58426210d09c0f6906aea741b`. The user cast the resonance,
+paused immediately afterward and collected it. Installed and built companion pak hashes are both
+`b2829ef795bc6bfad27eeaf8d64b36b01218f327a29b256c4528cfd40db8e39a`, exactly matching the verified
+local native package. That pak contains only the corrected Streams entry with the selected revision 2
+USM. Installed/build utoc hashes also match. The obsolete collector's failure to find the old
+`Content/Movies` entry does not show that the installed movie is missing.
+
+The returned private master `444011` reparses with the expected private ManaSource, shared external
+player/texture, actor spawn binding, 2.0–8.4 second movie range and 16.8 second root duration. Its
+opaque compiled data matches the native donor. The actor template's serialized bytes also match the
+native donor exactly; its raw-export fallback in the JSON reader is not evidence of modified bytes.
+The timeline preserves Fina's cure cue on the heal marker. The returned log contains the later LB
+motions but no specific Mana error. This does not establish whether the runtime decoder opened the
+file or whether the display actor rendered it.
+
+The separate `Crystal-Fina-Movie-Player-Reference.zip` runs **Collect Fina Movie Player.cmd**.
+It exports only `Movies/Sequencer/` and the native `440110/440111` movie sequence into a new output
+folder, using the full game's Paks directory so retoc can resolve global script objects. It includes
+existing mappings if available and checks for the display actor, player, texture/material, master and
+cut sequence. The game can be running or closed; no further cast, pause, rebuild, original vision
+unlock or installation is needed. Each extraction is limited to 60 seconds. Nine focused collector
+checks pass locally, including read-only scope, exact archive contents and failed-asset reporting even
+when the reader exits zero. Native Windows extraction of these assets remains to be checked with
+the user's return. No new cinematic or Studio runtime package was published for this collection.
 
 ### Returned playback diagnostics — 2026-10-23
 

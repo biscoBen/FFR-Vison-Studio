@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
@@ -15,6 +16,7 @@ HELPER = FOLDER / 'Collect Fina Movie Diagnostics.ps1'
 PWSH = shutil.which('pwsh')
 REPAK = os.environ.get('FFR_TEST_REPAK') or shutil.which('repak')
 NAMES = ['Collect Fina Movie Diagnostics.cmd', HELPER.name, 'Movie Diagnostics README.txt']
+PLAYER_NAMES = ['Collect Fina Movie Player.cmd', HELPER.name, 'Movie Player README.txt']
 
 
 class MovieDownloadTests(unittest.TestCase):
@@ -23,6 +25,14 @@ class MovieDownloadTests(unittest.TestCase):
             self.assertEqual(z.namelist(), NAMES)
             self.assertIsNone(z.testzip())
             for name in NAMES:
+                self.assertEqual(z.read(name).decode('utf-8').replace('\r\n', '\n'),
+                                 (FOLDER / name).read_text())
+
+    def test_player_download_contains_exact_reviewed_sources(self):
+        with zipfile.ZipFile(FOLDER / 'Crystal-Fina-Movie-Player-Reference.zip') as z:
+            self.assertEqual(z.namelist(), PLAYER_NAMES)
+            self.assertIsNone(z.testzip())
+            for name in PLAYER_NAMES:
                 self.assertEqual(z.read(name).decode('utf-8').replace('\r\n', '\n'),
                                  (FOLDER / name).read_text())
 
@@ -61,10 +71,11 @@ class MovieCollectorTests(unittest.TestCase):
         subprocess.run([REPAK, 'pack', '--version', 'V11', '--mount-point', '../../../',
                         str(stage), str(destination)], check=True, capture_output=True)
 
-    def run_helper(self, *, success=True):
+    def run_helper(self, *, success=True, player=False):
         p = subprocess.run([PWSH, '-NoLogo', '-NoProfile', '-File', str(HELPER),
                             '-EnginePath', str(self.engine), '-GamePath', str(self.game),
-                            '-OutputRoot', str(self.output), '-NoPrompt'],
+                            '-OutputRoot', str(self.output), '-NoPrompt',
+                            *(['-PlayerReference'] if player else [])],
                            env=self.env, text=True, capture_output=True, timeout=60)
         self.assertEqual(p.returncode, 0 if success else 1, p.stdout + p.stderr)
         return p
@@ -159,6 +170,60 @@ class MovieCollectorTests(unittest.TestCase):
             report = json.loads(z.read('report.json').decode('utf-8-sig'))
             self.assertEqual(report['samples'][0]['entry'], entry)
             self.assertEqual(len(report['errors']), 1)  # Native sample intentionally absent.
+
+    @unittest.skipIf(sys.platform == 'win32', 'POSIX executable fixture; real Windows retoc remains a live check.')
+    def test_player_reference_extracts_only_scoped_assets_and_leaves_installations_untouched(self):
+        stems = ['Movies/Sequencer/' + n for n in (
+            'BP_BtlSequencerMovieActor', 'MP_BtlManaPlayer',
+            'MSB_BtlSequencer_Texture', 'MSB_BtlSequencer_Texture_Mat')]
+        stems += ['Sequencer/Battle/Skill/440110/440111/SEQ_Battle_440111_Master',
+                  'Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Cut_000']
+        fixture = self.root / 'native-fixture'
+        for stem in stems:
+            self.write(fixture / ('FFRS/Content/' + stem + '.uasset'), stem.encode())
+        self.write(fixture / 'FFRS/Content/Unrelated/private.uasset', b'private')
+        self.write(self.engine / 'extracted/Mappings.usmap', b'mappings fixture')
+        tool = self.engine / 'tools/retoc/retoc.exe'
+        self.write(tool, (f'#!{sys.executable}\n'
+            'import pathlib, shutil, sys\n'
+            'a=sys.argv[1:]\n'
+            'assert a[:3]==["to-legacy","--no-shaders","--filter"]\n'
+            'assert a[3] in ("Movies/Sequencer/","Sequencer/Battle/Skill/440110/440111/")\n'
+            'assert pathlib.Path(a[4]).name=="Paks"\n'
+            f'source=pathlib.Path({str(fixture)!r})\n'
+            'for p in (source/"FFRS/Content"/a[3]).rglob("*"):\n'
+            ' if p.is_file():\n'
+            '  out=pathlib.Path(a[5])/p.relative_to(source)\n'
+            '  out.parent.mkdir(parents=True,exist_ok=True)\n'
+            '  shutil.copyfile(p,out)\n'
+            'print("info: : Extracted assets (0 failed)")\n').encode())
+        tool.chmod(0o755)
+        before = self.digest(self.game), self.digest(self.engine)
+        self.run_helper(player=True)
+        self.assertEqual(before, (self.digest(self.game), self.digest(self.engine)))
+        with self.archive() as z:
+            report = json.loads(z.read('report.json').decode('utf-8-sig'))
+            self.assertEqual(report['purpose'], 'native-movie-player')
+            self.assertEqual(report['errors'], [])
+            self.assertEqual(len(report['extraction']), 2)
+            self.assertTrue(all(x['timeoutSeconds'] == 60 for x in report['extraction']))
+            self.assertEqual(len(report['files']), len(stems))
+            self.assertEqual(z.read('native/Mappings.usmap'), b'mappings fixture')
+            for stem in stems:
+                self.assertEqual(z.read('native/legacy/FFRS/Content/' + stem + '.uasset'), stem.encode())
+            self.assertFalse(any('private' in n or n.endswith(('.usm', '.sav', '.pak', '.ini')) for n in z.namelist()))
+
+    @unittest.skipIf(sys.platform == 'win32', 'POSIX executable fixture; real Windows retoc remains a live check.')
+    def test_player_reference_reports_failed_assets_even_when_reader_exits_zero(self):
+        tool = self.engine / 'tools/retoc/retoc.exe'
+        self.write(tool, (f'#!{sys.executable}\nprint("info: : Extracted 0 (3 failed)")\n').encode())
+        tool.chmod(0o755)
+        self.run_helper(player=True)
+        with self.archive() as z:
+            report = json.loads(z.read('report.json').decode('utf-8-sig'))
+            self.assertEqual(len(report['errors']), 8)  # Two failed filters and six absent required assets.
+            self.assertEqual(report['files'], [])
+            self.assertTrue(all(x['exitCode'] == 0 for x in report['extraction']))
 
     def test_rejects_output_in_game_or_engine_before_writing(self):
         for folder in (self.game, self.engine):

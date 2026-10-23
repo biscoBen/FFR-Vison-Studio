@@ -11,6 +11,16 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina movie-player reference — 2026-10-23
+
+- Confirm that the user's revision 2 installed movie pak matches the verified corrected package, while
+  resonance playback still stays blank. Record the returned private sequence and package evidence; the
+  browser preview works, but the in-game failure remains unresolved.
+- Add a separate small, read-only collector for the game's shared movie player, display actor,
+  texture/material and native movie sequence. It needs no new cast, paused battle, rebuild or install.
+  Nine collector checks pass locally; the actual Windows game extraction awaits the returned reference.
+  This collection does not change the selected artwork or claim a new playback fix.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
