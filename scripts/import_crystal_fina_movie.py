@@ -2,7 +2,8 @@
 
 Developer tool: requires FFmpeg and WannaCRI 0.3.3. Supply the matching original
 score already encoded as mono HCA; the browser preview remains byte-identical to
-the reviewed MP4. The game copy uses the tested 1280x720 VP9/USM format.
+the reviewed MP4. The game copy uses native 1920x1080 VP9 color and a constant
+Sofdec opacity channel for the game's translucent battle movie material.
 """
 import argparse
 import hashlib
@@ -11,8 +12,10 @@ from pathlib import Path
 import shutil
 import subprocess
 
-from build_crystal_fina_cinematic import FPS, FRAMES, HEIGHT, ROOT, SECONDS, WIDTH, package
-from cri_usm_movie import normalize
+from build_crystal_fina_cinematic import FPS, FRAMES, ROOT, SECONDS, package
+from cri_usm_movie import with_opaque_alpha
+
+WIDTH, HEIGHT = 1920, 1080
 
 
 def import_movie(source, scene_path, score_hca, output, destination):
@@ -48,13 +51,15 @@ def import_movie(source, scene_path, score_hca, output, destination):
     video = Vp9(str(output / 'crystal-fina.ivf'))
     movie = Usm(videos=[video], version=video.crid_page['fmtver'].val)
     raw = b''.join(movie.stream(OpMode.NONE))
-    raw, container = normalize(raw)
+    raw, container = with_opaque_alpha(raw, ROOT / 'scripts/fixtures/fina_opaque_alpha')
     (output / 'crystal-fina.usm').write_bytes(raw)
     report = {
         **scene, 'width': WIDTH, 'height': HEIGHT,
         'artSha256': hashlib.sha256((ROOT / 'artwork/crystal_fina_cinematic.png').read_bytes()).hexdigest(),
         'eyeColor': 'red', 'audioEnding': 'soft awakening chord; no breaking sound',
-        'usmCodec': 'VP9', 'audio': 'Matching original score in a separate native HCA bank',
+        'usmCodec': 'VP9', 'alphaCodec': 'SofdecPrime', 'opaqueAlpha': True,
+        'alphaFrameSha256': '5d7aecb273db8cebabf70319bdd35c11731bb85312330034dfc45f93994067d3',
+        'audio': 'Matching original score in a separate native HCA bank',
         'maxPictureDataSize': container['maxPictureDataSize'], 'container': container,
         'sourceMovie': {'name': source.name, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                         'width': videos[0]['width'], 'height': videos[0]['height'],

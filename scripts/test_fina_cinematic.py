@@ -39,10 +39,19 @@ class CinematicTests(unittest.TestCase):
         self.assertEqual(usm.value(header['payload'], row, 'ixsize'), max(p['size'] for p in packets))
         self.assertEqual(spec['maxPictureDataSize'], max(p['size'] for p in packets))
         self.assertEqual(len(packets), 192)
-        for part in metadata:
-            for row in usm.integer_rows(part['payload']):
-                self.assertEqual(usm.value(part['payload'], row, 'ofs_byte'),
-                                 packets[usm.value(part['payload'], row, 'ofs_frmid')]['position'])
+        for channel, codec in [(b'@SFV', 9), (b'@ALP', 1)]:
+            stream = [p for p in parts if p['type'] == channel and p['kind'] == 0]
+            header, = [p for p in parts if p['type'] == channel and p['kind'] == 1]
+            row, = usm.integer_rows(header['payload'])
+            self.assertEqual(usm.value(header['payload'], row, 'mpeg_codec'), codec)
+            self.assertEqual(usm.value(header['payload'], row, 'total_frames'), 192)
+            self.assertEqual((usm.value(header['payload'], row, 'width'),
+                              usm.value(header['payload'], row, 'height')), (1920, 1080))
+            self.assertEqual(len(stream), 192)
+            for part in (p for p in parts if p['type'] == channel and p['kind'] == 3):
+                for seek in usm.integer_rows(part['payload']):
+                    self.assertEqual(usm.value(part['payload'], seek, 'ofs_byte'),
+                                     stream[usm.value(part['payload'], seek, 'ofs_frmid')]['position'])
         root = parts[0]['payload']
         row, = [r for r in usm.integer_rows(root) if usm.value(root, r, 'stmid') == 0]
         self.assertEqual(usm.value(root, row, 'filesize'), len(raw))
@@ -57,13 +66,27 @@ class CinematicTests(unittest.TestCase):
                 usm.put(part['payload'], row, 'ixsize', 8)
                 start = part['position'] + len(part['header'])
                 broken[start:start+len(part['payload'])] = part['payload']
-        fixed, report = usm.normalize(bytes(broken))
+        fixed, report = usm.normalize(bytes(broken), opaque_alpha=True)
         self.assertEqual(fixed, raw)
         self.assertEqual(report['chunkAlignment'], 32)
         self.assertEqual([p['payload'] for p in usm.chunks(fixed) if p['kind'] == 0],
                          [p['payload'] for p in usm.chunks(bytes(broken)) if p['kind'] == 0])
         with self.assertRaisesRegex(ValueError, 'bounds|Truncated'):
-            usm.normalize(raw[:-1])
+            usm.normalize(raw[:-1], opaque_alpha=True)
+
+    def test_every_frame_has_native_opacity_with_matching_presentation_time(self):
+        spec, files = film.payload()
+        self.assertTrue(spec['opaqueAlpha'])
+        self.assertEqual(spec['alphaCodec'], 'SofdecPrime')
+        parts = usm.chunks(files['movie.usm'])
+        color = [p for p in parts if p['type'] == b'@SFV' and p['kind'] == 0]
+        alpha = [p for p in parts if p['type'] == b'@ALP' and p['kind'] == 0]
+        self.assertEqual(len(alpha), 192)
+        self.assertTrue(all(hashlib.sha256(p['payload']).hexdigest() ==
+            '5d7aecb273db8cebabf70319bdd35c11731bb85312330034dfc45f93994067d3' for p in alpha))
+        self.assertEqual([p['header'][16:24] for p in color], [p['header'][16:24] for p in alpha])
+        with self.assertRaisesRegex(ValueError, 'video-only'):
+            usm.normalize(files['movie.usm'])
 
     def test_approved_art_and_playable_media_are_checksum_pinned(self):
         spec, files = film.payload()

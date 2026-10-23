@@ -1,0 +1,13 @@
+{
+  "source": "Native Cloud movie prefix from Fina-Movie-Diagnostics-20261023-135435-313271.zip",
+  "sourcePrefixSha256": "77825db91c244f229af40a6c4ef3d8fb7df650bb3c0f2299dbe685209c492efa",
+  "headerSha256": "8a7cc10e66571cf8c66f44375a1dd24d2f10a2b9e0c0c76d92c49b51d75d9632",
+  "frameSha256": "5d7aecb273db8cebabf70319bdd35c11731bb85312330034dfc45f93994067d3",
+  "width": 1920,
+  "height": 1080,
+  "codec": "SofdecPrime",
+  "mpegDcPrecision": 11,
+  "alphaType": 1,
+  "frameType": "I",
+  "purpose": "Constant full-frame opacity only; no character picture or sound data."
+}

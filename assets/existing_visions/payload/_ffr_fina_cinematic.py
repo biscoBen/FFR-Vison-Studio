@@ -43,7 +43,8 @@ def validate(raw):
         if manifest['files'] != {n: hashlib.sha256(v).hexdigest() for n, v in files.items()}:
             raise ValueError('Crystal Fina movie checksum mismatch.')
     spec = json.loads(files['spec.json'])
-    if (spec.get('revision') != REVISION or (spec.get('width'), spec.get('height'), spec.get('fps'), spec.get('frames')) != (1280, 720, 30, 192)
+    if (spec.get('revision') != REVISION or (spec.get('width'), spec.get('height'), spec.get('fps'), spec.get('frames')) != (1920, 1080, 30, 192)
+            or spec.get('opaqueAlpha') is not True or spec.get('alphaCodec') != 'SofdecPrime'
             or not files['movie.usm'].startswith(b'CRID') or not files['score.hca'].startswith(b'HCA\0\x02\0')
             or files['preview.mp4'][4:8] != b'ftyp' or not files['poster.jpg'].startswith(b'\xff\xd8')):
         raise ValueError('Unsupported Crystal Fina movie format.')
@@ -249,12 +250,16 @@ def build(units, env):
             raise ValueError('Unexpected native movie descriptor.')
         def prop(data, name): return next(p for p in data if p['Name'] == name)
         data = view['Exports'][0]['Data']
-        video, = prop(data, 'VideoTracks')['Value']
-        for name in ('TextureDimensions', 'DisplayDimensions'):
-            prop(video['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
-        for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
-            prop(video['Value'], name)['Value'] = value
-        fields = {'AlphaTracks': [], 'AudioTracks': [], 'bIsAlpha': False}
+        # The native UI material samples a separate alpha component texture.
+        # Keep its native Sofdec alpha track and describe our matching opaque
+        # pictures, rather than leaving the material with no opacity source.
+        for field in ('VideoTracks', 'AlphaTracks'):
+            track, = prop(data, field)['Value']
+            for name in ('TextureDimensions', 'DisplayDimensions'):
+                prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
+            for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
+                prop(track['Value'], name)['Value'] = value
+        fields = {'AudioTracks': [], 'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
             fields.update(FilePath='Movies/Studio/CrystalFina_Test.usm', MinBufferSize=maximum * 4,

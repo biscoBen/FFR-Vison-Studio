@@ -11,6 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina movie opacity compatibility test
+
+- Address the returned test where battle UI hides but the movie remains invisible.
+  The earlier runtime trace shows the correct movie decoding with the cinematic
+  manager enabled. The native battle material samples a separate opacity texture;
+  the previous private movie supplied no alpha channel.
+- Add a native Sofdec full-opacity track to Fina's private VP9 movie, with one
+  independently decodable opacity picture per color frame and matching timestamps
+  and seek tables. Encode the selected movie at its original 1920×1080 resolution
+  to match the native opacity pictures and battle texture. Keep the browser MP4
+  byte-identical, and preserve its score, sprite LB, healing and cure-sound timing.
+  Do not replace the shared movie player, texture, material or original movies.
+- Extension 1.2.73. All 192 picture and opacity frames decode locally; opacity is
+  full white throughout. Native readback confirms matching VP9/Sofdec track
+  dimensions, frame rates and counts in both descriptors, the existing movie/spawn
+  window and sprite/healing handoff, and the unchanged shared asset bindings.
+  The companion pak survives retoc unchanged. All 53 focused Python checks and
+  31 Flutter checks pass (one Windows-only local skip). This targets the likely
+  opacity mismatch; visible playback still requires an in-game test.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
