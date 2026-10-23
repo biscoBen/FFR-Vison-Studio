@@ -21,11 +21,20 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   restore 81 checked caster-motion tracks, resolve aliased impact rows, and teach imported models the native motion names their skills request using their
   own FFBE clips. Run independently of borrowed visuals. Keep original/global rows and enemy routes unchanged.
 - Check all written reward names, passive IDs, ranks and learned-command availability before converting sprites.
-  Stop early on changed audited source files. Record four original presentations still needing individual review
+  Stop early on changed audited source files. Record three original presentations still needing individual review
   in [the roster audit](docs/SEPHIRA_RUNTIME_REVIEW.md); do not silently substitute other skill visuals.
 - Restore both of Fina's casing visibility flags after battle transitions. Retain the queued runtime callback and
   recover from removed attachments or transient actor errors per instance. Preserve the accepted glass and timing.
   Native serialization and fixture checks do not replace a live retest of the vision and boss.
+
+### Snow White's approved FFBE Blood Recovery test — 2026-10-22
+
+- Assign Scartio's FFBE Blood Recovery to Snow White's private heal, as requested, including its front/back layers,
+  red flash and original healing sound. Retain one native heal and existing power, MP cost and targets. Works with
+  borrowed visuals off; no new toggle or full-library download is needed. Keep explicit user presentation edits.
+- Retain all 3,037 source sprite frames without cropping/dropping. Resample mesh texture cells while keeping world
+  sizes. Check the native projects, atlases, audio and exact event/cleanup schedule. Layering, scale and the
+  target-anchored source flash remain an in-game experiment, rather than a claim of exact FFBE render parity.
 
 ### Crystal Fina full-game diagnostics — 2026-10-22
 

@@ -14,14 +14,29 @@ Full-game reference: `8ce7a0746d0cc1b2`, collected 2026-10-22. This is a structu
 
 ## Original sources still needing individual review
 
-No different skill's animation is substituted for these cases. For Blood Recovery, the next step is to look for its matching FFBE presentation first, as requested.
+These three original presentations remain flagged; no different skill's animation is substituted for them.
 
 | Vision | Ability | Original source | Finding |
 | --- | --- | --- | --- |
-| Snow White | Blood Recovery | 501530 | No original sequence binding or explicit sequence pointer in the collected game. |
 | Trance Terra | Trance Apocalypse | 505540 | The original timeline's event functions cannot all be decoded; no enabled particle spawn was resolved. Keep its original behavior and flag it. |
 | Minfilia | Dual Jobs | 445210 | Original timeline copied; no enabled Niagara spawn. It contains a SpriteStudio actor event, so a live check is needed before treating this as missing visual content. |
 | Relm | Forbidden Ars Magna | 503930 | Original timeline copied; its only particle spawn is disabled. Requires an individual review of that original presentation. |
+
+### Approved FFBE Blood Recovery test
+
+The collected FFR source (501530) has no sequence binding. The user selected the FFBE ability with the same name,
+**Scartio's Blood Recovery (231688)**, after reviewing its source. It is now assigned only to Snow White's private
+copy, independently of borrowed visuals. Other original skills and explicit user presentation edits are retained.
+The original FFBE front/back healing layers begin at frame 40, the red flash and single native healing reaction at
+frame 100, and both recorded source sound events at frame 41. Actors are cleaned up after their source layers end.
+Healing strength, MP cost and target grouping remain Snow White's existing settings; FFBE's regeneration mechanics
+are not imported. The skill uses the caster's existing magic animation.
+
+The selected 9.6 MB payload contains three separate converted projects and one original HCA recording. All 3,037
+source sprite frames are retained with no cropping/dropping; mesh texture cells are resampled to 128 pixels while
+retaining world sizes. Native SS6, texture, audio and compiled-event writing/readback pass. Front/back depth offsets,
+source screen flash adapted to the caster, apparent size and final rendering still need a live test. The full optional
+animation library remains downloaded separately; this import does not require it on the user's PC.
 
 Native Cover (Mog, 400760) and Mimic (Relm, 400330) also have no ordinary direct sequence bindings. They use specialized mechanics and are kept as native skills. Generic physical/support presentations can legitimately have no Niagara particle; absence of a particle is not by itself a failed skill.
 

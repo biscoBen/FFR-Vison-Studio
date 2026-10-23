@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.63'
+VERSION = '1.2.64'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -74,6 +74,22 @@ def validate_needles_archive(raw):
         w, h = spec['pixelSize']
         if w <= 0 or h <= 0 or len(archive.read('tex.bgra')) != w*h*4:
             raise RuntimeError('Invalid FFBE Needles atlas dimensions.')
+
+
+def validate_blood_archive(raw):
+    expected = {'manifest.json', 'audio.json', 'needle.hca',
+                *(role + '/' + suffix for role in ('front', 'back', 'flash') for suffix in ('spec.json', 'tex.bgra'))}
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        if len(archive.namelist()) != len(expected) or set(archive.namelist()) != expected:
+            raise RuntimeError('Unexpected Blood Recovery archive contents.')
+        manifest = json.loads(archive.read('manifest.json'))
+        if (manifest.get('schema') != 1 or manifest.get('ability') != 231688
+                or manifest.get('files') != {name: sha(archive.read(name)) for name in expected - {'manifest.json'}}):
+            raise RuntimeError('Blood Recovery archive checksum mismatch.')
+        for role in ('front', 'back', 'flash'):
+            width, height = json.loads(archive.read(role + '/spec.json'))['pixelSize']
+            if min(width, height) <= 0 or len(archive.read(role + '/tex.bgra')) != width * height * 4:
+                raise RuntimeError('Invalid Blood Recovery atlas dimensions.')
 
 
 def validate_library_browser(raw):
@@ -205,7 +221,8 @@ def hook_builder(raw):
                     '    native_support={"clone": clone_sequence, "dumps": seq_dumps, "keys": event_keys,',
                     '                    "objects": post_objects, "bytecode": post_bytecode})', '_ffr_game_tables.normalize(ROOT, tables, rows)']
     before_pack = [MARKER, '_ffr_testing.build_practice(dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'import _ffr_ffbe_needles',
-                   '_ffr_ffbe_needles.build(dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'for u in native_units:',
+                   '_ffr_ffbe_needles.build(dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'import _ffr_sephira_ffbe',
+                   '_ffr_sephira_ffbe.build(native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY))', 'for u in native_units:',
                    '    if u.get("ffbe"):', '        stage("Replacing sprites: " + u["en"])', '        generate_sprites(u)',
                    '_ffr_existingvisions.copy_materials(native_units, ROOT, OUT)',
                    '_ffr_party.build(party_units, dict(globals(), OUT=OUT, LEGACY=LEGACY))',
@@ -455,6 +472,7 @@ def run(root, action):
             validate_field_archive(raw, json.loads(resource_data['overworld_catalog.json']))
         elif name == 'fina_battle_preview.zip': validate_preview_archive(raw)
         elif name == 'ffbe_needles.zip': validate_needles_archive(raw)
+        elif name == 'sephira_blood_recovery.zip': validate_blood_archive(raw)
         elif name == 'ffbe_library_browser.zip': validate_library_browser(raw)
         else: raise RuntimeError('Unsupported existing vision resource: ' + name)
     patched = {SOURCES[0]: hook_builder(original[SOURCES[0]]), SOURCES[1]: hook_server(original[SOURCES[1]]), SOURCES[2]: hook_verifier(original[SOURCES[2]])}

@@ -161,6 +161,8 @@ def player_units(units, rows):
         for identity, recipe in unit['skills'].items():
             source = native.get(recipe.get('from'))
             if not source or recipe.get('resonance'): continue
+            import _ffr_sephira_ffbe
+            if _ffr_sephira_ffbe.selected(unit, recipe): recipe['visuals'] = recipe['from']
             fields = recipe.setdefault('set', {})
             if int(identity) in learned and fields.get('belongCommandList') == [command]:
                 fields['belongCommandList'] = [1]

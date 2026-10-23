@@ -72,6 +72,10 @@ def prepare(tables, clones, units, root, rows, extract, support):
         source = recipe['from']; rule = policy['skills'].get(str(source))
         entry = {'id': sid, 'source': source, 'vision': unit['en'], 'name': recipe['en'], 'inGameValidated': False}
         reports.append(entry)
+        import _ffr_sephira_ffbe
+        if _ffr_sephira_ffbe.selected(unit, recipe):
+            entry.update(status='approved_ffbe_presentation', reason='Selected FFBE Blood Recovery from Scartio.')
+            continue
         if not rule:
             entry.update(status='unresolved', reason='No native source timeline in the collected full game.')
             continue

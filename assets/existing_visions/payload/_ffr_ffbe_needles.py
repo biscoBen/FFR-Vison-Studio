@@ -69,10 +69,11 @@ def audio_bank_name():
     return 'Studio_FFBE_Needles_SE'
 
 
-def prepare_audio(tables, root, extract):
+def prepare_audio(tables, root, extract, *, files=None, bank_name=None, folder_name='ffbe-needles-audio'):
     import ffbe_audio
-    files, _ = payload()
-    folder = Path(root) / 'build/ffbe-needles-audio'
+    if files is None: files, _ = payload()
+    bank_name = bank_name or audio_bank_name()
+    folder = Path(root) / 'build' / folder_name
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / 'audio.json'; path.write_bytes(files['audio.json'])
     doc = json.loads(files['audio.json'])
@@ -85,7 +86,7 @@ def prepare_audio(tables, root, extract):
     # Reuse the proven host-format HCA adapter, including the installed game's
     # key/routing. Do not ship an entire mobile sound bank or alter native audio.
     bank = {'path': str(path), 'sha256': hashlib.sha256(files['audio.json']).hexdigest(),
-            'name': audio_bank_name(), 'asset': 'FFRS/Content/Sound/FFBE/' + audio_bank_name(),
+            'name': bank_name, 'asset': 'FFRS/Content/Sound/FFBE/' + bank_name,
             'audioManifest': doc, 'cues': {int(k): v for k, v in doc['cues'].items()},
             'mode': 'native', 'recordings': doc['recordings'], 'gain': 0.15,
             'waveformProfile': {'revision': 1, 'version': 0x300,
@@ -165,7 +166,7 @@ def build(env):
     print('  OK: FFBE Needles cooked reference, target, single hit, cleanup and compiled event times verified.')
 
 
-def verify_sequence(view, events):
+def verify_sequence(view, events, *, plan=None, projects=None):
     import ffbe_resonance as seq
     def cls(e): return view['Imports'][-e['ClassIndex']-1]['ObjectName'] if e['ClassIndex'] < 0 else ''
     sections = [e for e in view['Exports'] if cls(e) == 'MovieSceneEventTriggerSection'
@@ -182,7 +183,8 @@ def verify_sequence(view, events):
     times = [number(t) for t in times]
     functions = [seq.child(k['Value'], 'Ptrs', 'Function') for k in seq.child(channel, 'KeyValues')]
     by_id = {int(k.split(':')[0]): v for k, v in events.items()}
-    plan = schedule()
+    plan = schedule() if plan is None else plan
+    projects = {NAME: PROJECT} if projects is None else projects
     if times != [e['time'] for e in plan['events']]: raise ValueError('FFBE Needles event times changed.')
     for fn, expected in zip(functions, plan['events']):
         actual = by_id[fn]; fields = expected['set']
@@ -190,7 +192,11 @@ def verify_sequence(view, events):
             if key == 'SsActor_SsData':
                 data = actual.get(key, {})
                 important = {k: v for k, v in value.items() if k not in ('addLocation', 'ssPlayerAsset')}
-                if any(data.get(k) != v for k, v in important.items()) or data.get('ssPlayerAsset') != 'import:' + NAME:
+                project_name = value['ssPlayerAsset']['path'].rsplit('/', 1)[-1]
+                # Cooked struct exports omit default false flags and zero axes.
+                if (any(data.get(k, False if isinstance(v, bool) else None) != v for k, v in important.items())
+                        or data.get('ssPlayerAsset') != 'import:' + project_name
+                        or any(data.get('addLocation', {}).get(k, 0) != v for k, v in value.get('addLocation', {}).items())):
                     raise ValueError('FFBE Needles lost its effect project/target placement.')
             elif isinstance(value, dict):
                 if any(actual.get(key, {}).get(k, 0) != v for k, v in value.items()):
@@ -198,9 +204,10 @@ def verify_sequence(view, events):
             elif actual.get(key, 0) != value:
                 raise ValueError('FFBE Needles event field changed: ' + key)
     imports = view['Imports']
-    if not any(i['ObjectName'] == NAME and i['ClassName'] == 'Ss6Project'
-               and imports[-i['OuterIndex']-1]['ObjectName'] == PROJECT for i in imports if i['OuterIndex'] < 0):
-        raise ValueError('FFBE Needles project import does not resolve.')
+    for name, project in projects.items():
+        if not any(i['ObjectName'] == name and i['ClassName'] == 'Ss6Project'
+                   and imports[-i['OuterIndex']-1]['ObjectName'] == project for i in imports if i['OuterIndex'] < 0):
+            raise ValueError('FFBE project import does not resolve: ' + name)
     compiled, = [e for e in view['Exports'] if cls(e) == 'MovieSceneCompiledData']
     field = seq.child(compiled['Data'], 'EntityComponentField')
     tree = seq.child(field, 'OneShotEntityTree')[0]['Value']['SerializedData']
