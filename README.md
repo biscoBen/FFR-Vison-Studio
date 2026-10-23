@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina battle recovery and MR repair — 2026-10-22
+
+[Verified Windows download / run 39900403407](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39900403407/Sephira-Studio-Test.zip)
+(code `aacedcc`, extension **1.2.66**; **57.1 MB**).
+
+The independent Crystal Fina import now has the same MR reward schedule as the collection preset. Studio
+recognizes and backs up the exact old stats-only layout, then repairs her rewards without resetting artwork,
+identity, acquisition or combat edits. Explicitly edited reward layouts stay intact. Her private passive names,
+learned Crystal Renewal and field healing also work when she is added independently of the collection.
+
+The crystal uses a persistent game-thread loop where available, with a recoverable callback bridge on older
+loaders. Invalid renderers and failed cleanup cannot block later Fina actors. The accepted glass and animation
+speed are preserved. These failure paths pass regression checks; the user's intermittent trigger still needs
+confirmation across consecutive battles in the actual game.
+
+Close Studio and the game, update while keeping **Studio Test Data**, reopen Studio and use **Install into the
+game**, then restart the game. The known MR layout repairs automatically; no kit reset or game preparation is
+needed. Windows validation/compilation, local tests and native reward readback pass. See
+[validation and measured timings](CHANGELOG.md#published-crystal-fina-battle-recovery-and-mr-repair--2026-10-22).
+
 ### Optional preparation and faster table refresh — 2026-10-22
 
 [Verified Windows download / run 39894606827](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39894606827/Sephira-Studio-Test.zip)

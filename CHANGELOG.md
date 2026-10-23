@@ -11,23 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina battle-session recovery and standalone MR rewards — 2026-10-22
-
-- Prefer one persistent game-thread presentation loop on supporting loaders. Recover crystal updates after an
-  older loader's native callback is lost; late callbacks cannot supersede the new request. Isolate invalid or unloading renderers, identify successive battle objects by their native addresses,
-  and release stale action clocks/components independently so one failed cleanup cannot block later battles.
-  Preserve the accepted glass, resonance glow and linked attack/damage speed.
-- Correct the independent Crystal Fina preset's old stats-only MR layout to match her collection rewards. Detect
-  that exact obsolete layout on opening Studio, importing, adopting or building; back up the previous roster and
-  repair only her rewards and required learned healing skill. Preserve identities, artwork, acquisition, combat
-  edits and deliberately edited reward layouts. Move an existing awakening grant to MR rather than duplicate it.
-- Apply the private passive labels, learned-command availability, field healing and original animation handling
-  to independent bundled Fina without enrolling her in Sephira's collection or its shop override. Verify standalone
-  MR parity against the collection during bundle validation, and remap the learned skill's command on allocation.
-- Local Flutter/Python regression checks and native table readback pass; Windows checks are pending. The exact
-  intermittent game-session trigger has not been captured; successive-battle testing in the game is still needed
-  to confirm the disappearance is resolved.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -96,6 +79,68 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina battle recovery and MR repair — 2026-10-22
+
+Code: [`aacedcc`](https://github.com/biscoBen/FFR-Vison-Studio/commit/aacedcccdc828262f0e22a0ca3799501e11e71ff), extension **1.2.66**.
+Windows package: [run 39900403407](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39900403407/Sephira-Studio-Test.zip). **57,089,081 bytes** (57.1 MB).
+SHA-256: `298f0cfdcaf3296f219f5bbc18de152bd1d4afc9689dbb39dd7108f1064a5881`.
+
+- Prefer one persistent game-thread presentation loop on supporting loaders. Recover crystal updates after an
+  older loader's native callback is lost; late callbacks cannot supersede the new request. Isolate invalid or unloading renderers, identify successive battle objects by their native addresses,
+  and release stale action clocks/components independently so one failed cleanup cannot block later battles.
+  Preserve the accepted glass, resonance glow and linked attack/damage speed.
+- Correct the independent Crystal Fina preset's old stats-only MR layout to match her collection rewards. Detect
+  that exact obsolete layout on opening Studio, importing, adopting or building; back up the previous roster and
+  repair only her rewards and required learned healing skill. Preserve identities, artwork, acquisition, combat
+  edits and deliberately edited reward layouts. Move an existing awakening grant to MR rather than duplicate it.
+- Apply the private passive labels, learned-command availability, field healing and original animation handling
+  to independent bundled Fina without enrolling her in Sephira's collection or its shop override. Verify standalone
+  MR parity against the collection during bundle validation, and remap the learned skill's command on allocation.
+- Local Flutter/Python regression checks and native table readback pass; Windows checks pass. The exact
+  intermittent game-session trigger has not been captured; successive-battle testing in the game is still needed
+  to confirm the disappearance is resolved.
+
+The returned screenshot exactly matches the obsolete standalone layout: HP at MR1, Attack at MR2, Defence at
+MR3, MP at MR4, Magic at MR5, Mind at MR6, Speed at MR7, HP at MR8, then Attack/AP/Spirit at MR9. Repair replaces
+that known layout with Resist Light; HP+30; Magic Evasion +15%; AP+8; Crystal Renewal; MP+20; LB Charge on Action;
+Spirit+15; then Divine Tidings/AP+8/Spirit of Crystal Fina. Existing grants move between awakening and MR rather
+than duplicate. Custom skill slots are allocated without replacing edited skills, and native/party overrides
+are excluded. Raw legacy imports with renamed keys and independent presets with edited artwork retain the
+runtime reward handling, without being enrolled in collection acquisition overrides.
+
+Validation: **591 local Python tests** (10 dependency/platform skips), **274 Flutter passes** (one skip), static
+analysis and both bundle integrity checks. Executable Lua regression covers native repeating-loop selection,
+older-loader fallback, lost/late callbacks, unloading unrelated renderers, stale action clocks, reused component
+names, recreation, scope, glass, resonance and linked timing. The native asset tool writes and reads back **9**
+actual full-game tables, including two correctly named private passives, the exact MR schedule and Crystal
+Renewal's common command/field-healing flags. Its own original skill route clones four packages and applies the
+guarded native motion/reaction edits. The old unused Raegen Blast definition is preserved; no repair or runtime
+validation of that ungranted test definition is claimed. No fallback visual was added.
+
+Full Windows validation and compilation pass for the same final commit. Download verification checks provenance,
+SHA-256, all **59** managed extension and **16** Fina file hashes, the corrected standalone profile and actual new
+runtime script. The optional FFBE animation library stays separate. The exact in-game disappearance trigger was
+not captured: no live Unreal session, driver behavior or full sequence of other-unit actions is claimed as
+reproduced. Test several battles in one game session after updating; collect diagnostics before restarting if
+the crystal disappears again.
+
+Close Studio/game, update while retaining **Studio Test Data**, reopen Studio, rebuild/install and restart the
+game. The automatic migration backs up the prior roster and does not reset the kit. Preparation and patch review
+remain optional. A deliberately edited reward layout is preserved rather than replaced.
+
+Measured timing: first complete candidate **2026-10-22 21:16:13 PDT** → verified package
+**21:38:19 PDT**, **22m 06s**, including local checks, corrections, the added independent
+import identity case, both automatic Windows runs, waiting and verification. The timer was not restarted. Each
+helper joined its matching automatic push workflow; no duplicate manual build was dispatched. The first run was
+superseded before delivery. README/CHANGELOG-only publication notes create no binary and do not relabel this one.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Windows, superseded candidate / 39900076343 | cancelled | 5m 18s | 7m 39s | 1m 24s |
+| Windows, final candidate / 39900403407 | success | 10m 11s | 12m 37s | 2m 07s |
+
+Summed runner usage: **23m 47s**, separate from elapsed delivery time.
 
 ## Published optional game preparation and table refresh — 2026-10-22
 
