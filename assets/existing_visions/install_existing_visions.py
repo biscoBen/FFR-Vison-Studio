@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.62'
+VERSION = '1.2.63'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -176,6 +176,7 @@ def hook_builder(raw):
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
     prelude = [MARKER, 'global UNITS, rows', 'import _ffr_game_tables', 'rows = _ffr_game_tables.reader(ROOT, rows)', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_fina_battle', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
                'import _ffr_sephira', 'UNITS = _ffr_sephira.visual_units(_ffr_sephira.active_units(UNITS), ROOT, rows)',
+               'UNITS = _ffr_sephira.player_units(UNITS, rows)',
                'UNITS = _ffr_sephira.bind_units(UNITS, rows)',
                'UNITS = [_ffr_animation_repair.retire_comparison_skills(u) for u in UNITS]',
                'party_units, UNITS = _ffr_party.split(UNITS, rows)',
@@ -216,7 +217,8 @@ def hook_builder(raw):
                    'import _ffr_field_leader',
                    '_ffr_field_leader.build(party_units + native_units + UNITS, dict(globals(), OUT=OUT, LEGACY=LEGACY, rows=rows))']
     early_check = ['stage("Checking game tables before sprite conversion")',
-                   '_ffr_testing.verify_table_recipe(ROOT, FFRDT, USMAP)']
+                   '_ffr_testing.verify_table_recipe(ROOT, FFRDT, USMAP)',
+                   '_ffr_sephira.verify_runtime_rows(ROOT, FFRDT, USMAP, UNITS, rows)']
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch,
                  timeline_loop.lineno - 1: early_check, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)

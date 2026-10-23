@@ -4,6 +4,7 @@ import copy
 import json
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 
 FIELD = 'sephiraVision'
@@ -122,6 +123,64 @@ BINDINGS = {
 }
 
 
+# Saved-game compatibility: freeze the preset/conditional seeds and existing
+# label positions. Append later explicit labels only within their reserved range.
+# Skill IDs 1000..1999 are passive IDs; command/active/master
+# lookups classify IDs before searching their respective native tables.
+_PASSIVE_PRESETS = ('a2', 'christine', 'crystal_fina', 'barusa', 'fran', 'lunafreya', 'minfilia', 'folka', 'fryevia', 'lenneth', 'lila', 'mystea', 'reberta', 'snow_white', 'aria', 'eiko', 'alice', 'mog', 'lilith', 'freya', 'trance_terra', 'ariana', 'elephim', 'jade', 'primm', 'relm', 'rikku', 'nalu', 'elza', 'lunera')
+_PASSIVE_CONDITIONALS = (1406, 1410, 1411, 1418, 1420, 1432, 1433, 1443, 1448, 1454)
+_PASSIVE_LABELS = (('crystal_fina', 1551), ('crystal_fina', 1552), ('lunafreya', 1510), ('lunafreya', 1517), ('folka', 1535), ('fryevia', 1522), ('mystea', 1530), ('mystea', 1274), ('mystea', 1513), ('reberta', 1507), ('aria', 1527), ('aria', 1519), ('eiko', 1498), ('eiko', 1373), ('alice', 1481), ('alice', 1531), ('mog', 1511), ('freya', 1529), ('freya', 1516), ('freya', 1497), ('freya', 1539), ('trance_terra', 1532), ('ariana', 1515), ('ariana', 1499), ('ariana', 1518), ('primm', 1521), ('primm', 1525), ('relm', 1500), ('rikku', 1009), ('nalu', 1523), ('nalu', 1537), ('nalu', 1496), ('elza', 1528), ('elza', 1495), ('elza', 1506), ('elza', 1276), ('lunera', 1051))
+_PASSIVE_KEYS = [(preset, sid) for preset in _PASSIVE_PRESETS for sid in _PASSIVE_CONDITIONALS] + list(_PASSIVE_LABELS)
+_PRIVATE_PASSIVES = {key: 1600 + index for index, key in enumerate(_PASSIVE_KEYS)}
+_FALLBACK_FIRST = 1970
+
+
+def private_passive_id(preset, source):
+    key = (preset, source)
+    if key in _PRIVATE_PASSIVES: return _PRIVATE_PASSIVES[key]
+    # Preserve support for explicitly edited/imported membership names without
+    # reassigning any bundled preset when another preset is disabled.
+    import hashlib
+    first = _FALLBACK_FIRST
+    return first + int.from_bytes(hashlib.sha256(f'{preset}:{source}'.encode()).digest()[:4], 'big') % (2000 - first)
+
+
+def player_units(units, rows):
+    """Normalize private learned commands and pure healing outside battle.
+
+    Saved recipes, IDs, numeric power/cost and the native donors stay unchanged.
+    Explicit edits to these presentation/availability fields retain precedence.
+    """
+    result = copy.deepcopy(units)
+    selected = [u for u in result if membership(u) is not None and u.get('skills')]
+    if not selected: return result
+    native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
+    for unit in selected:
+        learned = {g[1] for tier in unit.get('synchro', []) for g in tier if g[0] == 'ActiveSkill'}
+        command = unit['command']['id']
+        for identity, recipe in unit['skills'].items():
+            source = native.get(recipe.get('from'))
+            if not source or recipe.get('resonance'): continue
+            fields = recipe.setdefault('set', {})
+            if int(identity) in learned and fields.get('belongCommandList') == [command]:
+                fields['belongCommandList'] = [1]
+                if fields.get('commandIdBelongDebuggingAllSkills') == [command, -1]:
+                    fields['commandIdBelongDebuggingAllSkills'] = [901 if source.get('skillAttrType') == 'Magic' else 900, -1]
+            effective = dict(source, **fields)
+            if (effective.get('skillEffectType') == 'DamageAndRecovery'
+                    and effective.get('parameterVariationType') == 'Increase'
+                    and effective.get('parameterType') == 'HitPoint'
+                    and effective.get('defaultTargetRelation') == 'Friendlies'
+                    and effective.get('defaultTargetState') == 'Alive'
+                    and effective.get('damageCalcType') in ('Magic', 'Fixed', 'TargetMaxHPRatio')):
+                fields.setdefault('availableLocation', 'Anywhere')
+                fields.setdefault('mapEffectType', 'RecoveryHP')
+                fields.setdefault('isTargetIgnoreSelf', False)
+                if effective.get('damageCalcType') == 'Magic' and effective.get('DamageType') == 'None':
+                    fields.setdefault('DamageType', 'Magic')
+    return result
+
+
 def membership(unit):
     value = unit.get(FIELD)
     if value is None:
@@ -154,6 +213,57 @@ def active_units(units):
     return result
 
 
+def native_motion_for(units, identity):
+    return any(str(u.get('id')) == str(identity) and membership(u) is not None
+               for u in active_units(units))
+
+
+def native_motion_names(unit):
+    value = membership(unit)
+    if value is None: return []
+    policy = json.loads(Path(__file__).with_name('sephira_native_presentations.json').read_bytes())
+    return policy.get('modelMotions', {}).get(value['preset'], [])
+
+
+def verify_runtime_rows(root, tool, usmap, units, rows):
+    """Read back every selected kit's grants before converting any sprites."""
+    selected = [u for u in units if membership(u) is not None]
+    if not selected: return
+    root = Path(root); work = root / 'build/sephira-reward-check'; work.mkdir(parents=True, exist_ok=True)
+    rels = ('Skill/DT_SkillData', PASSIVE, 'Skill/DT_MasterSkillData',
+            'Item/Vision/DT_VisionAwakeningMasteryData', 'Item/Vision/DT_VisionSynchroMasteryData')
+    built = {}
+    for rel in rels:
+        target = work / (rel.replace('/', '_') + '.json')
+        subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets/FFRS/Content/Datatable' / (rel + '.uasset')),
+                               str(target), '--usmap', usmap], check=True, capture_output=True)
+        built[rel] = json.loads(target.read_text(encoding='utf-8-sig'))['rows']
+    lookups = {kind: {r['ID']: r for r in built[rel].values()} for kind, rel in (
+        ('ActiveSkill', rels[0]), ('PassiveSkill', PASSIVE), ('MasterSkill', rels[2]))}
+    for unit in selected:
+        for field, rel in [('awakening', rels[3]), ('synchro', rels[4])]:
+            for rank, grants in enumerate(unit[field]):
+                found = [r for r in built[rel].values() if r['ID'] == unit['id'] and r['Level'] == rank]
+                if len(found) != 1: raise ValueError(f'{unit["en"]}: missing {field} rank {rank}.')
+                actual = [[g['parameterType'], *g['params']] for g in found[0]['detailData'] if g['parameterType'] != 'None']
+                expected = [[*g[:2], g[2] if len(g) > 2 else -1] for g in grants]
+                if actual != expected: raise ValueError(f'{unit["en"]}: incorrect {field} rank {rank}; rebuild its reward data.')
+                for kind, identity, *_ in grants:
+                    if kind not in lookups: continue
+                    value = lookups[kind].get(identity)
+                    if not value or value.get('Name') in (None, '', 'None'):
+                        raise ValueError(f'{unit["en"]}: {field} rank {rank} has an unnamed or unavailable {kind} {identity}.')
+                    if kind == 'PassiveSkill' and not 1000 <= identity < 2000:
+                        raise ValueError(f'{unit["en"]}: passive {identity} is outside the game\'s passive lookup range.')
+        for identity, recipe in (unit.get('skills') or {}).items():
+            actual = lookups['ActiveSkill'].get(int(identity))
+            if not actual: raise ValueError(f'{unit["en"]}: custom skill {identity} was not written.')
+            for field in ('belongCommandList', 'availableLocation', 'mapEffectType', 'isTargetIgnoreSelf'):
+                if field in recipe.get('set', {}) and actual.get(field) != recipe['set'][field]:
+                    raise ValueError(f'{unit["en"]} / {recipe["en"]}: {field} did not survive serialization.')
+    print(f'OK: all awakening/MR rewards, skill names and learned-command availability checked for {len(selected)} Sephira visions')
+
+
 def bind_units(units, rows):
     """Private equivalents follow allocated IDs, including imported/reset kits.
 
@@ -165,6 +275,7 @@ def bind_units(units, rows):
     passives = {v['ID']: (k, v) for k, v in rows(PASSIVE).items()}
     effects = {v['ID']: (k, v) for k, v in rows(EFFECT).items()}
     native_skills = {v['ID'] for v in rows('Skill/DT_SkillData').values()}
+    allocated = {}
     for u in result:
         value = membership(u)
         if value is None: continue
@@ -180,7 +291,11 @@ def bind_units(units, rows):
                     if g[0] == 'PassiveSkill' and str(g[1]) in labels:
                         sid = g[1]
                         pk, passive = passives[sid]
-                        new_sid = u['id'] * 10000 + sid
+                        new_sid = private_passive_id(value['preset'], sid)
+                        owner = (value['preset'], sid)
+                        if new_sid in allocated and allocated[new_sid] != owner:
+                            raise ValueError('Edited Sephira passive identities collide; change the duplicated custom membership.')
+                        allocated[new_sid] = owner
                         if new_sid in passives:
                             raise ValueError('Sephira private passive ID overlaps the game catalog.')
                         label = labels[str(sid)]
@@ -198,7 +313,11 @@ def bind_units(units, rows):
                     pk, passive = passives[sid]; ek, effect = effects[eid]
                     if effect['EffectType'] != kind or effect['ParamList'][index] != original:
                         raise ValueError(f'Native passive {sid} changed; re-audit Sephira owner bindings for this game version.')
-                    new_sid = u['id'] * 10000 + sid
+                    new_sid = private_passive_id(value['preset'], sid)
+                    owner = (value['preset'], sid)
+                    if new_sid in allocated and allocated[new_sid] != owner:
+                        raise ValueError('Edited Sephira passive identities collide; change the duplicated custom membership.')
+                    allocated[new_sid] = owner
                     new_eid = u['id'] * 10000 + eid
                     if new_sid in passives or new_eid in effects:
                         raise ValueError('Sephira private IDs overlap the game catalog; re-audit this game version.')

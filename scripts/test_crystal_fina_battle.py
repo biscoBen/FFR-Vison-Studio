@@ -71,6 +71,46 @@ class FinaBattleTests(unittest.TestCase):
         lua = self.runtime()
         lua.execute('run_fina_tests()')
 
+    def test_casing_restores_both_visibility_flags_after_native_battle_hides_it(self):
+        lua = self.runtime()
+        lua.execute("""
+            tick(); local mesh=meshes[1]
+            assert(mesh.visible and not mesh.hidden)
+            mesh.hidden=true; mesh.visible=false
+            tick(); assert(mesh.visible and not mesh.hidden)
+            sprite.hidden=true; tick(); assert(not mesh.visible and mesh.hidden)
+            sprite.hidden=false; tick(); assert(mesh.visible and not mesh.hidden)
+            sprite.bHiddenInGame=true; tick(); assert(not mesh.visible and mesh.hidden)
+            sprite.bHiddenInGame=false; tick(); assert(mesh.visible and not mesh.hidden)
+            sprite.playing='LB1'; sprite.frame=config.fall; tick()
+            assert(not mesh.visible and mesh.hidden)
+            sprite.frame=config.reform; tick(); assert(mesh.visible and not mesh.hidden)
+        """.replace('config.fall', '134').replace('config.reform', '258'))
+
+    def test_destroyed_attachment_or_transient_actor_error_does_not_stop_future_presentations(self):
+        lua = self.runtime()
+        lua.execute("""
+            tick(); meshes[1].invalid=true
+            tick(); for _=1,15 do assert(tick()==false) end
+            assert(#meshes==2 and meshes[2].visible and not meshes[2].hidden)
+            local original=sprite.GetPlayFrame
+            sprite.GetPlayFrame=function() error('actor transition fixture') end
+            assert(tick()==false)
+            sprite.GetPlayFrame=original
+            for _=1,15 do assert(tick()==false) end
+            assert(#meshes==3 and meshes[3].visible and not meshes[3].hidden)
+        """)
+
+    def test_failed_game_thread_queue_retries_instead_of_staying_permanently_queued(self):
+        lua = self.runtime()
+        lua.execute("""
+            local original=ExecuteInGameThread
+            ExecuteInGameThread=function() error('callback queue fixture') end
+            assert(tick()==false and #meshes==0)
+            ExecuteInGameThread=original
+            assert(tick()==false and #meshes==1 and meshes[1].visible)
+        """)
+
     def test_attack_slows_actual_event_clocks_and_body_together_without_compounding(self):
         lua = self.runtime()
         lua.execute("""

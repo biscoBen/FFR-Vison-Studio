@@ -606,6 +606,7 @@ def verify(root, tool, usmap, *, before_assets=False):
     import _ffr_game_tables
     units = _ffr_sephira.visual_units(_ffr_sephira.active_units(units), root,
                                      _ffr_game_tables.reader(root, rows))
+    units = _ffr_sephira.player_units(units, _ffr_game_tables.reader(root, rows))
     operations = verification_operations(root, units, rows)
     plans = []
     if operations:

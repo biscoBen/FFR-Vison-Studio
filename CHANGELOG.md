@@ -11,6 +11,22 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Sephira roster runtime corrections — 2026-10-22
+
+- Review all 30 visions, every awakening tier and MR rank. Move 47 private passives into stable native passive
+  IDs to fix blank rewards. Make all 15 private learned MR abilities available as character commands, including
+  Crystal Renewal and Folka's Tidal Invocation/Waterga Surge. Give pure HP healing copies field-recovery metadata.
+  Preserve saved recipes, explicit availability edits, power, costs, target grouping and permanent stat budgets.
+- Give 312 private skills their own original player routes and sounds. Prefer 190 complete native player variants,
+  restore 81 checked caster-motion tracks, resolve aliased impact rows, and teach imported models the native motion names their skills request using their
+  own FFBE clips. Run independently of borrowed visuals. Keep original/global rows and enemy routes unchanged.
+- Check all written reward names, passive IDs, ranks and learned-command availability before converting sprites.
+  Stop early on changed audited source files. Record four original presentations still needing individual review
+  in [the roster audit](docs/SEPHIRA_RUNTIME_REVIEW.md); do not silently substitute other skill visuals.
+- Restore both of Fina's casing visibility flags after battle transitions. Retain the queued runtime callback and
+  recover from removed attachments or transient actor errors per instance. Preserve the accepted glass and timing.
+  Native serialization and fixture checks do not replace a live retest of the vision and boss.
+
 ### Crystal Fina full-game diagnostics — 2026-10-22
 
 - Update the standalone Fina runtime collector to select the full game, ignore demo paths, find Steam libraries

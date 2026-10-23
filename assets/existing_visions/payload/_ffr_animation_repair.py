@@ -138,7 +138,26 @@ def extend_frames(module):
     module.load_unit = load
 
 
-def native_caster_motions(spec, modes):
+# Native skills can ask for a pose/phase name used by their original caster.
+# These names use the imported character's corresponding FFBE clip. Particles,
+# sounds, event times and the skill's mechanics are never substituted.
+NATIVE_MOTION_ALIASES = {
+    'atk': 'attack_A', 'action': 'attack_A', 'attack_common': 'attack_A',
+    'attack_A2': 'attack_B', 'attack_A_pose': 'magic_idle',
+    'attack_B_pose': 'magic_idle', 'attack_C_pose': 'magic_idle',
+    'action_Loop': 'magic_idle', 'attack_A_Loop': 'magic_idle',
+    'anticipation_1': 'magic_idle', 'anticipation2': 'magic_idle',
+    'brave_shift': 'magic_attack', 'step_frontB': 'step_front', 'step_backB': 'step_back',
+    'damage': 'cushion', 'cushion2': 'cushion', 'cushion_pose': 'cushion',
+    'skill01_summon': 'magic_attack', 'skill02_loop': 'magic_idle', 'skill03_return': 'idle',
+    'skil_01slash': 'attack_A', 'skil_02charge': 'magic_idle', 'skil_03charging': 'magic_idle',
+    'skil_05slash': 'attack_B', 'skil_06slashed': 'attack_C', 'skil_07end': 'idle',
+    'jump_attack': 'attack_A', 'AB1_win': 'win', 'AB1_powerbreak': 'attack_B',
+    'AB2_ER_jump': 'jump', 'AB2_ER_falling': 'attack_A', 'LB1_02': 'LB1',
+}
+
+
+def native_caster_motions(spec, modes, required=()):
     """Expose the native monster attack name using the recipient's own clip.
 
     This supplies a motion name, not a skill timeline or substitute particle.
@@ -147,12 +166,15 @@ def native_caster_motions(spec, modes):
     if not (modes['showUnverified'] and (modes['useChanges'] or modes.get('useNativeRepairs'))):
         return []
     animations = spec['animations']
-    if any(a['name'] == 'atk' for a in animations): return []
-    source = next((a for a in animations if a['name'] == 'attack_A'), None)
-    if source is None: raise ValueError('The imported battle model has no attack_A motion for native atk requests.')
-    alias = copy.deepcopy(source); alias['name'] = 'atk'
-    animations.append(alias)
-    return ['atk']
+    result = []
+    for name in dict.fromkeys(('atk', *required)):
+        if name not in NATIVE_MOTION_ALIASES or any(a['name'] == name for a in animations): continue
+        target = NATIVE_MOTION_ALIASES[name]
+        source = next((a for a in animations if a['name'] == target), None)
+        if source is None: raise ValueError(f'The imported battle model has no {target} motion for native {name} requests.')
+        alias = copy.deepcopy(source); alias['name'] = name
+        animations.append(alias); result.append(name)
+    return result
 
 
 def install_preview_hooks(env):

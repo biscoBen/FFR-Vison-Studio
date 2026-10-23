@@ -41,12 +41,17 @@ if spec_file.is_file() and '--menu-only' not in sys.argv:
     spec = json.loads(spec_file.read_bytes())
     aliases = _ffr_animation_repair.native_caster_motions(spec, _ffr_ability_modes.settings(tools.parent))
     roster = tools.parent / 'mods/EstherTsukiko/units.json'
-    if not aliases and roster.is_file():
+    if roster.is_file():
         import _ffr_shrine_challenges as challenges
-        if challenges.enemy_motion_for(json.loads(roster.read_bytes()), sys.argv[3]):
-            aliases = _ffr_animation_repair.native_caster_motions(spec,
-                {'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True})
-    if aliases: print('  Native caster motion: atk uses this character\'s attack_A clip; no substitute effects.')
+        import _ffr_sephira
+        saved_units = json.loads(roster.read_bytes())
+        if (_ffr_sephira.native_motion_for(saved_units, sys.argv[3])
+                or challenges.enemy_motion_for(saved_units, sys.argv[3])):
+            selected = next((u for u in saved_units if str(u.get('id')) == sys.argv[3]), None)
+            required = _ffr_sephira.native_motion_names(selected) if selected else []
+            aliases.extend(_ffr_animation_repair.native_caster_motions(spec,
+                {'showUnverified': True, 'useChanges': False, 'useNativeRepairs': True}, required))
+    if aliases: print('  Native caster motions use this character\'s own clips: ' + ', '.join(aliases) + '; original skill effects retained.')
     if trial.is_file():
         _ffr_animation_repair.add_barrage_animation(spec, json.loads(trial.read_bytes()), sys.argv[3])
     if aliases or trial.is_file(): spec_file.write_text(json.dumps(spec, indent=1), encoding='utf-8')

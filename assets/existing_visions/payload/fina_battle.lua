@@ -4,7 +4,7 @@
 -- Normal action clocks and their body playback slow together, scoped to Fina.
 local config = require('config').fina
 if not config then return end
-local states, assets, queued, failed, scans = {}, nil, false, false, 0
+local states, assets, queued, scans, errors = {}, nil, false, 0, {}
 local function valid(o) return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid() end
 local function name(o) return type(o) == 'string' and o or o:ToString() end
 local function log(s) print('[FFR Fina] ' .. s .. '\n') end
@@ -314,7 +314,7 @@ end
 local function update(s)
     local sprite, actor = s.sprite, s.actor
     local n, time = motion(s), now(sprite)
-    local visible = sprite:IsVisible() and not actor.bHidden
+    local visible = sprite:IsVisible() and not sprite.bHiddenInGame and not actor.bHidden
     if n and n ~= s.last then
         if s.logged < 12 then
             log('Native motion ' .. n .. '; frame=' .. tostring(sprite:GetPlayFrame()) .. '; rate=' .. tostring(sprite:GetPlayRate()))
@@ -335,12 +335,25 @@ local function update(s)
     local frame = sprite:GetPlayFrame()
     local observed = n or s.last
     local casing = visible and not (observed == 'lb1' and frame >= config.fall and frame < config.reform)
+    -- Native battle visibility transitions can hide attached components after
+    -- their creation. Visibility and HiddenInGame are independent flags.
+    -- Restore both on our casing when its own body is visible again.
+    s.mesh:SetHiddenInGame(not casing, true)
     s.mesh:SetVisibility(casing, true)
     -- SpriteStudio sockets expose in-plane rotation, not a full 3D spin.
     -- Rotate the actual component about its own vertical axis explicitly.
     s.mesh:K2_SetRelativeRotation({Pitch=0,Yaw=(time*config.turnRate)%360,Roll=0}, false, {}, true)
     glass(s, casing)
     glow(s, frame, visible)
+end
+local function recover(key, error)
+    local s = states[key]
+    if s then pcall(clear, s); states[key] = nil end
+    local message = tostring(error)
+    if errors[key] ~= message then
+        errors[key] = message
+        log('Retrying presentation for ' .. key .. ': ' .. message)
+    end
 end
 local function tick()
     scans = scans + 1
@@ -353,34 +366,39 @@ local function tick()
                     -- UI renderers, map sprites and cinematics are excluded.
                     if valid(actor) then
                         local unit = actor:IsA(native('mucha.CPP_BtlUnit'))
-                        if unit or actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then create(sprite, actor, unit) end
+                        if unit or actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then
+                            local ok, error = pcall(create, sprite, actor, unit)
+                            if not ok then recover(key, error) end
+                        end
                     end
                 end
             end
         end
     end
     for key, s in pairs(states) do
-        if not valid(s.sprite) or not valid(s.actor) or not valid(s.sprite.SsProject)
+        if not valid(s.sprite) or not valid(s.actor) or not valid(s.mesh) or not valid(s.sprite.SsProject)
             or not s.sprite.SsProject:GetFullName():find(config.project, 1, true) then
             clear(s); states[key] = nil
-        else update(s) end
+        else
+            local ok, error = pcall(update, s)
+            if not ok then recover(key, error) else errors[key] = nil end
+        end
     end
 end
 assert(config.schema == 1, 'Unsupported Fina battle runtime config')
 assert(type(config.attackPlayRate) == 'number' and config.attackPlayRate >= .5 and config.attackPlayRate <= 1, 'Invalid Fina attack speed')
+-- Keep the queued callback reachable between native game-thread invocations.
+-- Actor/model transitions must not permanently stop all later Fina instances.
+local function run_tick()
+    queued = false
+    local ok, error = pcall(tick)
+    if not ok then recover('scan', error) else errors.scan = nil end
+end
 LoopAsync(33, function()
-    if failed then return true end
     if not queued then
         queued = true
-        ExecuteInGameThread(function()
-            queued = false
-            local ok, error = pcall(tick)
-            if not ok then
-                failed = true
-                for _, s in pairs(states) do pcall(clear, s) end
-                log('Presentation stopped: ' .. tostring(error))
-            end
-        end)
+        local ok, error = pcall(ExecuteInGameThread, run_tick)
+        if not ok then queued = false; recover('queue', error) end
     end
     return false
 end)

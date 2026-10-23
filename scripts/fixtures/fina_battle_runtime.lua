@@ -43,7 +43,7 @@ local function component()
     function o:K2_AttachToComponent(parent,socket) self.parent=parent; self.socket=socket:ToString(); return true end
     function o:K2_SetRelativeLocation(v) self.location=v end
     function o:SetRelativeScale3D(v) self.scale=v end
-    function o:SetHiddenInGame(v) assert(not v) end
+    function o:SetHiddenInGame(v) self.hidden=v end
     function o:K2_SetRelativeRotation(v) self.rotation=v end
     function o:SetAbsolute(a,b,c) assert(not a and not b and c) end
     function o:SetWorldScale3D(v) self.worldScale=v end
@@ -62,7 +62,7 @@ sprite.SsProject=obj({GetFullName=function() return 'Ss6Project '..config.projec
 function sprite:GetFullName() return 'FinaComponent' end
 function sprite:GetOwner() return actor end
 function sprite:DoesSocketExist(n) return n:ToString()=='NULL_Crystal' or n:ToString()=='NULL_Aura' end
-function sprite:IsVisible() return true end
+function sprite:IsVisible() return not self.hidden end
 function sprite:GetPlayFrame() return self.frame end
 function sprite:GetPlayRate() return self.rate or 1 end
 function sprite:SetPlayRate(rate) self.rate=rate end

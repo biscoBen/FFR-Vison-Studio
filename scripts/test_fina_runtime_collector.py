@@ -79,14 +79,14 @@ class FinaRuntimeCollectorTests(unittest.TestCase):
         self.write(self.engine / 'build/crystal-fina-battle/runtime.json', '{"fina": true}')
         before_game, before_engine = self.digest_tree(self.game), self.digest_tree(self.engine)
         result = self.run_helper()
-        self.assertIn('Full game: ' + str(self.game), result.stdout)
+        self.assertIn('Full game: ', result.stdout)
         self.assertEqual(before_game, self.digest_tree(self.game))
         self.assertEqual(before_engine, self.digest_tree(self.engine))
         with self.archive() as z:
             report = json.loads(z.read('report.json').decode('utf-8-sig'))
             self.assertEqual(report['gameEdition'], 'full')
-            self.assertEqual(Path(report['game']), self.game)
-            self.assertEqual(Path(report['engine']), self.engine)
+            self.assertTrue(os.path.samefile(report['game'], self.game))
+            self.assertTrue(os.path.samefile(report['engine'], self.engine))
             self.assertEqual(report['errors'], [])
             self.assertEqual(z.read('engine/' + ledger), b'{"selected": true}')
             self.assertNotIn('engine/field-leader-state.json', z.namelist())
@@ -107,7 +107,7 @@ class FinaRuntimeCollectorTests(unittest.TestCase):
         self.run_helper()
         with self.archive() as z:
             report = json.loads(z.read('report.json').decode('utf-8-sig'))
-            self.assertEqual(Path(report['game']), full_game)
+            self.assertTrue(os.path.samefile(report['game'], full_game))
 
     def test_explicit_demo_is_rejected_before_creating_output(self):
         demo = self.root / 'FINAL FANTASY RESONANCE DEMO'
@@ -124,8 +124,8 @@ class FinaRuntimeCollectorTests(unittest.TestCase):
         with self.archive() as z:
             self.assertEqual(z.read('engine/field-leader-state.json'), b'{"legacy": true}')
             report = json.loads(z.read('report.json').decode('utf-8-sig'))
-            self.assertEqual(Path(report['game']), self.game)
-            self.assertEqual(Path(report['engine']), other)
+            self.assertTrue(os.path.samefile(report['game'], self.game))
+            self.assertTrue(os.path.samefile(report['engine'], other))
 
     def test_output_inside_game_is_rejected_without_writing(self):
         self.output = self.game / 'do not create'

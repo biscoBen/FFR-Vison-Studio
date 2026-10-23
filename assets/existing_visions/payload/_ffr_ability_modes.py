@@ -48,6 +48,8 @@ def prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_s
     import _ffr_animation_repair as motion
     import _ffr_ffbe_needles
     _ffr_ffbe_needles.prepare(tables, clones, jobs, root, rows, extract)
+    import _ffr_sephira_sequences
+    _ffr_sephira_sequences.prepare(tables, clones, units, root, rows, extract, native_support)
     value = settings(root)
     if value['showUnverified'] and value['useChanges']:
         return motion.prepare_sequences(tables, clones, jobs, units, root, rows, extract, native_support)

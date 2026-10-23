@@ -1,0 +1,73 @@
+# Sephira runtime reward and presentation review
+
+Full-game reference: `8ce7a0746d0cc1b2`, collected 2026-10-22. This is a structural/native serialization audit; it does not certify the final appearance of every skill in a running game.
+
+## Coverage and corrections
+
+- All 30 presets, all four awakening tiers and MR0–9 were reviewed. The audit resolves 526 original active-skill sources; 523 have direct sequence bindings. Including the original player variants and their canonical aliases, 1,728 distinct timeline packages were inspected.
+- 47 private passives previously used large allocated vision-derived IDs. Reserve stable IDs inside the native passive range instead, without changing their effects, equip costs, original donors or permanent stat budgets. This covers the reported Fina, Christine, Folka and Minfilia blanks, including Minfilia's awakening passive.
+- 15 private learned MR abilities now use the general learned command. The original vision command restriction prevented those rewards from appearing in character ability lists. This includes Crystal Renewal, Tidal Invocation and Waterga Surge. Saved recipes retain their editable data; normalization is applied during building.
+- Give private pure HP healing copies field-recovery metadata, preserving explicit user availability overrides. Both Crystal Renewal variants can include the caster. Damage, healing strength, MP costs, hit counts and target grouping remain unchanged.
+- Copy 312 usable original source presentations to private player routes, including their original sound tracks. Prefer 190 complete native player variants from the same original sequence family. Restore 81 audited motion tracks and resolve embedded impact aliases. Keep native/global rows and the existing enemy routes. Preserve working player effects such as Aqua Breath; adapt only the audited enemy/party group points when an enemy timeline is transplanted or the recipe changes its target relationship. These repairs run even with borrowed visuals and library repairs off. Changed original bytes stop preparation before sprites are converted.
+- Imported models expose the native motion names requested by their skills using their own FFBE clips. The 30 model manifests request 151 aliases in total. Their effects and sounds still come from each original skill; existing explicitly supplied clips take precedence.
+- Read back every selected vision's awakening/MR tables, ability names, passive ID ranges and custom command/field-availability fields immediately after table writing, before sprite conversion.
+
+## Original sources still needing individual review
+
+No different skill's animation is substituted for these cases. For Blood Recovery, the next step is to look for its matching FFBE presentation first, as requested.
+
+| Vision | Ability | Original source | Finding |
+| --- | --- | --- | --- |
+| Snow White | Blood Recovery | 501530 | No original sequence binding or explicit sequence pointer in the collected game. |
+| Trance Terra | Trance Apocalypse | 505540 | The original timeline's event functions cannot all be decoded; no enabled particle spawn was resolved. Keep its original behavior and flag it. |
+| Minfilia | Dual Jobs | 445210 | Original timeline copied; no enabled Niagara spawn. It contains a SpriteStudio actor event, so a live check is needed before treating this as missing visual content. |
+| Relm | Forbidden Ars Magna | 503930 | Original timeline copied; its only particle spawn is disabled. Requires an individual review of that original presentation. |
+
+Native Cover (Mog, 400760) and Mimic (Relm, 400330) also have no ordinary direct sequence bindings. They use specialized mechanics and are kept as native skills. Generic physical/support presentations can legitimately have no Niagara particle; absence of a particle is not by itself a failed skill.
+
+## Fina runtime evidence
+
+Returned full-game diagnostics `Fina-Runtime-Diagnostics-20261022-173111-e46c95.zip` select the full game and the desktop Studio engine. The installed runtime and its per-game ownership record are present. The log shows the crystal attaching to FinaNative13500 twice; it later reports a Lua callback-registry error. This does not prove the exact visibility failure.
+
+The runtime now restores both component visibility flags after native battle hiding, keeps the queued callback reachable, and retries a removed component or transient actor transition per instance. An individual failure cannot permanently disable every later Fina. Accepted glass/refraction, size, spin, attack speed and resonance timing are preserved. Executable Lua fixtures cover hiding, component removal, transient failure, reattachment and normal cleanup; live confirmation is still required for the boss and the vision.
+
+## Per-preset inventory
+
+Counts include every awakening and MR tier. Each private passive and each learned private MR active is covered by the shared correction rather than a preset-specific patch.
+
+| Vision | Granted active skills | Private active copies | Native motion aliases |
+| --- | ---: | ---: | ---: |
+| A2 | 19 | 14 | 6 |
+| Christine | 16 | 10 | 3 |
+| Crystal Fina | 17 | 9 | 3 |
+| Barusa | 16 | 7 | 7 |
+| Blue Sky Belle Fran | 17 | 9 | 3 |
+| Oracle Maiden Lunafreya | 17 | 9 | 4 |
+| Minfilia | 16 | 9 | 3 |
+| Folka | 19 | 13 | 3 |
+| Fryevia | 17 | 13 | 5 |
+| Lenneth | 19 | 12 | 7 |
+| Lila | 16 | 8 | 5 |
+| Mystea | 15 | 10 | 4 |
+| Reberta (JP) | 18 | 9 | 5 |
+| Snow White | 19 | 12 | 6 |
+| Aria | 21 | 14 | 4 |
+| Eiko | 17 | 10 | 3 |
+| Alice/Half Nightmare | 17 | 14 | 10 |
+| Moogle of Narshe Mog | 16 | 8 | 3 |
+| Lilith | 16 | 9 | 11 |
+| Dragon Knight Freya | 18 | 13 | 5 |
+| Trance Terra | 17 | 5 | 7 |
+| Charming Kitty Ariana | 18 | 12 | 3 |
+| Elephim | 17 | 11 | 5 |
+| Jade | 18 | 10 | 6 |
+| Spirited Heart Primm | 18 | 10 | 4 |
+| Relm | 19 | 14 | 3 |
+| Rikku (FFX-2) | 20 | 11 | 7 |
+| Nalu | 18 | 10 | 4 |
+| Elza | 18 | 9 | 8 |
+| Lunera | 17 | 10 | 4 |
+
+## Validation
+
+Focused Python and executable Lua/PowerShell fixture checks cover the reported failures and all presets. The pinned native tools write and read back all 30 visions' reward/ability tables, copy 1,264 original timeline packages, apply 339 private object edits and 1,303 bytecode edits, and reparse their exports. A native negative check deliberately restores Folka's vision-only command restriction and blanks a private Fina passive name; both must stop the early readback check. Windows validation and package provenance are recorded in the release notes after the build completes.
