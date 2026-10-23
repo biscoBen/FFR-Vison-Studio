@@ -11,26 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina movie opacity compatibility test
-
-- Address the returned test where battle UI hides but the movie remains invisible.
-  The earlier runtime trace shows the correct movie decoding with the cinematic
-  manager enabled. The native battle material samples a separate opacity texture;
-  the previous private movie supplied no alpha channel.
-- Add a native Sofdec full-opacity track to Fina's private VP9 movie, with one
-  independently decodable opacity picture per color frame and matching timestamps
-  and seek tables. Encode the selected movie at its original 1920×1080 resolution
-  to match the native opacity pictures and battle texture. Keep the browser MP4
-  byte-identical, and preserve its score, sprite LB, healing and cure-sound timing.
-  Do not replace the shared movie player, texture, material or original movies.
-- Extension 1.2.73. All 192 picture and opacity frames decode locally; opacity is
-  full white throughout. Native readback confirms matching VP9/Sofdec track
-  dimensions, frame rates and counts in both descriptors, the existing movie/spawn
-  window and sprite/healing handoff, and the unchanged shared asset bindings.
-  The companion pak survives retoc unchanged. All 53 focused Python checks and
-  31 Flutter checks pass (one Windows-only local skip). This targets the likely
-  opacity mismatch; visible playback still requires an in-game test.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -99,6 +79,54 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Crystal Fina movie opacity test — 2026-10-23
+
+Code: [`d37d3b8`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d37d3b85fe859fe814303471e27c34491b63a01f), extension **1.2.73**.
+Windows package: [run 40031404397](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40031404397/Sephira-Studio-Test.zip).
+**74,090,982 bytes** (74.1 MB).
+SHA-256: `f2fe99a8f5c7354b8781a977602ac78336d353fab5384f9aa70f494685ae47f8`.
+
+- Address the returned test where battle UI hides but the movie remains invisible.
+  The earlier runtime trace shows the correct movie decoding with the cinematic
+  manager enabled. The native battle material samples a separate opacity texture;
+  the previous private movie supplied no alpha channel.
+- Add a native Sofdec full-opacity track to Fina's private VP9 movie, with one
+  independently decodable opacity picture per color frame and matching timestamps
+  and seek tables. Encode the selected movie at its original 1920×1080 resolution
+  to match the native opacity pictures and battle texture. Keep the browser MP4
+  byte-identical, and preserve its score, sprite LB, healing and cure-sound timing.
+  Do not replace the shared movie player, texture, material or original movies.
+- Extension 1.2.73. All 192 picture and opacity frames decode locally; opacity is
+  full white throughout. Native readback confirms matching VP9/Sofdec track
+  dimensions, frame rates and counts in both descriptors, the existing movie/spawn
+  window and sprite/healing handoff, and the unchanged shared asset bindings.
+  The companion pak survives retoc unchanged. All 53 focused Python checks and
+  31 Flutter checks pass (one Windows-only local skip). This targets the likely
+  opacity mismatch; visible playback still requires an in-game test.
+- Full Windows validation, compilation, fresh frozen-engine startup, Python checks,
+  bundled extension verification and shortcut/updater tests pass for this commit.
+  The downloaded package matches all 63 managed-extension and 16 Fina files,
+  executable provenance, selected preview and new color/opacity movie hashes.
+  **Visible in-game playback and the live handoff remain unverified.**
+
+Close Studio/game and update while keeping **Studio Test Data**. Include Crystal Fina,
+enable **Test Crystal Fina cinematic**, rebuild/install and restart Resonance.
+Expect one 6.4-second movie followed by her existing sprite LB; repeat in another battle.
+No MR/acquisition update or kit reset is required.
+
+First complete candidate: **15:04:56 PDT**.
+The downloaded release was verified at **15:17:23 PDT**,
+**12m 28s** later. Delivery was recorded at
+**15:18:10 PDT**, **13m 15s** after the
+candidate, including local checks, waiting, publication and download verification.
+The matching automatic push run was reused; no duplicate build was dispatched.
+
+| Workflow | Outcome | Measured CI wall time | Windows job time | Linux job time |
+| --- | --- | --- | --- | --- |
+| [40031404397](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40031404397) | Passed | 10m 48s | 13m 59s | 2m 24s |
+
+Job time sums overlapping jobs; it is separate from elapsed delivery time.
 
 ## Published Crystal Fina movie display and handoff test — 2026-10-23
 

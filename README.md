@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina movie opacity test — 2026-10-23
+
+[Verified Windows download / run 40031404397](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40031404397/Sephira-Studio-Test.zip)
+(code `d37d3b8`, extension **1.2.73**; **74.1 MB**).
+
+The previous update hides battle UI but still shows no movie. The returned trace confirms the selected
+movie's frames advance. This test supplies the separate opacity track expected by the native battle
+material, using matching native Sofdec opacity frames and 1080p VP9 color. It affects only Fina's private
+movie. The browser preview remains the exact selected **Crystal-Fina-Rotating-Lighter.mp4**; its score,
+sprite LB, healing and cure-sound timing remain. This supersedes the 720p/no-alpha transport in the older
+implementation notes linked below.
+
+Close Studio/game and update while keeping **Studio Test Data**. Include Crystal Fina, enable
+**Test Crystal Fina cinematic**, rebuild/install and restart Resonance. Check for the **6.4-second movie**
+followed by her existing sprite LB, then repeat in a second battle. No MR/acquisition update or kit reset is required.
+
+Local decoding, native descriptor/package checks, Windows validation, compilation and downloaded-package
+verification pass. **Visible playback still requires an in-game test.** See
+[measured delivery and CI timings](CHANGELOG.md#published-crystal-fina-movie-opacity-test--2026-10-23).
+
 ### Crystal Fina movie display and handoff test — 2026-10-23
 
 [Verified Windows download / run 40024946811](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40024946811/Sephira-Studio-Test.zip)
