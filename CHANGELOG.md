@@ -11,18 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Optional preparation and faster table refresh — 2026-10-22
-
-- Make game-data preparation and patch review optional. Build/install using existing local data without a
-  preparation record or review approval. Keep the tools, backups, references and Deck snapshots available under
-  **Game tools & snapshots**. Remove the preparation requirement from Home; first-run dependencies are still needed.
-- Keep the inexpensive checks for a changed game/settings during a build and installing an outdated build.
-  Do not run preparation or consult its ledger in the ordinary build/install path.
-- Optional refresh skips localization string tables used through the text catalog. Give parallel readers private
-  mappings files to avoid exclusive-file conflicts. Cache unsupported optional reads against the game, mappings,
-  reader and source bytes; retry required tables once and report actual required-table failures by name.
-- Local and Windows validation pending; live install timing needs confirmation on the user's PC.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -91,6 +79,59 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published optional game preparation and table refresh — 2026-10-22
+
+Code: [`35c4f7b`](https://github.com/biscoBen/FFR-Vison-Studio/commit/35c4f7b5e29c2f501c3074e7b50c9a91aae56b6a), extension **1.2.65**.
+Windows package: [run 39894606827](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39894606827/Sephira-Studio-Test.zip). **57,080,556 bytes** (57.1 MB).
+SHA-256: `de6acc764f447c884d6eeb0766bc04292d4dabaadf45f3f1f7cbb48b6b4d5b32`.
+
+- Make game-data preparation and patch review optional. Build/install using existing local data without a
+  preparation record or review approval. Keep the tools, backups, references and Deck snapshots available under
+  **Game tools & snapshots**. Remove the preparation requirement from Home; first-run dependencies are still needed.
+- Keep the inexpensive checks for a changed game/settings during a build and installing an outdated build.
+  Do not run preparation or consult its ledger in the ordinary build/install path.
+- Optional refresh skips localization string tables used through the text catalog. Give parallel readers private
+  mappings files to avoid exclusive-file conflicts. Cache unsupported optional reads against the game, mappings,
+  reader and source bytes; retry required tables once and report actual required-table failures by name.
+- Local/native and Windows validation pass; live install timing needs confirmation on the user's PC.
+
+Update while retaining **Studio Test Data**, then build/install normally. The optional baseline and patch-review
+records are not consulted by the normal build gate. Missing actual first-run data still needs setup; running a
+manual refresh/collection blocks competing writes until that requested operation finishes. Game/input changes
+during a build or before installing an old result still require a new build. This does not add an automatic refresh.
+The optional read cache contains only known unsupported format failures, keyed by the game, reader, mappings and
+source bytes. Temporary I/O/read errors are logged and tried on the next refresh; required table failures are
+retried once and reported to the existing setup completeness check.
+
+Validation: **583 local Python tests** (10 dependency/platform skips), **28 focused Flutter passes** (one skip),
+static analysis and extension integrity pass. Regression covers builds with no/unreadable optional baseline,
+review before preparation, stale-install rejection, changes during a build, private parallel mappings, localization
+skips, unchanged failure reuse, source/mapping/reader invalidation, required failures and recovery after temporary
+I/O errors. Native-reader proof decodes two actual full-game table packages, records one real non-table source as
+unsupported, preserves every source byte and launches **zero readers** on the unchanged second refresh. The measured
+small-fixture times are not a benchmark of a full refresh or the user's normal install.
+
+Full Windows validation and compilation pass for the same final commit, together with the automatic Deck launcher
+workflow. Download verification checks provenance, SHA-256, all **59** managed extension and **16** Fina file hashes,
+the optional flow/helper version and unchanged vision catalog/art payloads. The optional FFBE library stays
+separate. Gameplay and the previously reported animation review cases are unchanged by this install-flow update.
+
+Measured timing: first complete candidate **2026-10-22 20:12:49 PDT** → verified package
+**20:35:21 PDT**, **22m 31s**, including local checks, the correction to avoid caching
+transient I/O failures, both automatic Windows candidates, their Deck checks, waiting and package verification.
+The timer was not restarted. Each build helper joined the matching automatic push workflow; no duplicate manual
+build was dispatched. The first candidate was superseded before delivery. Publication notes only change
+README/CHANGELOG and do not create or relabel a binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Windows, superseded candidate / 39894022150 | cancelled | 9m 00s | 12m 17s | 1m 21s |
+| Deck launcher, first candidate / 39894022158 | success | 1m 15s | 1m 14s | 0m 54s |
+| Windows, final candidate / 39894606827 | success | 11m 51s | 12m 47s | 2m 05s |
+| Deck launcher, final candidate / 39894606803 | success | 1m 18s | 1m 18s | 0m 56s |
+
+Summed runner usage: **32m 52s**, separate from elapsed delivery time.
 
 ## Published complete Sephira runtime pass and FFBE heal test — 2026-10-22
 

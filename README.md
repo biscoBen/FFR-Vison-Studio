@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Optional preparation and faster table refresh — 2026-10-22
+
+[Verified Windows download / run 39894606827](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39894606827/Sephira-Studio-Test.zip)
+(code `35c4f7b`, extension **1.2.65**; **57.1 MB**).
+
+Build/install directly using the existing local data. Game preparation and patch review stay available under
+**Game tools & snapshots**, but neither is required before a normal build. Existing first-run dependencies and
+checks against installing a build made for different game data/settings remain.
+
+Optional refresh skips localization string tables, gives each parallel reader a private mappings file, and
+remembers unsupported optional table formats until their inputs change. Temporary I/O failures are tried again;
+required tables are never silently cached as unsupported. No whole-game refresh or retry pass runs during an
+ordinary build/install. Source assets, recipes, selected testing toggles and mod gameplay are preserved.
+
+Close Studio, update while keeping **Studio Test Data**, reopen it and use **Install into the game** normally.
+There is no preparation/review step for this update. Windows validation/compilation, Deck transfer checks and
+native reader checks pass; actual install timing still needs confirmation on the user's PC. See
+[validation and measured timings](CHANGELOG.md#published-optional-game-preparation-and-table-refresh--2026-10-22).
+
 ### Complete Sephira runtime pass and FFBE Blood Recovery test — 2026-10-22
 
 [Verified Windows download / run 39889024440](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39889024440/Sephira-Studio-Test.zip)
