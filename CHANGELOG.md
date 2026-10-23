@@ -11,20 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Original Sephira limit-burst audio
-
-- Enable original FFBE LB recordings with source frame timing for 23 added visions, including the regional
-  presentation metadata and layered Fran cue the previous audio adapter omitted. Supply the original charging
-  recording for all 30. List the seven exact forms/custom sequences without an original soundtrack in
-  `docs/SEPHIRA_LB_AUDIO.md`; no unrelated LB recording is substituted.
-- Include only the small selected recording pack, independent of the optional animation library. Convert unsupported
-  HFR/encrypted recordings for the installed game's audio adapter, retain complete sound tails, and use private banks.
-- Back up and upgrade the old audio-off preset defaults once without resetting MR rewards, combat edits or artwork.
-  Later explicit mutes and custom sound banks remain editable. Native bank/timeline checks and live listening results
-  are reported separately; the game still needs a listening pass for volume, misses and synchronization.
-- Include MR rewards in the home-screen bonus count, so visions whose passives moved into mastery no longer show
-  zero bonuses. Their saved rewards and in-game behavior are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -93,6 +79,67 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Sephira LB audio and bonus-count correction — 2026-10-22
+
+Code: [`fba79e6`](https://github.com/biscoBen/FFR-Vison-Studio/commit/fba79e69b702bdaffecd65e63801603f30f6c062), extension **1.2.68**.
+Windows package: [run 39912426219](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39912426219/Sephira-Studio-Test.zip). **58,609,367 bytes** (58.6 MB).
+SHA-256: `c9dc56bae3aabf4518900cca9e4e2bc162ec1dc0257543676e2f7a0deae99504`.
+
+- Enable original FFBE LB recordings with source frame timing for 23 added visions, including the regional
+  presentation metadata and layered Fran cue the previous audio adapter omitted. Supply the original charging
+  recording for all 30. List the seven exact forms/custom sequences without an original soundtrack in
+  `docs/SEPHIRA_LB_AUDIO.md`; no unrelated LB recording is substituted.
+- Include only the small selected recording pack, independent of the optional animation library. Convert unsupported
+  HFR/encrypted recordings for the installed game's audio adapter, retain complete sound tails, and use private banks.
+- Back up and upgrade the old audio-off preset defaults once without resetting MR rewards, combat edits or artwork.
+  Later explicit mutes and custom sound banks remain editable. Native bank/timeline checks and live listening results
+  are reported separately; the game still needs a listening pass for volume, misses and synchronization.
+- Include MR rewards in the home-screen bonus count, so visions whose passives moved into mastery no longer show
+  zero bonuses. Their saved rewards and in-game behavior are unchanged.
+
+The APK and decoded master/bank hashes, exact form IDs, selected variants and original cue frames are retained
+in the small audio archive. Fran uses Shatterheart's second presentation and keeps both layers in each of its
+three Ice Slash sound alternatives. Four recordings require offline conversion: three unsupported HFR attack
+sounds and the encrypted charging cue. Cipher-aware VGAudio decoding preserves waveform polarity and sample
+counts; an independent quality check caught the earlier encrypted-source decode before delivery. Converted
+waveform readback is 35–71 dB SNR against the correctly decoded source, with matching sample counts. Layered
+mixes retain headroom. The private host banks use the installed game's audio profile and original sound event
+clock; combat data, hit timing and MR progression are not replaced.
+
+The seven opening-only cases are Christine, Barusa, Fryevia, Lilith, Charming Kitty Ariana, Elza and the custom
+Crystal Fina sequence. Different Japanese forms and Ariana's unrelated Touch It LB are not silently borrowed.
+Standalone Fina also receives the charging cue. Existing native/party replacements and unrelated imported
+visions retain their audio settings. Explicit sound-bank overrides and later mutes remain authoritative.
+
+Validation: **599 Python tests** (10 platform/dependency skips), **276 Flutter passes** (one skip), clean static
+analysis and manifest integrity. Focused correction checks rerun **33 Python tests / 55 Flutter passes**. Native
+writing/readback verifies **30 real LB timelines**, **255 sound events**, **24 referenced private sound banks**,
+**80 host-format recordings** with valid header/frame checksums, and unchanged original rows in seven skill,
+sound, feedback and grading tables. Sound registration is checked in both generic and production composites.
+Windows compilation and full validation pass for this exact commit. The downloaded package's provenance,
+SHA-256, all **61 managed extension / 16 Fina files**, 30 presets and embedded audio archive are verified.
+The optional full FFBE animation library remains excluded. In-game listening is still required for perceived
+volume, misses/immunity behavior and synchronization; source-clock readback is not a live playback claim.
+
+Old preset audio defaults upgrade once with a backup when Studio loads them. The MR revision and user edits
+remain intact. Home cards count awakening and MR rewards, including permanent/stat/master rewards, rather than
+showing zero when all passives are in MR. No reward or game-stat change accompanies that display fix.
+Update while keeping **Studio Test Data**, then rebuild/install and restart the game. A kit reset is unnecessary.
+
+Measured delivery: first complete candidate **2026-10-22 23:24:52 PDT** → verified package delivered
+**23:48:54 PDT**, **24m 02s**, including local checks, the encrypted-source correction,
+the additional bonus-count request, CI, waiting, download and verification. The timer was not restarted.
+Both workflows were automatic push runs; helpers joined the matching runs without dispatching another build.
+The first candidate passed CI but was superseded before a verified link was delivered. This download points
+to the corrected candidate. Publication notes change only README/CHANGELOG and do not rebuild or relabel it.
+
+| Workflow | Outcome | Measured CI wall time | Windows runner time | Linux runner time |
+| --- | --- | ---: | ---: | ---: |
+| Earlier audio candidate, superseded / 39911724021 | success | 8m 12s | 10m 16s | 2m 25s |
+| Corrected audio and bonus-count package / 39912426219 | success | 12m 25s | 14m 31s | 2m 14s |
+
+Summed runner usage: **29m 26s**, separate from elapsed delivery time.
 
 ## Published Sephira passive mastery and vision command icons — 2026-10-22
 

@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Sephira LB audio and home-screen bonus counts — 2026-10-22
+
+[Verified Windows download / run 39912426219](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39912426219/Sephira-Studio-Test.zip)
+(code `fba79e6`, extension **1.2.68**; **58.6 MB**).
+
+Original FFBE LB recordings now play at their source frame times for **23 Sephira visions**. All 30 have the
+original charging cue. The seven exact forms/custom sequences without an original soundtrack are listed in
+[LB audio coverage](docs/SEPHIRA_LB_AUDIO.md); unrelated LBs are not substituted. The selected recording pack
+is about 1.5 MB and does not require the optional animation library. Home-screen cards now include MR rewards
+in their ability/bonus totals, fixing the zero-bonuses display after passives moved into mastery.
+
+Close Studio/game and update while keeping **Studio Test Data**. Reopen Studio, then rebuild/install and
+restart the game for the sound changes. Old audio-off defaults upgrade once with a roster backup; later mutes
+and custom banks stay intact. No kit reset or second MR update is needed for this change. Existing skill,
+mastery, icon and Fina fixes remain. Native bank/timeline readback and Windows checks pass; volume, misses and
+perceived synchronization still need in-game listening.
+
 ### Sephira MR rewards, elemental attacks and vision icons — 2026-10-22
 
 [Verified Windows download / run 39907648685](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39907648685/Sephira-Studio-Test.zip)
