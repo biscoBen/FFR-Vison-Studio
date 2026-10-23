@@ -464,7 +464,7 @@ def prepare_rows(setup, env, log):
     try: previous = record(env['ROOT'], cache_path, {})
     except transfer.SyncError: previous = {}
     if not isinstance(previous, dict): previous = {}
-    cached = previous.get('failures', {}) if previous.get('signature') == signature else {}
+    cached = previous.get('failures', {}) if previous.get('schema') == 2 and previous.get('signature') == signature else {}
     cached = {key: entry for key, entry in cached.items() if isinstance(entry, dict)} if isinstance(cached, dict) else {}
     jobs, failures, source_hashes = [], {}, {}
     strings = skipped = 0
@@ -517,12 +517,19 @@ def prepare_rows(setup, env, log):
             if retry:
                 log(f'  retrying {len(retry)} required table(s) ...')
                 for job in retry: one(job, maps[0])
+    uncached = 0
     for key, error in errors.items():
         if key in required: log(f'  ! needed table failed: {key}: {error}')
-        else: failures[key] = {'source': source_hashes[key], 'error': error}
+        elif any(marker in error.casefold() for marker in ('did not export a table', 'not a datatable',
+                  'no datatable export', 'unsupported property', 'unsupported export')):
+            failures[key] = {'source': source_hashes[key], 'error': error}
+        else:
+            uncached += 1
+            log(f'  optional table read failed: {key}: {error}')
     if failures: log(f'  {len(failures)} unsupported optional table(s) omitted; unchanged failures will not be retried')
+    if uncached: log(f'  {uncached} other optional read failure(s) will be tried again on the next refresh')
     transfer.json_write(transfer.checked(env['ROOT'], cache_path),
-                        {'schema': 1, 'signature': signature, 'failures': failures})
+                        {'schema': 2, 'signature': signature, 'failures': failures})
 
 
 def prepare_game(selected, setup, env, log):

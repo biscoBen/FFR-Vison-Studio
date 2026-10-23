@@ -215,6 +215,21 @@ class LaunchTests(unittest.TestCase):
             calls.clear(); launch.prepare_rows(setup, self.env, logs.append)
             self.assertEqual(calls, ['DT_SkillData', 'DT_SkillData'])
 
+    def test_temporary_optional_io_failure_is_not_cached_as_an_unsupported_table(self):
+        setup, _ = self.row_setup(); failed = [False]
+        def reader(command, **kwargs):
+            index = command.index('rows'); source, target = Path(command[index+1]), Path(command[index+2])
+            if source.stem == 'DT_Unsupported' and not failed[0]:
+                failed[0] = True
+                return subprocess.CompletedProcess(command, 1, '', 'IOException: file is being used by another process')
+            target.write_text(json.dumps({'rows': {}}))
+            return subprocess.CompletedProcess(command, 0, '', '')
+        with mock.patch.object(launch.subprocess, 'run', side_effect=reader):
+            launch.prepare_rows(setup, self.env, lambda _: None)
+            self.assertEqual(launch.record(self.root, launch.HOME+'/optional-table-reads.json')['failures'], {})
+            launch.prepare_rows(setup, self.env, lambda _: None)
+        self.assertTrue((Path(setup.ROWS)/'Optional/DT_Unsupported.json').is_file())
+
     def test_local_deck_snapshots_install_replace_remove_runtime_and_restore_without_network(self):
         # Runtime payload also serves Crystal Fina when cycling itself is off.
         from test_deck_sync import sync as tested_transfer
