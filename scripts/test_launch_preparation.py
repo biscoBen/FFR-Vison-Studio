@@ -1,4 +1,4 @@
-"""Exercise local transfer/rollback, new-build gates and actual launch API requests."""
+"""Exercise optional game tools, stale-install checks and actual launch API requests."""
 import copy
 import io
 import json
@@ -104,13 +104,15 @@ class LaunchTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Rebuild'):launch.guard(self.env,installing=True)
         new=self.game/'FFRS/Content/Paks/patch.utoc';new.write_bytes(b'new native container')
         self.assertFalse(launch.prepared_status(self.env)['prepared'])
-        with self.assertRaisesRegex(ValueError,'Prepare'):launch.guard(self.env)
+        # A new game no longer demands optional preparation/review to build.
+        launch.guard(self.env)
+        with self.assertRaisesRegex(ValueError,'Rebuild'):launch.guard(self.env,installing=True)
         self.assertNotEqual(status['gameIdentity'],transfer.game_identity(self.game))
 
     def test_preparation_message_distinguishes_untracked_changed_and_incomplete_data(self):
         current=transfer.game_identity(self.game)
         (self.root/launch.PREPARED).unlink()
-        self.assertIn('no recorded game-data baseline',launch.prepared_status(self.env)['message'])
+        self.assertIn('No optional game-data baseline',launch.prepared_status(self.env)['message'])
         transfer.json_write(self.root/launch.PREPARED,{'schema':1,'gameIdentity':{'sha256':'other build'}})
         self.assertIn('game files differ',launch.prepared_status(self.env)['message'])
         transfer.json_write(self.root/launch.PREPARED,{'schema':1,'source':'Preparation incomplete'})
@@ -118,15 +120,100 @@ class LaunchTests(unittest.TestCase):
         transfer.json_write(self.root/launch.PREPARED,{'schema':1,'gameIdentity':current})
         self.assertTrue(launch.prepared_status(self.env)['prepared'])
 
-    def test_patch_review_is_fingerprint_specific_and_preset_avoids_review(self):
-        with self.assertRaisesRegex(ValueError,'Review enabled patches'):launch.guard(self.env)
+    def test_patch_review_is_optional_and_fingerprint_specific_even_without_preparation(self):
+        (self.root/launch.PREPARED).unlink()
+        launch.guard(self.env)
         with self.client() as client:
             self.assertEqual(client.post('/api/launch/review-patches',json={'gameSha256':'wrong'}).status_code,409)
             identity=transfer.game_identity(self.game)
             self.assertEqual(client.post('/api/launch/review-patches',json={'gameSha256':identity['sha256']}).status_code,200)
+        self.assertFalse(launch.prepared_status(self.env)['prepared'])
+        self.assertTrue(launch.prepared_status(self.env)['demoPatchReview'])
         launch.guard(self.env)
         (self.game/transfer.MARKER).write_bytes(b'updated game')
         self.assertFalse(launch.prepared_status(self.env)['demoPatchReview'])
+
+    def test_build_never_reads_or_runs_optional_preparation_or_patch_flags(self):
+        (self.root/launch.PREPARED).write_text('unreadable optional baseline')
+        with mock.patch.object(launch, 'prepared_status', side_effect=AssertionError('Optional baseline must not gate builds')), \
+                mock.patch.object(launch, 'flags', side_effect=AssertionError('No patch review gate')):
+            started = launch.guard(self.env)
+            started['inputsSha256'] = transfer.inputs_digest(self.root)
+            launch.capture_build(self.env, started)
+            launch.guard(self.env, installing=True)
+            (self.game/transfer.MARKER).write_bytes(b'changed during a build')
+            with self.assertRaisesRegex(ValueError, 'changed during the build'):
+                launch.capture_build(self.env, started)
+        self.env['setup_state']['running'] = True
+        with self.assertRaisesRegex(ValueError, 'preparation to finish'): launch.guard(self.env)
+
+    def row_setup(self):
+        from types import SimpleNamespace
+        legacy = self.root / 'extracted/legacy'
+        mapping = self.root / 'extracted/Mappings.usmap'
+        mapping.parent.mkdir(parents=True, exist_ok=True); mapping.write_bytes(b'explicit mapping fixture')
+        setup = SimpleNamespace(LEGACY=str(legacy), ROWS=str(self.root/'extracted/rows'),
+                                REQUIRED_TABLES=['Skill/DT_SkillData'],
+                                ffrenv=SimpleNamespace(USMAP=str(mapping), FFRDT=['fixture-reader']))
+        for rel in ['Strings/ST_NotADataTable', 'Optional/DT_Unsupported', 'Skill/DT_SkillData',
+                    'Battle/DT_One', 'Battle/DT_Two', 'Battle/DT_Three', 'Battle/DT_Four']:
+            path = legacy/'FFRS/Content/Datatable'/(rel+'.uasset')
+            path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(('synthetic '+rel).encode())
+        return setup, mapping
+
+    def test_optional_refresh_skips_strings_uses_private_maps_and_caches_only_unchanged_optional_failures(self):
+        setup, mapping = self.row_setup(); calls = []; active = set(); collisions = []; lock = threading.Lock()
+        def reader(command, **kwargs):
+            index = command.index('rows'); source, target = Path(command[index+1]), Path(command[index+2])
+            usmap = command[-1]
+            with lock:
+                calls.append(source.stem)
+                if usmap in active: collisions.append(usmap)
+                active.add(usmap)
+            time.sleep(.01)
+            with lock: active.remove(usmap)
+            if source.stem == 'DT_Unsupported':
+                return subprocess.CompletedProcess(command, 1, '', 'not a DataTable')
+            target.write_text(json.dumps({'rows': {'Original': {'ID': 1}}}))
+            return subprocess.CompletedProcess(command, 0, '', '')
+        logs = []
+        with mock.patch.object(launch.subprocess, 'run', side_effect=reader):
+            launch.prepare_rows(setup, self.env, logs.append)
+            self.assertNotIn('ST_NotADataTable', calls)
+            self.assertEqual(calls.count('DT_Unsupported'), 1)
+            self.assertFalse(collisions)
+            self.assertTrue(any('skipped 1 localization' in line for line in logs))
+            calls.clear(); launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls, [])
+            source = Path(setup.LEGACY)/'FFRS/Content/Datatable/Optional/DT_Unsupported.uexp'
+            source.write_bytes(b'changed source bytes')
+            launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls, ['DT_Unsupported'])
+            calls.clear(); mapping.write_bytes(b'updated mappings')
+            launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls, ['DT_Unsupported'])
+            calls.clear(); setup.ffrenv.FFRDT.append('updated-reader')
+            launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls, ['DT_Unsupported'])
+
+    def test_required_table_failures_are_retried_reported_and_never_silently_cached(self):
+        setup, _ = self.row_setup(); calls = []
+        def reader(command, **kwargs):
+            index = command.index('rows'); source, target = Path(command[index+1]), Path(command[index+2])
+            calls.append(source.stem)
+            if source.stem == 'DT_SkillData':
+                return subprocess.CompletedProcess(command, 1, '', 'required table read failed')
+            target.write_text(json.dumps({'rows': {}}))
+            return subprocess.CompletedProcess(command, 0, '', '')
+        logs = []
+        with mock.patch.object(launch.subprocess, 'run', side_effect=reader):
+            launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls.count('DT_SkillData'), 2)
+            cached = launch.record(self.root, launch.HOME+'/optional-table-reads.json')
+            self.assertNotIn('Skill/DT_SkillData', cached['failures'])
+            self.assertTrue(any('! needed table failed: Skill/DT_SkillData' in line for line in logs))
+            calls.clear(); launch.prepare_rows(setup, self.env, logs.append)
+            self.assertEqual(calls, ['DT_SkillData', 'DT_SkillData'])
 
     def test_local_deck_snapshots_install_replace_remove_runtime_and_restore_without_network(self):
         # Runtime payload also serves Crystal Fina when cycling itself is off.

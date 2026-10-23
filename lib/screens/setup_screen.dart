@@ -87,7 +87,7 @@ class _SetupScreenState extends State<SetupScreen> {
                   GuideButton('Logs folder', small: true, icon: Icons.folder_open, onPressed: app.openLogs),
                 ]),
                 const SizedBox(height: 10),
-                Wrap(children: [GuideButton('Launch preparation & snapshots', key: const Key('setup-launch-preparation'),
+                Wrap(children: [GuideButton('Game tools & snapshots', key: const Key('setup-launch-preparation'),
                     onPressed: app.api == null || preparing ? null : () => launchUrl(Uri.parse('${app.api!.base}/launch-preparation')))]),
               ]),
             ),

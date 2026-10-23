@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Optional preparation and faster table refresh — 2026-10-22
+
+- Make game-data preparation and patch review optional. Build/install using existing local data without a
+  preparation record or review approval. Keep the tools, backups, references and Deck snapshots available under
+  **Game tools & snapshots**. Remove the preparation requirement from Home; first-run dependencies are still needed.
+- Keep the inexpensive checks for a changed game/settings during a build and installing an outdated build.
+  Do not run preparation or consult its ledger in the ordinary build/install path.
+- Optional refresh skips localization string tables used through the text catalog. Give parallel readers private
+  mappings files to avoid exclusive-file conflicts. Cache unsupported optional reads against the game, mappings,
+  reader and source bytes; retry required tables once and report actual required-table failures by name.
+- Local and Windows validation pending; live install timing needs confirmation on the user's PC.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

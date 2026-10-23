@@ -95,13 +95,13 @@ def prepared_status(env):
     ready = saved.get('gameIdentity') == current
     if ready: message = 'Prepared data matches this game build.'
     elif saved.get('source') == 'Preparation incomplete':
-        message = 'The last game preparation did not finish. Prepare the selected game again before building or installing.'
+        message = 'The last optional preparation did not finish. You can retry it here; preparation status does not block builds.'
     elif not saved.get('gameIdentity'):
-        message = 'This Studio setup has no recorded game-data baseline. Prepare the selected game once before building or installing; this does not by itself mean the game updated.'
+        message = 'No optional game-data baseline is recorded. Builds use the existing local data.'
     else:
-        message = 'The selected game files differ from the last preparation. Prepare this game before building or installing.'
+        message = 'The selected game files differ from the optional preparation record. You can refresh the data here when needed.'
     return {'gameIdentity': current, 'prepared': ready,
-            'label': 'Recognized demo build' if known_demo(current) else 'Unreviewed game build',
+            'label': 'Recognized demo build' if known_demo(current) else 'Selected game build',
             'message': message,
             'demoPatchReview': saved.get('demoPatchReview') == current['sha256']}
 
@@ -110,7 +110,7 @@ def brief(env):
     value = {'launchRevision': revision(env['ROOT'])}
     try: value['gameCompatibility'] = prepared_status(env)
     except (OSError, ValueError, transfer.SyncError):
-        value['gameCompatibility'] = {'prepared': False, 'message': 'Select and prepare the game build in Launch preparation.'}
+        value['gameCompatibility'] = {'prepared': False, 'message': 'Optional game preparation status is unavailable.'}
     return value
 
 
@@ -139,13 +139,11 @@ def flags(root):
 
 def guard(env, installing=False):
     if _job['running']: raise ValueError('Wait for the launch collection or snapshot export to finish.')
-    status = prepared_status(env)
-    if not status['prepared']:
-        raise ValueError(status['message'] + ' Open Launch preparation.')
-    selected = flags(env['ROOT'])['enabledPatches']
-    if selected and not known_demo(status['gameIdentity']) and not status['demoPatchReview']:
-        raise ValueError('Review enabled patches for this unreviewed game build in Launch preparation, '
-                         'or apply the Original-game test preset: ' + ', '.join(selected))
+    if env.get('setup_state', {}).get('running'):
+        raise ValueError('Wait for the current game preparation to finish.')
+    # Preparation and patch review are optional tools. A normal build reads no
+    # preparation ledger and never launches a full extraction/table retry pass.
+    status = {'gameIdentity': native_identity(env)}
     if installing:
         built = record(env['ROOT'], 'build/launch-game.json', {})
         if (built.get('gameIdentity') != status['gameIdentity']
@@ -451,6 +449,82 @@ def collect(env, log):
             'addedAssets': len(delta['assetsAdded']), 'removedAssets': len(delta['assetsRemoved'])}
 
 
+def prepare_rows(setup, env, log):
+    """Optional refresh: skip text tables and cache unsupported optional reads."""
+    legacy = Path(setup.LEGACY) / 'FFRS/Content/Datatable'
+    destination = Path(setup.ROWS)
+    required = {name.replace('\\', '/') for name in setup.REQUIRED_TABLES}
+    tool = setup.ffrenv
+    mapping = Path(tool.USMAP)
+    reader = [(str(part), Path(part).stat().st_size, Path(part).stat().st_mtime_ns)
+              for part in tool.FFRDT if Path(part).is_file()]
+    signature = {'game': native_identity(env), 'mapping': transfer.sha(mapping),
+                 'reader': digest([list(map(str, tool.FFRDT)), reader])}
+    cache_path = HOME + '/optional-table-reads.json'
+    try: previous = record(env['ROOT'], cache_path, {})
+    except transfer.SyncError: previous = {}
+    if not isinstance(previous, dict): previous = {}
+    cached = previous.get('failures', {}) if previous.get('signature') == signature else {}
+    cached = {key: entry for key, entry in cached.items() if isinstance(entry, dict)} if isinstance(cached, dict) else {}
+    jobs, failures, source_hashes = [], {}, {}
+    strings = skipped = 0
+    for path in sorted(legacy.rglob('*.uasset')):
+        relative = path.relative_to(legacy).with_suffix('')
+        key = relative.as_posix()
+        # The catalog gets localized names from locres_en.json. These string
+        # packages are not inputs to the table builder or its required set.
+        if relative.parts[0].casefold() == 'strings' and key not in required:
+            strings += 1; continue
+        out = destination / relative.with_suffix('.json')
+        if out.is_file(): continue
+        source_hashes[key] = digest({suffix: transfer.sha(path.with_suffix(suffix))
+                                    for suffix in ('.uasset', '.uexp') if path.with_suffix(suffix).is_file()})
+        if key not in required and cached.get(key, {}).get('source') == source_hashes[key]:
+            failures[key] = cached[key]; skipped += 1; continue
+        jobs.append((path, out, key))
+    if strings: log(f'  skipped {strings} localization string tables; Studio uses the text catalog')
+    if skipped: log(f'  skipped {skipped} unchanged unsupported optional tables')
+    errors = {}; progress = 0; lock = threading.Lock()
+    def one(job, usmap):
+        nonlocal progress
+        path, out, key = job
+        out.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            result = subprocess.run([*tool.FFRDT, 'rows', str(path), str(out), '--usmap', str(usmap)],
+                                    capture_output=True, text=True, encoding='utf-8', errors='replace')
+            if result.returncode or not out.is_file():
+                raise ValueError((result.stderr or result.stdout or f'exit {result.returncode}').strip()[:900])
+            document = json.loads(out.read_text(encoding='utf-8-sig'))
+            if not isinstance(document, dict) or not isinstance(document.get('rows'), dict):
+                raise ValueError('The reader did not export a table.')
+            errors.pop(key, None)
+        except (OSError, ValueError) as error:
+            out.unlink(missing_ok=True)
+            errors[key] = str(error)
+        with lock:
+            progress += 1
+            if progress % 100 == 0: log(f'  {progress}/{len(jobs)} tables')
+    if jobs:
+        log(f'reading {len(jobs)} data tables with separate mappings files ...')
+        with tempfile.TemporaryDirectory(prefix='ffr-setup-maps-') as folder:
+            maps = [Path(folder) / (str(index) + '.usmap') for index in range(4)]
+            for path in maps: shutil.copyfile(mapping, path)
+            one(jobs[0], maps[0])  # Warm up the single-file .NET reader once.
+            def batch(index):
+                for job in jobs[1:][index::4]: one(job, maps[index])
+            with ThreadPoolExecutor(max_workers=4) as pool: list(pool.map(batch, range(4)))
+            retry = [job for job in jobs if job[2] in required and job[2] in errors]
+            if retry:
+                log(f'  retrying {len(retry)} required table(s) ...')
+                for job in retry: one(job, maps[0])
+    for key, error in errors.items():
+        if key in required: log(f'  ! needed table failed: {key}: {error}')
+        else: failures[key] = {'source': source_hashes[key], 'error': error}
+    if failures: log(f'  {len(failures)} unsupported optional table(s) omitted; unchanged failures will not be retried')
+    transfer.json_write(transfer.checked(env['ROOT'], cache_path),
+                        {'schema': 1, 'signature': signature, 'failures': failures})
+
+
 def prepare_game(selected, setup, env, log):
     """Quarantine stale derived game data; never reuse shipped demo rows/catalog."""
     root = Path(env['ROOT'])
@@ -474,10 +548,12 @@ def prepare_game(selected, setup, env, log):
     shipped = setup.SHIPPED
     filters = setup.EXTRACT_FILTERS
     listing = setup._listing
+    dump_rows = getattr(setup, '_dump_rows', None)
     try:
         # Mapping/enums and FFBE data remain pinned helpers. Native source rows,
         # native listing and catalog must be rebuilt from this installation.
         setup.SHIPPED = [(a, b) for a, b in shipped if a not in ('ffr_catalog.json', 'utoc_filelist.tsv', 'DA_UIUnitSsLayout.json')]
+        if dump_rows is not None: setup._dump_rows = lambda output: prepare_rows(setup, env, output)
         with tempfile.TemporaryDirectory(prefix='ffr-prepare-view-') as folder:
             view = Path(folder)
             paks = Path(selected) / 'FFRS/Content/Paks'
@@ -511,6 +587,7 @@ def prepare_game(selected, setup, env, log):
         changed(root)
     finally:
         setup.SHIPPED, setup.EXTRACT_FILTERS, setup._listing = shipped, filters, listing
+        if dump_rows is not None: setup._dump_rows = dump_rows
         if 'extract' in locals(): setup._extract = extract
 
 
@@ -686,10 +763,10 @@ def register(app, env):
         def action():
             busy(env)
             status = prepared_status(env)
-            if not status['prepared'] or body.get('gameSha256') != status['gameIdentity']['sha256']:
-                raise ValueError('Prepare and review the currently selected game build first.')
-            saved = record(root, PREPARED)
-            transfer.json_write(transfer.checked(root, PREPARED), {**saved, 'demoPatchReview': body['gameSha256']})
+            if body.get('gameSha256') != status['gameIdentity']['sha256']:
+                raise ValueError('The selected game changed. Refresh before recording the optional review.')
+            saved = record(root, PREPARED, {})
+            transfer.json_write(transfer.checked(root, PREPARED), {**saved, 'schema': 1, 'demoPatchReview': body['gameSha256']})
             return {'ok': True}
         return checked_call(action)
 

@@ -61,7 +61,6 @@ class HomeScreen extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   child: Column(children: [
                     StatRow('Game', app.gameRunning ? 'running' : 'closed', trailing: Icon(app.gameRunning ? Icons.warning_amber : Icons.check, size: 16, color: app.gameRunning ? Guide.gold : Guide.green)),
-                    if (app.gameCompatibility != null) StatRow('Prepared data', app.gameCompatibility!['prepared'] == true ? 'matches game' : 'prepare this build'),
                     StatRow('Mod in the game', app.modInstalled ? 'installed' : 'not installed', zebra: true),
                     StatRow('Units ready', '${app.includedUnitCount}'),
                   ]),
@@ -181,7 +180,7 @@ class HomeScreen extends StatelessWidget {
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   GuideButton('Build without installing', onPressed: !canBuild || busy || app.sephiraWorking ? null : () => app.startBuild(install: false)),
                   GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : app.installLast),
-                  GuideButton('Launch preparation & snapshots', key: const Key('launch-preparation'), icon: Icons.fact_check_outlined,
+                  GuideButton('Game tools & snapshots', key: const Key('launch-preparation'), icon: Icons.fact_check_outlined,
                       onPressed: busy || app.api == null ? null : () async {
                         await app.save();
                         if (app.dirty) return;
