@@ -118,8 +118,21 @@ class CinematicTests(unittest.TestCase):
         self.assertEqual(result['duration'],plan['duration']+shift)
         self.assertTrue(all(0<=e['time']<result['duration'] for e in result['events']))
         self.assertEqual(sum(e['set']['EventType']=='OtherReaction' for e in result['events']),1)
+        ui=[e for e in result['events'] if e['set']['EventType'].startswith('UI')]
+        self.assertEqual(ui,[
+            {'time':film.START,'set':{'EventType':'UISetVisibility',
+                'UI_SetVisibillity_IsVisibility':False,'UI_SetVisibillityMovie_IsVisibility':True}},
+            {'time':film.END,'set':{'EventType':'UISetVisibility',
+                'UI_SetVisibillity_IsVisibility':True,'UI_SetVisibillityMovie_IsVisibility':True}}])
         too_long=copy.deepcopy(plan);too_long['duration']=film.NATIVE_DURATION
         with self.assertRaisesRegex(ValueError,'duration'):film.continuation(too_long)
+
+    def test_changed_movie_timing_refreshes_only_private_evaluation_signatures(self):
+        asset='FFRS/Content/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master'
+        updates=film.evaluation_updates(asset)
+        self.assertEqual({u['export'] for u in updates}, {'SEQ_Battle_444011_Master', 'MovieScene_0',
+            'MovieSceneManaSection_1','MovieSceneManaTrack_1','MovieSceneSpawnSection_0','MovieSceneSpawnTrack_1'})
+        self.assertTrue(all(u['asset']==asset and u['set']=={'Signature':'new'} for u in updates))
 
     def test_pak_includes_movie_and_disabling_replaces_only_its_companion(self):
         calls=[]

@@ -11,6 +11,18 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina cinematic display and handoff — 2026-10-23
+
+- Follow the native resonance movie's battle-UI transition while retaining movie visibility, then
+  restore the battle UI for Fina's existing sprite LB. The runtime trace confirms her selected movie
+  opens and advances frames with the cinematic manager enabled, despite staying invisible.
+- Refresh the private movie/spawn evaluation signatures after changing their ranges. The trace shows
+  a second movie pass continuing during the sprite LB; the old donor cache retained a longer window.
+  Keep the exact selected movie/score and the sprite LB's healing, reaction and cure-sound alignment.
+- Local checks: 52 focused Python checks, native asset reparse/packaging, six refreshed signatures,
+  preserved binding data and the two native UI transitions pass. This is a candidate for another
+  in-game test; visible playback and the corrected live handoff are not yet confirmed.
+
 ### Crystal Fina movie-player reference — 2026-10-23
 
 - Confirm that the user's revision 2 installed movie pak matches the verified corrected package, while

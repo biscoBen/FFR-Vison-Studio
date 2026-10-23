@@ -127,12 +127,28 @@ def continuation(plan):
     at(1, 'CameraSetDefault', Camera_SetDefault_Frame=0, Camera_SetDefault_IsRotation=True,
        Camera_SetDefault_IsLocation=True, Camera_SetDefault_IsZoomInOut=True)
     at(2, 'OtherSetGameSpeed', Other_SetGameSpeed_TimeDilation=1.0)
-    at(START, 'UISetVisibilityMovie', UI_SetVisibillityMovie_IsVisibility=True)
-    at(END, 'UISetVisibilityMovie', UI_SetVisibillityMovie_IsVisibility=False)
-    at(END, 'UISetVisibility', UI_SetVisibillity_IsVisibility=True)
+    # The native Cloud wrapper switches the battle UI through UISetVisibility,
+    # retaining movie visibility. Toggling the movie widget alone skips that
+    # native presentation transition even when Mana is already decoding.
+    at(START, 'UISetVisibility', UI_SetVisibillity_IsVisibility=False,
+       UI_SetVisibillityMovie_IsVisibility=True)
+    at(END, 'UISetVisibility', UI_SetVisibillity_IsVisibility=True,
+       UI_SetVisibillityMovie_IsVisibility=True)
     result['duration'] += shift
     result['events'].sort(key=lambda e: e['time'])
     return result
+
+
+def evaluation_updates(asset):
+    """Invalidate donor evaluation caches after changing movie/spawn timing.
+
+    Preserve opaque compiled bytes and binding locators, but give the edited
+    sequence/tracks/sections fresh signatures so Unreal rebuilds evaluation.
+    The ordinary engine movie-removal path uses this same native mechanism.
+    """
+    exports = (Path(asset).name, 'MovieScene_0', 'MovieSceneManaSection_1',
+               'MovieSceneManaTrack_1', 'MovieSceneSpawnSection_0', 'MovieSceneSpawnTrack_1')
+    return [{'asset': asset, 'export': export, 'set': {'Signature': 'new'}} for export in exports]
 
 
 def prepare_pak(root, ffrenv, run, video=None):
@@ -217,6 +233,7 @@ def build(units, env):
     patch('movie-duration', frames=[{'asset': job['asset'], 'after': NATIVE_END, 'delta': END - NATIVE_END}])
     shortened = NATIVE_DURATION + END - NATIVE_END
     patch('lb-duration', frames=[{'asset': job['asset'], 'after': shortened, 'delta': plan['duration'] - shortened}])
+    patch('refresh-evaluation', objects=evaluation_updates(job['asset']))
     for suffix in ('', '_vp9'):
         source = native(MOVIE + suffix)
         clone(source, PRIVATE + suffix, [('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),

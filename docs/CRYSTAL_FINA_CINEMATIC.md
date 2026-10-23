@@ -11,8 +11,10 @@ closer, ending with Fina opening ruby-red eyes. There is no shattering or breaki
 Revisions 1 and 2 delayed the LB but displayed no movie in the user's battle tests, although the browser
 preview works. Revision 2 corrected an observed movie pak path mismatch and USM header differences;
 it passed Windows checks and was published at `58dac32`. Those corrections did not resolve the runtime
-failure. The latest return confirms the corrected companion pak is installed. Investigation now needs
-the native shared movie player and display actor; no further playback fix is claimed.
+failure. The latest runtime trace confirms that the selected movie opens and advances frames with the
+cinematic manager enabled. The next candidate uses the native battle-UI transition and invalidates
+the donor's cached evaluation after shortening the movie/spawn window. It preserves the exact movie
+and sprite LB, and still requires an in-game visibility/handoff test.
 
 In Studio, use **Preview Crystal Fina cinematic** to view the movie with sound. To test the game path:
 
@@ -36,6 +38,10 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 - The original Cloud movie master supplies the native Mana/spawn bindings. Its compiled opaque data and director
   locator are retained through binary cloning. Its donor battle events are neutralized. Three private event-only
   children supply Fina’s continuation and inert effect/sound subtracks.
+- After timing changes, the private sequence, scene, Mana track/section and actor spawn track/section receive
+  fresh signatures. This invalidates the old cooked evaluation schedule without rewriting opaque binding data.
+  The native `UISetVisibility` transition hides battle UI while keeping movie visibility, then restores battle UI
+  at the movie end. The earlier separate movie-widget toggle did not reproduce that native transition.
 - The movie window is 2.0–8.4 seconds. Fina’s existing LB, reaction, cleanup and sounds shift together, with LB1
   beginning at 8.4 seconds. Her cure recording stays on the original heal application marker. The common opening
   cue moves to the start, and the original score begins with the movie.
@@ -129,6 +135,35 @@ owned `enabled.txt`; an unknown same-named folder is refused. Four focused check
 including executable Lua observations against native-object proxies that reject writes. Windows live
 API availability and the actual playback state still require the user's trace. No playback fix or
 updated Studio runtime package is claimed.
+
+### Runtime trace: decoding succeeds, movie outlasts its intended window
+
+`Fina-Movie-Diagnostics-20261023-135435-313271.zip` has SHA-256
+`7ddf5a2902024e2b49e15d7ddd6c6ac0d839e3db1786b57ce8c63f32b67bede4`. Collection reports no errors.
+At 13:53:53–54 the battle Mana player opens `/Game/Movies/Studio/CrystalFina_Test`, reaches Playing
+(status 5), and advances its frame counter through bucket 12 (frames 180–194). The cinematic manager
+sets `bUseMovie=true`. The same movie then restarts its counter, reaches bucket 12 again, and stops at
+13:54:07. The first F8 bookmark is at 13:54:05.763, during that second movie pass; the second is at
+13:54:11.562 after the movie stops. Fina's independent sprite LB starts at 13:54:00.362. These are
+separate movie and sprite observations; the sprite LB is not being removed or treated as a duplicate.
+
+The live movie/actor window follows the native donor's longer evaluation period despite the edited
+2.0–8.4 second ranges. Candidate extension 1.2.72 applies the engine's existing signature-refresh
+mechanism for edited movie/spawn tracks, plus the native `UISetVisibility` battle/movie transition.
+It does not change the selected MP4, VP9/USM packets, score, descriptor alpha settings, healing or
+sprite animation. Missing alpha is no longer a decoder explanation; whether it affects the display
+material remains unproven. The old released build's visible playback is still unresolved.
+
+The captured engine settings had been turned off and its generated master changed after the
+installed build was produced. Those loose generated files are therefore not treated as the live
+movie sequence. The installed/build pak and utoc hashes match, and the trace itself establishes the
+actual movie source and playback state. Both F8 bookmarks are retained.
+
+Local candidate checks: 10 cinematic tests, 29 existing-vision tests and 13 collector/observer tests
+pass. Native rebuilding/readback confirms all six signatures changed, the movie/spawn ranges end at
+8.4 seconds, private bindings and opaque bytes remain intact, media pak contents are unchanged, and
+the native UI transitions bracket the movie. Actual visibility and live stop timing require the next
+user test after the Windows package passes its checks.
 
 ### Returned playback diagnostics — 2026-10-23
 
