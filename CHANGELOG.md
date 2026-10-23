@@ -11,47 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina movie timing/audio, install verification and Christine challenge
-
-- Fix the install-blocking Lasswell table error when a party voice override is
-  combined with **Survive at 1 HP**. Merge authorized changes by field instead
-  of replacing a row's expected voice edit with its survival edit. Verify the
-  complete composed row while still requiring the exact saved voice and rejecting
-  unrelated stat/identity changes or incorrect/missing survival passives.
-- Check party voice parameters before sprite conversion and sequence generation,
-  using the same expected edits as the final verifier. Errors name the character
-  and mismatched fields. Keep the selected voice, survival mechanics and all
-  appearances; no game reinstall or disabling those settings is needed after updating.
-- Move Christine's normal challenge to the **secret cave behind Rain's house in
-  Grandshelt**, on the path to Tronn/Leah, as requested. Entering it offers the
-  level-2 challenge after obtaining Tronn (or the original completion flag),
-  with a Leave/cancel option. Winning grants her once; the entry prompt stops
-  after acquisition. Preserve original startup events, story grants and flags.
-  Use an instance-loaded copy of the room's native battle stage. Stop changing
-  the blocked Tronn crystal-room interaction. The 1-gil shop override and removed
-  or moved profiles suppress the challenge as before; no MR/kit update is needed.
-- Retain the now-visible 1080p Fina movie and its native opacity track. Shorten the
-  cooked Mana/evaluation-tree endpoints as well as typed section/spawn ranges:
-  fresh signatures alone had left the donor's longer playback window active.
-  Preserve every other compiled byte and reject unknown templates by SHA-256.
-  The target is one 6.4-second pass followed by the existing sprite LB.
-- Put the exact matching original score directly in the movie as mono 48-kHz HCA,
-  with sample-based packet timing and matching native movie descriptors. Remove
-  the separate hit-sound score event so it cannot be gated during the cinematic
-  or double the soundtrack. Keep the selected MP4/artwork unchanged, and retain
-  sprite/heal/cure timing. The user confirms only movie sound is missing; the
-  battle theme and sprite/healing sounds already work.
-- Extension 1.2.75. Local regressions cover all eight party targets with survival
-  on/off and both verifier paths; native readback reproduces the returned log's
-  643-row table and 11 survival targets. Native write/readback verifies 19
-  Christine challenge tables, preserving original startup/story/map fields.
-  Fina's native sequence readback verifies cooked/typed bounds, opaque bindings,
-  mono HCA descriptors, unchanged sprite/heal cues and successful retoc cooking;
-  movie packets recover the exact score. All 96 focused Python checks and 41
-  Flutter checks pass (one Windows-only local skip). Windows package validation
-  is recorded at publication. Live Christine entry/menu/battle and
-  Fina's single-pass handoff/movie audio remain game tests.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -120,6 +79,85 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Fina movie timing/audio, install verification and Christine challenge — 2026-10-23
+
+Code [`cc2b9ec`](https://github.com/biscoBen/FFR-Vison-Studio/commit/cc2b9ec632bcb188a782a88a29a5fa70f16dfb67),
+extension **1.2.75**, [Windows test ZIP / run 40038819889](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40038819889/Sephira-Studio-Test.zip).
+The verified ZIP is **74,251,661 bytes**, SHA-256
+`b7313d5952801c86b0d106838fcdb8cb7b4b972febc754ddb86be447034e50aa`.
+
+### Crystal Fina movie timing/audio, install verification and Christine challenge
+
+- Fix the install-blocking Lasswell table error when a party voice override is
+  combined with **Survive at 1 HP**. Merge authorized changes by field instead
+  of replacing a row's expected voice edit with its survival edit. Verify the
+  complete composed row while still requiring the exact saved voice and rejecting
+  unrelated stat/identity changes or incorrect/missing survival passives.
+- Check party voice parameters before sprite conversion and sequence generation,
+  using the same expected edits as the final verifier. Errors name the character
+  and mismatched fields. Keep the selected voice, survival mechanics and all
+  appearances; no game reinstall or disabling those settings is needed after updating.
+- Move Christine's normal challenge to the **secret cave behind Rain's house in
+  Grandshelt**, on the path to Tronn/Leah, as requested. Entering it offers the
+  level-2 challenge after obtaining Tronn (or the original completion flag),
+  with a Leave/cancel option. Winning grants her once; the entry prompt stops
+  after acquisition. Preserve original startup events, story grants and flags.
+  Use an instance-loaded copy of the room's native battle stage. Stop changing
+  the blocked Tronn crystal-room interaction. The 1-gil shop override and removed
+  or moved profiles suppress the challenge as before; no MR/kit update is needed.
+- Retain the now-visible 1080p Fina movie and its native opacity track. Shorten the
+  cooked Mana/evaluation-tree endpoints as well as typed section/spawn ranges:
+  fresh signatures alone had left the donor's longer playback window active.
+  Preserve every other compiled byte and reject unknown templates by SHA-256.
+  The target is one 6.4-second pass followed by the existing sprite LB.
+- Put the exact matching original score directly in the movie as mono 48-kHz HCA,
+  with sample-based packet timing and matching native movie descriptors. Remove
+  the separate hit-sound score event so it cannot be gated during the cinematic
+  or double the soundtrack. Keep the selected MP4/artwork unchanged, and retain
+  sprite/heal/cure timing. The user confirms only movie sound is missing; the
+  battle theme and sprite/healing sounds already work.
+- Extension 1.2.75. Local regressions cover all eight party targets with survival
+  on/off and both verifier paths; native readback reproduces the returned log's
+  643-row table and 11 survival targets. Native write/readback verifies 19
+  Christine challenge tables, preserving original startup/story/map fields.
+  Fina's native sequence readback verifies cooked/typed bounds, opaque bindings,
+  mono HCA descriptors, unchanged sprite/heal cues and successful retoc cooking;
+  movie packets recover the exact score. All 96 focused Python checks and 41
+  Flutter checks pass (one Windows-only local skip). Full Windows validation, compilation, frozen-engine setup, Python, launcher/updater
+  and downloaded-package checks also pass. Live Christine entry/menu/battle and
+  Fina's single-pass handoff/movie audio remain game tests.
+
+Close Studio/game, update while keeping **Studio Test Data**, rebuild/install and
+restart Resonance. Keep **Test Crystal Fina cinematic** enabled for this test.
+Check one movie with its score followed by the sprite LB, then test another battle.
+No MR/kit reset is needed. To use Christine's normal challenge, disable
+**Sephira visions: 1-gil Mitra shop** and enter the secret cave behind Rain's house
+after obtaining Tronn. Winning grants Christine once; Leave/cancel grants nothing.
+
+The downloaded Windows app matches all **63 existing-vision** and **16 Fina** manifest
+files, extension version, coupled installer hooks, exact selected MP4 and new movie
+SHA-256 `60eb3c5866361c9eec901e80cb6213d22705183edf3eeb7de42721c7ef124581`.
+It retains the prior 30-profile LB audio package, all 131 covered original MR passives,
+150 distinct MR slots and 160 awakening balance grants. The optional full FFBE library
+is excluded. Native sequence/descriptor/package checks and exact HCA/PCM recovery
+pass; these do not establish the new handoff or audible score inside Resonance.
+
+Measured delivery (America/Los_Angeles, PDT): first complete install-verifier candidate
+**15:44:53**, combined movie candidate **16:17:12**, package verified **16:28:47**,
+verified download link delivered **16:29:13**. Candidate to delivery is **44m 20s**
+(**43m 54.9s** to package verification). The original clock includes Christine's requested
+relocation, the later movie repeat/audio report, native serialization corrections,
+local checks, both builds, waiting and downloaded-package verification.
+
+Both automatic push runs passed and were reused; no duplicate workflow was dispatched.
+Intermediate `910e4de` / run **40036836130** took **10m 32s** CI wall time,
+**12m 04s Windows runner time** and **2m 35s Linux runner time**.
+Final `cc2b9ec` / run **40038819889** took **10m 41s** CI wall time,
+**12m 20s Windows runner time** and **2m 11s Linux runner time**.
+Across the two code builds, measured runner usage is **24m 24s Windows** plus
+**4m 46s Linux**; their summed CI wall time is **21m 13s**, separate from elapsed delivery.
+Publication-note commits touch only README/CHANGELOG and request no new binary.
 
 ## Published Crystal Fina movie opacity test — 2026-10-23
 

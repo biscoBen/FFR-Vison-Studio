@@ -4,6 +4,27 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Fina movie soundtrack and handoff; Christine challenge — 2026-10-23
+
+[Verified Windows download / run 40038819889](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40038819889/Sephira-Studio-Test.zip)
+(code `cc2b9ec`, extension **1.2.75**; **74.3 MB**).
+
+The movie is now visible in the user's game. This update shortens the cooked playback
+window that allowed it to repeat over Fina's sprite LB, and embeds the matching soundtrack
+in the movie itself. It keeps the exact selected **Crystal-Fina-Rotating-Lighter.mp4**,
+opacity track, sprite animation and heal/cure timing. The target is one 6.4-second movie
+with its music, followed by the sprite LB; the new handoff/audio still need an in-game test.
+
+It also fixes installation with party voice overrides and **Survive at 1 HP** enabled,
+and checks those tables before sprite conversion. Christine's normal level-2 challenge
+is now offered on entering the secret cave behind Rain's house in Grandshelt after obtaining
+Tronn. Winning grants her once. Disable **Sephira visions: 1-gil Mitra shop** to use that location.
+
+Close Studio/game, update while keeping **Studio Test Data**, then rebuild/install and
+restart Resonance. Keep **Test Crystal Fina cinematic** on for the movie test. No MR/kit
+reset is needed. Native readback, focused local checks, full Windows validation/compilation
+and downloaded-package verification pass; [details and measured delivery timings](CHANGELOG.md#published-fina-movie-timingaudio-install-verification-and-christine-challenge--2026-10-23).
+
 ### Crystal Fina movie opacity test — 2026-10-23
 
 [Verified Windows download / run 40031404397](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40031404397/Sephira-Studio-Test.zip)
