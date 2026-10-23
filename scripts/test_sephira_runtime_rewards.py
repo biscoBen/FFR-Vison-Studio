@@ -19,6 +19,19 @@ def inputs():
 
 
 class SephiraRuntimeRewardTests(unittest.TestCase):
+    def test_independent_fina_identity_survives_old_import_keys_and_edited_artwork(self):
+        unit = json.loads((ROOT / 'assets/crystal_fina/profile.json').read_bytes())
+        unit['key'] = 'my_imported_fina'
+        self.assertEqual(pack.runtime_membership(unit)['preset'], 'crystal_fina')
+        unit['bundledPreset'] = 'custom.crystal_fina.v1'
+        unit['ffbe'] = {'id':'my_other_artwork', 'source':'JP'}
+        self.assertEqual(pack.runtime_membership(unit)['preset'], 'crystal_fina')
+        unit.pop('bundledPreset')
+        self.assertIsNone(pack.runtime_membership(unit))
+        for field in ('native','party'):
+            original = dict(unit, bundledPreset='custom.crystal_fina.v1', **{field:{'id':1}})
+            self.assertIsNone(pack.runtime_membership(original))
+
     def test_independent_fina_keeps_reward_labels_and_learned_healing_without_collection_membership(self):
         import tempfile
         import _ffr_sephira_sequences as sequences

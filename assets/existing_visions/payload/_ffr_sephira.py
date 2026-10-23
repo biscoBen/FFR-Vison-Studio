@@ -204,9 +204,9 @@ def runtime_membership(unit):
     if value is not None: return value
     ffbe = unit.get('ffbe') or {}
     if (unit.get('native') is None and unit.get('party') is None
-            and ffbe.get('source') == 'CUSTOM'
-            and '99887755552703' in (str(ffbe.get('id')), str(ffbe.get('base')))
-            and (unit.get('bundledPreset') == 'custom.crystal_fina.v1' or unit.get('key') == 'crystal_fina_2')):
+            and (unit.get('bundledPreset') == 'custom.crystal_fina.v1'
+                 or (ffbe.get('source') == 'CUSTOM'
+                     and '99887755552703' in (str(ffbe.get('id')), str(ffbe.get('base')))))):
         return {'version': 1, 'preset': 'crystal_fina', 'enabled': True}
     return None
 
