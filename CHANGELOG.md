@@ -11,23 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina selected movie and playback correction
-
-- Use the user's selected `Crystal-Fina-Rotating-Lighter.mp4` for the optional cinematic test. Keep Studio's
-  preview byte-identical to that 1080p file; encode the game copy at 720p/30 fps for the same 6.4 seconds.
-  Retain its continuous crystal rotation, camera approach, red-eye ending and matching original score.
-- Correct the companion-pak movie path to `Content/Streams/Movies/Studio`, matching the returned native
-  game reference. Remove the obsolete owned staged movie on migration. Match native USM alignment,
-  metadata byte counts, maximum chunk size, declared length and seek offsets without changing video packets.
-- Preserve Fina's existing LB/heal behavior and audio offsets. Keep the test off by default; enabling it
-  requires rebuilding/installing and restarting the game. Bump the managed extension to 1.2.71.
-- Add a bounded, read-only movie diagnostic collector and developer import tool. Checksum-pin the exact
-  selected preview and packaged stream. Alternate artwork remains local; no new frames are generated.
-- Revision 1's blank movie is still awaiting an in-game retest. Native readback, package checks and full
-  video decoding verify the candidate files; they do not prove playback inside Resonance.
-- Local checks: 50 focused Python checks and 31 Flutter checks pass (one Windows-only local skip).
-  Native readback, source-preview checksum, full VP9 decode and byte-identical USM/IVF roundtrip pass.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -96,6 +79,56 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published selected Crystal Fina movie and playback correction — 2026-10-23
+
+Code: [`58dac32`](https://github.com/biscoBen/FFR-Vison-Studio/commit/58dac32d01b7837aca53c67419262e7efeb59e77), extension **1.2.71**.
+Windows package: [run 40014034193](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40014034193/Sephira-Studio-Test.zip).
+**72,024,934 bytes** (72.0 MB).
+SHA-256: `c7cfd38ead67cf41ba6f3f2745664eda5a8a271f2a4898d743980b4b75eaa073`.
+
+- Use the user's selected `Crystal-Fina-Rotating-Lighter.mp4` for the optional cinematic test. Keep Studio's
+  preview byte-identical to that 1080p file; encode the game copy at 720p/30 fps for the same 6.4 seconds.
+  Retain its continuous crystal rotation, camera approach, red-eye ending and matching original score.
+- Correct the companion-pak movie path to `Content/Streams/Movies/Studio`, matching the returned native
+  game reference. Remove the obsolete owned staged movie on migration. Match native USM alignment,
+  metadata byte counts, maximum chunk size, declared length and seek offsets without changing video packets.
+- Preserve Fina's existing LB/heal behavior and audio offsets. Keep the test off by default; enabling it
+  requires rebuilding/installing and restarting the game. Bump the managed extension to 1.2.71.
+- Add a bounded, read-only movie diagnostic collector and developer import tool. Checksum-pin the exact
+  selected preview and packaged stream. Alternate artwork remains local; no new frames are generated.
+- Revision 1's blank movie is still awaiting an in-game retest. Native readback, package checks and full
+  video decoding verify the candidate files; they do not prove playback inside Resonance.
+- Local checks: 50 focused Python checks and 31 Flutter checks pass (one Windows-only local skip).
+  Native readback, source-preview checksum, full VP9 decode and byte-identical USM/IVF roundtrip pass.
+
+The delivered preview is byte-identical to the selected MP4 (SHA-256
+`680e099c04a03f5e0e7206e2a2d5b8bb843613e218f7ee213d390b66a6b649c5`). Source name/hash, the normalized
+VP9 movie, score and private movie path are verified in the downloaded package. All **63 managed extension
+files / 16 Fina files**, existing 30 presets, optional-library exclusion and Windows executable provenance
+match the approved commit. Full Windows app tests, analysis, frozen-engine startup, Python checks, shortcut,
+updater, compilation and publication passed. Actual CRI playback remains unverified in Resonance.
+
+First complete intact-crystal candidate: **2026-10-23 10:18 PDT** (minute precision). The exact selected-movie
+candidate finished at **12:40:15 PDT**; the downloaded release was fully verified and shared at **12:57 PDT**
+(verification completed **12:57:18 PDT**). This is approximately **2h 39m** from the first candidate, including
+artwork review, corrections, local checks, the publication-approval pause, CI, waiting, download and verification;
+the original clock is not restarted at the selected-movie import. Selected-candidate-to-verification time was
+**17m 03s**. No in-game success is claimed.
+
+The helper dispatched a manual build during a GitHub push-run discovery race. The duplicate automatic run
+was cancelled before publication; the manual run was retained. Both runs' measured job times are included
+below. The timing endpoint confirms wall durations but returns zero billable milliseconds, so runner usage
+is reported as elapsed job time, not billing. Skipped/cancelled entries with inverted timestamps count as zero.
+Publication notes change README/CHANGELOG only; they do not rebuild or relabel the verified binary.
+
+| Workflow | Outcome | Measured CI wall time | Windows job time | Linux job time |
+| --- | --- | ---: | ---: | ---: |
+| 40014034193 | success | 10m 17s | 11m 44s | 2m 25s |
+| 40014030142 | cancelled | 5m 59s | 2m 40s | 4m 30s |
+
+Summed measured job time: **21m 19s** (Windows **14m 24s**, Linux **6m 55s**),
+separate from the end-to-end verification time.
 
 ## Published Crystal Fina illustrated cinematic test — 2026-10-23
 

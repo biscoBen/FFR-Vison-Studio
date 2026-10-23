@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Crystal Fina lighter movie and playback correction — 2026-10-23
+
+[Verified Windows download / run 40014034193](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40014034193/Sephira-Studio-Test.zip)
+(code `58dac32`, extension **1.2.71**; **72.0 MB**).
+
+Use the selected **Crystal-Fina-Rotating-Lighter.mp4** for the cinematic test. Studio's preview is the exact
+1080p file; the game copy uses the tested 720p VP9 format for the same 6.4 seconds, with the matching original
+score. The crystal keeps rotating during the wide-to-close shot and Fina opens her red eyes at the end.
+This also corrects the missing `Streams` component in the movie's pak path and the native container headers
+identified from the returned game reference. The earlier blank-movie report still needs an in-game retest.
+
+Close Studio/game and update while keeping **Studio Test Data**. Enable **Test Crystal Fina cinematic**,
+rebuild/install, restart Resonance, and use her resonance. Check the movie, music, transition into her LB
+and cure sound, then repeat in a second battle. **No MR/acquisition update or kit reset is required.**
+
+Windows validation, compilation, package provenance and delivered movie checks passed. Actual game playback,
+synchronization and Steam Deck playback remain user tests. Alternate artwork work is paused. See
+[implementation and test limits](docs/CRYSTAL_FINA_CINEMATIC.md).
+
 ### Crystal Fina cinematic test — 2026-10-23
 
 [Verified Windows download / run 39986827052](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-39986827052/Sephira-Studio-Test.zip)
