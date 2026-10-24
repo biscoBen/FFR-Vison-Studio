@@ -349,7 +349,7 @@ The replacement matches the original stereo ADX v4 movie path.
 The native-format ADX source has SHA-256
 `e4220390907bc88b513a2f7a65bda01de2a5e3914abb5018a3595e28ac20815a`.
 Its USM SHA-256 is
-`2fdcad921474c1e750ed7b7966f522eb84330db91442869517ecc25185e7d62e`.
+`008ec41a321eaee17ed4037022f80c0ce78ac5baae42a1cb4d5b1e6fd606fbfe`.
 Demuxing must recover the exact ADX file. The 288-byte header precedes 192 stereo
 1,800-byte data packets and the ADX end marker; the declared codec is 2 (`Adx`).
 Both VGAudio and FFmpeg decode 307,200 stereo frames. Relative to source PCM,
