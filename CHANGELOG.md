@@ -11,7 +11,29 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Crystal Fina piano/organ score and native movie audio format
+### Cave music and Christine's visible challenge crystal — pending native assets
+
+- Replace the planned piano/organ soundtrack with the secret cave's own music,
+  starting at its beginning. The selected cave row is `01Gra_44` / Secret Cave,
+  cue `BGM_PP_DUNGEON_CAVE1`. Preserve the single-play movie and sprite/heal timing.
+  The requested soundtrack and physical crystal are not installed yet.
+- Prepare a standalone cave/music collector: include the actual secret-cave levels,
+  native interaction blueprint and BGM cue/bank metadata; exclude saves, config,
+  installed mods and streamed music archives. Include global ScriptObjects and all
+  official patch containers through temporary hard links; remove links on exit.
+  It requires no Prepare Game run and leaves the game and Studio files unchanged.
+- Produce independent upload ZIPs under 25 MB, with hashed chunks for large assets.
+  Six focused checks pass, including exact large-file restoration, native-only
+  container selection, cleanup and failed conversion despite a zero process exit.
+  Real Windows/game extraction and live placement/music playback remain untested.
+- The previous map-entry prompt intentionally stops after Christine is owned; it
+  does not provide the requested persistent visible crystal. Existing references
+  lack the actual cave geometry needed to check the supplied minimap and place
+  that crystal. Await the scoped reference before publishing a game update.
+- Stop the superseded piano build and its unintended helper retry before publication.
+  Keep the latest published package at `cc2b9ec`; no new music release is claimed.
+
+### Superseded piano/organ candidate and native movie audio format
 
 - Keep the working single-play video and sprite/heal/cure timing. The user confirms
   one movie pass, but the mono HCA movie score is audible and garbled. Treat that

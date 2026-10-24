@@ -1,0 +1,19 @@
+Christine's challenge crystal: secret cave behind Rain's house
+
+1. Extract this ZIP and run Collect Christine Cave Reference.cmd.
+2. Enter your Studio folder (the one containing Studio Test Data).
+3. Attach all new Christine-Cave-Reference-...-001.zip files from Downloads\FFR Mod.
+
+The game may stay open. You do not need to cast a skill, install anything, or
+prepare the game. This only extracts the original secret cave map and the
+native interaction blueprint and cave music cue/bank metadata. It does not copy
+the streamed music archive; playback will use the game's own cave track from zero. It does not collect saves or the full game.
+Temporary hard links to official containers are deleted when the tool exits;
+installed mods and original game files are left alone.
+
+It reads the full-game folder selected in Studio. If Studio points to the demo,
+select the full game first. Advanced use in PowerShell:
+  & '.\Collect Christine Cave Reference.ps1' -EnginePath 'C:\path\to\Studio' -GamePath 'G:\path\to\FINAL FANTASY RESONANCE'
+
+Each upload ZIP stays below 25 MB. Large individual assets are split into
+checked chunks; upload every numbered ZIP together. No preparation is needed.
