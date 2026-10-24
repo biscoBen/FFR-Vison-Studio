@@ -94,6 +94,11 @@ class CinematicTests(unittest.TestCase):
         self.assertEqual(set(files),{'spec.json','movie.usm','preview.mp4','poster.jpg'})
         self.assertFalse(any(p['type']==b'@SFA' for p in usm.chunks(files['movie.usm'])))
 
+    def test_music_uses_an_active_native_master_subtrack(self):
+        native=json.loads(gzip.decompress((ROOT/'scripts/fixtures/fina_compiled/native-master.json.gz').read_bytes()))
+        music.check_active_child(native,'Effect_000')
+        with self.assertRaisesRegex(ValueError,'disabled'):music.check_active_child(native,'Sound_001')
+
     def test_native_atom_cue_starts_from_zero_and_stops_before_sprite(self):
         source=json.loads(gzip.decompress((ROOT/'scripts/fixtures/fina_compiled/native-sound.json.gz').read_bytes()))
         before=copy.deepcopy(source)
@@ -270,7 +275,7 @@ class CinematicTests(unittest.TestCase):
         class App:
             def get(self,path,**_):return lambda fn:routes.setdefault(path,fn)
         film.register(App())
-        self.assertEqual(set(routes),{'/crystal-fina-cinematic','/api/testing/fina-cinematic/preview','/api/testing/fina-cinematic/poster'})
+        self.assertEqual(set(routes),{'/crystal-fina-cinematic','/api/testing/fina-cinematic/preview','/api/testing/fina-cinematic/poster','/api/testing/fina-cinematic/audio'})
         response=routes['/api/testing/fina-cinematic/preview']()
         self.assertEqual(response.media_type,'video/mp4')
         self.assertEqual(response.body,film.payload()[1]['preview.mp4'])

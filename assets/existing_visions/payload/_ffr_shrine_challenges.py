@@ -540,13 +540,13 @@ def build(units, env):
 def christine_views(original, source, background, spec):
     """Add one persistent crystal and an input interaction to the native cave.
 
-    Only a private stream is appended. Original story actors, paths, lighting,
-    navigation, exits and streaming declarations are retained byte-for-byte in
-    their source packages. The talk event owns every acquisition check.
+    Append to the existing native gimmick level, which the map manager loads.
+    Keep its original export/import/name indices and story actors. The talk
+    event owns every acquisition check; no new streaming level is required.
     """
     import _ffr_crystal_cave as caves
     destination = spec['crystalInteraction']
-    room = destination['mapPackage']
+    room = destination['mapPackage'].rsplit('/',1)[0] + '/GD/Dng_01Gra_44_01_GD'
     donor = 'Map/Com/00Com/00Com_223/EV/Com_00Com_223_EV'
     package = SEQUENCE + 'Studio_ChristineCrystal_EV'
     trigger = caves.private_level(source, '/Game/' + donor, '/Game/' + package)
@@ -583,15 +583,29 @@ def christine_views(original, source, background, spec):
     caves.actors(trigger, [caves.export(trigger, 'CPP_MuchaWorldSetting')[0], 0,
                            owner_id, point_id, mapping[actor_id]])
     caves.names(trigger, [trigger['Exports'], PREFIX.rstrip('_')])
+    # Newly declared AlwaysLoaded streams are not sufficient for this game's
+    # map manager. Put the crystal in the existing GD stream instead.
     room_view = copy.deepcopy(original)
-    caves.add_collision_stream(room_view, Path(room).name, original, package)
-    return {package: trigger, room: room_view}
+    native_level_id, native_level = caves.export(room_view, 'PersistentLevel')
+    native_world = next(i for i,e in enumerate(room_view['Exports'],1)
+                        if e['ObjectName'] == Path(room).name)
+    roots = {level_id:native_level_id, caves.export(trigger, Path(package).name)[0]:native_world}
+    for name in ('CPP_MuchaWorldSetting', 'Model_0', 'NavigationSystemModuleConfig_0'):
+        roots[caves.export(trigger,name)[0]] = caves.export(room_view,name)[0]
+    indices = [i for i,e in enumerate(trigger['Exports'],1) if i not in roots]
+    appended = caves.clone_graph(room_view,trigger,indices,roots)
+    caves.actors(room_view, native_level['Actors'] + [appended[i] for i in
+                 (owner_id,point_id,mapping[actor_id])])
+    caves.names(room_view, [room_view['Exports'], PREFIX.rstrip('_')])
+    caves.check_object_names(room_view)
+    return {room: room_view}
 
 
 def build_christine_interaction(env, work, read, spec):
     import _ffr_crystal_cave as caves
     donor = 'Map/Com/00Com/00Com_223/EV/Com_00Com_223_EV'
-    original = read(spec['crystalInteraction']['mapPackage'], '.umap')
+    room = spec['crystalInteraction']['mapPackage'].rsplit('/',1)[0] + '/GD/Dng_01Gra_44_01_GD'
+    original = read(room, '.umap')
     background = read(caves.ROOM_BG, '.umap')
     blueprint = read('BP/Map/Gimmick/BP_MapGimmick_EventTrigger')
     _, cl = caves.export(blueprint, 'BP_MapGimmick_EventTrigger_C')

@@ -127,8 +127,8 @@ def flags(root):
     roster = Path(root) / 'mods/EstherTsukiko/units.json'
     if roster.is_file():
         import _ffr_shrine_challenges as challenges
-        units = sephira.active_units(json.loads(roster.read_bytes()))
-        if not s.get('shopAcquisitionOverride') and (challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units)):
+        units = [u for u in sephira.active_units(json.loads(roster.read_bytes())) if not sephira.shop_override(u,s)]
+        if (challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units)):
             enabled.append('Sephira vision challenges and story shop')
     for key, label in (('ffbeNeedles', 'FFBE 1,000 Needles import'), ('practiceBattle', 'Shop practice battle'),
                        ('finaCinematic', 'Crystal Fina cinematic test'),

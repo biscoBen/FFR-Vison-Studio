@@ -18,6 +18,33 @@ import 'remove_unit_dialog.dart';
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+  Future<void> _chooseShopVisions(BuildContext context, AppState app) async {
+    final presets = app.sephiraPresets;
+    final selected = (app.sephiraShopSelection ?? presets.map((p) => p['id'] as String).toList()).toSet();
+    final saved = await showDialog<bool>(context: context, builder: (context) => StatefulBuilder(
+      builder: (context, update) => AlertDialog(
+        title: const Text('Visions in the 1-gil shop'),
+        content: SizedBox(width: 420, height: 460, child: Column(children: [
+          const Text('Unselected visions keep their normal acquisition locations.'),
+          Row(children: [
+            TextButton(onPressed: () => update(() => selected.addAll(presets.map((p) => p['id'] as String))), child: const Text('All')),
+            TextButton(onPressed: () => update(selected.clear), child: const Text('None')),
+          ]),
+          Expanded(child: ListView(children: [for (final p in presets) CheckboxListTile(
+            title: Text(p['name'] as String), value: selected.contains(p['id']),
+            onChanged: (value) => update(() { if (value == true) { selected.add(p['id'] as String); } else { selected.remove(p['id']); } }),
+          )])),
+        ])),
+        actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save'))],
+      ),
+    ));
+    if (saved == true) {
+      try { await app.setSephiraShopSelection(selected.length == presets.length ? null : (selected.toList()..sort())); }
+      catch (e) { app.showNotice('$e'); }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
@@ -120,12 +147,17 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('sephira-shop-override'), contentPadding: EdgeInsets.zero,
                   title: Text('Sephira visions: 1-gil Mitra shop', style: Guide.text()),
-                  subtitle: Text('Sell enabled Sephira visions for 1 gil each in Mitra’s item shop. Turn off and rebuild/install to restore their saved acquisition locations.', style: Guide.small()),
+                  subtitle: Text('Sell ${app.sephiraShopSelection == null ? 'all enabled' : '${app.sephiraShopSelection!.length} selected'} Sephira visions for 1 gil each. Other visions keep their normal locations. Rebuild/install to apply.', style: Guide.small()),
                   value: app.sephiraShopOverride,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setSephiraShopOverride(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
+                Align(alignment: Alignment.centerLeft, child: TextButton(
+                  key: const Key('sephira-shop-selection'),
+                  onPressed: busy || app.engineDown || app.api == null ? null : () => _chooseShopVisions(context, app),
+                  child: const Text('Choose visions for the shop override'),
+                )),
                 SwitchListTile(
                   key: const Key('field-leader-cycle'), contentPadding: EdgeInsets.zero,
                   title: Text('Cycle walking character (LB / L1)', style: Guide.text()),

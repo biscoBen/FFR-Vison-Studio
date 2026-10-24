@@ -89,18 +89,25 @@ class NativeApi extends ConfigApi {
       {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs};
   bool borrowedVisuals = true;
   bool shopOverride = false;
+  List<String>? shopSelection;
   bool failVisualSettings = false;
   @override
   Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async {
     if (failVisualSettings) throw StateError('Settings write failed.');
     borrowedVisuals = useBorrowedSkillVisuals;
-    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals, 'shopAcquisitionOverride':shopOverride};
+    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals, 'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
   }
   @override
   Future<Map<String, dynamic>> saveSephiraShopOverride({required bool enabled, required bool useBorrowedSkillVisuals}) async {
     if (failVisualSettings) throw StateError('Settings write failed.');
     shopOverride=enabled; borrowedVisuals=useBorrowedSkillVisuals;
-    return {'schema':1, 'useBorrowedSkillVisuals':borrowedVisuals, 'shopAcquisitionOverride':shopOverride};
+    return {'schema':1, 'useBorrowedSkillVisuals':borrowedVisuals, 'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
+  }
+  @override
+  Future<Map<String,dynamic>> saveSephiraShopSelection({required List<String>? presets, required bool enabled, required bool useBorrowedSkillVisuals}) async {
+    if(failVisualSettings) throw StateError('Settings write failed.');
+    shopSelection=presets;shopOverride=enabled;borrowedVisuals=useBorrowedSkillVisuals;
+    return {'schema':1,'useBorrowedSkillVisuals':borrowedVisuals,'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
   }
   @override
   Future<bool> testingMaxMr() async => maxMr;
@@ -589,6 +596,18 @@ void main() {
     app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
     expect(tester.widget<SwitchListTile>(survival).onChanged, isNull);
     await expectLater(app.setSurviveAtOne(false), throwsStateError);
+  });
+
+  test('shop selection keeps Fina available without overriding Christine', () async {
+    await app.setSephiraShopSelection(['crystal_fina']);
+    expect(app.sephiraShopSelection,['crystal_fina']);
+    await app.setSephiraShopOverride(true);
+    await app.setSephiraBorrowedVisuals(false);
+    expect(app.sephiraShopSelection,['crystal_fina']);
+    await app.setSephiraShopOverride(false);
+    expect(app.sephiraShopSelection,['crystal_fina']);
+    await app.setSephiraShopSelection(null);
+    expect(app.sephiraShopSelection,isNull);
   });
 
   testWidgets('1-gil shop toggle preserves recipes and visual mode and retains its state on errors', (tester) async {

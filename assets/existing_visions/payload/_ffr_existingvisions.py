@@ -1,4 +1,5 @@
 """Native vision snapshots and narrow overrides against freshly extracted game rows."""
+import _ffr_build_cache
 import copy
 import json
 import math
@@ -224,7 +225,7 @@ def verify_command_icons(root, tool, usmap, units):
     for rel in ('Skill/DT_CommandSkillData', 'Skill/DT_MasterSkillData',
                 'UI/Skill/DT_CommandSkillIcon', 'UI/Skill/CDT_SkillIcon'):
         target = work / (rel.replace('/', '_') + '.json')
-        subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets/FFRS/Content/Datatable' / (rel + '.uasset')),
+        _ffr_build_cache.subprocess_run(tool + ['rows', str(root / 'build/visions_mod/assets/FFRS/Content/Datatable' / (rel + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         data[rel] = json.loads(target.read_text(encoding='utf-8-sig'))['rows']
     for unit in units:

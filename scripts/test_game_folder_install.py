@@ -178,6 +178,13 @@ class GameFolderInstallTests(unittest.TestCase):
         self.assertEqual([v['id'] for v in current['backups']], ['same-stamp'])
         actual_backup = Path(leader.backup_root(self.root, self.full)) / 'same-stamp' / mod_names[0]
         self.assertEqual(actual_backup.read_bytes(), b'full game previous pak')
+        # A repeated installation compares actual bytes and retains the prior
+        # complete backup rather than replacing it with this same build.
+        snapshot=files(self.full)
+        result=env['install_files']()
+        self.assertEqual(result['reused'],3)
+        self.assertEqual(files(self.full),snapshot)
+        self.assertEqual(actual_backup.read_bytes(), b'full game previous pak')
         env['restore_game']()
         self.assertEqual(full_old.read_bytes(), b'full game previous pak')
         self.assertEqual(untouched.read_bytes(), b'keep unrelated mod')

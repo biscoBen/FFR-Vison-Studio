@@ -17,11 +17,17 @@ CONFIG = 'mods/EstherTsukiko/sephira-settings.json'
 def validate_settings(value):
     required = {'schema', 'useBorrowedSkillVisuals'}
     if (not isinstance(value, dict) or not required <= set(value)
-            or set(value) - required - {'shopAcquisitionOverride'}
+            or set(value) - required - {'shopAcquisitionOverride','shopAcquisitionPresets'}
             or type(value['schema']) is not int or value['schema'] != 1
             or type(value['useBorrowedSkillVisuals']) is not bool
             or ('shopAcquisitionOverride' in value and type(value['shopAcquisitionOverride']) is not bool)):
         raise ValueError('Invalid Sephira skill visual settings.')
+    selected=value.get('shopAcquisitionPresets')
+    if selected is not None:
+        known=json.loads(Path(__file__).with_name('sephira_visuals.json').read_bytes())['presets']
+        if (not isinstance(selected,list) or any(not isinstance(p,str) or p not in known for p in selected)
+                or len(set(selected)) != len(selected)):
+            raise ValueError('Invalid Sephira shop vision selection.')
     return dict(value)
 
 
@@ -29,6 +35,13 @@ def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
         'schema': 1, 'useBorrowedSkillVisuals': True}
+
+
+def shop_override(unit, controls):
+    member=membership(unit)
+    selected=controls.get('shopAcquisitionPresets')
+    return bool(controls.get('shopAcquisitionOverride') and member is not None and member['enabled']
+                and member['preset'] not in RETIRED and (selected is None or member['preset'] in selected))
 
 
 def visual_units(units, root, rows=None):
@@ -43,7 +56,7 @@ def visual_units(units, root, rows=None):
     if controls.get('shopAcquisitionOverride', False):
         for unit in result:
             value = membership(unit)
-            if value is not None and value['enabled'] and value['preset'] not in RETIRED:
+            if shop_override(unit, controls):
                 unit['studioAcquisition'] = {'version': 1, 'location': 'mitra_shop',
                                             'random': False, 'hideSpoilers': True}
                 unit['price'] = 1
@@ -91,8 +104,8 @@ def register(app, env):
         try:
             value = validate_settings(value)
             current = settings(env['ROOT'])
-            if 'shopAcquisitionOverride' not in value and 'shopAcquisitionOverride' in current:
-                value['shopAcquisitionOverride'] = current['shopAcquisitionOverride']
+            for key in ('shopAcquisitionOverride','shopAcquisitionPresets'):
+                if key not in value and key in current: value[key]=current[key]
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG

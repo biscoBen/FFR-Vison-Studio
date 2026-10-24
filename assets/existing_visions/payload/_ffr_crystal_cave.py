@@ -1,4 +1,5 @@
 """Build an opt-in Crystal Fina shrine using the installed game's own levels."""
+import _ffr_build_cache
 import base64
 import copy
 from dataclasses import dataclass, replace
@@ -253,7 +254,7 @@ def verify_shops(root, tool, usmap):
     asset = root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')
     if not operations and not asset.is_file(): return
     target = root / 'build/vision-testing/shops-verified.json'; target.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(tool + ['rows', str(asset),
+    _ffr_build_cache.subprocess_run(tool + ['rows', str(asset),
                            str(target), '--usmap', usmap], check=True, capture_output=True)
     try:
         _ffr_testing.check_rows(rows(rel), json.loads(target.read_text(encoding='utf-8-sig'))['rows'], operation)

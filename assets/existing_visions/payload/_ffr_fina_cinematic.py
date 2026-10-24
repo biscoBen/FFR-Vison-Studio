@@ -236,14 +236,16 @@ def build(units, env):
     # Save Fina's event-only shell as three private children before replacing its
     # root with the native movie master. Cached binding IDs stay binary-native.
     import ffbe_resonance
-    for suffix in ('Cut_000', 'Effect_000'):
+    for suffix in ('Cut_000', 'Sound_001'):
         child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{suffix}').as_posix()
         clone(native(ffbe_resonance.SHELL), child,
               [('SEQ_Battle_440111_Cut_000', Path(child).name)])
         child_plan = plan if suffix == 'Cut_000' else {'duration': plan['duration'], 'events': [{'time': 0, 'set': {'EventType': 'None'}}]}
         ffbe_resonance.build({'asset': child, 'plan': child_plan}, str(out), str(work), tool, usmap, run)
     import _ffr_fina_cave_music
-    sound_child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_Sound_001').as_posix()
+    # The native Sound_001 subtrack is disabled in the cooked master.
+    # Effect_000 is active in both its live tracks and compiled hierarchy.
+    sound_child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_Effect_000').as_posix()
     _ffr_fina_cave_music.build(sound_child, env, work, native, clone, START, END, plan['duration'])
     rename = [('440110', str(sid)), ('440111', str(sid + 1)),
               ('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
@@ -261,6 +263,7 @@ def build(units, env):
     compiled = work / 'compiled-template.json'
     root_asset = out / (job['asset'] + '.uasset')
     run([*tool, 'tojson', str(root_asset), str(compiled), '--usmap', usmap])
+    _ffr_fina_cave_music.check_active_child(json.loads(compiled.read_text(encoding='utf-8-sig')))
     patch_compiled(root_asset, compiled, plan['duration'])
     for suffix in ('', '_vp9'):
         source = native(MOVIE + suffix)
@@ -303,20 +306,46 @@ def build(units, env):
     print('  Crystal Fina: optional 6.4-second illustrated cinematic before her existing LB (in-game test required).')
 
 
-def register(app):
+def register(app, env=None):
     @app.get('/crystal-fina-cinematic')
     def page():
         from fastapi.responses import HTMLResponse
         return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina cinematic test</title>
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
-        <h1>Crystal Fina cinematic test</h1><video controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
+        <h1>Crystal Fina cinematic test</h1><video id="movie" controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
         <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. The secret cave’s music plays from its beginning. In game it leads into Fina’s existing LB animation and cure sound.</p>
         <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
-        <p>The browser preview shows the unchanged picture only. In game, the original cave music accompanies the intro; playback still needs an in-game listening test.</p>''')
+        <p>The preview reads the original cave music from your selected game on first playback, then saves a short local copy. The movie pictures are unchanged. <span id="audio-status"></span></p><audio id="music" preload="none" src="/api/testing/fina-cinematic/audio"></audio>
+        <script>
+        const video=document.getElementById('movie'), music=document.getElementById('music'), status=document.getElementById('audio-status');
+        let starting=false;
+        video.addEventListener('play',async()=>{
+          if(starting)return; starting=true;
+          const position=video.currentTime; video.pause(); status.textContent='Loading cave music…';
+          music.currentTime=position;music.volume=video.volume;music.muted=video.muted;
+          try {await music.play();music.pause();music.currentTime=position;await video.play();await music.play();status.textContent='';}
+          catch(e) {status.textContent='Cave music could not be loaded from the selected game.';await video.play();}
+          finally {starting=false;}
+        });
+        video.addEventListener('pause',()=>{if(!starting)music.pause();});video.addEventListener('ended',()=>music.pause());
+        video.addEventListener('seeked',()=>{music.currentTime=video.currentTime;});
+        video.addEventListener('volumechange',()=>{music.volume=video.volume;music.muted=video.muted;});
+        music.addEventListener('canplay',()=>{music.currentTime=video.currentTime;});
+        music.addEventListener('error',()=>{status.textContent='Cave music could not be loaded from the selected game.';});
+        </script>''')
     @app.get('/api/testing/fina-cinematic/preview')
     def preview():
         from fastapi.responses import Response
         return Response(payload()[1]['preview.mp4'], media_type='video/mp4')
+    @app.get('/api/testing/fina-cinematic/audio')
+    def audio_preview():
+        from fastapi import HTTPException
+        from fastapi.responses import Response
+        import _ffr_cave_music_preview
+        try:
+            if env is None: raise ValueError('Select the full game in Studio first.')
+            return Response(_ffr_cave_music_preview.audio(env['ROOT'],env['ffrenv']),media_type='audio/wav')
+        except (OSError,ValueError) as error:raise HTTPException(422,str(error)) from error
     @app.get('/api/testing/fina-cinematic/poster')
     def poster():
         from fastapi.responses import Response

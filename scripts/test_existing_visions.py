@@ -14,12 +14,14 @@ from types import SimpleNamespace
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0,str(ROOT / 'assets/existing_visions/payload'))
 
 
 def module(name, path):
     spec = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 
 
+sys.modules['_ffr_build_cache'] = module('_ffr_build_cache', ROOT / 'assets/existing_visions/payload/_ffr_build_cache.py')
 party = module('_ffr_party', ROOT / 'assets/existing_visions/payload/_ffr_party.py')
 sys.modules['_ffr_sephira'] = module('_ffr_sephira', ROOT / 'assets/existing_visions/payload/_ffr_sephira.py')
 sys.modules['_ffr_game_tables'] = module('_ffr_game_tables', ROOT / 'assets/existing_visions/payload/_ffr_game_tables.py')

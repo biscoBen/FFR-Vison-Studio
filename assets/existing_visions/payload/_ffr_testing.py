@@ -1,4 +1,5 @@
 """Opt-in original vision grants, bounded MR and a repeatable shop battle."""
+import _ffr_build_cache
 import copy
 import json
 import os
@@ -622,7 +623,7 @@ def verify(root, tool, usmap, *, before_assets=False):
         if len(matches) != 1:
             raise ValueError('The build recipe must contain one testing table: ' + rel)
         target = work / (rel.replace('/', '_') + '.json')
-        subprocess.run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
+        _ffr_build_cache.subprocess_run(tool + ['rows', str(root / 'build/visions_mod/assets' / (operation['asset'] + '.uasset')),
                                str(target), '--usmap', usmap], check=True, capture_output=True)
         try:
             import _ffr_fina_boss
@@ -642,7 +643,7 @@ def verify(root, tool, usmap, *, before_assets=False):
 def register(app, env):
     from fastapi import HTTPException
     import _ffr_fina_cinematic
-    _ffr_fina_cinematic.register(app)
+    _ffr_fina_cinematic.register(app, env)
     @app.get('/api/testing')
     def get_settings():
         try: return settings(env['ROOT'])

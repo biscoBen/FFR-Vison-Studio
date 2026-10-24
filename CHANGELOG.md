@@ -11,6 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Faster repeat installs, selective shop testing and cave/movie corrections — 2026-10-24
+
+- Reuse verified unchanged sprites/icons, authored timelines, audio banks and native serialization/decoding results;
+  rebuild a clean asset folder so removed units cannot linger. Fingerprints track source art, motion/layout,
+  mappings, relevant generator code, native writer and game identity. Corrupt entries regenerate; cache is bounded
+  to 4 GiB. Skip unchanged installed package copies and identical-package backups, retaining complete rollback sets
+  for changed packages. Keep all row verification and game/runtime ownership checks. Log total build/install time.
+- Add a per-vision 1-gil shop selection. Fina can be sold in Mitra while Christine retains her normal cave battle;
+  toggling off restores saved locations and retains the selection. Existing all-vision settings stay compatible.
+- Respond to the confirmed missing crystal after restart/re-entry by placing Christine's crystal and interaction
+  directly in the existing cave gimmick level; retain original story actors/import/name indices and exits.
+- Fix the definite silent-music cause: the native movie master's Sound_001 parent track is disabled. Put the cave
+  Atom soundtrack in its active Effect_000 subtree, retaining the working single-play compiled timing and sprite/cure
+  handoff. Browser playback reads and locally caches the installed cave recording without adding game music to updates.
+- Local 30-unit raw sprite conversion experiment: **36.073 s cold → 1.147 s warm**, all 30 reused. This excludes native
+  cooking/icons, packing, verification and installation; it is not an end-to-end Windows sub-two-minute claim.
+  Native cave/movie readback, parent-track regression, decoder/bounds and cache invalidation checks are included.
+  Actual cave interaction, browser soundtrack extraction and in-battle music still require the user's live test.
+  See [reuse details](docs/INCREMENTAL_BUILDS.md).
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

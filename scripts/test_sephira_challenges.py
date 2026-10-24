@@ -190,12 +190,13 @@ class SephiraChallengeTests(unittest.TestCase):
     def test_physical_christine_crystal_retains_all_native_cave_streams(self):
         path = ROOT/'scripts/fixtures/sephira_challenges'
         def load(name): return json.loads(gzip.decompress((path/name).read_bytes()))
-        room, trigger, bg = [load(n) for n in ('secret-cave.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
+        room, trigger, bg = [load(n) for n in ('secret-cave-gimmicks.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
         before = copy.deepcopy((room,trigger,bg))
         spec = challenge.data()['encounters'][0]
         views = challenge.christine_views(room,trigger,bg,spec)
         self.assertEqual((room,trigger,bg),before)
-        private = views[challenge.SEQUENCE+'Studio_ChristineCrystal_EV']
+        self.assertEqual(len(views),1)
+        private = next(iter(views.values()))
         owner = caves.export(private,'BP_MapGimmick_EventTrigger_C_1')[1]
         event, = caves.property_data(owner,'m_EventList')['Value']
         self.assertEqual(caves.property_data(event,'EventId')['Value'],challenge.PREFIX+'13024')
@@ -207,11 +208,14 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(mesh['ObjectName'],'SM_Env_Com_magicstone001')
         position=caves.property_data(component,'RelativeLocation')['Value'][0]['Value']
         self.assertEqual([position[k] for k in ('X','Y','Z')],spec['crystalInteraction']['position'])
-        built=views[spec['crystalInteraction']['mapPackage']]
-        self.assertEqual(len(built['Exports']),len(room['Exports'])+1)
-        for original in room['Exports']:
-            if original['ObjectName'].startswith('LevelStreaming'):
-                self.assertEqual(caves.export(built,original['ObjectName'])[1],original)
+        built=private
+        self.assertTrue(next(iter(views)).endswith('/GD/Dng_01Gra_44_01_GD'))
+        self.assertEqual(built['Imports'][:len(room['Imports'])],room['Imports'])
+        self.assertEqual(built['NameMap'][:len(room['NameMap'])],room['NameMap'])
+        for index,original in enumerate(room['Exports']):
+            if original['ObjectName'] == 'PersistentLevel':
+                self.assertEqual(built['Exports'][index]['Actors'][:len(original['Actors'])],original['Actors'])
+            else: self.assertEqual(built['Exports'][index],original)
         for view in views.values(): caves.check_object_names(view)
 
 

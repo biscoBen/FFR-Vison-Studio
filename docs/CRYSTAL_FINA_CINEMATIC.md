@@ -402,3 +402,23 @@ PYTHONPATH=/path/to/wannacri python scripts/use_crystal_fina_cave_music.py \
   --destination assets/existing_visions/payload/fina_cinematic.zip \
   --work /tmp/fina-cave-movie
 ```
+
+## Native soundtrack parent-track correction
+
+The previous sound child was valid but its native master parent
+`MovieSceneSubTrack_4` has `bIsEvalDisabled=True`. Music now occupies the existing
+active `Effect_000` subtree; `Sound_001` remains inert. A fixture from the native
+master checks the selected parent is active. The compiled movie timing and
+single-play handoff are retained. Native serialize/readback and IoStore packing
+pass; the user must still confirm the cave track can be heard in battle.
+
+The browser preview can now load the exact cave recording from the selected
+installed game. On playback it reads only stream 56 from `Streams/Sound/BGM_PP.awb`,
+decrypts in memory with the local game settings, and decodes a 6.4-second WAV using
+MIT-licensed VGAudio 2.2.1 (`net45`, bundled with its license). No game key is sent
+to the decoder or saved in preview metadata. The short WAV stays in the engine's
+local build cache; game music is not added to Studio downloads. Video and audio
+play/pause/seek together. The decoder/archive, bounds and stereo trimming are tested;
+a synthetic encrypted HCA3/subkey roundtrip decodes successfully. The actual
+installed cave AWB is not available in this workspace, so native track playback
+in the user's browser remains a live test.

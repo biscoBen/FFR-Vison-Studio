@@ -32,3 +32,15 @@ The two returned upload archives have SHA-256:
 - `Christine-Cave-Reference-20261023-173751-cbffe5-001.zip`: `c1198cf5fa86678442b52a84fddf4166acd0118390114da5fdfe52cf170e93be`
 
 - `Christine-Cave-Reference-20261023-173751-cbffe5-002.zip`: `d928966b62d8aeea004a9c21c24a4674d6090a832ae237d62636f9f068a0b325`
+
+## Follow-up to the user's missing-crystal test
+
+The user confirmed the shop override was off, the game was restarted, and the
+cave re-entered. The added AlwaysLoaded streaming declaration did not produce a
+visible crystal or interaction. The revised placement appends the decoded crystal,
+trigger and approach-point graph directly to the cave's existing
+`GD/Dng_01Gra_44_01_GD` level instead of depending on a new stream. Original name
+and import indices, opaque story actors, exits and preload dependencies are retained.
+Native serialize/readback passes; appearance and interaction still need a live test.
+The optional `scripts/reference/cave-music` observer records F8 world/stream states
+and installed scoped assets without rebuilding or preparing the game.

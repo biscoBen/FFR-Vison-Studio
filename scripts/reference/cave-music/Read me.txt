@@ -1,0 +1,11 @@
+Cave crystal and native movie music diagnostics
+
+1. Run Install cave and music trace.cmd. Select your full game folder.
+2. Restart Resonance. Enter the cave behind Rain's house and press F8.
+3. Use Crystal Fina resonance once; press F8 during or just after the movie.
+4. Run Collect cave and music trace.cmd and attach the returned ZIP.
+
+No Studio build/install or Prepare Game is needed. The observer only reads
+state and writes logs; it does not load levels, play audio or change gameplay.
+It uses your existing Studio UE4SS loader and its owned observer folder.
+Run Disable cave and music trace.cmd and restart to remove the observer.

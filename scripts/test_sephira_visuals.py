@@ -42,6 +42,24 @@ class SephiraVisualTests(unittest.TestCase):
                             {'schema': 1, 'useBorrowedSkillVisuals': True, 'extra': False}):
                 with self.assertRaises(ValueError): pack.validate_settings(invalid)
 
+    def test_shop_selection_keeps_christine_challenge_while_fina_is_one_gil(self):
+        units=presets();before=copy.deepcopy(units)
+        controls={'schema':1,'useBorrowedSkillVisuals':True,'shopAcquisitionOverride':True,
+                  'shopAcquisitionPresets':['crystal_fina']}
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)/pack.CONFIG;path.parent.mkdir(parents=True);path.write_text(json.dumps(controls))
+            actual=pack.visual_units(units,root)
+            for original,unit in zip(units,actual):
+                if unit[pack.FIELD]['preset']=='crystal_fina':
+                    self.assertEqual(unit['price'],1)
+                    self.assertEqual(unit['studioAcquisition']['location'],'mitra_shop')
+                else:self.assertEqual(unit,original)
+            controls['shopAcquisitionOverride']=False;path.write_text(json.dumps(controls))
+            self.assertEqual(pack.visual_units(units,root),before)
+        for selected in (['missing'],['crystal_fina','crystal_fina'],False,[1]):
+            with self.assertRaises(ValueError):pack.validate_settings({**controls,'shopAcquisitionPresets':selected})
+        self.assertEqual(units,before)
+
     def test_all_226_substitutions_round_trip_without_changes_to_combat_grants_or_lbs(self):
         roster = presets(); before = copy.deepcopy(roster)
         policy = json.loads((ROOT / 'assets/existing_visions/payload/sephira_visuals.json').read_bytes())
@@ -113,6 +131,25 @@ class SephiraVisualTests(unittest.TestCase):
             with self.assertRaisesRegex(HTTPException, 'build to finish'): put({**off, 'useBorrowedSkillVisuals': True})
             self.assertEqual(get(), off)
             for name, raw in unchanged.items(): self.assertEqual((other / name).read_text(), raw)
+
+    def test_settings_route_retains_shop_selection_on_other_toggle_changes(self):
+        routes={}
+        class App:
+            def get(self,path):
+                return lambda fn: routes.setdefault(('get',path),fn)
+            def put(self,path):
+                return lambda fn: routes.setdefault(('put',path),fn)
+        with tempfile.TemporaryDirectory() as root:
+            pack.register(App(),{'ROOT':root,'state':{'running':False}})
+            put=routes[('put','/api/sephira/settings')]
+            put({'schema':1,'useBorrowedSkillVisuals':True,'shopAcquisitionOverride':True,'shopAcquisitionPresets':['crystal_fina']})
+            result=put({'schema':1,'useBorrowedSkillVisuals':False})
+            self.assertEqual(result['shopAcquisitionPresets'],['crystal_fina'])
+            self.assertTrue(result['shopAcquisitionOverride'])
+            result=put({'schema':1,'useBorrowedSkillVisuals':False,'shopAcquisitionOverride':False})
+            self.assertEqual(result['shopAcquisitionPresets'],['crystal_fina'])
+            result=put({'schema':1,'useBorrowedSkillVisuals':False,'shopAcquisitionPresets':None})
+            self.assertIsNone(result['shopAcquisitionPresets'])
 
     def test_original_mode_restores_native_shared_sequence_pointers_and_retains_user_pointers(self):
         unit = presets()[1]

@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.77'
+VERSION = '1.2.78'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('_ffr_build_cache.py', '_ffr_cave_music_preview.py', 'cave_music_preview.zip', '_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -190,7 +190,7 @@ def hook_builder(raw):
     timeline_stage, = [n for n in timeline_loop.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call)
                       and ast.unparse(n.value.func) == 'stage']
     skill_body = '\n'.join(ast.unparse(n) for n in loop.body[start:stop])
-    prelude = [MARKER, 'global UNITS, rows', 'import _ffr_game_tables', 'rows = _ffr_game_tables.reader(ROOT, rows)', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_fina_battle', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
+    prelude = [MARKER, 'global UNITS, rows', 'import _ffr_build_cache', '_ffr_build_cache.install(globals())', '_ffr_cached_run = _ffr_build_cache.with_runner(subprocess.run)', 'import _ffr_game_tables', 'rows = _ffr_game_tables.reader(ROOT, rows)', 'import _ffr_existingvisions', 'import _ffr_animation_repair', 'import _ffr_fina_battle', 'import _ffr_party', 'import _ffr_testing', 'import _ffr_crystal_cave', 'import _ffr_ability_modes',
                'import _ffr_sephira', 'UNITS = _ffr_sephira.visual_units(_ffr_sephira.active_units(UNITS), ROOT, rows)',
                'UNITS = _ffr_sephira.player_units(UNITS, rows)',
                'UNITS = _ffr_sephira.bind_units(UNITS, rows)',
@@ -240,9 +240,13 @@ def hook_builder(raw):
                    '_ffr_party.verify_voice_parameters(ROOT, FFRDT, USMAP, party_units)',
                    '_ffr_existingvisions.verify_command_icons(ROOT, FFRDT, USMAP, UNITS)',
                    '_ffr_sephira.verify_runtime_rows(ROOT, FFRDT, USMAP, UNITS, rows)']
+    before_pack.append('_ffr_build_cache.finish()')
     additions = {main.body[0].lineno - 1: prelude, patch.lineno - 1: before_patch,
                  timeline_loop.lineno - 1: early_check, pack.lineno - 1: before_pack}
     nl = '\r\n' if '\r\n' in text else '\n'; out = []; lines = text.splitlines(keepends=True)
+    for call in [n for n in ast.walk(main) if isinstance(n, ast.Call) and ast.unparse(n.func) == 'subprocess.run']:
+        if call.lineno != call.end_lineno: raise RuntimeError('Unsupported build subprocess layout.')
+        lines[call.lineno - 1] = lines[call.lineno - 1].replace('subprocess.run(', '_ffr_cached_run(')
     lines[layout_source.lineno - 1] = '    layout = _ffr_existingvisions.menu_layout(dict(globals(), LEGACY=LEGACY), UNITS)' + nl
     # Party specs describe only appearance. The legacy vision loader adds
     # skills={} even to untouched party entries, violating that sparse contract.
@@ -370,6 +374,15 @@ def hook_server(raw):
         '    try:', '        if state["result"] == "ok": _ffr_deck_sync.capture(globals())',
         '    except Exception as deck_error:', '        note("Deck export is unavailable: " + str(deck_error))',
     ]) + nl + lines[finish.lineno - 1]
+    result_notes = [n for n in ast.walk(build) if isinstance(n, ast.Expr)
+                   and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'note'
+                   and n.value.args and isinstance(n.value.args[0],ast.JoinedStr)
+                   and isinstance(n.value.args[0].values[0],ast.Constant)
+                   and n.value.args[0].values[0].value.startswith('result:')]
+    if result_notes:
+        result_note, = result_notes
+        timing = "    note(f\"Total build/install time: {time.time() - state['started']:.1f} seconds\")"
+        lines[result_note.lineno-1] = timing + nl + lines[result_note.lineno-1]
     route, = [n for n in tree.body if isinstance(n, ast.AsyncFunctionDef) and n.name == 'build']
     thread, = [n for n in route.body if isinstance(n, ast.Expr) and 'threading.Thread' in ast.unparse(n)]
     lines[thread.lineno - 1] = nl.join([
@@ -386,6 +399,19 @@ def hook_server(raw):
     state, = [n for n in install.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'st']
     returned, = [n for n in install.body if isinstance(n, ast.Return)]
     lines[state.lineno - 1] = '    import _ffr_field_leader' + nl + '    leader_plan = _ffr_field_leader.install_plan(ROOT, _game_root(paks))' + nl + lines[state.lineno - 1]
+    copy_calls = [n for n in ast.walk(install) if isinstance(n, ast.Call) and ast.unparse(n.func) == 'shutil.copy2' and ast.unparse(n.args[0]) == "os.path.join(src, f)"]
+    if copy_calls:
+        copy_call, = copy_calls
+        lines[state.lineno - 1] += nl.join([
+            '    import _ffr_build_cache',
+            '    unchanged = _ffr_build_cache.unchanged_files(src, dst, files)',
+            '    if len(unchanged) == len(files) and all(f"{MODS_REL}/{f}" in st["placed"] for f in files):',
+            '        _ffr_field_leader.deploy(leader_plan)',
+            '        log("  Installed package already matches; no package copies or backups needed.")',
+            '        return {"files": len(files), "backup": None, "reused": len(files)}', '',
+        ])
+
+        lines[copy_call.lineno - 1] = '        if f not in unchanged: ' + lines[copy_call.lineno - 1].lstrip()
     lines[returned.lineno - 1] = '    _ffr_field_leader.deploy(leader_plan, bdir)' + nl + lines[returned.lineno - 1]
     game, = [n for n in restore.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'game']
     lines[game.lineno - 1] += '    import _ffr_field_leader' + nl + '    leader_plan = _ffr_field_leader.restore_plan(ROOT, game, backup)' + nl
@@ -410,6 +436,9 @@ def hook_verifier(raw):
     lines[count.lineno - 1] = '    return set()  # Private icon rows never replace original brushes.' + nl
     finish, = [n for n in main.body if isinstance(n, ast.Expr) and isinstance(n.value, ast.Call) and ast.unparse(n.value.func) == 'sys.exit']
     lines[finish.lineno - 1] = '    import _ffr_testing' + nl + '    _ffr_testing.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + '    import _ffr_party' + nl + '    _ffr_party.verify(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"), expected=native_expected)' + nl + '    import _ffr_crystal_cave' + nl + '    _ffr_crystal_cave.verify_shops(ROOT, ffrenv.FFRDT, os.path.join(ROOT, "extracted", "Mappings.usmap"))' + nl + lines[finish.lineno - 1]
+    lines[main.body[0].lineno-1] = '    import _ffr_build_cache' + nl + '    _ffr_build_cache.install_reader(ROOT, ffrenv)' + nl + '    _ffr_cached_run = _ffr_build_cache.with_runner(subprocess.run)' + nl + lines[main.body[0].lineno-1]
+    for call in [n for n in ast.walk(main) if isinstance(n,ast.Call) and ast.unparse(n.func)=='subprocess.run']:
+        lines[call.lineno-1]=lines[call.lineno-1].replace('subprocess.run(', '_ffr_cached_run(')
     additions = {
         expected.end_lineno: [MARKER, 'import _ffr_existingvisions', 'native_expected = _ffr_existingvisions.expected_edits(ROOT)'],
         unexpected.end_lineno: [MARKER, 'unexpected = [k for k in unexpected if k not in changed or not _ffr_existingvisions.expected_row_change(rel, k, orig[k], built[k], native_expected, equivalent)]'],
@@ -486,6 +515,12 @@ def run(root, action):
         elif name == 'overworld_assets.zip':
             validate_field_archive(raw, json.loads(resource_data['overworld_catalog.json']))
         elif name == 'fina_battle_preview.zip': validate_preview_archive(raw)
+        elif name == 'cave_music_preview.zip':
+            with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                if (set(archive.namelist()) != {'VGAudio.dll','LICENSE.txt','decode.ps1'}
+                        or not archive.read('VGAudio.dll').startswith(b'MZ')
+                        or b'MIT' not in archive.read('LICENSE.txt')):
+                    raise ValueError('Invalid native music preview decoder.')
         elif name == 'ffbe_needles.zip': validate_needles_archive(raw)
         elif name == 'sephira_blood_recovery.zip': validate_blood_archive(raw)
         elif name == 'sephira_lb_audio.zip':

@@ -1,4 +1,5 @@
 """Independent party appearances and native battle voices, preserving identity."""
+import _ffr_build_cache
 import copy
 import json
 from pathlib import Path
@@ -293,7 +294,7 @@ def verify_voice_parameters(root, tool, usmap, units, *, expected=None):
         work = root / 'build/party-voices'; work.mkdir(parents=True, exist_ok=True)
         original = work / 'verify-original.json'; built = work / 'verify-built.json'
         for source, target in ((root / 'extracted/legacy', original), (root / 'build/visions_mod/assets', built)):
-            subprocess.run(tool + ['rows', str(source / (VOICE_ASSET + '.uasset')), str(target), '--usmap', usmap],
+            _ffr_build_cache.subprocess_run(tool + ['rows', str(source / (VOICE_ASSET + '.uasset')), str(target), '--usmap', usmap],
                            check=True, capture_output=True)
         check_voice_rows(json.loads(original.read_text(encoding='utf-8-sig'))['rows'],
                          json.loads(built.read_text(encoding='utf-8-sig'))['rows'], party, expected=expected)
@@ -314,7 +315,7 @@ def verify(root, tool, usmap, *, expected=None):
     selected = [u for u in party if u.get('ffbe')]
     if not selected: return
     work = root / 'build/party-models'; work.mkdir(parents=True, exist_ok=True)
-    def run(args): subprocess.run(args, check=True, capture_output=True)
+    def run(args): _ffr_build_cache.subprocess_run(args, check=True, capture_output=True)
     original = work / 'verify-original.json'; built = work / 'verify-built.json'
     run(tool + ['rows', str(root / 'extracted/legacy' / (ASSET + '.uasset')), str(original), '--usmap', usmap])
     run(tool + ['rows', str(root / 'build/visions_mod/assets' / (ASSET + '.uasset')), str(built), '--usmap', usmap])

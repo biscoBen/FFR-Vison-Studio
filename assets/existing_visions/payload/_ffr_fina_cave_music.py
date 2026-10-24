@@ -65,6 +65,21 @@ def author(view, start, end, duration):
     return result
 
 
+def check_active_child(master, suffix='Effect_000'):
+    """Reject a disabled parent: a valid sound child alone cannot make music play."""
+    import _ffr_crystal_cave as assets
+    sections=[]
+    for i,e in enumerate(master['Exports'],1):
+        for p in e.get('Data',[]) if isinstance(e.get('Data'),list) else []:
+            if p['Name']=='SubSequence' and p['Value']<0:
+                imp=master['Imports'][-p['Value']-1]
+                if imp['ObjectName'].endswith('_'+suffix): sections.append(i)
+    tracks=[e for e in master['Exports'] if isinstance(e.get('Data'),list)
+            and any(p['Name']=='Sections' and any(x['Value'] in sections for x in p['Value']) for p in e['Data'])]
+    if len(sections)!=1 or len(tracks)!=1 or any(p['Name']=='bIsEvalDisabled' and p['Value'] for p in tracks[0]['Data']):
+        raise ValueError('The Crystal Fina soundtrack parent track is disabled or changed.')
+
+
 def build(child, env, work, native, clone, start, end, duration):
     """Private cue references the installed BGM_PP sheet and streamed audio."""
     import _ffr_crystal_cave as assets
