@@ -4,6 +4,37 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Cave music, Christine's crystal and clearer ability text — 2026-10-23
+
+[Verified Windows download / run 40048368217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40048368217/Sephira-Studio-Test.zip)
+(code `0dd3c68`, extension **1.2.77**; **73.8 MB**).
+
+Fina's working single-play intro now uses the secret cave's original music from
+its beginning, through the game's native audio system. The garbled embedded
+score and discarded piano/organ music are removed. The approved video and
+sprite/heal/cure timing remain. The browser preview shows the picture only;
+hear the native soundtrack in game.
+
+Christine's normal challenge now has a visible blue crystal in the wider end
+of the secret cave behind Rain's house. Interact with it after obtaining Tronn;
+winning grants Christine once. The original cave and story actors are retained.
+The crystal stays after acquisition and reports that she has already joined.
+
+All 30 Sephira visions have concise native-style ability/resonance descriptions:
+313 custom ability descriptions lose repeated technical listings, and 30
+resonances describe effects rather than borrowed source characters. Studio backs
+up and replaces matching old generated text on opening, retaining custom text,
+renamed abilities and all kit/combat/acquisition settings.
+
+Update while keeping **Studio Test Data**, reopen Studio, rebuild/install and
+restart Resonance. Keep **Test Crystal Fina cinematic** on for her movie and
+**Sephira visions: 1-gil Mitra shop** off to use Christine's normal crystal.
+No Prepare Game, MR update or kit reset is required. Full Windows checks and
+downloaded-package verification pass; actual crystal interaction and soundtrack
+playback/mixing still need the user's test. See [implementation](docs/CHRISTINE_CAVE.md),
+[movie/audio evidence](docs/CRYSTAL_FINA_CINEMATIC.md) and
+[measured delivery and CI](CHANGELOG.md#published-cave-soundtrack-christine-crystal-and-sephira-descriptions--2026-10-23).
+
 ### Fina movie soundtrack and handoff; Christine challenge — 2026-10-23
 
 [Verified Windows download / run 40038819889](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40038819889/Sephira-Studio-Test.zip)

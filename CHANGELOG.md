@@ -11,40 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Cave soundtrack, visible Christine crystal and concise Sephira descriptions
-
-- Use the secret cave's original `BGM_PP_DUNGEON_CAVE1` recording from its
-  beginning during Fina's 6.4-second intro. A private native Atom cue/track reads
-  the installed `BGM_PP` sheet and streamed audio; no game music is copied or
-  reencoded. Remove the discarded piano/organ score and all embedded Mana audio.
-  Keep every approved video/opacity picture, single-play cooked movie timing,
-  sprite animation, opening/build-up and healing/cure marker. The browser preview
-  is picture-only because the original music stays in the installed game.
-- Put a visible blue crystal in the wider end of the secret cave behind Rain's
-  house, `01Gra_44`, using the returned cave geometry. Talking to it opens the
-  guarded level-2 Christine challenge. Preserve the native cave's original story
-  actors, navigation, lighting, exits and every existing stream; append one
-  private always-loaded interaction/crystal stream. Remove the failed startup
-  prompt. The crystal stays visible after acquisition and reports ownership.
-  Tronn/the original story completion is still required, and only victory grants
-  Christine once. The 1-gil shop override still suppresses the normal challenge.
-- Shorten 313 authored ability descriptions across all 30 Sephira visions and
-  rewrite all 30 resonances in native English style, describing effects instead
-  of borrowed characters or animation sources. Remove repeated MP, accuracy,
-  stagger and raw power listings while retaining useful effects and targets.
-  Apply the same Crystal Renewal/resonance text to independent bundled Fina.
-- Automatically back up and repair matching old generated text when Studio opens.
-  Preserve custom descriptions and all combat, learned reward, artwork, identity,
-  acquisition and audio settings. No MR/kit reset or Prepare Game run is needed.
-- Extension 1.2.77. Native write/readback and IoStore packing pass for the movie,
-  single native music cue, cave map and physical interaction. All 66 Sephira
-  regressions, 29 existing-vision checks and 14 cinematic checks pass; Flutter
-  analysis and 55 focused Flutter checks pass (one Windows-only local skip).
-  Actual crystal visibility/interaction, cave music playback/mixing and movie
-  handoff still require the user's in-game test. Windows/package verification
-  is pending; the superseded piano build and its unintended helper retry were
-  stopped before publication.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -113,6 +79,60 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published cave soundtrack, Christine crystal and Sephira descriptions — 2026-10-23
+
+Code [`0dd3c68`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0dd3c680c4d5eaa60cb479a3fb7ed3fd9215ca8e),
+extension **1.2.77**, [Windows test ZIP / run 40048368217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40048368217/Sephira-Studio-Test.zip).
+The verified ZIP is **73,827,639 bytes**, SHA-256
+`aa23fc7956356c18c5b8cc2bef449ce07cad6e31e8bc192a8d86861d908d31bf`.
+
+- Use the secret cave's original `BGM_PP_DUNGEON_CAVE1` recording from its
+  beginning during Fina's 6.4-second intro. A private native Atom cue/track reads
+  the installed `BGM_PP` sheet and streamed audio; no game music is copied or
+  reencoded. Remove the discarded piano/organ score and all embedded Mana audio.
+  Keep every approved video/opacity picture, single-play cooked movie timing,
+  sprite animation, opening/build-up and healing/cure marker. The browser preview
+  is picture-only because the original music stays in the installed game.
+- Put a visible blue crystal in the wider end of the secret cave behind Rain's
+  house, `01Gra_44`, using the returned cave geometry. Talking to it opens the
+  guarded level-2 Christine challenge. Preserve the native cave's original story
+  actors, navigation, lighting, exits and every existing stream; append one
+  private always-loaded interaction/crystal stream. Remove the failed startup
+  prompt. The crystal stays visible after acquisition and reports ownership.
+  Tronn/the original story completion is still required, and only victory grants
+  Christine once. The 1-gil shop override still suppresses the normal challenge.
+- Shorten 313 authored ability descriptions across all 30 Sephira visions and
+  rewrite all 30 resonances in native English style, describing effects instead
+  of borrowed characters or animation sources. Remove repeated MP, accuracy,
+  stagger and raw power listings while retaining useful effects and targets.
+  Apply the same Crystal Renewal/resonance text to independent bundled Fina.
+- Automatically back up and repair matching old generated text when Studio opens.
+  Preserve custom descriptions and all combat, learned reward, artwork, identity,
+  acquisition and audio settings. No MR/kit reset or Prepare Game run is needed.
+- Extension 1.2.77. Native write/readback and IoStore packing pass for the movie,
+  single native music cue, cave map and physical interaction. All 66 Sephira
+  regressions, 29 existing-vision checks and 14 cinematic checks pass; Flutter
+  analysis and 55 focused Flutter checks pass (one Windows-only local skip).
+  Actual crystal visibility/interaction, cave music playback/mixing and movie
+  handoff still require the user's in-game test. Windows/package verification
+  passed for this exact commit, including frozen-engine startup and launcher/
+  updater checks. The downloaded package matches all 64 extension files, all 16
+  independent Fina files, the catalog and approved movie hashes.
+
+### Measured delivery and CI
+
+The first complete soundtrack candidate finished **2026-10-23 17:10:31 America/Los_Angeles**.
+The final combined download was verified at **18:16:36**: **66 minutes 5 seconds** elapsed.
+This includes the earlier soundtrack work, user steering/reference collection, corrections,
+local checks, two stopped superseded runs, final CI and actual download verification; the clock
+was not restarted. The final run reused the matching automatic push build, without a duplicate dispatch.
+
+Final CI wall time was **7 minutes 56 seconds**. Measured Windows job time was **9 minutes
+38 seconds** in parallel: compile **4:01**, validation **5:37**. Linux plan/aggregation/publication
+used **2:10**. Across all three runs, including cancelled runs **40044171680** and **40044741999**,
+the totals were **30:42 Windows** and **5:15 Linux** job time. These are elapsed job timestamps,
+not billed or weighted runner minutes. Neither superseded piano run published a package.
 
 ## Published Fina movie timing/audio, install verification and Christine challenge — 2026-10-23
 
