@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 import zipfile
 
-CUE_NAME = 'BGM_PP_DUNGEON_CAVE1'
+CUE_NAME = 'BGM_PP_EVENT_VISIONS_INST'
 CUE_DONOR = 'FFRS/Content/Sound/Cri/Bgm/BGM_PP/BGM_PP_BATTLE1_Cue'
 CUE = 'FFRS/Content/Sound/Cri/Studio/Studio_FinaCaveMusic_Cue'
 SOUND = 'FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Sound_001'
@@ -34,8 +34,10 @@ def movie_audio(env, pictures):
                 for name in ('VGAudio.dll','encode.ps1'):(work/name).write_bytes(z.read(name))
             source=work/'cave.wav';source.write_bytes(wave);encoded=work/'cave.adx'
             result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
-                                   '-File',str(work/'encode.ps1'),str(source),str(encoded)],capture_output=True)
-            if result.returncode:raise ValueError('The installed cave recording could not be encoded as native stereo ADX.')
+                                   '-File',str(work/'encode.ps1'),str(source),str(encoded),str(work/'VGAudio.dll')],capture_output=True)
+            if result.returncode:
+                detail=(result.stderr or result.stdout).decode('utf-8',errors='replace').strip()
+                raise ValueError('The installed cave recording could not be encoded as native stereo ADX: '+detail[:2000])
             data, report=movie.with_soundtrack(pictures,encoded.read_bytes())
         temporary=target.with_suffix('.tmp');temporary.write_bytes(data);temporary.replace(target)
         marker.write_text(json.dumps({'schema':1,'sha256':hashlib.sha256(data).hexdigest(),'report':report}))
@@ -130,7 +132,7 @@ def build(child, env, work, native, clone, start, end, duration):
     if assets.property_data(owner, 'CueName')['Value'] != 'BGM_PP_BATTLE1':
         raise ValueError('The native cave music cue template changed.')
     assets.set_value(owner, 'CueName', CUE_NAME)
-    assets.set_value(owner, 'FirstWaveDuration', 3277372 / 48000)
+    assets.set_value(owner, 'FirstWaveDuration', 7523899 / 48000)
     assets.names(cue, cue['Exports'])
     cue_json.write_text(json.dumps(cue), encoding='utf-8')
     run([*tool, 'fromjson', str(cue_json), str(cue_asset), '--usmap', usmap])

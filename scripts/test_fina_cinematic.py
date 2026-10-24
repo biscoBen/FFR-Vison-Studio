@@ -90,7 +90,7 @@ class CinematicTests(unittest.TestCase):
         self.assertIsNone(spec['embeddedAudio'])
         self.assertFalse(spec['previewHasAudio'])
         self.assertEqual(spec['soundtrack'], {'kind':'nativeCue', 'cueSheet':'BGM_PP',
-            'cueName':'BGM_PP_DUNGEON_CAVE1','startSeconds':0,
+            'cueName':'BGM_PP_EVENT_VISIONS_INST','startSeconds':0,
             'movieStartTick':film.START,'movieEndTick':film.END})
         self.assertEqual(set(files),{'spec.json','movie.usm','preview.mp4','poster.jpg'})
         self.assertFalse(any(p['type']==b'@SFA' for p in usm.chunks(files['movie.usm'])))

@@ -53,7 +53,8 @@ class MovieAudioTests(unittest.TestCase):
             root=Path(temporary);tools=root/'tools';tools.mkdir()
             (tools/'cave_music_preview.zip').write_bytes((ROOT/'assets/existing_visions/payload/cave_music_preview.zip').read_bytes())
             def encode(cmd,**kwargs):
-                Path(cmd[-1]).write_bytes(adx_fixture());return SimpleNamespace(returncode=0)
+                self.assertTrue(cmd[-1].endswith('VGAudio.dll'))
+                Path(cmd[-2]).write_bytes(adx_fixture());return SimpleNamespace(returncode=0)
             with mock.patch.object(preview,'audio',return_value=b'wave'),mock.patch.object(music.subprocess,'run',side_effect=encode) as run,mock.patch.object(movie,'with_soundtrack',return_value=(b'local movie',{})):
                 first=music.movie_audio({'ROOT':root,'ffrenv':None},b'pictures')
                 self.assertIsNotNone(first);self.assertEqual(first.read_bytes(),b'local movie')

@@ -69,12 +69,24 @@ class SephiraChallengeTests(unittest.TestCase):
                     expected = '_Locked' if not (owns_tronn or progress>=1090) else '_Done' if owns_christine else '_Menu'
                     self.assertEqual(state,name+expected)
         for rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
-            original = self.native[rel]['01Gra_44']
-            self.assertEqual(self.built[rel]['01Gra_44'], {**original, 'battleStage': 27500})
+            original = self.native[rel]['01Gra_20']
+            self.assertEqual(self.built[rel]['01Gra_20'], {**original, 'battleStage': 27500})
         self.assertNotIn(name+'_Return',self.built[challenge.COMPOSITE])
         menu = self.built[challenge.CHOICES][name+'_Menu']
         self.assertEqual(menu['ChoiceTextList'][-1],'Leave')
         self.assertEqual(menu['CancelIndex'],len(menu['ChoiceTextList'])-1)
+
+    def test_mitra_practice_stage_is_preserved_when_christine_is_enabled(self):
+        native=copy.deepcopy(self.native)
+        tables={}
+        def table(rel):return tables.setdefault(rel,{'asset':'FFRS/Content/Datatable/'+rel,'add':[],'set':[]})
+        for rel in (testing.MAP,testing.MAP_COMPOSITE):
+            table(rel)['set'].append({'row':'01Gra_20','set':{'battleStage':testing.PRACTICE_ID}})
+        with tempfile.TemporaryDirectory() as root:
+            challenge.prepare(tables,[u for u in self.units if u['sephiraVision']['preset']=='christine'],root,lambda rel:native[rel])
+        for rel in (testing.MAP,testing.MAP_COMPOSITE):
+            edits=[e for e in tables[rel]['set'] if e['row']=='01Gra_20']
+            self.assertEqual(edits,[{'row':'01Gra_20','set':{'battleStage':testing.PRACTICE_ID}}])
 
     def test_christine_return_prompt_is_absent_when_removed_or_moved_to_the_shop(self):
         for moved in (False, True):
@@ -87,7 +99,7 @@ class SephiraChallengeTests(unittest.TestCase):
             for rel, plan in operations.items():
                 self.assertFalse(any(e['row'] == challenge.PREFIX + '13024_Return' for e in plan['add']))
                 if rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
-                    self.assertFalse(any(e['row'] == '01Gra_44' for kind in ('set', 'add') for e in plan[kind]))
+                    self.assertFalse(any(e['row'] == '01Gra_20' for kind in ('set', 'add') for e in plan[kind]))
 
     def test_all_original_grants_and_native_replay_targets_are_preserved(self):
         for spec, units in challenge.plans(self.units):
@@ -210,6 +222,8 @@ class SephiraChallengeTests(unittest.TestCase):
         trigger=json.loads(gzip.decompress((path/'crystal-interaction.json.gz').read_bytes()))
         bg=json.loads(gzip.decompress((path/'crystal-background.json.gz').read_bytes()))
         spec=challenge.data()['encounters'][0]
+        spec=copy.deepcopy(spec)
+        spec['crystalInteraction']['mapPackage']='Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL'
         room=json.loads(gzip.decompress((path/'secret-cave.json.gz').read_bytes()))
         views=challenge.christine_views(room,trigger,bg,spec)
         collected=[]
@@ -258,7 +272,7 @@ class SephiraChallengeTests(unittest.TestCase):
     def test_physical_christine_crystal_retains_all_native_cave_streams(self):
         path = ROOT/'scripts/fixtures/sephira_challenges'
         def load(name): return json.loads(gzip.decompress((path/name).read_bytes()))
-        room, trigger, bg = [load(n) for n in ('secret-cave.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
+        room, trigger, bg = [load(n) for n in ('mitra-cave.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
         before = copy.deepcopy((room,trigger,bg))
         spec = challenge.data()['encounters'][0]
         views = challenge.christine_views(room,trigger,bg,spec)
@@ -285,7 +299,7 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual([position[k] for k in ('X','Y','Z')],[0.0,0.0,0.0])
         root_box=private['Exports'][caves.property_data(owner,'m_pRootBoxComponent')['Value']-1]
         position=caves.property_data(root_box,'RelativeLocation')['Value'][0]['Value']
-        self.assertEqual([position[k] for k in ('X','Y','Z')],[5260.0,-45.0,75.0])
+        self.assertEqual([position[k] for k in ('X','Y','Z')],[6610.0,52639.0,-705.02])
         built=private
         self.assertTrue(next(iter(views)) == spec['crystalInteraction']['mapPackage'])
         self.assertEqual(built['Imports'][:len(room['Imports'])],room['Imports'])

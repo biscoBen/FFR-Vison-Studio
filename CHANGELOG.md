@@ -11,6 +11,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Actual Mitra cave placement and native movie music
+
+- Use the three returned F8 bookmarks to identify the cave behind Rain's house as part of Mitra's `Town_01Gra_20_PL`, rather than the separate `Dng_01Gra_44` cave. Place Christine's crystal at the native tutorial portal position (6610, 52639, -705.02), retaining original streams, story gates and the level-5 fight. Preserve the shop practice stage when enabled.
+- Select the captured `BGM_PP_EVENT_VISIONS_INST` recording (stream 51), starting at its beginning. The earlier CAVE1/stream-56 choice was a different track. Include the cue/stream in the local preview cache identity so old audio is not reused.
+- Pass the ADX encoder's DLL explicitly and resolve its optional default inside the script body. The returned Windows probe confirms the default parameter failed because `$PSScriptRoot` was empty; the explicit-DLL probe succeeds. Preserve readable encoder error details.
+- Show update **1.2.82**. Keep all 30 sprite cache keys and the reviewed movie's video/alpha packets. The returned 1.2.81 install measured 136.3s, with all 30 sprite/icon sets reused in 6.1s; no complete sub-two-minute repeat-install result is claimed.
+
 
 ### Returned full-game reference audit — 2026-10-22
 

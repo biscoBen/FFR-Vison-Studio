@@ -11,7 +11,8 @@ import zipfile
 
 _LOCK=threading.Lock()
 ENTRY='FFRS/Content/Streams/Sound/BGM_PP.awb'
-STREAM_ID=56  # BGM_PP_DUNGEON_CAVE1: native cue 10046 / waveform 46.
+CUE_NAME='BGM_PP_EVENT_VISIONS_INST'
+STREAM_ID=51  # Captured in Mitra's cave: native cue 10025 / waveform 25.
 
 
 def read_exact(stream, count):
@@ -97,7 +98,8 @@ def audio(root, ffrenv):
     import _ffr_deck_sync
     identity=_ffr_deck_sync.game_identity(Path(ffrenv.game_root()))
     archive=root/'tools/cave_music_preview.zip'
-    fingerprint=hashlib.sha256((json.dumps(identity,sort_keys=True)+hashlib.sha256(archive.read_bytes()).hexdigest()).encode()).hexdigest()[:24]
+    fingerprint=hashlib.sha256(json.dumps({'game':identity,'cue':CUE_NAME,'stream':STREAM_ID,
+        'decoder':hashlib.sha256(archive.read_bytes()).hexdigest()},sort_keys=True).encode()).hexdigest()[:24]
     folder=root/'build/fina-preview-audio';folder.mkdir(parents=True,exist_ok=True)
     target=folder/(fingerprint+'.wav')
     with _LOCK:

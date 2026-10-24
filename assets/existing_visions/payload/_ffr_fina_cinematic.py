@@ -87,7 +87,7 @@ def validate(raw):
             or spec.get('opaqueAlpha') is not True or spec.get('alphaCodec') != 'SofdecPrime'
             or spec.get('embeddedAudio') is not None
             or spec.get('soundtrack') != {'kind':'nativeCue', 'cueSheet':'BGM_PP',
-                'cueName':'BGM_PP_DUNGEON_CAVE1', 'startSeconds':0,
+                'cueName':'BGM_PP_EVENT_VISIONS_INST', 'startSeconds':0,
                 'movieStartTick':START, 'movieEndTick':END}
             or not files['movie.usm'].startswith(b'CRID')
             or files['preview.mp4'][4:8] != b'ftyp' or not files['poster.jpg'].startswith(b'\xff\xd8')):

@@ -406,6 +406,11 @@ def _events(table, rows, spec, units, group_id, root, roster):
     for rel in (STAGE, STAGE_COMPOSITE):
         _add(table, rows, rel, stage_id, spec['stage'], name, {'isLoadLevelInstance': True})
     for rel in (map_rel, caves.COMPOSITE):
+        # Mitra's practice mode already supplies a private instance-loaded
+        # stage. Keep it so Christine and the existing vendor tests coexist.
+        if spec.get('crystalInteraction') and map_row == '01Gra_20' and any(
+                e['row'] == map_row and 'battleStage' in e['set'] for e in table(rel)['set']):
+            continue
         additions = [e for e in table(rel)['add'] if e['row'] == map_row]
         if additions: additions[0]['set']['battleStage'] = stage_id
         else: table(rel)['set'].append({'row': map_row, 'set': {'battleStage': stage_id}})
