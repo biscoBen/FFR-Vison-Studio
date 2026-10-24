@@ -72,6 +72,39 @@ class FinaBattleTests(unittest.TestCase):
         lua = self.runtime()
         lua.execute('run_fina_tests()')
 
+    def test_movie_pauses_only_the_current_bgm_handle_and_resumes_on_end_or_interruption(self):
+        lua = self.runtime("""
+            require('config').fina.cinematicMovie='/Game/Movies/Studio/CrystalFina_Test'
+            movie=runtime_object({playing=false,paused=false})
+            movie.ManaComponent=runtime_object({Movie=runtime_object({
+                GetFullName=function() return 'FileManaMovie /Game/Movies/Studio/CrystalFina_Test.CrystalFina_Test' end})})
+            function movie:IsPlaying() return self.playing end
+            function movie:IsPaused() return self.paused end
+            sound=runtime_object({pauses=0,resumes=0})
+            function sound:GetFullName() return 'CPP_SoundManager Game.SoundManager' end
+            function sound:GetCurrentPlayBGMId() return 42 end
+            function sound:IsExistPlaySound(id) return id==42 end
+            function sound:PauseSound(id) assert(id==42);self.pauses=self.pauses+1 end
+            function sound:ResumeSound(id) assert(id==42);self.resumes=self.resumes+1 end
+            local original=FindAllOf
+            function FindAllOf(class)
+                if class=='ManaPlayer' then return {movie} end
+                if class=='CPP_SoundManager' then return {sound} end
+                return original(class)
+            end
+        """)
+        lua.execute("""
+            tick();assert(sound.pauses==0)
+            movie.playing=true;tick();tick();assert(sound.pauses==1 and sound.resumes==0)
+            movie.playing=false;movie.paused=true;tick();assert(sound.resumes==0)
+            movie.paused=false;tick();tick();assert(sound.resumes==1)
+            movie.playing=true;tick();assert(sound.pauses==2)
+            movie.ManaComponent.invalid=true;tick();assert(sound.resumes==2)
+            movie.ManaComponent.invalid=false
+            movie.ManaComponent.Movie.GetFullName=function() return 'Other vision movie' end
+            tick();assert(sound.pauses==2)
+        """)
+
     def test_casing_restores_both_visibility_flags_after_native_battle_hides_it(self):
         lua = self.runtime()
         lua.execute("""

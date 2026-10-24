@@ -28,7 +28,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   position (5260, -45, 75). Reuse native completion flag 147 for visibility/interaction, attach the mesh to its owner,
   and remove the old map's baked culling ID. Preserve native streams, actors, story gates and the level-5 fight.
 - Optional Fina browser audio now reports its actual failure instead of an unhelpful internal-server-error page.
-  Cave music is still reported silent in game; no successful playback fix is claimed in this speed update.
+  During Fina's private movie only, pause the current native BGM playback handle and resume it when the movie
+  ends or is interrupted. Preserve user/category volumes and other sounds. This runtime control needs live testing.
+  Cave music is still reported silent in game; no successful soundtrack playback fix is claimed in this update.
   Crystal visibility/interaction on the user's save and full install time still require live testing.
 
 ### Returned full-game reference audit — 2026-10-22

@@ -392,7 +392,51 @@ local function refresh(key, s)
         clear(s)
     else update(s) end
 end
+local movieMusic = nil
+local function resume_movie_music()
+    if not movieMusic then return end
+    local saved = movieMusic
+    if valid(saved.manager) then saved.manager:ResumeSound(saved.id) end
+    movieMusic = nil
+    log('Resumed battle music after the Crystal Fina movie')
+end
+local function movie_music()
+    if not config.cinematicMovie then return end
+    local active = false
+    for _, player in ipairs(FindAllOf('ManaPlayer') or {}) do
+        -- These getters require an initialized native ManaComponent. Match the
+        -- private movie, never another vision, a menu movie or its sprite LB.
+        if valid(player) and valid(player.ManaComponent) then
+            local source = player.ManaComponent.Movie
+            if valid(source) and source:GetFullName():find(config.cinematicMovie, 1, true)
+                and (player:IsPlaying() or player:IsPaused()) then active = true; break end
+        end
+    end
+    if not active then resume_movie_music(); return end
+    if movieMusic then return end
+    for _, manager in ipairs(FindAllOf('CPP_SoundManager') or {}) do
+        if valid(manager) and not manager:GetFullName():find('Default__', 1, true) then
+            local id = manager:GetCurrentPlayBGMId()
+            if type(id) == 'number' and id >= 0 and manager:IsExistPlaySound(id) then
+                -- Pause the current playback handle. Category volume would
+                -- also silence the cave cue and overwrite the user's settings.
+                manager:PauseSound(id)
+                movieMusic = {manager=manager, id=id}
+                log('Paused battle music for the Crystal Fina movie')
+                return
+            end
+        end
+    end
+end
 local function tick()
+    local musicOk, musicError = pcall(movie_music)
+    if not musicOk then
+        -- A missing native audio API must not stop body/casing updates. Retry
+        -- restoration on subsequent ticks if the movie was interrupted.
+        if movieMusic then pcall(resume_movie_music) end
+        local message = tostring(musicError)
+        if errors.movieMusic ~= message then log('Movie music control unavailable: ' .. message); errors.movieMusic = message end
+    else errors.movieMusic = nil end
     scans = scans + 1
     if scans == 1 or scans % 15 == 0 then
         for _, class in ipairs({'SsPlayerComponent', 'CPP_MuchaSsPlayerComponent'}) do
