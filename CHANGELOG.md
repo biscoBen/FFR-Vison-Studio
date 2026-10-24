@@ -11,13 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Actual Mitra cave placement and native movie music
-
-- Use the three returned F8 bookmarks to identify the cave behind Rain's house as part of Mitra's `Town_01Gra_20_PL`, rather than the separate `Dng_01Gra_44` cave. Place Christine's crystal at the native tutorial portal position (6610, 52639, -705.02), retaining original streams, story gates and the level-5 fight. Preserve the shop practice stage when enabled.
-- Select the captured `BGM_PP_EVENT_VISIONS_INST` recording (stream 51), starting at its beginning. The earlier CAVE1/stream-56 choice was a different track. Include the cue/stream in the local preview cache identity so old audio is not reused.
-- Pass the ADX encoder's DLL explicitly and resolve its optional default inside the script body. The returned Windows probe confirms the default parameter failed because `$PSScriptRoot` was empty; the explicit-DLL probe succeeds. Preserve readable encoder error details.
-- Show update **1.2.82**. Keep all 30 sprite cache keys and the reviewed movie's video/alpha packets. The returned 1.2.81 install measured 136.3s, with all 30 sprite/icon sets reused in 6.1s; no complete sub-two-minute repeat-install result is claimed.
-
 
 ### Returned full-game reference audit — 2026-10-22
 
@@ -87,6 +80,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published actual Mitra cave placement and native movie music — 2026-10-24
+
+[Verified Windows test ZIP / run 40129779990](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40129779990/Sephira-Studio-Test.zip),
+code [`57f558a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/57f558ae60c0c404c79c54f89b09a4c01dded535),
+update **1.2.82**; 73,975,170 bytes. SHA-256
+`2876f6b0552a4415ad2f7aeb58030d9d330d1c571fb55a0242ed1695426af1dd`.
+
+- Use the three returned F8 bookmarks to identify the cave behind Rain's house as part of Mitra's `Town_01Gra_20_PL`, rather than the separate `Dng_01Gra_44` cave. Place Christine's crystal at the native tutorial portal position (6610, 52639, -705.02), retaining original streams, story gates and the level-5 fight. Preserve the shop practice stage when enabled.
+- Select the captured `BGM_PP_EVENT_VISIONS_INST` recording (stream 51), starting at its beginning. The earlier CAVE1/stream-56 choice was a different track. Include the cue/stream in the local preview cache identity so old audio is not reused.
+- Pass the ADX encoder's DLL explicitly and resolve its optional default inside the script body. The returned Windows probe confirms the default parameter failed because `$PSScriptRoot` was empty; the explicit-DLL probe succeeds. Preserve readable encoder error details.
+- Show update **1.2.82**. Keep all 30 sprite cache keys and the reviewed movie's video/alpha packets. The returned 1.2.81 install measured 136.3s, with all 30 sprite/icon sets reused in 6.1s; no complete sub-two-minute repeat-install result is claimed.
+
+
+
+Evidence: F8 at cave entry places the player at (-1000, 52650, 102.15); the intended crystal spot at
+(6388.09, 52650, -740.87). Both belong to Mitra's persistent world and play `BGM_PP_EVENT_VISIONS_INST`.
+The original tutorial portal is `BP_MapGimmick_BlockObject012_C_1` at (6610, 52639, -705.02), visible only
+at main progress 1080. The custom challenge retains its original-vision/progress-1090 prerequisite.
+The third bookmark confirms battle BGM pauses during the CG and resumes before the sprite LB; the generated
+movie had no audio track because Windows encoding failed. No further playback-state workaround is needed.
+
+Validation: **684** Python tests pass locally (41 platform skips), plus **31** focused Flutter tests.
+The full Windows suites, real frozen-engine setup, both Windows PowerShell ADX encoder cases, launcher/updater
+and compilation pass for this commit. Actual Mitra map serialization/readback and IoStore packing pass;
+native actors and streams remain unchanged. The user's successful Windows-encoded track muxes with all
+192 color and 192 opacity packets unchanged. Native movie cold/reused outputs match (18.137s / 0.059s).
+Verify the downloaded ZIP's **70** managed extension files, **16** standalone Fina files and compiled **1.2.82**
+label against source; retain all 30 kits, 131-passive coverage, original LB audio and the approved movie pictures.
+No full FFBE library or original cave recording is bundled; music is read locally from the selected game.
+
+Keep **Studio Test Data**, update, rebuild/install and restart Resonance. Leave Christine on her normal route;
+use the individual Mitra override for Fina if needed. No Prepare Game, new save, preset reset or new diagnostic
+observer is required. The first corrected build changes the room/stage assets and fills the new audio cache.
+Live crystal interaction, movie listening and a subsequent unchanged install still need the user's test.
+
+First complete candidate **20:23:28 UTC** to verified downloaded ZIP **20:37:03 UTC**: **13m 35s**, including local
+checks, native readback, publication transport correction, Windows waiting and actual ZIP verification.
+One candidate / one reused automatic Windows run. CI wall time **9m 51s**; summed runner usage **13m 57s**.
+Normal repository push and public read-only API/download transport completed publication; the unchanged build
+helper still verifies exact workflow/commit/input provenance and the download checksum. No workflow was dispatched.
 
 ## Published warm-install reuse, persistent Christine unlock and visible update number — 2026-10-24
 

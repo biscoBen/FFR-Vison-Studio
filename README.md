@@ -4,6 +4,30 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Actual Mitra cave and movie music fixes — 2026-10-24
+
+[Verified Windows download / run 40129779990](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40129779990/Sephira-Studio-Test.zip)
+(code `57f558a`, update **1.2.82**; **74.0 MB**).
+
+The runtime bookmarks identify the room behind Rain's house as part of **Mitra's town map**, rather than the
+separate cave asset used previously. Christine's crystal now occupies the original tutorial portal's position
+there. Her fight remains level 5; the original vision/story prerequisite and native map streams remain intact.
+The optional vendor practice stage is preserved when enabled.
+
+The same bookmarks identify the music as **BGM_PP_EVENT_VISIONS_INST** (stream 51). Fina's preview and movie now use
+that recording from its beginning and invalidate the earlier wrong-track cache. Windows PowerShell evaluated the
+encoder's DLL default before its script-root variable existed; passing the DLL explicitly succeeds on the user's PC.
+The default is also resolved in the script body and both paths are tested on Windows. Battle BGM pause/resume already
+works and is retained; the approved video, opacity frames and sprite LB remain unchanged.
+
+Keep **Studio Test Data**, update, rebuild/install and restart the game. No Prepare Game, new save or preset reset is
+needed. Keep Christine on her normal route and override only Fina to the shop when testing both. The first build fills
+the corrected audio cache. The returned 1.2.81 install measured **136.3s**, with all 30 sprite/icon sets reused in **6.1s**;
+a subsequent unchanged install may be faster, but the complete sub-two-minute target remains unverified.
+
+Windows checks, actual native Mitra readback/packing and downloaded-ZIP verification pass;
+[live-test limits and delivery/CI timings](CHANGELOG.md#published-actual-mitra-cave-placement-and-native-movie-music--2026-10-24).
+
 ### Warm installs, persistent Christine unlock and visible versions — 2026-10-24
 
 [Verified Windows download / run 40124402761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40124402761/Sephira-Studio-Test.zip)
