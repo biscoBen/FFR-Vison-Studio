@@ -19,8 +19,9 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
   invocation. Keep complete clean builds, input/corruption checks, verification and installation rollback.
 - Cache Fina's complete verified body/crystal/glow/runtime presentation and movie wrapper, avoiding repeated large
   native-model JSON reads and signature churn. Build/verifier CLI processes share immutable decoded native tables;
-  editor reads remain live and every new CLI invocation gets a fresh snapshot.
-- Native component checks: Fina presentation 80.139s cold / 0.041s reused, movie wrapper 20.153s / 0.063s;
+  editor reads remain live and every new CLI invocation gets a fresh snapshot. Bind Fina's current table rows separately
+  so an unrelated vision's challenge/stat changes do not recook her body or restore stale rows.
+- Native component checks: Fina presentation 83.018s cold / 0.036s reused, movie wrapper 20.153s / 0.063s;
   the 344-skill table plus shop patch 6.556s cold / 0.014s unchanged / 0.844s for a shop-only change. Thirty-vision
   recipe/source reads 23.111s / 1.994s with identical recipes. These executor timings do not establish a complete
   sub-two-minute Windows install; the first build fills the new group caches.

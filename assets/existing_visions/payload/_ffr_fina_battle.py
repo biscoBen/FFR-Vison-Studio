@@ -117,9 +117,34 @@ def design_table(original, unit):
     return view, tuple(resolved)
 
 
+def bind_tables(unit, env):
+    """Bind the current tables without rebuilding independent body assets."""
+    root, out = (Path(env[n]) for n in ('ROOT', 'OUT'))
+    work = root / 'build/crystal-fina-battle'; work.mkdir(parents=True, exist_ok=True)
+    tool, usmap, run = env['FFRDT'], env['USMAP'], env['run']
+    def decode(path, label):
+        dump = work / (label + '-original.json')
+        run(tool + ['tojson', str(path), str(dump), '--usmap', usmap])
+        return json.loads(dump.read_text(encoding='utf-8-sig'))
+    content = out / 'FFRS/Content'
+    design, (scale, effect_scale) = design_table(decode(content / ('Datatable/' + DESIGN_TABLE + '.uasset'), 'built-battle-design'), unit)
+    print(f'  Crystal Fina battle scales: sprite={scale:g}, attached effects={effect_scale:g} (explicit built row).')
+    views = {DESIGN_TABLE: design, UNIT_TABLE: battle_table(decode(content / ('Datatable/' + UNIT_TABLE + '.uasset'), 'built-battle-units'), unit)}
+    for rel, view in views.items():
+        cave.names(view, [view['Imports'], view['Exports']])
+        dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
+        target = content / ('Datatable/' + rel + '.uasset')
+        run(tool + ['fromjson', str(dump), str(target), '--usmap', usmap])
+        check = decode(target, Path(rel).name + '-verified')
+        cave.check_level(view, check)
+        if cave.semantic(table_rows(view)) != cave.semantic(table_rows(check)):
+            raise ValueError('Crystal Fina battle data did not survive native serialization.')
+
+
 def build(units, env):
     unit = selected(units, env['ROOT'])
     if unit is None: return
+    if not env.get('_fina_tables_bound'): bind_tables(unit, env)
     import _ffr_fina_motion as motion
     root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
     work = root / 'build/crystal-fina-battle'; work.mkdir(parents=True, exist_ok=True)
@@ -138,12 +163,9 @@ def build(units, env):
         AURA, cave.TEST_BACKGROUND, cave.TEST_NATIVE_MESH, cave.TEST_NATIVE_MATERIAL, cave.TEST_NATIVE_SHADER,
         cave.TEST_SPRITE.removeprefix('/Game/'), cave.TEST_SPRITE.removeprefix('/Game/') + '_tex')}
     content = out / 'FFRS/Content'
-    design_path = content / ('Datatable/' + DESIGN_TABLE + '.uasset')
-    design, (scale, effect_scale) = design_table(decode(design_path, 'built-battle-design'), unit)
-    print(f'  Crystal Fina battle scales: sprite={scale:g}, attached effects={effect_scale:g} (explicit built row).')
     # Match the casing/body ratio approved in the field test. Battle sprite and
     # attachment scales are separate native design parameters.
-    assets = {'Datatable/' + DESIGN_TABLE: design}
+    assets = {}
     clone_glow(legacy / ('FFRS/Content/' + AURA + '.uasset'), content / (glow_package(unit) + '.uasset'),
                unit, tool, usmap, run)
     private_mesh, private_material = package(unit, 'SM_Studio_CrystalFina'), package(unit, 'MI_Studio_CrystalFina')
@@ -157,8 +179,6 @@ def build(units, env):
             material['Value'] = cave.asset_import(result, material['Value'], '/Game/' + private_material)
             material['IsZero'] = False
         assets[new] = result
-    unit_path = content / ('Datatable/' + UNIT_TABLE + '.uasset')
-    assets['Datatable/' + UNIT_TABLE] = battle_table(decode(unit_path, 'built-battle-units'), unit)
     for rel, view in assets.items():
         cave.names(view, [view['Imports'], view['Exports']])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
@@ -166,8 +186,6 @@ def build(units, env):
         run(tool + ['fromjson', str(dump), str(dest), '--usmap', usmap])
         check = decode(dest, Path(rel).name + '-verified')
         cave.check_level(view, check)
-        if 'Datatable/' in rel and cave.semantic(table_rows(view)) != cave.semantic(table_rows(check)):
-            raise ValueError('Crystal Fina battle data did not survive native serialization.')
     for suffix in ('.ubulk', '.uptnl'):
         src = legacy / ('FFRS/Content/' + cave.TEST_NATIVE_MESH + suffix)
         if src.is_file(): (content / (private_mesh + suffix)).write_bytes(src.read_bytes())

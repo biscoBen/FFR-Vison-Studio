@@ -127,6 +127,9 @@ def _presentation(original):
                               cave.TEST_SPRITE.removeprefix('/Game/') + '_tex')]
         _ensure_native(env, native)
         tables = [out / ('FFRS/Content/Datatable/' + t + '.uasset') for t in (battle.DESIGN_TABLE, battle.UNIT_TABLE)]
+        cache.execute('fina-bindings', {'id': unit['id'], 'jp': unit['jp']},
+                      [*tables, env['USMAP'], Path(battle.__file__)], tables,
+                      lambda: battle.bind_tables(unit, env))
         old = f'Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
         private_boss = unit['id'] == 29670
         if private_boss: old = 'Chara/summon/summon13108/summon13108'
@@ -136,18 +139,19 @@ def _presentation(original):
         spec = (root / 'tools/crystal_fina_boss.json' if private_boss else
                 root / 'build/sprites' / unit['key'] / 'battle/spec.json')
         sheet = root / unit['ffbe']['dir'] / ('unit_anime_' + battle.SPRITE + '.png') if not private_boss else None
-        inputs = [*native, *tables, *templates, spec, env['USMAP'],
+        inputs = [*native, *templates, spec, env['USMAP'],
                   *_sources(root, [battle, motion, cave])]
         if sheet is not None: inputs.append(sheet)
         name = 'FinaNative' + str(unit['id'])
         outputs = [out / ('FFRS/Content/' + battle.package(unit, leaf) + '.uasset')
                    for leaf in ('SM_Studio_CrystalFina', 'MI_Studio_CrystalFina', name, name+'_tex', name+'_normal', name+'_mreo')]
-        outputs += [out / ('FFRS/Content/' + battle.glow_package(unit) + '.uasset'), *tables,
+        outputs += [out / ('FFRS/Content/' + battle.glow_package(unit) + '.uasset'),
                     root / 'build/crystal-fina-battle/runtime.json']
         value = {'revision': 1, 'id': unit['id'], 'jp': unit['jp'], 'boss': private_boss,
                  'enemyMotion': testing.settings(root)['practiceBattle'] or challenges.needs_enemy_motion(unit)
                                 or sephira.membership(unit) is not None}
-        hit = cache.execute('fina-presentation', value, inputs, outputs, lambda: original(units, env))
+        hit = cache.execute('fina-presentation', value, inputs, outputs,
+                            lambda: original(units, dict(env, _fina_tables_bound=True)))
         if hit: print('  Crystal Fina presentation: reused verified body, crystal, glow and runtime data.', flush=True)
     build._incremental = True
     return build

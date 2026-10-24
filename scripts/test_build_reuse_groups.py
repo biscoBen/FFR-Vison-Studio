@@ -16,6 +16,41 @@ import _ffr_game_tables as tables
 
 
 class GroupReuseTests(unittest.TestCase):
+    def test_unrelated_unit_table_change_rebinds_fina_without_recooking_her_body(self):
+        import _ffr_fina_battle as battle
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder); out=root/'out'; bindings=[]; cooked=[]
+            unit={'id':13503,'jp':'Fina','key':'fina','ffbe':{'id':battle.SPRITE,'source':'CUSTOM','dir':'raw'}}
+            paths=[out/('FFRS/Content/Datatable/'+rel+'.uasset') for rel in (battle.DESIGN_TABLE,battle.UNIT_TABLE)]
+            def bind(current,env):
+                bindings.append(paths[0].read_bytes())
+                for p in paths:p.write_bytes(p.read_bytes()+b':bound')
+            def body(units,env):
+                self.assertTrue(env['_fina_tables_bound']);cooked.append(True)
+                leaves=['SM_Studio_CrystalFina','MI_Studio_CrystalFina','FinaNative13503',
+                        'FinaNative13503_tex','FinaNative13503_normal','FinaNative13503_mreo']
+                targets=[out/('FFRS/Content/'+battle.package(unit,leaf)+'.uasset') for leaf in leaves]
+                targets.append(out/('FFRS/Content/'+battle.glow_package(unit)+'.uasset'))
+                for p in targets:
+                    p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'body');p.with_suffix('.uexp').write_bytes(b'exports')
+                runtime=root/'build/crystal-fina-battle/runtime.json';runtime.parent.mkdir(parents=True,exist_ok=True)
+                runtime.write_text('{"schema":1}')
+            env={'ROOT':root,'OUT':out,'LEGACY':root/'legacy','USMAP':root/'map.usmap'}
+            wrapped=incremental._presentation(body)
+            for changed in (False,True):
+                for p in paths:
+                    p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'unmodified')
+                    p.with_suffix('.uexp').write_bytes(b'table exports')
+                if changed:paths[0].write_bytes(b'unmodified:another vision changed')
+                cache=reuse.Cache(root,{'game':'one'})
+                with mock.patch.object(reuse,'_active',cache),mock.patch.object(incremental,'_ensure_native'),mock.patch.object(battle,'bind_tables',side_effect=bind):
+                    wrapped([unit],env)
+                if changed:
+                    self.assertEqual(paths[0].read_bytes(),b'unmodified:another vision changed:bound')
+                    self.assertEqual(cache.stats['fina-presentation']['reused'],1)
+            self.assertEqual(len(bindings),2)
+            self.assertEqual(len(cooked),1)
+
     def test_setting_edit_batches_only_changed_assets_and_rebuilds_corrupt_entries(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); legacy = root / 'legacy'; out = root / 'out'

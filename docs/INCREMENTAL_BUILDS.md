@@ -70,6 +70,8 @@ patch, and for Fina's entire presentation and movie wrapper. A changed shop sett
 can reuse unchanged skills, icons and other tables. Dirty packages share one native
 invocation; in-place timeline edits keep the existing guarded command path.
 Fina's runtime data is restored together with her body, glass, glow and textures.
+Her current table bindings are generated/cached separately: another vision's
+challenge or stat edit does not recook her body, and unrelated table rows stay current.
 Native input hashes and complete sidecars still control reuse; a corrupt entry
 regenerates. Both builder and verifier take their own immutable table snapshot at
 the start of each CLI invocation, avoiding repeated parsing without freezing the
@@ -79,7 +81,7 @@ Native component measurements on this executor (not a complete Windows install):
 
 | Work | Cold | Reused / edited |
 | --- | ---: | ---: |
-| Fina body, crystal, glow and runtime | 80.139s | 0.041s, zero native launches |
+| Fina body, crystal, glow and runtime | 83.018s | 0.036s, zero native launches |
 | Fina movie wrapper | 20.153s | 0.063s, companion-pak packing only |
 | 344 skills plus shop table | 6.556s | 0.014s unchanged; 0.844s shop-only edit |
 | 30-vision recipe/source reads | 23.111s | 1.994s using the snapshot |
