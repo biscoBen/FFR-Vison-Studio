@@ -17,7 +17,7 @@ import _ffr_build_cache as reuse
 
 class BuildProgressTests(unittest.TestCase):
     def test_stamp_includes_wall_clock_and_elapsed_build_time(self):
-        line=progress.stamp('native output',100,now=166.25)
+        line=progress.stamp('native output',1700000000,now=1700000066.25)
         self.assertRegex(line,r'^\[\d{4}-\d\d-\d\dT.* \+01:06\.2\] native output$')
 
     def test_failed_operation_still_records_durations_and_cache_counts(self):

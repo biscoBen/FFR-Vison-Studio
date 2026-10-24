@@ -298,6 +298,11 @@ def hook_builder(raw):
     for i, line in enumerate(lines, 1):
         out.append(line)
         if i in additions: out.append(nl.join('    ' + s for s in additions[i]) + nl)
+    parsed = ast.parse(''.join(out))
+    finished_main = next(n for n in parsed.body if isinstance(n,ast.FunctionDef) and n.name=='main')
+    completed = ''.join(out).splitlines(keepends=True)
+    completed.insert(finished_main.end_lineno, '    _ffr_build_progress.finish()' + nl)
+    out = completed
     result = ''.join(out); compile(result, 'make_vision_mod.py', 'exec')
     return (b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'') + result.encode('utf-8')
 

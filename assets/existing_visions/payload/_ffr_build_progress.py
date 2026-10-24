@@ -159,3 +159,7 @@ def capture(cmd, *, log, **kwargs):
     finally:process.stdout.close()
     process.wait()
     return subprocess.CompletedProcess(cmd,process.returncode,stdout='',stderr='')
+
+
+def finish():
+    if _current is not None:_current.finish()
