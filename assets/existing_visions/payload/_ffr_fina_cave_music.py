@@ -1,4 +1,4 @@
-"""Local movie soundtrack from the installed cave recording, with native cue fallback."""
+"""Native Atom soundtrack from the installed game's cave music cue."""
 import copy
 import json
 from pathlib import Path
@@ -145,3 +145,4 @@ def build(child, env, work, native, clone, start, end, duration):
     run([*tool, 'fromjson', str(dump), str(target), '--usmap', usmap])
     run([*tool, 'tojson', str(target), str(dump), '--usmap', usmap])
     assets.check_level(authored, json.loads(dump.read_text(encoding='utf-8-sig')))
+    print('  Crystal Fina: original BGM_PP_EVENT_VISIONS_INST cue from 0:00; native Atom playback, no movie audio conversion.', flush=True)

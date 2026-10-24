@@ -262,23 +262,21 @@ def _cinematic(original):
         root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
         sid = env['lb_id'](selected[0]['id'])
         job, = [j for j in env['authored_sequences'] if f'/Skill/{sid}/{sid + 1}/' in j['asset']]
-        soundtrack=music.movie_audio(env,movie.payload()[1]['movie.usm'])
         inputs = [legacy / (rel + '.uasset') for rel in
                   (movie.MASTER, movie.MOVIE, movie.MOVIE+'_vp9', music.CUE_DONOR, music.SOUND, ffbe_resonance.SHELL)]
         _ensure_native(env, inputs)
         inputs += [out / (job['asset'] + '.uasset'), root / 'tools/fina_cinematic.zip', env['USMAP'],
                    *_sources(root, [movie, music, cave, ffbe_resonance])]
-        if soundtrack: inputs.append(soundtrack)
         outputs = [out / (job['asset'] + '.uasset')]
         outputs += [out / (str(Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{s}') + '.uasset')
                     for s in ('Cut_000', 'Sound_001', 'Effect_000')]
         outputs += [out / (p + '.uasset') for p in (movie.PRIVATE, movie.PRIVATE+'_vp9')]
-        if soundtrack is None: outputs.append(out/(music.CUE+'.uasset'))
+        outputs.append(out/(music.CUE+'.uasset'))
         outputs += [root / 'build/fina-cinematic/timeline.json']
         hit = cache.execute('fina-movie', {'revision': 1, 'asset': job['asset'], 'plan': job['plan']}, inputs, outputs,
-                            lambda: original(units, dict(env,_fina_movie_audio=soundtrack)))
+                            lambda: original(units, env))
         if hit:
-            movie.prepare_pak(root, env['ffrenv'], env['run'], soundtrack.read_bytes() if soundtrack else movie.payload()[1]['movie.usm'])
+            movie.prepare_pak(root, env['ffrenv'], env['run'], movie.payload()[1]['movie.usm'])
             print('  Crystal Fina movie/music: reused verified native timeline and movie descriptors.', flush=True)
     build._incremental = True
     return build

@@ -11,6 +11,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Christine boss pressure and native Fina music
+
+- Keep Christine's level-5 HP (2,750) and break gauge (162), increase her magic stat by 50% and speed by 15% (rounded to the game's integer stat). Blizzard replaces her basic weapon attack. Ice damage is halved and Fire is a weakness; Slumber Mist's native 30% Sleep effect is unchanged.
+- Give the simpler difficulty AI the same bounded offensive and utility choices as the scripted rotation, excluding heals that require the scripted low-HP guard. Other challenges keep their existing stats and skills.
+- Play Fina's cave music directly through the original game's Atom cue from its beginning, with no embedded movie audio or re-encoding. Preserve the approved video, opacity, single playback and battle-music pause/resume. The returned ADX decodes cleanly offline, but the user heard garbling through Mana; native Atom playback still requires an in-game listening test.
+- The reported black screen after Christine's victory remains under investigation. A separate read-only observer now records camera fades, view targets and active sequences while the screen is black; no speculative camera or progression reset is applied.
+
 
 ### Returned full-game reference audit — 2026-10-22
 

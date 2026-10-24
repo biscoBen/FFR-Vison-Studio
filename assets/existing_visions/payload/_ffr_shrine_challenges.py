@@ -121,6 +121,11 @@ def team_stats(rows, level, units):
         row['MaxHitPoint'] = round(total['MaxHitPoint'] * weight / sum(weights))
         row['MaxBreakPoint'] = max(60, round(total['MaxBreakPoint'] * weight / sum(weights)))
         row.update(Level=level, LevelParamId=-1)
+        # Christine's level-five test keeps its approved durability. Increase
+        # spell pressure and only the requested 15% turn-speed adjustment.
+        if unit['sephiraVision']['preset'] == 'christine':
+            row['Intelligence'] = round(total['Intelligence'] * 1.5)
+            row['Agility'] = round(total['Agility'] * 1.15)
         budgets.append(row)
     budgets[-1]['MaxHitPoint'] += total['MaxHitPoint'] - sum(r['MaxHitPoint'] for r in budgets)
     return budgets
@@ -137,9 +142,10 @@ def kit(unit, rows, team_size):
     for field in ('awakening', 'synchro'):
         chosen.extend(g[1] for tier in unit[field] for g in tier if g[0] == 'ActiveSkill')
     result = []
+    basic = data()['kits'][unit['sephiraVision']['preset']].get('basic', 500010)
     for index, identity in enumerate([0, *dict.fromkeys(chosen)]):
         recipe = (unit.get('skills') or {}).get(identity, (unit.get('skills') or {}).get(str(identity), {}))
-        source = recipe.get('from', identity) if identity else 500010
+        source = recipe.get('from', identity) if identity else basic
         if source not in native: raise ValueError('Missing vision boss skill source: ' + str(source))
         key, original = native[source]
         import _ffr_testing as testing
@@ -151,7 +157,8 @@ def kit(unit, rows, team_size):
                    isApplyAllMag=False, playSequencerId=-1, sequencerIdWhenTargetFriendlies=-1,
                    voiceLabel='None', selfSkillActivateVoiceLabel='None', isRemovable=False)
         if recipe.get('en'): row['Name'] = recipe['en']
-        if identity == 0: row.update(Name='Attack', element='None', magnification=12)
+        if identity == 0 and basic == 500010: row.update(Name='Attack', element='None', magnification=12)
+        elif identity == 0: row['Name'] = 'Blizzard'
         healing = row['parameterVariationType'] == 'Increase' and row['parameterType'] == 'HitPoint'
         damaging = row['parameterVariationType'] == 'Decrease' and row['DamageType'] in ('Magic', 'Physic')
         if healing:
@@ -185,6 +192,22 @@ def rotation(unit, recipes, index):
     return actions
 
 
+def casual_actions(unit, recipes, index):
+    """The game's simpler AI must have the same bounded offensive choices.
+
+    Exclude heals: their scripted low-HP guard does not run in this path. The
+    native Probability entries are independent weights, not cumulative limits.
+    """
+    actions = [r for r in rotation(unit, recipes, index) if not r['healing']]
+    counts = {r['id']: sum(a['id'] == r['id'] for a in actions) for r in actions}
+    # Integer percentages round-trip exactly through the native float32 table;
+    # repeating fractions would fail the build's strict native readback check.
+    choices = [{'SkillId': identity, 'Probability': float(round(count * 100 / len(actions)))}
+               for identity, count in counts.items()]
+    choices[0]['Probability'] += 100 - sum(c['Probability'] for c in choices)
+    return choices
+
+
 def _source(rows, rel, identity):
     matches = [(k, v) for k, v in rows(rel).items() if v.get('ID') == identity]
     if len(matches) != 1: raise ValueError(f'Sephira challenge needs native {rel} ID {identity}.')
@@ -203,12 +226,18 @@ def prepare_enemies(table, rows, spec, units):
     _, donor = _source(rows, UNIT, 401)
     for index, (unit, stats) in enumerate(zip(units, team_stats(rows, spec['level'], units))):
         identity, name = boss_id(unit), PREFIX + str(unit['id'])
+        resistances = {k: 'eResistance::None' for k in donor['ElementResistanceList']}
+        for element, resistance in data()['kits'][unit['sephiraVision']['preset']].get('resistances', {}).items():
+            key = 'eElement::' + element
+            if key not in resistances or resistance not in ('Halved', 'Weakness'):
+                raise ValueError('Unsupported challenge resistance: ' + element)
+            resistances[key] = 'eResistance::' + resistance
         _add(table, rows, UNIT, identity, 401, name, {**stats,
             'Name': unit['en'], 'Description': 'Sephira crystal challenge',
             'SortId': identity, 'SaveId': identity, 'FaceIconId': unit['id'],
             'Category': 'Boss', 'Sex': 'Female', 'Race': 'Human', 'IsBoss': True, 'IsAccent': False,
             'HitPoint': 0, 'MagicPoint': stats['MaxMagicPoint'], 'Breakpoint': 0, 'LimitBurstPoint': 0,
-            'ElementResistanceList': {k: 'eResistance::None' for k in donor['ElementResistanceList']},
+            'ElementResistanceList': resistances,
             'passiveSkillList': [], 'WeaponId': -1, 'ArmorId': -1, 'AccessoryIdList': [], 'VisionId': -1,
             'Experience': 0, 'Money': 0, 'DropNormalItem': -1, 'DropNormalItemRate': 0,
             'DropRareItem': -1, 'DropRareItemRate': 0, 'StealNormalItem': -1, 'StealRareItem': -1,
@@ -247,11 +276,12 @@ def prepare_enemies(table, rows, spec, units):
                 table(rel)['add'].append({'row': recipe['name'] + '_Hit_' + str(variant),
                     'cloneFrom': key, 'set': {'ID': recipe['id']}})
         ids = [r['id'] for r in recipes]
+        random_actions = casual_actions(unit, recipes, index)
         _add(table, rows, AI, identity, 401, name, {'aiId': identity, 'fightSkillId': ids[0],
             'silenceFightId': ids[0], 'chaseSkillId': -1, 'counterSkillIdList': [-1, -1],
             'highRiskSkillIdList': [-1, -1],
-            'skillRandData1': [{'SkillId': ids[0], 'Probability': 100.0}],
-            'skillRandData2': [{'SkillId': v, 'Probability': 0.0} for v in ids]})
+            'skillRandData1': random_actions,
+            'skillRandData2': copy.deepcopy(random_actions)})
         for rel in AI_ASSETS:
             package = 'BP/Battle/AI/Studio/BP_' + name
             _add(table, rows, rel, identity, 401, name, {'UnitAIClass': '/Game/' + package + '.BP_' + name + '_C'})

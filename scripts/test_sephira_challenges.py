@@ -160,12 +160,37 @@ class SephiraChallengeTests(unittest.TestCase):
         enemy=next(v for v in self.built[challenge.UNIT].values() if v.get('ID')==challenge.boss_id(unit))
         self.assertEqual(enemy['Level'],5)
         expected=challenge.curve(lambda rel:self.native[rel],5)
-        for field in challenge.PARAMETERS:self.assertEqual(enemy[field],expected[field])
+        for field in challenge.PARAMETERS:
+            factor = {'Intelligence':1.5, 'Agility':1.15}.get(field,1)
+            self.assertEqual(enemy[field],round(expected[field]*factor))
+        self.assertEqual((enemy['MaxHitPoint'],enemy['MaxBreakPoint']),(2750,162))
+        self.assertEqual(enemy['ElementResistanceList']['eElement::Ice'],'eResistance::Halved')
+        self.assertEqual(enemy['ElementResistanceList']['eElement::Fire'],'eResistance::Weakness')
         self.assertGreater(enemy['MaxHitPoint'],challenge.curve(lambda rel:self.native[rel],2)['MaxHitPoint'])
         kit=challenge.kit(unit,lambda rel:self.native[rel],1)
-        self.assertEqual(kit[0]['fields']['Name'],'Attack')
+        self.assertEqual(kit[0]['source'],220050)
+        self.assertEqual(kit[0]['fields']['Name'],'Blizzard')
         originals={v['ID']:v for v in self.native[challenge.SKILL].values()}
         self.assertTrue(any(testing.apply_fields(originals[r['source']],r['fields'])['element']=='Ice' for r in kit))
+        slumber=next(r for r in kit if r['source']==500570)
+        self.assertEqual(testing.apply_fields(originals[500570],slumber['fields'])['effectBundleList'],
+                         originals[500570]['effectBundleList'])
+
+    def test_casual_ai_uses_reviewed_moves_without_unguarded_heals(self):
+        for spec, units in challenge.plans(self.units):
+            for index, unit in enumerate(units):
+                recipes=challenge.kit(unit,lambda rel:self.native[rel],len(units))
+                allowed={r['id'] for r in challenge.rotation(unit,recipes,index) if not r['healing']}
+                ai=self.built[challenge.AI][challenge.PREFIX+str(unit['id'])]
+                for field in ('skillRandData1','skillRandData2'):
+                    choices=ai[field]
+                    self.assertEqual({c['SkillId'] for c in choices},allowed)
+                    self.assertTrue(all(c['Probability']>0 for c in choices))
+                    self.assertAlmostEqual(sum(c['Probability'] for c in choices),100)
+                if unit['sephiraVision']['preset']=='christine':
+                    self.assertEqual(ai['fightSkillId'],recipes[0]['id'])
+                    self.assertGreater(len(allowed),1)
+                    self.assertNotIn(500010,{r['source'] for r in recipes})
 
     def test_team_durability_is_one_boss_budget_and_rotation_executes(self):
         rows = lambda rel: self.native[rel]

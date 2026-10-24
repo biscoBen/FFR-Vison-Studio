@@ -503,6 +503,11 @@
       "utility": 505420
     },
     "christine": {
+      "basic": 220050,
+      "resistances": {
+        "Ice": "Halved",
+        "Fire": "Weakness"
+      },
       "attacks": [
         220050,
         220060,
