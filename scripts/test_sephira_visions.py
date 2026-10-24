@@ -54,14 +54,18 @@ class SephiraTests(unittest.TestCase):
                     for kind,id,*_ in tier:
                         if kind not in ['ActiveSkill','PassiveSkill']: continue
                         if kind=='ActiveSkill': id=u['skills'].get(str(id),{}).get('from',id)
-                        # The preserved original collection is allocated once
-                        # in MR; supplementary awakening choices may be shared.
-                        if kind=='PassiveSkill' and field=='awakening': continue
+                        # General passive rewards may be shared; command-bound
+                        # traits now remain in their owner's awakening kit.
+                        if kind=='PassiveSkill': continue
                         key=f'{kind}:{id}'
                         self.assertNotIn(key,seen,key)
                         seen[key]=p['id']
         for e in audit['entries']:
-            self.assertEqual(seen[f"{e['kind']}:{e['id']}"],e['assignedTo'])
+            if e['kind']=='PassiveSkill':
+                owner=next(p['profile'] for p in catalog['presets'] if p['id']==e['assignedTo'])
+                self.assertIn(e['id'],{g[1] for f in ('awakening','synchro') for t in owner[f]
+                                      for g in t if g[0]=='PassiveSkill'})
+            else:self.assertEqual(seen[f"{e['kind']}:{e['id']}"],e['assignedTo'])
         self.assertEqual(len(audit['entries']),291)
         excluded={v['id'] for v in audit['excludedVisions']}
         budgets={p['balance']['nativeBudget'] for p in catalog['presets']}

@@ -303,7 +303,7 @@
       "index": 9,
       "name": "Zidane",
       "presets": [
-        "lunafreya",
+        "rikku",
         "eiko"
       ],
       "legend": 9,
@@ -402,7 +402,7 @@
       "index": 12,
       "name": "Vaan",
       "presets": [
-        "rikku",
+        "lunafreya",
         "elephim"
       ],
       "legend": 12,

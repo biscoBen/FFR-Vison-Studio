@@ -317,6 +317,9 @@ class CharacterConfig {
     }
     final ffbe = unit['ffbe'];
     final native = unit['native'];
+    if (unit.containsKey('nativeVoice') && (native == null || !integer(unit['nativeVoice']))) {
+      throw const FormatException('A vision voice must refer to an original game vision.');
+    }
     if (unit.containsKey('testAcquire') && (unit['testAcquire'] is! bool || native == null)) {
       throw const FormatException('Test acquisition requires an original vision.');
     }

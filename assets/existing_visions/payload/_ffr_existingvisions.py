@@ -141,6 +141,10 @@ def validate(unit, rows):
     if base.get('id') != unit['id'] or unit.get('lb_custom'):
         raise ValueError('Original visions support existing Resonances; a new custom Resonance must be added as a separate vision.')
     one(rows, UNIT, 'ID', unit['id']); _, item = one(rows, VISION, 'ID', unit['id'])
+    if 'nativeVoice' in unit:
+        source = unit['nativeVoice']
+        if type(source) is not int or source <= 0: raise ValueError('Select an original vision voice.')
+        one(rows, VISION, 'ID', source)
     _, master = one(rows, 'Skill/DT_MasterSkillData', 'VisionId', unit['id'])
     if base['command']['id'] != item['CommandId'] or base['master']['id'] != master['ID']:
         raise ValueError('The original game identities changed; reset and review this vision before building.')

@@ -92,20 +92,20 @@ Sprite `310000505` (GL); base-stat budget: Squall. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Rend ← Rend [501510, enemy]: MP 8, power 18. Non-elemental physical damage; power 18. Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Venom Skewer ← Skewer [501790, enemy]: MP 12, power 18. Non-elemental physical damage; power 18. Apply Poison (50%). Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Grand Slash ← Grand Slash [501310, enemy]: MP 18, power 18. Non-elemental physical damage; power 18. Group enemies; MP 18; hits 1; accuracy 100; stagger 12.
-- Perforate ← Perforate [502220, enemy]: MP 24, power 30. Non-elemental physical damage; power 30. Apply Poison (50%). Single enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Blade Volley ← Machine Gun [500150, enemy]: MP 10, power 12. Non-elemental physical damage; power 12. Single enemies; MP 10; hits 4; accuracy 100; stagger 25.
-- Colossal Cleave ← Colossus Cleave [501720, enemy]: MP 22, power 30. Non-elemental physical damage; power 30. Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Quad Blade ← Barrage [503260, enemy]: MP 24, power 32. Non-elemental physical damage; power 32. Single enemies; MP 24; hits 4; accuracy 100; stagger 12.
-- Binding Assault ← Boundless Void [505950, enemy]: MP 20, power 24. Non-elemental physical damage; power 24. Apply Paralyzation (50%). Single enemies; MP 20; hits 2; accuracy 100; stagger 33.
-- Rending Edge ← Devil Claw [571330, enemy]: MP 18, power 20. Non-elemental physical damage; power 20. Also remove enemy buffs. Single enemies; MP 18; hits 1; accuracy 100; stagger 25.
-- Offensive Calibration ← 猛攻の血を注入した！ [501780, enemy]: MP 20, power 0. Raise own attack and magic by 50% for 3 turns. Self friendlies; MP 20; hits 1; accuracy 100; stagger 25.
-- Guard Mode ← Assaulting Warcry [505420, enemy]: MP 12, power 0. Reduce own physical damage taken by 30% for 3 turns. Self friendlies; MP 12; hits 1; accuracy 100; stagger 25.
-- Relentless Blade ← Unrelenting Claw [503840, enemy]: MP 28, power 36. Non-elemental physical damage; power 36. Single enemies; MP 28; hits 1; accuracy 100; stagger 20.
-- Charging Blade ← Trample [501050, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Numbing Slash ← Numbclaw [500890, enemy]: MP 10, power 12. Non-elemental physical damage; power 12. Apply Paralyzation (100%). Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
+- Rend ← Rend [501510, enemy]: MP 8, power 18. Deal physical damage to an enemy.
+- Venom Skewer ← Skewer [501790, enemy]: MP 12, power 18. Deal physical damage to an enemy. Inflict Poison with a 50% chance.
+- Grand Slash ← Grand Slash [501310, enemy]: MP 18, power 18. Deal physical damage to all enemies.
+- Perforate ← Perforate [502220, enemy]: MP 24, power 30. Deal physical damage to an enemy. Inflict Poison with a 50% chance.
+- Blade Volley ← Machine Gun [500150, enemy]: MP 10, power 12. Deal physical damage to an enemy 4 times.
+- Colossal Cleave ← Colossus Cleave [501720, enemy]: MP 22, power 30. Deal physical damage to an enemy.
+- Quad Blade ← Barrage [503260, enemy]: MP 24, power 32. Deal physical damage to an enemy 4 times.
+- Binding Assault ← Boundless Void [505950, enemy]: MP 20, power 24. Deal physical damage to an enemy 2 times. Inflict Paralysis with a 50% chance.
+- Rending Edge ← Devil Claw [571330, enemy]: MP 18, power 20. Deal physical damage to an enemy. remove enemy buffs.
+- Offensive Calibration ← 猛攻の血を注入した！ [501780, enemy]: MP 20, power 0. Increase own attack and magic by 50% for 3 turns.
+- Guard Mode ← Assaulting Warcry [505420, enemy]: MP 12, power 0. Reduce own physical damage taken by 30% for 3 turns.
+- Relentless Blade ← Unrelenting Claw [503840, enemy]: MP 28, power 36. Deal physical damage to an enemy.
+- Charging Blade ← Trample [501050, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Numbing Slash ← Numbclaw [500890, enemy]: MP 10, power 12. Deal physical damage to an enemy. Inflict Paralysis.
 
 ### Christine — 6
 
@@ -116,29 +116,29 @@ Sprite `401002606` (GL); base-stat budget: Tronn. Growth: Terra.
 - Awakening 1: Blizzard [220050]; Silence [230030]; Dispel [210200]; Blizzard Beam [485109]; Frost Wave [485115]; Frozen Needle [485130]; MP +10% [1380]; Resist Ice [1033].
 - Awakening 2: Blizzara [220060]; Blizzaga [220070]; Absolute Zero [485106]; Slumber Mist [485112]; Frozen Needle II [485133]; Snowstorm [485139]; Focus Magic [400630]; Speed +10% [1277].
 - Awakening 3: Freezing Spike [485103]; Frozen Needle III [485136]; Frostspike [485142]; Deshell on Stagger [1285].
-- Awakening 4: Fill LB on Stagger [1280].
+- Awakening 4: True Stagger [1406].
 - MR 1: Restore MP on Stagger [1281].
 - MR 2: Agility +5 (permanent).
 - MR 3: Stagger Power +30% [1376].
 - MR 4: AP +8 (permanent).
 - MR 5: Victor’s Respite [1407].
 - MR 6: MP +20 (permanent).
-- MR 7: True Stagger [1406].
+- MR 7: Fill LB on Stagger [1280].
 - MR 8: Magic +15 (permanent).
 - MR 9: Half MP Cost [1045]; AP +8 (permanent); Spirit of Christine.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Freezing Spike ← Freezing Spike [220080, native]: MP 30, power 30. Ice magic damage; power 30. Group enemies; MP 30; hits 3; accuracy 100; stagger 21.
-- Absolute Zero ← Absolute Zero [500230, enemy]: MP 22, power 24. Ice magic damage; power 24. Group enemies; MP 22; hits 1; accuracy 100; stagger 12.
-- Blizzard Beam ← Blizzard Beam [500990, enemy]: MP 10, power 18. Ice magic damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Slumber Mist ← Sleep Gas [500570, enemy]: MP 20, power 0. Apply Sleep (30%). Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Frost Wave ← Blaze [500350, enemy]: MP 12, power 12. Ice magic damage; power 12. Group enemies; MP 12; hits 2; accuracy 100; stagger 12.
-- Frozen Needle ← Blizzard of the Seventh Dawn [220420, native]: MP 5, power 19. Ice magic damage; power 19. Single enemies; MP 5; hits 1; accuracy 100; stagger 17.
-- Frozen Needle II ← Blizzard II of the Seventh Dawn [220430, native]: MP 17, power 36. Ice magic damage; power 36. Single enemies; MP 17; hits 2; accuracy 100; stagger 19.
-- Frozen Needle III ← Blizzard III of the Seventh Dawn [220440, native]: MP 45, power 48. Ice magic damage; power 48. Group enemies; MP 45; hits 3; accuracy 100; stagger 25.
-- Snowstorm ← Snowstorm [500470, enemy]: MP 20, power 18. Ice magic damage; power 18. Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Frostspike ← Frostspike [506130, enemy]: MP 32, power 30. Ice magic damage; power 30. Apply Slow (100%). Group enemies; MP 32; hits 3; accuracy 100; stagger 21.
+- Freezing Spike ← Freezing Spike [220080, native]: MP 30, power 30. Deal Ice magic damage to all enemies 3 times.
+- Absolute Zero ← Absolute Zero [500230, enemy]: MP 22, power 24. Deal Ice magic damage to all enemies.
+- Blizzard Beam ← Blizzard Beam [500990, enemy]: MP 10, power 18. Deal Ice magic damage to an enemy.
+- Slumber Mist ← Sleep Gas [500570, enemy]: MP 20, power 0. Inflict Sleep with a 30% chance.
+- Frost Wave ← Blaze [500350, enemy]: MP 12, power 12. Deal Ice magic damage to all enemies 2 times.
+- Frozen Needle ← Blizzard of the Seventh Dawn [220420, native]: MP 5, power 19. Deal Ice magic damage to an enemy.
+- Frozen Needle II ← Blizzard II of the Seventh Dawn [220430, native]: MP 17, power 36. Deal Ice magic damage to an enemy 2 times.
+- Frozen Needle III ← Blizzard III of the Seventh Dawn [220440, native]: MP 45, power 48. Deal Ice magic damage to all enemies 3 times.
+- Snowstorm ← Snowstorm [500470, enemy]: MP 20, power 18. Deal Ice magic damage to all enemies.
+- Frostspike ← Frostspike [506130, enemy]: MP 32, power 30. Deal Ice magic damage to all enemies 3 times. Inflict Slow.
 
 ### Crystal Fina — Custom
 
@@ -162,15 +162,15 @@ Sprite `99887755552703` (CUSTOM); base-stat budget: Ayaka. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Holy ← Holy [210190, native]: MP 63, power 80. Light magic damage; power 80. Single enemies; MP 63; hits 1; accuracy 100; stagger 40.
-- Reraise ← Reraise [210240, native]: MP 60, power 0. Grant Reraise to an ally. Single friendlies; MP 60; hits 1; accuracy 100; stagger 25.
-- Radiant Restoration ← Curaga [215020, native]: MP 65, power 1500. Restore healing power 1500. Group friendlies; MP 65; hits 1; accuracy 100; stagger 60.
-- Crystal Ray ← Array: Brilliance [503630, enemy]: MP 24, power 32. Light magic damage; power 32. Single enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Restore ← Restore [501930, enemy]: MP 18, power 20. Restore 20% max HP. Single friendlies; MP 18; hits 1; accuracy 100; stagger 25.
-- Crystal Sanctification ← Holy [240190, enemy]: MP 45, power 40. Light magic damage; power 40. Group enemies; MP 45; hits 1; accuracy 100; stagger 40.
-- Crystal Renewal ← Repair [503210, enemy]: MP 35, power 10. Restore 10% max HP. Group friendlies; MP 35; hits 1; accuracy 100; stagger 25.
-- Purify ← Regurgitate [570690, enemy]: MP 15, power 50. Remove an ally’s ailments. Single friendlies; MP 15; hits 1; accuracy 100; stagger 0.
-- Crystal Renewal ← Curaga [506110, enemy]: MP 50, power 400. Restore healing power 400. Group friendlies; MP 50; hits 1; accuracy 100; stagger 50.
+- Holy ← Holy [210190, native]: MP 63, power 80. Deal Light magic damage to an enemy.
+- Reraise ← Reraise [210240, native]: MP 60, power 0. Grant Reraise to an ally.
+- Radiant Restoration ← Curaga [215020, native]: MP 65, power 1500. Restore all allies’ HP.
+- Crystal Ray ← Array: Brilliance [503630, enemy]: MP 24, power 32. Deal Light magic damage to an enemy.
+- Restore ← Restore [501930, enemy]: MP 18, power 20. Restore 20% of an ally’s max HP.
+- Crystal Sanctification ← Holy [240190, enemy]: MP 45, power 40. Deal Light magic damage to all enemies.
+- Crystal Renewal ← Repair [503210, enemy]: MP 35, power 10. Restore 10% of all allies’ max HP.
+- Purify ← Regurgitate [570690, enemy]: MP 15, power 50. Remove an ally’s ailments.
+- Crystal Renewal ← Curaga [506110, enemy]: MP 50, power 400. Restore all allies’ HP.
 
 ### Barusa — 6
 
@@ -181,7 +181,7 @@ Sprite `401003006` (GL); base-stat budget: Wilhelm. Growth: Cloud.
 - Awakening 1: Stone Surge [421400]; Stone Slam [421340]; Quicksand [485309]; Granite Claw [485312]; Granite Slam [485333]; Stone Horn [485336]; Guard [400640]; Physical Defense +20% [1313].
 - Awakening 2: Stonera Surge [421410]; Stonera Slam [421350]; D Sword Breaker [414700]; Crust Driver [485303]; Granite Shell Strike [485330]; Nullify Sleep [1106]; Protect Opener [1290].
 - Awakening 3: Stonega Surge [421420]; Stonega Slam [421360]; Supreme Defense [414710]; Mantle Driver [485306]; HP +30% [1379]; Fill LB when Taking Damage [1331].
-- Awakening 4: Critical Counter [1333].
+- Awakening 4: Bastion [1454].
 - MR 1: Imbue Earth [1526].
 - MR 2: HP +30 (permanent).
 - MR 3: Strategic Acumen [1336].
@@ -190,17 +190,17 @@ Sprite `401003006` (GL); base-stat budget: Wilhelm. Growth: Cloud.
 - MR 6: Defence +10 (permanent).
 - MR 7: Unmoving Bulwark [1453].
 - MR 8: Attack +15 (permanent).
-- MR 9: Bastion [1454]; AP +8 (permanent); Spirit of Barusa.
+- MR 9: Critical Counter [1333]; AP +8 (permanent); Spirit of Barusa.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Crust Driver ← Crust Driver [414800, native]: MP 20, power 23. Earth physical damage; power 23. Single enemies; MP 20; hits 1; accuracy 100; stagger 33.
-- Mantle Driver ← Mantle Driver [414810, native]: MP 37, power 49. Earth physical damage; power 49. Single enemies; MP 37; hits 3; accuracy 100; stagger 36.
-- Quicksand ← Quicksand [500330, enemy]: MP 12, power 12. Earth physical damage; power 12. Apply Slow (100%). Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Granite Claw ← Pincer [500540, enemy]: MP 8, power 18. Non-elemental physical damage; power 18. Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Granite Shell Strike ← Turtle Shell [501340, enemy]: MP 18, power 24. Earth physical damage; power 24. Also reduce own physical damage taken by 30% for 3 turns. Single enemies; MP 18; hits 1; accuracy 100; stagger 25.
-- Granite Slam ← Slam [500030, enemy]: MP 6, power 12. Earth physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.
-- Stone Horn ← Horn [500550, enemy]: MP 10, power 18. Earth physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
+- Crust Driver ← Crust Driver [414800, native]: MP 20, power 23. Deal Earth physical damage to an enemy.
+- Mantle Driver ← Mantle Driver [414810, native]: MP 37, power 49. Deal Earth physical damage to an enemy 3 times.
+- Quicksand ← Quicksand [500330, enemy]: MP 12, power 12. Deal Earth physical damage to an enemy. Inflict Slow.
+- Granite Claw ← Pincer [500540, enemy]: MP 8, power 18. Deal physical damage to an enemy.
+- Granite Shell Strike ← Turtle Shell [501340, enemy]: MP 18, power 24. Deal Earth physical damage to an enemy. reduce own physical damage taken by 30% for 3 turns.
+- Granite Slam ← Slam [500030, enemy]: MP 6, power 12. Deal Earth physical damage to an enemy.
+- Stone Horn ← Horn [500550, enemy]: MP 10, power 18. Deal Earth physical damage to an enemy.
 
 ### Blue Sky Belle Fran — 6
 
@@ -224,15 +224,15 @@ Sprite `212001706` (GL); base-stat budget: Firion. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Poison Arrow ← Poison Slash [500210, enemy]: MP 8, power 12. Non-elemental physical damage; power 12. Apply Poison (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Binding Arrow ← Stun Slash [501170, enemy]: MP 10, power 12. Non-elemental physical damage; power 12. Apply Paralyzation (100%). Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Arrow Tempest ← Frenzied Bombardment [503250, enemy]: MP 32, power 32. Non-elemental physical damage; power 32. Group enemies; MP 32; hits 4; accuracy 100; stagger 12.
-- Triple Arrow ← Beak [500480, enemy]: MP 10, power 12. Non-elemental physical damage; power 12. Single enemies; MP 10; hits 3; accuracy 100; stagger 25.
-- Roving Volley ← Strikes of the Duty Bound [503820, enemy]: MP 28, power 32. Non-elemental physical damage; power 32. Random enemies; MP 28; hits 4; accuracy 100; stagger 12.
-- Windfeather Volley ← 羽ばたき_物理 [503880, enemy]: MP 20, power 20. Wind physical damage; power 20. Group enemies; MP 20; hits 3; accuracy 100; stagger 20.
-- Snipe ← Snipe [500110, enemy]: MP 6, power 12. Non-elemental physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.
-- Flurry Arrow ← Flatten [500190, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 2; accuracy 100; stagger 25.
-- Focused Arrow ← Hack [500050, enemy]: MP 8, power 18. Non-elemental physical damage; power 18. Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
+- Poison Arrow ← Poison Slash [500210, enemy]: MP 8, power 12. Deal physical damage to an enemy. Inflict Poison.
+- Binding Arrow ← Stun Slash [501170, enemy]: MP 10, power 12. Deal physical damage to an enemy. Inflict Paralysis.
+- Arrow Tempest ← Frenzied Bombardment [503250, enemy]: MP 32, power 32. Deal physical damage to all enemies 4 times.
+- Triple Arrow ← Beak [500480, enemy]: MP 10, power 12. Deal physical damage to an enemy 3 times.
+- Roving Volley ← Strikes of the Duty Bound [503820, enemy]: MP 28, power 32. Deal physical damage to random enemies 4 times.
+- Windfeather Volley ← 羽ばたき_物理 [503880, enemy]: MP 20, power 20. Deal Wind physical damage to all enemies 3 times.
+- Snipe ← Snipe [500110, enemy]: MP 6, power 12. Deal physical damage to an enemy.
+- Flurry Arrow ← Flatten [500190, enemy]: MP 10, power 18. Deal physical damage to an enemy 2 times.
+- Focused Arrow ← Hack [500050, enemy]: MP 8, power 18. Deal physical damage to an enemy.
 
 ### Oracle Maiden Lunafreya — NV Brave Shift
 
@@ -256,15 +256,15 @@ Sprite `215002417` (GL); base-stat budget: Zidane. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Sundering Wind ← Sundering Wind [502470, enemy]: MP 28, power 0. Reduce enemy physical and magic defense by 30% for 3 turns. Group enemies; MP 28; hits 1; accuracy 100; stagger 12.
-- Graceful Deluge ← Graceful Deluge [501420, enemy]: MP 40, power 30. Water magic damage; power 30. Also reduce enemy physical and magic defense. Group enemies; MP 40; hits 3; accuracy 100; stagger 12.
-- Slowing Tide ← Mucus [500500, enemy]: MP 8, power 0. Apply Slow (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Confusega ← Confusega [235070, native]: MP 24, power 0. Apply Confusion (50%). Group enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Maelstrom ← Maelstrom [500760, enemy]: MP 22, power 24. Water magic damage; power 24. Group enemies; MP 22; hits 1; accuracy 100; stagger 12.
-- Blinding Light ← Flash [500820, enemy]: MP 18, power 0. Apply Blind (100%). Group enemies; MP 18; hits 1; accuracy 100; stagger 12.
-- Oracle’s Censure ← Biased Examination [503170, enemy]: MP 50, power 0. Attempt to lower enemy attack, magic, defenses and speed. Group enemies; MP 50; hits 1; accuracy 100; stagger 12.
-- Weakening Tide ← Splattering Flesh [503670, enemy]: MP 24, power 10. Water magic damage; power 10. Also lower enemy physical attack and defense. Group enemies; MP 24; hits 1; accuracy 100; stagger 12.
-- Fading Tide ← Splattering Fluid [503680, enemy]: MP 24, power 10. Water magic damage; power 10. Also lower enemy magic and magic defense. Group enemies; MP 24; hits 1; accuracy 100; stagger 12.
+- Sundering Wind ← Sundering Wind [502470, enemy]: MP 28, power 0. Reduce enemy physical and magic defense by 30% for 3 turns.
+- Graceful Deluge ← Graceful Deluge [501420, enemy]: MP 40, power 30. Deal Water magic damage to all enemies 3 times. reduce enemy physical and magic defense.
+- Slowing Tide ← Mucus [500500, enemy]: MP 8, power 0. Inflict Slow.
+- Confusega ← Confusega [235070, native]: MP 24, power 0. Inflict Confusion with a 50% chance.
+- Maelstrom ← Maelstrom [500760, enemy]: MP 22, power 24. Deal Water magic damage to all enemies.
+- Blinding Light ← Flash [500820, enemy]: MP 18, power 0. Inflict Blind.
+- Oracle’s Censure ← Biased Examination [503170, enemy]: MP 50, power 0. Attempt to lower enemy attack, magic, defenses and speed.
+- Weakening Tide ← Splattering Flesh [503670, enemy]: MP 24, power 10. Deal Water magic damage to all enemies. lower enemy physical attack and defense.
+- Fading Tide ← Splattering Fluid [503680, enemy]: MP 24, power 10. Deal Water magic damage to all enemies. lower enemy magic and magic defense.
 
 ### Minfilia — 4
 
@@ -274,28 +274,28 @@ Sprite `214000304` (GL); base-stat budget: Onion Knight. Growth: Lightning.
 
 - Awakening 1: Stone [220210]; Protect [230040]; Gale [485606]; Sandstorm [485609]; Quiet Recovery [485615]; Earthward [485630]; Throw [400240]; Magic Attack +20% [1311].
 - Awakening 2: Stonera [220220]; Protectga [230050]; Petrifying Gaze [485612]; Warrior’s Blessing [485636]; Nullify Slow [1116]; MP +20% [1381].
-- Awakening 3: Stonega [220230]; Blade Torrent [445200]; Calamity [485603]; Stonefall [485633]; Speed +10% [1277]; Physical Defense +20% [1313].
-- Awakening 4: Dual Jobs [485690]; Strategic Acumen [1336].
+- Awakening 3: Stonega [220230]; Blade Torrent [445200]; Calamity [485603]; Stonefall [485633]; Speed +10% [1277]; Job Change [1410].
+- Awakening 4: Dual Jobs [485690]; Late Bloomer [1411].
 - MR 1: Observe and Recover HP [1465].
 - MR 2: Attack +5 (permanent).
 - MR 3: Observe and Attack [1343].
 - MR 4: AP +8 (permanent).
-- MR 5: Job Change [1410].
+- MR 5: Physical Defense +20% [1313].
 - MR 6: MP +20 (permanent).
-- MR 7: Late Bloomer [1411].
+- MR 7: Strategic Acumen [1336].
 - MR 8: Magic +15 (permanent).
 - MR 9: Chuck [1412]; AP +8 (permanent); Spirit of Minfilia.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Calamity ← Calamity [220240, native]: MP 35, power 30. Earth magic damage; power 30. Group enemies; MP 35; hits 3; accuracy 100; stagger 21.
-- Gale ← Aero [225120, native]: MP 12, power 17. Wind magic damage; power 17. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Sandstorm ← Sandstorm [500320, enemy]: MP 12, power 12. Earth physical damage; power 12. Apply Blind (30%). Group enemies; MP 12; hits 2; accuracy 100; stagger 12.
-- Petrifying Gaze ← Petrifying Gaze [500600, enemy]: MP 18, power 0. Apply Stoned (30%). Single enemies; MP 18; hits 1; accuracy 100; stagger 25.
-- Quiet Recovery ← Groom [502610, enemy]: MP 5, power 100. Restore healing power 100. Self friendlies; MP 5; hits 1; accuracy 100; stagger 25.
-- Earthward ← Stone [225150, native]: MP 12, power 17. Earth magic damage; power 17. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Stonefall ← Stonega [255170, enemy]: MP 28, power 24. Earth magic damage; power 24. Group enemies; MP 28; hits 3; accuracy 100; stagger 15.
-- Warrior’s Blessing ← Red Wing Legacy [502730, enemy]: MP 14, power 0. Raise an ally’s attack by 50% for 3 turns. Single friendlies; MP 14; hits 1; accuracy 100; stagger 0.
+- Calamity ← Calamity [220240, native]: MP 35, power 30. Deal Earth magic damage to all enemies 3 times.
+- Gale ← Aero [225120, native]: MP 12, power 17. Deal Wind magic damage to all enemies.
+- Sandstorm ← Sandstorm [500320, enemy]: MP 12, power 12. Deal Earth physical damage to all enemies 2 times. Inflict Blind with a 30% chance.
+- Petrifying Gaze ← Petrifying Gaze [500600, enemy]: MP 18, power 0. Inflict Stoned with a 30% chance.
+- Quiet Recovery ← Groom [502610, enemy]: MP 5, power 100. Restore own HP.
+- Earthward ← Stone [225150, native]: MP 12, power 17. Deal Earth magic damage to all enemies.
+- Stonefall ← Stonega [255170, enemy]: MP 28, power 24. Deal Earth magic damage to all enemies 3 times.
+- Warrior’s Blessing ← Red Wing Legacy [502730, enemy]: MP 14, power 0. Increase an ally’s attack by 50% for 3 turns.
 
 ### Folka — 6
 
@@ -319,19 +319,19 @@ Sprite `100018306` (GL); base-stat budget: Tronn. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Aqua Breath ← Aqua Breath [500800, enemy]: MP 20, power 18. Water magic damage; power 18. Group enemies; MP 20; hits 3; accuracy 100; stagger 12.
-- Tidal Wave ← Tidal Wave [505130, enemy]: MP 32, power 36. Water magic damage; power 36. Group enemies; MP 32; hits 2; accuracy 100; stagger 12.
-- Watera Tide ← Watera [225100, native]: MP 30, power 33. Water magic damage; power 33. Group enemies; MP 30; hits 2; accuracy 100; stagger 19.
-- Bio ← Bio [250260, enemy]: MP 10, power 12. Non-elemental magic damage; power 12. Apply Poison (100%). Single enemies; MP 10; hits 1; accuracy 100; stagger 20.
-- Poisonga ← Poisonga [225180, native]: MP 20, power 0. Apply Poison (100%). Group enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Waterga Tide ← Waterga [225110, native]: MP 60, power 55. Water magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
-- Sundering Deluge ← Graceful Deluge [501410, enemy]: MP 28, power 26. Water magic damage; power 26. Apply DeffenceDown (100%), MindDown (100%). Group enemies; MP 28; hits 3; accuracy 100; stagger 12.
-- Piercing Current ← Psycho Skewer [505320, enemy]: MP 36, power 40. Water magic damage; power 40. Single enemies; MP 36; hits 1; accuracy 100; stagger 25.
-- Rushing Tide ← Watera [250140, enemy]: MP 22, power 22. Water magic damage; power 22. Random enemies; MP 22; hits 3; accuracy 100; stagger 19.
-- Restoring Mist ← White Wind [500810, enemy]: MP 45, power 500. Restore healing power 500. Group friendlies; MP 45; hits 1; accuracy 100; stagger 50.
-- Oracle’s Blessing ← Blue Wing Legacy [502710, enemy]: MP 14, power 0. Raise an ally’s magic by 50% for 3 turns. Single friendlies; MP 14; hits 1; accuracy 100; stagger 0.
-- Tidal Invocation ← タイダルウェイブ(コロシアム) [571450, enemy]: MP 36, power 30. Water magic damage; power 30. Group enemies; MP 36; hits 4; accuracy 100; stagger 12.
-- Waterga Surge ← Waterga [250150, enemy]: MP 30, power 30. Water magic damage; power 30. Group enemies; MP 30; hits 3; accuracy 100; stagger 21.
+- Aqua Breath ← Aqua Breath [500800, enemy]: MP 20, power 18. Deal Water magic damage to all enemies 3 times.
+- Tidal Wave ← Tidal Wave [505130, enemy]: MP 32, power 36. Deal Water magic damage to all enemies 2 times.
+- Watera Tide ← Watera [225100, native]: MP 30, power 33. Deal Water magic damage to all enemies 2 times.
+- Bio ← Bio [250260, enemy]: MP 10, power 12. Deal magic damage to an enemy. Inflict Poison.
+- Poisonga ← Poisonga [225180, native]: MP 20, power 0. Inflict Poison.
+- Waterga Tide ← Waterga [225110, native]: MP 60, power 55. Deal Water magic damage to all enemies 3 times.
+- Sundering Deluge ← Graceful Deluge [501410, enemy]: MP 28, power 26. Deal Water magic damage to all enemies 3 times. Lower defense and spirit.
+- Piercing Current ← Psycho Skewer [505320, enemy]: MP 36, power 40. Deal Water magic damage to an enemy.
+- Rushing Tide ← Watera [250140, enemy]: MP 22, power 22. Deal Water magic damage to random enemies 3 times.
+- Restoring Mist ← White Wind [500810, enemy]: MP 45, power 500. Restore all allies’ HP.
+- Oracle’s Blessing ← Blue Wing Legacy [502710, enemy]: MP 14, power 0. Increase an ally’s magic by 50% for 3 turns.
+- Tidal Invocation ← タイダルウェイブ(コロシアム) [571450, enemy]: MP 36, power 30. Deal Water magic damage to all enemies 4 times.
+- Waterga Surge ← Waterga [250150, enemy]: MP 30, power 30. Deal Water magic damage to all enemies 3 times.
 
 ### Fryevia — 5
 
@@ -355,19 +355,19 @@ Sprite `302001405` (GL); base-stat budget: Bartz. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Glint of Verglas ← Glint of Verglas [505380, enemy]: MP 35, power 40. Ice physical damage; power 40. Single enemies; MP 35; hits 2; accuracy 100; stagger 25.
-- Stormbound Smite ← Stormbound Smite [505390, enemy]: MP 32, power 30. Ice physical damage; power 30. Group enemies; MP 32; hits 3; accuracy 100; stagger 12.
-- Frozen Slumber Cut ← Sleep Slash [500630, enemy]: MP 10, power 18. Ice physical damage; power 18. Apply Sleep (50%). Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Frostbind Cut ← Paralysis Slash [500640, enemy]: MP 12, power 18. Ice physical damage; power 18. Apply Paralyzation (50%). Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- True Strike ← True Strike [500920, enemy]: MP 6, power 18. Non-elemental physical damage; power 18. Single enemies; MP 6; hits 1; accuracy 70; stagger 25.
-- Golden Thrust ← Golden Lance [501600, enemy]: MP 14, power 24. Non-elemental physical damage; power 24. Single enemies; MP 14; hits 1; accuracy 100; stagger 25.
-- Dark Edge ← Dark Edge [505260, enemy]: MP 20, power 24. Dark physical damage; power 24. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Diamond Bind ← Petrifying Bite [502270, enemy]: MP 18, power 18. Ice physical damage; power 18. Apply Stoned (50%). Single enemies; MP 18; hits 1; accuracy 100; stagger 25.
-- Frozen Fang ← Paralysis Fang [501670, enemy]: MP 20, power 24. Ice physical damage; power 24. Apply Paralyzation (100%). Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Frost Pierce ← Blizzara [250060, enemy]: MP 15, power 22. Ice physical damage; power 22. Single enemies; MP 15; hits 2; accuracy 100; stagger 19.
-- Frost Sweep ← Blizzara [255040, enemy]: MP 20, power 18. Ice physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Frozen Slash ← Slash [500040, enemy]: MP 6, power 12. Ice physical damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.
-- Frost Dance ← Slash [501300, enemy]: MP 24, power 28. Ice physical damage; power 28. Single enemies; MP 24; hits 4; accuracy 100; stagger 25.
+- Glint of Verglas ← Glint of Verglas [505380, enemy]: MP 35, power 40. Deal Ice physical damage to an enemy 2 times.
+- Stormbound Smite ← Stormbound Smite [505390, enemy]: MP 32, power 30. Deal Ice physical damage to all enemies 3 times.
+- Frozen Slumber Cut ← Sleep Slash [500630, enemy]: MP 10, power 18. Deal Ice physical damage to an enemy. Inflict Sleep with a 50% chance.
+- Frostbind Cut ← Paralysis Slash [500640, enemy]: MP 12, power 18. Deal Ice physical damage to an enemy. Inflict Paralysis with a 50% chance.
+- True Strike ← True Strike [500920, enemy]: MP 6, power 18. Deal physical damage to an enemy.
+- Golden Thrust ← Golden Lance [501600, enemy]: MP 14, power 24. Deal physical damage to an enemy.
+- Dark Edge ← Dark Edge [505260, enemy]: MP 20, power 24. Deal Dark physical damage to an enemy.
+- Diamond Bind ← Petrifying Bite [502270, enemy]: MP 18, power 18. Deal Ice physical damage to an enemy. Inflict Stoned with a 50% chance.
+- Frozen Fang ← Paralysis Fang [501670, enemy]: MP 20, power 24. Deal Ice physical damage to an enemy. Inflict Paralysis.
+- Frost Pierce ← Blizzara [250060, enemy]: MP 15, power 22. Deal Ice physical damage to an enemy 2 times.
+- Frost Sweep ← Blizzara [255040, enemy]: MP 20, power 18. Deal Ice physical damage to all enemies 2 times.
+- Frozen Slash ← Slash [500040, enemy]: MP 6, power 12. Deal Ice physical damage to an enemy.
+- Frost Dance ← Slash [501300, enemy]: MP 24, power 28. Deal Ice physical damage to an enemy 4 times.
 
 ### Lenneth — 6
 
@@ -391,18 +391,18 @@ Sprite `330000106` (GL); base-stat budget: Warrior of Light. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Shield Crush ← Crush [500020, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Guarding Smite ← Guarding Smite [505410, enemy]: MP 20, power 24. Non-elemental physical damage; power 24. Also defend after attacking. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Sword Strike ← Sword Strike [503640, enemy]: MP 25, power 30. Non-elemental physical damage; power 30. Group enemies; MP 25; hits 1; accuracy 100; stagger 25.
-- Lance Breaker ← Rib [500170, enemy]: MP 18, power 24. Non-elemental physical damage; power 24. Single enemies; MP 18; hits 1; accuracy 100; stagger 30.
-- Repose ← Repose [502080, enemy]: MP 8, power 0. Raise own defenses while lowering attack and magic. Self friendlies; MP 8; hits 1; accuracy 100; stagger 0.
-- Dawn Judgment ← Dawn of Judgment [505350, enemy]: MP 38, power 40. Light physical damage; power 40. Single enemies; MP 38; hits 1; accuracy 100; stagger 25.
-- Luminant Purifier ← Luminant Purifier [505370, enemy]: MP 36, power 36. Light physical damage; power 36. Group enemies; MP 36; hits 1; accuracy 100; stagger 12.
-- Guarding Bash ← Carapace [500930, enemy]: MP 12, power 18. Non-elemental physical damage; power 18. Also reduce own physical damage taken by 30% for 3 turns. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Shield Thrust ← Counter Horn [505100, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Valkyrie Cleansing ← Negation [505360, enemy]: MP 35, power 0. Remove party ailments and stat debuffs. Group friendlies; MP 35; hits 1; accuracy 100; stagger 12.
-- Brave Lance ← Chomp [503810, enemy]: MP 32, power 40. Non-elemental physical damage; power 40. Single enemies; MP 32; hits 1; accuracy 100; stagger 20.
-- Valkyrie Ward ← Show me majestic magic! [505530, enemy]: MP 20, power 0. Reduce own physical and magic damage taken by 30% for 3 turns. Self friendlies; MP 20; hits 1; accuracy 100; stagger 25.
+- Shield Crush ← Crush [500020, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Guarding Smite ← Guarding Smite [505410, enemy]: MP 20, power 24. Deal physical damage to an enemy. defend after attacking.
+- Sword Strike ← Sword Strike [503640, enemy]: MP 25, power 30. Deal physical damage to all enemies.
+- Lance Breaker ← Rib [500170, enemy]: MP 18, power 24. Deal physical damage to an enemy.
+- Repose ← Repose [502080, enemy]: MP 8, power 0. Increase own defenses while lowering attack and magic.
+- Dawn Judgment ← Dawn of Judgment [505350, enemy]: MP 38, power 40. Deal Light physical damage to an enemy.
+- Luminant Purifier ← Luminant Purifier [505370, enemy]: MP 36, power 36. Deal Light physical damage to all enemies.
+- Guarding Bash ← Carapace [500930, enemy]: MP 12, power 18. Deal physical damage to an enemy. reduce own physical damage taken by 30% for 3 turns.
+- Shield Thrust ← Counter Horn [505100, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Valkyrie Cleansing ← Negation [505360, enemy]: MP 35, power 0. Remove party ailments and stat debuffs.
+- Brave Lance ← Chomp [503810, enemy]: MP 32, power 40. Deal physical damage to an enemy.
+- Valkyrie Ward ← Show me majestic magic! [505530, enemy]: MP 20, power 0. Reduce own physical and magic damage taken by 30% for 3 turns.
 
 ### Lila — 6
 
@@ -426,14 +426,14 @@ Sprite `100013806` (GL); base-stat budget: Firion. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Fist of Vigor ← Fist of Vigor [502230, enemy]: MP 12, power 14. Non-elemental physical damage; power 14. Also raise own attack by 50%. Single enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Fist of Fortification ← Fist of Fortification [502370, enemy]: MP 20, power 18. Non-elemental physical damage; power 18. Also reduce own physical/magic damage taken by 30%. Single enemies; MP 20; hits 1; accuracy 100; stagger 17.
-- Fist of Fury ← Fist of Fury [505060, enemy]: MP 14, power 24. Non-elemental physical damage; power 24. Single enemies; MP 14; hits 1; accuracy 100; stagger 25.
-- Crushing Grasp ← Crushing Grasp [502240, enemy]: MP 22, power 28. Non-elemental physical damage; power 28. Apply Paralyzation (50%). Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Martial Reprisal ← That is no martial skill! [505600, enemy]: MP 22, power 30. Non-elemental physical damage; power 30. Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Heavy Palm ← Clobber [501850, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Sweeping Fists ← Wild Rage [505030, enemy]: MP 16, power 12. Non-elemental physical damage; power 12. Group enemies; MP 16; hits 4; accuracy 100; stagger 12.
-- Binding Grapple ← Stranglehold [501030, enemy]: MP 22, power 24. Non-elemental physical damage; power 24. Apply Paralyzation (20%). Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
+- Fist of Vigor ← Fist of Vigor [502230, enemy]: MP 12, power 14. Deal physical damage to an enemy. raise own attack by 50%.
+- Fist of Fortification ← Fist of Fortification [502370, enemy]: MP 20, power 18. Deal physical damage to an enemy. reduce own physical/magic damage taken by 30%.
+- Fist of Fury ← Fist of Fury [505060, enemy]: MP 14, power 24. Deal physical damage to an enemy.
+- Crushing Grasp ← Crushing Grasp [502240, enemy]: MP 22, power 28. Deal physical damage to an enemy. Inflict Paralysis with a 50% chance.
+- Martial Reprisal ← That is no martial skill! [505600, enemy]: MP 22, power 30. Deal physical damage to an enemy.
+- Heavy Palm ← Clobber [501850, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Sweeping Fists ← Wild Rage [505030, enemy]: MP 16, power 12. Deal physical damage to all enemies 4 times.
+- Binding Grapple ← Stranglehold [501030, enemy]: MP 22, power 24. Deal physical damage to an enemy. Inflict Paralysis with a 20% chance.
 
 ### Mystea — 5
 
@@ -457,16 +457,16 @@ Sprite `100011005` (GL); base-stat budget: Cecil. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Mighty Guard ← Mighty Guard [500860, enemy]: MP 40, power 0. Reduce party physical and magic damage taken by 30%. Group friendlies; MP 40; hits 1; accuracy 100; stagger 25.
-- Evasion Ward ← Scatter Feathers [500700, enemy]: MP 20, power 0. Raise own physical evasion by 50%. Self friendlies; MP 20; hits 1; accuracy 100; stagger 25.
-- Light Ray ← Laser [500310, enemy]: MP 10, power 18. Light magic damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Dystopia ← Dystopia [505860, enemy]: MP 26, power 26. Dark magic damage; power 26. Group enemies; MP 26; hits 1; accuracy 100; stagger 12.
-- Dazing Mist ← Pollen [500690, enemy]: MP 12, power 0. Apply Confusion (100%). Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Banishra Ray ← Banishra [240240, enemy]: MP 15, power 22. Light magic damage; power 22. Single enemies; MP 15; hits 2; accuracy 100; stagger 19.
-- Magic Ward ← Magic Warcry [505430, enemy]: MP 12, power 0. Reduce own magic damage taken by 30% for 3 turns. Self friendlies; MP 12; hits 1; accuracy 100; stagger 25.
-- Barrier Burst ← Heavy Countermeasure [503980, enemy]: MP 35, power 36. Non-elemental magic damage; power 36. Group enemies; MP 35; hits 1; accuracy 100; stagger 12.
-- Dark Pulse ← Dark [255260, enemy]: MP 12, power 12. Dark magic damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Focused Dark Pulse ← Darkra [250520, enemy]: MP 18, power 22. Dark magic damage; power 22. Single enemies; MP 18; hits 2; accuracy 100; stagger 19.
+- Mighty Guard ← Mighty Guard [500860, enemy]: MP 40, power 0. Reduce party physical and magic damage taken by 30%.
+- Evasion Ward ← Scatter Feathers [500700, enemy]: MP 20, power 0. Increase own physical evasion by 50%.
+- Light Ray ← Laser [500310, enemy]: MP 10, power 18. Deal Light magic damage to an enemy.
+- Dystopia ← Dystopia [505860, enemy]: MP 26, power 26. Deal Dark magic damage to all enemies.
+- Dazing Mist ← Pollen [500690, enemy]: MP 12, power 0. Inflict Confusion.
+- Banishra Ray ← Banishra [240240, enemy]: MP 15, power 22. Deal Light magic damage to an enemy 2 times.
+- Magic Ward ← Magic Warcry [505430, enemy]: MP 12, power 0. Reduce own magic damage taken by 30% for 3 turns.
+- Barrier Burst ← Heavy Countermeasure [503980, enemy]: MP 35, power 36. Deal magic damage to all enemies.
+- Dark Pulse ← Dark [255260, enemy]: MP 12, power 12. Deal Dark magic damage to all enemies.
+- Focused Dark Pulse ← Darkra [250520, enemy]: MP 18, power 22. Deal Dark magic damage to an enemy 2 times.
 
 ### Reberta (JP) — 5
 
@@ -490,15 +490,15 @@ Sprite `100014405` (GL); base-stat budget: Clive. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Breath Wing ← Breath Wing [500460, enemy]: MP 12, power 12. Wind physical damage; power 12. Group enemies; MP 12; hits 3; accuracy 100; stagger 12.
-- Silver Lance ← Silver Lance [501260, enemy]: MP 25, power 36. Non-elemental physical damage; power 36. Single enemies; MP 25; hits 1; accuracy 100; stagger 25.
-- Branch Spear ← Branch Spear [503780, enemy]: MP 25, power 36. Earth physical damage; power 36. Single enemies; MP 25; hits 1; accuracy 100; stagger 20.
-- Flame Lance ← Spew Flames [502010, enemy]: MP 20, power 24. Fire physical damage; power 24. Single enemies; MP 20; hits 3; accuracy 100; stagger 25.
-- Flame Lance Volley ← Flame Thrower [500370, enemy]: MP 16, power 18. Fire physical damage; power 18. Single enemies; MP 16; hits 3; accuracy 100; stagger 25.
-- Blistering Hellfire ← Blistering Hellfire [505330, enemy]: MP 32, power 30. Fire physical damage; power 30. Group enemies; MP 32; hits 1; accuracy 100; stagger 12.
-- Carmine Lance ← Carmine Inferno [505340, enemy]: MP 20, power 24. Fire physical damage; power 24. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Dragonfire Breath ← Flame Breath [501880, enemy]: MP 40, power 40. Fire magic damage; power 40. Group enemies; MP 40; hits 1; accuracy 100; stagger 12.
-- Dragoon Cleave ← Rake [500130, enemy]: MP 16, power 22. Non-elemental physical damage; power 22. Single enemies; MP 16; hits 1; accuracy 100; stagger 25.
+- Breath Wing ← Breath Wing [500460, enemy]: MP 12, power 12. Deal Wind physical damage to all enemies 3 times.
+- Silver Lance ← Silver Lance [501260, enemy]: MP 25, power 36. Deal physical damage to an enemy.
+- Branch Spear ← Branch Spear [503780, enemy]: MP 25, power 36. Deal Earth physical damage to an enemy.
+- Flame Lance ← Spew Flames [502010, enemy]: MP 20, power 24. Deal Fire physical damage to an enemy 3 times.
+- Flame Lance Volley ← Flame Thrower [500370, enemy]: MP 16, power 18. Deal Fire physical damage to an enemy 3 times.
+- Blistering Hellfire ← Blistering Hellfire [505330, enemy]: MP 32, power 30. Deal Fire physical damage to all enemies.
+- Carmine Lance ← Carmine Inferno [505340, enemy]: MP 20, power 24. Deal Fire physical damage to an enemy.
+- Dragonfire Breath ← Flame Breath [501880, enemy]: MP 40, power 40. Deal Fire magic damage to all enemies.
+- Dragoon Cleave ← Rake [500130, enemy]: MP 16, power 22. Deal physical damage to an enemy.
 
 ### Snow White — 7
 
@@ -522,18 +522,18 @@ Sprite `336000207` (GL); base-stat budget: Cecil. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Leech ← Leech [500520, enemy]: MP 12, power 12. Non-elemental physical damage; power 12. Apply HP drain (100% of damage). Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Predation ← Predation [570710, enemy]: MP 16, power 18. Non-elemental physical damage; power 18. Apply HP drain (100% of damage). Single enemies; MP 16; hits 1; accuracy 100; stagger 20.
-- Purging Blade ← Purging Blade [505960, enemy]: MP 32, power 36. Dark physical damage; power 36. Also reduce enemy physical and magic defense. Single enemies; MP 32; hits 1; accuracy 100; stagger 16.
-- Revenge Strike ← Revenge Blast [501630, enemy]: MP 16, power 24. Non-elemental physical damage; power 24. Single enemies; MP 16; hits 1; accuracy 100; stagger 25.
-- Binding Sweep ← Cling [500910, enemy]: MP 14, power 12. Non-elemental physical damage; power 12. Apply Slow (30%). Group enemies; MP 14; hits 1; accuracy 100; stagger 12.
-- Crimson Bite ← Incisors [500510, enemy]: MP 10, power 18. Dark physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Venom Gash ← Regurgitate [570640, enemy]: MP 12, power 15. Dark physical damage; power 15. Apply Poison (100%). Single enemies; MP 12; hits 1; accuracy 100; stagger 0.
-- Nightcut ← Regurgitate [570660, enemy]: MP 12, power 15. Dark physical damage; power 15. Apply Blind (100%). Single enemies; MP 12; hits 1; accuracy 100; stagger 0.
-- Slumber Gash ← Regurgitate [570670, enemy]: MP 12, power 15. Dark physical damage; power 15. Apply Sleep (100%). Single enemies; MP 12; hits 1; accuracy 100; stagger 0.
-- Hell Gate ← Hell’s Gate [505970, enemy]: MP 30, power 30. Dark physical damage; power 30. Group enemies; MP 30; hits 1; accuracy 100; stagger 12.
-- Crimson Sweep ← Darkra [255280, enemy]: MP 20, power 18. Dark physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Blood Recovery ← 捕食(1000回復) [501530, enemy]: MP 18, power 400. Restore 400 HP. Self friendlies; MP 18; hits 1; accuracy 100; stagger 25.
+- Leech ← Leech [500520, enemy]: MP 12, power 12. Deal physical damage to an enemy. Absorb damage dealt as HP.
+- Predation ← Predation [570710, enemy]: MP 16, power 18. Deal physical damage to an enemy. Absorb damage dealt as HP.
+- Purging Blade ← Purging Blade [505960, enemy]: MP 32, power 36. Deal Dark physical damage to an enemy. reduce enemy physical and magic defense.
+- Revenge Strike ← Revenge Blast [501630, enemy]: MP 16, power 24. Deal physical damage to an enemy.
+- Binding Sweep ← Cling [500910, enemy]: MP 14, power 12. Deal physical damage to all enemies. Inflict Slow with a 30% chance.
+- Crimson Bite ← Incisors [500510, enemy]: MP 10, power 18. Deal Dark physical damage to an enemy.
+- Venom Gash ← Regurgitate [570640, enemy]: MP 12, power 15. Deal Dark physical damage to an enemy. Inflict Poison.
+- Nightcut ← Regurgitate [570660, enemy]: MP 12, power 15. Deal Dark physical damage to an enemy. Inflict Blind.
+- Slumber Gash ← Regurgitate [570670, enemy]: MP 12, power 15. Deal Dark physical damage to an enemy. Inflict Sleep.
+- Hell Gate ← Hell’s Gate [505970, enemy]: MP 30, power 30. Deal Dark physical damage to all enemies.
+- Crimson Sweep ← Darkra [255280, enemy]: MP 20, power 18. Deal Dark physical damage to all enemies 2 times.
+- Blood Recovery ← 捕食(1000回復) [501530, enemy]: MP 18, power 400. Restore 400 HP to self.
 
 ### Aria — 5
 
@@ -557,20 +557,20 @@ Sprite `203000905` (GL); base-stat budget: Leah. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Healing Rain ← Cure [245000, enemy]: MP 10, power 80. Restore healing power 80. Group friendlies; MP 10; hits 1; accuracy 100; stagger 20.
-- Soothing Rain ← Cura [245010, enemy]: MP 18, power 200. Restore healing power 200. Group friendlies; MP 18; hits 1; accuracy 100; stagger 22.
-- Rejuvenate ← Rejuvenate [502020, enemy]: MP 12, power 20. Restore 20% max HP. Self friendlies; MP 12; hits 1; accuracy 100; stagger 25.
-- Undertow ← Graceful Deluge [501400, enemy]: MP 20, power 12. Water magic damage; power 12. Also reduce enemy physical and magic defense. Group enemies; MP 20; hits 3; accuracy 100; stagger 12.
-- Bubble Breath ← Bubble Breath [501680, enemy]: MP 24, power 24. Water magic damage; power 24. Group enemies; MP 24; hits 3; accuracy 100; stagger 12.
-- Banish Ray ← Banish [240230, enemy]: MP 5, power 14. Light magic damage; power 14. Single enemies; MP 5; hits 1; accuracy 100; stagger 17.
-- Water Chorus ← Water [225090, native]: MP 12, power 17. Water magic damage; power 17. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Ocean Requiem ← Graceful Deluge [501440, enemy]: MP 40, power 40. Water magic damage; power 40. Apply DeffenceDown (100%), MindDown (100%). Group enemies; MP 40; hits 3; accuracy 100; stagger 12.
-- Cleansing Miasma ← Bio [255190, enemy]: MP 20, power 12. Non-elemental magic damage; power 12. Apply Poison (100%). Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Radiant Pulse ← 連続ホーリー [503870, enemy]: MP 36, power 40. Light magic damage; power 40. Single enemies; MP 36; hits 1; accuracy 100; stagger 40.
-- Mist Veil ← Darkness Powder [570820, enemy]: MP 20, power 0. Apply Blind (100%). Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Aether Current ← (ボスカウンター用)アスピル [503970, enemy]: MP 8, power 6. Drain MP; power 6. Apply MP drain (100% of damage). Single enemies; MP 8; hits 1; accuracy 100; stagger 20.
-- Waterdrop ← Water [250130, enemy]: MP 6, power 14. Water magic damage; power 14. Single enemies; MP 6; hits 1; accuracy 100; stagger 17.
-- Soothing Current ← Regurgitate [570620, enemy]: MP 14, power 200. Restore 200 HP. Single friendlies; MP 14; hits 1; accuracy 100; stagger 0.
+- Healing Rain ← Cure [245000, enemy]: MP 10, power 80. Restore all allies’ HP.
+- Soothing Rain ← Cura [245010, enemy]: MP 18, power 200. Restore all allies’ HP.
+- Rejuvenate ← Rejuvenate [502020, enemy]: MP 12, power 20. Restore 20% of own max HP.
+- Undertow ← Graceful Deluge [501400, enemy]: MP 20, power 12. Deal Water magic damage to all enemies 3 times. reduce enemy physical and magic defense.
+- Bubble Breath ← Bubble Breath [501680, enemy]: MP 24, power 24. Deal Water magic damage to all enemies 3 times.
+- Banish Ray ← Banish [240230, enemy]: MP 5, power 14. Deal Light magic damage to an enemy.
+- Water Chorus ← Water [225090, native]: MP 12, power 17. Deal Water magic damage to all enemies.
+- Ocean Requiem ← Graceful Deluge [501440, enemy]: MP 40, power 40. Deal Water magic damage to all enemies 3 times. Lower defense and spirit.
+- Cleansing Miasma ← Bio [255190, enemy]: MP 20, power 12. Deal magic damage to all enemies. Inflict Poison.
+- Radiant Pulse ← 連続ホーリー [503870, enemy]: MP 36, power 40. Deal Light magic damage to an enemy.
+- Mist Veil ← Darkness Powder [570820, enemy]: MP 20, power 0. Inflict Blind.
+- Aether Current ← (ボスカウンター用)アスピル [503970, enemy]: MP 8, power 6. Drain MP from an enemy.
+- Waterdrop ← Water [250130, enemy]: MP 6, power 14. Deal Water magic damage to an enemy.
+- Soothing Current ← Regurgitate [570620, enemy]: MP 14, power 200. Restore 200 HP to an ally.
 
 ### Eiko — 7
 
@@ -594,16 +594,16 @@ Sprite `209000707` (GL); base-stat budget: Ayaka. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Firaga Burst ← Firaga [225020, native]: MP 60, power 55. Fire magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
-- Blizzaga Burst ← Blizzaga [225050, native]: MP 60, power 55. Ice magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
-- Banishga Ray ← Banishga [240250, enemy]: MP 25, power 30. Light magic damage; power 30. Single enemies; MP 25; hits 3; accuracy 100; stagger 21.
-- Aerora Gust ← Aerora [225130, native]: MP 30, power 33. Wind magic damage; power 33. Group enemies; MP 30; hits 2; accuracy 100; stagger 19.
-- Healing Breeze ← Curaga [245020, enemy]: MP 35, power 600. Restore healing power 600. Group friendlies; MP 35; hits 1; accuracy 100; stagger 25.
-- Light of the Eidolons ← Banish [225290, native]: MP 12, power 17. Light magic damage; power 17. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Eidolon Radiance ← Banishga [225310, native]: MP 60, power 55. Light magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
-- Guardian’s Earth ← Stonega [225170, native]: MP 60, power 55. Earth magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
-- Focused Gale ← Aeroga [250190, enemy]: MP 25, power 30. Wind magic damage; power 30. Single enemies; MP 25; hits 3; accuracy 100; stagger 21.
-- Guardian’s Lightning ← Thundaga [225080, native]: MP 60, power 55. Thunder magic damage; power 55. Group enemies; MP 60; hits 3; accuracy 100; stagger 21.
+- Firaga Burst ← Firaga [225020, native]: MP 60, power 55. Deal Fire magic damage to all enemies 3 times.
+- Blizzaga Burst ← Blizzaga [225050, native]: MP 60, power 55. Deal Ice magic damage to all enemies 3 times.
+- Banishga Ray ← Banishga [240250, enemy]: MP 25, power 30. Deal Light magic damage to an enemy 3 times.
+- Aerora Gust ← Aerora [225130, native]: MP 30, power 33. Deal Wind magic damage to all enemies 2 times.
+- Healing Breeze ← Curaga [245020, enemy]: MP 35, power 600. Restore all allies’ HP.
+- Light of the Eidolons ← Banish [225290, native]: MP 12, power 17. Deal Light magic damage to all enemies.
+- Eidolon Radiance ← Banishga [225310, native]: MP 60, power 55. Deal Light magic damage to all enemies 3 times.
+- Guardian’s Earth ← Stonega [225170, native]: MP 60, power 55. Deal Earth magic damage to all enemies 3 times.
+- Focused Gale ← Aeroga [250190, enemy]: MP 25, power 30. Deal Wind magic damage to an enemy 3 times.
+- Guardian’s Lightning ← Thundaga [225080, native]: MP 60, power 55. Deal Lightning magic damage to all enemies 3 times.
 
 ### Alice/Half Nightmare — NV Brave Shift
 
@@ -627,20 +627,20 @@ Sprite `336000127` (JP); base-stat budget: Squall. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Absolving Hail ← Absolving Hailstorm [505840, enemy]: MP 32, power 30. Ice physical damage; power 30. Group enemies; MP 32; hits 3; accuracy 100; stagger 12.
-- Rage ← Rage [501700, enemy]: MP 10, power 0. Raise own attack and magic by 50%, lowering both defenses. Self friendlies; MP 10; hits 1; accuracy 100; stagger 0.
-- Throat Strike ← Throat Strike [500250, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Apply Silence (50%). Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Ruthless Rampage ← Ruthless Rampage [502030, enemy]: MP 30, power 18. Non-elemental physical damage; power 18. Apply Paralyzation (50%), Blind (50%), Silence (50%). Group enemies; MP 30; hits 4; accuracy 100; stagger 25.
-- Disorienting Cut ← Slap [500620, enemy]: MP 18, power 24. Ice physical damage; power 24. Apply Charme (100%). Single enemies; MP 18; hits 2; accuracy 100; stagger 25.
-- Binding Cut ← Paralysis Needle [500290, enemy]: MP 8, power 12. Non-elemental physical damage; power 12. Apply Paralyzation (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Ice Slam ← Blizzard Surge [421370, native]: MP 5, power 12. Ice physical damage; power 12. Single enemies; MP 5; hits 1; accuracy 100; stagger 25.
-- Icera Slam ← Blizzara Surge [421380, native]: MP 15, power 24. Ice physical damage; power 24. Single enemies; MP 15; hits 1; accuracy 100; stagger 28.
-- Icega Slam ← Blizzaga Surge [421390, native]: MP 44, power 39. Ice physical damage; power 39. Single enemies; MP 44; hits 1; accuracy 100; stagger 30.
-- Nightmare Flurry ← Whack and Smack [502200, enemy]: MP 36, power 28. Ice physical damage; power 28. Apply Poison (50%), Blind (50%), Silence (50%). Random enemies; MP 36; hits 4; accuracy 100; stagger 25.
-- Frost Reprisal ← That is no magic! [505610, enemy]: MP 22, power 30. Ice physical damage; power 30. Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Frozen Finale ← Regurgitate [570680, enemy]: MP 38, power 40. Ice physical damage; power 40. Single enemies; MP 38; hits 1; accuracy 100; stagger 0.
-- Hail Cut ← Blizzard [255030, enemy]: MP 12, power 12. Ice physical damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Twin Frost Blades ← Tentacle [500580, enemy]: MP 12, power 18. Ice physical damage; power 18. Apply Slow (50%). Single enemies; MP 12; hits 2; accuracy 100; stagger 25.
+- Absolving Hail ← Absolving Hailstorm [505840, enemy]: MP 32, power 30. Deal Ice physical damage to all enemies 3 times.
+- Rage ← Rage [501700, enemy]: MP 10, power 0. Increase own attack and magic by 50%, lowering both defenses.
+- Throat Strike ← Throat Strike [500250, enemy]: MP 10, power 18. Deal physical damage to an enemy. Inflict Silence with a 50% chance.
+- Ruthless Rampage ← Ruthless Rampage [502030, enemy]: MP 30, power 18. Deal physical damage to all enemies 4 times. May inflict Paralysis, Blind and Silence.
+- Disorienting Cut ← Slap [500620, enemy]: MP 18, power 24. Deal Ice physical damage to an enemy 2 times. Inflict Charm.
+- Binding Cut ← Paralysis Needle [500290, enemy]: MP 8, power 12. Deal physical damage to an enemy. Inflict Paralysis.
+- Ice Slam ← Blizzard Surge [421370, native]: MP 5, power 12. Deal Ice physical damage to an enemy.
+- Icera Slam ← Blizzara Surge [421380, native]: MP 15, power 24. Deal Ice physical damage to an enemy.
+- Icega Slam ← Blizzaga Surge [421390, native]: MP 44, power 39. Deal Ice physical damage to an enemy.
+- Nightmare Flurry ← Whack and Smack [502200, enemy]: MP 36, power 28. Deal Ice physical damage to random enemies 4 times. May inflict Poison, Blind and Silence.
+- Frost Reprisal ← That is no magic! [505610, enemy]: MP 22, power 30. Deal Ice physical damage to an enemy.
+- Frozen Finale ← Regurgitate [570680, enemy]: MP 38, power 40. Deal Ice physical damage to an enemy.
+- Hail Cut ← Blizzard [255030, enemy]: MP 12, power 12. Deal Ice physical damage to all enemies.
+- Twin Frost Blades ← Tentacle [500580, enemy]: MP 12, power 18. Deal Ice physical damage to an enemy 2 times. Inflict Slow with a 50% chance.
 
 ### Moogle of Narshe Mog — 5
 
@@ -664,14 +664,14 @@ Sprite `206003005` (GL); base-stat budget: Tidus. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Gust Dance ← Wind Slash [500430, enemy]: MP 12, power 12. Wind magic damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Cyclone ← Cyclone [500410, enemy]: MP 22, power 24. Wind magic damage; power 24. Group enemies; MP 22; hits 1; accuracy 100; stagger 12.
-- Mystery Waltz ← Mystery Waltz [570450, enemy]: MP 12, power 10. Drain MP; power 10. Apply MP drain (100% of damage). Single enemies; MP 12; hits 1; accuracy 100; stagger 0.
-- Alluring Dance ← Alluring Dance [570430, enemy]: MP 32, power 0. Apply Charme (100%). Group enemies; MP 32; hits 1; accuracy 100; stagger 0.
-- Mega Berserk ← Mega Berserk [235080, native]: MP 22, power 0. Apply Berserk (100%). Group enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Heavenly Wind ← Heavenly Wind [505280, enemy]: MP 40, power 40. Wind magic damage; power 40. Group enemies; MP 40; hits 1; accuracy 100; stagger 12.
-- Berserker Step ← Berserk [570410, enemy]: MP 6, power 0. Apply Berserk (100%). Single enemies; MP 6; hits 1; accuracy 100; stagger 0.
-- Gale Dance ← 大魔法マグヌム・オプス(風) [503920, enemy]: MP 22, power 20. Wind magic damage; power 20. Group enemies; MP 22; hits 3; accuracy 100; stagger 21.
+- Gust Dance ← Wind Slash [500430, enemy]: MP 12, power 12. Deal Wind magic damage to all enemies.
+- Cyclone ← Cyclone [500410, enemy]: MP 22, power 24. Deal Wind magic damage to all enemies.
+- Mystery Waltz ← Mystery Waltz [570450, enemy]: MP 12, power 10. Drain MP from an enemy.
+- Alluring Dance ← Alluring Dance [570430, enemy]: MP 32, power 0. Inflict Charm.
+- Mega Berserk ← Mega Berserk [235080, native]: MP 22, power 0. Inflict Berserk.
+- Heavenly Wind ← Heavenly Wind [505280, enemy]: MP 40, power 40. Deal Wind magic damage to all enemies.
+- Berserker Step ← Berserk [570410, enemy]: MP 6, power 0. Inflict Berserk.
+- Gale Dance ← 大魔法マグヌム・オプス(風) [503920, enemy]: MP 22, power 20. Deal Wind magic damage to all enemies 3 times.
 
 ### Lilith — 5
 
@@ -695,15 +695,15 @@ Sprite `401005905` (GL); base-stat budget: Cecil. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Seal of Conviction ← Seal of Conviction [505580, enemy]: MP 32, power 30. Dark physical damage; power 30. Group enemies; MP 32; hits 2; accuracy 100; stagger 12.
-- Dark Sunder ← Darkness’s Dawn [505560, enemy]: MP 28, power 0. Reduce enemy physical and magic defense by 30% for 3 turns. Group enemies; MP 28; hits 1; accuracy 100; stagger 12.
-- Dark Aegis ← Darkness’s Advance [505570, enemy]: MP 40, power 0. Reduce party physical and magic damage taken by 30%. Group friendlies; MP 40; hits 1; accuracy 100; stagger 25.
-- Poison Mist ← Poison Gas [500560, enemy]: MP 18, power 0. Apply Poison (50%). Group enemies; MP 18; hits 1; accuracy 100; stagger 12.
-- Shock Claw ← Shock Claw [503240, enemy]: MP 22, power 28. Non-elemental physical damage; power 28. Apply Paralyzation (100%). Single enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Nihilistic Solitude ← Nihilistic Solitude [506040, enemy]: MP 30, power 24. Dark magic damage; power 24. Also remove enemy buffs. Group enemies; MP 30; hits 1; accuracy 100; stagger 12.
-- Obsidian Vortex ← Obsidian Vortex [505550, enemy]: MP 30, power 0. Apply Confusion (100%). Group enemies; MP 30; hits 1; accuracy 100; stagger 12.
-- Vampiric Lash ← Vampiric Lash [571110, enemy]: MP 12, power 12. Dark physical damage; power 12. Apply HP drain (100% of damage). Single enemies; MP 12; hits 2; accuracy 100; stagger 25.
-- Dark Feast ← Feed [503700, enemy]: MP 35, power 40. Dark magic damage; power 40. Apply HP drain (100% of damage). Single enemies; MP 35; hits 1; accuracy 100; stagger 20.
+- Seal of Conviction ← Seal of Conviction [505580, enemy]: MP 32, power 30. Deal Dark physical damage to all enemies 2 times.
+- Dark Sunder ← Darkness’s Dawn [505560, enemy]: MP 28, power 0. Reduce enemy physical and magic defense by 30% for 3 turns.
+- Dark Aegis ← Darkness’s Advance [505570, enemy]: MP 40, power 0. Reduce party physical and magic damage taken by 30%.
+- Poison Mist ← Poison Gas [500560, enemy]: MP 18, power 0. Inflict Poison with a 50% chance.
+- Shock Claw ← Shock Claw [503240, enemy]: MP 22, power 28. Deal physical damage to an enemy. Inflict Paralysis.
+- Nihilistic Solitude ← Nihilistic Solitude [506040, enemy]: MP 30, power 24. Deal Dark magic damage to all enemies. remove enemy buffs.
+- Obsidian Vortex ← Obsidian Vortex [505550, enemy]: MP 30, power 0. Inflict Confusion.
+- Vampiric Lash ← Vampiric Lash [571110, enemy]: MP 12, power 12. Deal Dark physical damage to an enemy 2 times. Absorb damage dealt as HP.
+- Dark Feast ← Feed [503700, enemy]: MP 35, power 40. Deal Dark magic damage to an enemy. Absorb damage dealt as HP.
 
 ### Dragon Knight Freya — 5
 
@@ -727,19 +727,19 @@ Sprite `209001805` (GL); base-stat budget: Noctis. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Crystal Lance ← Crystal Lance [501610, enemy]: MP 20, power 30. Non-elemental physical damage; power 30. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Flash Flood ← Flash Flood [500770, enemy]: MP 12, power 18. Water physical damage; power 18. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Gungnir ← Gungnir [505810, enemy]: MP 40, power 40. Non-elemental physical damage; power 40. Single enemies; MP 40; hits 1; accuracy 100; stagger 25.
-- Hydro Lance ← Hydro Breath [503830, enemy]: MP 26, power 28. Water physical damage; power 28. Group enemies; MP 26; hits 1; accuracy 100; stagger 20.
-- Venom Lance ← Poison Tail [500870, enemy]: MP 15, power 24. Non-elemental physical damage; power 24. Apply Poison (100%). Single enemies; MP 15; hits 1; accuracy 100; stagger 25.
-- Sonic Boom ← Sonic Boom [500440, enemy]: MP 12, power 18. Wind physical damage; power 18. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Lance Thrust ← Stab [500090, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Lance Storm ← Stab [502600, enemy]: MP 24, power 34. Non-elemental physical damage; power 34. Single enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Cleansing Lance ← Clear Smog [571140, enemy]: MP 22, power 12. Water physical damage; power 12. Also remove enemy buffs. Group enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Splash Lance ← Water [255090, enemy]: MP 12, power 12. Water physical damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Tidal Lance ← Watera [255100, enemy]: MP 20, power 18. Water physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Ocean Lance ← Waterga [255110, enemy]: MP 28, power 24. Water physical damage; power 24. Group enemies; MP 28; hits 3; accuracy 100; stagger 15.
-- Mana Lance ← Giga-Syphon [503690, enemy]: MP 12, power 10. Drain MP; power 10. Apply MP drain (100% of damage). Single enemies; MP 12; hits 1; accuracy 100; stagger 20.
+- Crystal Lance ← Crystal Lance [501610, enemy]: MP 20, power 30. Deal physical damage to an enemy.
+- Flash Flood ← Flash Flood [500770, enemy]: MP 12, power 18. Deal Water physical damage to an enemy.
+- Gungnir ← Gungnir [505810, enemy]: MP 40, power 40. Deal physical damage to an enemy.
+- Hydro Lance ← Hydro Breath [503830, enemy]: MP 26, power 28. Deal Water physical damage to all enemies.
+- Venom Lance ← Poison Tail [500870, enemy]: MP 15, power 24. Deal physical damage to an enemy. Inflict Poison.
+- Sonic Boom ← Sonic Boom [500440, enemy]: MP 12, power 18. Deal Wind physical damage to an enemy.
+- Lance Thrust ← Stab [500090, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Lance Storm ← Stab [502600, enemy]: MP 24, power 34. Deal physical damage to an enemy.
+- Cleansing Lance ← Clear Smog [571140, enemy]: MP 22, power 12. Deal Water physical damage to all enemies. remove enemy buffs.
+- Splash Lance ← Water [255090, enemy]: MP 12, power 12. Deal Water physical damage to all enemies.
+- Tidal Lance ← Watera [255100, enemy]: MP 20, power 18. Deal Water physical damage to all enemies 2 times.
+- Ocean Lance ← Waterga [255110, enemy]: MP 28, power 24. Deal Water physical damage to all enemies 3 times.
+- Mana Lance ← Giga-Syphon [503690, enemy]: MP 12, power 10. Drain MP from an enemy.
 
 ### Trance Terra — 5
 
@@ -750,24 +750,24 @@ Sprite `206000125` (GL); base-stat budget: Shantotto. Growth: Terra.
 - Awakening 1: Poison [220250]; Fire [220010]; Magic Attack +30% [1275]; Nullify Silence [1107].
 - Awakening 2: Nightmare Scythe [447300]; Bio [220260]; Fira [220020]; Firaga [220030]; MP +20% [1381].
 - Awakening 3: Salvation Scythe [447310]; Death [220320]; Meltdown [220380]; Spill [487103]; Trance Judgment [487106]; Judgment Shadow [487109]; Hell Pillar [487112]; Trance Apocalypse [487130].
-- Awakening 4: Meteor [220350]; Ultima [220340]; Dualcast [400730]; Magic Defense +20% [1315]; MP Stroll [1307].
+- Awakening 4: Meteor [220350]; Ultima [220340]; Dualcast [400730]; The Federation’s Fiend [1432]; Play Rough [1433].
 - MR 1: Fire Eater [1038].
 - MR 2: Agility +5 (permanent).
 - MR 3: Restore MP on Defeating Foes [1319].
 - MR 4: AP +8 (permanent).
-- MR 5: The Federation’s Fiend [1432].
+- MR 5: Magic Defense +20% [1315].
 - MR 6: MP +20 (permanent).
 - MR 7: Area Effect Adept [1351].
 - MR 8: Magic +15 (permanent).
-- MR 9: Play Rough [1433]; AP +8 (permanent); Spirit of Trance Terra.
+- MR 9: MP Stroll [1307]; AP +8 (permanent); Spirit of Trance Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Spill ← Spill [414300, native]: MP 46, power 45. Dark magic damage; power 45. Group enemies; MP 46; hits 2; accuracy 100; stagger 35.
-- Trance Judgment ← Execution [505450, enemy]: MP 35, power 36. Dark magic damage; power 36. Group enemies; MP 35; hits 3; accuracy 100; stagger 12.
-- Judgment Shadow ← Judgment of the Shadow [503120, enemy]: MP 30, power 30. Non-elemental magic damage; power 30. Group enemies; MP 30; hits 1; accuracy 100; stagger 25.
-- Hell Pillar ← Hell’s Pillar [505470, enemy]: MP 26, power 24. Fire magic damage; power 24. Group enemies; MP 26; hits 3; accuracy 100; stagger 12.
-- Trance Apocalypse ← Ray of Apocalypse [505540, enemy]: MP 40, power 40. Non-elemental magic damage; power 40. Group enemies; MP 40; hits 1; accuracy 100; stagger 12.
+- Spill ← Spill [414300, native]: MP 46, power 45. Deal Dark magic damage to all enemies 2 times.
+- Trance Judgment ← Execution [505450, enemy]: MP 35, power 36. Deal Dark magic damage to all enemies 3 times.
+- Judgment Shadow ← Judgment of the Shadow [503120, enemy]: MP 30, power 30. Deal magic damage to all enemies.
+- Hell Pillar ← Hell’s Pillar [505470, enemy]: MP 26, power 24. Deal Fire magic damage to all enemies 3 times.
+- Trance Apocalypse ← Ray of Apocalypse [505540, enemy]: MP 40, power 40. Deal magic damage to all enemies.
 
 ### Charming Kitty Ariana — 5
 
@@ -791,18 +791,18 @@ Sprite `401002405` (GL); base-stat budget: Ayaka. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Healing Refrain ← Cure [215000, native]: MP 12, power 200. Restore healing power 200. Group friendlies; MP 12; hits 1; accuracy 100; stagger 50.
-- Restoring Refrain ← Cura [215010, native]: MP 25, power 500. Restore healing power 500. Group friendlies; MP 25; hits 1; accuracy 100; stagger 55.
-- Lullaby ← Lullaby [570440, enemy]: MP 8, power 0. Apply Sleep (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 0.
-- Blindga ← Blindga [235010, native]: MP 20, power 0. Apply Blind (50%). Group enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Silencega ← Silencega [235020, native]: MP 20, power 0. Apply Silence (50%). Group enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Starlight Refrain ← Array: Light of Destruction [503620, enemy]: MP 24, power 28. Light magic damage; power 28. Group enemies; MP 24; hits 1; accuracy 100; stagger 12.
-- Dimming Refrain ← Flamewall [506120, enemy]: MP 34, power 30. Fire magic damage; power 30. Apply AttackDown (100%), IntelligenceDown (100%). Group enemies; MP 34; hits 3; accuracy 100; stagger 21.
-- Wind Aria ← Aero [250170, enemy]: MP 5, power 14. Wind magic damage; power 14. Single enemies; MP 5; hits 1; accuracy 100; stagger 17.
-- Wind Refrain ← Aerora [250180, enemy]: MP 15, power 22. Wind magic damage; power 22. Single enemies; MP 15; hits 2; accuracy 100; stagger 19.
-- Winter Refrain ← Blizzaga [255050, enemy]: MP 28, power 24. Ice magic damage; power 24. Group enemies; MP 28; hits 3; accuracy 100; stagger 15.
-- Flame Refrain ← 大魔法マグヌム・オプス(火) [503910, enemy]: MP 22, power 20. Fire magic damage; power 20. Group enemies; MP 22; hits 3; accuracy 100; stagger 21.
-- Dazzling Refrain ← Alluring Pollen [503770, enemy]: MP 30, power 24. Non-elemental magic damage; power 24. Apply Confusion (50%), Charme (50%), Silence (50%), Blind (50%). Group enemies; MP 30; hits 1; accuracy 100; stagger 20.
+- Healing Refrain ← Cure [215000, native]: MP 12, power 200. Restore all allies’ HP.
+- Restoring Refrain ← Cura [215010, native]: MP 25, power 500. Restore all allies’ HP.
+- Lullaby ← Lullaby [570440, enemy]: MP 8, power 0. Inflict Sleep.
+- Blindga ← Blindga [235010, native]: MP 20, power 0. Inflict Blind with a 50% chance.
+- Silencega ← Silencega [235020, native]: MP 20, power 0. Inflict Silence with a 50% chance.
+- Starlight Refrain ← Array: Light of Destruction [503620, enemy]: MP 24, power 28. Deal Light magic damage to all enemies.
+- Dimming Refrain ← Flamewall [506120, enemy]: MP 34, power 30. Deal Fire magic damage to all enemies 3 times. Lower attack and magic.
+- Wind Aria ← Aero [250170, enemy]: MP 5, power 14. Deal Wind magic damage to an enemy.
+- Wind Refrain ← Aerora [250180, enemy]: MP 15, power 22. Deal Wind magic damage to an enemy 2 times.
+- Winter Refrain ← Blizzaga [255050, enemy]: MP 28, power 24. Deal Ice magic damage to all enemies 3 times.
+- Flame Refrain ← 大魔法マグヌム・オプス(火) [503910, enemy]: MP 22, power 20. Deal Fire magic damage to all enemies 3 times.
+- Dazzling Refrain ← Alluring Pollen [503770, enemy]: MP 30, power 24. Deal magic damage to all enemies. May inflict Confusion, Charm, Silence and Blind.
 
 ### Elephim — 7
 
@@ -826,17 +826,17 @@ Sprite `100017107` (GL); base-stat budget: Vaan. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Sleep ← Sleep [230010, native]: MP 5, power 0. Apply Sleep (80%). Single enemies; MP 5; hits 1; accuracy 100; stagger 25.
-- Defaith ← Defaith [230200, native]: MP 6, power 0. Apply IntelligenceDown (100%). Single enemies; MP 6; hits 1; accuracy 100; stagger 25.
-- Debravega ← Debravega [235050, native]: MP 24, power 0. Apply AttackDown (100%). Group enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Defaithga ← Defaithga [235060, native]: MP 24, power 0. Apply IntelligenceDown (100%). Group enemies; MP 24; hits 1; accuracy 100; stagger 25.
-- Sleepga ← Sleepga [235000, native]: MP 20, power 0. Apply Sleep (50%). Group enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Rallying Song ← Get them! [501120, enemy]: MP 45, power 0. Raise party magic and speed by 50%. Group friendlies; MP 45; hits 0; accuracy 100; stagger 25.
-- Inspire ← Inspire [570130, enemy]: MP 42, power 0. Raise an ally’s attack/magic by 50% and reduce incoming physical/magic damage by 30%. Single friendlies; MP 42; hits 1; accuracy 100; stagger 0.
-- Berserker Samba ← Samba de Flan [570420, enemy]: MP 28, power 0. Apply Berserk (100%). Group enemies; MP 28; hits 1; accuracy 100; stagger 0.
-- Resonant Notes ← Cut [500060, enemy]: MP 6, power 12. Non-elemental magic damage; power 12. Single enemies; MP 6; hits 1; accuracy 100; stagger 25.
-- Flame Chant ← Flame [500340, enemy]: MP 6, power 12. Fire magic damage; power 12. Group enemies; MP 6; hits 1; accuracy 100; stagger 12.
-- Harp Volley ← Swing [500070, enemy]: MP 6, power 12. Wind physical damage; power 12. Single enemies; MP 6; hits 2; accuracy 100; stagger 25.
+- Sleep ← Sleep [230010, native]: MP 5, power 0. Inflict Sleep with a 80% chance.
+- Defaith ← Defaith [230200, native]: MP 6, power 0. Lower magic.
+- Debravega ← Debravega [235050, native]: MP 24, power 0. Lower attack.
+- Defaithga ← Defaithga [235060, native]: MP 24, power 0. Lower magic.
+- Sleepga ← Sleepga [235000, native]: MP 20, power 0. Inflict Sleep with a 50% chance.
+- Rallying Song ← Get them! [501120, enemy]: MP 45, power 0. Increase party magic and speed by 50%.
+- Inspire ← Inspire [570130, enemy]: MP 42, power 0. Increase an ally’s attack/magic by 50% and reduce incoming physical/magic damage by 30%.
+- Berserker Samba ← Samba de Flan [570420, enemy]: MP 28, power 0. Inflict Berserk.
+- Resonant Notes ← Cut [500060, enemy]: MP 6, power 12. Deal magic damage to an enemy.
+- Flame Chant ← Flame [500340, enemy]: MP 6, power 12. Deal Fire magic damage to all enemies.
+- Harp Volley ← Swing [500070, enemy]: MP 6, power 12. Deal Wind physical damage to an enemy 2 times.
 
 ### Jade — 5
 
@@ -860,16 +860,16 @@ Sprite `337001205` (GL); base-stat budget: Cloud. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Volt Palm ← Megavolt [500180, enemy]: MP 14, power 17. Thunder physical damage; power 17. Apply Paralyzation (100%). Single enemies; MP 14; hits 1; accuracy 100; stagger 25.
-- Gigavolt Strike ← Gigavolt [500400, enemy]: MP 20, power 24. Thunder physical damage; power 24. Single enemies; MP 20; hits 2; accuracy 100; stagger 25.
-- Rocket Punch ← Rocket Punch [500730, enemy]: MP 10, power 18. Non-elemental physical damage; power 18. Single enemies; MP 10; hits 1; accuracy 100; stagger 25.
-- Charge ← Charge [501040, enemy]: MP 12, power 24. Non-elemental physical damage; power 24. Apply Paralyzation (50%). Single enemies; MP 12; hits 1; accuracy 70; stagger 25.
-- Volt Kick ← Lightning Bolt [500220, enemy]: MP 12, power 18. Thunder physical damage; power 18. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Thunder Palm ← Thunder [255060, enemy]: MP 12, power 12. Thunder physical damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Thunder Palm II ← Thundara [255070, enemy]: MP 20, power 18. Thunder physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Thunder Palm III ← Thundaga [255080, enemy]: MP 28, power 24. Thunder physical damage; power 24. Group enemies; MP 28; hits 3; accuracy 100; stagger 15.
-- Storm Flurry ← Octo-Strike [501070, enemy]: MP 28, power 32. Thunder physical damage; power 32. Random enemies; MP 28; hits 4; accuracy 100; stagger 12.
-- Fist of the Storm ← Fist of Ferocity [502380, enemy]: MP 35, power 40. Thunder physical damage; power 40. Single enemies; MP 35; hits 1; accuracy 100; stagger 17.
+- Volt Palm ← Megavolt [500180, enemy]: MP 14, power 17. Deal Lightning physical damage to an enemy. Inflict Paralysis.
+- Gigavolt Strike ← Gigavolt [500400, enemy]: MP 20, power 24. Deal Lightning physical damage to an enemy 2 times.
+- Rocket Punch ← Rocket Punch [500730, enemy]: MP 10, power 18. Deal physical damage to an enemy.
+- Charge ← Charge [501040, enemy]: MP 12, power 24. Deal physical damage to an enemy. Inflict Paralysis with a 50% chance.
+- Volt Kick ← Lightning Bolt [500220, enemy]: MP 12, power 18. Deal Lightning physical damage to an enemy.
+- Thunder Palm ← Thunder [255060, enemy]: MP 12, power 12. Deal Lightning physical damage to all enemies.
+- Thunder Palm II ← Thundara [255070, enemy]: MP 20, power 18. Deal Lightning physical damage to all enemies 2 times.
+- Thunder Palm III ← Thundaga [255080, enemy]: MP 28, power 24. Deal Lightning physical damage to all enemies 3 times.
+- Storm Flurry ← Octo-Strike [501070, enemy]: MP 28, power 32. Deal Lightning physical damage to random enemies 4 times.
+- Fist of the Storm ← Fist of Ferocity [502380, enemy]: MP 35, power 40. Deal Lightning physical damage to an enemy.
 
 ### Spirited Heart Primm — NV Super Limit Burst
 
@@ -893,16 +893,16 @@ Sprite `304000717` (GLW); base-stat budget: Onion Knight. Growth: Lightning.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Cure ← Cure [240010, enemy]: MP 6, power 200. Restore healing power 200. Single friendlies; MP 6; hits 1; accuracy 100; stagger 50.
-- Cura ← Cura [240020, enemy]: MP 18, power 500. Restore healing power 500. Single friendlies; MP 18; hits 1; accuracy 100; stagger 55.
-- Curaga ← Curaga [240030, enemy]: MP 50, power 1500. Restore healing power 1500. Single friendlies; MP 50; hits 1; accuracy 100; stagger 60.
-- Firestorm Saber ← Firestorm [500360, enemy]: MP 20, power 18. Fire physical damage; power 18. Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Atomic Saber ← Atomic Ray [500380, enemy]: MP 20, power 24. Fire physical damage; power 24. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Flame Saber ← Fira [255010, enemy]: MP 20, power 18. Fire physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Gale Saber ← Aerora [255130, enemy]: MP 20, power 18. Wind physical damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Spiritlight Saber ← Banishra [225300, native]: MP 35, power 33. Light physical damage; power 33. Group enemies; MP 35; hits 2; accuracy 100; stagger 19.
-- Mana Burst ← Countermeasure [503190, enemy]: MP 26, power 27. Non-elemental magic damage; power 27. Group enemies; MP 26; hits 1; accuracy 100; stagger 12.
-- Blazing Saber ← Fire [255000, enemy]: MP 14, power 18. Fire physical damage; power 18. Group enemies; MP 14; hits 1; accuracy 100; stagger 12.
+- Cure ← Cure [240010, enemy]: MP 6, power 200. Restore an ally’s HP.
+- Cura ← Cura [240020, enemy]: MP 18, power 500. Restore an ally’s HP.
+- Curaga ← Curaga [240030, enemy]: MP 50, power 1500. Restore an ally’s HP.
+- Firestorm Saber ← Firestorm [500360, enemy]: MP 20, power 18. Deal Fire physical damage to all enemies.
+- Atomic Saber ← Atomic Ray [500380, enemy]: MP 20, power 24. Deal Fire physical damage to an enemy.
+- Flame Saber ← Fira [255010, enemy]: MP 20, power 18. Deal Fire physical damage to all enemies 2 times.
+- Gale Saber ← Aerora [255130, enemy]: MP 20, power 18. Deal Wind physical damage to all enemies 2 times.
+- Spiritlight Saber ← Banishra [225300, native]: MP 35, power 33. Deal Light physical damage to all enemies 2 times.
+- Mana Burst ← Countermeasure [503190, enemy]: MP 26, power 27. Deal magic damage to all enemies.
+- Blazing Saber ← Fire [255000, enemy]: MP 14, power 18. Deal Fire physical damage to all enemies.
 
 ### Relm — 5
 
@@ -926,20 +926,20 @@ Sprite `206001005` (GL); base-stat budget: Shantotto. Growth: Terra.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Bioblaster ← Bioblaster [500970, enemy]: MP 18, power 12. Non-elemental magic damage; power 12. Apply Poison (70%). Group enemies; MP 18; hits 1; accuracy 100; stagger 12.
-- Fire Beam ← Fire Beam [500980, enemy]: MP 12, power 18. Fire magic damage; power 18. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- El Nino ← El Niño [501010, enemy]: MP 20, power 18. Water magic damage; power 18. Group enemies; MP 20; hits 1; accuracy 100; stagger 12.
-- Forbidden Ars Magna ← 禁呪アルス・マグナ [503930, enemy]: MP 26, power 26. Non-elemental magic damage; power 26. Group enemies; MP 26; hits 1; accuracy 100; stagger 45.
-- Drain ← Drain [250300, enemy]: MP 12, power 12. Non-elemental magic damage; power 12. Apply HP drain (100% of damage). Single enemies; MP 12; hits 1; accuracy 100; stagger 20.
-- Banishra Canvas ← Banishra [245300, enemy]: MP 20, power 18. Light magic damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Mind Blast ← Mind Blast [500750, enemy]: MP 45, power 24. Thunder magic damage; power 24. Apply Paralyzation (100%), Silence (100%), Poison (100%). Single enemies; MP 45; hits 1; accuracy 100; stagger 25.
-- Earth Canvas ← Stone [255150, enemy]: MP 12, power 12. Earth magic damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Earth Canvas II ← Stonera [255160, enemy]: MP 20, power 18. Earth magic damage; power 18. Group enemies; MP 20; hits 2; accuracy 100; stagger 14.
-- Frost Canvas ← Blizzard [225030, native]: MP 12, power 17. Ice magic damage; power 17. Group enemies; MP 12; hits 1; accuracy 100; stagger 17.
-- Erase Canvas ← Liquidate [503200, enemy]: MP 40, power 40. Non-elemental magic damage; power 40. Group enemies; MP 40; hits 1; accuracy 100; stagger 12.
-- Stone Stroke ← Stonera [250220, enemy]: MP 15, power 22. Earth magic damage; power 22. Single enemies; MP 15; hits 2; accuracy 100; stagger 19.
-- Aether Palette ← Regurgitate [570630, enemy]: MP 18, power 30. Restore 30 MP. Single friendlies; MP 18; hits 1; accuracy 100; stagger 0.
-- Storm Canvas ← Thundaga [250110, enemy]: MP 30, power 30. Thunder magic damage; power 30. Single enemies; MP 30; hits 3; accuracy 100; stagger 21.
+- Bioblaster ← Bioblaster [500970, enemy]: MP 18, power 12. Deal magic damage to all enemies. Inflict Poison with a 70% chance.
+- Fire Beam ← Fire Beam [500980, enemy]: MP 12, power 18. Deal Fire magic damage to an enemy.
+- El Nino ← El Niño [501010, enemy]: MP 20, power 18. Deal Water magic damage to all enemies.
+- Forbidden Ars Magna ← 禁呪アルス・マグナ [503930, enemy]: MP 26, power 26. Deal magic damage to all enemies.
+- Drain ← Drain [250300, enemy]: MP 12, power 12. Deal magic damage to an enemy. Absorb damage dealt as HP.
+- Banishra Canvas ← Banishra [245300, enemy]: MP 20, power 18. Deal Light magic damage to all enemies 2 times.
+- Mind Blast ← Mind Blast [500750, enemy]: MP 45, power 24. Deal Lightning magic damage to an enemy. Inflict Paralysis, Silence and Poison.
+- Earth Canvas ← Stone [255150, enemy]: MP 12, power 12. Deal Earth magic damage to all enemies.
+- Earth Canvas II ← Stonera [255160, enemy]: MP 20, power 18. Deal Earth magic damage to all enemies 2 times.
+- Frost Canvas ← Blizzard [225030, native]: MP 12, power 17. Deal Ice magic damage to all enemies.
+- Erase Canvas ← Liquidate [503200, enemy]: MP 40, power 40. Deal magic damage to all enemies.
+- Stone Stroke ← Stonera [250220, enemy]: MP 15, power 22. Deal Earth magic damage to an enemy 2 times.
+- Aether Palette ← Regurgitate [570630, enemy]: MP 18, power 30. Restore 30 MP to an ally.
+- Storm Canvas ← Thundaga [250110, enemy]: MP 30, power 30. Deal Lightning magic damage to an enemy 3 times.
 
 ### Rikku (FFX-2) — 6
 
@@ -963,17 +963,17 @@ Sprite `249000206` (GL); base-stat budget: Vaan. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Flash Bomb ← Flash Bomb [501020, enemy]: MP 10, power 6. Non-elemental physical damage; power 6. Apply Blind (30%). Group enemies; MP 10; hits 1; accuracy 100; stagger 12.
-- Sleep Needle ← Sleep Needle [500300, enemy]: MP 8, power 12. Non-elemental physical damage; power 12. Apply Sleep (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Poison Needle ← Poison Needle [500280, enemy]: MP 8, power 12. Non-elemental physical damage; power 12. Apply Poison (100%). Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Blinding Flash ← Blinding Flash [571540, enemy]: MP 28, power 24. Non-elemental physical damage; power 24. Apply Blind (100%). Group enemies; MP 28; hits 1; accuracy 100; stagger 50.
-- Mustard Bomb ← Mustard Bomb [571550, enemy]: MP 40, power 40. Non-elemental physical damage; power 40. Apply Paralyzation (50%). Group enemies; MP 40; hits 1; accuracy 100; stagger 25.
-- Acid Grenade ← Secrete Acid [501650, enemy]: MP 24, power 18. Non-elemental physical damage; power 18. Apply Poison (50%). Group enemies; MP 24; hits 1; accuracy 100; stagger 12.
-- Incendiary Sphere ← Incineration Sphere [571530, enemy]: MP 22, power 18. Fire physical damage; power 18. Apply AttackDown (65%), IntelligenceDown (65%). Group enemies; MP 22; hits 1; accuracy 100; stagger 25.
-- Wave Cannon ← Wave Cannon [505120, enemy]: MP 35, power 36. Non-elemental magic damage; power 36. Group enemies; MP 35; hits 1; accuracy 100; stagger 12.
-- Trickshot ← Triple Threat [505940, enemy]: MP 30, power 36. Non-elemental physical damage; power 36. Random enemies; MP 30; hits 3; accuracy 100; stagger 12.
-- Emergency Protocol ← Analyze Movement Pattern [571520, enemy]: MP 30, power 0. Remove own ailments/debuffs and gain 30% physical/magic protection for 3 turns. Self friendlies; MP 30; hits 1; accuracy 100; stagger 12.
-- Quick Repair ← Cannibalize [501290, enemy]: MP 30, power 200. Restore 200 HP. Group friendlies; MP 30; hits 1; accuracy 100; stagger 25.
+- Flash Bomb ← Flash Bomb [501020, enemy]: MP 10, power 6. Deal physical damage to all enemies. Inflict Blind with a 30% chance.
+- Sleep Needle ← Sleep Needle [500300, enemy]: MP 8, power 12. Deal physical damage to an enemy. Inflict Sleep.
+- Poison Needle ← Poison Needle [500280, enemy]: MP 8, power 12. Deal physical damage to an enemy. Inflict Poison.
+- Blinding Flash ← Blinding Flash [571540, enemy]: MP 28, power 24. Deal physical damage to all enemies. Inflict Blind.
+- Mustard Bomb ← Mustard Bomb [571550, enemy]: MP 40, power 40. Deal physical damage to all enemies. Inflict Paralysis with a 50% chance.
+- Acid Grenade ← Secrete Acid [501650, enemy]: MP 24, power 18. Deal physical damage to all enemies. Inflict Poison with a 50% chance.
+- Incendiary Sphere ← Incineration Sphere [571530, enemy]: MP 22, power 18. Deal Fire physical damage to all enemies. May lower attack and magic.
+- Wave Cannon ← Wave Cannon [505120, enemy]: MP 35, power 36. Deal magic damage to all enemies.
+- Trickshot ← Triple Threat [505940, enemy]: MP 30, power 36. Deal physical damage to random enemies 3 times.
+- Emergency Protocol ← Analyze Movement Pattern [571520, enemy]: MP 30, power 0. Remove own ailments/debuffs and gain 30% physical/magic protection for 3 turns.
+- Quick Repair ← Cannibalize [501290, enemy]: MP 30, power 200. Restore 200 HP to all allies.
 
 ### Nalu — 5
 
@@ -984,29 +984,29 @@ Sprite `100015405` (GL); base-stat budget: Cloud. Growth: Cloud.
 - Awakening 1: Thunder Surge [421130]; Libra [210220]; Thunder Spear [487803]; Lightning Sweep [487806]; Needle [487812]; Lance Launcher [487836]; Physical Attack +20% [1309]; Resist Lightning [1250].
 - Awakening 2: Braver [446000]; Thundara Surge [421140]; Lightning Strike [447500]; Lightning Lance Sweep [487830]; Shock Lance [487839]; Critical Hit Rate +10% [1247].
 - Awakening 3: Cross-Slash [446010]; Thundaga Surge [421150]; Thunderfall [447510]; Chain Lance [487809]; Thunderstorm Lance [487833]; Numbing Spark [487842]; Thunder Javelin [487845]; HP +20% [1378].
-- Awakening 4: Stagger Power +20% [1279]; Critical Boost [1234].
+- Awakening 4: Broadsword Mastery [1420]; Signature Moves [1418].
 - MR 1: Restore MP on Attack [1124].
 - MR 2: Agility +5 (permanent).
 - MR 3: Imbue Lightning [1523].
 - MR 4: AP +8 (permanent).
 - MR 5: Scan and Strike [1399].
 - MR 6: HP +60 (permanent).
-- MR 7: Broadsword Mastery [1420].
+- MR 7: Stagger Power +20% [1279].
 - MR 8: Attack +15 (permanent).
-- MR 9: Signature Moves [1418]; AP +8 (permanent); Spirit of Nalu.
+- MR 9: Critical Boost [1234]; AP +8 (permanent); Spirit of Nalu.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Thunder Spear ← Thunder Beam [501000, enemy]: MP 12, power 18. Thunder physical damage; power 18. Single enemies; MP 12; hits 1; accuracy 100; stagger 25.
-- Lightning Sweep ← Lightning [500390, enemy]: MP 12, power 12. Thunder physical damage; power 12. Group enemies; MP 12; hits 2; accuracy 100; stagger 12.
-- Chain Lance ← Chain Spark [220120, native]: MP 30, power 30. Thunder physical damage; power 30. Group enemies; MP 30; hits 3; accuracy 100; stagger 21.
-- Needle ← Needle [500260, enemy]: MP 8, power 18. Non-elemental physical damage; power 18. Single enemies; MP 8; hits 1; accuracy 100; stagger 25.
-- Lightning Lance Sweep ← Thunder [225060, native]: MP 15, power 17. Thunder physical damage; power 17. Group enemies; MP 15; hits 1; accuracy 100; stagger 17.
-- Thunderstorm Lance ← Thunderstorm [506140, enemy]: MP 36, power 30. Thunder physical damage; power 30. Apply Paralyzation (100%). Group enemies; MP 36; hits 3; accuracy 100; stagger 21.
-- Lance Launcher ← Launcher [500880, enemy]: MP 10, power 12. Thunder physical damage; power 12. Single enemies; MP 10; hits 2; accuracy 100; stagger 25.
-- Shock Lance ← Array: Shock Shell [503610, enemy]: MP 20, power 26. Thunder physical damage; power 26. Single enemies; MP 20; hits 1; accuracy 100; stagger 25.
-- Numbing Spark ← Thunderspark [250360, enemy]: MP 32, power 30. Thunder physical damage; power 30. Apply Paralyzation (50%). Single enemies; MP 32; hits 1; accuracy 100; stagger 28.
-- Thunder Javelin ← Regurgitate [570650, enemy]: MP 28, power 36. Thunder physical damage; power 36. Single enemies; MP 28; hits 1; accuracy 100; stagger 0.
+- Thunder Spear ← Thunder Beam [501000, enemy]: MP 12, power 18. Deal Lightning physical damage to an enemy.
+- Lightning Sweep ← Lightning [500390, enemy]: MP 12, power 12. Deal Lightning physical damage to all enemies 2 times.
+- Chain Lance ← Chain Spark [220120, native]: MP 30, power 30. Deal Lightning physical damage to all enemies 3 times.
+- Needle ← Needle [500260, enemy]: MP 8, power 18. Deal physical damage to an enemy.
+- Lightning Lance Sweep ← Thunder [225060, native]: MP 15, power 17. Deal Lightning physical damage to all enemies.
+- Thunderstorm Lance ← Thunderstorm [506140, enemy]: MP 36, power 30. Deal Lightning physical damage to all enemies 3 times. Inflict Paralysis.
+- Lance Launcher ← Launcher [500880, enemy]: MP 10, power 12. Deal Lightning physical damage to an enemy 2 times.
+- Shock Lance ← Array: Shock Shell [503610, enemy]: MP 20, power 26. Deal Lightning physical damage to an enemy.
+- Numbing Spark ← Thunderspark [250360, enemy]: MP 32, power 30. Deal Lightning physical damage to an enemy. Inflict Paralysis with a 50% chance.
+- Thunder Javelin ← Regurgitate [570650, enemy]: MP 28, power 36. Deal Lightning physical damage to an enemy.
 
 ### Elza — 5
 
@@ -1030,15 +1030,15 @@ Sprite `302000605` (GL); base-stat budget: Tidus. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Queenly Rend ← Queenly Whip [505910, enemy]: MP 16, power 16. Dark physical damage; power 16. Also reduce enemy attack and magic. Single enemies; MP 16; hits 2; accuracy 100; stagger 25.
-- Shred ← Shred [503580, enemy]: MP 25, power 35. Non-elemental physical damage; power 35. Single enemies; MP 25; hits 1; accuracy 100; stagger 25.
-- Venom Sweep ← Digestive Fluid [500490, enemy]: MP 15, power 12. Non-elemental physical damage; power 12. Apply Poison (50%). Group enemies; MP 15; hits 1; accuracy 100; stagger 12.
-- Black Tide ← Sludge [503660, enemy]: MP 26, power 28. Water physical damage; power 28. Group enemies; MP 26; hits 1; accuracy 100; stagger 12.
-- Rabid Claw ← Rabid Claw [502040, enemy]: MP 26, power 30. Dark physical damage; power 30. Apply Confusion (50%), Berserk (50%). Single enemies; MP 26; hits 1; accuracy 100; stagger 25.
-- Abyssal Rend ← Regurgitate [570610, enemy]: MP 32, power 40. Dark physical damage; power 40. Apply Poison (50%), Paralyzation (50%), Slow (30%). Single enemies; MP 32; hits 1; accuracy 100; stagger 25.
-- Ferocious Strike ← Ferocious Strike [503650, enemy]: MP 32, power 30. Dark physical damage; power 30. Apply Paralyzation (50%). Group enemies; MP 32; hits 1; accuracy 100; stagger 25.
-- Crushing Tide ← Crushing Breath [505400, enemy]: MP 26, power 28. Water physical damage; power 28. Group enemies; MP 26; hits 1; accuracy 100; stagger 12.
-- Judgment Claw ← Judgment of the Claw [503130, enemy]: MP 28, power 30. Dark physical damage; power 30. Group enemies; MP 28; hits 1; accuracy 100; stagger 25.
+- Queenly Rend ← Queenly Whip [505910, enemy]: MP 16, power 16. Deal Dark physical damage to an enemy 2 times. reduce enemy attack and magic.
+- Shred ← Shred [503580, enemy]: MP 25, power 35. Deal physical damage to an enemy.
+- Venom Sweep ← Digestive Fluid [500490, enemy]: MP 15, power 12. Deal physical damage to all enemies. Inflict Poison with a 50% chance.
+- Black Tide ← Sludge [503660, enemy]: MP 26, power 28. Deal Water physical damage to all enemies.
+- Rabid Claw ← Rabid Claw [502040, enemy]: MP 26, power 30. Deal Dark physical damage to an enemy. May inflict Confusion and Berserk.
+- Abyssal Rend ← Regurgitate [570610, enemy]: MP 32, power 40. Deal Dark physical damage to an enemy. May inflict Poison, Paralysis and Slow.
+- Ferocious Strike ← Ferocious Strike [503650, enemy]: MP 32, power 30. Deal Dark physical damage to all enemies. Inflict Paralysis with a 50% chance.
+- Crushing Tide ← Crushing Breath [505400, enemy]: MP 26, power 28. Deal Water physical damage to all enemies.
+- Judgment Claw ← Judgment of the Claw [503130, enemy]: MP 28, power 30. Deal Dark physical damage to all enemies.
 
 ### Lunera — 6
 
@@ -1062,16 +1062,16 @@ Sprite `100007506` (GL); base-stat budget: Bartz. Growth: Cloud.
 
 Supplemental player copies (native source ID; final MP/power):
 
-- Shamshir ← Shamshir [500450, enemy]: MP 16, power 24. Wind physical damage; power 24. Single enemies; MP 16; hits 1; accuracy 100; stagger 25.
-- Gale Volley ← Wing Flap [503720, enemy]: MP 20, power 20. Wind magic damage; power 20. Group enemies; MP 20; hits 3; accuracy 100; stagger 20.
-- Merciless Gale ← Merciless Judgment [505270, enemy]: MP 38, power 40. Wind physical damage; power 40. Single enemies; MP 38; hits 3; accuracy 100; stagger 25.
-- Star Volley ← Flare Star [500900, enemy]: MP 32, power 30. Non-elemental physical damage; power 30. Group enemies; MP 32; hits 1; accuracy 100; stagger 12.
-- Venom Gale ← Venom Breath [501900, enemy]: MP 24, power 18. Wind physical damage; power 18. Apply Poison (30%). Group enemies; MP 24; hits 1; accuracy 100; stagger 12.
-- Tempest Volley ← Aeroga [225140, native]: MP 42, power 40. Wind physical damage; power 40. Group enemies; MP 42; hits 3; accuracy 100; stagger 21.
-- Gale Sweep ← Aero [255120, enemy]: MP 12, power 12. Wind physical damage; power 12. Group enemies; MP 12; hits 1; accuracy 100; stagger 12.
-- Silencing Gale ← Windwail [506150, enemy]: MP 34, power 30. Wind physical damage; power 30. Apply Silence (100%). Group enemies; MP 34; hits 3; accuracy 100; stagger 21.
-- Gale Reprisal ← Counter Vines [502620, enemy]: MP 20, power 26. Wind physical damage; power 26. Single enemies; MP 20; hits 2; accuracy 100; stagger 25.
-- Twin Gale Shot ← Whip [500120, enemy]: MP 8, power 12. Wind physical damage; power 12. Single enemies; MP 8; hits 2; accuracy 100; stagger 25.
+- Shamshir ← Shamshir [500450, enemy]: MP 16, power 24. Deal Wind physical damage to an enemy.
+- Gale Volley ← Wing Flap [503720, enemy]: MP 20, power 20. Deal Wind magic damage to all enemies 3 times.
+- Merciless Gale ← Merciless Judgment [505270, enemy]: MP 38, power 40. Deal Wind physical damage to an enemy 3 times.
+- Star Volley ← Flare Star [500900, enemy]: MP 32, power 30. Deal physical damage to all enemies.
+- Venom Gale ← Venom Breath [501900, enemy]: MP 24, power 18. Deal Wind physical damage to all enemies. Inflict Poison with a 30% chance.
+- Tempest Volley ← Aeroga [225140, native]: MP 42, power 40. Deal Wind physical damage to all enemies 3 times.
+- Gale Sweep ← Aero [255120, enemy]: MP 12, power 12. Deal Wind physical damage to all enemies.
+- Silencing Gale ← Windwail [506150, enemy]: MP 34, power 30. Deal Wind physical damage to all enemies 3 times. Inflict Silence.
+- Gale Reprisal ← Counter Vines [502620, enemy]: MP 20, power 26. Deal Wind physical damage to an enemy 2 times.
+- Twin Gale Shot ← Whip [500120, enemy]: MP 8, power 12. Deal Wind physical damage to an enemy 2 times.
 
 ## Research and validation limits
 

@@ -320,7 +320,8 @@ def prepare_encounter(table, rows, spec, units, root, roster):
     _add(table, rows, GROUP, group_id, 1026, name, {
         'UnitIdList': [boss_id(u) for u in units], 'locationIdList': {1: [10], 2: [6, 15], 3: [20, 6, 15]}[len(units)],
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
-        'battleFinishEventId': '',
+        # Inherit the verified empty native finish-event names. The native
+        # patcher cannot insert a new empty FString into an FName name map.
         'ap': 0, 'isResultSkipOnWin': False, 'isResultSkipOnLose': False})
     # Menus, ownership checks and return-to-field routing are authored from
     # the inspected original repeat events, never the original acquisition row.

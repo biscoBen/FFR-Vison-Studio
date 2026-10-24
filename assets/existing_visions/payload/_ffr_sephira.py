@@ -52,6 +52,7 @@ def visual_units(units, root, rows=None):
     Saved recipes keep the borrowed donors so turning the setting on restores them.
     """
     result = copy.deepcopy(units)
+    for unit in result: repair_default_acquisition(unit)
     controls = settings(root)
     if controls.get('shopAcquisitionOverride', False):
         for unit in result:
@@ -134,6 +135,69 @@ BINDINGS = {
     1448: (12942, 'AquaTerraSword', 1, 205, 'command'),
     1454: (15127, 'BreakDmgByProtect', 1, 207, 'command'),
 }
+
+# Swap command/LB-bound MR rewards with existing, transferable awakening
+# bonuses. Each tuple is (MR rank, bound passive, general passive, awakening
+# rank). Nothing is added or removed from a complete kit or its AP budget.
+MASTERY_SCOPE = {
+    'christine': [(7, 1406, 1280, 3)],
+    'barusa': [(9, 1454, 1333, 3)],
+    'minfilia': [(5, 1410, 1313, 2), (7, 1411, 1336, 3)],
+    'trance_terra': [(5, 1432, 1315, 3), (9, 1433, 1307, 3)],
+    'nalu': [(7, 1420, 1279, 3), (9, 1418, 1234, 3)],
+}
+ACQUISITION_SWAPS = {'rikku': ('sephira_13124','sephira_13118'),
+                     'lunafreya': ('sephira_13118','sephira_13124')}
+
+
+def repair_default_acquisition(unit):
+    member = runtime_membership(unit)
+    if member is None or member['preset'] not in ACQUISITION_SWAPS: return
+    old, new = ACQUISITION_SWAPS[member['preset']]
+    # The saved canonical location makes this a one-time default migration.
+    # A later explicit choice of the old crystal remains the user's choice.
+    if (unit.get('sephiraAcquisition') or {}).get('location') != old: return
+    for field in ('studioAcquisition','sephiraAcquisition'):
+        value = unit.get(field) or {}
+        if value.get('version') == 3 and value.get('location') == old:
+            unit[field] = dict(value, location=new)
+MASTERY_LABELS = {
+    'christine': {1406: ('True Stagger', 'Increases the stagger power of Christine’s skills.')},
+    'barusa': {1454: ('Bastion', 'Increases the stagger power of Barusa’s skills. The effect increases with the number of allies under Protect.')},
+    'minfilia': {
+        1410: ('Job Change', 'Minfilia’s skills use the higher of physical or magic attack.'),
+        1411: ('Late Bloomer', 'Increases damage dealt by Minfilia’s skills by 30% while the LB gauge is at least 50%.')},
+    'trance_terra': {
+        1432: ('The Federation’s Fiend', 'Halves the MP cost of Trance Terra’s skills while the LB gauge is at least 50%.'),
+        1433: ('Play Rough', 'Increases damage dealt by Trance Judgment, Judgment Shadow, and Trance Terra’s resonance by 40% against enemies that have attacked self.')},
+    'nalu': {
+        1420: ('Broadsword Mastery', 'Increases the critical hit rate of Nalu’s skills by 30% while at full HP.'),
+        1418: ('Signature Moves', 'Increases the critical hit rate of Thunder Spear, Lightning Sweep, and Nalu’s resonance by 15%.')},
+}
+# Two original traits name two active skills as well as an LB. Rebind those
+# typed skill-ID slots to the private signatures, just like their LB slot.
+SIGNATURE_BINDINGS = {
+    ('trance_terra', 1433): [(1, 447300, 505450), (2, 447310, 503120)],
+    ('nalu', 1418): [(3, 446000, 501000), (4, 446010, 500390)],
+}
+
+
+def repair_mastery_scope(unit):
+    member = runtime_membership(unit)
+    if member is None: return
+    for rank, bound, general, preferred in MASTERY_SCOPE.get(member['preset'], []):
+        if rank >= len(unit.get('synchro', [])): continue
+        reward = next((g for g in unit['synchro'][rank] if g[:2] == ['PassiveSkill', bound]), None)
+        if reward is None: continue  # Already repaired or a deliberate MR edit.
+        replacement = next((g for tier in unit['awakening'] for g in tier
+                            if g[:2] == ['PassiveSkill', general]), None)
+        if replacement is not None: replacement[1] = bound
+        else:
+            # Revision-6 saves have not received the general awakening reward.
+            target = next((tier for tier in unit['awakening'][preferred:] if len(tier) < 8), None)
+            if target is None: raise ValueError(unit['en'] + ': free an awakening slot for its unit-specific bonus.')
+            target.append(['PassiveSkill', bound, -1])
+        reward[1] = general
 
 
 # Saved-game compatibility: freeze the preset/conditional seeds and existing
@@ -341,16 +405,19 @@ def bind_units(units, rows):
     for u in result:
         value = runtime_membership(u)
         if value is None: continue
+        repair_mastery_scope(u)
         owned = {int(sid) for sid in u.get('skills', {})}
         if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)
         if native_skills & owned:
             raise ValueError('A Sephira custom skill/LB ID overlaps the game catalog. Reset this preset in Studio to allocate safe IDs.')
         private = {}
-        labels = u.get('sephiraPassiveText') or {}
+        labels = {str(sid):dict(zip(('name','desc'),text))
+                  for sid,text in MASTERY_LABELS.get(value['preset'],{}).items()}
+        labels.update(u.get('sephiraPassiveText') or {})
         for field in ['awakening', 'synchro']:
             for tier in u[field]:
                 for g in tier:
-                    if g[0] == 'PassiveSkill' and str(g[1]) in labels:
+                    if g[0] == 'PassiveSkill' and str(g[1]) in labels and g[1] not in BINDINGS:
                         sid = g[1]
                         pk, passive = passives[sid]
                         new_sid = private_passive_id(value['preset'], sid)
@@ -388,9 +455,18 @@ def bind_units(units, rows):
                         if b['effectId'] == eid: b['effectId'] = new_eid
                     params = list(effect['ParamList'])
                     params[index] = u['command']['id'] if replacement == 'command' else (440000 + (u['id'] - 13099) * 10 if u.get('lb_custom') else u['lb'])
+                    for slot, native_id, source in SIGNATURE_BINDINGS.get((value['preset'],sid), []):
+                        if effect['ParamList'][slot] != native_id:
+                            raise ValueError('Native signature binding changed; re-audit passive ' + str(sid))
+                        matches = [int(k) for k,r in (u.get('skills') or {}).items() if r.get('from') == source]
+                        # An edited kit may remove a signature. Never leave a
+                        # reference to the unrelated original vision's skill.
+                        params[slot] = matches[0] if len(matches) == 1 else -1
                     private[sid] = {
                         'passive': {'row': f"Studio_Sephira_{u['id']}_Passive_{sid}", 'cloneFrom': pk,
-                                    'set': {'ID': new_sid, 'effectBundleList': bundles}},
+                                    'set': {'ID': new_sid, 'effectBundleList': bundles,
+                                            **({'Name': labels[str(sid)]['name'], 'Description': labels[str(sid)]['desc']}
+                                               if str(sid) in labels else {})}},
                         'effect': {'row': f"Studio_Sephira_{u['id']}_Effect_{eid}", 'cloneFrom': ek,
                                    'set': {'ID': new_eid, 'ParamList': params}}}
                     g[1] = new_sid

@@ -2976,7 +2976,7 @@
           [
             [
               "PassiveSkill",
-              1280,
+              1406,
               -1
             ]
           ]
@@ -3028,7 +3028,7 @@
           [
             [
               "PassiveSkill",
-              1406,
+              1280,
               -1
             ]
           ],
@@ -3102,7 +3102,12 @@
           "hideSpoilers": true,
           "cave": null
         },
-        "sephiraPassiveText": {}
+        "sephiraPassiveText": {
+          "1406": {
+            "name": "True Stagger",
+            "desc": "Increases the stagger power of Christine\u2019s skills."
+          }
+        }
       },
       "balance": {
         "nativeBudget": 13024,
@@ -3976,7 +3981,7 @@
           },
           {
             "rank": 3,
-            "id": 1280
+            "id": 1406
           }
         ],
         "nativePassives": [
@@ -4060,6 +4065,210 @@
           "from": 414090,
           "before": "Native Tronn resonance mechanics; Christine's own sprite animation.",
           "after": "Deal Ice magic damage to random enemies 5 times."
+        }
+      },
+      "masteryScopeUpdate": {
+        "schema": 1,
+        "swaps": [
+          [
+            7,
+            1406,
+            1280,
+            3
+          ]
+        ],
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                220050,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                230030,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                210200,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485109,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485115,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485130,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1380,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1033,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220060,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220070,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485106,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485112,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485133,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485139,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400630,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1277,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                485103,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485136,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485142,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1285,
+                -1
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1280,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1281,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                9,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1376,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1407,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                2,
+                20
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1406,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                7,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1045,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1350100,
+                -1
+              ]
+            ]
+          ]
         }
       }
     },
@@ -6094,7 +6303,7 @@
           [
             [
               "PassiveSkill",
-              1333,
+              1454,
               -1
             ]
           ]
@@ -6160,7 +6369,7 @@
           [
             [
               "PassiveSkill",
-              1454,
+              1333,
               -1
             ],
             [
@@ -6224,6 +6433,10 @@
           "1526": {
             "name": "Imbue Earth",
             "desc": "Add earth to non-elemental standard attacks and battle skills."
+          },
+          "1454": {
+            "name": "Bastion",
+            "desc": "Increases the stagger power of Barusa\u2019s skills. The effect increases with the number of allies under Protect."
           }
         }
       },
@@ -7158,7 +7371,7 @@
           },
           {
             "rank": 3,
-            "id": 1333
+            "id": 1454
           }
         ],
         "nativePassives": [
@@ -7225,6 +7438,215 @@
           "from": 412620,
           "before": "Native Wilhelm resonance mechanics; Barusa's own sprite animation.",
           "after": "Activate a barrier on all allies that reduces damage taken by 70% once."
+        }
+      },
+      "masteryScopeUpdate": {
+        "schema": 1,
+        "swaps": [
+          [
+            9,
+            1454,
+            1333,
+            3
+          ]
+        ],
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                421400,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                421340,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485309,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485312,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485333,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485336,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400640,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1313,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                421410,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                421350,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                414700,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485303,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485330,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1106,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1290,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                421420,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                421360,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                414710,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485306,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1379,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1331,
+                -1
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1333,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1526,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                1,
+                30
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1336,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1452,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                6,
+                10
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1453,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                5,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1454,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1350300,
+                -1
+              ]
+            ]
+          ]
         }
       }
     },
@@ -9281,14 +9703,14 @@
         },
         "sephiraAcquisition": {
           "version": 3,
-          "location": "sephira_13118",
+          "location": "sephira_13124",
           "random": false,
           "hideSpoilers": true,
           "cave": null
         },
         "studioAcquisition": {
           "version": 3,
-          "location": "sephira_13118",
+          "location": "sephira_13124",
           "random": false,
           "hideSpoilers": true,
           "cave": null
@@ -10291,6 +10713,11 @@
           "before": "Native Zidane resonance mechanics; Oracle Maiden Lunafreya's own sprite animation.",
           "after": "Deal Water magic damage to an enemy."
         }
+      },
+      "acquisitionUpdate": {
+        "schema": 1,
+        "before": "sephira_13118",
+        "after": "sephira_13124"
       }
     },
     {
@@ -10762,7 +11189,7 @@
             ],
             [
               "PassiveSkill",
-              1313,
+              1410,
               -1
             ]
           ],
@@ -10774,7 +11201,7 @@
             ],
             [
               "PassiveSkill",
-              1336,
+              1411,
               -1
             ]
           ]
@@ -10812,7 +11239,7 @@
           [
             [
               "PassiveSkill",
-              1410,
+              1313,
               -1
             ]
           ],
@@ -10826,7 +11253,7 @@
           [
             [
               "PassiveSkill",
-              1411,
+              1336,
               -1
             ]
           ],
@@ -10900,7 +11327,16 @@
           "hideSpoilers": true,
           "cave": null
         },
-        "sephiraPassiveText": {}
+        "sephiraPassiveText": {
+          "1410": {
+            "name": "Job Change",
+            "desc": "Minfilia\u2019s skills use the higher of physical or magic attack."
+          },
+          "1411": {
+            "name": "Late Bloomer",
+            "desc": "Increases damage dealt by Minfilia\u2019s skills by 30% while the LB gauge is at least 50%."
+          }
+        }
       },
       "balance": {
         "nativeBudget": 13102,
@@ -11872,11 +12308,11 @@
           },
           {
             "rank": 2,
-            "id": 1313
+            "id": 1410
           },
           {
             "rank": 3,
-            "id": 1336
+            "id": 1411
           }
         ],
         "nativePassives": [
@@ -11949,6 +12385,221 @@
           "from": 440030,
           "before": "Native Onion Knight resonance mechanics; Minfilia's own sprite animation.",
           "after": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends."
+        }
+      },
+      "masteryScopeUpdate": {
+        "schema": 1,
+        "swaps": [
+          [
+            5,
+            1410,
+            1313,
+            2
+          ],
+          [
+            7,
+            1411,
+            1336,
+            3
+          ]
+        ],
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                220210,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                230040,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485606,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485609,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485615,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485630,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400240,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1311,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220220,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                230050,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485612,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485636,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1116,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1381,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220230,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                445200,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485603,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                485633,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1277,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1313,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                485690,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1336,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1465,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                5,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1343,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1410,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                2,
+                20
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1411,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                7,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1412,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1350600,
+                -1
+              ]
+            ]
+          ]
         }
       }
     },
@@ -37157,12 +37808,12 @@
             ],
             [
               "PassiveSkill",
-              1315,
+              1432,
               -1
             ],
             [
               "PassiveSkill",
-              1307,
+              1433,
               -1
             ]
           ]
@@ -37200,7 +37851,7 @@
           [
             [
               "PassiveSkill",
-              1432,
+              1315,
               -1
             ]
           ],
@@ -37228,7 +37879,7 @@
           [
             [
               "PassiveSkill",
-              1433,
+              1307,
               -1
             ],
             [
@@ -37288,7 +37939,16 @@
           "hideSpoilers": true,
           "cave": null
         },
-        "sephiraPassiveText": {}
+        "sephiraPassiveText": {
+          "1432": {
+            "name": "The Federation\u2019s Fiend",
+            "desc": "Halves the MP cost of Trance Terra\u2019s skills while the LB gauge is at least 50%."
+          },
+          "1433": {
+            "name": "Play Rough",
+            "desc": "Increases damage dealt by Trance Judgment, Judgment Shadow, and Trance Terra\u2019s resonance by 40% against enemies that have attacked self."
+          }
+        }
       },
       "balance": {
         "nativeBudget": 13123,
@@ -37904,11 +38564,11 @@
           },
           {
             "rank": 3,
-            "id": 1315
+            "id": 1432
           },
           {
             "rank": 3,
-            "id": 1307
+            "id": 1433
           }
         ],
         "nativePassives": [
@@ -37962,6 +38622,221 @@
           "from": 440240,
           "before": "Native Shantotto resonance mechanics; Trance Terra's own sprite animation.",
           "after": "Deal Dark magic damage to an enemy and fill LB gauge by 20%."
+        }
+      },
+      "masteryScopeUpdate": {
+        "schema": 1,
+        "swaps": [
+          [
+            5,
+            1432,
+            1315,
+            3
+          ],
+          [
+            9,
+            1433,
+            1307,
+            3
+          ]
+        ],
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                220250,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220010,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1275,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1107,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                447300,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220260,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220020,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220030,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1381,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                447310,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220320,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220380,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487103,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487106,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487109,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487112,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487130,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220350,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220340,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400730,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1315,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1307,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1038,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                9,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1319,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1432,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                2,
+                20
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1351,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                7,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1433,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1352100,
+                -1
+              ]
+            ]
+          ]
         }
       }
     },
@@ -47277,14 +48152,14 @@
         },
         "sephiraAcquisition": {
           "version": 3,
-          "location": "sephira_13124",
+          "location": "sephira_13118",
           "random": false,
           "hideSpoilers": true,
           "cave": null
         },
         "studioAcquisition": {
           "version": 3,
-          "location": "sephira_13124",
+          "location": "sephira_13118",
           "random": false,
           "hideSpoilers": true,
           "cave": null
@@ -48389,6 +49264,11 @@
           "before": "Native Vaan resonance mechanics; Rikku (FFX-2)'s own sprite animation.",
           "after": "Deal Fire physical damage to all enemies. Guaranteed to steal from affected targets."
         }
+      },
+      "acquisitionUpdate": {
+        "schema": 1,
+        "before": "sephira_13124",
+        "after": "sephira_13118"
       }
     },
     {
@@ -48831,12 +49711,12 @@
           [
             [
               "PassiveSkill",
-              1279,
+              1420,
               -1
             ],
             [
               "PassiveSkill",
-              1234,
+              1418,
               -1
             ]
           ]
@@ -48888,7 +49768,7 @@
           [
             [
               "PassiveSkill",
-              1420,
+              1279,
               -1
             ]
           ],
@@ -48902,7 +49782,7 @@
           [
             [
               "PassiveSkill",
-              1418,
+              1234,
               -1
             ],
             [
@@ -48966,6 +49846,14 @@
           "1523": {
             "name": "Imbue Lightning",
             "desc": "Add lightning to non-elemental standard attacks and battle skills."
+          },
+          "1420": {
+            "name": "Broadsword Mastery",
+            "desc": "Increases the critical hit rate of Nalu\u2019s skills by 30% while at full HP."
+          },
+          "1418": {
+            "name": "Signature Moves",
+            "desc": "Increases the critical hit rate of Thunder Spear, Lightning Sweep, and Nalu\u2019s resonance by 15%."
           }
         }
       },
@@ -49983,11 +50871,11 @@
           },
           {
             "rank": 3,
-            "id": 1279
+            "id": 1420
           },
           {
             "rank": 3,
-            "id": 1234
+            "id": 1418
           }
         ],
         "nativePassives": [
@@ -50072,6 +50960,231 @@
           "from": 440110,
           "before": "Native Cloud resonance mechanics; Nalu's own sprite animation.",
           "after": "Deal Lightning physical damage to an enemy. Has a high critical hit rate."
+        }
+      },
+      "masteryScopeUpdate": {
+        "schema": 1,
+        "swaps": [
+          [
+            7,
+            1420,
+            1279,
+            3
+          ],
+          [
+            9,
+            1418,
+            1234,
+            3
+          ]
+        ],
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                421130,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                210220,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487803,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487806,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487812,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487836,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1309,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1250,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                446000,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                421140,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                447500,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487830,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487839,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1247,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                446010,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                421150,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                447510,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487809,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487833,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487842,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487845,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1378,
+                -1
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1279,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1234,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1124,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                9,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1523,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1399,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                1,
+                60
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1420,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                5,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1418,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1352800,
+                -1
+              ]
+            ]
+          ]
         }
       }
     },

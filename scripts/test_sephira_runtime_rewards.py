@@ -108,7 +108,7 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
             self.assertTrue(1000 <= identity < 2000, (preset, rank, identity))
         minfilia = result['minfilia']
         self.assertTrue(any(g[0] == 'PassiveSkill' and 1600 <= g[1] < 2000
-                            for tier in minfilia['synchro'] for g in tier))
+                            for tier in minfilia['awakening'] for g in tier))
 
     def test_every_private_mr_active_is_a_learnable_general_command(self):
         catalog, native, units = inputs()

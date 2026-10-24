@@ -134,5 +134,21 @@ class IncrementalTests(unittest.TestCase):
         recipe.write_text(json.dumps({'legacyRoot':str(self.out),'outRoot':str(self.out),'unknownEdits':[]}))
         self.assertIsNone(c.command(['ffr-dt','patch',str(recipe)]))
 
+    def test_mastery_and_acquisition_changes_reuse_sprites_but_motion_changes_do_not(self):
+        import _ffr_incremental as inc
+        source=self.root/'tools/_ffr_sephira.py';source.parent.mkdir()
+        current=(ROOT/'assets/existing_visions/payload/_ffr_sephira.py').read_text()
+        source.write_text(current)
+        cache=Cache(self.root,{'game':'one'});inc._sprite_dependencies(cache)
+        def stage():return cache.execute('sprites',{'nativeCaster':True},[source],self.targets,self.action)
+        self.assertFalse(stage());self.assertTrue(stage())
+        source.write_text(current.replace("'sephira_13124','sephira_13118'","'sephira_13124','sephira_13100'"))
+        self.assertTrue(stage());self.assertEqual(self.calls,1)
+        # Only source normalization is scoped to sprites. Other asset stages
+        # must see the real source hash so they rebuild changed rewards.
+        self.assertFalse(cache.execute('tables',{},[source],self.targets,self.action))
+        source.write_text(current.replace("policy.get('modelMotions', {})", "policy.get('changedMotions', {})"))
+        self.assertFalse(stage());self.assertEqual(self.calls,3)
+
 
 if __name__=='__main__':unittest.main()

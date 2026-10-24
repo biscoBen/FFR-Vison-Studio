@@ -21,13 +21,14 @@ Future<void> chooseNativeVision(
       shape: Border.fromBorderSide(Guide.frame),
       title: Text(vision['en'].toString(), style: Guide.h2()),
       content: Text(
-        'Change this game vision\'s model, edit its current configuration, or revert all its edits to the original. Changing the model keeps its current configuration.',
+        'Change this vision’s model and name, edit its current configuration, or revert its edits to the original. Model changes keep its abilities, stats and progression.',
         style: Guide.text(),
       ),
       actions: [
         GuideButton('Cancel', onPressed: () => Navigator.pop(c)),
         GuideButton('Edit vision', onPressed: () => Navigator.pop(c, 'edit')),
         GuideButton('Change model', onPressed: () => Navigator.pop(c, 'model')),
+        GuideButton('Change voice', onPressed: app.building ? null : () => Navigator.pop(c, 'voice')),
         GuideButton(
           'Revert to original',
           danger: true,
@@ -45,6 +46,7 @@ Future<void> chooseNativeVision(
     await showChangeModel(context, vision['id'] as int);
     return;
   }
+  if (choice == 'voice') { await showNativeVisionVoice(context, vision); return; }
   if (choice == 'revert') {
     await confirmRemove(context, app, vision);
     return;

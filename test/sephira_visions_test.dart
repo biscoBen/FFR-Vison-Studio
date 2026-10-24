@@ -423,6 +423,8 @@ void main() {
       final before = CharacterConfig.copy(saved);
       final revision6 = CharacterConfig.copy(preset);
       revision6['profile']['sephiraRecipe'] = 6;
+      final scope = preset['masteryScopeUpdate'];
+      if (scope is Map) revision6['profile']['synchro'] = CharacterConfig.copy(scope['before'] as Map<String,dynamic>)['synchro'];
       final next = SephiraVisions.updateProgression(saved, revision6);
       final active = {for (final field in ['awakening','synchro']) for (final tier in saved[field] as List)
         for (final g in tier as List) if (g[0]=='ActiveSkill') g[1]};
@@ -430,7 +432,7 @@ void main() {
       expect((next['awakening'] as List).expand((t) => t as List).every((g) => g[0]=='ActiveSkill'), isTrue);
       for (final rank in [1,3,5,7,9]) {
         final chosen = (next['synchro'][rank] as List).where((g) => g[0]=='PassiveSkill').single;
-        expect(chosen, preset['profile']['synchro'][rank][0]);
+        expect(chosen, revision6['profile']['synchro'][rank][0]);
         passiveIds.add(chosen[1] as int);
       }
       for (final field in ['id','key','ffbe','stats','skills','lb_custom','studioAcquisition',SephiraVisions.field]) {
@@ -504,6 +506,58 @@ void main() {
     expect(SephiraVisions.repairIndependentBonuses(next,presets),same(next));
     unit['awakening']=[for(var t=0;t<4;t++) [for(var i=0;i<8;i++) ['ActiveSkill',220010+t*100+i,-1]]];
     expect(SephiraVisions.repairIndependentBonuses(unit,presets),same(unit));
+  });
+
+  test('unit-bound MR defaults swap with general awakening bonuses without changing the kit', () async {
+    final presets = await SephiraVisions.bundled;
+    var swaps = 0;
+    for (final preset in presets.where((p) => p['masteryScopeUpdate'] is Map)) {
+      final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      final update = preset['masteryScopeUpdate'] as Map;
+      unit.addAll(CharacterConfig.copy(update['before'] as Map<String,dynamic>));
+      unit[SephiraVisions.field] = {'version':1,'preset':preset['id'],'enabled':true};
+      unit['stats']['Attack'] = 123;
+      unit['studioAcquisition'] = {'version':1,'location':'mitra_shop','random':false,'hideSpoilers':false};
+      final before = CharacterConfig.copy(unit);
+      final next = SephiraVisions.repairMasteryScope(unit,presets);
+      for (final field in ['awakening','synchro']) { expect(next[field],preset['profile'][field]); }
+      for (final field in ['id','key','stats','skills','lb_custom','studioAcquisition']) { expect(next[field],unit[field]); }
+      Set<String> learned(Map u) => {for(final field in ['awakening','synchro'])
+        for(final tier in u[field] as List) for(final g in tier as List) '${g[0]}:${g[1]}:${g[2]}'};
+      expect(learned(next),learned(unit));
+      expect(unit,before);
+      expect(SephiraVisions.repairMasteryScope(next,presets),same(next));
+      for (final swap in update['swaps'] as List) {
+        final edited = CharacterConfig.copy(unit);
+        edited['synchro'][swap[0]] = [['PassiveSkill',1042,-1]];
+        final fixed = SephiraVisions.repairMasteryScope(edited,presets);
+        expect(fixed['synchro'][swap[0]],edited['synchro'][swap[0]]);
+        swaps++;
+      }
+    }
+    expect(swaps,8);
+  });
+
+  test('Rikku and Lunafreya default locations migrate once and preserve shop overrides', () async {
+    final presets=await SephiraVisions.bundled;
+    for(final preset in presets.where((p)=>p['acquisitionUpdate'] is Map)) {
+      final update=preset['acquisitionUpdate'] as Map;
+      final unit=CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      unit[SephiraVisions.field]={'version':1,'preset':preset['id'],'enabled':true};
+      unit['sephiraAcquisition']['location']=update['before'];
+      unit['studioAcquisition']['location']=update['before'];
+      unit['studioAcquisition']['hideSpoilers']=false;
+      final next=SephiraVisions.repairDefaultAcquisition(unit,presets);
+      expect(next['studioAcquisition']['location'],update['after']);
+      expect(next['studioAcquisition']['hideSpoilers'],false);
+      expect(unit['studioAcquisition']['location'],update['before']);
+      next['studioAcquisition']['location']=update['before'];
+      expect(SephiraVisions.repairDefaultAcquisition(next,presets),same(next));
+      unit['studioAcquisition']={'version':1,'location':'mitra_shop','random':false,'hideSpoilers':true};
+      final shop=SephiraVisions.repairDefaultAcquisition(unit,presets);
+      expect(shop['studioAcquisition'],unit['studioAcquisition']);
+      expect(shop['sephiraAcquisition']['location'],update['after']);
+    }
   });
 
   test('progression update backs up the old roster and commits atomically', () async {

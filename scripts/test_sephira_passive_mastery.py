@@ -12,24 +12,57 @@ from sephira_passive_mastery import REWARDS
 
 
 class PassiveMasteryTests(unittest.TestCase):
-    def test_all_131_original_passives_survive_once_in_150_single_mr_slots(self):
+    def test_all_131_original_passives_survive_with_150_transferable_mr_slots(self):
         catalog, _, units = inputs()
         audit = json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())
         required = {e['id'] for e in audit['entries'] if e['kind'] == 'PassiveSkill'}
-        actual = []
+        actual = []; learned = set()
         for preset, unit in zip(catalog['presets'], units):
             choices = [unit['synchro'][rank][0] for rank in (1, 3, 5, 7, 9)]
             self.assertTrue(all(g[0] == 'PassiveSkill' for g in choices))
-            self.assertEqual([g[1] for g in choices], REWARDS[preset['id']])
+            expected = list(REWARDS[preset['id']])
+            for rank, bound, general, _ in pack.MASTERY_SCOPE.get(preset['id'], []):
+                expected[(rank-1)//2] = general
+            self.assertEqual([g[1] for g in choices], expected)
+            self.assertFalse({g[1] for g in choices} & pack.BINDINGS.keys())
+            learned.update(g[1] for f in ('awakening','synchro') for t in unit[f]
+                           for g in t if g[0]=='PassiveSkill')
             actual.extend(g[1] for g in choices)
             previous = {g[1] for field in ('awakening','synchro')
                         for tier in preset['revision5Progression'][field] for g in tier if g[0]=='ActiveSkill'}
             self.assertEqual({g[1] for tier in unit['awakening'] for g in tier if g[0]=='ActiveSkill'}, previous)
         self.assertEqual(len(required), 131)
-        self.assertEqual(len(actual), len(set(actual)))
         self.assertEqual(len(actual), 150)
-        self.assertLessEqual(required, set(actual))
-        self.assertEqual(len(set(actual) - required), 19)
+        self.assertLessEqual(required, learned)
+
+    def test_scope_repair_preserves_complete_kits_and_old_private_reward_ids(self):
+        catalog, rows, units = inputs()
+        for preset, unit in zip(catalog['presets'],units):
+            update=preset.get('masteryScopeUpdate')
+            if not update:continue
+            old=copy.deepcopy(unit);old.update(copy.deepcopy(update['before']))
+            expected={g[1] for f in ('awakening','synchro') for t in old[f] for g in t if g[0]=='PassiveSkill'}
+            fixed=copy.deepcopy(old);pack.repair_mastery_scope(fixed)
+            self.assertEqual({g[1] for f in ('awakening','synchro') for t in fixed[f] for g in t if g[0]=='PassiveSkill'},expected)
+            for f in ('awakening','synchro'):self.assertEqual(fixed[f],unit[f])
+            pack.repair_mastery_scope(fixed)
+            for f in ('awakening','synchro'):self.assertEqual(fixed[f],unit[f])
+            bound=pack.bind_units([old],rows.__getitem__)[0]
+            mr={g[1] for t in bound['synchro'] for g in t if g[0]=='PassiveSkill'}
+            for _,sid,_,_ in pack.MASTERY_SCOPE[preset['id']]:
+                self.assertNotIn(pack.private_passive_id(preset['id'],sid),mr)
+            if preset['id']=='christine':
+                trait=next(b for b in bound['_sephiraBindings'] if b['passive']['set']['ID']==pack.private_passive_id('christine',1406))
+                self.assertEqual(trait['effect']['set']['ParamList'][1],unit['command']['id'])
+                self.assertIn('Christine',trait['passive']['set']['Description'])
+                self.assertNotIn('Tronn',trait['passive']['set']['Description'])
+            for sid in (1418,1433):
+                extra=pack.SIGNATURE_BINDINGS.get((preset['id'],sid),[])
+                if not extra:continue
+                trait=next(b for b in bound['_sephiraBindings'] if b['passive']['set']['ID']==pack.private_passive_id(preset['id'],sid))
+                for slot,native_id,source in extra:
+                    target=next(int(k) for k,r in unit['skills'].items() if r['from']==source)
+                    self.assertEqual(trait['effect']['set']['ParamList'][slot],target)
 
     def test_complete_passive_kits_match_native_budgets_without_duplicate_stat_tiers(self):
         catalog, rows, units = inputs()

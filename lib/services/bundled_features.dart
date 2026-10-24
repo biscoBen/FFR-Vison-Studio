@@ -266,6 +266,8 @@ class BundledFeatures {
           'payload/sephira_visuals.json',
           'payload/_ffr_party.py',
           'payload/_ffr_party_voices.py',
+          'payload/_ffr_native_voices.py',
+          'payload/native_voice_codec.ps1',
           'payload/party_voice_cues.json',
           'payload/_ffr_overworld.py',
           'payload/_ffr_field_leader.py',
@@ -309,7 +311,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 70) {
+        (manifest['files'] as Map).length != 72) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

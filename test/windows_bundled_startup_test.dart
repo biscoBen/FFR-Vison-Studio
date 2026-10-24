@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.83');
+      expect(state['version'], '1.2.84');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_build_progress.py',
@@ -89,6 +89,8 @@ void main() {
         '_ffr_deck_sync.py',
         '_ffr_party.py',
         '_ffr_party_voices.py',
+        '_ffr_native_voices.py',
+        'native_voice_codec.ps1',
         'party_voice_cues.json',
         '_ffr_overworld.py',
         '_ffr_field_leader.py',
@@ -127,7 +129,7 @@ void main() {
 import sys, io
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / 'tools'))
-import _ffr_party, _ffr_party_voices, _ffr_overworld, _ffr_deck_sync
+import _ffr_party, _ffr_party_voices, _ffr_native_voices, _ffr_overworld, _ffr_deck_sync
 from fastapi import FastAPI
 root = Path(__file__).parent
 assert _ffr_deck_sync.settings(root)['enabled'] is False

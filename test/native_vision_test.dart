@@ -4,6 +4,7 @@ import 'dart:ui' show PointerDeviceKind;
 import 'package:ffr_vision_studio/design/theme.dart';
 import 'package:ffr_vision_studio/design/widgets.dart';
 import 'package:ffr_vision_studio/screens/home_screen.dart';
+import 'package:ffr_vision_studio/screens/battle_voice_dialog.dart';
 import 'package:ffr_vision_studio/screens/unit_screen.dart';
 import 'package:ffr_vision_studio/services/bundled_features.dart';
 import 'package:ffr_vision_studio/services/character_config.dart';
@@ -74,6 +75,7 @@ class NativeApi extends ConfigApi {
     if (failCinematic) throw StateError('Cinematic setting write failed.');
     cinematicValue = value;
   }
+
   bool failNeedles = false;
   @override
   Future<bool> ffbeNeedles() async => ffbeNeedlesValue;
@@ -82,45 +84,93 @@ class NativeApi extends ConfigApi {
     if (failNeedles) throw StateError('Settings write failed.');
     ffbeNeedlesValue = value;
   }
+
   String practiceEncounter = 'standard';
   bool failPracticeEncounter = false;
   @override
-  Future<Map<String, dynamic>> saveAbilityModes({required bool showUnverified, required bool useChanges, bool useNativeRepairs = false}) async =>
-      {'schema': 1, 'showUnverified': showUnverified, 'useChanges': useChanges, 'useNativeRepairs': useNativeRepairs};
+  Future<Map<String, dynamic>> saveAbilityModes({
+    required bool showUnverified,
+    required bool useChanges,
+    bool useNativeRepairs = false,
+  }) async => {
+    'schema': 1,
+    'showUnverified': showUnverified,
+    'useChanges': useChanges,
+    'useNativeRepairs': useNativeRepairs,
+  };
   bool borrowedVisuals = true;
   bool shopOverride = false;
   List<String>? shopSelection;
   bool failVisualSettings = false;
   @override
-  Future<Map<String, dynamic>> saveSephiraVisualSettings({required bool useBorrowedSkillVisuals}) async {
+  Future<Map<String, dynamic>> saveSephiraVisualSettings({
+    required bool useBorrowedSkillVisuals,
+  }) async {
     if (failVisualSettings) throw StateError('Settings write failed.');
     borrowedVisuals = useBorrowedSkillVisuals;
-    return {'schema': 1, 'useBorrowedSkillVisuals': borrowedVisuals, 'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
+    return {
+      'schema': 1,
+      'useBorrowedSkillVisuals': borrowedVisuals,
+      'shopAcquisitionOverride': shopOverride,
+      'shopAcquisitionPresets': shopSelection,
+    };
   }
+
   @override
-  Future<Map<String, dynamic>> saveSephiraShopOverride({required bool enabled, required bool useBorrowedSkillVisuals}) async {
+  Future<Map<String, dynamic>> saveSephiraShopOverride({
+    required bool enabled,
+    required bool useBorrowedSkillVisuals,
+  }) async {
     if (failVisualSettings) throw StateError('Settings write failed.');
-    shopOverride=enabled; borrowedVisuals=useBorrowedSkillVisuals;
-    return {'schema':1, 'useBorrowedSkillVisuals':borrowedVisuals, 'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
+    shopOverride = enabled;
+    borrowedVisuals = useBorrowedSkillVisuals;
+    return {
+      'schema': 1,
+      'useBorrowedSkillVisuals': borrowedVisuals,
+      'shopAcquisitionOverride': shopOverride,
+      'shopAcquisitionPresets': shopSelection,
+    };
   }
+
   @override
-  Future<Map<String,dynamic>> saveSephiraShopSelection({required List<String>? presets, required bool enabled, required bool useBorrowedSkillVisuals}) async {
-    if(failVisualSettings) throw StateError('Settings write failed.');
-    shopSelection=presets;shopOverride=enabled;borrowedVisuals=useBorrowedSkillVisuals;
-    return {'schema':1,'useBorrowedSkillVisuals':borrowedVisuals,'shopAcquisitionOverride':shopOverride,'shopAcquisitionPresets':shopSelection};
+  Future<Map<String, dynamic>> saveSephiraShopSelection({
+    required List<String>? presets,
+    required bool enabled,
+    required bool useBorrowedSkillVisuals,
+  }) async {
+    if (failVisualSettings) throw StateError('Settings write failed.');
+    shopSelection = presets;
+    shopOverride = enabled;
+    borrowedVisuals = useBorrowedSkillVisuals;
+    return {
+      'schema': 1,
+      'useBorrowedSkillVisuals': borrowedVisuals,
+      'shopAcquisitionOverride': shopOverride,
+      'shopAcquisitionPresets': shopSelection,
+    };
   }
+
   @override
   Future<bool> testingMaxMr() async => maxMr;
   @override
-  Future<void> saveTestingMaxMr(bool value) async { maxMr = value; }
+  Future<void> saveTestingMaxMr(bool value) async {
+    maxMr = value;
+  }
+
   @override
   Future<bool> surviveAtOne() async => survival;
   @override
-  Future<void> saveSurviveAtOne(bool value) async { survival = value; }
+  Future<void> saveSurviveAtOne(bool value) async {
+    survival = value;
+  }
+
   @override
   Future<bool> testingPracticeBattle() async => practiceBattle;
   @override
-  Future<void> saveTestingPracticeBattle(bool value) async { practiceBattle = value; }
+  Future<void> saveTestingPracticeBattle(bool value) async {
+    practiceBattle = value;
+  }
+
   @override
   Future<String> testingPracticeEncounter() async => practiceEncounter;
   @override
@@ -128,11 +178,15 @@ class NativeApi extends ConfigApi {
     if (failPracticeEncounter) throw StateError('Settings write failed.');
     practiceEncounter = value;
   }
+
   @override
   Future<bool> fieldLeader() async => fieldLeaderValue;
   bool fieldLeaderValue = false;
   @override
-  Future<void> saveFieldLeader(bool value) async { fieldLeaderValue = value; }
+  Future<void> saveFieldLeader(bool value) async {
+    fieldLeaderValue = value;
+  }
+
   @override
   Future<Map<String, dynamic>> nativeVision(int id) async =>
       originalFixture(id: id, name: id == 13024 ? 'Tronn' : 'Cloud');
@@ -215,6 +269,7 @@ void main() {
     final before = clone(api.roster);
     final native = await app.editNativeVision(13110, appearance: profile());
     final expected = originalFixture()
+      ..['en'] = profile()['en']
       ..['ffbe'] = profile()['ffbe']
       ..['menuScale'] = profile()['menuScale'] ?? 2.52;
     if (profile()['icon'] != null) {
@@ -228,6 +283,86 @@ void main() {
     app.useOriginalModel(native);
     await app.save();
     expect(api.roster.last, originalFixture());
+  });
+
+  test(
+    'reset all defaults backs up overrides and keeps added visions',
+    () async {
+      final added = clone(api.roster.first);
+      await app.editNativeVision(13110, appearance: profile());
+      await app.editNativeVision(13024);
+      final before = clone(api.roster);
+      await app.resetNativeVisions();
+      expect(api.roster, [added]);
+      expect(app.units, [added]);
+      expect(app.selectedKey, isNull);
+      final backups = Directory(app.paths.configBackups)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.contains('default-visions-reset'));
+      expect(backups, hasLength(1));
+      expect(
+        CharacterConfig.decodeAll(backups.single.readAsStringSync()),
+        before,
+      );
+    },
+  );
+
+  test('failed reset keeps every native override available', () async {
+    await app.editNativeVision(13110, appearance: profile());
+    final before = clone(api.roster);
+    api.fail = true;
+    await expectLater(app.resetNativeVisions(), throwsStateError);
+    expect(api.roster, before);
+    expect(app.units, before);
+  });
+
+  test(
+    'default voice selection round-trips without changing the native kit',
+    () async {
+      final original = originalFixture();
+      final changed = await app.editNativeVision(
+        13110,
+        voiceSource: 13024,
+        selectEditor: false,
+      );
+      expect(changed, {...original, 'nativeVoice': 13024});
+      expect(app.selectedKey, isNull);
+      expect(
+        CharacterConfig.decode(CharacterConfig.encode(changed))['nativeVoice'],
+        13024,
+      );
+      await app.editNativeVision(13110, appearance: profile());
+      expect(api.roster.last['nativeVoice'], 13024);
+      expect(api.roster.last['en'], profile()['en']);
+      final reverted = await app.editNativeVision(13110, voiceSource: 13110);
+      expect(reverted['nativeVoice'], isNull);
+      expect(reverted['ffbe'], profile()['ffbe']);
+      expect(reverted['en'], profile()['en']);
+    },
+  );
+
+  test('voice validation rejects invalid identities and a failed save keeps the choice', () async {
+    for (final bad in [true, 0, -1, '13024']) {
+      expect(
+        () =>
+            CharacterConfig.validate(originalFixture()..['nativeVoice'] = bad),
+        throwsFormatException,
+      );
+    }
+    expect(
+      () => CharacterConfig.validate(profile()..['nativeVoice'] = 13024),
+      throwsFormatException,
+    );
+    await app.editNativeVision(13110, voiceSource: 13024);
+    final before = clone(api.roster);
+    api.fail = true;
+    await expectLater(
+      app.editNativeVision(13110, clearVoice: true),
+      throwsStateError,
+    );
+    expect(api.roster, before);
+    expect(app.units, before);
   });
 
   test('lower-ID original can change models, edit MR and round-trip single and bulk configs', () async {
@@ -345,35 +480,87 @@ void main() {
   }
 
   Future<void> rightClickVision(WidgetTester tester, String name) async {
-    final card = find.descendant(of: find.byKey(const Key('added-visions')), matching: find.text(name.toUpperCase()));
-    await tester.tap(card, kind: PointerDeviceKind.mouse, buttons: kSecondaryMouseButton);
-    if (app.building) { await tester.pump(const Duration(milliseconds: 300)); }
-    else { await tester.pumpAndSettle(); }
+    final card = find.descendant(
+      of: find.byKey(const Key('added-visions')),
+      matching: find.text(name.toUpperCase()),
+    );
+    await tester.tap(
+      card,
+      kind: PointerDeviceKind.mouse,
+      buttons: kSecondaryMouseButton,
+    );
+    if (app.building) {
+      await tester.pump(const Duration(milliseconds: 300));
+    } else {
+      await tester.pumpAndSettle();
+    }
     expect(find.text('Remove vision'), findsOneWidget);
     expect(app.selectedKey, isNull);
   }
 
-  testWidgets('added vision context menu confirms removal and supports cancelling', (tester) async {
-    await show(tester);
-    final before = clone(api.roster);
-    final name = api.roster.first['en'] as String;
-    await rightClickVision(tester, name);
-    await tester.tap(find.text('Remove vision'));
-    await tester.pumpAndSettle();
-    expect(find.text('Remove $name from the mod?'), findsOneWidget);
-    await tester.tap(find.text('Keep'));
-    await tester.pumpAndSettle();
-    expect(api.roster, before);
-    await rightClickVision(tester, name);
-    await tester.tap(find.text('Remove vision'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Remove'));
-    await wait(tester, () => app.units.isEmpty);
-    expect(api.roster, isEmpty);
-    expect(app.nativeVisions, [originalFixture()]);
-  });
+  testWidgets(
+    'default voice dialog lists both kinds of default and saves the source',
+    (tester) async {
+      app.nativeVisions = [
+        originalFixture(),
+        originalFixture(id: 13024, name: 'Tronn'),
+      ];
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: app,
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => TextButton(
+                  onPressed: () =>
+                      showNativeVisionVoice(context, originalFixture()),
+                  child: const Text('Voice'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Voice'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('native-vision-voice-source')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Tronn').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save voice'));
+      await wait(tester, () => app.units.any((u) => u['nativeVoice'] == 13024));
+      expect(api.roster.last['nativeVoice'], 13024);
+      expect(api.roster.last['lb'], 440110);
+    },
+  );
 
-  testWidgets('removing an acquired original returns it to Defaults', (tester) async {
+
+  testWidgets(
+    'added vision context menu confirms removal and supports cancelling',
+    (tester) async {
+      await show(tester);
+      final before = clone(api.roster);
+      final name = api.roster.first['en'] as String;
+      await rightClickVision(tester, name);
+      await tester.tap(find.text('Remove vision'));
+      await tester.pumpAndSettle();
+      expect(find.text('Remove $name from the mod?'), findsOneWidget);
+      await tester.tap(find.text('Keep'));
+      await tester.pumpAndSettle();
+      expect(api.roster, before);
+      await rightClickVision(tester, name);
+      await tester.tap(find.text('Remove vision'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remove'));
+      await wait(tester, () => app.units.isEmpty);
+      expect(api.roster, isEmpty);
+      expect(app.nativeVisions, [originalFixture()]);
+    },
+  );
+
+  testWidgets('removing an acquired original returns it to Defaults', (
+    tester,
+  ) async {
     api.roster.add(originalFixture()..['testAcquire'] = true);
     app.units = clone(api.roster) as List;
     await show(tester);
@@ -384,149 +571,226 @@ void main() {
     await tester.tap(find.text('Revert to original'));
     await wait(tester, () => !app.units.any((u) => u['native'] != null));
     expect(api.roster, hasLength(1));
-    expect(find.descendant(of: find.byKey(const Key('default-visions')), matching: find.text('CLOUD')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('default-visions')),
+        matching: find.text('CLOUD'),
+      ),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('context removal is disabled during builds and allows cave-assigned Fina', (tester) async {
-    await show(tester);
-    app.buildState = {'running': true};
-    app.notifyListeners();
-    await tester.pump();
-    await rightClickVision(tester, api.roster.first['en'] as String);
-    expect(tester.widget<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).enabled, isFalse);
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.pump(const Duration(milliseconds: 300));
-    app.buildState = null;
-    app.update({...app.units.single as Map<String, dynamic>, 'studioAcquisition': {
-      'version': 1, 'random': false, 'hideSpoilers': true, 'location': 'crystal_cave',
-    }});
-    app.notifyListeners();
-    await tester.pumpAndSettle();
-    await rightClickVision(tester, api.roster.first['en'] as String);
-    await tester.tap(find.text('Remove vision'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Remove'));
-    await wait(tester, () => app.units.isEmpty);
-    expect(api.roster, isEmpty);
-    await tester.pump(const Duration(seconds: 6));
-  });
+  testWidgets(
+    'context removal is disabled during builds and allows cave-assigned Fina',
+    (tester) async {
+      await show(tester);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      await rightClickVision(tester, api.roster.first['en'] as String);
+      expect(
+        tester
+            .widget<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>))
+            .enabled,
+        isFalse,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump(const Duration(milliseconds: 300));
+      app.buildState = null;
+      app.update({
+        ...app.units.single as Map<String, dynamic>,
+        'studioAcquisition': {
+          'version': 1,
+          'random': false,
+          'hideSpoilers': true,
+          'location': 'crystal_cave',
+        },
+      });
+      app.notifyListeners();
+      await tester.pumpAndSettle();
+      await rightClickVision(tester, api.roster.first['en'] as String);
+      await tester.tap(find.text('Remove vision'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remove'));
+      await wait(tester, () => app.units.isEmpty);
+      expect(api.roster, isEmpty);
+      await tester.pump(const Duration(seconds: 6));
+    },
+  );
 
-  testWidgets('dragging original visions enables acquisition and dragging back keeps edits', (tester) async {
-    await show(tester);
-    final before = clone(api.roster.first);
-    final source = find.byKey(const ValueKey('drag-native-13110'));
-    final top = find.byKey(const Key('added-visions'));
-    await tester.dragFrom(tester.getCenter(source), tester.getCenter(top) - tester.getCenter(source));
-    await wait(tester, () => app.units.any((u) => u['testAcquire'] == true));
-    expect(app.selectedKey, isNull);
-    expect(api.roster.first, before);
-    final original = api.roster.last;
-    expect(original['id'], 13110);
-    expect(original['donor'], 13110);
-    expect(original['native']['baseline'], originalFixture()['native']['baseline']);
-    expect(find.descendant(of: top, matching: find.text('CLOUD')), findsOneWidget);
-    final saved = CharacterConfig.decode(CharacterConfig.encode(original as JsonMap));
-    expect(saved['testAcquire'], isTrue);
-    final edited = CharacterConfig.copy(original)..['stats']['Attack'] = 999;
-    app.update(edited);
-    final defaults = find.byKey(const Key('default-visions'));
-    await tester.dragFrom(tester.getCenter(source), tester.getCenter(defaults) - tester.getCenter(source));
-    await wait(tester, () => app.units.last['testAcquire'] == null);
-    expect(api.roster, hasLength(2));
-    expect(api.roster.last['stats']['Attack'], 999);
-    expect(find.descendant(of: defaults, matching: find.text('CLOUD')), findsOneWidget);
-  });
+  testWidgets(
+    'dragging original visions enables acquisition and dragging back keeps edits',
+    (tester) async {
+      await show(tester);
+      final before = clone(api.roster.first);
+      final source = find.byKey(const ValueKey('drag-native-13110'));
+      final top = find.byKey(const Key('added-visions'));
+      await tester.dragFrom(
+        tester.getCenter(source),
+        tester.getCenter(top) - tester.getCenter(source),
+      );
+      await wait(tester, () => app.units.any((u) => u['testAcquire'] == true));
+      expect(app.selectedKey, isNull);
+      expect(api.roster.first, before);
+      final original = api.roster.last;
+      expect(original['id'], 13110);
+      expect(original['donor'], 13110);
+      expect(
+        original['native']['baseline'],
+        originalFixture()['native']['baseline'],
+      );
+      expect(
+        find.descendant(of: top, matching: find.text('CLOUD')),
+        findsOneWidget,
+      );
+      final saved = CharacterConfig.decode(
+        CharacterConfig.encode(original as JsonMap),
+      );
+      expect(saved['testAcquire'], isTrue);
+      final edited = CharacterConfig.copy(original)..['stats']['Attack'] = 999;
+      app.update(edited);
+      final defaults = find.byKey(const Key('default-visions'));
+      await tester.dragFrom(
+        tester.getCenter(source),
+        tester.getCenter(defaults) - tester.getCenter(source),
+      );
+      await wait(tester, () => app.units.last['testAcquire'] == null);
+      expect(api.roster, hasLength(2));
+      expect(api.roster.last['stats']['Attack'], 999);
+      expect(
+        find.descendant(of: defaults, matching: find.text('CLOUD')),
+        findsOneWidget,
+      );
+    },
+  );
 
   test('acquisition is idempotent, preserves pending edits and is blocked during builds', () async {
-    final edited = CharacterConfig.copy(app.units.first as JsonMap)..['stats']['Attack'] = 222;
+    final edited = CharacterConfig.copy(app.units.first as JsonMap)
+      ..['stats']['Attack'] = 222;
     app.update(edited);
     await app.editNativeVision(13110, testAcquire: true, selectEditor: false);
     await app.editNativeVision(13110, testAcquire: true, selectEditor: false);
     expect(api.roster, hasLength(2));
     expect(api.roster.first['stats']['Attack'], 222);
     app.buildState = {'running': true};
-    await expectLater(app.editNativeVision(13110, testAcquire: false), throwsStateError);
+    await expectLater(
+      app.editNativeVision(13110, testAcquire: false),
+      throwsStateError,
+    );
     await expectLater(app.setTestingMaxMr(true), throwsStateError);
     await expectLater(app.setTestingPracticeBattle(true), throwsStateError);
     expect(api.roster.last['testAcquire'], isTrue);
   });
 
-  testWidgets('MR testing persists both toggle states without changing the roster', (tester) async {
-    final before = clone(api.roster);
-    await show(tester);
-    final control = find.byKey(const Key('testing-max-mr'));
-    await tester.ensureVisible(control);
-    await tester.tap(control);
-    await wait(tester, () => app.testingMaxMr);
-    expect(api.maxMr, isTrue);
-    expect(api.roster, before);
-    await tester.tap(control);
-    await wait(tester, () => !app.testingMaxMr);
-    expect(api.maxMr, isFalse);
-    final invalid = profile()..['testAcquire'] = true;
-    expect(() => CharacterConfig.validate(invalid), throwsFormatException);
-  });
+  testWidgets(
+    'MR testing persists both toggle states without changing the roster',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final control = find.byKey(const Key('testing-max-mr'));
+      await tester.ensureVisible(control);
+      await tester.tap(control);
+      await wait(tester, () => app.testingMaxMr);
+      expect(api.maxMr, isTrue);
+      expect(api.roster, before);
+      await tester.tap(control);
+      await wait(tester, () => !app.testingMaxMr);
+      expect(api.maxMr, isFalse);
+      final invalid = profile()..['testAcquire'] = true;
+      expect(() => CharacterConfig.validate(invalid), throwsFormatException);
+    },
+  );
 
-  testWidgets('ability controls preserve roster and remembered repairs while disabled', (tester) async {
-    final before = clone(api.roster);
-    await show(tester);
-    final toggle = find.byKey(const Key('show-unverified-skills'));
-    final checkbox = find.byKey(const Key('use-ability-changes'));
-    await tester.ensureVisible(toggle);
-    expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
-    await tester.tap(toggle);
-    await wait(tester, () => app.showUnverifiedSkills);
-    expect(app.useAbilityChanges, isFalse);
-    await tester.tap(checkbox);
-    await wait(tester, () => app.useAbilityChanges);
-    await tester.tap(toggle);
-    await wait(tester, () => !app.showUnverifiedSkills);
-    expect(app.useAbilityChanges, isTrue);
-    expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
-    expect(app.catalog!['abilityModes'], {'schema': 1, 'showUnverified': false, 'useChanges': true, 'useNativeRepairs': false});
-    expect(api.roster, before);
-    app.buildState = {'running': true};
-    app.notifyListeners();
-    await tester.pump();
-    expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
-  });
+  testWidgets(
+    'ability controls preserve roster and remembered repairs while disabled',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final toggle = find.byKey(const Key('show-unverified-skills'));
+      final checkbox = find.byKey(const Key('use-ability-changes'));
+      await tester.ensureVisible(toggle);
+      expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
+      await tester.tap(toggle);
+      await wait(tester, () => app.showUnverifiedSkills);
+      expect(app.useAbilityChanges, isFalse);
+      await tester.tap(checkbox);
+      await wait(tester, () => app.useAbilityChanges);
+      await tester.tap(toggle);
+      await wait(tester, () => !app.showUnverifiedSkills);
+      expect(app.useAbilityChanges, isTrue);
+      expect(tester.widget<CheckboxListTile>(checkbox).onChanged, isNull);
+      expect(app.catalog!['abilityModes'], {
+        'schema': 1,
+        'showUnverified': false,
+        'useChanges': true,
+        'useNativeRepairs': false,
+      });
+      expect(api.roster, before);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(toggle).onChanged, isNull);
+    },
+  );
 
-  testWidgets('native-only toggle preserves other modes and saved kit and is remembered while hidden', (tester) async {
-    final before = clone(api.roster);
-    await show(tester);
-    final native = find.byKey(const Key('native-skill-repairs'));
-    final showSkills = find.byKey(const Key('show-unverified-skills'));
-    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
-    await tester.ensureVisible(showSkills); await tester.tap(showSkills);
-    await wait(tester, () => app.showUnverifiedSkills);
-    await tester.ensureVisible(native);
-    await tester.tap(native);
-    await wait(tester, () => app.useNativeSkillRepairs);
-    expect(app.useAbilityChanges, isFalse);
-    expect(app.useSephiraBorrowedVisuals, isTrue);
-    expect(find.text('Native binding, aiming and motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.'), findsOneWidget);
-    final borrowed = find.byKey(const Key('sephira-borrowed-skill-visuals'));
-    await tester.ensureVisible(borrowed); await tester.tap(borrowed);
-    await wait(tester, () => !app.useSephiraBorrowedVisuals);
-    await tester.ensureVisible(showSkills); await tester.tap(showSkills);
-    await wait(tester, () => !app.showUnverifiedSkills);
-    expect(app.useNativeSkillRepairs, isTrue);
-    expect(app.useAbilityChanges, isFalse);
-    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
-    await tester.tap(showSkills);
-    await wait(tester, () => app.showUnverifiedSkills);
-    expect(app.useNativeSkillRepairs, isTrue);
-    expect(app.useSephiraBorrowedVisuals, isFalse);
-    expect(api.roster, before);
-    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
-    await expectLater(app.setAbilityModes(useNativeRepairs: false), throwsStateError);
-  });
+  testWidgets(
+    'native-only toggle preserves other modes and saved kit and is remembered while hidden',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final native = find.byKey(const Key('native-skill-repairs'));
+      final showSkills = find.byKey(const Key('show-unverified-skills'));
+      expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+      await tester.ensureVisible(showSkills);
+      await tester.tap(showSkills);
+      await wait(tester, () => app.showUnverifiedSkills);
+      await tester.ensureVisible(native);
+      await tester.tap(native);
+      await wait(tester, () => app.useNativeSkillRepairs);
+      expect(app.useAbilityChanges, isFalse);
+      expect(app.useSephiraBorrowedVisuals, isTrue);
+      expect(
+        find.text(
+          'Native binding, aiming and motion repairs only. Borrowed library effects, fallback timelines and reviewed hiding rules are off.',
+        ),
+        findsOneWidget,
+      );
+      final borrowed = find.byKey(const Key('sephira-borrowed-skill-visuals'));
+      await tester.ensureVisible(borrowed);
+      await tester.tap(borrowed);
+      await wait(tester, () => !app.useSephiraBorrowedVisuals);
+      await tester.ensureVisible(showSkills);
+      await tester.tap(showSkills);
+      await wait(tester, () => !app.showUnverifiedSkills);
+      expect(app.useNativeSkillRepairs, isTrue);
+      expect(app.useAbilityChanges, isFalse);
+      expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+      await tester.tap(showSkills);
+      await wait(tester, () => app.showUnverifiedSkills);
+      expect(app.useNativeSkillRepairs, isTrue);
+      expect(app.useSephiraBorrowedVisuals, isFalse);
+      expect(api.roster, before);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<CheckboxListTile>(native).onChanged, isNull);
+      await expectLater(
+        app.setAbilityModes(useNativeRepairs: false),
+        throwsStateError,
+      );
+    },
+  );
 
-  testWidgets('shop battle works without a roster and preserves MR testing', (tester) async {
-    api.roster.clear(); app.units.clear();
+  testWidgets('shop battle works without a roster and preserves MR testing', (
+    tester,
+  ) async {
+    api.roster.clear();
+    app.units.clear();
     await show(tester);
-    final buildButton = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
+    final buildButton = find.ancestor(
+      of: find.text('Build without installing'),
+      matching: find.byType(GuideButton),
+    );
     expect(tester.widget<GuideButton>(buildButton).onPressed, isNull);
     final control = find.byKey(const Key('testing-practice-battle'));
     await tester.ensureVisible(control);
@@ -542,125 +806,168 @@ void main() {
     expect(api.maxMr, isTrue);
   });
 
-  testWidgets('cinematic toggle saves independently and keeps failed edits out of UI state', (tester) async {
-    await show(tester);
-    final control = find.byKey(const Key('testing-fina-cinematic'));
-    await tester.ensureVisible(control); await tester.tap(control);
-    await wait(tester, () => app.finaCinematic);
-    expect(api.cinematicValue, isTrue);
-    api.failCinematic = true;
-    await tester.tap(control);
-    await wait(tester, () => app.notice?.contains('Cinematic setting write failed') == true);
-    expect(app.finaCinematic, isTrue);
-    await tester.pump(const Duration(seconds: 6));
-    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
-  });
+  testWidgets(
+    'cinematic toggle saves independently and keeps failed edits out of UI state',
+    (tester) async {
+      await show(tester);
+      final control = find.byKey(const Key('testing-fina-cinematic'));
+      await tester.ensureVisible(control);
+      await tester.tap(control);
+      await wait(tester, () => app.finaCinematic);
+      expect(api.cinematicValue, isTrue);
+      api.failCinematic = true;
+      await tester.tap(control);
+      await wait(
+        tester,
+        () => app.notice?.contains('Cinematic setting write failed') == true,
+      );
+      expect(app.finaCinematic, isTrue);
+      await tester.pump(const Duration(seconds: 6));
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+    },
+  );
 
-  testWidgets('FFBE visual test saves independently and waits for successful saves', (tester) async {
-    api.roster.clear(); app.units.clear();
-    await show(tester);
-    final control = find.byKey(const Key('testing-ffbe-needles'));
-    await tester.ensureVisible(control); await tester.tap(control);
-    await wait(tester, () => app.ffbeNeedles);
-    expect(api.ffbeNeedlesValue, isTrue);
-    expect(api.roster, isEmpty);
-    expect(app.useAbilityChanges, isFalse);
-    final build = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
-    expect(tester.widget<GuideButton>(build).onPressed, isNotNull);
-    api.failNeedles = true;
-    await tester.tap(control);
-    await wait(tester, () => app.notice?.contains('Settings write failed') == true);
-    expect(app.ffbeNeedles, isTrue);
-    expect(tester.widget<SwitchListTile>(control).value, isTrue);
-    await tester.pump(const Duration(seconds: 6));
-    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
-    await expectLater(app.setFfbeNeedles(false), throwsStateError);
-  });
+  testWidgets(
+    'FFBE visual test saves independently and waits for successful saves',
+    (tester) async {
+      api.roster.clear();
+      app.units.clear();
+      await show(tester);
+      final control = find.byKey(const Key('testing-ffbe-needles'));
+      await tester.ensureVisible(control);
+      await tester.tap(control);
+      await wait(tester, () => app.ffbeNeedles);
+      expect(api.ffbeNeedlesValue, isTrue);
+      expect(api.roster, isEmpty);
+      expect(app.useAbilityChanges, isFalse);
+      final build = find.ancestor(
+        of: find.text('Build without installing'),
+        matching: find.byType(GuideButton),
+      );
+      expect(tester.widget<GuideButton>(build).onPressed, isNotNull);
+      api.failNeedles = true;
+      await tester.tap(control);
+      await wait(
+        tester,
+        () => app.notice?.contains('Settings write failed') == true,
+      );
+      expect(app.ffbeNeedles, isTrue);
+      expect(tester.widget<SwitchListTile>(control).value, isTrue);
+      await tester.pump(const Duration(seconds: 6));
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+      await expectLater(app.setFfbeNeedles(false), throwsStateError);
+    },
+  );
 
-  testWidgets('practice opponents move in-game and survival stays independent', (tester) async {
-    final before = clone(api.roster);
-    await show(tester);
-    final battle = find.byKey(const Key('testing-practice-battle'));
-    await tester.ensureVisible(battle); await tester.tap(battle);
-    await wait(tester, () => app.testingPracticeBattle);
-    expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
-    expect(find.textContaining('in-game opponent picker'), findsOneWidget);
-    final survival = find.byKey(const Key('testing-survive-at-one'));
-    await tester.ensureVisible(survival); await tester.tap(survival);
-    await wait(tester, () => app.surviveAtOne);
-    expect(api.survival, isTrue);
-    expect(app.testingPracticeBattle, isTrue);
-    expect(api.roster, before);
-    app.buildState = {'running': true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<SwitchListTile>(survival).onChanged, isNull);
-    await expectLater(app.setSurviveAtOne(false), throwsStateError);
-  });
+  testWidgets(
+    'practice opponents move in-game and survival stays independent',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final battle = find.byKey(const Key('testing-practice-battle'));
+      await tester.ensureVisible(battle);
+      await tester.tap(battle);
+      await wait(tester, () => app.testingPracticeBattle);
+      expect(find.byKey(const Key('testing-practice-encounter')), findsNothing);
+      expect(find.textContaining('in-game opponent picker'), findsOneWidget);
+      final survival = find.byKey(const Key('testing-survive-at-one'));
+      await tester.ensureVisible(survival);
+      await tester.tap(survival);
+      await wait(tester, () => app.surviveAtOne);
+      expect(api.survival, isTrue);
+      expect(app.testingPracticeBattle, isTrue);
+      expect(api.roster, before);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(survival).onChanged, isNull);
+      await expectLater(app.setSurviveAtOne(false), throwsStateError);
+    },
+  );
 
-  test('shop selection keeps Fina available without overriding Christine', () async {
-    await app.setSephiraShopSelection(['crystal_fina']);
-    expect(app.sephiraShopSelection,['crystal_fina']);
-    await app.setSephiraShopOverride(true);
-    await app.setSephiraBorrowedVisuals(false);
-    expect(app.sephiraShopSelection,['crystal_fina']);
-    await app.setSephiraShopOverride(false);
-    expect(app.sephiraShopSelection,['crystal_fina']);
-    await app.setSephiraShopSelection(null);
-    expect(app.sephiraShopSelection,isNull);
-  });
+  test(
+    'shop selection keeps Fina available without overriding Christine',
+    () async {
+      await app.setSephiraShopSelection(['crystal_fina']);
+      expect(app.sephiraShopSelection, ['crystal_fina']);
+      await app.setSephiraShopOverride(true);
+      await app.setSephiraBorrowedVisuals(false);
+      expect(app.sephiraShopSelection, ['crystal_fina']);
+      await app.setSephiraShopOverride(false);
+      expect(app.sephiraShopSelection, ['crystal_fina']);
+      await app.setSephiraShopSelection(null);
+      expect(app.sephiraShopSelection, isNull);
+    },
+  );
 
-  testWidgets('1-gil shop toggle preserves recipes and visual mode and retains its state on errors', (tester) async {
-    final before=clone(api.roster);
-    await show(tester);
-    final control=find.byKey(const Key('sephira-shop-override'));
-    await tester.ensureVisible(control);
-    expect(app.sephiraShopOverride,isFalse);
-    await tester.tap(control); await wait(tester,()=>app.sephiraShopOverride);
-    expect(api.shopOverride,isTrue);
-    await app.setSephiraBorrowedVisuals(false);
-    expect(app.sephiraShopOverride,isTrue);
-    api.failVisualSettings=true;
-    await expectLater(app.setSephiraShopOverride(false),throwsStateError);
-    expect(app.sephiraShopOverride,isTrue);
-    api.failVisualSettings=false;
-    await app.setSephiraShopOverride(false);
-    expect(app.useSephiraBorrowedVisuals,isFalse);
-    expect(api.roster,before); expect(app.units,before);
-    app.buildState={'running':true}; app.notifyListeners(); await tester.pump();
-    expect(tester.widget<SwitchListTile>(control).onChanged,isNull);
-    await expectLater(app.setSephiraShopOverride(true),throwsStateError);
-  });
+  testWidgets(
+    '1-gil shop toggle preserves recipes and visual mode and retains its state on errors',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final control = find.byKey(const Key('sephira-shop-override'));
+      await tester.ensureVisible(control);
+      expect(app.sephiraShopOverride, isFalse);
+      await tester.tap(control);
+      await wait(tester, () => app.sephiraShopOverride);
+      expect(api.shopOverride, isTrue);
+      await app.setSephiraBorrowedVisuals(false);
+      expect(app.sephiraShopOverride, isTrue);
+      api.failVisualSettings = true;
+      await expectLater(app.setSephiraShopOverride(false), throwsStateError);
+      expect(app.sephiraShopOverride, isTrue);
+      api.failVisualSettings = false;
+      await app.setSephiraShopOverride(false);
+      expect(app.useSephiraBorrowedVisuals, isFalse);
+      expect(api.roster, before);
+      expect(app.units, before);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+      await expectLater(app.setSephiraShopOverride(true), throwsStateError);
+    },
+  );
 
-  testWidgets('Sephira visuals switch independently without resetting saved kits', (tester) async {
-    final before = clone(api.roster);
-    await show(tester);
-    final control = find.byKey(const Key('sephira-borrowed-skill-visuals'));
-    await tester.ensureVisible(control);
-    expect(app.useSephiraBorrowedVisuals, isTrue);
-    expect(app.showUnverifiedSkills, isFalse);
-    expect(app.useAbilityChanges, isFalse);
-    expect(tester.widget<SwitchListTile>(control).onChanged, isNotNull);
-    await tester.tap(control);
-    await wait(tester, () => !app.useSephiraBorrowedVisuals);
-    expect(api.borrowedVisuals, isFalse);
-    expect(api.roster, before);
-    expect(app.units, before);
-    expect(app.showUnverifiedSkills, isFalse);
-    expect(app.useAbilityChanges, isFalse);
-    await app.setAbilityModes(showUnverified: true, useChanges: true);
-    expect(app.useSephiraBorrowedVisuals, isFalse);
-    await tester.tap(control);
-    await wait(tester, () => app.useSephiraBorrowedVisuals);
-    expect(api.borrowedVisuals, isTrue);
-    expect(app.useAbilityChanges, isTrue);
-    expect(api.roster, before);
-    app.buildState = {'running': true}; app.notifyListeners();
-    await tester.pump();
-    expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
-    await expectLater(app.setSephiraBorrowedVisuals(false), throwsStateError);
-    expect(api.borrowedVisuals, isTrue);
-  });
+  testWidgets(
+    'Sephira visuals switch independently without resetting saved kits',
+    (tester) async {
+      final before = clone(api.roster);
+      await show(tester);
+      final control = find.byKey(const Key('sephira-borrowed-skill-visuals'));
+      await tester.ensureVisible(control);
+      expect(app.useSephiraBorrowedVisuals, isTrue);
+      expect(app.showUnverifiedSkills, isFalse);
+      expect(app.useAbilityChanges, isFalse);
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNotNull);
+      await tester.tap(control);
+      await wait(tester, () => !app.useSephiraBorrowedVisuals);
+      expect(api.borrowedVisuals, isFalse);
+      expect(api.roster, before);
+      expect(app.units, before);
+      expect(app.showUnverifiedSkills, isFalse);
+      expect(app.useAbilityChanges, isFalse);
+      await app.setAbilityModes(showUnverified: true, useChanges: true);
+      expect(app.useSephiraBorrowedVisuals, isFalse);
+      await tester.tap(control);
+      await wait(tester, () => app.useSephiraBorrowedVisuals);
+      expect(api.borrowedVisuals, isTrue);
+      expect(app.useAbilityChanges, isTrue);
+      expect(api.roster, before);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+      await expectLater(app.setSephiraBorrowedVisuals(false), throwsStateError);
+      expect(api.borrowedVisuals, isTrue);
+    },
+  );
 
   test('Sephira visuals preserve the current selection after a failed settings save', () async {
     api.failVisualSettings = true;
@@ -670,25 +977,32 @@ void main() {
     expect(api.roster, before);
   });
 
-  testWidgets('controller cycling toggle persists with an empty roster and retains other settings', (tester) async {
-    api.roster.clear(); app.units.clear();
-    await show(tester);
-    final control = find.byKey(const Key('field-leader-cycle'));
-    await tester.ensureVisible(control);
-    await tester.tap(control);
-    await wait(tester, () => app.fieldLeader);
-    expect(api.fieldLeaderValue, isTrue);
-    expect(api.roster, isEmpty);
-    final buildButton = find.ancestor(of: find.text('Build without installing'), matching: find.byType(GuideButton));
-    expect(tester.widget<GuideButton>(buildButton).onPressed, isNotNull);
-    await app.setTestingMaxMr(true);
-    await tester.tap(control);
-    await wait(tester, () => !app.fieldLeader);
-    expect(api.fieldLeaderValue, isFalse);
-    expect(api.maxMr, isTrue);
-    app.buildState = {'running': true};
-    await expectLater(app.setFieldLeader(true), throwsStateError);
-  });
+  testWidgets(
+    'controller cycling toggle persists with an empty roster and retains other settings',
+    (tester) async {
+      api.roster.clear();
+      app.units.clear();
+      await show(tester);
+      final control = find.byKey(const Key('field-leader-cycle'));
+      await tester.ensureVisible(control);
+      await tester.tap(control);
+      await wait(tester, () => app.fieldLeader);
+      expect(api.fieldLeaderValue, isTrue);
+      expect(api.roster, isEmpty);
+      final buildButton = find.ancestor(
+        of: find.text('Build without installing'),
+        matching: find.byType(GuideButton),
+      );
+      expect(tester.widget<GuideButton>(buildButton).onPressed, isNotNull);
+      await app.setTestingMaxMr(true);
+      await tester.tap(control);
+      await wait(tester, () => !app.fieldLeader);
+      expect(api.fieldLeaderValue, isFalse);
+      expect(api.maxMr, isTrue);
+      app.buildState = {'running': true};
+      await expectLater(app.setFieldLeader(true), throwsStateError);
+    },
+  );
 
   testWidgets(
     'reverting from the home popup restores the original and preserves other roster edits',
@@ -715,11 +1029,19 @@ void main() {
       );
 
       await show(tester);
-      await tester.tap(find.text('CLOUD'));
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const Key('default-visions')),
+          matching: find.text(profile()['en'].toString().toUpperCase()),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
       await tester.pumpAndSettle();
-      expect(find.text('Revert Cloud to original?'), findsOneWidget);
+      expect(
+        find.text('Revert ${profile()['en']} to original?'),
+        findsOneWidget,
+      );
       expect(
         find.textContaining(
           'The next build/install applies the original vision',
@@ -769,7 +1091,12 @@ void main() {
     final saves = api.saves;
 
     await show(tester);
-    await tester.tap(find.text('CLOUD'));
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('default-visions')),
+        matching: find.text(profile()['en'].toString().toUpperCase()),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(GuideButton, 'Revert to original'));
     await tester.pumpAndSettle();
@@ -779,7 +1106,13 @@ void main() {
     expect(app.units, before);
     expect(api.roster, before);
     expect(api.saves, saves);
-    expect(find.text('CLOUD'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('default-visions')),
+        matching: find.text(profile()['en'].toString().toUpperCase()),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Game vision · your edits'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -931,7 +1264,7 @@ void main() {
       await wait(tester, () => app.selected != null);
       expect(api.roster, hasLength(2));
       expect(api.roster.first, profile());
-      expect(app.selected!['en'], 'Cloud');
+      expect(app.selected!['en'], profile()['en']);
       expect(app.selected!['lb'], 440110);
       expect(app.selected!['ffbe']['id'], profile()['ffbe']['id']);
       expect(find.text('Use original model'), findsOneWidget);

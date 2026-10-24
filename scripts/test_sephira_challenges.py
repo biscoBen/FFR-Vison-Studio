@@ -76,6 +76,30 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(menu['ChoiceTextList'][-1],'Leave')
         self.assertEqual(menu['CancelIndex'],len(menu['ChoiceTextList'])-1)
 
+    def test_rikku_swaps_with_lunafreya_without_moving_eiko_or_changing_group_budgets(self):
+        import _ffr_sephira as pack
+        groups={spec['origin']:(spec,units) for spec,units in challenge.plans(self.units)}
+        for origin,expected in [(13118,{'rikku','eiko'}),(13124,{'lunafreya','elephim'})]:
+            spec,units=groups[origin]
+            self.assertEqual({u['sephiraVision']['preset'] for u in units},expected)
+            self.assertIn('{item:'+str(origin)+'}>0',spec['unlock'])
+            self.assertEqual(sum(s['MaxHitPoint'] for s in challenge.team_stats(lambda p:self.native[p],spec['level'],units)),
+                             challenge.curve(lambda p:self.native[p],spec['level'])['MaxHitPoint'])
+        for key,(old,new) in pack.ACQUISITION_SWAPS.items():
+            u=copy.deepcopy(next(u for u in self.units if u['sephiraVision']['preset']==key))
+            for field in ('studioAcquisition','sephiraAcquisition'):u[field]['location']=old
+            u['studioAcquisition']['hideSpoilers']=False
+            pack.repair_default_acquisition(u)
+            self.assertEqual(u['studioAcquisition']['location'],new)
+            self.assertFalse(u['studioAcquisition']['hideSpoilers'])
+            u['studioAcquisition']['location']=old
+            pack.repair_default_acquisition(u)
+            self.assertEqual(u['studioAcquisition']['location'],old) # A later explicit edit.
+            u['sephiraAcquisition']['location']=old
+            u['studioAcquisition']={'version':1,'location':'mitra_shop','random':False,'hideSpoilers':True}
+            pack.repair_default_acquisition(u)
+            self.assertEqual(u['studioAcquisition']['location'],'mitra_shop')
+
     def test_mitra_practice_stage_is_preserved_when_christine_is_enabled(self):
         native=copy.deepcopy(self.native)
         tables={}

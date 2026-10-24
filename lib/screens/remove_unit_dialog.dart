@@ -66,6 +66,21 @@ Future<void> confirmResetSephira(BuildContext context, AppState app, {Map<String
   }
 }
 
+Future<void> confirmResetNativeVisions(BuildContext context, AppState app) async {
+  final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+    backgroundColor: Guide.paper,
+    title: Text('Reset all default visions?', style: Guide.h2()),
+    content: Text('Restores their original names, models, voices, abilities, stats, Resonances and mastery rewards. A roster backup is saved first. Sephira’s visions, added visions and party settings are kept. Build/install afterward to apply the reset.', style: Guide.text()),
+    actions: [
+      GuideButton('Keep edits', onPressed: () => Navigator.pop(c, false)),
+      GuideButton('Reset all visions', danger: true, onPressed: () => Navigator.pop(c, true)),
+    ],
+  ));
+  if (ok == true) {
+    try { await app.resetNativeVisions(); } catch (e) { app.showNotice('$e'); }
+  }
+}
+
 Future<void> _confirmRevertParty(
   BuildContext context,
   AppState app,

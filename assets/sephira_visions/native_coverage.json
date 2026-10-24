@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "All 160 original active skills and 131 original passives retain canonical allocations; revision 7 awakening bonuses may repeat MR choices on other visions.",
+  "status": "All 160 original active skills and 131 original passives retain canonical allocations; unit-bound traits are awakening bonuses, and transferable MR bonuses may be shared.",
   "sourceTableSha256": {
     "Skill/DT_SkillData.json": "7f2e12526d1658dd08d25ef7b91a0b7ac1e1f5da5bb8c4f20173af3bc9bb1b4e",
     "Skill/DT_PassiveSkillData.json": "8de894e26c1511d0a8856e7a0e52f8ab63a5d7e3be2519ef7e9b899cb4eb508b",

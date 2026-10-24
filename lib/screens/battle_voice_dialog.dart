@@ -6,6 +6,82 @@ import '../design/widgets.dart';
 import '../services/battle_voice.dart';
 import '../state/app_state.dart';
 
+Future<void> showNativeVisionVoice(
+  BuildContext context,
+  Map<String, dynamic> vision,
+) async {
+  final app = context.read<AppState>();
+  final id = vision['id'] as int;
+  final saved =
+      app.units.where((u) => u['native']?['id'] == id).firstOrNull ?? vision;
+  final original = (saved['native']?['baseline']?['en'] ?? vision['en'])
+      .toString();
+  var selected = (saved['nativeVoice'] ?? id) as int;
+  final sources = [
+    for (final u in app.nativeVisions)
+      if (u['id'] != id) u,
+  ]..sort((a, b) => a['en'].toString().compareTo(b['en'].toString()));
+  if (selected != id && !sources.any((u) => u['id'] == selected)) selected = id;
+  final choice = await showDialog<int>(
+    context: context,
+    builder: (c) => StatefulBuilder(
+      builder: (c, setState) => AlertDialog(
+        backgroundColor: Guide.paper,
+        shape: Border.fromBorderSide(Guide.frame),
+        title: Text('${saved['en']} · resonance voice', style: Guide.h2()),
+        content: SizedBox(
+          width: 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<int>(
+                key: const Key('native-vision-voice-source'),
+                initialValue: selected,
+                isExpanded: true,
+                decoration: const InputDecoration(labelText: 'Voice vision'),
+                items: [
+                  DropdownMenuItem(
+                    value: id,
+                    child: Text('Original voice · $original'),
+                  ),
+                  for (final source in sources)
+                    DropdownMenuItem(
+                      value: source['id'] as int,
+                      child: Text(source['en'].toString()),
+                    ),
+                ],
+                onChanged: app.building
+                    ? null
+                    : (value) {
+                        if (value != null) setState(() => selected = value);
+                      },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Uses the selected default vision’s resonance voice. Longer lines may be cut short by the original resonance timing. Build/install to apply this choice.',
+                style: Guide.text(),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          GuideButton('Cancel', onPressed: () => Navigator.pop(c)),
+          GuideButton(
+            'Save voice',
+            onPressed: app.building ? null : () => Navigator.pop(c, selected),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (choice == null) return;
+  try {
+    await app.editNativeVision(id, voiceSource: choice, selectEditor: false);
+  } catch (e) {
+    app.showNotice('Could not change this voice: $e');
+  }
+}
+
 Future<void> showBattleVoice(
   BuildContext context,
   Map<String, dynamic> character,

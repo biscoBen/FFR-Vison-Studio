@@ -9,10 +9,10 @@ GROUPS = {
     13105: ['fryevia', 'lunera'],
     13110: ['nalu', 'jade'],
     13116: ['a2', 'alice'],
-    13118: ['lunafreya', 'eiko'],
+    13118: ['rikku', 'eiko'],
     13120: ['elza', 'mog'],
     13123: ['trance_terra', 'relm'],
-    13124: ['rikku', 'elephim'],
+    13124: ['lunafreya', 'elephim'],
     13128: ['freya'],
     13130: ['reberta'],
 }

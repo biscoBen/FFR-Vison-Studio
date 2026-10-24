@@ -11,8 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Christine boss pressure and native Fina music
+### Vision battle rewards, mastery scope and native Fina music
 
+- Default visions can use any other default vision’s resonance voice, including movie-only voices. Original effects and movie pictures stay intact; prepared voice data is cached. These routes require an in-game listening test; longer recordings can be cut short by the target resonance’s unchanged timing.
+- Add a backed-up **Reset all visions** action to Default visions, restoring their original names/models and other overrides while keeping added visions, Sephira’s collection and party settings. Changing a default vision’s model now uses that model’s name; reverting its model restores the original name.
+- Swap Rikku and Lunafreya’s normal acquisition groups: Rikku joins Eiko at Zidane’s crystal, and Lunafreya joins Elephim at Vaan’s crystal. Preserve both original-vision prerequisite gates, encounter levels and combined boss budgets. Migrate saved default locations once while retaining shop/custom overrides and later deliberate edits.
+- Swap eight command/LB-bound MR passives on Christine, Barusa, Minfilia, Trance Terra and Nalu with their existing general awakening bonuses. Christine now learns transferable Fill LB on Stagger at MR7; True Stagger stays in her final awakening tier and names her own skills. Preserve every passive, all 131 excluded-original bonuses, native AP costs and kit power. Back up saved stock rosters before repairing them, retain deliberate MR edits, and apply the same rule during builds. Rebind the two named active-skill slots on Nalu’s Signature Moves and Trance Terra’s Play Rough to their private skills as well as their resonance; the original game’s rows remain unchanged.
 - Keep Christine's level-5 HP (2,750) and break gauge (162), increase her magic stat by 50% and speed by 15% (rounded to the game's integer stat). Blizzard replaces her basic weapon attack. Ice damage is halved and Fire is a weakness; Slumber Mist's native 30% Sleep effect is unchanged.
 - Give the simpler difficulty AI the same bounded offensive and utility choices as the scripted rotation, excluding heals that require the scripted low-HP guard. Other challenges keep their existing stats and skills.
 - Play Fina's cave music directly through the original game's Atom cue from its beginning, with no embedded movie audio or re-encoding. Preserve the approved video, opacity, single playback and battle-music pause/resume. The returned ADX decodes cleanly offline, but the user heard garbling through Mana; native Atom playback still requires an in-game listening test.

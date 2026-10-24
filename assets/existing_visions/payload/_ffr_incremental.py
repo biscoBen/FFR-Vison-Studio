@@ -145,6 +145,8 @@ def install(env):
 # while checking the exact motion-call contract, rather than the entire file.
 _SHRINE_SPRITE_SOURCE = '6c0a942322749e3c10e5e7c2a7dd2ab436dcf0dcc35dd2ff3173f289cae08d38'
 _SHRINE_SPRITE_CONTRACT = '124450711ed49a35a4366af698bdfb0d630b119ead315da79394f0070f8e64c6'
+_SEPHIRA_SPRITE_SOURCE = '94ea55499755b9e6abe5f02abf5add547bba48755430b0b6a4eb024ecbfdbf55'
+_SEPHIRA_SPRITE_CONTRACT = '46234d2ce2395104f2a9a80f7a0eab7963c6bd1a5be57587406ceefde3890992'
 
 
 def _ast_contract(node):
@@ -158,22 +160,32 @@ def _ast_contract(node):
 def _sprite_dependencies(cache):
     original_file, original_execute = cache.file, cache.execute
     shrine = str((cache.root/'tools/_ffr_shrine_challenges.py').resolve())
+    sephira = str((cache.root/'tools/_ffr_sephira.py').resolve())
     scope = [False]; signatures = {}
     def file(path):
         record = original_file(path)
-        if not scope[0] or record[0] != shrine or record[1] is None: return record
+        if not scope[0] or record[0] not in (shrine,sephira) or record[1] is None: return record
         if record[1] not in signatures:
             try:
                 tree = ast.parse(Path(path).read_text(encoding='utf-8-sig'))
-                selected = {'data','route','needs_enemy_motion','enemy_motion_for'}
-                contract = [_ast_contract(n) for n in tree.body
-                            if isinstance(n,ast.FunctionDef) and n.name in selected]
-                constants = [n for n in tree.body if isinstance(n,ast.Assign)
-                             and any(isinstance(t,ast.Name) and t.id=='DATA' for t in n.targets)]
-                data_name = ast.literal_eval(constants[0].value) if len(constants)==1 else None
-                data = json.loads(Path(path).with_name(data_name).read_bytes())
-                contract += [data_name, data['schema'], sorted(s['origin'] for s in data['encounters'])]
-                signatures[record[1]] = _SHRINE_SPRITE_SOURCE if reuse.digest(contract)==_SHRINE_SPRITE_CONTRACT else record[1]
+                if record[0] == shrine:
+                    selected = {'data','route','needs_enemy_motion','enemy_motion_for'}
+                    contract = [_ast_contract(n) for n in tree.body
+                                if isinstance(n,ast.FunctionDef) and n.name in selected]
+                    constants = [n for n in tree.body if isinstance(n,ast.Assign)
+                                 and any(isinstance(t,ast.Name) and t.id=='DATA' for t in n.targets)]
+                    data_name = ast.literal_eval(constants[0].value) if len(constants)==1 else None
+                    data = json.loads(Path(path).with_name(data_name).read_bytes())
+                    contract += [data_name, data['schema'], sorted(s['origin'] for s in data['encounters'])]
+                    expected,source = _SHRINE_SPRITE_CONTRACT,_SHRINE_SPRITE_SOURCE
+                else:
+                    selected = {'runtime_membership','membership','active_units','native_motion_for','native_motion_names'}
+                    contract = [_ast_contract(n) for n in tree.body
+                        if isinstance(n,ast.FunctionDef) and n.name in selected
+                        or isinstance(n,(ast.Import,ast.ImportFrom))
+                        or isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id in {'FIELD','RETIRED'} for t in n.targets)]
+                    expected,source = _SEPHIRA_SPRITE_CONTRACT,_SEPHIRA_SPRITE_SOURCE
+                signatures[record[1]] = source if reuse.digest(contract)==expected else record[1]
             except (OSError,ValueError,TypeError,KeyError,IndexError): signatures[record[1]] = record[1]
         return [record[0],signatures[record[1]]]
     def execute(kind,value,inputs,targets,action):

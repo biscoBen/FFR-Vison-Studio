@@ -124,6 +124,64 @@ class SephiraVisions {
     return changed ? result : unit;
   }
 
+  /// Move command-bound MR defaults into the vision's existing bonus slots.
+  /// General bonuses take their place in MR; complete kits keep the same
+  /// abilities, passive count, AP costs and permanent stats.
+  static Map<String, dynamic> repairMasteryScope(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (unit['native'] != null || unit['party'] != null ||
+        (unit['sephiraRecipe'] as int? ?? 0) < 7) { return unit; }
+    final preset = presets.where((p) => p['id'] == presetId(unit)).firstOrNull;
+    final update = preset?['masteryScopeUpdate'];
+    if (update is! Map || update['schema'] != 1) return unit;
+    var changed = false;
+    final result = CharacterConfig.copy(unit);
+    for (final swap in update['swaps'] as List) {
+      final rank = swap[0] as int, bound = swap[1] as int, general = swap[2] as int;
+      final reward = (result['synchro'][rank] as List).where((g) =>
+          g[0] == 'PassiveSkill' && g[1] == bound).firstOrNull;
+      if (reward == null) continue; // Repaired already, or deliberately edited.
+      final awakening = result['awakening'] as List;
+      final bonus = awakening.expand((t) => t as List).where((g) =>
+          g[0] == 'PassiveSkill' && g[1] == general).firstOrNull;
+      if (bonus != null) {
+        bonus[1] = bound;
+      } else {
+        final target = awakening.skip(swap[3] as int).where((t) => (t as List).length < 8).firstOrNull;
+        if (target == null) return unit; // Keep an edited, full kit openable.
+        (target as List).add(['PassiveSkill',bound,-1]);
+      }
+      reward[1] = general;
+      changed = true;
+    }
+    if (!changed) return unit;
+    result['sephiraPassiveText'] = {
+      ...?result['sephiraPassiveText'] as Map?, ...?preset!['profile']['sephiraPassiveText'] as Map?,
+    };
+    CharacterConfig.validate(result);
+    return result;
+  }
+
+  static Map<String, dynamic> repairDefaultAcquisition(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (unit['native'] != null || unit['party'] != null) return unit;
+    final preset = presets.where((p) => p['id'] == presetId(unit)).firstOrNull;
+    final update = preset?['acquisitionUpdate'];
+    if (update is! Map || update['schema'] != 1) return unit;
+    if ((unit['sephiraAcquisition'] as Map?)?['location'] != update['before']) return unit;
+    final result = CharacterConfig.copy(unit);
+    var changed = false;
+    for (final field in ['studioAcquisition','sephiraAcquisition']) {
+      final value = result[field];
+      if (value is Map && value['version'] == 3 && value['location'] == update['before']) {
+        value['location'] = update['after']; changed = true;
+      }
+    }
+    return changed ? result : unit;
+  }
+
   /// Independent bundled Fina shares the collection's additive bonus repair.
   /// Already-updated entries and deliberate later edits are left alone.
   static Map<String, dynamic> repairIndependentBonuses(
@@ -165,7 +223,7 @@ class SephiraVisions {
   ) {
     final latest = preset['profile']['sephiraRecipe'] as int;
     if ((unit['sephiraRecipe'] as int? ?? 0) >= latest) {
-      return CharacterConfig.copy(unit);
+      return repairMasteryScope(CharacterConfig.copy(unit), [preset]);
     }
     if (latest >= 7) {
       var previous = unit;
@@ -195,7 +253,7 @@ class SephiraVisions {
       }
       result['sephiraRecipe'] = 7;
       CharacterConfig.validate(result);
-      return result;
+      return repairMasteryScope(result, [preset]);
     }
     if (latest >= 6) {
       var previous = unit;

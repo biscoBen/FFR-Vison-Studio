@@ -385,6 +385,24 @@ class AppState extends ChangeNotifier {
       units = audio;
       dirty = true;
     }
+    final locations = [for (final u in units)
+      SephiraVisions.repairDefaultAcquisition(u as JsonMap, sephiraPresets)];
+    if (locations.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'sephira-acquisition-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = locations;
+      dirty = true;
+    }
+    final masteryScope = [for (final u in units)
+      SephiraVisions.repairMasteryScope(u as JsonMap, sephiraPresets)];
+    if (masteryScope.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'sephira-mr-scope-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = masteryScope;
+      dirty = true;
+    }
     final descriptions = [for (final u in units)
       SephiraVisions.repairDescriptions(u as JsonMap, sephiraPresets)];
     if (descriptions.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
@@ -574,6 +592,25 @@ class AppState extends ChangeNotifier {
       showNotice('Could not remove the unit: $e');
       return false;
     }
+  });
+
+  Future<void> resetNativeVisions() => _withRoster(() async {
+    if (building) throw StateError('Wait for the current build to finish.');
+    if (api == null || engineDown) throw StateError('The engine is not running.');
+    _saveTimer?.cancel(); await _savePending();
+    final current = _mergePending(await api!.spec());
+    final keys = {for (final u in current) if (u['native'] != null) u['key']};
+    if (keys.isEmpty) return;
+    final backup = File(p.join(paths.configBackups, 'default-visions-reset-${DateTime.now().microsecondsSinceEpoch}.json'));
+    await backup.parent.create(recursive: true);
+    await backup.writeAsString(CharacterConfig.encodeAll(current), flush: true);
+    final next = [for (final u in current) if (u['native'] == null) u];
+    await api!.saveSpec(json.decode(json.encode(next)) as List);
+    _pendingEdits.removeWhere((key, value) => keys.contains(key));
+    units = _mergePending(next);
+    dirty = _pendingEdits.isNotEmpty;
+    if (keys.contains(selectedKey)) selectedKey = null;
+    await _savePending(); _anims.clear(); notifyListeners();
   });
 
   /// All artwork and ID allocation are prepared before changing the roster.
@@ -1010,7 +1047,7 @@ class AppState extends ChangeNotifier {
 
   /// Original visions keep their game identity. Merely opening the editor
   /// creates an unchanged snapshot; the builder only applies later differences.
-  Future<JsonMap> editNativeVision(int id, {JsonMap? appearance, bool? testAcquire, bool selectEditor = true}) => _withRoster(() async {
+  Future<JsonMap> editNativeVision(int id, {JsonMap? appearance, int? voiceSource, bool clearVoice = false, bool? testAcquire, bool selectEditor = true}) => _withRoster(() async {
     if (api == null || engineDown) { throw StateError('The engine is not running.'); }
     if (building) { throw StateError('Wait for the current build to finish.'); }
     _saveTimer?.cancel(); await _savePending();
@@ -1022,6 +1059,9 @@ class AppState extends ChangeNotifier {
       throw StateError('This original vision conflicts with a roster entry. Your roster has not been changed.');
     }
     if (appearance != null) {
+      final name = appearance['en'];
+      if (name is! String || name.trim().isEmpty) throw StateError('The selected model has no name.');
+      unit['en'] = name;
       unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
       unit['menuScale'] = appearance['menuScale'] ?? 2.52;
       if (appearance['icon'] != null) { unit['icon'] = CharacterConfig.copy(appearance['icon'] as JsonMap); }
@@ -1029,6 +1069,12 @@ class AppState extends ChangeNotifier {
     }
     if (testAcquire != null) {
       if (testAcquire) { unit['testAcquire'] = true; } else { unit.remove('testAcquire'); }
+    }
+    if (clearVoice || voiceSource == id) { unit.remove('nativeVoice'); }
+    else if (voiceSource != null) {
+      final source = await api!.nativeVision(voiceSource);
+      if (source['native']?['id'] != voiceSource) throw StateError('Select an original vision voice.');
+      unit['nativeVoice'] = voiceSource;
     }
     CharacterConfig.validate(unit);
     final next = [for (final u in current) u['native']?['id'] == id ? unit : u, if (matches.isEmpty) unit];
@@ -1233,6 +1279,7 @@ class AppState extends ChangeNotifier {
   void useOriginalModel(JsonMap unit) {
     final restored = CharacterConfig.copy(unit);
     final baseline = restored['native']['baseline'] as Map;
+    restored['en'] = baseline['en'];
     for (final field in ['ffbe', 'menuScale', 'icon']) {
       if (baseline.containsKey(field)) { restored[field] = json.decode(json.encode(baseline[field])); }
       else { restored.remove(field); }

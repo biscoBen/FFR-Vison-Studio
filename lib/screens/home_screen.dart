@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
           else Expanded(flex: 2, child: _visionBox(context, app, app.sephiraUnits, title: "Sephira's Visions", key: const Key('sephira-visions'), isSephira: true)),
           const SizedBox(height: 12),
           Expanded(
-            child: _visionBox(context, app, defaults, title: 'Default visions', key: const Key('default-visions')),
+            child: _visionBox(context, app, defaults, title: 'Default visions', key: const Key('default-visions'), isDefault: true),
           ),
           const SizedBox(height: 12),
           Expanded(child: _visionBox(context, app, party, title: 'Party characters', key: const Key('party-characters'), isParty: true)),
@@ -265,7 +265,7 @@ class HomeScreen extends StatelessWidget {
     ]);
   }
 
-  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false, bool isSephira = false}) => DragTarget<int>(
+  Widget _visionBox(BuildContext context, AppState app, List<Map<String, dynamic>> entries, {required String title, required Key key, bool allowAdd = false, bool isParty = false, bool isSephira = false, bool isDefault = false}) => DragTarget<int>(
         onWillAcceptWithDetails: (details) => !(app.building || app.deckWorking) && !isParty && !isSephira &&
             entries.every((u) => u['id'] != details.data),
         onAcceptWithDetails: (details) async {
@@ -284,6 +284,13 @@ class HomeScreen extends StatelessWidget {
               try { await app.setSephiraEnabled(value); } catch (e) { app.showNotice('$e'); }
             },
           ) : Text('${entries.length} ${isParty ? 'character' : 'vision'}${entries.length == 1 ? '' : 's'}', style: Guide.band().copyWith(letterSpacing: 0.4, fontSize: 13))),
+          if (isDefault) Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Align(alignment: Alignment.centerLeft, child: GuideButton('Reset all visions',
+              key: const Key('default-visions-reset-all'),
+              onPressed: app.building || app.deckWorking || app.api == null || !app.units.any((u) => u['native'] != null)
+                  ? null : () => confirmResetNativeVisions(context, app))),
+          ),
           if (isSephira) Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
