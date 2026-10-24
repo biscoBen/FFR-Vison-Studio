@@ -11,28 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Build timing diagnostics, Christine install failure and level-5 trial — 2026-10-24
-
-- Address the user's **908.2-second failed install** without treating that duration as a cache benchmark. The pasted
-  tail contains 54 menus built with four native operations each after sprites, while Studio still labels the stage
-  “Lunera, 30 of 30.” There are no prior per-stage timestamps, so the full 15 minutes cannot be accurately apportioned.
-- Timestamp every captured console/saved-log line with local time and elapsed build time. Stream verification output
-  as it arrives; time verification and installation. Add accurate post-sprite stages, per-operation duration/status,
-  cache hit/new/invalid lookup records, phase totals and slowest-operation summaries. Save unique `build-profile-*.json`
-  and `build-events-*.jsonl` files in **Logs folder**, including failed builds. Keep completed cached work after a failure.
-- Reproduce the exact Christine schema failure with native Blueprint packages available: the cave's existing actors
-  decode normally but lose their schema context on JSON write. Collect all actual actor declarations into private
-  mappings; preserve the installed mappings and original actors. Check the cave write before sprite conversion and
-  reuse that verified result later in the same build.
-- Batch native menu cloning from one authored template, assign consistent distinct signatures per menu, verify every
-  cooked dialog and cache the whole group. Native 45-menu comparison: **149.386s / 180 tool launches before**, **44.433s /
-  50 launches after**, **0.020s / zero launches on reuse**. These local component timings do not establish the Windows
-  full-install two-minute target. Keep the existing asset-cache implementation/namespace so prior completed work remains usable.
-- Tune Christine's fixed challenge to **level 5**, using the existing native boss curve (2,750 HP), her ice kit and
-  generic attack. Review each later challenge against the user's party level and battle experience when they reach it.
-  Native cave readback, menu bindings/signatures and fixed-level budget checks are included; live battle balance remains a user test.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -101,6 +79,47 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published timed builds, batched menus and Christine level-5 trial — 2026-10-24
+
+- Address the user's **908.2-second failed install** without treating that duration as a cache benchmark. The pasted
+  tail contains 54 menus built with four native operations each after sprites, while Studio still labels the stage
+  “Lunera, 30 of 30.” There are no prior per-stage timestamps, so the full 15 minutes cannot be accurately apportioned.
+- Timestamp every captured console/saved-log line with local time and elapsed build time. Stream verification output
+  as it arrives; time verification and installation. Add accurate post-sprite stages, per-operation duration/status,
+  cache hit/new/invalid lookup records, phase totals and slowest-operation summaries. Save unique `build-profile-*.json`
+  and `build-events-*.jsonl` files in **Logs folder**, including failed builds. Keep completed cached work after a failure.
+- Reproduce the exact Christine schema failure with native Blueprint packages available: the cave's existing actors
+  decode normally but lose their schema context on JSON write. Collect all actual actor declarations into private
+  mappings; preserve the installed mappings and original actors. Check the cave write before sprite conversion and
+  reuse that verified result later in the same build.
+- Batch native menu cloning from one authored template, assign consistent distinct signatures per menu, verify every
+  cooked dialog and cache the whole group. Native 45-menu comparison: **149.386s / 180 tool launches before**, **44.433s /
+  50 launches after**, **0.020s / zero launches on reuse**. These local component timings do not establish the Windows
+  full-install two-minute target. Keep the existing asset-cache implementation/namespace so prior completed work remains usable.
+- Tune Christine's fixed challenge to **level 5**, using the existing native boss curve (2,750 HP), her ice kit and
+  generic attack. Review each later challenge against the user's party level and battle experience when they reach it.
+  Native cave readback, menu bindings/signatures and fixed-level budget checks are included; live battle balance remains a user test.
+
+
+- **Verified Windows test package:** code `c63c8e98f613a66646c2ca339e068c0593ea4e6a`, extension **1.2.79**,
+  [run 40114191529](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40114191529),
+  [download](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40114191529/Sephira-Studio-Test.zip),
+  **73,960,090 bytes**, SHA-256 `fda88d7cc31a43fae1933d3e7fa3baa76db5ec6000a7ad681838207bfb5a4fa9`.
+  Full Windows analysis/Flutter tests, frozen-engine setup, Python checks, bundle checks, launcher/updater checks and
+  compilation pass. Verify downloaded provenance and all **68** extension files plus **16** standalone Fina files.
+  Confirm the delivered native asset-cache helper is byte-identical to 1.2.78, preserving completed cache entries.
+- Windows validation caught open profile handles at normal builder return and a timestamp test using an unsupported
+  epoch-era local date. Close profiles at normal return with an exit fallback; use a modern date in the clock test.
+  Correct the follow-up test's indentation/module scope and explicitly check profiles are closed before temporary-file
+  cleanup. Final validation passes; no failed candidate was published as this release.
+- First complete candidate **16:38:08 UTC**, verified delivery **17:11:48 UTC**, 2026-10-24: **33m 40s**, including
+  local checks, later level-5 request, Windows corrections, an extra retry, waiting, download and verification.
+  Successful CI **9m 57s wall**, **13m 47s summed job time**. Earlier automatic run 40113152061 failed validation;
+  the helper dispatched protected manual retry 40113776471 after that failure. Automatic 40114032519 was superseded
+  and cancelled, and the corrected commit reused automatic run 40114191529. At delivery, measured job time across
+  these attempts was **49m 13s**, including **16m 52s** elapsed on the still-running protected retry; this is a snapshot
+  lower bound, not final/billed usage. Do not equate CI/delivery timing with PC installation time.
 
 ## Published faster repeat installs, selected shop visions and cave/movie corrections — 2026-10-24
 

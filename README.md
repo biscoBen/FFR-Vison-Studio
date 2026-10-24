@@ -4,6 +4,31 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Timestamped builds and Christine level-5 trial — 2026-10-24
+
+[Verified Windows download / run 40114191529](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40114191529/Sephira-Studio-Test.zip)
+(code `c63c8e9`, extension **1.2.79**; **74.0 MB**).
+
+Build logs now include wall-clock/elapsed timestamps, accurate post-sprite stages,
+operation durations, cache hits/misses, phase totals and slowest operations.
+**Logs folder** also saves unique `build-profile-*.json` and `build-events-*.jsonl`
+reports, including failures. Verification output streams immediately.
+
+The failed install's cave-schema error is reproduced and fixed using the actual
+existing actors' declarations. That cave write is checked before sprite work.
+Menu generation is batched and cached: a native 45-menu test fell from 149s to
+44s cold and 0.02s on reuse. These are component timings; the full PC installation's
+two-minute target still needs the user's new timing report.
+
+Christine's fixed battle is now **level 5**, with 2,750 HP, her ice kit and a generic
+attack. Later challenges will be reviewed as the user reaches them, against their
+party's level and battle experience.
+
+Keep **Studio Test Data**, update, rebuild/install and restart the game. Completed
+asset-cache work from the failed attempt is retained. No Prepare Game or kit reset
+is required. Full Windows checks and actual downloaded-package verification pass;
+[details and delivery/CI measurements](CHANGELOG.md#published-timed-builds-batched-menus-and-christine-level-5-trial--2026-10-24).
+
 ### Faster repeat installs and cave/music corrections — 2026-10-24
 
 [Verified Windows download / run 40080356282](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40080356282/Sephira-Studio-Test.zip)
