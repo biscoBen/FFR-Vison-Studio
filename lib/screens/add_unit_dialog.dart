@@ -232,7 +232,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                     if (widget.replacePartyId != null) {
                       await app.editPartyCharacter(widget.replacePartyId!, appearance: appearance);
                     } else {
-                      await app.editNativeVision(widget.replaceVisionId!, appearance: appearance);
+                      await app.editNativeVision(widget.replaceVisionId!, appearance: {...appearance, 'en': name.text});
                     }
                   } else if (bundled) {
                     await app.addBundledUnit(onStep: (s) { if (mounted) { setState(() => step = s); } });

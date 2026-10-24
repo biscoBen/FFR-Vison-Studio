@@ -11,6 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Default model replacement and Windows voice extraction
+
+- Fix the 1.2.85 regression that rejected ordinary default-vision model replacements with “The selected model has no name.” Pass the selected catalog name alongside the appearance-only model response, preserving automatic naming, the native kit and independently selected voice. Bundled Crystal Fina and ordinary Add unit keep their existing paths.
+- Normalize native voice extraction filters to forward-slash package paths and remove the content prefix after normalization. Windows paths previously extracted zero sound tracks and caused the “Expected either native voice cues or one movie voice track” error. Fetch missing sound tracks when only a resonance master is cached.
+- Add full-picker regressions for hosted and engine catalogs, plus Windows filter and uncached-track discovery checks. Keep existing sprite/icon reuse and voice/audio generation unchanged. Live voice playback still needs testing after a successful install.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

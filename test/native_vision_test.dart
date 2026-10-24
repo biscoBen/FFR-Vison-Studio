@@ -198,6 +198,30 @@ class NativeApi extends ConfigApi {
   Future<List<String>> anims(String form) async => [];
 }
 
+class ModelPickerApi extends NativeApi {
+  ModelPickerApi(super.roster);
+  static const uid = '401000207', form = '401001207';
+  static const entry = {'id':uid,'name':'A2','packs':[form],'hasSprites':true};
+  final models = <Map<String,dynamic>>[];
+  @override
+  Future<List<dynamic>> ffbeUnits() async => [entry];
+  @override
+  Future<Map<String,dynamic>> ffbeUnit(String id) async => {
+    'id':id,'name':'A2','maxForm':form,
+    'forms':{form:{'rarity':'7','sprites':prepared.contains(form)?['idle','atk']:<String>[]}},
+  };
+  @override
+  Future<List<String>> anims(String form) async => prepared.contains(form)?['idle','atk']:[];
+  @override
+  Future<Map<String,dynamic>> nativeModel(String id,String form) async {
+    // The real endpoint returns appearance data only, without a display name.
+    final appearance={'ffbe':{'id':form,'base':id,'source':'JP',
+      'dir':'units/ffbe/native_model_$form/sprites/$form'}};
+    models.add(appearance);
+    return appearance;
+  }
+}
+
 void main() {
   setUpAll(() async {
     await (FontLoader(
@@ -1271,4 +1295,29 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final hosted in [true,false]) {
+    testWidgets('default model replacement carries the chosen name from the ${hosted?'hosted':'engine'} catalog', (tester) async {
+      final original=originalFixture()..['nativeVoice']=13024;
+      final before=clone(original);
+      final modelApi=ModelPickerApi([profile(),original])..paths=app.paths;
+      api=modelApi;app.api=api;app.units=clone(api.roster) as List;
+      app.hostIndex=hosted?{'units':[ModelPickerApi.entry]}:null;
+      await show(tester);
+      await tester.tap(find.text('CLOUD'));await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(GuideButton,'Change model'));await tester.pumpAndSettle();
+      await tester.tap(find.text('A2'));
+      final apply=find.widgetWithText(GoButton,'USE THIS MODEL');
+      await wait(tester,()=>apply.evaluate().length==1 && tester.widget<GoButton>(apply).onPressed!=null);
+      await tester.tap(find.text('USE THIS MODEL'));
+      await wait(tester,()=>app.selected?['en']=='A2');
+      expect(modelApi.models,hasLength(1));
+      expect(modelApi.models.single.containsKey('en'),isFalse);
+      expect(api.roster,hasLength(2));expect(api.roster.first,profile());
+      expect(app.selected,{...before,'en':'A2','ffbe':modelApi.models.single['ffbe'],'menuScale':2.52});
+      expect(app.selected!['nativeVoice'],13024);
+      expect(find.textContaining('The selected model has no name'),findsNothing);
+      expect(tester.takeException(),isNull);
+    });
+  }
 }

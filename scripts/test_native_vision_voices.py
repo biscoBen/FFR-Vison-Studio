@@ -121,6 +121,44 @@ class NativeVisionVoiceTests(unittest.TestCase):
             with mock.patch.object(voices,'Builder',side_effect=AssertionError('Unexpected voice work')):
                 voices.build([],{'ROOT':root})
 
+    def test_windows_extraction_filters_are_relative_forward_slash_package_paths(self):
+        with tempfile.TemporaryDirectory() as root:
+            run=mock.Mock()
+            env={'ROOT':root,'LEGACY':root,'OUT':root,'run':run,
+                 'ffrenv':SimpleNamespace(py=lambda *args:['python',*args])}
+            builder=voices.Builder(env)
+            for path in ('FFRS/Content/Sequencer/Battle/Skill/414090/414091/',
+                         'FFRS\\Content\\Sequencer\\Battle\\Skill\\414090\\414091/',
+                         'Sequencer/Battle/Skill/414090/414091/'):
+                builder.extract(path)
+                self.assertEqual(run.call_args.args[0][-2:],['--filter','Sequencer/Battle/Skill/414090/414091/'])
+
+    def test_profile_fetches_uncached_voice_tracks_from_a_cached_master(self):
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);legacy=root/'legacy'
+            master='FFRS/Content/Sequencer/Battle/Skill/414090/414091/SEQ_Battle_414091_Master'
+            sound=str(Path(master).parent/'Track/SEQ_Battle_414091_Sound_001').replace('\\','/')
+            path=legacy/(master+'.uasset');path.parent.mkdir(parents=True);path.touch()
+            view=track([('VO_BTL_TEST_004_Cue',8800)])
+            view['Imports'].append({'ObjectName':'/Game/Sound/Cri/Voice/VO_BTL/VO_BTL_TEST/VO_BTL_TEST_004_Cue'})
+            view['Imports'][1]['OuterIndex']=-len(view['Imports'])
+            extracts=[]
+            def run(args):
+                if args[0]=='extract':
+                    self.assertEqual(args[-2:],['--filter','Sequencer/Battle/Skill/414090/414091/'])
+                    extracts.append(args[-1]);target=legacy/(sound+'.uasset');target.parent.mkdir();target.touch()
+                else:
+                    data={'Imports':[],'Exports':[]} if args[2].endswith('_Master.uasset') else view
+                    Path(args[3]).write_text(json.dumps(data))
+            assets={str(414091):{'ID':414091,'LevelSequence':master.replace('FFRS/Content/','/Game/')}}
+            env={'ROOT':root,'LEGACY':legacy,'OUT':root/'out','run':run,'FFRDT':['tool'],'USMAP':'mapping',
+                 'rows':lambda rel:assets if rel=='Asset/Skill/DT_SkillAsset' else {},
+                 'ffrenv':SimpleNamespace(py=lambda *args:['extract',*args])}
+            builder=voices.Builder(env);profile=builder.profile(414090)
+            self.assertEqual([v['cue'] for v in profile['voices']],['VO_BTL_TEST_004_Cue'])
+            self.assertEqual(profile['movies'],{});self.assertEqual(len(extracts),1)
+            self.assertIs(builder.profile(414090),profile);self.assertEqual(len(extracts),1)
+
     def test_warm_voice_cache_checks_hashes_and_game_identity(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);tools=root/'tools';tools.mkdir();paks=root/'paks';paks.mkdir()

@@ -177,7 +177,9 @@ class Builder:
         self.views={};self.profiles={};self.entries={};self.number=0
 
     def extract(self,rel):
-        self.env['run'](self.env['ffrenv'].py(str(self.root/'tools/extract_legacy.py'),'--filter',rel.removeprefix('FFRS/Content/')))
+        # retoc filters are package paths even when the local filesystem is Windows.
+        rel=str(rel).replace('\\','/').removeprefix('FFRS/Content/')
+        self.env['run'](self.env['ffrenv'].py(str(self.root/'tools/extract_legacy.py'),'--filter',rel))
 
     def view(self,rel):
         if rel in self.views:return self.views[rel]
@@ -202,7 +204,7 @@ class Builder:
         for master in masters:
             self.view(master)
             folder=self.legacy/Path(master).parent
-            if not list(folder.rglob('*_Sound*.uasset')):self.extract(str(Path(master).parent)+'/')
+            if not list(folder.rglob('*_Sound*.uasset')):self.extract(Path(master).parent.as_posix()+'/')
             for sound in sorted(folder.rglob('*_Sound*.uasset')):
                 rel=sound.relative_to(self.legacy).with_suffix('').as_posix();data=self.view(rel)
                 for export,cue,start,index in party.sounds(data):
