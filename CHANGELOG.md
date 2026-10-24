@@ -11,18 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Vision battle rewards, mastery scope and native Fina music
-
-- Default visions can use any other default vision’s resonance voice, including movie-only voices. Original effects and movie pictures stay intact; prepared voice data is cached using short filenames suitable for portable Windows paths. These routes require an in-game listening test; longer recordings can be cut short by the target resonance’s unchanged timing.
-- Add a backed-up **Reset all visions** action to Default visions, restoring their original names/models and other overrides while keeping added visions, Sephira’s collection and party settings. Changing a default vision’s model now uses that model’s name; reverting its model restores the original name.
-- Swap Rikku and Lunafreya’s normal acquisition groups: Rikku joins Eiko at Zidane’s crystal, and Lunafreya joins Elephim at Vaan’s crystal. Preserve both original-vision prerequisite gates, encounter levels and combined boss budgets. Migrate saved default locations once while retaining shop/custom overrides and later deliberate edits.
-- Swap eight command/LB-bound MR passives on Christine, Barusa, Minfilia, Trance Terra and Nalu with their existing general awakening bonuses. Christine now learns transferable Fill LB on Stagger at MR7; True Stagger stays in her final awakening tier and names her own skills. Preserve every passive, all 131 excluded-original bonuses, native AP costs and kit power. Back up saved stock rosters before repairing them, retain deliberate MR edits, and apply the same rule during builds. Rebind the two named active-skill slots on Nalu’s Signature Moves and Trance Terra’s Play Rough to their private skills as well as their resonance; the original game’s rows remain unchanged.
-- Keep Christine's level-5 HP (2,750) and break gauge (162), increase her magic stat by 50% and speed by 15% (rounded to the game's integer stat). Blizzard replaces her basic weapon attack. Ice damage is halved and Fire is a weakness; Slumber Mist's native 30% Sleep effect is unchanged.
-- Give the simpler difficulty AI the same bounded offensive and utility choices as the scripted rotation, excluding heals that require the scripted low-HP guard. Other challenges keep their existing stats and skills.
-- Play Fina's cave music directly through the original game's Atom cue from its beginning, with no embedded movie audio or re-encoding. Preserve the approved video, opacity, single playback and battle-music pause/resume. The returned ADX decodes cleanly offline, but the user heard garbling through Mana; native Atom playback still requires an in-game listening test.
-- Make each challenge vision a guaranteed normal battle drop from its private boss. Remove the extra post-victory acquisition event/sequence, allowing the standard result and field-return flow to handle the reward. Quest/ownership checks still guard entry, and visions cannot be stolen. The new trace showed the field loaded, the camera targeting the player and the acquisition sequence finished during the black screen; the revised normal return still needs an in-game test. No camera or progression reset is applied.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -91,6 +79,51 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published vision battle rewards, transferable MR and native voices — 2026-10-24
+
+[Verified Windows test ZIP / run 40141095549](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40141095549/Sephira-Studio-Test.zip), code
+[`5dfd847`](https://github.com/biscoBen/FFR-Vison-Studio/commit/5dfd847336617498e2fc8d2d246a88f83d6584a7), update **1.2.85**
+(**74.0 MB**; host compatibility version/build unchanged). SHA-256
+`68b97dfdd51ae4c10a9e9302d608273b763fbea82c4bbc02d2a33bcb00c489b0`.
+
+- Default visions can use any other default vision’s resonance voice, including movie-only voices. Original effects and movie pictures stay intact; prepared voice data is cached using short filenames suitable for portable Windows paths. These routes require an in-game listening test; longer recordings can be cut short by the target resonance’s unchanged timing.
+- Add a backed-up **Reset all visions** action to Default visions, restoring their original names/models and other overrides while keeping added visions, Sephira’s collection and party settings. Changing a default vision’s model now uses that model’s name; reverting its model restores the original name.
+- Swap Rikku and Lunafreya’s normal acquisition groups: Rikku joins Eiko at Zidane’s crystal, and Lunafreya joins Elephim at Vaan’s crystal. Preserve both original-vision prerequisite gates, encounter levels and combined boss budgets. Migrate saved default locations once while retaining shop/custom overrides and later deliberate edits.
+- Swap eight command/LB-bound MR passives on Christine, Barusa, Minfilia, Trance Terra and Nalu with their existing general awakening bonuses. Christine now learns transferable Fill LB on Stagger at MR7; True Stagger stays in her final awakening tier and names her own skills. Preserve every passive, all 131 excluded-original bonuses, native AP costs and kit power. Back up saved stock rosters before repairing them, retain deliberate MR edits, and apply the same rule during builds. Rebind the two named active-skill slots on Nalu’s Signature Moves and Trance Terra’s Play Rough to their private skills as well as their resonance; the original game’s rows remain unchanged.
+- Keep Christine's level-5 HP (2,750) and break gauge (162), increase her magic stat by 50% and speed by 15% (rounded to the game's integer stat). Blizzard replaces her basic weapon attack. Ice damage is halved and Fire is a weakness; Slumber Mist's native 30% Sleep effect is unchanged.
+- Give the simpler difficulty AI the same bounded offensive and utility choices as the scripted rotation, excluding heals that require the scripted low-HP guard. Other challenges keep their existing stats and skills.
+- Play Fina's cave music directly through the original game's Atom cue from its beginning, with no embedded movie audio or re-encoding. Preserve the approved video, opacity, single playback and battle-music pause/resume. The returned ADX decodes cleanly offline, but the user heard garbling through Mana; native Atom playback still requires an in-game listening test.
+- Make each challenge vision a guaranteed normal battle drop from its private boss. Remove the extra post-victory acquisition event/sequence, allowing the standard result and field-return flow to handle the reward. Quest/ownership checks still guard entry, and visions cannot be stolen. The new trace showed the field loaded, the camera targeting the player and the acquisition sequence finished during the black screen; the revised normal return still needs an in-game test. No camera or progression reset is applied.
+
+- Preserve all 30 existing sprite/icon cache keys for mastery and acquisition-only changes. Motion or image changes
+  still invalidate their dependent conversions. Native voice artifacts use separate content-verified reuse, flattened
+  filenames and short cache keys, with recovery after a damaged cached file/manifest.
+- Local validation: the 695-test Python suite passed (41 platform skips), followed by all eight focused native-voice/cache
+  checks after the portable-path correction. All 93 targeted Flutter tests pass (one additional Windows-only local skip);
+  Flutter analysis reports no issues. Final Windows validation and compilation both passed for this exact commit,
+  including the full Flutter/Python suites, fresh frozen-engine setup, launcher/updater and extension checks.
+- Native proofs read back all challenge reward/AI tables and the actual Mitra crystal placement, eight effect rows and
+  26 private passive rows. The supplied voice reference verifies all four separate-cue/movie conversion routes,
+  original ADX packet preservation, generated HCA cues and native asset readback. The small source export deliberately
+  omits most movie pictures; full generated color/opacity packets are checked byte-for-byte during transplantation.
+  The downloaded ZIP's 72 managed extension files and 16 standalone Fina files match their manifests; the optional
+  animation library is excluded. Live battle exits, music playback and representative voice swaps still need testing.
+
+Keep **Studio Test Data**, update, rebuild/install and restart the game. No Prepare Game or preset reset is required.
+Stock MR/acquisition repairs save backups and preserve deliberate custom acquisition choices. Under **Default visions**,
+click a vision and choose **Change voice**; **Original voice** restores its original audio. **Reset all visions** removes
+all default overrides, including voices and models, while keeping added visions, Sephira's collection and party edits.
+
+First complete candidate **21:07:56 UTC** to verified downloaded ZIP **23:14:21 UTC**:
+**2h 06m 25s**, including local corrections, native source investigation, user-requested scope additions,
+Windows waiting and actual ZIP verification. Final CI wall time **09m 52s**; final summed runner
+usage **13m 58s**. Four automatic code runs were joined; none was manually dispatched.
+Their total runner usage was **55m 54s**:
+`40133219367` (success, 10m 25s wall / 13m 46s runner);
+`40133998997` (success, 11m 13s wall / 15m 05s runner);
+`40140616346` (cancelled, 08m 36s wall / 13m 05s runner);
+`40141095549` (success, 09m 52s wall / 13m 58s runner).
 
 ## Published actual Mitra cave placement and native movie music — 2026-10-24
 

@@ -4,6 +4,32 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Vision rewards, battle balance and default voices — 2026-10-24
+
+[Verified Windows download / run 40141095549](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40141095549/Sephira-Studio-Test.zip)
+(code `5dfd847`, update **1.2.85**; **74.0 MB**).
+
+Default visions now offer **Change voice** with every other default vision as a source, including voices embedded in
+resonance movies. Pictures and effect sounds stay intact. The original resonance length stays fixed, so longer voice
+lines can be cut short. **Reset all visions** backs up and removes all default overrides; model changes also update
+the displayed name. Added/Sephira visions and party settings are kept when resetting defaults.
+
+Christine's level-5 fight uses Blizzard as its basic action, stronger magic and 15% more speed, with Ice resistance
+and Fire weakness. HP/break and Slumber Mist are unchanged. Challenge visions are normal guaranteed battle rewards,
+using the standard result/return flow. Christine's MR7 is now transferable **Fill LB on Stagger**; **True Stagger**
+belongs to her awakening bonuses. Seven other unit-bound traits receive the same treatment, preserving all 131
+excluded-original passives across the complete kits. Rikku joins Eiko at Zidane; Lunafreya moves to Vaan with Elephim.
+
+Fina's movie uses the game's original cave-music cue directly from its beginning, avoiding the garbled embedded
+soundtrack conversion. The approved movie, one-time playback and battle-music pause/resume are retained. These audio
+routes and the revised battle exit need live tests. Warm sprite/icon reuse is preserved; the new voice cache uses short
+portable paths and only rebuilds changed or damaged entries.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. No Prepare Game or preset reset is needed. Saved stock
+MR/acquisition settings migrate with backups; deliberate custom shop settings stay in place. Windows validation,
+compilation and actual downloaded-ZIP verification pass;
+[checks, limits and measured delivery/CI timings](CHANGELOG.md#published-vision-battle-rewards-transferable-mr-and-native-voices--2026-10-24).
+
 ### Actual Mitra cave and movie music fixes — 2026-10-24
 
 [Verified Windows download / run 40129779990](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40129779990/Sephira-Studio-Test.zip)
@@ -1476,6 +1502,9 @@ remain available from the home screen.
 Right-click a card in **Added visions** and choose **Remove vision** to remove it with the usual confirmation.
 Default portraits use bundled FFBE icons matched to all 26 original visions, with the original portrait as a fallback.
 These portraits appear in Studio's list and character page; selecting a replacement model shows that model's portrait.
+A replacement model also supplies the default vision’s displayed name. Click a default vision and choose **Change voice**
+to select another default vision’s resonance voice, or **Original voice** to undo just the audio change. **Reset all visions**
+in the Default visions panel backs up and removes every default override; rebuild/install afterward to apply the reset.
 
 Missing-sequence abilities borrow native FFR target effects by name, element/power, physical impact style, or extracted
 healing/status mechanics. Visions retain their own motions and the original skill mechanics. Existing timelines and
@@ -1815,8 +1844,8 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   identify supported game builds. Run the batch animation audit and required Windows release gates, followed by
   representative live-game checks; package validation alone does not establish gameplay compatibility.
 
-Deferred feature: **FFBE battle voices** remain on hold. Resume source/audio-bank investigation when requested;
-review available full-game voice routing and preserve story dialogue. This is not an implemented compatibility feature.
+Additional **FFBE archive battle voices** for imported visions remain deferred. The default-vision selector above uses
+voices already present in the installed game; it does not import a new voice library or change story dialogue.
 Native party voice overrides must also be checked against full-game bank contents, fixed cinematic cues and team
 victory exchanges before claiming complete battle voice coverage.
 
