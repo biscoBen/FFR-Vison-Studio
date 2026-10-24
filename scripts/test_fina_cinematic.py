@@ -10,6 +10,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 import zipfile
+import wave
 
 from test_existing_visions import ROOT
 import _ffr_fina_cinematic as film
@@ -18,15 +19,19 @@ import cri_usm_movie as usm
 
 
 class CinematicTests(unittest.TestCase):
-    def test_runtime_test_uses_the_exact_reviewed_lighter_movie(self):
+    def test_runtime_test_preserves_reviewed_video_with_requested_new_score(self):
         spec, files = film.payload()
         source = spec['sourceMovie']
         self.assertEqual(source['name'], 'Crystal-Fina-Rotating-Lighter.mp4')
         self.assertEqual(source['sha256'], '680e099c04a03f5e0e7206e2a2d5b8bb843613e218f7ee213d390b66a6b649c5')
         self.assertEqual((source['width'], source['height'], source['frames']), (1920, 1080, 192))
-        self.assertTrue(spec['previewMatchesSource'])
+        self.assertFalse(spec['previewMatchesSource'])
+        self.assertTrue(spec['previewVideoMatchesSource'])
+        self.assertTrue(spec['audioReplaced'])
+        self.assertEqual(spec['previewVideoSha256'],
+            'bc7dec7c2a7d0ad08caf0386d2022178fbfdcb965949cfe9204c6fb2681ec1d5')
         self.assertFalse(spec['artworkRerendered'])
-        self.assertEqual(hashlib.sha256(files['preview.mp4']).hexdigest(), source['sha256'])
+        self.assertNotEqual(hashlib.sha256(files['preview.mp4']).hexdigest(), source['sha256'])
         self.assertEqual(spec['materialVariant'], 'lighter')
 
     def test_movie_headers_and_seek_offsets_match_native_container_conventions(self):
@@ -75,26 +80,52 @@ class CinematicTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'bounds|Truncated'):
             usm.normalize(raw[:-1], opaque_alpha=True, soundtrack=True)
 
-    def test_movie_contains_the_complete_score_at_its_sample_clock(self):
+    def test_movie_audio_matches_native_stereo_adx_packets_and_frame_clock(self):
         spec, files = film.payload(); parts = usm.chunks(files['movie.usm'])
         self.assertEqual(spec['embeddedAudio'],
-            {'codec':'HCA','channels':1,'sampleRate':48000,'samples':307200})
+            {'codec':'Adx','channels':2,'sampleRate':48000,'samples':307200})
         header, = [p for p in parts if p['type']==b'@SFA' and p['kind']==1]
         row, = usm.integer_rows(header['payload'])
         self.assertEqual({k:usm.value(header['payload'],row,k) for k in row},
-            {'audio_codec':4,'sampling_rate':48000,'total_samples':307200,'num_channels':1,
+            {'audio_codec':2,'sampling_rate':48000,'total_samples':307200,'num_channels':2,
              'metadata_count':0,'metadata_size':0,'ixsize':27860,'ambisonics':0,'channel_config':0})
         packets = [p for p in parts if p['type']==b'@SFA' and p['kind']==0]
-        self.assertEqual(b''.join(p['payload'] for p in packets),files['score.hca'])
-        self.assertEqual(hashlib.sha256(files['score.hca']).hexdigest(),
-            '3b76ce143df2fdba023506a999ae3eae8fd382cfdadf81fe9095834439344567')
-        self.assertEqual(len(packets),302)
+        self.assertEqual(b''.join(p['payload'] for p in packets),files['score.adx'])
+        self.assertEqual(hashlib.sha256(files['score.adx']).hexdigest(),
+            'e4220390907bc88b513a2f7a65bda01de2a5e3914abb5018a3595e28ac20815a')
+        # Captured native Cloud format: 288-byte v4 header, then 1,800-byte
+        # packets (50 stereo ADX groups, or 1,600 samples) at 30 fps.
+        self.assertEqual([len(p['payload']) for p in packets],[288]+[1800]*192+[18])
         self.assertEqual([struct.unpack_from('>II',p['header'],16) for p in packets],
-            [(0,3000)]+[(max(0,i*1024-128)*3000//48000,3000) for i in range(301)])
-        # Sound and picture packets advance on one clock, with no accumulating
-        # 30-fps assumption for HCA's 1,024-sample blocks.
-        times=[struct.unpack_from('>I',p['header'],16)[0] for p in parts if p['kind']==0]
-        self.assertEqual(times,sorted(times))
+            [(0,2997)]+[(i*999//10,2997) for i in range(193)])
+        self.assertEqual(usm.native_adx(files['score.adx']),files['score.adx'])
+        with self.assertRaisesRegex(ValueError,'stereo ADX'):
+            usm.native_adx(b'HCA'+bytes(400))
+        broken=bytearray(files['score.adx']);broken[12:16]=(307201).to_bytes(4,'big')
+        with self.assertRaisesRegex(ValueError,'6.4-second'):usm.native_adx(broken)
+        with self.assertRaises(ValueError):usm.native_adx(files['score.adx'][:-18])
+        times=[struct.unpack_from('>II',p['header'],16) for p in parts if p['kind']==0]
+        seconds=[t/rate for t,rate in times]
+        self.assertEqual(seconds,sorted(seconds))
+
+    def test_clean_stereo_score_has_piano_and_organ_arrangement_and_headroom(self):
+        spec,files=film.payload();music=spec['soundtrack']
+        self.assertIn('unresolved',music['ending'])
+        self.assertTrue(music['rubato'])
+        self.assertEqual((music['tempo'],music['pianoProgram'],music['organProgram']),(64,0,19))
+        self.assertEqual((music['organStart'],music['climax']),(3.2,5.2))
+        self.assertEqual(hashlib.sha256(files['score.wav']).hexdigest(),music['waveSha256'])
+        with wave.open(io.BytesIO(files['score.wav'])) as wav:
+            self.assertEqual((wav.getnchannels(),wav.getsampwidth(),wav.getframerate(),wav.getnframes()),
+                             (2,2,48000,307200))
+            pcm=struct.unpack('<'+str(307200*2)+'h',wav.readframes(307200))
+        self.assertGreater(max(map(abs,pcm)),24000)
+        self.assertLess(max(map(abs,pcm)),28500)
+        self.assertNotEqual(pcm[::2],pcm[1::2])
+        self.assertLess(music['peakDbfs'],-1)
+        self.assertGreater(music['rmsDbfs'],-25)
+        organs=[e for e in music['events'] if e[1]=='noteon' and e[2]==1]
+        self.assertEqual(min(e[0] for e in organs),round(3.2*48000))
 
     def test_every_frame_has_native_opacity_with_matching_presentation_time(self):
         spec, files = film.payload()
@@ -114,7 +145,7 @@ class CinematicTests(unittest.TestCase):
         spec, files = film.payload()
         self.assertEqual(spec['artSha256'], hashlib.sha256((ROOT/'artwork/crystal_fina_cinematic.png').read_bytes()).hexdigest())
         self.assertEqual(spec['seconds'], 6.4)
-        self.assertEqual(spec['revision'], 'crystal-fina-film-2')
+        self.assertEqual(spec['revision'], 'crystal-fina-film-3')
         self.assertEqual(spec['eyeColor'], 'red')
         self.assertEqual(spec['cameraZoom'], [1, 5.05])
         self.assertEqual(spec['spinAxis'], 'vertical')
@@ -122,9 +153,6 @@ class CinematicTests(unittest.TestCase):
         self.assertEqual(spec['eyesOpenFrames'], [156, 177])
         self.assertFalse(spec['fractures'] or spec['shards'] or spec['whiteout'])
         self.assertEqual(spec['layers'], {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (ROOT/'artwork/crystal_fina_layers').glob('*.png')})
-        audio = json.loads(files['audio.json'])
-        self.assertEqual(audio['recordings'][0]['samples'], 307200)
-        self.assertEqual(audio['waves']['0']['sha256'], hashlib.sha256(files['score.hca']).hexdigest())
         # A corrupt media file is rejected before writing a pak or changing a row.
         original = ROOT/'assets/existing_visions/payload/fina_cinematic.zip'
         stream = io.BytesIO()

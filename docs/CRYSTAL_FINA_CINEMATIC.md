@@ -1,18 +1,25 @@
 # Crystal Fina cinematic test
 
-The current runtime-test candidate uses the exact existing **Crystal-Fina-Rotating-Lighter.mp4**
-selected by the user, without rerendering the artwork. Alternate artwork work is paused. The source
-MP4 is 1920×1080, 30 fps, 192 frames (6.4 seconds); Studio's preview is byte-identical to it. Its SHA-256
-is `680e099c04a03f5e0e7206e2a2d5b8bb843613e218f7ee213d390b66a6b649c5`.
-The in-game copy uses 1920×1080 VP9/USM with native opaque Sofdec alpha. It retains the same shot, timing
-and matching original chime/air score. The intact crystal rotates continuously and the camera moves
-closer, ending with Fina opening ruby-red eyes. There is no shattering or breaking sound.
+The current test keeps the approved **Crystal-Fina-Rotating-Lighter.mp4** video and
+its 6.4-second duration. The user confirms the movie now plays once and hands off
+to the sprite LB. Its embedded mono HCA score was audible but garbled in game,
+despite clean offline HCA recovery/decoding. That is a failed listening test.
 
-The user confirms the opacity update now displays the movie. It still repeats over the sprite LB,
-and only the battle theme is audible during the movie; sprite/heal audio works. The current candidate
-retimes the checksum-pinned cooked evaluation export, whose old movie endpoints survived the typed
-range/signature changes. It also embeds the matching HCA score in the Mana stream. Native readback
-and local container checks pass; the corrected handoff and audible movie score still need a game test.
+The current correction uses the original Cloud movie's stereo ADX v4 audio format,
+288-byte header packet, 1,800-byte stereo data packets and native audio clock. Both
+movie descriptors declare stereo `Adx`, 48 kHz, 307,200 samples. A new original
+light, spacious piano phrase uses rubato timing around 64 bpm. Organ enters at
+3.2 seconds and builds into an intense, unresolved ending as Fina opens her eyes
+at 5.2 seconds. This is a codec/layout
+compatibility test; its audible result inside Resonance remains unverified.
+
+Only audio is replaced. Studio's preview copies the approved video stream without
+re-encoding; the in-game 192 VP9 color pictures and 192 native Sofdec opacity pictures
+are byte-identical to the working single-play version. The source movie's SHA-256
+remains `680e099c04a03f5e0e7206e2a2d5b8bb843613e218f7ee213d390b66a6b649c5`.
+The new preview has different whole-file bytes because its soundtrack changed.
+Its copied video-stream SHA-256 is
+`bc7dec7c2a7d0ad08caf0386d2022178fbfdcb965949cfe9204c6fb2681ec1d5`.
 
 In Studio, use **Preview Crystal Fina cinematic** to view the movie with sound. To test the game path:
 
@@ -29,7 +36,7 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 
 ## Playback and transport
 
-- VP9, 1920×1080, 30 fps, 192 frames; native opaque Sofdec alpha and embedded mono 48-kHz HCA score.
+- VP9, 1920×1080, 30 fps, 192 frames; native opaque Sofdec alpha and embedded stereo 48-kHz ADX v4 score.
 - A private native `PlatformManaMovie`/`FileManaMovie` pair points at `Movies/Studio/CrystalFina_Test.usm`.
   CRI resolves that relative to `Content/Streams`: the companion pak must contain
   `FFRS/Content/Streams/Movies/Studio/CrystalFina_Test.usm`.
@@ -45,10 +52,12 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 - The movie window is 2.0–8.4 seconds. Fina’s existing LB, reaction, cleanup and sounds shift together, with LB1
   beginning at 8.4 seconds. Her cure recording stays on the original heal application marker. The common opening
   cue moves to the start, and the original score begins with the movie.
-- The matching original score is embedded in the movie as a single mono HCA track: 48 kHz, 307,200
-  samples. Both movie descriptors declare that track. HCA packets use sample-based timestamps; they
-  are not timed as 30-fps video frames. No duplicate hit-sound score event is added. Movie sound is
-  independent of the sprite LB audio choice, like original CG audio. No shared sound/movie asset is replaced.
+- The new piano/organ score is embedded as stereo ADX v4: 48 kHz, 307,200 samples.
+  Both movie descriptors match. The stereo channel blocks stay interleaved: 50
+  pairs of 18-byte ADX blocks per packet provide 1,600 samples per 30-fps frame.
+  The header/timestamp layout matches the captured native Cloud stream. The HCA
+  movie path is removed after the user's garbled-audio report. No hit-sound score
+  event is added. The sprite opening/build-up and cure banks remain independent.
 - The USM travels in Studio’s normal companion `.pak`; retoc writes the `.utoc`/`.ucas` and preserves that pak.
   The existing three-file installer and Steam Deck snapshot format therefore carry the movie too. Disabling the
   test empties the owned companion movie pak on the next build. Other mods are untouched.
@@ -247,6 +256,9 @@ blender -b -t 4 --python scripts/render_crystal_fina_refraction.py -- \
 
 ## Reproduction
 
+The original Blender/chime recipe below is historical. For current movie audio, use
+the stereo ADX rescoring recipe at the end of this document.
+
 The original approved image-generation artwork is `artwork/crystal_fina_cinematic.png`. Its SHA-256 is
 `2f9c38115ec78a673f70fb3133b9185561ea5a04bc6b8b1d917c446d2cfeb573`.
 The scene uses separated sanctuary/closed-eye/open-eye layers in `artwork/crystal_fina_layers/`, with every layer
@@ -284,7 +296,7 @@ in-game testing; only that selection and the required playback fixes are authori
 ### Reproduce the selected runtime movie
 
 Use `scripts/import_crystal_fina_movie.py` with the selected MP4, its `scene.json`, and its matching
-original score HCA. It checks the source duration/frame count/aspect ratio, keeps the preview bytes,
+stereo ADX score plus its clean WAV. It checks the source duration/frame count/aspect ratio, keeps the preview video,
 converts the game stream and normalizes its native container before using the existing archive packager.
 The matching score source was checked against the selected MP4 export record. No new artwork is generated.
 The archive records the source MP4 name and SHA-256; regression checks pin that exact selection.
@@ -292,7 +304,7 @@ The archive records the source MP4 name and SHA-256; regression checks pin that 
 ```sh
 PYTHONPATH=/path/to/wannacri:scripts python scripts/import_crystal_fina_movie.py \
   --source /path/to/Crystal-Fina-Rotating-Lighter.mp4 \
-  --scene /path/to/lighter/scene.json --score-hca /path/to/matching/score.hca \
+  --scene /path/to/lighter/scene.json --score-adx /path/to/score.adx --score-wav /path/to/score.wav \
   --output /tmp/fina-game --package assets/existing_visions/payload/fina_cinematic.zip
 ```
 
@@ -325,3 +337,46 @@ sprite/healing timeline. The private USM SHA-256 is
 The exact selected browser MP4 remains unchanged. These corrections require a rebuild/install and
 restart; they need no kit/MR/acquisition update. One movie followed by the sprite LB, audible movie
 music and reuse in a second battle remain live checks.
+
+### Piano/organ score and native ADX compatibility test
+
+The user confirms the previous update's video plays once, and only its movie audio
+is garbled; retain its cooked/typed timing fixes. Offline recovery/decoding of that
+HCA file was insufficient evidence of game compatibility. The native-template
+comparison establishes a format difference, not a proven cause inside the decoder.
+The replacement matches the original stereo ADX v4 movie path.
+
+The native-format ADX source has SHA-256
+`e4220390907bc88b513a2f7a65bda01de2a5e3914abb5018a3595e28ac20815a`.
+Its USM SHA-256 is
+`2fdcad921474c1e750ed7b7966f522eb84330db91442869517ecc25185e7d62e`.
+Demuxing must recover the exact ADX file. The 288-byte header precedes 192 stereo
+1,800-byte data packets and the ADX end marker; the declared codec is 2 (`Adx`).
+Both VGAudio and FFmpeg decode 307,200 stereo frames. Relative to source PCM,
+VGAudio readback measures 47.73 dB SNR and FFmpeg 25.14 dB, with correlations
+0.999992 and 0.999034 respectively. These are independent offline results, not a
+claim that the game's distortion is resolved. Check the installed game's sound.
+
+The user selected this light-to-intense score for the current test. The opening
+measures -32.87 dBFS RMS and the final build -14.77 dBFS RMS, an 18.1 dB rise.
+The clean source WAV and new preview are included in the media archive. The WAV
+peaks at -1.51 dBFS with -21.19 dBFS RMS. `scripts/score_crystal_fina.py` records
+the rubato arrangement, instrument programs, velocities and render provenance.
+It uses FluidSynth and TimGM6mb (Tim Brechbill, 2004; David Bolton, 2010; GPL-2;
+[upstream source](https://github.com/musescore/musescore-old/commit/90c33ef9d87b3f5ff92efd3b07d89eb455fb1fef)).
+The SoundFont is not bundled with Studio. `scripts/encode_movie_adx.ps1` uses
+VGAudio 2.2.1, ADX version 4, 18-byte blocks, encryption disabled.
+`scripts/rescore_crystal_fina_movie.py` replaces only the score and verifies every
+color/opacity packet and the copied preview video stream. Players need none of
+these developer tools or instrument libraries.
+
+```sh
+python scripts/score_crystal_fina.py --soundfont /path/to/TimGM6mb.sf2 --output /tmp/fina-score.wav
+pwsh -File scripts/encode_movie_adx.ps1 -InputWave /tmp/fina-score.wav \
+  -OutputAdx /tmp/fina-score.adx -VgaudioDll /path/to/VGAudio.dll
+PYTHONPATH=/path/to/wannacri:scripts python scripts/rescore_crystal_fina_movie.py \
+  --archive assets/existing_visions/payload/fina_cinematic.zip \
+  --source /path/to/Crystal-Fina-Rotating-Lighter.mp4 \
+  --score-wav /tmp/fina-score.wav --score-adx /tmp/fina-score.adx \
+  --destination assets/existing_visions/payload/fina_cinematic.zip --output /tmp/fina-scored
+```

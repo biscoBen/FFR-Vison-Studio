@@ -1,7 +1,7 @@
 """Normalize our movie USM to the native movie's chunk/seek conventions.
 
 No video data is decoded or changed. This is deliberately limited to one
-unencrypted VP9 channel, matching opacity and a mono HCA soundtrack. It must never be
+unencrypted VP9 channel, matching opacity and a native stereo ADX soundtrack. It must never be
 used to rewrite arbitrary game movies.
 """
 import struct
@@ -129,57 +129,81 @@ def normalize(raw, *, opaque_alpha=False, soundtrack=False):
                            'maxPictureDataSize':max(r['max'] for r in reports.values()), 'chunkAlignment':32}
 
 
-def with_soundtrack(raw, hca):
-    """Mux the matching 6.4-second score without changing any color/alpha packet.
+def without_soundtrack(raw):
+    """Remove just the audio stream before rescoring; preserve color and opacity."""
+    from wannacri.usm.page import get_pages, pack_pages
+    parts = chunks(raw)
+    pages = get_pages(parts[0]['payload'])
+    parts[0]['payload'] = bytearray(pack_pages([
+        p for p in pages if p['stmid'].val != int.from_bytes(b'@SFA', 'big')], 'UTF-8'))
+    return normalize(pack_chunks([p for p in parts if p['type'] != b'@SFA']), opaque_alpha=True)[0]
 
-    HCA blocks decode 1,024 samples, not one video frame. Timestamp and interleave
-    them by sample position; WannaCRI's default audio frame clock drifts here.
+
+def native_adx(adx):
+    """Validate stereo ADX v4 and use the native movie's 288-byte header layout."""
+    if (len(adx) < 40 or adx[:2] != b'\x80\x00'
+            or adx[4:8] != bytes((3,18,4,2)) or adx[18:20] != bytes((4,0))):
+        raise ValueError('Expected unencrypted stereo ADX v4 with 18-byte blocks')
+    header = int.from_bytes(adx[2:4], 'big') + 4
+    rate, samples = struct.unpack_from('>II', adx, 8)
+    body_bytes = ((samples+31)//32)*18*2
+    if (rate, samples) != (48000,307200) or adx[header-6:header] != b'(c)CRI':
+        raise ValueError('Expected the complete 48-kHz 6.4-second ADX score')
+    if len(adx) != header+body_bytes+18 or adx[-18:-14] != b'\x80\x01\x00\x0e':
+        raise ValueError('ADX size or end marker does not match its sample count')
+    # Native Cloud's header packet is 288 bytes, including the v4 histories and
+    # padding before the copyright marker. Padding is not compressed audio.
+    result = bytearray(adx[:32]);result[2:4] = (284).to_bytes(2,'big')
+    result.extend(bytes(282-len(result)));result.extend(b'(c)CRI')
+    result.extend(adx[header:])
+    return bytes(result)
+
+
+def with_soundtrack(raw, adx):
+    """Mux the native movie's stereo ADX layout, without changing any picture.
+
+    Every 30-fps data packet contains 1,600 samples: fifty 32-sample ADX groups,
+    with the two 18-byte channel blocks kept together. HCA is deliberately not
+    accepted here after it produced garbled audio in the game despite clean
+    offline decoding. Movie metadata and the actual codec must agree.
     """
     from wannacri.usm.page import get_pages, pack_pages, UsmPage
     from wannacri.usm.types import ElementType as T
     import hashlib
-    if (hca[:8] != b'HCA\0\x02\0\0\x60' or hca[8:12] != b'fmt\0'
-            or hca[24:28] != b'comp' or hca[40:46] != b'ciph\0\0'):
-        raise ValueError('Expected our unencrypted HCA 2.0 score')
-    channels, rate = hca[12], int.from_bytes(hca[13:16], 'big')
-    frames, inserted, appended = struct.unpack_from('>IHH', hca, 16)
-    block = int.from_bytes(hca[28:30], 'big')
-    samples = frames*1024-inserted-appended
-    if (channels, rate, samples, len(hca)) != (1, 48000, 307200, 96+frames*block):
-        raise ValueError('Expected the complete mono 48-kHz 6.4-second score')
+    adx = native_adx(adx)
+    rate, samples, channels, header_size = 48000,307200,2,288
     parts = chunks(raw)
     if any(c['type'] not in (b'CRID', b'@SFV', b'@ALP') or c['channel'] != 0 for c in parts):
         raise ValueError('Expected one silent color/opacity movie')
     pages = get_pages(parts[0]['payload'])
     audio = UsmPage('CRIUSF_DIR_STREAM')
-    for name, typ, val in [('fmtver',T.I32,pages[0]['fmtver'].val), ('filename',T.STRING,'score.hca'),
-            ('filesize',T.I32,len(hca)), ('datasize',T.I32,0), ('stmid',T.I32,int.from_bytes(b'@SFA','big')),
+    for name, typ, val in [('fmtver',T.I32,pages[0]['fmtver'].val), ('filename',T.STRING,'score.adx'),
+            ('filesize',T.I32,len(adx)), ('datasize',T.I32,0), ('stmid',T.I32,int.from_bytes(b'@SFA','big')),
             ('chno',T.I16,0), ('minchk',T.I16,1), ('minbuf',T.I32,27860),
-            ('avbps',T.I32,round((len(hca)-96)*8/(samples/rate)))]:
+            ('avbps',T.I32,round(len(adx)*8/(samples/rate)))]:
         audio.update(name, typ, val)
     parts[0]['payload'] = bytearray(pack_pages([*pages,audio], 'UTF-8'))
     info = UsmPage('AUDIO_HDRINFO')
-    for name, typ, val in [('audio_codec',T.I8,4), ('sampling_rate',T.I32,rate),
+    for name, typ, val in [('audio_codec',T.I8,2), ('sampling_rate',T.I32,rate),
             ('total_samples',T.I32,samples), ('num_channels',T.I32,channels),
             ('metadata_count',T.I32,0), ('metadata_size',T.I32,0), ('ixsize',T.I32,27860),
             ('ambisonics',T.I8,0), ('channel_config',T.I32,0)]:
         info.update(name, typ, val)
     def chunk(kind, payload, tick=0):
-        header = bytearray(32);header[:4] = b'@SFA';header[9] = 24;header[15] = kind
-        struct.pack_into('>II', header, 16, tick, 3000)
-        return {'type':b'@SFA','kind':kind,'channel':0,'header':header,'payload':payload}
-    # Header and header end precede all seek metadata/data, following the native layout.
+        item_header = bytearray(32);item_header[:4] = b'@SFA';item_header[9] = 24;item_header[15] = kind
+        struct.pack_into('>II', item_header, 16, tick, 2997)
+        return {'type':b'@SFA','kind':kind,'channel':0,'header':item_header,'payload':payload}
     first_end = next(i for i,p in enumerate(parts) if p['kind']==2)
     parts.insert(first_end, chunk(1,pack_pages([info],'UTF-8')))
     metadata = next(i for i,p in enumerate(parts) if p['kind']==3)
     parts.insert(metadata, chunk(2,b'#HEADER END     ===============\0'))
     first_data = next(i for i,p in enumerate(parts) if p['kind']==0)
     prefix, stream = parts[:first_data], parts[first_data:]
-    # HCA header is its own first data packet, matching CRI's codec framing.
-    audio_packets = [chunk(0,hca[:96])]
-    for index in range(frames):
-        tick = max(0,index*1024-inserted)*3000//rate
-        audio_packets.append(chunk(0,hca[96+index*block:96+(index+1)*block],tick))
+    audio_packets = [chunk(0,adx[:header_size])]
+    body=adx[header_size:-18]
+    for index in range(192):
+        audio_packets.append(chunk(0,body[index*1800:(index+1)*1800],index*999//10))
+    audio_packets.append(chunk(0,adx[-18:],192*999//10))
     media = [p for p in stream if p['kind']==0] + audio_packets
     media.sort(key=lambda p: struct.unpack_from('>I',p['header'],16)[0] /
                struct.unpack_from('>I',p['header'],20)[0])
@@ -187,7 +211,7 @@ def with_soundtrack(raw, hca):
     ending.append(chunk(2,b'#CONTENTS END   ===============\0'))
     result, report = normalize(pack_chunks([*prefix,*media,*ending]), opaque_alpha=True, soundtrack=True)
     return result, {**report, 'audioPackets':len(audio_packets), 'audioSamples':samples,
-                    'audioSha256':hashlib.sha256(hca).hexdigest()}
+                    'audioSha256':hashlib.sha256(adx).hexdigest()}
 
 
 def with_opaque_alpha(raw, fixture):

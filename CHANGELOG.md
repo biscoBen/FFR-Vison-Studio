@@ -11,6 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Crystal Fina piano/organ score and native movie audio format
+
+- Keep the working single-play video and sprite/heal/cure timing. The user confirms
+  one movie pass, but the mono HCA movie score is audible and garbled. Treat that
+  listening result as a failure despite the earlier offline decoding checks.
+- Replace the movie score with an original light, spacious piano phrase,
+  building into an intense organ ending as Fina opens her eyes. Leave the final
+  chord unresolved and remove the first draft's upbeat, bright cadence. Copy the
+  approved preview's video stream and retain every in-game color/opacity packet.
+- Use the native movie template's stereo ADX v4 format: 48 kHz, 307,200 samples,
+  288-byte header, 1,800-byte stereo packets and matching native movie descriptors.
+  Remove the HCA movie path. Package a clean source WAV and the rescored preview;
+  no synthesizer/instrument library is installed with Studio.
+- Extension 1.2.76. Check exact audio recovery from the movie, independent VGAudio
+  and FFmpeg decoding, unchanged picture/timing data, descriptors and retoc output.
+  All 47 focused Python checks and 31 Flutter checks pass (one Windows-only
+  local skip). Offline checks do not establish that the game distortion is
+  fixed; the new native-format path still needs an in-game listening test.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

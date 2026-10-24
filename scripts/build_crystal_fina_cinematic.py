@@ -92,18 +92,12 @@ def render(art, directory, reuse_frames=False):
 
 
 def package(directory, destination):
-    """Package a rendered movie and VGAudio Highest-quality mono HCA score."""
+    """Package a movie, its native stereo ADX score and clean source WAV."""
     spec = json.loads((directory/'render.json').read_text())
-    hca = (directory/'score.hca').read_bytes()
-    digest = hashlib.sha256(hca).hexdigest()
-    audio = {'schema':'ffr-audio-1', 'cues':{'1':{'name':'studio_crystal_fina_intro','cueIndex':0,'durationMs':6400}},
-             'recordings':[{'sourceCueId':1,'variation':0,'sourceWaveIndex':0,'sourceWaveId':0,
-                            'name':'studio_crystal_fina_intro__v1','durationMs':6400,'sourceEncodeType':2,
-                            'channels':1,'sampleRate':48000,'samples':307200}],
-             'waves':{'0':{'sha256':digest}}}
     files = {'spec.json':(json.dumps(spec,indent=2)+'\n').encode(),
-             'movie.usm':(directory/'crystal-fina.usm').read_bytes(),'score.hca':hca,
-             'audio.json':(json.dumps(audio,indent=2)+'\n').encode(),
+             'movie.usm':(directory/'crystal-fina.usm').read_bytes(),
+             'score.adx':(directory/'score.adx').read_bytes(),
+             'score.wav':(directory/'score.wav').read_bytes(),
              'preview.mp4':(directory/'Crystal-Fina-Cinematic-Preview.mp4').read_bytes()}
     poster=Image.open(directory/'frame-0001.png').convert('RGB')
     import io
@@ -121,7 +115,7 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--art',type=Path,default=ROOT/'artwork/crystal_fina_cinematic.png')
     p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--package',type=Path,help='Package existing render plus score.hca instead of rendering')
+    p.add_argument('--package',type=Path,help='Package existing render plus score.adx and score.wav instead of rendering')
     p.add_argument('--reuse-frames',action='store_true',help='Encode the already completed Blender frame sequence')
     a=p.parse_args()
     if a.package:package(a.output,a.package)

@@ -14,7 +14,7 @@ from pathlib import Path
 import struct
 import zipfile
 
-REVISION = 'crystal-fina-film-2'
+REVISION = 'crystal-fina-film-3'
 SPRITE = '99887755552703'
 START = 48000
 END = START + 192 * 800
@@ -74,7 +74,7 @@ def validate(raw):
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         names = archive.namelist()
         manifest = json.loads(archive.read('manifest.json'))
-        expected = {'spec.json', 'movie.usm', 'score.hca', 'audio.json', 'preview.mp4', 'poster.jpg'}
+        expected = {'spec.json', 'movie.usm', 'score.adx', 'score.wav', 'preview.mp4', 'poster.jpg'}
         if (manifest.get('schema') != 1 or manifest.get('revision') != REVISION
                 or set(manifest.get('files', {})) != expected
                 or set(names) != expected | {'manifest.json'} or len(names) != 7):
@@ -85,8 +85,9 @@ def validate(raw):
     spec = json.loads(files['spec.json'])
     if (spec.get('revision') != REVISION or (spec.get('width'), spec.get('height'), spec.get('fps'), spec.get('frames')) != (1920, 1080, 30, 192)
             or spec.get('opaqueAlpha') is not True or spec.get('alphaCodec') != 'SofdecPrime'
-            or spec.get('embeddedAudio') != {'codec': 'HCA', 'channels': 1, 'sampleRate': 48000, 'samples': 307200}
-            or not files['movie.usm'].startswith(b'CRID') or not files['score.hca'].startswith(b'HCA\0\x02\0')
+            or spec.get('embeddedAudio') != {'codec': 'Adx', 'channels': 2, 'sampleRate': 48000, 'samples': 307200}
+            or not files['movie.usm'].startswith(b'CRID') or not files['score.adx'].startswith(b'\x80\x00\x01\x1c\x03\x12\x04\x02')
+            or not files['score.wav'].startswith(b'RIFF')
             or files['preview.mp4'][4:8] != b'ftyp' or not files['poster.jpg'].startswith(b'\xff\xd8')):
         raise ValueError('Unsupported Crystal Fina movie format.')
     return spec, files
@@ -280,7 +281,7 @@ def build(units, env):
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
         audio, = prop(data, 'AudioTracks')['Value']
-        for name, value in (('NumChannels', 1), ('SamplingRate', 48000), ('TotalSamples', 307200), ('Type', 'HCA')):
+        for name, value in (('NumChannels', 2), ('SamplingRate', 48000), ('TotalSamples', 307200), ('Type', 'Adx')):
             prop(audio['Value'], name)['Value'] = value
         fields = {'bIsAlpha': True}
         if suffix:
@@ -303,9 +304,9 @@ def register(app):
         return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina cinematic test</title>
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
         <h1>Crystal Fina cinematic test</h1><video controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
-        <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. In game it leads into Fina’s existing LB animation and cure sound.</p>
+        <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. A light, spacious piano phrase builds into an intense, suspended organ ending. In game it leads into Fina’s existing LB animation and cure sound.</p>
         <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
-        <p>The browser shows the movie and its original score. In-game timing, playback and transitions still need testing.</p>''')
+        <p>The browser shows the new score with the unchanged video. The previous game test confirmed single playback; the stereo ADX audio correction still needs an in-game listening test.</p>''')
     @app.get('/api/testing/fina-cinematic/preview')
     def preview():
         from fastapi.responses import Response

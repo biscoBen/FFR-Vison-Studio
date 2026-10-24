@@ -1,8 +1,8 @@
 """Package an existing reviewed 6.4-second movie without rerendering its artwork.
 
 Developer tool: requires FFmpeg and WannaCRI 0.3.3. Supply the matching original
-score already encoded as mono HCA; the browser preview remains byte-identical to
-the reviewed MP4. The game copy uses native 1920x1080 VP9 color and a constant
+score encoded as stereo ADX v4 plus its clean WAV. The browser preview retains
+the reviewed MP4 video. The game copy uses native 1920x1080 VP9 color and a constant
 Sofdec opacity channel for the game's translucent battle movie material.
 """
 import argparse
@@ -13,12 +13,12 @@ import shutil
 import subprocess
 
 from build_crystal_fina_cinematic import FPS, FRAMES, ROOT, SECONDS, package
-from cri_usm_movie import with_opaque_alpha, with_soundtrack
+from cri_usm_movie import with_opaque_alpha, with_soundtrack, native_adx
 
 WIDTH, HEIGHT = 1920, 1080
 
 
-def import_movie(source, scene_path, score_hca, output, destination):
+def import_movie(source, scene_path, score_adx, score_wave, output, destination):
     source = source.resolve()
     probe = json.loads(subprocess.check_output([
         'ffprobe', '-v', 'error', '-count_frames', '-show_streams',
@@ -35,8 +35,10 @@ def import_movie(source, scene_path, score_hca, output, destination):
         raise ValueError('Scene provenance does not describe the reviewed movie')
     output.mkdir(parents=True, exist_ok=True)
     preview = output / 'Crystal-Fina-Cinematic-Preview.mp4'
-    shutil.copyfile(source, preview)
-    shutil.copyfile(score_hca, output / 'score.hca')
+    from rescore_crystal_fina_movie import preview_with_score, video_hash
+    preview_with_score(source, score_wave, preview)
+    (output / 'score.adx').write_bytes(native_adx(score_adx.read_bytes()))
+    shutil.copyfile(score_wave, output / 'score.wav')
     subprocess.run([
         'ffmpeg', '-v', 'error', '-y', '-i', str(source), '-map', '0:v:0',
         '-vf', f'scale={WIDTH}:{HEIGHT}:flags=lanczos', '-frames:v', str(FRAMES),
@@ -52,22 +54,24 @@ def import_movie(source, scene_path, score_hca, output, destination):
     movie = Usm(videos=[video], version=video.crid_page['fmtver'].val)
     raw = b''.join(movie.stream(OpMode.NONE))
     raw, container = with_opaque_alpha(raw, ROOT / 'scripts/fixtures/fina_opaque_alpha')
-    raw, container = with_soundtrack(raw, score_hca.read_bytes())
+    raw, container = with_soundtrack(raw, score_adx.read_bytes())
     (output / 'crystal-fina.usm').write_bytes(raw)
     report = {
-        **scene, 'width': WIDTH, 'height': HEIGHT,
+        **scene, 'revision': 'crystal-fina-film-3', 'width': WIDTH, 'height': HEIGHT,
         'artSha256': hashlib.sha256((ROOT / 'artwork/crystal_fina_cinematic.png').read_bytes()).hexdigest(),
-        'eyeColor': 'red', 'audioEnding': 'soft awakening chord; no breaking sound',
+        'eyeColor': 'red', 'audioEnding': 'light piano opening building into an intense suspended organ ending; no breaking sound',
         'usmCodec': 'VP9', 'alphaCodec': 'SofdecPrime', 'opaqueAlpha': True,
         'alphaFrameSha256': '5d7aecb273db8cebabf70319bdd35c11731bb85312330034dfc45f93994067d3',
-        'audio': 'Matching original score embedded in the native Mana movie',
-        'embeddedAudio': {'codec': 'HCA', 'channels': 1, 'sampleRate': 48000, 'samples': 307200},
+        'audio': 'Stereo ADX score embedded in the native Mana movie',
+        'embeddedAudio': {'codec': 'Adx', 'channels': 2, 'sampleRate': 48000, 'samples': 307200},
         'maxPictureDataSize': container['maxPictureDataSize'], 'container': container,
         'sourceMovie': {'name': source.name, 'sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                         'width': videos[0]['width'], 'height': videos[0]['height'],
                         'fps': FPS, 'frames': FRAMES, 'seconds': SECONDS},
-        'previewMatchesSource': preview.read_bytes() == source.read_bytes(),
+        'previewMatchesSource': False, 'previewVideoMatchesSource': video_hash(preview)==video_hash(source),
+        'previewVideoSha256': video_hash(preview), 'audioReplaced': True,
         'artworkRerendered': False,
+        'soundtrack': json.loads(score_wave.with_suffix('.json').read_text()),
     }
     (output / 'render.json').write_text(json.dumps(report, indent=2) + '\n')
     package(output, destination)
@@ -78,8 +82,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--scene', type=Path, required=True)
-    parser.add_argument('--score-hca', type=Path, required=True)
+    parser.add_argument('--score-adx', type=Path, required=True)
+    parser.add_argument('--score-wav', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--package', type=Path, required=True)
     args = parser.parse_args()
-    import_movie(args.source, args.scene, args.score_hca, args.output, args.package)
+    import_movie(args.source, args.scene, args.score_adx, args.score_wav, args.output, args.package)
