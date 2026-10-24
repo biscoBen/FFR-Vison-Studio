@@ -445,19 +445,55 @@ def build_choices(env, names, folder, work_label):
                                    '--filter', 'Sequencer/Battle/Skill/440110/440111/'))
     if not shell.is_file(): raise ValueError('The practice choice sequence template is unavailable.')
     work.mkdir(parents=True, exist_ok=True)
-    for name in names:
-        destination = folder + 'SEQ_' + name
-        patch = work / (name + '-clone.json')
-        patch.write_text(json.dumps({'legacyRoot': str(legacy), 'outRoot': str(out), 'clones': [{
-            'from': seq.SHELL, 'to': destination, 'rename': [['SEQ_Battle_440111_Cut_000', 'SEQ_' + name]]}]}), encoding='utf-8')
-        env['run']([*env['FFRDT'], 'patch', str(patch), '--usmap', env['USMAP']])
-        dump = work / (name + '.json')
-        env['run']([*env['FFRDT'], 'tojson', str(out/(destination+'.uasset')), str(dump), '--usmap', env['USMAP']])
-        asset = author_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')), 'UI.Dialog.Choice.' + name)
-        dump.write_text(json.dumps(asset, ensure_ascii=False), encoding='utf-8')
-        env['run']([*env['FFRDT'], 'fromjson', str(dump), str(out/(destination+'.uasset')), '--usmap', env['USMAP']])
-        env['run']([*env['FFRDT'], 'tojson', str(out/(destination+'.uasset')), str(dump), '--usmap', env['USMAP']])
-        verify_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')), 'UI.Dialog.Choice.' + name)
+    import _ffr_crystal_cave as assets
+    import uuid
+    targets=[out/(folder+'SEQ_'+name+'.uasset') for name in names]
+    if not targets: return
+    def generate():
+        # Decode and author one unbound native template. Clone all destinations
+        # together instead of launching four native processes per dialog.
+        dump=work/'choice-template.json'
+        template='FFRS/Content/Sequencer/Event/StudioChoiceTemplate/SEQ_Studio_ChoiceTemplate'
+        placeholder='UI.Dialog.Choice.Studio_ChoiceTemplate'
+        base=work/'choice-template-assets';asset=base/(template+'.uasset');asset.parent.mkdir(parents=True,exist_ok=True)
+        env['run']([*env['FFRDT'],'clone-package',str(shell),str(asset),
+            seq.SHELL.replace('FFRS/Content/','/Game/'),template.replace('FFRS/Content/','/Game/'),
+            Path(seq.SHELL).name+'='+Path(template).name,'--usmap',env['USMAP']])
+        env['run']([*env['FFRDT'],'tojson',str(asset),str(dump),'--usmap',env['USMAP']])
+        view=author_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')),placeholder)
+        dump.write_text(json.dumps(view,ensure_ascii=False),encoding='utf-8')
+        env['run']([*env['FFRDT'],'fromjson',str(dump),str(asset),'--usmap',env['USMAP']])
+        template_root=next(e for e in view['Exports'] if e['ObjectName']==Path(template).name)
+        template_signature=seq.child(template_root['Data'],'Signature')[0]['Value']
+        clones=[];objects=[]
+        for name in names:
+            destination=folder+'SEQ_'+name
+            clones.append({'from':template,'to':destination,'rename':[
+                ['SEQ_Studio_ChoiceTemplate','SEQ_'+name],[placeholder,'UI.Dialog.Choice.'+name]]})
+            signature='{'+str(uuid.uuid4()).upper()+'}'
+            for export in view['Exports']:
+                for prop in export.get('Data',[]) if isinstance(export.get('Data'),list) else []:
+                    if (prop['Name'] in ('Signature','CompiledSignature','EvaluationFieldGuid')
+                            and prop['Value'][0]['Value']==template_signature):
+                        objects.append({'asset':destination,'export':export['ObjectName'].replace(Path(template).name,'SEQ_'+name),
+                                        'set':{prop['Name']:signature}})
+        def patch(label,legacy,**operations):
+            recipe=work/(label+'.json')
+            recipe.write_text(json.dumps({'legacyRoot':str(legacy),'outRoot':str(out),**operations}),encoding='utf-8')
+            env['run']([*env['FFRDT'],'patch',str(recipe),'--usmap',env['USMAP']])
+        patch('choice-clones',base,clones=clones)
+        patch('choice-signatures',out,objects=objects)
+        for index,(name,target) in enumerate(zip(names,targets),1):
+            dump=work/(name+'.json')
+            env['run']([*env['FFRDT'],'tojson',str(target),str(dump),'--usmap',env['USMAP']])
+            verify_practice_choice(json.loads(dump.read_text(encoding='utf-8-sig')),'UI.Dialog.Choice.'+name)
+            print(f'  Verified menu {index}/{len(names)}: {name}',flush=True)
+    cache=_ffr_build_cache._active
+    if cache is None: generate()
+    else:
+        hit=cache.execute('dialogs',{'names':names,'folder':folder},
+            [shell,env['USMAP'],Path(__file__),Path(assets.__file__)],targets,generate)
+        if hit: print(f'  Reused {len(names)} verified menus.',flush=True)
 
 
 def verify_practice_choice(asset, tag):
@@ -500,6 +536,12 @@ def verify_practice_choice(asset, tag):
     field = seq.child(compiled['Data'], 'EntityComponentField')
     if seq.child(seq.child(field, 'SharedMetaData')[0]['Value'], 'ObjectBindingID')[0]['Value'] != '{00000000-0000-0000-0000-000000000000}':
         raise ValueError('Practice choice compiled metadata retained a battle actor.')
+    root, = [e for e in exports if cls(e)=='LevelSequence']
+    signatures=[seq.child(e['Data'],'Signature')[0]['Value'] for e in
+                (root,scene,exports[track['Value']-1],exports[section_ref['Value']-1])]
+    signatures.append(seq.child(compiled['Data'],'CompiledSignature')[0]['Value'])
+    signatures.append(seq.child(exports[track['Value']-1]['Data'],'EvaluationFieldGuid')[0]['Value'])
+    if len(set(signatures))!=1:raise ValueError('Practice choice compiled signatures do not match.')
     nodes = seq.child(field, 'OneShotEntityTree')[0]['Value']['SerializedData']['ChildNodes']['Items']
     if len(seq.child(field, 'Entities')) != 2 or [n['Range']['LowerBound']['Value']['Value'] for n in nodes] != [0, 400]:
         raise ValueError('Practice choice compiled playback times changed.')

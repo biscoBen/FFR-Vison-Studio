@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT/'assets/existing_visions/payload'))
@@ -138,6 +139,20 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(len(cave_events), 2)
         self.assertTrue(all(not e['ObtainItemList'] and e['encountGroupId'] == -1 for e in cave_events))
 
+    def test_christine_is_a_level_five_boss_with_the_native_curve_budget(self):
+        spec=next(s for s in challenge.data()['encounters'] if s['origin']==13024)
+        self.assertEqual(spec['level'],5)
+        unit=next(u for u in self.units if u['sephiraVision']['preset']=='christine')
+        enemy=next(v for v in self.built[challenge.UNIT].values() if v.get('ID')==challenge.boss_id(unit))
+        self.assertEqual(enemy['Level'],5)
+        expected=challenge.curve(lambda rel:self.native[rel],5)
+        for field in challenge.PARAMETERS:self.assertEqual(enemy[field],expected[field])
+        self.assertGreater(enemy['MaxHitPoint'],challenge.curve(lambda rel:self.native[rel],2)['MaxHitPoint'])
+        kit=challenge.kit(unit,lambda rel:self.native[rel],1)
+        self.assertEqual(kit[0]['fields']['Name'],'Attack')
+        originals={v['ID']:v for v in self.native[challenge.SKILL].values()}
+        self.assertTrue(any(testing.apply_fields(originals[r['source']],r['fields'])['element']=='Ice' for r in kit))
+
     def test_team_durability_is_one_boss_budget_and_rotation_executes(self):
         rows = lambda rel: self.native[rel]
         for spec, units in challenge.plans(self.units):
@@ -186,6 +201,57 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(added['Condition'], '{progress:0}>=3150')
         self.assertEqual(added['MaxOrderNum'], 1)
         self.assertEqual([i for i in actual['ItemList'] if i['ItemId'] not in (-1, folka['id'])], [i for i in source['ItemList'] if i['ItemId']!=-1])
+
+    def test_complete_existing_actor_schemas_are_loaded_for_cave_serialization(self):
+        path=ROOT/'scripts/fixtures/sephira_challenges'
+        native=json.loads(gzip.decompress((path/'decoded-cave-blueprints.json.gz').read_bytes()))
+        trigger=json.loads(gzip.decompress((path/'crystal-interaction.json.gz').read_bytes()))
+        bg=json.loads(gzip.decompress((path/'crystal-background.json.gz').read_bytes()))
+        spec=challenge.data()['encounters'][0]
+        views=challenge.christine_views(native['room'],trigger,bg,spec)
+        collected=[]
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);legacy=root/'legacy';work=root/'work';work.mkdir()
+            mapping=root/'Mappings.usmap';mapping.write_bytes(b'original mappings')
+            for view in views.values():
+                for imp in view['Imports']:
+                    if imp['ClassName']=='BlueprintGeneratedClass':
+                        package=view['Imports'][-imp['OuterIndex']-1]['ObjectName']
+                        p=legacy/('FFRS/Content/'+package.removeprefix('/Game/')+'.uasset')
+                        p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'native BP')
+            def run(cmd):
+                source,target=Path(cmd[2]),Path(cmd[3])
+                target.write_text(json.dumps(native['blueprints'][source.stem]))
+            def mapped(original,blueprints):
+                self.assertEqual(original,b'original mappings');collected.extend(blueprints)
+                return b'private complete mappings'
+            env={'ROOT':root,'LEGACY':legacy,'USMAP':str(mapping),'FFRDT':['native'],'run':run}
+            with mock.patch.object(caves,'map_mappings',side_effect=mapped):
+                private=caves.blueprint_mappings(views,env,work)
+            self.assertEqual(Path(private).read_bytes(),b'private complete mappings')
+            self.assertEqual(mapping.read_bytes(),b'original mappings')
+        self.assertEqual(set(collected),{'BP_MapAreaBox_C','BP_MapTransitionPoint_C',
+                                        'BP_MapTransitionTrigger_C','BP_MapGimmick_EventTrigger_C'})
+
+    def test_preflight_write_is_reused_once_and_never_after_output_changed(self):
+        spec=challenge.data()['encounters'][0]
+        unit=next(u for u in self.units if u['sephiraVision']['preset']=='christine')
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);out=root/'out';stages=[]
+            env={'ROOT':root,'OUT':out,'BUILD':root/'build','LEGACY':root/'legacy','stage':stages.append}
+            rel=spec['crystalInteraction']['mapPackage'].rsplit('/',1)[0]+'/GD/Dng_01Gra_44_01_GD'
+            asset=out/('FFRS/Content/'+rel+'.umap')
+            def build(*args):
+                asset.parent.mkdir(parents=True,exist_ok=True);asset.write_bytes(b'validated map')
+                asset.with_suffix('.uexp').write_bytes(b'validated exports')
+            with mock.patch.object(challenge,'build_christine_interaction',side_effect=build) as native_build:
+                challenge.preflight([unit],env)
+                self.assertTrue(challenge.checked_crystal(env,spec))
+                self.assertFalse(challenge.checked_crystal(env,spec))
+                challenge.preflight([unit],env);asset.write_bytes(b'changed later')
+                self.assertFalse(challenge.checked_crystal(env,spec))
+                self.assertEqual(native_build.call_count,2)
+            self.assertEqual(stages[0],'Checking cave interactions before sprite conversion')
 
     def test_physical_christine_crystal_retains_all_native_cave_streams(self):
         path = ROOT/'scripts/fixtures/sephira_challenges'

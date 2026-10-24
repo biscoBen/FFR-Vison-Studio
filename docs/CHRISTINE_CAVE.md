@@ -1,6 +1,6 @@
 # Christine's cave crystal
 
-The normal level-2 challenge is in the secret cave behind Rain's house in
+The normal level-5 challenge is in the secret cave behind Rain's house in
 Grandshelt, on the route toward the original Tronn/Leah room. Disable the
 **Sephira visions: 1-gil Mitra shop** override to use that acquisition route.
 The visible blue crystal is in the wider area at the north end. Interact with
@@ -44,3 +44,20 @@ and import indices, opaque story actors, exits and preload dependencies are reta
 Native serialize/readback passes; appearance and interaction still need a live test.
 The optional `scripts/reference/cave-music` observer records F8 world/stream states
 and installed scoped assets without rebuilding or preparing the game.
+
+## Schema repair and level-5 test
+
+The returned failed-install log reports a missing schema for
+`/Game/BP/Map/Area/BP_MapAreaBox.BP_MapAreaBox_C`. Reproducing with the native area
+and transition Blueprint packages extracted produces the same failure: these
+actors decode as normal exports, while the earlier limited-reference proof kept
+them opaque. The interaction now collects schemas for all decoded Blueprint
+actors into a private mapping. Native write/readback passes with the expanded
+references. The build checks this before sprite conversion and reuses the checked
+asset later. The original game mapping and cave actors remain intact.
+
+Christine's fixed battle level is now 5. The existing native boss curve gives
+2,750 HP, 167 MP, 162 break points and 21 agility. Her learned ice-focused kit,
+bounded boss skill copies, generic attack and victory-only acquisition remain.
+Other challenges keep fixed levels and will be reviewed with the user as each is
+reached, against their party's level and battle experience.

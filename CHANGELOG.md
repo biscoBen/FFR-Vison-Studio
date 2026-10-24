@@ -11,6 +11,28 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Build timing diagnostics, Christine install failure and level-5 trial — 2026-10-24
+
+- Address the user's **908.2-second failed install** without treating that duration as a cache benchmark. The pasted
+  tail contains 54 menus built with four native operations each after sprites, while Studio still labels the stage
+  “Lunera, 30 of 30.” There are no prior per-stage timestamps, so the full 15 minutes cannot be accurately apportioned.
+- Timestamp every captured console/saved-log line with local time and elapsed build time. Stream verification output
+  as it arrives; time verification and installation. Add accurate post-sprite stages, per-operation duration/status,
+  cache hit/new/invalid lookup records, phase totals and slowest-operation summaries. Save unique `build-profile-*.json`
+  and `build-events-*.jsonl` files in **Logs folder**, including failed builds. Keep completed cached work after a failure.
+- Reproduce the exact Christine schema failure with native Blueprint packages available: the cave's existing actors
+  decode normally but lose their schema context on JSON write. Collect all actual actor declarations into private
+  mappings; preserve the installed mappings and original actors. Check the cave write before sprite conversion and
+  reuse that verified result later in the same build.
+- Batch native menu cloning from one authored template, assign consistent distinct signatures per menu, verify every
+  cooked dialog and cache the whole group. Native 45-menu comparison: **149.386s / 180 tool launches before**, **44.433s /
+  50 launches after**, **0.020s / zero launches on reuse**. These local component timings do not establish the Windows
+  full-install two-minute target. Keep the existing asset-cache implementation/namespace so prior completed work remains usable.
+- Tune Christine's fixed challenge to **level 5**, using the existing native boss curve (2,750 HP), her ice kit and
+  generic attack. Review each later challenge against the user's party level and battle experience when they reach it.
+  Native cave readback, menu bindings/signatures and fixed-level budget checks are included; live battle balance remains a user test.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

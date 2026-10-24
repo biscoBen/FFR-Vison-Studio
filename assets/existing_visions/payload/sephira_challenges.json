@@ -15,7 +15,7 @@
       "retry": null,
       "grantEvent": "C01_014_03",
       "unlock": "{item:13024}>0|{flag:147}",
-      "level": 2,
+      "level": 5,
       "stage": 9,
       "region": "Secret cave behind Rain's house (Grandshelt)",
       "encounterTable": "DT_01Gra_40_02_Encount",

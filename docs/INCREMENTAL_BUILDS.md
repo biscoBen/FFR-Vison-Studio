@@ -33,3 +33,26 @@ only Crystal Fina and leave Christine unselected to test both in one installatio
 The switch must be on to apply the selection. Turning it off restores normal
 routes and retains the selection for later; the saved vision recipes are unchanged.
 Old settings with no selection continue to override every enabled Sephira vision.
+
+## Timestamped timing reports
+
+Every captured build-log line has local wall time and elapsed time since the
+build started. Verification output streams immediately. Explicit stages cover
+practice fights, imported effects, acquisition caves, challenge AI/menus/rewards,
+Fina's presentation/movie/music and walking-character controls; the final sprite
+label no longer covers these later jobs.
+
+**Logs folder** contains the full saved build log, `build-profile-<run>.json`,
+and `build-events-<run>.jsonl`. These remain available after a failed native
+operation. The JSON profile records stage/phase durations, operation durations
+and statuses, cache counts and cache context. Events distinguish hits, absent
+entries and invalid entries. Nested operations are included in their parent's
+duration, so do not add parent and child times together. Console summaries list
+phase totals and slowest operations; verification and install duration follow.
+
+The user's 908.2-second failed first attempt provides a total, not a timed phase
+breakdown. Its tail shows 54 separately generated menus during the misleading
+last-sprite stage. A native 45-menu comparison measured 149.386s/180 launches with
+the old code, 44.433s/50 launches with batching, and 0.020s/zero launches with reuse.
+These are menu-component measurements on this executor. The full Windows install
+still needs the new timed report from the user's PC.

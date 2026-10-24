@@ -272,6 +272,7 @@ class BundledFeatures {
           'payload/vagrant_knight_rain_field.png',
           'payload/overworld_catalog.json',
           'payload/overworld_assets.zip',
+          'payload/_ffr_build_progress.py',
           'payload/_ffr_build_cache.py',
           'payload/_ffr_cave_music_preview.py',
           'payload/cave_music_preview.zip',
@@ -305,7 +306,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 67) {
+        (manifest['files'] as Map).length != 68) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -351,7 +352,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.78' ||
+    if (status['patchVersion'] != '1.2.79' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

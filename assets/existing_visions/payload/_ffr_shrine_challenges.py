@@ -467,14 +467,11 @@ def final_rows(rel, expected, units, root):
     return expected
 
 
-def build(units, env):
-    selected = plans(units)
-    if not selected: return
-    import _ffr_testing as testing
-    import _ffr_fina_boss as fina
-    import _ffr_crystal_cave as caves
-    legacy, out, root = (Path(env[k]) for k in ('LEGACY', 'OUT', 'ROOT'))
-    work = Path(env['BUILD']) / 'sephira-challenges'; work.mkdir(parents=True, exist_ok=True)
+_CHECKED_CRYSTALS = {}
+
+
+def asset_reader(env, work):
+    legacy, root = Path(env['LEGACY']), Path(env['ROOT'])
     def read(package, suffix='.uasset'):
         source = legacy / ('FFRS/Content/' + package + suffix)
         if not source.is_file():
@@ -483,6 +480,44 @@ def build(units, env):
         dump = work / (Path(package).name + '-original.json')
         env['run']([*env['FFRDT'], 'tojson', str(source), str(dump), '--usmap', env['USMAP']])
         return json.loads(dump.read_text(encoding='utf-8-sig'))
+    return read
+
+
+def crystal_key(env, spec):
+    return (str(Path(env['ROOT']).resolve()),str(Path(env['OUT']).resolve()),spec['origin'])
+
+
+def preflight(units, env):
+    """Validate native cave writes before spending time on thirty sprites."""
+    _CHECKED_CRYSTALS.clear()
+    for spec,_ in plans(units):
+        if not spec.get('crystalInteraction'):continue
+        env.get('stage', lambda text: print('##stage '+text,flush=True))('Checking cave interactions before sprite conversion')
+        work=Path(env['BUILD'])/'sephira-challenges';work.mkdir(parents=True,exist_ok=True)
+        build_christine_interaction(env,work,asset_reader(env,work),spec)
+        room=spec['crystalInteraction']['mapPackage'].rsplit('/',1)[0]+'/GD/Dng_01Gra_44_01_GD'
+        target=Path(env['OUT'])/('FFRS/Content/'+room+'.umap')
+        import _ffr_build_cache
+        _CHECKED_CRYSTALS[crystal_key(env,spec)]=[(target.with_suffix(ext),_ffr_build_cache.sha(target.with_suffix(ext)))
+                                               for ext in ('.umap','.uexp')]
+
+
+def checked_crystal(env,spec):
+    files=_CHECKED_CRYSTALS.pop(crystal_key(env,spec),None)
+    if not files:return False
+    import _ffr_build_cache
+    return all(p.is_file() and _ffr_build_cache.sha(p)==expected for p,expected in files)
+
+
+def build(units, env):
+    selected = plans(units)
+    if not selected: return
+    import _ffr_testing as testing
+    import _ffr_fina_boss as fina
+    import _ffr_crystal_cave as caves
+    legacy, out, root = (Path(env[k]) for k in ('LEGACY', 'OUT', 'ROOT'))
+    work = Path(env['BUILD']) / 'sephira-challenges'; work.mkdir(parents=True, exist_ok=True)
+    read = asset_reader(env, work)
     # Clone AI packages through the patcher so their imported paths, generated
     # class, CDO and dependency lists retain the native serialization contract.
     source = legacy / ('FFRS/Content/' + fina.DONOR_AI + '.uasset')
@@ -513,11 +548,13 @@ def build(units, env):
                 before = next(e[field] for e in authored['Exports'] if e['ObjectName'] == 'ThinkInner')
                 after = next(e[field] for e in actual['Exports'] if e['ObjectName'] == 'ThinkInner')
                 if before != after: raise ValueError('Vision boss AI failed native serialization: ' + name)
+    env.get('stage', lambda text: print('##stage '+text,flush=True))('Building challenge menus')
     testing.build_choices(env, [PREFIX + str(spec['origin']) + suffix
         for spec, _ in selected for suffix in ('_Menu', '_Locked', '_Done')],
         'FFRS/Content/' + SEQUENCE, 'sephira-dialogs')
     # One small footer-driven sequence grants the current event's conditional
     # rewards. It is referenced exclusively by victorious challenge groups.
+    env.get('stage', lambda text: print('##stage '+text,flush=True))('Building challenge rewards')
     source = read(caves.GRANT_DONOR)
     from dataclasses import replace
     grant_spec = replace(caves.CaveSpec(), package=SEQUENCE + 'SEQ', name='SEQ')
@@ -529,7 +566,8 @@ def build(units, env):
     env['run']([*env['FFRDT'], 'tojson', str(destination), str(dump), '--usmap', env['USMAP']])
     caves.check_level(grant, json.loads(dump.read_text(encoding='utf-8-sig')))
     for spec, _ in selected:
-        if spec.get('crystalInteraction'):
+        if spec.get('crystalInteraction') and not checked_crystal(env,spec):
+            env.get('stage', lambda text: print('##stage '+text,flush=True))('Building Christine cave interaction')
             build_christine_interaction(env, work, read, spec)
     for spec, members in selected:
         stats = team_stats(env['rows'], spec['level'], members)
@@ -617,6 +655,10 @@ def build_christine_interaction(env, work, read, spec):
                 str(decoded), '--usmap', str(mapping)])
     source = json.loads(decoded.read_text(encoding='utf-8-sig'))
     views = christine_views(original, source, background, spec)
+    # The native GD can decode additional Blueprint actors when their packages
+    # are already extracted. JSON serialization needs those exact declarations
+    # too, including inherited fields; the trigger-only mapping is insufficient.
+    mapping = caves.blueprint_mappings(views, env, work)
     for rel, view in views.items():
         caves.names(view, view['Exports'])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')

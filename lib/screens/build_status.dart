@@ -6,7 +6,7 @@ import '../design/theme.dart';
 import '../design/widgets.dart';
 import '../state/app_state.dart';
 
-const _stages = ['Starting', 'Preparing the game tables', 'Writing game tables and copying battle sequences', 'Checking game tables before sprite conversion', 'Applying Resonance and animation edits', 'Converting sprites and icons', 'Packing the mod', 'Verifying the game tables', 'Done'];
+const _stages = ['Starting', 'Preparing the game tables', 'Writing game tables and copying battle sequences', 'Checking game tables before sprite conversion', 'Checking cave interactions before sprite conversion', 'Applying Resonance and animation edits', 'Converting sprites and icons', 'Preparing practice battles', 'Preparing FFBE test effects', 'Preparing party appearances', 'Building vision acquisition caves', 'Building vision challenges', 'Building challenge menus', 'Building challenge rewards', 'Building Christine cave interaction', 'Preparing Crystal Fina presentation', 'Preparing Crystal Fina movie and music', 'Preparing walking-character controls', 'Finalizing build cache', 'Packing the mod', 'Verifying the game tables', 'Done'];
 
 /// Build progress as a guide "notes" box: stage, bar, outcome, and the console on demand.
 class BuildStatus extends StatefulWidget {
@@ -43,7 +43,7 @@ class _BuildStatusState extends State<BuildStatus> {
           if (running) ...[
             LinearProgressIndicator(value: pct, minHeight: 8, color: Guide.blue, backgroundColor: Guide.paper3),
             const SizedBox(height: 8),
-            Text('Acquisition and shop tables are checked before sprite conversion. A full build still takes a few minutes.', style: Guide.small()),
+            Text('The console shows timestamps, stage timings and cache reuse. Full timing reports are saved in Logs folder.', style: Guide.small()),
           ],
           if (!running && st['message'] != null) Text(st['message'] as String, style: Guide.text(ok ? Guide.green : Guide.red)),
           if (open) ...[
