@@ -54,7 +54,7 @@ Future<void> confirmResetSephira(BuildContext context, AppState app, {Map<String
   final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
     backgroundColor: Guide.paper,
     title: Text(unit == null ? 'Reset all Sephira presets?' : 'Reset ${unit['en']} to its preset?', style: Guide.h2()),
-    content: Text('Restores preset kits and appearances, replacing their edits and bringing back missing entries. Acquisition locations are kept. A roster backup is saved in your config backups. Your other visions and party edits are kept.', style: Guide.text()),
+    content: Text('Restores preset kits, appearances and acquisition locations, replacing their edits and bringing back missing entries. A roster backup is saved in your config backups. Your other visions and party edits are kept.', style: Guide.text()),
     actions: [
       GuideButton('Keep edits', onPressed: () => Navigator.pop(c, false)),
       GuideButton('Reset to preset', danger: true, onPressed: () => Navigator.pop(c, true)),

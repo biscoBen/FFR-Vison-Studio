@@ -2,10 +2,18 @@
 const appVersion = String.fromEnvironment('APP_VERSION', defaultValue: '1.0.0');
 const appBuild = String.fromEnvironment('APP_BUILD', defaultValue: '15');
 const appTag = '$appVersion.$appBuild';
-const appChannel = String.fromEnvironment('APP_CHANNEL', defaultValue: 'stable');
+
+/// Branch update shown to users and required from the installed extension.
+const sephiraUpdateVersion = '1.2.81';
+const appChannel = String.fromEnvironment(
+  'APP_CHANNEL',
+  defaultValue: 'stable',
+);
 const appCommit = String.fromEnvironment('APP_COMMIT');
 const isTestBuild = appChannel == 'sephira-test';
-const appLabel = '${isTestBuild ? 'Sephira Test · ' : ''}version $appVersion · build $appBuild';
+const appLabel = isTestBuild
+    ? 'Sephira Test · update $sephiraUpdateVersion'
+    : 'version $appVersion · build $appBuild';
 
 /// Dotted numeric tags ("1.0.0.4"): negative when a is older than b, 0 when equal.
 int compareTags(String a, String b) {

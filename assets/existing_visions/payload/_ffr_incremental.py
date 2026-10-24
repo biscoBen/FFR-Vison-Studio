@@ -1,5 +1,6 @@
 """Build-scoped reuse above the native command cache; retain existing entries."""
 import functools
+import ast
 import json
 from pathlib import Path
 import time
@@ -7,12 +8,12 @@ import time
 import _ffr_build_cache as reuse
 
 
-def _groups(cache, cmd):
+def _groups(cache, cmd, plan=None):
     args = list(map(str, cmd))
     if args[:len(cache.tool)] != cache.tool: return None
     tail = args[len(cache.tool):]
     if len(tail) < 2 or tail[0] != 'patch': return None
-    plan = json.loads(Path(tail[1]).read_text(encoding='utf-8-sig'))
+    if plan is None: plan = json.loads(Path(tail[1]).read_text(encoding='utf-8-sig'))
     if set(plan) - {'legacyRoot', 'outRoot', 'tables', 'objects', 'clones'}: return None
     if Path(plan['legacyRoot']).resolve() == Path(plan['outRoot']).resolve(): return None
     grouped = {}
@@ -21,16 +22,30 @@ def _groups(cache, cmd):
             asset = operation['to'] if kind == 'clones' else operation['asset']
             group = grouped.setdefault(asset, {k: plan[k] for k in ('legacyRoot', 'outRoot')})
             group.setdefault(kind, []).append(operation)
-    folder = cache.root / 'build/reuse-plans'; folder.mkdir(parents=True, exist_ok=True)
     result = []
+    candidates = {}
+    def paths(value):
+        if isinstance(value, str) and len(value) < 1024:
+            p = Path(value)
+            if p.is_absolute():
+                if value not in candidates: candidates[value] = p.is_file()
+                if candidates[value]: return [value]
+        elif isinstance(value, dict):
+            return [p for v in value.values() for p in paths(v)]
+        elif isinstance(value, list):
+            return [p for v in value for p in paths(v)]
+        return []
     for asset, group in grouped.items():
-        recipe = folder / (reuse.digest(asset)[:24] + '.json')
-        recipe.write_text(json.dumps(group), encoding='utf-8')
-        command = [*cache.tool, 'patch', str(recipe), *tail[2:]]
-        spec = cache.command(command)
-        if spec is None: return None
-        _, _, inputs, targets = spec
-        inputs = [p for p in inputs if Path(p) != recipe]
+        inputs = [tail[tail.index('--usmap') + 1]] if '--usmap' in tail else []
+        targets = []
+        for kind in ('tables', 'objects', 'clones'):
+            for operation in group.get(kind, []):
+                source = operation['from'] if kind == 'clones' else operation['asset']
+                inputs.append(Path(group['legacyRoot']) / (source + '.uasset'))
+                targets.append(Path(group['outRoot']) / (asset + '.uasset'))
+        inputs += paths(group)
+        targets = list(dict.fromkeys(targets))
+        if any(not p.resolve().is_relative_to(cache.root) for p in targets): return None
         value = {'revision': 1, 'recipe': group, 'options': tail[2:], 'sources': cache.inputs(inputs)}
         fingerprint = reuse.digest({'context': cache.context, 'kind': 'asset-patch', 'value': value, 'inputs': []})
         result.append((group, inputs, targets, value, fingerprint))
@@ -54,7 +69,7 @@ def patch_assets(cache, cmd, original, groups):
         for group, inputs, targets, value, fingerprint in dirty:
             for kind in ('tables', 'objects', 'clones'):
                 if kind in group: partial.setdefault(kind, []).extend(group[kind])
-        path = cache.root / 'build/reuse-plans/changed.json'
+        path = cache.root / 'build/reuse-plans/changed.json'; path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(partial), encoding='utf-8')
         args = list(cmd); args[len(cache.tool) + 1] = str(path)
         result = original(args)
@@ -70,23 +85,51 @@ def install(env):
     cache = reuse._active
     if cache is None or getattr(cache, '_incremental_installed', False): return
     cache._incremental_installed = True
+    _sprite_dependencies(cache)
     original_run = cache.run
     def run(cmd, original):
-        try: groups = _groups(cache, cmd)
-        except (OSError, ValueError, KeyError, TypeError): groups = None
-        if not groups: return original_run(cmd, original)
-        executed = []
+        args = list(map(str, cmd))
+        if args[:len(cache.tool)] != cache.tool or args[len(cache.tool):len(cache.tool)+1] != ['patch']:
+            return original_run(cmd, original)
+        try:
+            plan = json.loads(Path(args[len(cache.tool)+1]).read_text(encoding='utf-8-sig'))
+            supported = not set(plan)-{'legacyRoot','outRoot','tables','objects','clones'} and Path(plan['legacyRoot']).resolve()!=Path(plan['outRoot']).resolve()
+            if not supported: return original_run(cmd, original)
+            spec = cache.command(cmd)
+            if spec is None: return original(cmd)
+            kind, value, inputs, targets = spec
+            fingerprint = reuse.digest({'context':cache.context,'kind':kind,'value':value,'inputs':cache.inputs(inputs)})
+            entry = cache.directory / fingerprint[:32]
+            marker = entry / 'split-index.json'
+            try: indexed = json.loads(marker.read_bytes()) == {'schema':1,'fingerprint':fingerprint}
+            except (OSError,ValueError,TypeError): indexed = False
+        except (OSError, ValueError, KeyError, TypeError):
+            return original_run(cmd, original)
+        groups = None; executed = []
         def action(actual):
+            nonlocal groups
             executed.append(True)
-            return patch_assets(cache, actual, original, groups)
-        result = original_run(cmd, action)
-        if not executed:
+            groups = _groups(cache, actual, plan)
+            return patch_assets(cache, actual, original, groups) if groups else original(actual)
+        returned = []
+        cache.execute(kind,value,inputs,targets,lambda:returned.append(action(cmd)))
+        result = returned[0] if returned else None
+        if not executed and not indexed:
             # Seed individual assets from an already verified whole-patch hit.
-            # A small setting edit can then reuse them on the very next build.
-            for group, inputs, targets, value, fingerprint in groups:
-                if cache.inputs(inputs) != value['sources']:
+            # Do not restore each package a second time after the whole hit.
+            groups = _groups(cache, cmd, plan)
+            for group, group_inputs, group_targets, group_value, group_fingerprint in groups or []:
+                if cache.inputs(group_inputs) != group_value['sources']:
                     raise ValueError('Native patch inputs changed during generation. Retry the build.')
-                cache.execute('asset-patch', value, [], targets, lambda: None)
+                try: present = json.loads((cache.directory/group_fingerprint[:32]/'manifest.json').read_bytes()).get('fingerprint') == group_fingerprint
+                except (OSError, ValueError, TypeError): present = False
+                if not present: cache.execute('asset-patch', group_value, [], group_targets, lambda: None)
+        if groups:
+            try:
+                if json.loads((entry/'manifest.json').read_bytes()).get('fingerprint') == fingerprint:
+                    temporary = marker.with_suffix('.tmp'); temporary.write_text(json.dumps({'schema':1,'fingerprint':fingerprint}))
+                    temporary.replace(marker)
+            except (OSError, ValueError, TypeError): pass
         return result
     cache.run = run
     import _ffr_fina_battle as battle
@@ -95,6 +138,55 @@ def install(env):
         battle.build = _presentation(battle.build)
     if not getattr(movie.build, '_incremental', False):
         movie.build = _cinematic(movie.build)
+
+
+# Audited 1.2.80 sprite dependency: cave placement, levels and dialog text do
+# not affect converted pixels or motions. Preserve its existing cache keys
+# while checking the exact motion-call contract, rather than the entire file.
+_SHRINE_SPRITE_SOURCE = '6c0a942322749e3c10e5e7c2a7dd2ab436dcf0dcc35dd2ff3173f289cae08d38'
+_SHRINE_SPRITE_CONTRACT = '124450711ed49a35a4366af698bdfb0d630b119ead315da79394f0070f8e64c6'
+
+
+def _ast_contract(node):
+    # Ignore empty optional fields added/omitted by different Python versions.
+    if isinstance(node, ast.AST):
+        return [type(node).__name__,{k:_ast_contract(v) for k,v in ast.iter_fields(node) if v is not None and v!=[]}]
+    if isinstance(node, list): return [_ast_contract(v) for v in node]
+    return node
+
+
+def _sprite_dependencies(cache):
+    original_file, original_execute = cache.file, cache.execute
+    shrine = str((cache.root/'tools/_ffr_shrine_challenges.py').resolve())
+    scope = [False]; signatures = {}
+    def file(path):
+        record = original_file(path)
+        if not scope[0] or record[0] != shrine or record[1] is None: return record
+        if record[1] not in signatures:
+            try:
+                tree = ast.parse(Path(path).read_text(encoding='utf-8-sig'))
+                selected = {'data','route','needs_enemy_motion','enemy_motion_for'}
+                contract = [_ast_contract(n) for n in tree.body
+                            if isinstance(n,ast.FunctionDef) and n.name in selected]
+                constants = [n for n in tree.body if isinstance(n,ast.Assign)
+                             and any(isinstance(t,ast.Name) and t.id=='DATA' for t in n.targets)]
+                data_name = ast.literal_eval(constants[0].value) if len(constants)==1 else None
+                data = json.loads(Path(path).with_name(data_name).read_bytes())
+                contract += [data_name, data['schema'], sorted(s['origin'] for s in data['encounters'])]
+                signatures[record[1]] = _SHRINE_SPRITE_SOURCE if reuse.digest(contract)==_SHRINE_SPRITE_CONTRACT else record[1]
+            except (OSError,ValueError,TypeError,KeyError,IndexError): signatures[record[1]] = record[1]
+        return [record[0],signatures[record[1]]]
+    def execute(kind,value,inputs,targets,action):
+        previous = scope[0]; scope[0] = kind == 'sprites'
+        try:
+            if scope[0] and not value.get('nativeCaster',True):
+                import _ffr_shrine_challenges as challenges
+                roster=cache.root/'mods/EstherTsukiko/units.json'
+                units=json.loads(roster.read_bytes()) if roster.is_file() else []
+                value={**value,'challengeEnemyMotion':challenges.enemy_motion_for(units,value['id'])}
+            return original_execute(kind,value,inputs,targets,action)
+        finally: scope[0] = previous
+    cache.file=file; cache.execute=execute
 
 
 def _sources(root, modules):
@@ -170,20 +262,23 @@ def _cinematic(original):
         root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
         sid = env['lb_id'](selected[0]['id'])
         job, = [j for j in env['authored_sequences'] if f'/Skill/{sid}/{sid + 1}/' in j['asset']]
+        soundtrack=music.movie_audio(env,movie.payload()[1]['movie.usm'])
         inputs = [legacy / (rel + '.uasset') for rel in
                   (movie.MASTER, movie.MOVIE, movie.MOVIE+'_vp9', music.CUE_DONOR, music.SOUND, ffbe_resonance.SHELL)]
         _ensure_native(env, inputs)
         inputs += [out / (job['asset'] + '.uasset'), root / 'tools/fina_cinematic.zip', env['USMAP'],
                    *_sources(root, [movie, music, cave, ffbe_resonance])]
+        if soundtrack: inputs.append(soundtrack)
         outputs = [out / (job['asset'] + '.uasset')]
         outputs += [out / (str(Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{s}') + '.uasset')
                     for s in ('Cut_000', 'Sound_001', 'Effect_000')]
-        outputs += [out / (p + '.uasset') for p in (movie.PRIVATE, movie.PRIVATE+'_vp9', music.CUE)]
+        outputs += [out / (p + '.uasset') for p in (movie.PRIVATE, movie.PRIVATE+'_vp9')]
+        if soundtrack is None: outputs.append(out/(music.CUE+'.uasset'))
         outputs += [root / 'build/fina-cinematic/timeline.json']
         hit = cache.execute('fina-movie', {'revision': 1, 'asset': job['asset'], 'plan': job['plan']}, inputs, outputs,
-                            lambda: original(units, env))
+                            lambda: original(units, dict(env,_fina_movie_audio=soundtrack)))
         if hit:
-            movie.prepare_pak(root, env['ffrenv'], env['run'], movie.payload()[1]['movie.usm'])
+            movie.prepare_pak(root, env['ffrenv'], env['run'], soundtrack.read_bytes() if soundtrack else movie.payload()[1]['movie.usm'])
             print('  Crystal Fina movie/music: reused verified native timeline and movie descriptors.', flush=True)
     build._incremental = True
     return build

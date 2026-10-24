@@ -7,7 +7,6 @@ import struct
 import subprocess
 import tempfile
 import threading
-import wave
 import zipfile
 
 _LOCK=threading.Lock()
@@ -71,15 +70,29 @@ def decrypt(raw,key,subkey):
 
 
 def trim_wave(raw,seconds=6.4):
-    with wave.open(io.BytesIO(raw),'rb') as src:
-        out=io.BytesIO()
-        with wave.open(out,'wb') as dst:
-            dst.setparams(src.getparams());dst.writeframes(src.readframes(round(seconds*src.getframerate())))
-    return out.getvalue()
+    # The distributed frozen engine does not contain Python's wave module.
+    # VGAudio writes PCM RIFF; retain its samples/format without that dependency.
+    if len(raw)<12 or raw[:4]!=b'RIFF' or raw[8:12]!=b'WAVE':raise ValueError('Invalid decoded cave WAV.')
+    pos=12;fmt=None;data=None
+    while pos+8<=len(raw):
+        kind=raw[pos:pos+4];size=struct.unpack_from('<I',raw,pos+4)[0];start=pos+8
+        if start+size>len(raw):raise ValueError('Incomplete decoded cave WAV.')
+        if kind==b'fmt ':fmt=raw[start:start+size]
+        elif kind==b'data':data=raw[start:start+size]
+        pos=start+size+(size&1)
+    if fmt is None or len(fmt)<16 or data is None:raise ValueError('Missing decoded cave WAV samples.')
+    codec,channels,rate,byte_rate,align,bits=struct.unpack_from('<HHIIHH',fmt)
+    if codec==65534 and len(fmt)>=40 and fmt[24:40]==bytes.fromhex('0100000000001000800000aa00389b71'):codec=1
+    if codec!=1 or bits not in (8,16,24,32) or not 1<=channels<=8 or not 8000<=rate<=192000 or align!=channels*bits//8 or byte_rate!=rate*align or len(data)%align:
+        raise ValueError('Unsupported decoded cave WAV format.')
+    data=data[:round(seconds*rate)*align]
+    def chunk(tag,value):return tag+struct.pack('<I',len(value))+value+bytes(len(value)&1)
+    body=b'WAVE'+chunk(b'fmt ',fmt)+chunk(b'data',data)
+    return b'RIFF'+struct.pack('<I',len(body))+body
 
 
 def audio(root, ffrenv):
-    """Called only on preview playback; never adds work to a mod build."""
+    """Read once for preview or the optional cinematic; retain a short local copy."""
     root=Path(root)
     import _ffr_deck_sync
     identity=_ffr_deck_sync.game_identity(Path(ffrenv.game_root()))
@@ -111,7 +124,7 @@ def audio(root, ffrenv):
         with tempfile.TemporaryDirectory(prefix='decode-',dir=folder) as temporary:
             work=Path(temporary)
             with zipfile.ZipFile(archive) as z:
-                if set(z.namelist())!={'VGAudio.dll','LICENSE.txt','decode.ps1'}:raise ValueError('Invalid preview decoder.')
+                if set(z.namelist())!={'VGAudio.dll','LICENSE.txt','decode.ps1','encode.ps1'}:raise ValueError('Invalid preview decoder.')
                 for name in z.namelist():(work/name).write_bytes(z.read(name))
             source=work/'source.hca';source.write_bytes(plain)
             result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(work/'decode.ps1'),str(source),str(work/'decoded.wav')],capture_output=True)

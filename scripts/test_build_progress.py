@@ -37,6 +37,15 @@ class BuildProgressTests(unittest.TestCase):
             self.assertEqual(events[-1]['event'],'profile-end')
             self.assertEqual(stages,['Converting sprites and icons: First (1 of 2)','Building challenge menus'])
 
+    def test_visible_version_and_installer_version_stay_in_sync_and_reach_profile(self):
+        import re
+        version=re.search(r"sephiraUpdateVersion = '([^']+)'",(ROOT/'lib/version.dart').read_text())[1]
+        self.assertEqual(version,installer.VERSION)
+        with tempfile.TemporaryDirectory() as root,mock.patch.dict(progress.os.environ,{'FFR_LOG_DIR':root}),mock.patch.object(reuse,'_active',None):
+            state=Path(root)/'.ffr-existing-visions/state.json';state.parent.mkdir();state.write_text(json.dumps({'version':version}))
+            profile=progress.Profile(root,lambda _:None);profile.finish()
+            self.assertEqual(json.loads(next(Path(root).glob('build-profile-*.json')).read_bytes())['studioVersion'],version)
+
     def test_server_console_and_persisted_log_get_identical_timestamps(self):
         source=installer.hook_server(gzip.decompress((ROOT/'scripts/fixtures/existing_visions/server.py.gz').read_bytes()))
         tree=ast.parse(source);build=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='run_build')

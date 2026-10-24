@@ -103,6 +103,19 @@ class FinaBattleTests(unittest.TestCase):
             movie.ManaComponent.invalid=false
             movie.ManaComponent.Movie.GetFullName=function() return 'Other vision movie' end
             tick();assert(sound.pauses==2)
+            -- Some Mana players retain only their wrapper source.
+            movie.ManaMovie=runtime_object({GetFullName=function() return 'PlatformManaMovie Other' end,
+                FilePath='Movies/Studio/CrystalFina_Test.usm'})
+            tick();assert(sound.pauses==3)
+            movie.playing=false;tick();assert(sound.resumes==3)
+            -- The native BGM handle may be wrapped instead of a Lua number.
+            local handle={native=true}
+            sound.GetCurrentPlayBGMId=function() return handle end
+            sound.IsExistPlaySound=function(self,id) return id==handle end
+            sound.PauseSound=function(self,id) assert(id==handle);self.pauses=self.pauses+1 end
+            sound.ResumeSound=function(self,id) assert(id==handle);self.resumes=self.resumes+1 end
+            movie.playing=true;tick();assert(sound.pauses==4)
+            movie.playing=false;tick();assert(sound.resumes==4)
         """)
 
     def test_casing_restores_both_visibility_flags_after_native_battle_hides_it(self):

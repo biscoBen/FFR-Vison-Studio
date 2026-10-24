@@ -216,6 +216,8 @@ def build(units, env):
     plan = continuation(job['plan'])
     spec, files = payload()
     work = root / 'build/fina-cinematic'; work.mkdir(parents=True, exist_ok=True)
+    import _ffr_fina_cave_music
+    soundtrack = env.get('_fina_movie_audio') if '_fina_movie_audio' in env else _ffr_fina_cave_music.movie_audio(env,files['movie.usm'])
     def patch(label, **fields):
         recipe = work / (label + '.json')
         recipe.write_text(json.dumps({'legacyRoot': str(out), 'outRoot': str(out), **fields}), encoding='utf-8')
@@ -242,11 +244,16 @@ def build(units, env):
               [('SEQ_Battle_440111_Cut_000', Path(child).name)])
         child_plan = plan if suffix == 'Cut_000' else {'duration': plan['duration'], 'events': [{'time': 0, 'set': {'EventType': 'None'}}]}
         ffbe_resonance.build({'asset': child, 'plan': child_plan}, str(out), str(work), tool, usmap, run)
-    import _ffr_fina_cave_music
     # The native Sound_001 subtrack is disabled in the cooked master.
     # Effect_000 is active in both its live tracks and compiled hierarchy.
     sound_child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_Effect_000').as_posix()
-    _ffr_fina_cave_music.build(sound_child, env, work, native, clone, START, END, plan['duration'])
+    if soundtrack is None:
+        _ffr_fina_cave_music.build(sound_child, env, work, native, clone, START, END, plan['duration'])
+    else:
+        clone(native(ffbe_resonance.SHELL), sound_child,
+              [('SEQ_Battle_440111_Cut_000', Path(sound_child).name)])
+        ffbe_resonance.build({'asset':sound_child,'plan':{'duration':plan['duration'],
+            'events':[{'time':0,'set':{'EventType':'None'}}]}},str(out),str(work),tool,usmap,run)
     rename = [('440110', str(sid)), ('440111', str(sid + 1)),
               ('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
               ('MV_Skill440110', Path(PRIVATE).name)]
@@ -289,9 +296,13 @@ def build(units, env):
                 prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
-        # Music uses the original installed cave recording through Atom. No
-        # second score is left in Mana, avoiding its failing decoder path.
-        prop(data, 'AudioTracks')['Value'] = []
+        # Describe the locally encoded stereo ADX soundtrack when available.
+        # The native Atom cue is retained only as an extraction-failure fallback.
+        if soundtrack is None: prop(data, 'AudioTracks')['Value'] = []
+        else:
+            audio, = prop(data,'AudioTracks')['Value']
+            for name,value in (('NumChannels',2),('SamplingRate',48000),('TotalSamples',307200),('Type','Adx')):
+                prop(audio['Value'],name)['Value']=value
         fields = {'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
@@ -300,7 +311,7 @@ def build(units, env):
         for name, value in fields.items(): prop(data, name)['Value'] = value
         description.write_text(json.dumps(view), encoding='utf-8')
         run([*tool, 'fromjson', str(description), str(target), '--usmap', usmap])
-    prepare_pak(root, env['ffrenv'], run, files['movie.usm'])
+    prepare_pak(root, env['ffrenv'], run, soundtrack.read_bytes() if soundtrack else files['movie.usm'])
     (work / 'timeline.json').write_text(json.dumps({'schema': 1, 'movieStart': START, 'movieEnd': END,
         'duration': plan['duration'], 'asset': job['asset'], 'plan': plan}), encoding='utf-8')
     print('  Crystal Fina: optional 6.4-second illustrated cinematic before her existing LB (in-game test required).')
@@ -342,8 +353,8 @@ def register(app, env=None):
     def audio_preview():
         from fastapi import HTTPException
         from fastapi.responses import Response
-        import _ffr_cave_music_preview
         try:
+            import _ffr_cave_music_preview
             if env is None: raise ValueError('Select the full game in Studio first.')
             return Response(_ffr_cave_music_preview.audio(env['ROOT'],env['ffrenv']),media_type='audio/wav')
         except Exception as error:

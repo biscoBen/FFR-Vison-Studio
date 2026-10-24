@@ -99,6 +99,58 @@ class GroupReuseTests(unittest.TestCase):
             self.assertEqual(len(calls), 4)
             self.assertTrue((out / 'PrivateIcon.uexp').is_file())
 
+    def test_group_keys_match_existing_recipe_cache_without_temporary_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);legacy=root/'legacy';legacy.mkdir();out=root/'out'
+            for name in ('Shop','Icon'):(legacy/(name+'.uasset')).write_bytes(b'native')
+            plan={'legacyRoot':str(legacy),'outRoot':str(out),'tables':[{'asset':'Shop','set':[]}],
+                  'clones':[{'from':'Icon','to':'PrivateIcon','rename':[]}]}
+            cache=reuse.Cache(root,{'game':'one'},['native']);recipe=root/'patch.json'
+            recipe.write_text(json.dumps(plan));cmd=['native','patch',str(recipe)]
+            groups=incremental._groups(cache,cmd)
+            self.assertFalse((root/'build/reuse-plans').exists())
+            for group,inputs,targets,value,fingerprint in groups:
+                recipe.write_text(json.dumps(group))
+                kind,old_value,old_inputs,old_targets=cache.command(cmd)
+                old_inputs=[p for p in old_inputs if Path(p)!=recipe]
+                expected={'revision':1,'recipe':group,'options':cmd[3:],'sources':cache.inputs(old_inputs)}
+                self.assertEqual(value,expected);self.assertEqual(targets,old_targets)
+                self.assertEqual(fingerprint,reuse.digest({'context':cache.context,'kind':'asset-patch','value':expected,'inputs':[]}))
+
+    def test_warm_whole_patch_does_not_reindex_or_restore_individual_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);legacy=root/'legacy';legacy.mkdir();out=root/'out'
+            (legacy/'Shop.uasset').write_bytes(b'native')
+            path=root/'patch.json';path.write_text(json.dumps({'legacyRoot':str(legacy),'outRoot':str(out),'tables':[{'asset':'Shop','set':[]}]}))
+            cache=reuse.Cache(root,{},['native']);cmd=['native','patch',str(path)]
+            def generate(cmd):
+                out.mkdir();(out/'Shop.uasset').write_bytes(b'patched');(out/'Shop.uexp').write_bytes(b'exports')
+            # Start with an existing 1.2.80 whole-patch entry, without an index.
+            cache.run(cmd,generate)
+            with mock.patch.object(reuse,'_active',cache):incremental.install({})
+            shutil.rmtree(out);cache.run(cmd,lambda _:self.fail('must reuse'))
+            self.assertTrue(list(cache.directory.glob('*/split-index.json')))
+            shutil.rmtree(out)
+            with mock.patch.object(incremental,'_groups',side_effect=AssertionError('must not reindex')):
+                cache.run(cmd,lambda _:self.fail('must reuse'))
+            self.assertEqual((out/'Shop.uasset').read_bytes(),b'patched')
+
+    def test_sprite_key_migration_keeps_cave_edits_but_invalidates_motion_changes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);tools=root/'tools';tools.mkdir();source=tools/'_ffr_shrine_challenges.py'
+            source.write_bytes((ROOT/'assets/existing_visions/payload/_ffr_shrine_challenges.py').read_bytes())
+            data=tools/'sephira_challenges.json';data.write_bytes((ROOT/'assets/existing_visions/payload/sephira_challenges.json').read_bytes())
+            cache=reuse.Cache(root,{});incremental._sprite_dependencies(cache)
+            output=root/'output.json';calls=[]
+            def action():calls.append(True);output.write_text('pixels')
+            self.assertFalse(cache.execute('sprites',{'nativeCaster':True},[source],[output],action))
+            source.write_text(source.read_text()+'\n# Cave placement does not change pixels.\n')
+            self.assertTrue(cache.execute('sprites',{'nativeCaster':True},[source],[output],action))
+            self.assertFalse(cache.execute('other',{},[source],[output],action))
+            source.write_text(source.read_text().replace('def needs_enemy_motion(unit):','def needs_enemy_motion(unit):\n    unused_change = True'))
+            self.assertFalse(cache.execute('sprites',{'nativeCaster':True},[source],[output],action))
+            self.assertEqual(len(calls),3)
+
     def test_in_place_and_unknown_recipes_keep_the_existing_native_path(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); c = reuse.Cache(root, {}, ['native'])

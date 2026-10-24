@@ -38,9 +38,17 @@ class CaveMusicPreviewTests(unittest.TestCase):
             self.assertEqual((f.getnchannels(),f.getsampwidth(),f.getframerate(),f.getnframes()),(2,2,48000,307200))
             self.assertEqual(f.readframes(1),b'\x11\x22\x33\x44')
 
+    def test_rejects_truncated_and_non_pcm_decodes(self):
+        with self.assertRaises(ValueError):preview.trim_wave(b'RIFF')
+        raw=b'RIFF'+struct.pack('<I',40)+b'WAVEfmt '+struct.pack('<I',100)+bytes(16)
+        with self.assertRaisesRegex(ValueError,'Incomplete'):preview.trim_wave(raw)
+        fmt=struct.pack('<HHIIHH',3,2,48000,384000,8,32)
+        raw=b'RIFF'+struct.pack('<I',36)+b'WAVEfmt '+struct.pack('<I',16)+fmt+b'data'+bytes(4)
+        with self.assertRaisesRegex(ValueError,'format'):preview.trim_wave(raw)
+
     def test_decoder_archive_has_license_and_compatible_framework_assembly(self):
         with zipfile.ZipFile(ROOT/'assets/existing_visions/payload/cave_music_preview.zip') as z:
-            self.assertEqual(set(z.namelist()),{'VGAudio.dll','LICENSE.txt','decode.ps1'})
+            self.assertEqual(set(z.namelist()),{'VGAudio.dll','LICENSE.txt','decode.ps1','encode.ps1'})
             self.assertTrue(z.read('VGAudio.dll').startswith(b'MZ'))
             self.assertIn(b'MIT',z.read('LICENSE.txt'))
             if sys.platform=='win32':

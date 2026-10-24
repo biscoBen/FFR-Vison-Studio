@@ -167,7 +167,7 @@ void main() {
     restarted.dispose();
   });
 
-  test('reset preserves identity and acquisition, backs up overwritten edits', () async {
+  test('reset restores acquisition and kit, preserves identity and backs up overwritten edits', () async {
     await app.setSephiraEnabled(true);
     final old = CharacterConfig.copy(app.sephiraUnits.first);
     final edited = CharacterConfig.copy(old);
@@ -179,10 +179,45 @@ void main() {
     expect(reset['stats'], old['stats']);
     expect(reset['id'], old['id']);
     expect(reset['master']['id'], old['master']['id']);
-    expect(reset['studioAcquisition'], edited['studioAcquisition']);
+    expect(reset['studioAcquisition'], old['studioAcquisition']);
     final backup = Directory(app.paths.configBackups).listSync().whereType<File>().single;
     final saved = CharacterConfig.decodeAll(backup.readAsStringSync());
     expect(saved.firstWhere((u) => u['key'] == old['key'])['stats']['Attack'], 47);
+    expect(saved.firstWhere((u) => u['key'] == old['key'])['studioAcquisition'], edited['studioAcquisition']);
+  });
+
+  test('reset all restores real Crystal Fina and other visions acquisition defaults', () async {
+    app.sephiraPresets = (await SephiraVisions.bundled)
+        .where((p) => ['crystal_fina', 'christine'].contains(p['id']))
+        .toList();
+    await app.setSephiraEnabled(true);
+    final identities = {
+      for (final u in app.sephiraUnits) SephiraVisions.presetId(u): u['id'],
+    };
+    for (final unit in app.sephiraUnits.toList()) {
+      final edited = CharacterConfig.copy(unit);
+      edited['studioAcquisition'] = {
+        'version': 1,
+        'random': false,
+        'hideSpoilers': false,
+        'location': 'mitra_shop',
+      };
+      app.update(edited);
+    }
+    await app.restoreSephira(reset: true);
+    for (final unit in app.sephiraUnits) {
+      final preset = app.sephiraPresets.singleWhere(
+        (p) => p['id'] == SephiraVisions.presetId(unit),
+      );
+      expect(unit['studioAcquisition'], preset['profile']['studioAcquisition']);
+      expect(unit['id'], identities[SephiraVisions.presetId(unit)]);
+    }
+    expect(
+      app.sephiraUnits.singleWhere(
+        (u) => SephiraVisions.presetId(u) == 'crystal_fina',
+      )['studioAcquisition']['location'],
+      'sephira_13100',
+    );
   });
 
   test('preparation or save failure does not partially add or enable presets', () async {

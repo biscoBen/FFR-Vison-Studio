@@ -11,6 +11,14 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Warm-install reuse, persistent Christine unlock and visible update number
+
+- Keep unchanged sprite/icon sets reusable across cave placement and balance edits, including existing 1.2.80 cache entries. Skip per-asset recipe writes and repeated indexing/copying on verified whole-table cache hits; changed packages and corrupted entries still rebuild.
+- Use permanent story progress or original Tronn ownership for Christine's secret-cave crystal. The earlier flag is cleared by the following story event; visibility and interaction now use the same persistent condition. Keep the level-5 fight and original map actors.
+- Explicitly resetting Sephira presets also restores their default acquisition locations, with previous edits retained in the reset backup. Normal updates continue to preserve custom acquisition choices.
+- Show test update **1.2.81** in Studio's main window and About, and record the installed update version in build logs/profiles. Host compatibility remains version 1.0.0/build 15.
+- Remove the unbundled `wave` import behind Fina's bare audio-preview server error. Cache a short original cave recording from the installed game and mux it locally into her unchanged movie using the previously working stereo ADX layout. Broaden private-movie detection for pausing/resuming the current battle BGM handle and log detector startup/source matching. Live cave visibility and soundtrack playback remain user tests.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

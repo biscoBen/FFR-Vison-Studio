@@ -26,6 +26,10 @@ class Profile:
         self.folder=Path(os.environ.get('FFR_LOG_DIR') or self.root/'logs');self.folder.mkdir(parents=True,exist_ok=True)
         self.run_id=datetime.now().strftime('%Y%m%d-%H%M%S-%f')
         self.events=(self.folder/('build-events-'+self.run_id+'.jsonl')).open('w',encoding='utf-8',buffering=1)
+        try:self.version=json.loads((self.root/'.ffr-existing-visions/state.json').read_bytes())['version']
+        except (OSError,ValueError,KeyError,TypeError):self.version='unknown'
+        print('  Studio test update: '+str(self.version),flush=True)
+        self.event(event='build-version',studioVersion=self.version)
 
     def event(self,**fields):
         item={'at':datetime.now().astimezone().isoformat(timespec='milliseconds'),
@@ -82,7 +86,7 @@ class Profile:
         print('  Slowest operations (nested work is included in its parent):',flush=True)
         for item in sorted((i for i in self.operations if i['depth']==0),key=lambda i:i['seconds'],reverse=True)[:8]:
             print(f"    {item['seconds']:.2f}s {item['name']} ({item['cacheReused']} reused / {item['cacheBuilt']} built)",flush=True)
-        report={'schema':1,'seconds':round(now-self.started,4),'operationFailed':self.failed,
+        report={'schema':1,'studioVersion':self.version,'seconds':round(now-self.started,4),'operationFailed':self.failed,
                 'cacheContext':cache.context[:16] if cache else None,
                 'stages':self.stages,'phaseTotals':totals,'operations':self.operations,'cache':cache.stats if cache else {}}
         try:

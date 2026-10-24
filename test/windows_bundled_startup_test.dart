@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.80');
+      expect(state['version'], '1.2.81');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_build_progress.py',
@@ -82,6 +82,9 @@ void main() {
         'ffbe_needles.zip',
         '_ffr_fina_cinematic.py',
         '_ffr_fina_cave_music.py',
+        '_ffr_movie_audio.py',
+        '_ffr_cave_music_preview.py',
+        'cave_music_preview.zip',
         'fina_cinematic.zip',
         '_ffr_deck_sync.py',
         '_ffr_party.py',
@@ -141,6 +144,16 @@ status = next(r for r in app.routes if r.path == '/api/deck/status').endpoint()
 assert status['enabled'] is False and status['repository'] == '' and status['hasToken'] is False
 from PIL import Image
 import _ffr_fina_preview
+import struct, _ffr_cave_music_preview, _ffr_movie_audio
+# These helpers run inside the real frozen engine, which does not bundle wave
+# or developer-only WannaCRI. Exercise real PCM trimming and CRI metadata.
+pcm = bytes(48000 * 4 * 8)
+fmt = struct.pack('<HHIIHH',1,2,48000,192000,4,16)
+wav = b'RIFF'+struct.pack('<I',36+len(pcm))+b'WAVEfmt '+struct.pack('<I',16)+fmt+b'data'+struct.pack('<I',len(pcm))+pcm
+short = _ffr_cave_music_preview.trim_wave(wav)
+assert len(short)==44+307200*4
+metadata = _ffr_movie_audio._write_utf('frozen',[('samples',5)],[{'samples':307200}])
+assert _ffr_movie_audio._read_utf(metadata)[2]==[{'samples':307200}]
 preview_app = FastAPI()
 _ffr_fina_preview.register(preview_app, {'ROOT': str(root)})
 native_route = next(r for r in preview_app.routes if r.path == '/api/ffbe/anim/99887755552703/{anim}.webp')

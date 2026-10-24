@@ -44,27 +44,29 @@ class SephiraChallengeTests(unittest.TestCase):
     def test_christine_crystal_dialog_checks_tronn_and_only_offers_unowned_reward(self):
         name = challenge.PREFIX + '13024'
         unit = next(u for u in self.units if u['sephiraVision']['preset'] == 'christine')
-        def matches(condition, items, flags):
+        def matches(condition, items, flags, progress):
             def token(text):
                 item = re.fullmatch(r'\{item:(\d+)\}(>0|==0)', text)
                 if item: return (int(item[1]) in items) == (item[2] == '>0')
+                story = re.fullmatch(r'\{progress:0\}(>=|<)([0-9]+)', text)
+                if story: return (progress >= int(story[2])) == (story[1]=='>=')
                 flag = re.fullmatch(r'(!?)\{flag:(\d+)\}', text)
                 self.assertIsNotNone(flag, text)
                 return (int(flag[2]) in flags) != bool(flag[1])
             return any(all(token(part) for part in alternative.split('&')) for alternative in condition.split('|'))
         for owns_tronn in (False, True):
-            for story_flag in (False, True):
+            for progress in (1089,1090,1095,1200):
                 for owns_christine in (False, True):
                     items = ({13024} if owns_tronn else set()) | ({unit['id']} if owns_christine else set())
-                    flags = {147} if story_flag else set()
+                    flags = set()  # C01_015_01 clears the temporary tutorial flag.
                     state = name
                     while True:
                         branches = self.built[challenge.COMPOSITE][state]['ContinuousEventList']
                         if not branches: break
-                        active = [b['EventId'] for b in branches if matches(b['Condition'],items,flags)]
+                        active = [b['EventId'] for b in branches if matches(b['Condition'],items,flags,progress)]
                         self.assertEqual(len(active),1)
                         state = active[0]
-                    expected = '_Locked' if not (owns_tronn or story_flag) else '_Done' if owns_christine else '_Menu'
+                    expected = '_Locked' if not (owns_tronn or progress>=1090) else '_Done' if owns_christine else '_Menu'
                     self.assertEqual(state,name+expected)
         for rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
             original = self.native[rel]['01Gra_44']
@@ -114,7 +116,7 @@ class SephiraChallengeTests(unittest.TestCase):
             if spec['origin'] == 13062:
                 self.assertIn('{progress:48}>=50', spec['unlock'])
                 self.assertNotIn('>=10', spec['unlock'])
-            if spec['origin'] == 13024: self.assertIn('{flag:147}', spec['unlock'])
+            if spec['origin'] == 13024: self.assertIn('{progress:0}>=1090', spec['unlock'])
         # No shared "some legend completed" flag can unlock a different vision.
         self.assertTrue(all('{flag:1017}' not in s['unlock'] for s, _ in challenge.plans(self.units)))
 
@@ -270,7 +272,8 @@ class SephiraChallengeTests(unittest.TestCase):
         owner_id=caves.export(private,'BP_MapGimmick_EventTrigger_C_1')[0]
         self.assertIn(owner_id,caves.export(private,'PersistentLevel')[1]['Actors'])
         self.assertEqual(crystal['OuterIndex'],owner_id)
-        self.assertEqual(caves.property_data(owner,'VisibleCondition')['Value'],'{flag:147}')
+        self.assertEqual(caves.property_data(owner,'VisibleCondition')['Value'],'{item:13024}>0|{progress:0}>=1090')
+        self.assertEqual(caves.property_data(owner,'m_FlagCondition')['Value'],spec['unlock'])
         self.assertEqual(caves.property_data(owner,'m_MapInteractType')['Value'],'Check_Gimmick')
         self.assertEqual(caves.property_data(owner,'m_UniqueId')['Value'],27500)
         component = crystal

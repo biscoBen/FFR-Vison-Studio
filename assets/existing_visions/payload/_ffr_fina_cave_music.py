@@ -1,13 +1,49 @@
-"""Play the installed cave cue on a native Atom timeline; never reencode BGM."""
+"""Local movie soundtrack from the installed cave recording, with native cue fallback."""
 import copy
 import json
 from pathlib import Path
+import hashlib
+import subprocess
+import tempfile
+import zipfile
 
 CUE_NAME = 'BGM_PP_DUNGEON_CAVE1'
 CUE_DONOR = 'FFRS/Content/Sound/Cri/Bgm/BGM_PP/BGM_PP_BATTLE1_Cue'
 CUE = 'FFRS/Content/Sound/Cri/Studio/Studio_FinaCaveMusic_Cue'
 SOUND = 'FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Sound_001'
 NATIVE_START, NATIVE_END = 48000, 363503
+
+
+def movie_audio(env, pictures):
+    """Cache a local six-second stereo ADX copy of the installed cave recording."""
+    root=Path(env['ROOT'])
+    try:
+        import _ffr_cave_music_preview as preview
+        import _ffr_movie_audio as movie
+        wave=preview.audio(root,env['ffrenv'])
+        archive=root/'tools/cave_music_preview.zip'
+        identity=hashlib.sha256(pictures+wave+archive.read_bytes()+Path(movie.__file__).read_bytes()).hexdigest()
+        folder=root/'build/fina-cinematic/native-audio';folder.mkdir(parents=True,exist_ok=True)
+        target=folder/(identity[:24]+'.usm');marker=target.with_suffix('.json')
+        if target.is_file() and marker.is_file():
+            expected=json.loads(marker.read_bytes())
+            if expected.get('sha256')==hashlib.sha256(target.read_bytes()).hexdigest():return target
+        with tempfile.TemporaryDirectory(prefix='encode-',dir=folder) as temporary:
+            work=Path(temporary)
+            with zipfile.ZipFile(archive) as z:
+                for name in ('VGAudio.dll','encode.ps1'):(work/name).write_bytes(z.read(name))
+            source=work/'cave.wav';source.write_bytes(wave);encoded=work/'cave.adx'
+            result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+                                   '-File',str(work/'encode.ps1'),str(source),str(encoded)],capture_output=True)
+            if result.returncode:raise ValueError('The installed cave recording could not be encoded as native stereo ADX.')
+            data, report=movie.with_soundtrack(pictures,encoded.read_bytes())
+        temporary=target.with_suffix('.tmp');temporary.write_bytes(data);temporary.replace(target)
+        marker.write_text(json.dumps({'schema':1,'sha256':hashlib.sha256(data).hexdigest(),'report':report}))
+        print('  Crystal Fina: cached original cave recording from its beginning in the native stereo ADX movie.',flush=True)
+        return target
+    except Exception as error:
+        print('  ! Crystal Fina movie soundtrack unavailable: '+type(error).__name__+': '+str(error),flush=True)
+        return None
 
 
 def author(view, start, end, duration):

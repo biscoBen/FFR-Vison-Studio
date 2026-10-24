@@ -690,7 +690,7 @@ class AppState extends ChangeNotifier {
     final sources = [for (final p in wanted) {
       ...CharacterConfig.copy(p['profile'] as JsonMap),
       SephiraVisions.field: {'version': 1, 'preset': p['id'], 'enabled': sephiraEnabled},
-      if (existing[p['id']]?.containsKey(Acquisition.field) == true)
+      if (!reset && existing[p['id']]?.containsKey(Acquisition.field) == true)
         Acquisition.field: CharacterConfig.copy(existing[p['id']]![Acquisition.field] as JsonMap),
     }];
     final reservedSkills = <int>{

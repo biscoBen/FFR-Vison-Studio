@@ -303,11 +303,17 @@ def _events(table, rows, spec, units, group_id, root, roster):
     if not any(i['ID'] == spec['origin'] and i['Num'] > 0 for i in grant.get('ObtainItemList', [])):
         raise ValueError('The original vision acquisition changed: ' + spec['name'])
     proof = spec['unlock'].split('|', 1)[1]
+    completion = grant
+    if spec.get('completionEvent'):
+        if not any(e.get('Condition') == '' and e.get('EventId') == spec['completionEvent']
+                   for e in grant.get('ContinuousEventList', [])):
+            raise ValueError('The original vision completion chain changed: ' + spec['name'])
+        completion = composite.get(spec['completionEvent'], {})
     if proof.startswith('{flag:'):
-        valid = int(proof.removeprefix('{flag:').removesuffix('}')) in grant['OnFlagList']
+        valid = int(proof.removeprefix('{flag:').removesuffix('}')) in completion.get('OnFlagList', [])
     else:
         progress, value = proof.removeprefix('{progress:').split('}>=')
-        valid = any(p['ID'] == int(progress) and p['Value'] == int(value) for p in grant['ProgressList'])
+        valid = any(p['ID'] == int(progress) and p['Value'] == int(value) for p in completion.get('ProgressList', []))
     if not valid: raise ValueError('The original vision completion check changed: ' + spec['name'])
     name = PREFIX + str(spec['origin'])
     clean = testing.apply_fields(composite['C01_ArijigokuEncount'], {
@@ -594,10 +600,10 @@ def christine_views(original, source, background, spec):
     if len(events) != 1: raise ValueError('The native crystal interaction changed.')
     caves.set_value(events[0], 'EventId', PREFIX + str(spec['origin']))
     caves.set_value(events[0], 'Condition', '')
-    # The original vision-get event sets 147. Its gate then disappears. Use
-    # that existing story state, including saves made before Studio was installed.
-    owner['Data'] += [caves.data_property('VisibleCondition', '{flag:147}', 'StrPropertyData'),
-        caves.data_property('m_FlagCondition', '{flag:147}', 'StrPropertyData'),
+    # Flag 147 is cleared by C01_015_01. Use the persistent acquisition/story
+    # condition for both appearance and interaction, including existing saves.
+    owner['Data'] += [caves.data_property('VisibleCondition', spec['unlock'], 'StrPropertyData'),
+        caves.data_property('m_FlagCondition', spec['unlock'], 'StrPropertyData'),
         caves.data_property('bIsBeginPlaySycnVisibleCall', True, 'BoolPropertyData'),
         caves.data_property('m_MapInteractType', 'Check_Gimmick', 'EnumPropertyData',
                             EnumType='eMapInteractType', InnerType='ByteProperty')]

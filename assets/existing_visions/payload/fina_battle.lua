@@ -393,6 +393,14 @@ local function refresh(key, s)
     else update(s) end
 end
 local movieMusic = nil
+local function movie_source(source)
+    if not valid(source) then return false, 'none' end
+    local full = source:GetFullName()
+    if full:find(config.cinematicMovie, 1, true) then return true, full end
+    local ok, path = pcall(function() return name(source.FilePath) end)
+    if ok and path:find('Movies/Studio/CrystalFina_Test.usm', 1, true) then return true, path end
+    return false, full
+end
 local function resume_movie_music()
     if not movieMusic then return end
     local saved = movieMusic
@@ -407,9 +415,20 @@ local function movie_music()
         -- These getters require an initialized native ManaComponent. Match the
         -- private movie, never another vision, a menu movie or its sprite LB.
         if valid(player) and valid(player.ManaComponent) then
-            local source = player.ManaComponent.Movie
-            if valid(source) and source:GetFullName():find(config.cinematicMovie, 1, true)
-                and (player:IsPlaying() or player:IsPaused()) then active = true; break end
+            if player:IsPlaying() or player:IsPaused() then
+                -- Mana can retain the movie on the player/source wrapper while
+                -- its component's Movie property is unset. Inspect both.
+                local matched, first = movie_source(player.ManaComponent.Movie)
+                local alternate, second = movie_source(player.ManaMovie)
+                local ok, source = pcall(function() return player:GetMovieSource() end)
+                local wrapped, third = false, 'none'
+                if ok then wrapped, third = movie_source(source) end
+                local signature = first .. ' | ' .. second .. ' | ' .. third
+                if errors.movieSource ~= signature then
+                    errors.movieSource = signature; log('Movie audio sources: ' .. signature)
+                end
+                if matched or alternate or wrapped then active = true; break end
+            end
         end
     end
     if not active then resume_movie_music(); return end
@@ -417,16 +436,18 @@ local function movie_music()
     for _, manager in ipairs(FindAllOf('CPP_SoundManager') or {}) do
         if valid(manager) and not manager:GetFullName():find('Default__', 1, true) then
             local id = manager:GetCurrentPlayBGMId()
-            if type(id) == 'number' and id >= 0 and manager:IsExistPlaySound(id) then
+            if id ~= nil and manager:IsExistPlaySound(id) then
                 -- Pause the current playback handle. Category volume would
                 -- also silence the cave cue and overwrite the user's settings.
                 manager:PauseSound(id)
                 movieMusic = {manager=manager, id=id}
                 log('Paused battle music for the Crystal Fina movie')
+                errors.movieHandle = nil
                 return
             end
         end
     end
+    if not errors.movieHandle then log('Movie identified; no active battle music handle found'); errors.movieHandle = true end
 end
 local function tick()
     local musicOk, musicError = pcall(movie_music)
@@ -492,3 +513,4 @@ if not nativeLoop then LoopAsync(33, function()
     return false
 end) end
 log('Battle presentation ready (session recovery; body-ray refraction; single resonance glow; linked attack timing); waiting for custom Crystal Fina')
+if config.cinematicMovie then log('Movie audio detector ready: ' .. config.cinematicMovie) end

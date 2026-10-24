@@ -155,10 +155,6 @@ class SephiraVisions {
     }
     final result = CharacterConfig.restore(profile, roster, replacing: replacing);
     result[field] = {'version': 1, 'preset': preset['id'], 'enabled': enabled};
-    // Resetting a kit should not move a vision out of its assigned cave/shop.
-    if (replacing?.containsKey('studioAcquisition') == true) {
-      result['studioAcquisition'] = CharacterConfig.copy(replacing!['studioAcquisition'] as Map<String, dynamic>);
-    }
     return result;
   }
 
