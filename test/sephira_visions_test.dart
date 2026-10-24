@@ -42,6 +42,59 @@ Map<String, dynamic> revision5Preset(Map<String, dynamic> value) {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('All shipped technical skill and donor resonance text migrates without kit changes', () async {
+    final presets = await SephiraVisions.bundled;
+    var skillsChanged = 0;
+    for (final preset in presets) {
+      final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      unit[SephiraVisions.field] = {'version':1,'preset':preset['id'],'enabled':true};
+      final updates = preset['descriptionUpdate'] as Map;
+      for (final text in updates['skills'] as List) {
+        final recipe = (unit['skills'] as Map).values.whereType<Map>().singleWhere(
+          (r) => r['from']==text['from'] && r['en']==text['name']);
+        recipe['desc'] = text['before'];
+        skillsChanged++;
+      }
+      unit['lb_custom']['desc'] = updates['resonance']['before'];
+      final expected = CharacterConfig.copy(unit);
+      final next = SephiraVisions.repairDescriptions(unit,presets);
+      for (final text in updates['skills'] as List) {
+        final recipe = (expected['skills'] as Map).values.whereType<Map>().singleWhere(
+          (r) => r['from']==text['from'] && r['en']==text['name']);
+        recipe['desc'] = text['after']; recipe['descAuto'] = false;
+      }
+      expected['lb_custom']['desc'] = updates['resonance']['after'];
+      expected['lb_custom']['descAuto'] = false;
+      expect(next,expected,reason:preset['id'] as String);
+      expect(SephiraVisions.repairDescriptions(next,presets),same(next));
+    }
+    expect(skillsChanged,313);
+  });
+
+  test('Description repair preserves edited text, native units and unrelated donors', () async {
+    final presets = await SephiraVisions.bundled;
+    final preset = presets.singleWhere((p) => p['id']=='aria');
+    final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+    unit[SephiraVisions.field] = {'version':1,'preset':'aria','enabled':true};
+    unit['lb_custom']['desc'] = 'My own resonance text.';
+    for (final recipe in (unit['skills'] as Map).values.whereType<Map>()) {
+      recipe['desc'] = 'My own ability text.';
+    }
+    expect(SephiraVisions.repairDescriptions(unit,presets),same(unit));
+    final edit = (preset['descriptionUpdate']['skills'] as List).first as Map;
+    final recipe = (unit['skills'] as Map).values.whereType<Map>().firstWhere(
+      (r) => r['from']==edit['from'] && r['en']==edit['name']);
+    recipe['en'] = 'My own ability name.';
+    recipe['desc'] = edit['before'];
+    final repaired = SephiraVisions.repairDescriptions(unit,presets);
+    final renamed = (repaired['skills'] as Map).values.whereType<Map>().singleWhere(
+      (r) => r['en']=='My own ability name.');
+    expect(renamed['desc'],edit['after']);
+    expect(repaired['lb_custom']['desc'],'My own resonance text.');
+    final native = CharacterConfig.copy(unit)..['native']={'id':13024};
+    expect(SephiraVisions.repairDescriptions(native,presets),same(native));
+  });
+
   late Directory dir;
   late ConfigApi api;
   late AppState app;

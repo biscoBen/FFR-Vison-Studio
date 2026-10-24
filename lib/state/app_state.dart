@@ -385,6 +385,15 @@ class AppState extends ChangeNotifier {
       units = audio;
       dirty = true;
     }
+    final descriptions = [for (final u in units)
+      SephiraVisions.repairDescriptions(u as JsonMap, sephiraPresets)];
+    if (descriptions.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'sephira-descriptions-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = descriptions;
+      dirty = true;
+    }
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);

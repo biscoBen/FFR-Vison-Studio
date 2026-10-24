@@ -274,6 +274,7 @@ class BundledFeatures {
           'payload/overworld_assets.zip',
           'payload/_ffr_testing.py',
           'payload/_ffr_fina_cinematic.py',
+          'payload/_ffr_fina_cave_music.py',
           'payload/fina_cinematic.zip',
           'payload/_ffr_fina_boss.py',
           'payload/crystal_fina_boss.json',
@@ -301,7 +302,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 63) {
+        (manifest['files'] as Map).length != 64) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
@@ -347,7 +348,7 @@ class BundledFeatures {
       throw StateError(result.stderr.toString().trim());
     }
     final status = json.decode(result.stdout.toString()) as Map;
-    if (status['patchVersion'] != '1.2.76' ||
+    if (status['patchVersion'] != '1.2.77' ||
         status['status'] != (action == 'Apply' ? 'active' : 'restored')) {
       throw StateError('The engine did not confirm existing vision support.');
     }

@@ -87,6 +87,43 @@ class SephiraVisions {
     return result;
   }
 
+  /// Replace only our shipped technical descriptions, retaining deliberate text
+  /// edits and every identity, learned reward, combat field and acquisition.
+  static Map<String, dynamic> repairDescriptions(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (unit['native'] != null || unit['party'] != null) return unit;
+    final id = presetId(unit) ?? (CrystalFina.matches(unit) ? 'crystal_fina' : null);
+    final preset = presets.where((p) => p['id'] == id).firstOrNull;
+    final update = preset?['descriptionUpdate'];
+    if (update is! Map || update['schema'] != 1) return unit;
+    var changed = false;
+    final result = CharacterConfig.copy(unit);
+    final skills = result['skills'];
+    if (skills is Map) {
+      for (final recipe in skills.values.whereType<Map>()) {
+        for (final text in (update['skills'] as List).whereType<Map>()) {
+          if (recipe['from'] == text['from'] &&
+              recipe['desc'] == text['before']) {
+            recipe['desc'] = text['after'];
+            recipe['descAuto'] = false;
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+    final lb = result['lb_custom'];
+    final text = update['resonance'];
+    if (lb is Map && text is Map && lb['from'] == text['from'] &&
+        lb['desc'] == text['before']) {
+      lb['desc'] = text['after'];
+      lb['descAuto'] = false;
+      changed = true;
+    }
+    return changed ? result : unit;
+  }
+
   /// Independent bundled Fina shares the collection's additive bonus repair.
   /// Already-updated entries and deliberate later edits are left alone.
   static Map<String, dynamic> repairIndependentBonuses(

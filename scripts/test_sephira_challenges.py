@@ -40,11 +40,9 @@ class SephiraChallengeTests(unittest.TestCase):
             for edit in plan['set']:
                 cls.built[rel][edit['row']] = testing.apply_fields(cls.built[rel][edit['row']], edit['set'])
 
-    def test_christine_is_offered_behind_rains_house_only_after_tronn_and_until_won(self):
+    def test_christine_crystal_dialog_checks_tronn_and_only_offers_unowned_reward(self):
         name = challenge.PREFIX + '13024'
-        entry = name + '_Return'
         unit = next(u for u in self.units if u['sephiraVision']['preset'] == 'christine')
-        branches = self.built[challenge.COMPOSITE][entry]['ContinuousEventList']
         def matches(condition, items, flags):
             def token(text):
                 item = re.fullmatch(r'\{item:(\d+)\}(>0|==0)', text)
@@ -58,20 +56,22 @@ class SephiraChallengeTests(unittest.TestCase):
                 for owns_christine in (False, True):
                     items = ({13024} if owns_tronn else set()) | ({unit['id']} if owns_christine else set())
                     flags = {147} if story_flag else set()
-                    active = [b['EventId'] for b in branches if matches(b['Condition'], items, flags)]
-                    should_offer = (owns_tronn or story_flag) and not owns_christine
-                    self.assertEqual(active, [name + ('_Menu' if should_offer else '_Close')])
+                    state = name
+                    while True:
+                        branches = self.built[challenge.COMPOSITE][state]['ContinuousEventList']
+                        if not branches: break
+                        active = [b['EventId'] for b in branches if matches(b['Condition'],items,flags)]
+                        self.assertEqual(len(active),1)
+                        state = active[0]
+                    expected = '_Locked' if not (owns_tronn or story_flag) else '_Done' if owns_christine else '_Menu'
+                    self.assertEqual(state,name+expected)
         for rel in ('Map/MapData/DT_MapData_01Gra', caves.COMPOSITE):
             original = self.native[rel]['01Gra_44']
-            self.assertEqual(self.built[rel]['01Gra_44'], {
-                **original, 'startupEventList': [*original['startupEventList'],
-                    {'Condition': branches[0]['Condition'], 'EventId': entry}], 'battleStage': 27500})
-            self.assertEqual(self.built[rel]['01Gra_44']['battleStage'], 27500)
-        event = self.built[challenge.COMPOSITE][entry]
-        self.assertEqual(event['ObtainItemList'] + event['OnFlagList'] + event['ProgressList'], [])
-        menu = self.built[challenge.CHOICES][name + '_Menu']
-        self.assertEqual(menu['ChoiceTextList'][-1], 'Leave')
-        self.assertEqual(menu['CancelIndex'], len(menu['ChoiceTextList']) - 1)
+            self.assertEqual(self.built[rel]['01Gra_44'], {**original, 'battleStage': 27500})
+        self.assertNotIn(name+'_Return',self.built[challenge.COMPOSITE])
+        menu = self.built[challenge.CHOICES][name+'_Menu']
+        self.assertEqual(menu['ChoiceTextList'][-1],'Leave')
+        self.assertEqual(menu['CancelIndex'],len(menu['ChoiceTextList'])-1)
 
     def test_christine_return_prompt_is_absent_when_removed_or_moved_to_the_shop(self):
         for moved in (False, True):
@@ -187,22 +187,31 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(added['MaxOrderNum'], 1)
         self.assertEqual([i for i in actual['ItemList'] if i['ItemId'] not in (-1, folka['id'])], [i for i in source['ItemList'] if i['ItemId']!=-1])
 
-    def test_tronn_interaction_retains_native_streams_and_actor_graph(self):
+    def test_physical_christine_crystal_retains_all_native_cave_streams(self):
         path = ROOT/'scripts/fixtures/sephira_challenges'
-        room = json.loads(gzip.decompress((path/'tronn-room.json.gz').read_bytes()))
-        trigger = json.loads(gzip.decompress((path/'crystal-interaction.json.gz').read_bytes()))
-        before = copy.deepcopy((room, trigger))
-        views = challenge.tronn_views(room, trigger)
-        self.assertEqual((room, trigger), before)
-        private = views[challenge.SEQUENCE+'Studio_TronnCrystal_EV']
-        owner = caves.export(private, 'BP_MapGimmick_EventTrigger_C_1')[1]
-        event, = caves.property_data(owner, 'm_EventList')['Value']
-        self.assertEqual(caves.property_data(event, 'EventId')['Value'], challenge.PREFIX+'13024')
-        self.assertIn(challenge.PREFIX.rstrip('_'), private['NameMap'][:private['NamesReferencedFromExportDataCount']])
-        built = views['Map/Com/00Com/00Com_237/Com_00Com_237_PL']
-        self.assertEqual(len(built['Exports']), len(room['Exports'])+1)
-        for name in ('LevelStreamingDynamic_0', 'LevelStreamingDynamic_1'):
-            self.assertEqual(caves.export(built, name)[1], caves.export(room, name)[1])
+        def load(name): return json.loads(gzip.decompress((path/name).read_bytes()))
+        room, trigger, bg = [load(n) for n in ('secret-cave.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
+        before = copy.deepcopy((room,trigger,bg))
+        spec = challenge.data()['encounters'][0]
+        views = challenge.christine_views(room,trigger,bg,spec)
+        self.assertEqual((room,trigger,bg),before)
+        private = views[challenge.SEQUENCE+'Studio_ChristineCrystal_EV']
+        owner = caves.export(private,'BP_MapGimmick_EventTrigger_C_1')[1]
+        event, = caves.property_data(owner,'m_EventList')['Value']
+        self.assertEqual(caves.property_data(event,'EventId')['Value'],challenge.PREFIX+'13024')
+        crystal_id, crystal = caves.export(private,'Studio_ChristineCrystal')
+        self.assertIn(crystal_id,caves.export(private,'PersistentLevel')[1]['Actors'])
+        self.assertEqual(caves.property_data(owner,'m_UniqueId')['Value'],27500)
+        component = private['Exports'][caves.property_data(crystal,'StaticMeshComponent')['Value']-1]
+        mesh = private['Imports'][-caves.property_data(component,'StaticMesh')['Value']-1]
+        self.assertEqual(mesh['ObjectName'],'SM_Env_Com_magicstone001')
+        position=caves.property_data(component,'RelativeLocation')['Value'][0]['Value']
+        self.assertEqual([position[k] for k in ('X','Y','Z')],spec['crystalInteraction']['position'])
+        built=views[spec['crystalInteraction']['mapPackage']]
+        self.assertEqual(len(built['Exports']),len(room['Exports'])+1)
+        for original in room['Exports']:
+            if original['ObjectName'].startswith('LevelStreaming'):
+                self.assertEqual(caves.export(built,original['ObjectName'])[1],original)
         for view in views.values(): caves.check_object_names(view)
 
 

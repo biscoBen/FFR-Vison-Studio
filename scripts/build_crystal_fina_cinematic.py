@@ -92,13 +92,13 @@ def render(art, directory, reuse_frames=False):
 
 
 def package(directory, destination):
-    """Package a movie, its native stereo ADX score and clean source WAV."""
+    """Package the current movie; include an embedded score only for historical formats."""
     spec = json.loads((directory/'render.json').read_text())
     files = {'spec.json':(json.dumps(spec,indent=2)+'\n').encode(),
              'movie.usm':(directory/'crystal-fina.usm').read_bytes(),
-             'score.adx':(directory/'score.adx').read_bytes(),
-             'score.wav':(directory/'score.wav').read_bytes(),
              'preview.mp4':(directory/'Crystal-Fina-Cinematic-Preview.mp4').read_bytes()}
+    if spec.get('embeddedAudio') is not None:
+        for name in ('score.adx','score.wav'): files[name]=(directory/name).read_bytes()
     poster=Image.open(directory/'frame-0001.png').convert('RGB')
     import io
     stream=io.BytesIO();poster.save(stream,format='JPEG',quality=90);files['poster.jpg']=stream.getvalue()

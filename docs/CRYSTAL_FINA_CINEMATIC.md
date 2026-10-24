@@ -5,13 +5,11 @@ its 6.4-second duration. The user confirms the movie now plays once and hands of
 to the sprite LB. Its embedded mono HCA score was audible but garbled in game,
 despite clean offline HCA recovery/decoding. That is a failed listening test.
 
-The current correction uses the original Cloud movie's stereo ADX v4 audio format,
-288-byte header packet, 1,800-byte stereo data packets and native audio clock. Both
-movie descriptors declare stereo `Adx`, 48 kHz, 307,200 samples. A new original
-light, spacious piano phrase uses rubato timing around 64 bpm. Organ enters at
-3.2 seconds and builds into an intense, unresolved ending as Fina opens her eyes
-at 5.2 seconds. This is a codec/layout
-compatibility test; its audible result inside Resonance remains unverified.
+The current correction uses the secret cave's own **BGM_PP_DUNGEON_CAVE1** recording,
+from its beginning. A private native Atom timeline/cue reads the installed game's
+`BGM_PP` bank and streaming archive. No audio is reencoded or copied into the mod,
+and the failing embedded Mana soundtrack is removed. The requested piano/organ
+candidate was superseded before publication. In-game listening remains unverified.
 
 Only audio is replaced. Studio's preview copies the approved video stream without
 re-encoding; the in-game 192 VP9 color pictures and 192 native Sofdec opacity pictures
@@ -21,7 +19,7 @@ The new preview has different whole-file bytes because its soundtrack changed.
 Its copied video-stream SHA-256 is
 `bc7dec7c2a7d0ad08caf0386d2022178fbfdcb965949cfe9204c6fb2681ec1d5`.
 
-In Studio, use **Preview Crystal Fina cinematic** to view the movie with sound. To test the game path:
+In Studio, **Preview Crystal Fina cinematic** shows the picture only; its native game soundtrack is heard in battle. To test the game path:
 
 1. Include Crystal Fina and keep her own FFBE resonance selected.
 2. Turn on **Test Crystal Fina cinematic**.
@@ -36,13 +34,12 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 
 ## Playback and transport
 
-- VP9, 1920×1080, 30 fps, 192 frames; native opaque Sofdec alpha and embedded stereo 48-kHz ADX v4 score.
+- VP9, 1920×1080, 30 fps, 192 frames; native opaque Sofdec alpha, no embedded audio.
 - A private native `PlatformManaMovie`/`FileManaMovie` pair points at `Movies/Studio/CrystalFina_Test.usm`.
   CRI resolves that relative to `Content/Streams`: the companion pak must contain
   `FFRS/Content/Streams/Movies/Studio/CrystalFina_Test.usm`.
 - The original Cloud movie master supplies the native Mana/spawn bindings. Its compiled bindings and director
-  locator are retained through binary cloning; only validated cached frame bounds are shortened. Its donor battle events are neutralized. Three private event-only
-  children supply Fina’s continuation and inert effect/sound subtracks.
+  locator are retained through binary cloning; only validated cached frame bounds are shortened. Its donor battle events are neutralized. Private children supply Fina’s continuation, an inert effect subtrack and the native Atom cave-music subtrack.
 - After timing changes, the private sequence, scene, Mana track/section and actor spawn track/section receive
   fresh signatures. Shipping playback still consumed the cooked evaluation export, so its four movie
   endpoints and nine root/subsequence endpoints now change alongside the typed ranges. Every other byte
@@ -52,12 +49,11 @@ The first test leaves native movie skipping disabled on this private wrapper; sk
 - The movie window is 2.0–8.4 seconds. Fina’s existing LB, reaction, cleanup and sounds shift together, with LB1
   beginning at 8.4 seconds. Her cure recording stays on the original heal application marker. The common opening
   cue moves to the start, and the original score begins with the movie.
-- The new piano/organ score is embedded as stereo ADX v4: 48 kHz, 307,200 samples.
-  Both movie descriptors match. The stereo channel blocks stay interleaved: 50
-  pairs of 18-byte ADX blocks per packet provide 1,600 samples per 30-fps frame.
-  The header/timestamp layout matches the captured native Cloud stream. The HCA
-  movie path is removed after the user's garbled-audio report. No hit-sound score
-  event is added. The sprite opening/build-up and cure banks remain independent.
+- One native `MovieSceneAtomSection` plays `BGM_PP_DUNGEON_CAVE1` from offset zero
+  over 2.0–8.4 seconds, stopping at the sprite handoff. The other four Cloud cues
+  are disabled. Its typed cooked evaluation ranges are retimed with its section;
+  native preloading is retained. Both Mana descriptors have zero audio tracks.
+  Fina's separate opening/build-up and cure banks stay on their original markers.
 - The USM travels in Studio’s normal companion `.pak`; retoc writes the `.utoc`/`.ucas` and preserves that pak.
   The existing three-file installer and Steam Deck snapshot format therefore carry the movie too. Disabling the
   test empties the owned companion movie pak on the next build. Other mods are untouched.
@@ -338,7 +334,7 @@ The exact selected browser MP4 remains unchanged. These corrections require a re
 restart; they need no kit/MR/acquisition update. One movie followed by the sprite LB, audible movie
 music and reuse in a second battle remain live checks.
 
-### Piano/organ score and native ADX compatibility test
+### Superseded piano/organ and native ADX candidate (not published)
 
 The user confirms the previous update's video plays once, and only its movie audio
 is garbled; retain its cooked/typed timing fixes. Offline recovery/decoding of that
@@ -379,4 +375,30 @@ PYTHONPATH=/path/to/wannacri:scripts python scripts/rescore_crystal_fina_movie.p
   --source /path/to/Crystal-Fina-Rotating-Lighter.mp4 \
   --score-wav /tmp/fina-score.wav --score-adx /tmp/fina-score.adx \
   --destination assets/existing_visions/payload/fina_cinematic.zip --output /tmp/fina-scored
+```
+
+### Native cave-music test (revision 4)
+
+The returned `Christine-Cave-Reference-20261023-173751-cbffe5` parts contain 60 native
+assets, with zero conversion failures. `BGM_PP` cue index 46 / cue ID 10046 resolves
+`BGM_PP_DUNGEON_CAVE1` to streamed waveform 46, stream ID 56, stereo 48 kHz,
+3,277,372 samples. The ACB metadata is present; the streamed recording stays in the
+user's game. A private clone of the game's BGM Atom cue references that same bank
+and exact cue name, with zero starting offset and an explicit stop at movie end.
+The picture-only USM SHA-256 is
+`172c79078fe12907141b1f5dfb6687fdfd8625dd10c1420cf258df8e4a21d6c7`.
+
+Native descriptor, Atom section/cue, cooked master timing and full retoc packing
+read back correctly. These checks cannot establish audible playback/mixing or
+return to the battle theme: test the intro, sprite/cure handoff and a second battle.
+No original cue, bank, track or shared movie player is modified.
+
+To reproduce the current picture-only payload from the earlier illustrated test:
+
+```sh
+PYTHONPATH=/path/to/wannacri python scripts/use_crystal_fina_cave_music.py \
+  --archive /path/to/earlier/fina_cinematic.zip \
+  --source /path/to/Crystal-Fina-Rotating-Lighter.mp4 \
+  --destination assets/existing_visions/payload/fina_cinematic.zip \
+  --work /tmp/fina-cave-movie
 ```

@@ -61,7 +61,7 @@
     "jp": "Crystal Fina 2_LB",
     "en": "Crystal Restoration",
     "nameAuto": false,
-    "desc": "Restore HP to all allies and cures status",
+    "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
     "set": {
       "element": "None",
       "hitCount": 1,
@@ -102,7 +102,7 @@
       "visuals": 210020,
       "jp": "CrystalFina_MR_485318",
       "en": "Crystal Renewal",
-      "desc": "Restore healing power 400. Group friendlies; MP 50; hits 1; accuracy 100; stagger 50.",
+      "desc": "Restore all allies\u2019 HP.",
       "descAuto": false,
       "set": {
         "Cost": 50,

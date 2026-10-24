@@ -64,7 +64,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.76');
+      expect(state['version'], '1.2.77');
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_ffbe_library.py',
@@ -79,6 +79,7 @@ void main() {
         '_ffr_ffbe_needles.py',
         'ffbe_needles.zip',
         '_ffr_fina_cinematic.py',
+        '_ffr_fina_cave_music.py',
         'fina_cinematic.zip',
         '_ffr_deck_sync.py',
         '_ffr_party.py',

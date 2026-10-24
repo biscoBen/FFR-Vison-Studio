@@ -13,6 +13,7 @@ from sephira_journey import acquisition as journey_acquisition
 from sephira_reward_sources import revise as revise_reward_sources, describe_changes
 from sephira_passive_mastery import revise as revise_passive_mastery
 from sephira_awakening_bonuses import revise as revise_awakening_bonuses
+from sephira_descriptions import revise as revise_descriptions, standalone as standalone_descriptions
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -421,6 +422,9 @@ def generate(reference):
     revise_reward_sources(catalog, rows, english, player_recipe)
     revise_passive_mastery(catalog, audit, rows, english)
     revise_awakening_bonuses(catalog, rows, english)
+    revise_descriptions(catalog, rows, english)
+    independent = ROOT/'assets/crystal_fina/profile.json'
+    independent.write_text(json.dumps(standalone_descriptions(json.loads(independent.read_bytes()), catalog),indent=2)+'\n')
     audit['status'] = 'All 160 original active skills and 131 original passives retain canonical allocations; revision 7 awakening bonuses may repeat MR choices on other visions.'
     (ROOT/'assets/sephira_visions/native_coverage.json').write_text(json.dumps(audit,indent=2)+'\n')
     (ROOT/'assets/sephira_visions/catalog.json').write_text(json.dumps(catalog,indent=2)+'\n')

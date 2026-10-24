@@ -1,0 +1,2988 @@
+{
+  "skills": [
+    {
+      "id": 440010,
+      "row": "\u30af\u30ea\u30b9\u30bf\u30eb\u30d6\u30ec\u30a4\u30d0\u30fc",
+      "name": "Crystal Braver",
+      "desc": "Deal physical damage to all enemies, cast Regen on self, and increase own defense and spirit for {Effect1Turn} {Effect1Turn}|plural(one=turn, other=turns).",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 5,
+      "ratios": [
+        0.2,
+        0.2,
+        0.2,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Attack",
+      "effects": [
+        1289,
+        1291,
+        1165,
+        12966
+      ],
+      "seq": [
+        1
+      ],
+      "seqPath": "/Game/Sequencer/Battle/Skill/440010/440011/SEQ_Battle_440011_Master",
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440020,
+      "row": "\u30de\u30b9\u30bf\u30fc\u30aa\u30d6\u30a2\u30fc\u30e0\u30ba",
+      "name": "Weaponsmaster",
+      "desc": "Deal Light physical damage to an enemy and fill LB gauge by 20%.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Light",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 39,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 8,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Light",
+      "effects": [
+        12966,
+        62000
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440030,
+      "row": "\u30b8\u30e7\u30d6\u30c1\u30a7\u30f3\u30b8\u30a2\u30bf\u30c3\u30af",
+      "name": "Job Change Attack",
+      "desc": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Magic",
+      "calcType": "Magic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 8,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Attack",
+      "effects": [
+        12946,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440040,
+      "row": "\u30c7\u30e5\u30a2\u30ea\u30c6\u30a3\u30ca\u30a4\u30c8",
+      "name": "Knight of Duality",
+      "desc": "Deal Light physical damage to all enemies. Activate a barrier on all allies that reduces damage taken by 50% once.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Light",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 8,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Light",
+      "effects": [
+        16100,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440060,
+      "row": "\u9b54\u6cd5\u5263\u4e8c\u5200\u6d41\u307f\u3060\u308c\u3046\u3061",
+      "name": "Spellblade-Dual Wield-Rapid Fire",
+      "desc": "Deal physical damage to an enemy.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "None",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 39,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "icon": "UI.Skill.Action.Icon.Attack",
+      "effects": [
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440090,
+      "row": "\u30ed\u30fc\u30bf\u30b9\u30fb\u30e9\u30a4\u30aa\u30c3\u30c8\u30bd\u30fc\u30c9",
+      "name": "Riot Blade - Lotus",
+      "desc": "Deal non-elemental magic damage to all enemies.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Magic",
+      "calcType": "Magic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 7,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Attack",
+      "effects": [
+        12966
+      ],
+      "seq": [
+        1
+      ],
+      "seqPath": "/Game/Sequencer/Battle/Skill/440090/440091/SEQ_Battle_440091_Master",
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440110,
+      "row": "\u30af\u30e9\u30a4\u30e0\u30cf\u30b6\u30fc\u30c9",
+      "name": "Ascension",
+      "desc": "Deal Lightning physical damage to an enemy. Has a high critical hit rate.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Thunder",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 36,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.08,
+        0.28
+      ],
+      "icon": "UI.Skill.Action.Icon.Thunder",
+      "effects": [
+        13301,
+        12966
+      ],
+      "seq": [
+        1
+      ],
+      "seqPath": "/Game/Sequencer/Battle/Skill/440110/440111/SEQ_Battle_440111_Master",
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440170,
+      "row": "\u30d6\u30e9\u30b9\u30c6\u30a3\u30f3\u30b0\u30be\u30fc\u30f3",
+      "name": "Blasting Zone",
+      "desc": "Deal Fire physical damage to all enemies.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Fire",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "icon": "UI.Skill.Action.Icon.Fire",
+      "effects": [
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440190,
+      "row": "\u30af\u30e9\u30a4\u30de\u30c3\u30af\u30b9\u30a8\u30c3\u30b8",
+      "name": "Climax Edge",
+      "desc": "Deal Wind magic damage to an enemy.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Magic",
+      "calcType": "Magic",
+      "element": "Wind",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 39,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "icon": "UI.Skill.Action.Icon.Wind",
+      "effects": [
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440210,
+      "row": "\u30a8\u30fc\u30b9\u30fb\u30aa\u30d6\u30fb\u30b6\u30fb\u30d6\u30ea\u30c3\u30c4",
+      "name": "Blitz Ace",
+      "desc": "Deal Water physical damage to an enemy. The last hit targets all enemies.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Water",
+      "target": "SingleAndGroup",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 18,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 9,
+      "ratios": [
+        0.11,
+        0.11,
+        0.11,
+        0.11,
+        0.11,
+        0.11,
+        0.11,
+        0.11,
+        0.12
+      ],
+      "icon": "UI.Skill.Action.Icon.Water",
+      "effects": [
+        59000,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440240,
+      "row": "\u30b3\u30ed\u30c3\u30b5\u30eb\u30fb\u30b7\u30e3\u30f3\u30c8\u30c3\u30c8\u2161",
+      "name": "Colossal Shantotto II",
+      "desc": "Deal Dark magic damage to an enemy and fill LB gauge by 20%.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Magic",
+      "calcType": "Magic",
+      "element": "Dark",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 39,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "icon": "UI.Skill.Action.Icon.Dark",
+      "effects": [
+        62000,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440250,
+      "row": "\u771f\u30fb\u30e1\u30eb\u30c8\u30af\u30ea\u30e0\u30be\u30f3",
+      "name": "True Pyroclasm",
+      "desc": "Deal Fire physical damage to all enemies. Guaranteed to steal from affected targets.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Fire",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 8,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Fire",
+      "effects": [
+        52003,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440290,
+      "row": "\u771f\u30fb\u30d5\u30a1\u30f3\u30c8\u30e0\u30bd\u30fc\u30c9",
+      "name": "Armiger Unleashed",
+      "desc": "Deal physical damage to all enemies.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 30,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 10,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1
+      ],
+      "icon": "UI.Skill.Action.Icon.Attack",
+      "effects": [
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 440310,
+      "row": "\u771f\u30fb\u30a4\u30d5\u30ea\u30fc\u30c8\u9855\u73fe",
+      "name": "True Ifrit-Primed",
+      "desc": "[Eikon Skill] Deal Fire physical damage to an enemy.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Physic",
+      "calcType": "Physic",
+      "element": "Fire",
+      "target": "Single",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 39,
+      "breakDmg": 0,
+      "accuracy": 500,
+      "hits": 8,
+      "ratios": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Fire",
+      "effects": [
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 414090,
+      "row": "\u30c8\u30ed\u30f3_LB\u3000\u9023\u7d9a\u30d6\u30ea\u30b6\u30e9",
+      "name": "Hibernal Fury",
+      "desc": "Deal Ice magic damage to random enemies 5 times.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "Magic",
+      "calcType": "Magic",
+      "element": "Ice",
+      "target": "Random",
+      "relation": "Enemies",
+      "cost": 0,
+      "mag": 45,
+      "breakDmg": 29,
+      "accuracy": 500,
+      "hits": 5,
+      "ratios": [
+        0.2,
+        0.2,
+        0.2,
+        0.2,
+        0.2
+      ],
+      "icon": "UI.Skill.Action.Icon.Ice",
+      "effects": [
+        12966
+      ],
+      "seq": [
+        1
+      ],
+      "seqPath": "/Game/Sequencer/Battle/Skill/414090/414091/SEQ_Battle_414091_Master",
+      "hit": true,
+      "hasUnit": "All"
+    },
+    {
+      "id": 414100,
+      "row": "\u30ea\u30fc\u30a2_LB\u3000\u9650\u754c\u7a81\u7834\u56de\u5fa9",
+      "name": "Healing Wind",
+      "desc": "Heal all allies and cast Regen on them. Heal effect can exceed max HP.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "None",
+      "calcType": "Magic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Friendlies",
+      "cost": 0,
+      "mag": 100,
+      "breakDmg": 50,
+      "accuracy": 500,
+      "hits": 1,
+      "ratios": [
+        1.0
+      ],
+      "icon": "UI.Skill.Action.Icon.Heal",
+      "effects": [
+        21200,
+        1165,
+        12966
+      ],
+      "seq": [
+        1
+      ],
+      "seqPath": "/Game/Sequencer/Battle/Skill/414100/414101/SEQ_Battle_414101_Master",
+      "hit": false,
+      "hasUnit": "All"
+    },
+    {
+      "id": 412510,
+      "row": "\u30a2\u30e4\u30ab_LB\u3000\u30a8\u30f3\u30b8\u30a7\u30ea\u30c3\u30af\u30d5\u30a7\u30b6\u30fc",
+      "name": "Angelic Embrace",
+      "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
+      "attr": "FinishBlow",
+      "effectType": "DamageAndRecovery",
+      "dmgType": "None",
+      "calcType": "Magic",
+      "element": "None",
+      "target": "Group",
+      "relation": "Friendlies",
+      "cost": 0,
+      "mag": 300,
+      "breakDmg": 50,
+      "accuracy": 500,
+      "hits": 1,
+      "ratios": [
+        1.0
+      ],
+      "icon": "UI.Skill.Action.Icon.Heal",
+      "effects": [
+        20012,
+        1025,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": false,
+      "hasUnit": "All"
+    },
+    {
+      "id": 412620,
+      "row": "\u30f4\u30a3\u30eb\u30d8\u30eb\u30e0_LB\u3000\u30b0\u30ec\u30fc\u30c8\u30a6\u30a9\u30fc\u30eb",
+      "name": "Towering Rampart",
+      "desc": "Activate a barrier on all allies that reduces damage taken by 70% once.",
+      "attr": "FinishBlow",
+      "effectType": "None",
+      "dmgType": "None",
+      "calcType": "None",
+      "element": "None",
+      "target": "Group",
+      "relation": "Friendlies",
+      "cost": 0,
+      "mag": 15,
+      "breakDmg": 25,
+      "accuracy": 500,
+      "hits": 1,
+      "ratios": [
+        1.0
+      ],
+      "icon": "UI.Skill.Action.Icon.Support",
+      "effects": [
+        16129,
+        12966
+      ],
+      "seq": [],
+      "seqPath": null,
+      "hit": false,
+      "hasUnit": "All"
+    }
+  ],
+  "nativeRows": {
+    "\u30db\u30fc\u30ea\u30fc": {
+      "ID": 210190,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30ea\u30ec\u30a4\u30ba_\u8607\u751f": {
+      "ID": 210240,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b1\u30a2\u30eb\u5168\u4f53\u5316": {
+      "ID": 215000,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b1\u30a2\u30eb\u30e9\u5168\u4f53\u5316": {
+      "ID": 215010,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b1\u30a2\u30eb\u30ac\u5168\u4f53\u5316": {
+      "ID": 215020,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b5\u30a4\u30aa\u30f3\u30ba\u30fb\u30d6\u30ea\u30b6\u30c9": {
+      "ID": 220420,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b5\u30a4\u30aa\u30f3\u30ba\u30fb\u30d6\u30ea\u30b6\u30e9": {
+      "ID": 220430,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u30b5\u30a4\u30aa\u30f3\u30ba\u30fb\u30d6\u30ea\u30b6\u30ac": {
+      "ID": 220440,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30d5\u30a1\u30a4\u30ac\u5168\u4f53\u5316": {
+      "ID": 225020,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30d6\u30ea\u30b6\u30c9\u5168\u4f53\u5316": {
+      "ID": 225030,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d6\u30ea\u30b6\u30ac\u5168\u4f53\u5316": {
+      "ID": 225050,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30b5\u30f3\u30c0\u30fc\u5168\u4f53\u5316": {
+      "ID": 225060,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b5\u30f3\u30c0\u30ac\u5168\u4f53\u5316": {
+      "ID": 225080,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30a6\u30a9\u30fc\u30bf\u5168\u4f53\u5316": {
+      "ID": 225090,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30a6\u30a9\u30bf\u30e9\u5168\u4f53\u5316": {
+      "ID": 225100,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u30a6\u30a9\u30bf\u30ac\u5168\u4f53\u5316": {
+      "ID": 225110,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30a8\u30a2\u30ed\u5168\u4f53\u5316": {
+      "ID": 225120,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30a8\u30a2\u30ed\u30e9\u5168\u4f53\u5316": {
+      "ID": 225130,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u30a8\u30a2\u30ed\u30ac\u5168\u4f53\u5316": {
+      "ID": 225140,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30b9\u30c8\u30fc\u30f3\u5168\u4f53\u5316": {
+      "ID": 225150,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b9\u30c8\u30f3\u30ac\u5168\u4f53\u5316": {
+      "ID": 225170,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30dd\u30a4\u30ba\u30f3\u5168\u4f53\u5316": {
+      "ID": 225180,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d0\u30cb\u30b7\u30e5\u5168\u4f53\u5316": {
+      "ID": 225290,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d0\u30cb\u30b7\u30e5\u30e9\u5168\u4f53\u5316": {
+      "ID": 225300,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u30d0\u30cb\u30b7\u30e5\u30ac\u5168\u4f53\u5316": {
+      "ID": 225310,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30b9\u30ea\u30d7\u30eb\u3000\u7761\u7720": {
+      "ID": 230010,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30c7\u30d5\u30a7\u30a4": {
+      "ID": 230200,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b9\u30ea\u30d7\u30eb\u3000\u7761\u7720\u3000\u5168\u4f53\u5316": {
+      "ID": 235000,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d6\u30e9\u30a4\u30f3\u3000\u6697\u95c7\u3000\u5168\u4f53\u5316": {
+      "ID": 235010,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b5\u30a4\u30ec\u30b9\u3000\u6c88\u9ed9\u3000\u5168\u4f53\u5316": {
+      "ID": 235020,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30c7\u30d6\u30ec\u30ac": {
+      "ID": 235050,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30c7\u30d5\u30a7\u30ac": {
+      "ID": 235060,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b3\u30f3\u30d5\u30e5\u30ac": {
+      "ID": 235070,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30e1\u30ac\u30d0\u30fc\u30b5\u30af": {
+      "ID": 235080,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30af\u30ea\u30b9\u30bf\u30eb\u30d6\u30ec\u30a4\u30d0\u30fc": {
+      "ID": 440010,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 5
+    },
+    "\u30de\u30b9\u30bf\u30fc\u30aa\u30d6\u30a2\u30fc\u30e0\u30ba": {
+      "ID": 440020,
+      "element": "Light",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 8
+    },
+    "\u30b8\u30e7\u30d6\u30c1\u30a7\u30f3\u30b8\u30a2\u30bf\u30c3\u30af": {
+      "ID": 440030,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 8
+    },
+    "\u30c7\u30e5\u30a2\u30ea\u30c6\u30a3\u30ca\u30a4\u30c8": {
+      "ID": 440040,
+      "element": "Light",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 8
+    },
+    "\u9b54\u6cd5\u5263\u4e8c\u5200\u6d41\u307f\u3060\u308c\u3046\u3061": {
+      "ID": 440060,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 10
+    },
+    "\u30ed\u30fc\u30bf\u30b9\u30fb\u30e9\u30a4\u30aa\u30c3\u30c8\u30bd\u30fc\u30c9": {
+      "ID": 440090,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 7
+    },
+    "\u30af\u30e9\u30a4\u30e0\u30cf\u30b6\u30fc\u30c9": {
+      "ID": 440110,
+      "element": "Thunder",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 10
+    },
+    "\u30d6\u30e9\u30b9\u30c6\u30a3\u30f3\u30b0\u30be\u30fc\u30f3": {
+      "ID": 440170,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 10
+    },
+    "\u30af\u30e9\u30a4\u30de\u30c3\u30af\u30b9\u30a8\u30c3\u30b8": {
+      "ID": 440190,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 10
+    },
+    "\u30a8\u30fc\u30b9\u30fb\u30aa\u30d6\u30fb\u30b6\u30fb\u30d6\u30ea\u30c3\u30c4": {
+      "ID": 440210,
+      "element": "Water",
+      "DamageType": "Physic",
+      "TargetType": "SingleAndGroup",
+      "hitCount": 9
+    },
+    "\u30b3\u30ed\u30c3\u30b5\u30eb\u30fb\u30b7\u30e3\u30f3\u30c8\u30c3\u30c8\u2161": {
+      "ID": 440240,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 10
+    },
+    "\u771f\u30fb\u30e1\u30eb\u30c8\u30af\u30ea\u30e0\u30be\u30f3": {
+      "ID": 440250,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 8
+    },
+    "\u771f\u30fb\u30d5\u30a1\u30f3\u30c8\u30e0\u30bd\u30fc\u30c9": {
+      "ID": 440290,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 10
+    },
+    "\u771f\u30fb\u30a4\u30d5\u30ea\u30fc\u30c8\u9855\u73fe": {
+      "ID": 440310,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 8
+    },
+    "\u30c4\u30a4\u30f3\u30b8\u30e7\u30d6": {
+      "ID": 445210,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30c8\u30ed\u30f3_LB\u3000\u9023\u7d9a\u30d6\u30ea\u30b6\u30e9": {
+      "ID": 414090,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Random",
+      "hitCount": 5
+    },
+    "\u30ea\u30fc\u30a2_LB\u3000\u9650\u754c\u7a81\u7834\u56de\u5fa9": {
+      "ID": 414100,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30a2\u30e4\u30ab_LB\u3000\u30a8\u30f3\u30b8\u30a7\u30ea\u30c3\u30af\u30d5\u30a7\u30b6\u30fc": {
+      "ID": 412510,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30f4\u30a3\u30eb\u30d8\u30eb\u30e0_LB\u3000\u30b0\u30ec\u30fc\u30c8\u30a6\u30a9\u30fc\u30eb": {
+      "ID": 412620,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30aa\u30fc\u30d0\u30fc\u30d5\u30ed\u30a6": {
+      "ID": 414300,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u30d1\u30a4\u30eb\u30c9\u30e9\u30a4\u30d0\u30fc": {
+      "ID": 414800,
+      "element": "Earth",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30de\u30f3\u30c8\u30eb\u30c9\u30e9\u30a4\u30d0\u30fc": {
+      "ID": 414810,
+      "element": "Earth",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "\u30b7\u30e3\u30eb\u30ed\u30c3\u30c8_\u30d6\u30ea\u30b6\u30c9\u5263": {
+      "ID": 421370,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b7\u30e3\u30eb\u30ed\u30c3\u30c8_\u30d6\u30ea\u30b6\u30e9\u5263": {
+      "ID": 421380,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b7\u30e3\u30eb\u30ed\u30c3\u30c8_\u30d6\u30ea\u30b6\u30ac\u5263": {
+      "ID": 421390,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5f37\u6253": {
+      "ID": 500020,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6253\u3061\u3064\u3051\u308b": {
+      "ID": 500030,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u65ac\u6483": {
+      "ID": 500040,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u91cd\u6483": {
+      "ID": 500050,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u63bb\u3063\u5207\u308b": {
+      "ID": 500060,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30ab\u30de": {
+      "ID": 500070,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u523a\u3059": {
+      "ID": 500090,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u72d9\u6483": {
+      "ID": 500110,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u97ad\u6253": {
+      "ID": 500120,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u3072\u3063\u304b\u304f": {
+      "ID": 500130,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6a5f\u95a2\u9283": {
+      "ID": 500150,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 4
+    },
+    "\u308d\u3063\u3053\u3064": {
+      "ID": 500170,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "1\u307e\u3093\u30dc\u30eb\u30c8": {
+      "ID": 500180,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u53e9\u304d\u3064\u3051\u308b": {
+      "ID": 500190,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u5927\u66b4\u308c\uff08\u30e2\u30eb\u30dc\u30eb\u7528\uff09": {
+      "ID": 505030,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 4
+    },
+    "\u6bd2\u5203": {
+      "ID": 500210,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7a32\u59bb": {
+      "ID": 500220,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7d76\u5bfe\u96f6\u5ea6": {
+      "ID": 500230,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u5589\u7a81\u304d": {
+      "ID": 500250,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u91dd": {
+      "ID": 500260,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6bd2\u91dd": {
+      "ID": 500280,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u9ebb\u75fa\u91dd": {
+      "ID": 500290,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7720\u308a\u91dd": {
+      "ID": 500300,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30ec\u30fc\u30b6\u30fc": {
+      "ID": 500310,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b5\u30f3\u30c9\u30b9\u30c8\u30fc\u30e0": {
+      "ID": 500320,
+      "element": "Earth",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u6d41\u7802": {
+      "ID": 500330,
+      "element": "Earth",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u708e": {
+      "ID": 500340,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d6\u30ec\u30a4\u30ba": {
+      "ID": 500350,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u706b\u708e\u65cb\u98a8": {
+      "ID": 500360,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u706b\u708e\u653e\u5c04": {
+      "ID": 500370,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "\u30a2\u30c8\u30df\u30c3\u30af\u30ec\u30a4": {
+      "ID": 500380,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u96f7": {
+      "ID": 500390,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "100\u307e\u3093\u30dc\u30eb\u30c8": {
+      "ID": 500400,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u7adc\u5dfb": {
+      "ID": 500410,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u304b\u307e\u3044\u305f\u3061": {
+      "ID": 500430,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30bd\u30cb\u30c3\u30af\u30d6\u30fc\u30e0": {
+      "ID": 500440,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b7\u30e3\u30e0\u30b7\u30fc\u30eb": {
+      "ID": 500450,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d6\u30ec\u30b9\u30a6\u30a3\u30f3\u30b0": {
+      "ID": 500460,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u5439\u96ea": {
+      "ID": 500470,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u304f\u3061\u3070\u3057": {
+      "ID": 500480,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "\u6d88\u5316\u6db2": {
+      "ID": 500490,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u7c98\u6db2": {
+      "ID": 500500,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u524d\u6b6f": {
+      "ID": 500510,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5438\u8840": {
+      "ID": 500520,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30cf\u30b5\u30df": {
+      "ID": 500540,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u3064\u306e": {
+      "ID": 500550,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6bd2\u30ac\u30b9": {
+      "ID": 500560,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u7761\u7720\u30ac\u30b9": {
+      "ID": 500570,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u89e6\u624b": {
+      "ID": 500580,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u77f3\u5316\u306b\u3089\u307f": {
+      "ID": 500600,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5e73\u624b\u6253\u3061": {
+      "ID": 500620,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u7720\u308a\u5203": {
+      "ID": 500630,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u9ebb\u75fa\u5203": {
+      "ID": 500640,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u82b1\u7c89": {
+      "ID": 500690,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7fbd\u3092\u307e\u304d\u6563\u3089\u3059": {
+      "ID": 500700,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30ed\u30b1\u30c3\u30c8\u30d1\u30f3\u30c1": {
+      "ID": 500730,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30de\u30a4\u30f3\u30c9\u30d6\u30e9\u30b9\u30c8": {
+      "ID": 500750,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30e1\u30a4\u30eb\u30b7\u30e5\u30c8\u30ed\u30fc\u30e0": {
+      "ID": 500760,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u9244\u7832\u6c34": {
+      "ID": 500770,
+      "element": "Water",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30a2\u30af\u30a2\u30d6\u30ec\u30b9": {
+      "ID": 500800,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30db\u30ef\u30a4\u30c8\u30a6\u30a4\u30f3\u30c9": {
+      "ID": 500810,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d5\u30e9\u30c3\u30b7\u30e5": {
+      "ID": 500820,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30de\u30a4\u30c6\u30a3\u30ac\u30fc\u30c9": {
+      "ID": 500860,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30dd\u30a4\u30ba\u30f3\u30c6\u30fc\u30eb": {
+      "ID": 500870,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30e9\u30f3\u30c1\u30e3\u30fc": {
+      "ID": 500880,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u3057\u3073\u308c\u30cf\u30b5\u30df": {
+      "ID": 500890,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d5\u30ec\u30a2\u30b9\u30bf\u30fc": {
+      "ID": 500900,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u307e\u3068\u308f\u308a\u3064\u304f": {
+      "ID": 500910,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u6b63\u62f3\u7a81\u304d": {
+      "ID": 500920,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7532\u7f85": {
+      "ID": 500930,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d0\u30a4\u30aa\u30d6\u30e9\u30b9\u30c8": {
+      "ID": 500970,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d5\u30a1\u30a4\u30a2\u30d3\u30fc\u30e0": {
+      "ID": 500980,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d6\u30ea\u30b6\u30fc\u30d3\u30fc\u30e0": {
+      "ID": 500990,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b5\u30f3\u30c0\u30fc\u30d3\u30fc\u30e0": {
+      "ID": 501000,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30a8\u30eb\u30cb\u30fc\u30cb\u30e7": {
+      "ID": 501010,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u9583\u5149\u5f3e": {
+      "ID": 501020,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u308f\u3057\u3065\u304b\u307f": {
+      "ID": 501030,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7a81\u9032": {
+      "ID": 501040,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u3075\u307f\u3064\u3051\u308b": {
+      "ID": 501050,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "8\u9023\u6253": {
+      "ID": 501070,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Random",
+      "hitCount": 8
+    },
+    "\u672c\u6c17\u306e\u3053\u3076\u3057": {
+      "ID": 505060,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u306f\u3093\u3052\u304d\u306e\u3064\u306e": {
+      "ID": 505100,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6ce2\u52d5\u7832": {
+      "ID": 505120,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30bf\u30a4\u30c0\u30eb\u30a6\u30a7\u30a4\u30d6": {
+      "ID": 505130,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u6697\u9ed2\u306e\u5203": {
+      "ID": 505260,
+      "element": "Dark",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6148\u60b2\u306a\u304d\u5929\u5211": {
+      "ID": 505270,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 10
+    },
+    "\u5929\u6765\u306e\u98a8": {
+      "ID": 505280,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b5\u30a4\u30b3\u30b9\u30ad\u30e5\u30a2\u30fc": {
+      "ID": 505320,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u731b\u308b\u7344\u708e": {
+      "ID": 505330,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30ec\u30c3\u30c9\u30a4\u30f3\u30d5\u30a7\u30eb\u30ce": {
+      "ID": 505340,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u88c1\u304d\u306e\u6681\u5149": {
+      "ID": 505350,
+      "element": "Light",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30ea\u30bb\u30c3\u30c8\u30aa\u30fc\u30e9": {
+      "ID": 505360,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "All",
+      "hitCount": 1
+    },
+    "\u30bb\u30a4\u30f3\u30c8\u30a4\u30ec\u30a4\u30b6\u30fc": {
+      "ID": 505370,
+      "element": "Light",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u5217\u6c37\u6fc0\u9583\u65ac": {
+      "ID": 505380,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u51cd\u7344\u5929\u939a\u6483": {
+      "ID": 505390,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 6
+    },
+    "\u30af\u30e9\u30c3\u30b7\u30e5\u30d6\u30ec\u30b9": {
+      "ID": 505400,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30ac\u30fc\u30c9\u30b9\u30de\u30a4\u30c8": {
+      "ID": 505410,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30a2\u30b5\u30eb\u30c8\u30af\u30e9\u30a4": {
+      "ID": 505420,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30de\u30b8\u30c3\u30af\u30af\u30e9\u30a4": {
+      "ID": 505430,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30a8\u30af\u30b9\u30ad\u30e5\u30fc\u30b7\u30e7\u30f3": {
+      "ID": 505450,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30d8\u30eb\u30b7\u30e3\u30d5\u30c8": {
+      "ID": 505470,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u304a\u524d\u306e\u83ef\u9e97\u306a\u9b54\u6cd5\u3092\u898b\u305b\u3066\u307f\u308d\uff01": {
+      "ID": 505530,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30a2\u30dd\u30ab\u30ea\u30d7\u30b9\u30ec\u30a4": {
+      "ID": 505540,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u60d1\u4e71\u306e\u6e26": {
+      "ID": 505550,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u95c7\u304c\u6e80\u3061\u59cb\u3081\u305f": {
+      "ID": 505560,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u95c7\u304c\u6e80\u3061\u304b\u3051\u3066\u3044\u308b": {
+      "ID": 505570,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u65ad\u7f6a\u306e\u523b\u5370": {
+      "ID": 505580,
+      "element": "Dark",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u305d\u308c\u306f\u6b66\u6280\u3067\u306f\u306a\u3044\u3060\u308d\u3046\uff01": {
+      "ID": 505600,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u305d\u308c\u306f\u9b54\u6cd5\u3067\u306f\u306a\u3044\u3060\u308d\u3046\uff01": {
+      "ID": 505610,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b0\u30f3\u30b0\u30cb\u30eb": {
+      "ID": 505810,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7834\u90aa\u6c37\u5d50\uff08\u6575\u7528\uff09": {
+      "ID": 505840,
+      "element": "Ice",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30c7\u30a3\u30b9\u30c8\u30d4\u30a2\uff08\u6575\u7528\uff09": {
+      "ID": 505860,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30af\u30a3\u30fc\u30f3\u30a6\u30a3\u30c3\u30d7\uff08\u6575\u7528\uff09": {
+      "ID": 505910,
+      "element": "Dark",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u4e09\u9023\u6483": {
+      "ID": 505940,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Random",
+      "hitCount": 3
+    },
+    "\u7d76\u7a7a\uff08\u6575\u7528\uff09": {
+      "ID": 505950,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u6ec5\u5203\uff08\u6575\u7528\uff09": {
+      "ID": 505960,
+      "element": "Dark",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7344\u9580": {
+      "ID": 505970,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d5\u30ec\u30a4\u30e0\u30a6\u30a9\u30fc\u30eb": {
+      "ID": 506120,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30a2\u30a4\u30b7\u30af\u30eb\u30d4\u30e9\u30fc": {
+      "ID": 506130,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30b5\u30f3\u30c0\u30fc\u30b9\u30c8\u30fc\u30e0": {
+      "ID": 506140,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u30b0\u30ec\u30fc\u30c8\u30cf\u30ea\u30b1\u30fc\u30f3": {
+      "ID": 506150,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u5b64\u9ad8\u306e\u865a\u7121": {
+      "ID": 506040,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30b1\u30a2\u30eb\u30ac\u5168\u4f53\u5316\uff08\u30ae\u30eb\u30ac\u30e1\u30c3\u30b7\u30e5\u7528": {
+      "ID": 506110,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u304b\u304b\u308c\u3063\uff01": {
+      "ID": 501120,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 0
+    },
+    "\u30b9\u30bf\u30f3\u30b9\u30e9\u30c3\u30b7\u30e5": {
+      "ID": 501170,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b7\u30eb\u30d0\u30fc\u30e9\u30f3\u30b9": {
+      "ID": 501260,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6355\u98df\u56de\u5fa9": {
+      "ID": 501290,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30b9\u30e9\u30c3\u30b7\u30e5": {
+      "ID": 501300,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b0\u30e9\u30f3\u30b9\u30e9\u30c3\u30b7\u30e5": {
+      "ID": 501310,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u4e80\u306e\u7532\u7f85": {
+      "ID": 501340,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u83ef\u9e97\u306a\u308b\u6c34\u7f70\uff08\u5f31": {
+      "ID": 501400,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u83ef\u9e97\u306a\u308b\u6c34\u7f70\uff08\u4e2d\u5f37": {
+      "ID": 501410,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u83ef\u9e97\u306a\u308b\u6c34\u7f70\uff08\u4e2d": {
+      "ID": 501420,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u83ef\u9e97\u306a\u308b\u6c34\u7f70\uff08\u5f37": {
+      "ID": 501440,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u5207\u308a\u88c2\u304f": {
+      "ID": 501510,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6355\u98df(1000\u56de\u5fa9)": {
+      "ID": 501530,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30b4\u30fc\u30eb\u30c9\u30e9\u30f3\u30b9": {
+      "ID": 501600,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30af\u30ea\u30b9\u30bf\u30eb\u30e9\u30f3\u30b9": {
+      "ID": 501610,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30ea\u30d9\u30f3\u30b8\u30d6\u30e9\u30b9\u30c8": {
+      "ID": 501630,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5f37\u9178\u6db2\u5206\u6ccc": {
+      "ID": 501650,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d1\u30eb\u30b7\u30fc\u30d5\u30a1\u30f3\u30b0": {
+      "ID": 501670,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d0\u30d6\u30eb\u30d6\u30ec\u30b9": {
+      "ID": 501680,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u6012\u308a": {
+      "ID": 501700,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u5927\u65a7\u65ac": {
+      "ID": 501720,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u731b\u653b\u306e\u8840": {
+      "ID": 501780,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u7a81\u304d\u523a\u3059": {
+      "ID": 501790,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5f37\u91cd\u6483": {
+      "ID": 501850,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d5\u30ec\u30a4\u30e0\u30d6\u30ec\u30b9": {
+      "ID": 501880,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30f4\u30a7\u30ce\u30e0\u30d6\u30ec\u30b9": {
+      "ID": 501900,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u4fee\u5fa9": {
+      "ID": 501930,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u706b\u708e\u5674\u51fa": {
+      "ID": 502010,
+      "element": "Fire",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "\u5feb\u5fa9": {
+      "ID": 502020,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u5927\u66b4\u8d70": {
+      "ID": 502030,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 4
+    },
+    "\u72c2\u722a\u6483": {
+      "ID": 502040,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u93ae\u9759": {
+      "ID": 502080,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u731b\u4e71\u6253\u203b\u9b54\u6676\u306e\u30e2\u30eb\u30dc\u30eb\u30b0\u30ec\u30fc\u30c8\u5c02\u7528\u6280": {
+      "ID": 502200,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Random",
+      "hitCount": 8
+    },
+    "\u7a7f\u5b54\u523a\u3057\u203b\u9b54\u6676\u306e\u30e1\u30fc\u30c7\u30a3\u30a2\u5c02\u7528\u6280": {
+      "ID": 502220,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6c17\u5408\u306e\u3053\u3076\u3057": {
+      "ID": 502230,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u306b\u304e\u308a\u3064\u3076\u3059": {
+      "ID": 502240,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u77f3\u5316\u304b\u307f\u3064\u304d": {
+      "ID": 502270,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5805\u5b88\u306e\u3053\u3076\u3057": {
+      "ID": 502370,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6e3e\u8eab\u306e\u3053\u3076\u3057": {
+      "ID": 502380,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5d29\u58ca\u306e\u98a8": {
+      "ID": 502470,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u523a\u7a81": {
+      "ID": 502600,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6bdb\u3065\u304f\u308d\u3044\u3057\u3066\u3044\u308b": {
+      "ID": 502610,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u53cd\u6483\u306e\u30c4\u30bf": {
+      "ID": 502620,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u9752\u7ffc\u306e\u627f\u7d99": {
+      "ID": 502710,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u8d64\u7ffc\u306e\u627f\u7d99": {
+      "ID": 502730,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u95c7\u306e\u88c1\u304d": {
+      "ID": 503120,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u9264\u306e\u88c1\u304d": {
+      "ID": 503130,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u731c\u7591\u306e\u50be\u8074": {
+      "ID": 503170,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u5831\u5fa9\u53cd\u5fdc": {
+      "ID": 503190,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30ea\u30af\u30a4\u30c7\u30fc\u30c8": {
+      "ID": 503200,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30ea\u30da\u30a2": {
+      "ID": 503210,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30b7\u30e7\u30c3\u30af\u30af\u30ed\u2015": {
+      "ID": 503240,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u66b4\u8d70\u4e71\u6483": {
+      "ID": 503250,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 4
+    },
+    "\u307f\u3060\u308c\u3046\u3061(\u6575\u7528\uff09": {
+      "ID": 503260,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Random",
+      "hitCount": 4
+    },
+    "\u98df\u3044\u3061\u304e\u308b": {
+      "ID": 503580,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u9632\u8b77\u9b54\u65b9\u9663\u3000\u885d\u6483\u5f3e": {
+      "ID": 503610,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u9632\u8b77\u9b54\u65b9\u9663\u3000\u7834\u58ca\u5149": {
+      "ID": 503620,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u9632\u8b77\u9b54\u65b9\u9663\u3000\u6975\u5149": {
+      "ID": 503630,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5263\u306e\u4e00\u6483": {
+      "ID": 503640,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u6e3e\u8eab\u306e\u4e00\u6483": {
+      "ID": 503650,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u6c5a\u6c34": {
+      "ID": 503660,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u98db\u6563\u305b\u3057\u8089\u7247": {
+      "ID": 503670,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u98db\u6563\u305b\u3057\u4f53\u6db2": {
+      "ID": 503680,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30ae\u30ac\u30a2\u30b9\u30d4\u30eb": {
+      "ID": 503690,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u98df\u990c": {
+      "ID": 503700,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7fbd\u3070\u305f\u304d": {
+      "ID": 503720,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u9b45\u60d1\u306e\u82b1\u7c89": {
+      "ID": 503770,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d6\u30e9\u30f3\u30c1\u30b9\u30d4\u30a2": {
+      "ID": 503780,
+      "element": "Earth",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u304b\u3058\u308a\u3064\u304f": {
+      "ID": 503810,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u4f7f\u547d\u306e\u9023\u5f3e": {
+      "ID": 503820,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Random",
+      "hitCount": 8
+    },
+    "\u30cf\u30a4\u30c9\u30ed\u30d6\u30ec\u30b9": {
+      "ID": 503830,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u6297\u3044\u304c\u305f\u304d\u51f6\u722a": {
+      "ID": 503840,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u9023\u7d9a\u30db\u30fc\u30ea\u30fc": {
+      "ID": 503870,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u7fbd\u3070\u305f\u304d_\u7269\u7406": {
+      "ID": 503880,
+      "element": "Wind",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u5927\u9b54\u6cd5\u30de\u30b0\u30cc\u30e0\u30fb\u30aa\u30d7\u30b9(\u706b)": {
+      "ID": 503910,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u5927\u9b54\u6cd5\u30de\u30b0\u30cc\u30e0\u30fb\u30aa\u30d7\u30b9(\u98a8)": {
+      "ID": 503920,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "\u7981\u546a\u30a2\u30eb\u30b9\u30fb\u30de\u30b0\u30ca": {
+      "ID": 503930,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u30dc\u30b9\u30ab\u30a6\u30f3\u30bf\u30fc\u7528)\u30a2\u30b9\u30d4\u30eb": {
+      "ID": 503970,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5f37\u5831\u5fa9\u53cd\u5fdc": {
+      "ID": 503980,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb": {
+      "ID": 240010,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb\u30e9": {
+      "ID": 240020,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb\u30ac": {
+      "ID": 240030,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30db\u30fc\u30ea\u30fc": {
+      "ID": 240190,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb\u5168\u4f53\u5316": {
+      "ID": 245000,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb\u30e9\u5168\u4f53\u5316": {
+      "ID": 245010,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b1\u30a2\u30eb\u30ac\u5168\u4f53\u5316": {
+      "ID": 245020,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d6\u30ea\u30b6\u30e9": {
+      "ID": 250060,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30b5\u30f3\u30c0\u30ac": {
+      "ID": 250110,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30fc\u30bf": {
+      "ID": 250130,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30bf\u30e9": {
+      "ID": 250140,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30bf\u30ac": {
+      "ID": 250150,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30a8\u30a2\u30ed": {
+      "ID": 250170,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30a8\u30a2\u30ed\u30e9": {
+      "ID": 250180,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30a8\u30a2\u30ed\u30ac": {
+      "ID": 250190,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30b9\u30c8\u30f3\u30e9": {
+      "ID": 250220,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30d0\u30a4\u30aa": {
+      "ID": 250260,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30c9\u30ec\u30a4\u30f3": {
+      "ID": 250300,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b5\u30f3\u30c0\u30fc\u30b9\u30d1\u30fc\u30af": {
+      "ID": 250360,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d0\u30cb\u30b7\u30e5": {
+      "ID": 240230,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d0\u30cb\u30b7\u30e5\u30e9": {
+      "ID": 240240,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30d0\u30cb\u30b7\u30e5\u30ac": {
+      "ID": 240250,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30c0\u30fc\u30e9": {
+      "ID": 250520,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30d5\u30a1\u30a4\u30a2\u5168\u4f53\u5316": {
+      "ID": 255000,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d5\u30a1\u30a4\u30e9\u5168\u4f53\u5316": {
+      "ID": 255010,
+      "element": "Fire",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30d6\u30ea\u30b6\u30c9\u5168\u4f53\u5316": {
+      "ID": 255030,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d6\u30ea\u30b6\u30e9\u5168\u4f53\u5316": {
+      "ID": 255040,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30d6\u30ea\u30b6\u30ac\u5168\u4f53\u5316": {
+      "ID": 255050,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30d5\u30ea\u30b8\u30f3\u30b0\u30b9\u30d1\u30a4\u30af": {
+      "ID": 220080,
+      "element": "Ice",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30b5\u30f3\u30c0\u30fc\u5168\u4f53\u5316": {
+      "ID": 255060,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b5\u30f3\u30c0\u30e9\u5168\u4f53\u5316": {
+      "ID": 255070,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30b5\u30f3\u30c0\u30ac\u5168\u4f53\u5316": {
+      "ID": 255080,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30c1\u30a7\u30a4\u30f3\u30b9\u30d1\u30fc\u30af": {
+      "ID": 220120,
+      "element": "Thunder",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30fc\u30bf\u5168\u4f53\u5316": {
+      "ID": 255090,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30bf\u30e9\u5168\u4f53\u5316": {
+      "ID": 255100,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30a6\u30a9\u30bf\u30ac\u5168\u4f53\u5316": {
+      "ID": 255110,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30a8\u30a2\u30ed\u5168\u4f53\u5316": {
+      "ID": 255120,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30a8\u30a2\u30ed\u30e9\u5168\u4f53\u5316": {
+      "ID": 255130,
+      "element": "Wind",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30b9\u30c8\u30fc\u30f3\u5168\u4f53\u5316": {
+      "ID": 255150,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30b9\u30c8\u30f3\u30e9\u5168\u4f53\u5316": {
+      "ID": 255160,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30b9\u30c8\u30f3\u30ac\u5168\u4f53\u5316": {
+      "ID": 255170,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30ab\u30bf\u30b9\u30c8\u30ed\u30d5": {
+      "ID": 220240,
+      "element": "Earth",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 3
+    },
+    "(\u6575\u7528)\u30d0\u30a4\u30aa\u5168\u4f53\u5316": {
+      "ID": 255190,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30d0\u30cb\u30b7\u30e5\u30e9\u5168\u4f53\u5316": {
+      "ID": 245300,
+      "element": "Light",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "(\u6575\u7528)\u30c0\u30fc\u30af\u5168\u4f53\u5316": {
+      "ID": 255260,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "(\u6575\u7528)\u30c0\u30fc\u30e9\u5168\u4f53\u5316": {
+      "ID": 255280,
+      "element": "Dark",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u9f13\u821e": {
+      "ID": 570130,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30d0\u30fc\u30b5\u30af\uff08\u30d7\u30ea\u30f3\u30d7\u30ea\u30f3\u30bb\u30b9\u7528\uff09": {
+      "ID": 570410,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u738b\u5973\u306e\u6b4c\uff08\u30e1\u30ac\u30d0\u30fc\u30b5\u30af\uff09": {
+      "ID": 570420,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u8a98\u60d1\u306e\u821e": {
+      "ID": 570430,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u5b50\u5b88\u6b4c": {
+      "ID": 570440,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30df\u30b9\u30c6\u30ea\u30fc\u30ef\u30eb\u30c4": {
+      "ID": 570450,
+      "element": "None",
+      "DamageType": "Magic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30be\u30fc\u30f3\u30a4\u30fc\u30bf\u30fc\u7528\uff09": {
+      "ID": 570610,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff11\u30dd\u30fc\u30b7\u30e7\u30f3": {
+      "ID": 570620,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff12\u30a8\u30fc\u30c6\u30eb": {
+      "ID": 570630,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff13\u6bd2\u6295\u3052\u30ca\u30a4\u30d5": {
+      "ID": 570640,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff14\u3057\u3085\u308a\u3051\u3093\uff08\u306a\u3052\u308b\uff09": {
+      "ID": 570650,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff15\u6697\u95c7\u6295\u3052\u30ca\u30a4\u30d5": {
+      "ID": 570660,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff16\u7761\u7720\u6295\u3052\u30ca\u30a4\u30d5": {
+      "ID": 570670,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff17\u307b\u3046\u3061\u3087\u3046\uff08\u306a\u3052\u308b\uff09": {
+      "ID": 570680,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u5410\u304d\u51fa\u3059\uff08\u30a2\u30a4\u30c6\u30e0\uff09\uff18\u4e07\u80fd\u85ac": {
+      "ID": 570690,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u751f\u547d\u6355\u98df": {
+      "ID": 570710,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u6697\u95c7\u306e\u82b1\u7c89": {
+      "ID": 570820,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u5438\u8840\u30e0\u30c1": {
+      "ID": 571110,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 2
+    },
+    "\u30af\u30ea\u30a2\u30b9\u30e2\u30c3\u30b0": {
+      "ID": 571140,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u9b54\u6027\u306e\u722a": {
+      "ID": 571330,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Single",
+      "hitCount": 1
+    },
+    "\u30bf\u30a4\u30c0\u30eb\u30a6\u30a7\u30a4\u30d6(\u30b3\u30ed\u30b7\u30a2\u30e0)": {
+      "ID": 571450,
+      "element": "Water",
+      "DamageType": "Magic",
+      "TargetType": "Group",
+      "hitCount": 2
+    },
+    "\u884c\u52d5\u5206\u6790": {
+      "ID": 571520,
+      "element": "None",
+      "DamageType": "None",
+      "TargetType": "Self",
+      "hitCount": 1
+    },
+    "\u30a4\u30f3\u30b7\u30ca\u30ec\u30a4\u30c8\u30b9\u30d5\u30a3\u30a2": {
+      "ID": 571530,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30d6\u30e9\u30a4\u30f3\u30d5\u30e9\u30c3\u30b7\u30e5": {
+      "ID": 571540,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    },
+    "\u30de\u30b9\u30bf\u30fc\u30c9\u30dc\u30e0": {
+      "ID": 571550,
+      "element": "None",
+      "DamageType": "Physic",
+      "TargetType": "Group",
+      "hitCount": 1
+    }
+  }
+}

@@ -11,47 +11,39 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Cave music and Christine's visible challenge crystal — pending native assets
+### Cave soundtrack, visible Christine crystal and concise Sephira descriptions
 
-- Replace the planned piano/organ soundtrack with the secret cave's own music,
-  starting at its beginning. The selected cave row is `01Gra_44` / Secret Cave,
-  cue `BGM_PP_DUNGEON_CAVE1`. Preserve the single-play movie and sprite/heal timing.
-  The requested soundtrack and physical crystal are not installed yet.
-- Prepare a standalone cave/music collector: include the actual secret-cave levels,
-  native interaction blueprint and BGM cue/bank metadata; exclude saves, config,
-  installed mods and streamed music archives. Include global ScriptObjects and all
-  official patch containers through temporary hard links; remove links on exit.
-  It requires no Prepare Game run and leaves the game and Studio files unchanged.
-- Produce independent upload ZIPs under 25 MB, with hashed chunks for large assets.
-  Six focused checks pass, including exact large-file restoration, native-only
-  container selection, cleanup and failed conversion despite a zero process exit.
-  Real Windows/game extraction and live placement/music playback remain untested.
-- The previous map-entry prompt intentionally stops after Christine is owned; it
-  does not provide the requested persistent visible crystal. Existing references
-  lack the actual cave geometry needed to check the supplied minimap and place
-  that crystal. Await the scoped reference before publishing a game update.
-- Stop the superseded piano build and its unintended helper retry before publication.
-  Keep the latest published package at `cc2b9ec`; no new music release is claimed.
-
-### Superseded piano/organ candidate and native movie audio format
-
-- Keep the working single-play video and sprite/heal/cure timing. The user confirms
-  one movie pass, but the mono HCA movie score is audible and garbled. Treat that
-  listening result as a failure despite the earlier offline decoding checks.
-- Replace the movie score with an original light, spacious piano phrase,
-  building into an intense organ ending as Fina opens her eyes. Leave the final
-  chord unresolved and remove the first draft's upbeat, bright cadence. Copy the
-  approved preview's video stream and retain every in-game color/opacity packet.
-- Use the native movie template's stereo ADX v4 format: 48 kHz, 307,200 samples,
-  288-byte header, 1,800-byte stereo packets and matching native movie descriptors.
-  Remove the HCA movie path. Package a clean source WAV and the rescored preview;
-  no synthesizer/instrument library is installed with Studio.
-- Extension 1.2.76. Check exact audio recovery from the movie, independent VGAudio
-  and FFmpeg decoding, unchanged picture/timing data, descriptors and retoc output.
-  All 47 focused Python checks and 31 Flutter checks pass (one Windows-only
-  local skip). Offline checks do not establish that the game distortion is
-  fixed; the new native-format path still needs an in-game listening test.
-
+- Use the secret cave's original `BGM_PP_DUNGEON_CAVE1` recording from its
+  beginning during Fina's 6.4-second intro. A private native Atom cue/track reads
+  the installed `BGM_PP` sheet and streamed audio; no game music is copied or
+  reencoded. Remove the discarded piano/organ score and all embedded Mana audio.
+  Keep every approved video/opacity picture, single-play cooked movie timing,
+  sprite animation, opening/build-up and healing/cure marker. The browser preview
+  is picture-only because the original music stays in the installed game.
+- Put a visible blue crystal in the wider end of the secret cave behind Rain's
+  house, `01Gra_44`, using the returned cave geometry. Talking to it opens the
+  guarded level-2 Christine challenge. Preserve the native cave's original story
+  actors, navigation, lighting, exits and every existing stream; append one
+  private always-loaded interaction/crystal stream. Remove the failed startup
+  prompt. The crystal stays visible after acquisition and reports ownership.
+  Tronn/the original story completion is still required, and only victory grants
+  Christine once. The 1-gil shop override still suppresses the normal challenge.
+- Shorten 313 authored ability descriptions across all 30 Sephira visions and
+  rewrite all 30 resonances in native English style, describing effects instead
+  of borrowed characters or animation sources. Remove repeated MP, accuracy,
+  stagger and raw power listings while retaining useful effects and targets.
+  Apply the same Crystal Renewal/resonance text to independent bundled Fina.
+- Automatically back up and repair matching old generated text when Studio opens.
+  Preserve custom descriptions and all combat, learned reward, artwork, identity,
+  acquisition and audio settings. No MR/kit reset or Prepare Game run is needed.
+- Extension 1.2.77. Native write/readback and IoStore packing pass for the movie,
+  single native music cue, cave map and physical interaction. All 66 Sephira
+  regressions, 29 existing-vision checks and 14 cinematic checks pass; Flutter
+  analysis and 55 focused Flutter checks pass (one Windows-only local skip).
+  Actual crystal visibility/interaction, cave music playback/mixing and movie
+  handoff still require the user's in-game test. Windows/package verification
+  is pending; the superseded piano build and its unintended helper retry were
+  stopped before publication.
 
 ### Returned full-game reference audit — 2026-10-22
 

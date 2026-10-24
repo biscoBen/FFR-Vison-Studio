@@ -18,16 +18,24 @@
       "level": 2,
       "stage": 9,
       "region": "Secret cave behind Rain's house (Grandshelt)",
-      "returnEntry": {
-        "map": 10001,
-        "mapRow": "01Gra_44",
-        "mapTable": "Map/MapData/DT_MapData_01Gra"
-      },
       "encounterTable": "DT_01Gra_40_02_Encount",
       "nearbyEnemies": {
         "2": 1,
         "10": 3,
         "3": 2
+      },
+      "crystalInteraction": {
+        "mapPackage": "Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL",
+        "position": [
+          5000.0,
+          31.0,
+          160.0
+        ],
+        "approach": [
+          4700.0,
+          31.0,
+          0.0
+        ]
       }
     },
     {

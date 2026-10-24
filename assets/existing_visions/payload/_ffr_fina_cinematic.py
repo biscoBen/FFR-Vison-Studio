@@ -14,7 +14,7 @@ from pathlib import Path
 import struct
 import zipfile
 
-REVISION = 'crystal-fina-film-3'
+REVISION = 'crystal-fina-film-4'
 SPRITE = '99887755552703'
 START = 48000
 END = START + 192 * 800
@@ -74,10 +74,10 @@ def validate(raw):
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         names = archive.namelist()
         manifest = json.loads(archive.read('manifest.json'))
-        expected = {'spec.json', 'movie.usm', 'score.adx', 'score.wav', 'preview.mp4', 'poster.jpg'}
+        expected = {'spec.json', 'movie.usm', 'preview.mp4', 'poster.jpg'}
         if (manifest.get('schema') != 1 or manifest.get('revision') != REVISION
                 or set(manifest.get('files', {})) != expected
-                or set(names) != expected | {'manifest.json'} or len(names) != 7):
+                or set(names) != expected | {'manifest.json'} or len(names) != 5):
             raise ValueError('Invalid Crystal Fina movie archive.')
         files = {name: archive.read(name) for name in expected}
         if manifest['files'] != {n: hashlib.sha256(v).hexdigest() for n, v in files.items()}:
@@ -85,9 +85,11 @@ def validate(raw):
     spec = json.loads(files['spec.json'])
     if (spec.get('revision') != REVISION or (spec.get('width'), spec.get('height'), spec.get('fps'), spec.get('frames')) != (1920, 1080, 30, 192)
             or spec.get('opaqueAlpha') is not True or spec.get('alphaCodec') != 'SofdecPrime'
-            or spec.get('embeddedAudio') != {'codec': 'Adx', 'channels': 2, 'sampleRate': 48000, 'samples': 307200}
-            or not files['movie.usm'].startswith(b'CRID') or not files['score.adx'].startswith(b'\x80\x00\x01\x1c\x03\x12\x04\x02')
-            or not files['score.wav'].startswith(b'RIFF')
+            or spec.get('embeddedAudio') is not None
+            or spec.get('soundtrack') != {'kind':'nativeCue', 'cueSheet':'BGM_PP',
+                'cueName':'BGM_PP_DUNGEON_CAVE1', 'startSeconds':0,
+                'movieStartTick':START, 'movieEndTick':END}
+            or not files['movie.usm'].startswith(b'CRID')
             or files['preview.mp4'][4:8] != b'ftyp' or not files['poster.jpg'].startswith(b'\xff\xd8')):
         raise ValueError('Unsupported Crystal Fina movie format.')
     return spec, files
@@ -111,7 +113,8 @@ def matches(unit):
 
 def ensure_assets(root, extract):
     if not enabled(root): return
-    for rel in (MASTER, MOVIE, MOVIE + '_vp9'):
+    import _ffr_fina_cave_music
+    for rel in (MASTER, MOVIE, MOVIE + '_vp9', _ffr_fina_cave_music.CUE_DONOR, _ffr_fina_cave_music.SOUND):
         path = Path(root) / 'extracted/legacy' / (rel + '.uasset')
         if not path.is_file(): extract(rel.removeprefix('FFRS/Content/'))
         if not path.is_file(): raise ValueError('The selected game is missing the Crystal Fina movie test template: ' + rel)
@@ -122,7 +125,7 @@ def ensure_assets(root, extract):
 
 
 def attach_audio(unit, skill, bank, events, table):
-    """Compatibility hook: movie score now travels in Mana, not hit-sound events."""
+    """Compatibility hook: music now uses the native Atom child, not hit-sound events."""
     return bank, events
 
 
@@ -233,12 +236,15 @@ def build(units, env):
     # Save Fina's event-only shell as three private children before replacing its
     # root with the native movie master. Cached binding IDs stay binary-native.
     import ffbe_resonance
-    for suffix in ('Cut_000', 'Effect_000', 'Sound_001'):
+    for suffix in ('Cut_000', 'Effect_000'):
         child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{suffix}').as_posix()
         clone(native(ffbe_resonance.SHELL), child,
               [('SEQ_Battle_440111_Cut_000', Path(child).name)])
         child_plan = plan if suffix == 'Cut_000' else {'duration': plan['duration'], 'events': [{'time': 0, 'set': {'EventType': 'None'}}]}
         ffbe_resonance.build({'asset': child, 'plan': child_plan}, str(out), str(work), tool, usmap, run)
+    import _ffr_fina_cave_music
+    sound_child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_Sound_001').as_posix()
+    _ffr_fina_cave_music.build(sound_child, env, work, native, clone, START, END, plan['duration'])
     rename = [('440110', str(sid)), ('440111', str(sid + 1)),
               ('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
               ('MV_Skill440110', Path(PRIVATE).name)]
@@ -280,9 +286,9 @@ def build(units, env):
                 prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
-        audio, = prop(data, 'AudioTracks')['Value']
-        for name, value in (('NumChannels', 2), ('SamplingRate', 48000), ('TotalSamples', 307200), ('Type', 'Adx')):
-            prop(audio['Value'], name)['Value'] = value
+        # Music uses the original installed cave recording through Atom. No
+        # second score is left in Mana, avoiding its failing decoder path.
+        prop(data, 'AudioTracks')['Value'] = []
         fields = {'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
@@ -304,9 +310,9 @@ def register(app):
         return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina cinematic test</title>
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
         <h1>Crystal Fina cinematic test</h1><video controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
-        <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. A light, spacious piano phrase builds into an intense, suspended organ ending. In game it leads into Fina’s existing LB animation and cure sound.</p>
+        <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. The secret cave’s music plays from its beginning. In game it leads into Fina’s existing LB animation and cure sound.</p>
         <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
-        <p>The browser shows the new score with the unchanged video. The previous game test confirmed single playback; the stereo ADX audio correction still needs an in-game listening test.</p>''')
+        <p>The browser preview shows the unchanged picture only. In game, the original cave music accompanies the intro; playback still needs an in-game listening test.</p>''')
     @app.get('/api/testing/fina-cinematic/preview')
     def preview():
         from fastapi.responses import Response

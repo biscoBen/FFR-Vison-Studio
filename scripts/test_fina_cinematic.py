@@ -7,19 +7,23 @@ import json
 from pathlib import Path
 import struct
 import tempfile
+import sys
 from types import SimpleNamespace
 import unittest
 import zipfile
-import wave
+import gzip
 
 from test_existing_visions import ROOT
+sys.path.insert(0,str(ROOT/'assets/existing_visions/payload'))
+import _ffr_fina_cave_music as music
+import _ffr_crystal_cave as assets
 import _ffr_fina_cinematic as film
 import _ffr_testing as testing
 import cri_usm_movie as usm
 
 
 class CinematicTests(unittest.TestCase):
-    def test_runtime_test_preserves_reviewed_video_with_requested_new_score(self):
+    def test_runtime_preserves_reviewed_video_with_requested_cave_soundtrack(self):
         spec, files = film.payload()
         source = spec['sourceMovie']
         self.assertEqual(source['name'], 'Crystal-Fina-Rotating-Lighter.mp4')
@@ -72,60 +76,56 @@ class CinematicTests(unittest.TestCase):
                 usm.put(part['payload'], row, 'ixsize', 8)
                 start = part['position'] + len(part['header'])
                 broken[start:start+len(part['payload'])] = part['payload']
-        fixed, report = usm.normalize(bytes(broken), opaque_alpha=True, soundtrack=True)
+        fixed, report = usm.normalize(bytes(broken), opaque_alpha=True)
         self.assertEqual(fixed, raw)
         self.assertEqual(report['chunkAlignment'], 32)
         self.assertEqual([p['payload'] for p in usm.chunks(fixed) if p['kind'] == 0],
                          [p['payload'] for p in usm.chunks(bytes(broken)) if p['kind'] == 0])
         with self.assertRaisesRegex(ValueError, 'bounds|Truncated'):
-            usm.normalize(raw[:-1], opaque_alpha=True, soundtrack=True)
+            usm.normalize(raw[:-1], opaque_alpha=True)
 
-    def test_movie_audio_matches_native_stereo_adx_packets_and_frame_clock(self):
-        spec, files = film.payload(); parts = usm.chunks(files['movie.usm'])
-        self.assertEqual(spec['embeddedAudio'],
-            {'codec':'Adx','channels':2,'sampleRate':48000,'samples':307200})
-        header, = [p for p in parts if p['type']==b'@SFA' and p['kind']==1]
-        row, = usm.integer_rows(header['payload'])
-        self.assertEqual({k:usm.value(header['payload'],row,k) for k in row},
-            {'audio_codec':2,'sampling_rate':48000,'total_samples':307200,'num_channels':2,
-             'metadata_count':0,'metadata_size':0,'ixsize':27860,'ambisonics':0,'channel_config':0})
-        packets = [p for p in parts if p['type']==b'@SFA' and p['kind']==0]
-        self.assertEqual(b''.join(p['payload'] for p in packets),files['score.adx'])
-        self.assertEqual(hashlib.sha256(files['score.adx']).hexdigest(),
-            'e4220390907bc88b513a2f7a65bda01de2a5e3914abb5018a3595e28ac20815a')
-        # Captured native Cloud format: 288-byte v4 header, then 1,800-byte
-        # packets (50 stereo ADX groups, or 1,600 samples) at 30 fps.
-        self.assertEqual([len(p['payload']) for p in packets],[288]+[1800]*192+[18])
-        self.assertEqual([struct.unpack_from('>II',p['header'],16) for p in packets],
-            [(0,2997)]+[(i*999//10,2997) for i in range(193)])
-        self.assertEqual(usm.native_adx(files['score.adx']),files['score.adx'])
-        with self.assertRaisesRegex(ValueError,'stereo ADX'):
-            usm.native_adx(b'HCA'+bytes(400))
-        broken=bytearray(files['score.adx']);broken[12:16]=(307201).to_bytes(4,'big')
-        with self.assertRaisesRegex(ValueError,'6.4-second'):usm.native_adx(broken)
-        with self.assertRaises(ValueError):usm.native_adx(files['score.adx'][:-18])
-        times=[struct.unpack_from('>II',p['header'],16) for p in parts if p['kind']==0]
-        seconds=[t/rate for t,rate in times]
-        self.assertEqual(seconds,sorted(seconds))
+    def test_cave_music_is_native_and_no_discarded_score_remains(self):
+        spec, files = film.payload()
+        self.assertIsNone(spec['embeddedAudio'])
+        self.assertFalse(spec['previewHasAudio'])
+        self.assertEqual(spec['soundtrack'], {'kind':'nativeCue', 'cueSheet':'BGM_PP',
+            'cueName':'BGM_PP_DUNGEON_CAVE1','startSeconds':0,
+            'movieStartTick':film.START,'movieEndTick':film.END})
+        self.assertEqual(set(files),{'spec.json','movie.usm','preview.mp4','poster.jpg'})
+        self.assertFalse(any(p['type']==b'@SFA' for p in usm.chunks(files['movie.usm'])))
 
-    def test_clean_stereo_score_has_piano_and_organ_arrangement_and_headroom(self):
-        spec,files=film.payload();music=spec['soundtrack']
-        self.assertIn('unresolved',music['ending'])
-        self.assertTrue(music['rubato'])
-        self.assertEqual((music['tempo'],music['pianoProgram'],music['organProgram']),(64,0,19))
-        self.assertEqual((music['organStart'],music['climax']),(3.2,5.2))
-        self.assertEqual(hashlib.sha256(files['score.wav']).hexdigest(),music['waveSha256'])
-        with wave.open(io.BytesIO(files['score.wav'])) as wav:
-            self.assertEqual((wav.getnchannels(),wav.getsampwidth(),wav.getframerate(),wav.getnframes()),
-                             (2,2,48000,307200))
-            pcm=struct.unpack('<'+str(307200*2)+'h',wav.readframes(307200))
-        self.assertGreater(max(map(abs,pcm)),24000)
-        self.assertLess(max(map(abs,pcm)),28500)
-        self.assertNotEqual(pcm[::2],pcm[1::2])
-        self.assertLess(music['peakDbfs'],-1)
-        self.assertGreater(music['rmsDbfs'],-25)
-        organs=[e for e in music['events'] if e[1]=='noteon' and e[2]==1]
-        self.assertEqual(min(e[0] for e in organs),round(3.2*48000))
+    def test_native_atom_cue_starts_from_zero_and_stops_before_sprite(self):
+        source=json.loads(gzip.decompress((ROOT/'scripts/fixtures/fina_compiled/native-sound.json.gz').read_bytes()))
+        before=copy.deepcopy(source)
+        result=music.author(source,film.START,film.END,403200)
+        self.assertEqual(source,before)
+        sections=[e for e in result['Exports'] if e['ClassIndex']<0 and
+                  result['Imports'][-e['ClassIndex']-1]['ObjectName']=='MovieSceneAtomSection']
+        active=[e for e in sections if assets.property_data(e,'Sound')['Value']]
+        section,=active
+        self.assertFalse(assets.property_data(section,'bContinueSoundWhenSequenceIsEnd')['Value'])
+        self.assertEqual(assets.property_data(section,'StartFrameOffset')['Value'][0]['Value']['Value'],0)
+        range_=assets.property_data(section,'SectionRange')['Value'][0]['Value']
+        self.assertEqual((range_['LowerBound']['Value']['Value'],range_['UpperBound']['Value']['Value']),
+                         (film.START,film.END))
+        cue=result['Imports'][-assets.property_data(section,'Sound')['Value']-1]
+        self.assertEqual(cue['ObjectName'],'Studio_FinaCaveMusic_Cue')
+        self.assertEqual(result['Imports'][-cue['OuterIndex']-1]['ObjectName'],
+                         music.CUE.replace('FFRS/Content/','/Game/'))
+        # Compiled Atom templates read the same section; cached time ranges must
+        # be monotonic and include the new endpoint rather than the donor's end.
+        def frames(value):
+            if isinstance(value,list):
+                for item in value: yield from frames(item)
+            elif isinstance(value,dict):
+                if value.get('$type')=='UAssetAPI.UnrealTypes.FFrameNumber, UAssetAPI': yield value['Value']
+                else:
+                    for item in value.values(): yield from frames(item)
+        compiled=assets.export(result,'CompiledData')[1]
+        self.assertIn(film.END,list(frames(compiled)))
+        self.assertNotIn(music.NATIVE_END,list(frames(compiled)))
+        broken=copy.deepcopy(source);broken['Exports']=[e for e in broken['Exports'] if e!=broken['Exports'][5]]
+        with self.assertRaisesRegex(ValueError,'template'):music.author(broken,film.START,film.END,403200)
 
     def test_every_frame_has_native_opacity_with_matching_presentation_time(self):
         spec, files = film.payload()
@@ -145,7 +145,7 @@ class CinematicTests(unittest.TestCase):
         spec, files = film.payload()
         self.assertEqual(spec['artSha256'], hashlib.sha256((ROOT/'artwork/crystal_fina_cinematic.png').read_bytes()).hexdigest())
         self.assertEqual(spec['seconds'], 6.4)
-        self.assertEqual(spec['revision'], 'crystal-fina-film-3')
+        self.assertEqual(spec['revision'], 'crystal-fina-film-4')
         self.assertEqual(spec['eyeColor'], 'red')
         self.assertEqual(spec['cameraZoom'], [1, 5.05])
         self.assertEqual(spec['spinAxis'], 'vertical')

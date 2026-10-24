@@ -377,38 +377,6 @@ def _events(table, rows, spec, units, group_id, root, roster):
     labels, targets = ['These visions have already joined you'], [name + '_Close']
     if memory: labels.append('Recall ' + spec['name']); targets.append(memory)
     menu('_Done', labels + ['Leave'], targets + [name + '_Close'])
-    if spec.get('returnEntry'):
-        # Tronn's crystal room is blocked on the user's revisit. Offer the
-        # guarded challenge in the secret cave behind Rain's house instead.
-        # Distribute the conjunction over the native OR alternatives so both
-        # ownership and original completion flags require a missing reward.
-        ready = '|'.join(f'{gate}&{reward}' for gate in unlock.split('|') for reward in missing.split('|'))
-        entry = name + '_Return'
-        event(entry, {'ContinuousEventList': links(ready, name + '_Menu',
-            locked + '|' + complete, name + '_Close')}, 'link')
-        destination = spec['returnEntry']
-        for rel in (destination['mapTable'], caves.COMPOSITE):
-            original = rows(rel).get(destination['mapRow'], {})
-            starts = original.get('startupEventList')
-            if (original.get('ID') != destination['map'] or not isinstance(starts, list)
-                    or any(not isinstance(s, dict) or s.get('EventId') == entry for s in starts)):
-                raise ValueError('The secret cave behind Rain\'s house changed; collect a new native reference.')
-            # startupEventList is a native struct array, even though the row
-            # dump hides its type when empty. Clone a populated row, restore
-            # every field of the cave and then append the conditional entry.
-            donor = '01Gra_20'
-            template = rows(rel).get(donor, {})
-            if not template.get('startupEventList'):
-                raise ValueError('The native map startup-event template is unavailable.')
-            desired = copy.deepcopy(original)
-            desired['startupEventList'] = [*starts, {'Condition': ready, 'EventId': entry}]
-            fields = testing.field_delta(template, desired)
-            # Row dumps represent string-table FText as a dictionary. Native
-            # Name is a TextProperty, so restore it whole, never Name.key.
-            fields = {k: v for k, v in fields.items() if not k.startswith('Name.')}
-            fields['Name'] = copy.deepcopy(desired['Name'])
-            table(rel)['add'].append({'row': destination['mapRow'], 'cloneFrom': donor,
-                                     'set': fields})
     if replay:
         if replay not in parent or parent[replay] != composite[replay]:
             raise ValueError('The original shrine repeat event changed: ' + replay)
@@ -560,70 +528,85 @@ def build(units, env):
     env['run']([*env['FFRDT'], 'fromjson', str(dump), str(destination), '--usmap', env['USMAP']])
     env['run']([*env['FFRDT'], 'tojson', str(destination), str(dump), '--usmap', env['USMAP']])
     caves.check_level(grant, json.loads(dump.read_text(encoding='utf-8-sig')))
-    if any(spec['origin'] == 13024 and not spec.get('returnEntry') for spec, _ in selected):
-        build_tronn_interaction(env, work, read)
+    for spec, _ in selected:
+        if spec.get('crystalInteraction'):
+            build_christine_interaction(env, work, read, spec)
     for spec, members in selected:
         stats = team_stats(env['rows'], spec['level'], members)
         print(f'  {spec["name"]} challenge: level {spec["level"]}, ' + ', '.join(u['en'] for u in members)
               + f'; combined HP {sum(s["MaxHitPoint"] for s in stats):,}; original acquisition required; victory-only rewards.')
 
 
-def build_tronn_interaction(env, work, read):
-    """Tronn's story shrine has no native repeat actor; add a private stream.
+def christine_views(original, source, background, spec):
+    """Add one persistent crystal and an input interaction to the native cave.
 
-    Reuse the adjacent-crystal interaction from WoL's identical shrine layout,
-    retaining the original revisit map, background, lighting and exits.
+    Only a private stream is appended. Original story actors, paths, lighting,
+    navigation, exits and streaming declarations are retained byte-for-byte in
+    their source packages. The talk event owns every acquisition check.
     """
     import _ffr_crystal_cave as caves
+    destination = spec['crystalInteraction']
+    room = destination['mapPackage']
     donor = 'Map/Com/00Com/00Com_223/EV/Com_00Com_223_EV'
-    room = 'Map/Com/00Com/00Com_237/Com_00Com_237_PL'
-    source = read(donor, '.umap'); original = read(room, '.umap')
-    # Read BP declarations before editing: opaque RawExports are never aliased
-    # to their C++ parents or written back after property-index guesses.
+    package = SEQUENCE + 'Studio_ChristineCrystal_EV'
+    trigger = caves.private_level(source, '/Game/' + donor, '/Game/' + package)
+    owner_id, owner = caves.export(trigger, 'BP_MapGimmick_EventTrigger_C_1')
+    caves.set_value(owner, 'm_UniqueId', 27500)
+    events = caves.property_data(owner, 'm_EventList')['Value']
+    if len(events) != 1: raise ValueError('The native crystal interaction changed.')
+    caves.set_value(events[0], 'EventId', PREFIX + str(spec['origin']))
+    caves.set_value(events[0], 'Condition', '')
+    point_id = caves.property_data(owner, 'm_MoveTargetPoint')['Value']
+    point = trigger['Exports'][point_id - 1]
+    caves.set_value(point, 'm_Direction', 'North')
+    box = trigger['Exports'][caves.property_data(owner, 'm_pRootBoxComponent')['Value'] - 1]
+    caves.vector(box, 'RelativeLocation', destination['position'])
+    extent = copy.deepcopy(caves.property_data(box, 'RelativeLocation'))
+    extent['Name'] = 'BoxExtent'; extent['Value'][0]['Name'] = 'BoxExtent'
+    box['Data'].append(extent)
+    caves.vector(box, 'RelativeScale3D', (1.0, 1.0, 1.0))
+    caves.vector(box, 'BoxExtent', (180.0, 200.0, 220.0))
+    point_root = trigger['Exports'][caves.property_data(point, 'RootComponent')['Value'] - 1]
+    caves.vector(point_root, 'RelativeLocation', destination['approach'])
+    # A single native blue shrine crystal, with its original material. Mesh 002
+    # is the other shrine crystal, not a second layer of the same object.
+    crystal = copy.deepcopy(background)
+    actor_id, mesh_id = caves.clear_crystals(crystal)['SM_Env_Com_magicstone001']
+    level_id, level = caves.export(trigger, 'PersistentLevel')
+    roots = {caves.export(crystal, 'PersistentLevel')[0]: level_id,
+             caves.export(crystal, 'Com_00Com_217_01_BG')[0]: caves.export(trigger, Path(package).name)[0]}
+    mapping = caves.clone_graph(trigger, crystal, [actor_id, mesh_id], roots)
+    mesh = trigger['Exports'][mapping[mesh_id] - 1]
+    trigger['Exports'][mapping[actor_id] - 1]['ObjectName'] = 'Studio_ChristineCrystal'
+    caves.vector(mesh, 'RelativeLocation', destination['position'])
+    caves.vector(mesh, 'RelativeScale3D', (2.0, 2.0, 2.0))
+    caves.actors(trigger, [caves.export(trigger, 'CPP_MuchaWorldSetting')[0], 0,
+                           owner_id, point_id, mapping[actor_id]])
+    caves.names(trigger, [trigger['Exports'], PREFIX.rstrip('_')])
+    room_view = copy.deepcopy(original)
+    caves.add_collision_stream(room_view, Path(room).name, original, package)
+    return {package: trigger, room: room_view}
+
+
+def build_christine_interaction(env, work, read, spec):
+    import _ffr_crystal_cave as caves
+    donor = 'Map/Com/00Com/00Com_223/EV/Com_00Com_223_EV'
+    original = read(spec['crystalInteraction']['mapPackage'], '.umap')
+    background = read(caves.ROOM_BG, '.umap')
     blueprint = read('BP/Map/Gimmick/BP_MapGimmick_EventTrigger')
     _, cl = caves.export(blueprint, 'BP_MapGimmick_EventTrigger_C')
-    mapping = work/'tronn-mappings.usmap'
+    mapping = work / 'christine-mappings.usmap'
     mapping.write_bytes(caves.map_mappings(Path(env['USMAP']).read_bytes(), {cl['ObjectName']: (blueprint, cl)}))
-    path = Path(env['LEGACY']) / ('FFRS/Content/' + donor + '.umap'); decoded = work/'tronn-trigger.json'
-    env['run']([*env['FFRDT'], 'tojson', str(path), str(decoded), '--usmap', str(mapping)])
+    read(donor, '.umap')  # Ensure the native template is extracted.
+    decoded = work / 'christine-trigger.json'
+    env['run']([*env['FFRDT'], 'tojson', str(Path(env['LEGACY']) / ('FFRS/Content/' + donor + '.umap')),
+                str(decoded), '--usmap', str(mapping)])
     source = json.loads(decoded.read_text(encoding='utf-8-sig'))
-    views = tronn_views(original, source)
+    views = christine_views(original, source, background, spec)
     for rel, view in views.items():
         caves.names(view, view['Exports'])
-        dump = work/(Path(rel).name+'-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
-        target = Path(env['OUT'])/('FFRS/Content/'+rel+'.umap'); target.parent.mkdir(parents=True, exist_ok=True)
+        dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
+        target = Path(env['OUT']) / ('FFRS/Content/' + rel + '.umap'); target.parent.mkdir(parents=True, exist_ok=True)
         env['run']([*env['FFRDT'], 'fromjson', str(dump), str(target), '--usmap', str(mapping)])
         env['run']([*env['FFRDT'], 'tojson', str(target), str(dump), '--usmap', str(mapping)])
         caves.check_level(view, json.loads(dump.read_text(encoding='utf-8-sig')))
-
-
-def tronn_views(original, source):
-    import _ffr_crystal_cave as caves
-    original = copy.deepcopy(original)
-    donor = 'Map/Com/00Com/00Com_223/EV/Com_00Com_223_EV'
-    room = 'Map/Com/00Com/00Com_237/Com_00Com_237_PL'
-    package = SEQUENCE + 'Studio_TronnCrystal_EV'
-    trigger = caves.private_level(source, '/Game/' + donor, '/Game/' + package)
-    _, actor = caves.export(trigger, 'BP_MapGimmick_EventTrigger_C_1')
-    caves.set_value(actor, 'm_UniqueId', 27500)
-    events = caves.property_data(actor, 'm_EventList')['Value']
-    if len(events) != 1: raise ValueError('The native shrine crystal interaction changed.')
-    caves.set_value(events[0], 'EventId', PREFIX + '13024')
-    # The talk event performs the ownership gate, including already-open saves.
-    caves.set_value(events[0], 'Condition', '')
-    # Event IDs ending in an integer are numbered FNames; register their base
-    # as well as the full text before JSON deserialization.
-    caves.names(trigger, PREFIX.rstrip('_'))
-    # The native revisit room has dynamic BG/LT streams. Make a separate native
-    # ULevelStreamingAlwaysLoaded declaration using their shared WorldAsset
-    # property; leave both original streams and their class imports untouched.
-    streaming = copy.deepcopy(original)
-    stream = next(e for e in streaming['Exports'] if e['ClassIndex'] < 0
-        and streaming['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'LevelStreamingDynamic')
-    if {p['Name'] for p in stream['Data']} != {'WorldAsset', 'LevelColor'}:
-        raise ValueError('The native shrine streaming declaration changed.')
-    streaming['Imports'][-stream['ClassIndex']-1]['ObjectName'] = 'LevelStreamingAlwaysLoaded'
-    template = streaming['Imports'][-stream['TemplateIndex']-1]
-    template.update(ObjectName='Default__LevelStreamingAlwaysLoaded', ClassName='LevelStreamingAlwaysLoaded')
-    caves.add_collision_stream(original, Path(room).name, streaming, package)
-    return {package: trigger, room: original}
