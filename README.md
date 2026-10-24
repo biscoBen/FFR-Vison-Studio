@@ -4,6 +4,31 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Faster repeat installs and cave/music corrections — 2026-10-24
+
+[Verified Windows download / run 40080356282](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40080356282/Sephira-Studio-Test.zip)
+(code `2047475`, extension **1.2.78**; **74.0 MB**).
+
+Unchanged sprites/icons, timelines, audio banks and native read/write results are
+reused from a verified local cache. A changed mod still gets packed and checked;
+identical installed files are not recopied. The console reports total build/install
+time. The first build fills the cache. A 30-unit raw sprite test measured 36.1s
+cold versus 1.1s warm; the complete Windows install's two-minute target still needs
+measurement on your PC. See [reuse and measurement details](docs/INCREMENTAL_BUILDS.md).
+
+The 1-gil shop override now lets you choose visions. Select only Crystal Fina to
+keep her available in Mitra while testing Christine's normal cave battle.
+Christine's crystal now goes directly into the existing cave gimmick level after
+the user's missing-crystal test. Fina's native cave soundtrack moves to an active
+parent track; the previous Sound_001 parent was disabled. Browser preview can read
+and cache the exact recording from your installed game. These still need a live
+crystal interaction and listening test; the approved movie and sprite/cure timing remain.
+
+Update while keeping **Studio Test Data**, rebuild/install once and restart the
+game. Keep **Test Crystal Fina cinematic** on for the movie. No Prepare Game or
+kit/MR reset is required. Full Windows checks and downloaded-package verification
+pass; [delivery and CI measurements](CHANGELOG.md#published-faster-repeat-installs-selected-shop-visions-and-cavemovie-corrections--2026-10-24).
+
 ### Cave music, Christine's crystal and clearer ability text — 2026-10-23
 
 [Verified Windows download / run 40048368217](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40048368217/Sephira-Studio-Test.zip)

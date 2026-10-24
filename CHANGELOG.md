@@ -11,26 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Faster repeat installs, selective shop testing and cave/movie corrections — 2026-10-24
-
-- Reuse verified unchanged sprites/icons, authored timelines, audio banks and native serialization/decoding results;
-  rebuild a clean asset folder so removed units cannot linger. Fingerprints track source art, motion/layout,
-  mappings, relevant generator code, native writer and game identity. Corrupt entries regenerate; cache is bounded
-  to 4 GiB. Skip unchanged installed package copies and identical-package backups, retaining complete rollback sets
-  for changed packages. Keep all row verification and game/runtime ownership checks. Log total build/install time.
-- Add a per-vision 1-gil shop selection. Fina can be sold in Mitra while Christine retains her normal cave battle;
-  toggling off restores saved locations and retains the selection. Existing all-vision settings stay compatible.
-- Respond to the confirmed missing crystal after restart/re-entry by placing Christine's crystal and interaction
-  directly in the existing cave gimmick level; retain original story actors/import/name indices and exits.
-- Fix the definite silent-music cause: the native movie master's Sound_001 parent track is disabled. Put the cave
-  Atom soundtrack in its active Effect_000 subtree, retaining the working single-play compiled timing and sprite/cure
-  handoff. Browser playback reads and locally caches the installed cave recording without adding game music to updates.
-- Local 30-unit raw sprite conversion experiment: **36.073 s cold → 1.147 s warm**, all 30 reused. This excludes native
-  cooking/icons, packing, verification and installation; it is not an end-to-end Windows sub-two-minute claim.
-  Native cave/movie readback, parent-track regression, decoder/bounds and cache invalidation checks are included.
-  Actual cave interaction, browser soundtrack extraction and in-battle music still require the user's live test.
-  See [reuse details](docs/INCREMENTAL_BUILDS.md).
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -99,6 +79,40 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published faster repeat installs, selected shop visions and cave/movie corrections — 2026-10-24
+
+- Reuse verified unchanged sprites/icons, authored timelines, audio banks and native serialization/decoding results;
+  rebuild a clean asset folder so removed units cannot linger. Fingerprints track source art, motion/layout,
+  mappings, relevant generator code, native writer and game identity. Corrupt entries regenerate; cache is bounded
+  to 4 GiB. Skip unchanged installed package copies and identical-package backups, retaining complete rollback sets
+  for changed packages. Keep all row verification and game/runtime ownership checks. Log total build/install time.
+- Add a per-vision 1-gil shop selection. Fina can be sold in Mitra while Christine retains her normal cave battle;
+  toggling off restores saved locations and retains the selection. Existing all-vision settings stay compatible.
+- Respond to the confirmed missing crystal after restart/re-entry by placing Christine's crystal and interaction
+  directly in the existing cave gimmick level; retain original story actors/import/name indices and exits.
+- Fix the definite silent-music cause: the native movie master's Sound_001 parent track is disabled. Put the cave
+  Atom soundtrack in its active Effect_000 subtree, retaining the working single-play compiled timing and sprite/cure
+  handoff. Browser playback reads and locally caches the installed cave recording without adding game music to updates.
+- Local 30-unit raw sprite conversion experiment: **36.073 s cold → 1.147 s warm**, all 30 reused. This excludes native
+  cooking/icons, packing, verification and installation; it is not an end-to-end Windows sub-two-minute claim.
+  Native cave/movie readback, parent-track regression, decoder/bounds and cache invalidation checks are included.
+  Actual cave interaction, browser soundtrack extraction and in-battle music still require the user's live test.
+  See [reuse details](docs/INCREMENTAL_BUILDS.md).
+
+
+- **Verified Windows test package:** code `2047475e6facd0341278f2eb99a71a79c8fd32a4`, extension **1.2.78**,
+  [run 40080356282](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40080356282),
+  [download](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40080356282/Sephira-Studio-Test.zip),
+  **73,954,238 bytes**, SHA-256 `16884275a5d0ac2ff224905419622434f3db31e5eeb411de623dcb70e222e408`.
+  Full Windows Flutter analysis/tests, frozen-engine startup, Python checks, bundle verification, launcher/updater
+  checks and compilation pass for this commit. The actual downloaded ZIP's provenance and all **67** managed
+  extension files plus **16** standalone Fina files match; the optional full animation library remains excluded.
+- First complete candidate **08:58:56 UTC**, verified delivery **09:12:48 UTC** on 2026-10-24: **13m 52s**,
+  including local checks/corrections, build waiting, download and verification. One automatic push run was reused;
+  no duplicate manual build. Measured CI wall time (first job to final job) **9m 56s**; summed runner time **14m 15s**
+  (plan 38s, compile 4m 25s, validation 7m 48s, Windows packaging 38s, test publication 46s).
+  No prior task duration or end-to-end PC install time is inferred from these delivery measurements.
 
 ## Published cave soundtrack, Christine crystal and Sephira descriptions — 2026-10-23
 
