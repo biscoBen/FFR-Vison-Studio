@@ -381,6 +381,12 @@ class Builder:
         return cues
 
 
+def cached_file(cache,kind,relative):
+    # Keep the user's portable root + cache suffix below Windows MAX_PATH.
+    # Native asset paths are retained only as manifest keys, never nested here.
+    return cache/kind/(hashlib.sha256(relative.encode()).hexdigest()[:24]+Path(relative).suffix)
+
+
 def build(units,env):
     chosen=selected(units);root=Path(env['ROOT']);work=root/'build/native-voices'
     marker=work/'pak-managed.json'
@@ -399,19 +405,19 @@ def build(units,env):
               'mapping':hashlib.sha256(Path(env['USMAP']).read_bytes()).hexdigest(),
               'codec':hashlib.sha256((root/'tools/cave_music_preview.zip').read_bytes()).hexdigest(),
               'code':hashlib.sha256(Path(__file__).read_bytes()+Path(movie.__file__).read_bytes()+(root/'tools/native_voice_codec.ps1').read_bytes()).hexdigest()}
-    key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest();cache=work/'cache'/key
+    key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest();cache=work/'cache'/key[:24]
     cached=cache/'manifest.json';valid=False
     if cached.is_file():
         try:
             saved=json.loads(cached.read_bytes())
             safe=lambda p: isinstance(p,str) and not Path(p).is_absolute() and '..' not in p.replace('\\','/').split('/')
-            valid=all(safe(p) and p.startswith('FFRS/Content/') and (cache/'files'/p).is_file() and hashlib.sha256((cache/'files'/p).read_bytes()).hexdigest()==digest for p,digest in saved['assets'].items())
-            valid=valid and all(safe(p) and p.startswith('FFRS/Content/Streams/Movies/') and (cache/'movies'/p).is_file() and hashlib.sha256((cache/'movies'/p).read_bytes()).hexdigest()==digest for p,digest in saved['movies'].items())
+            valid=all(safe(p) and p.startswith('FFRS/Content/') and cached_file(cache,'files',p).is_file() and hashlib.sha256(cached_file(cache,'files',p).read_bytes()).hexdigest()==digest for p,digest in saved['assets'].items())
+            valid=valid and all(safe(p) and p.startswith('FFRS/Content/Streams/Movies/') and cached_file(cache,'movies',p).is_file() and hashlib.sha256(cached_file(cache,'movies',p).read_bytes()).hexdigest()==digest for p,digest in saved['movies'].items())
         except (OSError,ValueError,KeyError,TypeError):valid=False
     if chosen and valid:
         for rel in saved['assets']:
-            target=Path(env['OUT'])/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(cache/'files'/rel,target)
-        movies={rel:(cache/'movies'/rel).read_bytes() for rel in saved['movies']}
+            target=Path(env['OUT'])/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(cached_file(cache,'files',rel),target)
+        movies={rel:cached_file(cache,'movies',rel).read_bytes() for rel in saved['movies']}
         print(f'  Reused {len(chosen)} prepared default vision voice selections.',flush=True)
     elif chosen:
         for sid,source in selections.items():
@@ -451,10 +457,10 @@ def build(units,env):
         cache.mkdir(parents=True,exist_ok=True)
         saved={'assets':{},'movies':{}}
         for rel in sorted(set(outputs)):
-            source=builder.out/rel;target=cache/'files'/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+            source=builder.out/rel;target=cached_file(cache,'files',rel);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
             saved['assets'][rel]=hashlib.sha256(source.read_bytes()).hexdigest()
         for rel,data in movies.items():
-            target=cache/'movies'/rel;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data);saved['movies'][rel]=hashlib.sha256(data).hexdigest()
+            target=cached_file(cache,'movies',rel);target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data);saved['movies'][rel]=hashlib.sha256(data).hexdigest()
         cached.write_text(json.dumps(saved,indent=2))
     # Share the existing companion pak; manage only voice-owned original stream overrides.
     stage=root/'build/fina-cinematic/pak-input';stage.mkdir(parents=True,exist_ok=True)

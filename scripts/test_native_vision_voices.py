@@ -108,6 +108,14 @@ class NativeVisionVoiceTests(unittest.TestCase):
             self.assertEqual(voices.party.import_name(actual,actual['Exports'][0]['Data'][0]['Value']),'VO_A')
             self.assertEqual(voices.party.import_name(actual,actual['Exports'][2]['Data'][0]['Value']),'VO_B')
 
+    def test_cache_flattens_long_native_paths_under_portable_windows_roots(self):
+        root=Path('C:/Users/Owner/Desktop/Sephira-Studio-Test/Studio Test Data/FFR Vision Studio/engine')
+        cache=root/'build/native-voices/cache'/('a'*24)
+        original='FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Sound_001.uasset'
+        self.assertLess(len(str(voices.cached_file(cache,'files',original))),240)
+        self.assertEqual(voices.cached_file(cache,'files',original).suffix,'.uasset')
+        self.assertNotEqual(voices.cached_file(cache,'files',original),voices.cached_file(cache,'files',original+'.uexp'))
+
     def test_unselected_build_is_noop(self):
         with tempfile.TemporaryDirectory() as root:
             with mock.patch.object(voices,'Builder',side_effect=AssertionError('Unexpected voice work')):
@@ -133,7 +141,7 @@ class NativeVisionVoiceTests(unittest.TestCase):
                     if p.is_file():p.unlink()
                 voices.build([u],env);self.assertEqual(author.call_count,1)
                 self.assertEqual((out/'FFRS/Content/native-track.uasset').read_bytes(),b'verified native voice')
-                cached=next((root/'build/native-voices/cache').rglob('native-track.uexp'));cached.write_bytes(b'corrupt')
+                cached=next((root/'build/native-voices/cache').rglob('*.uexp'));cached.write_bytes(b'corrupt')
                 voices.build([u],env);self.assertEqual(author.call_count,2)
                 official.write_bytes(b'game update B');voices.build([u],env);self.assertEqual(author.call_count,3)
                 next((root/'build/native-voices/cache').glob('*/manifest.json')).write_text('invalid cache metadata')
