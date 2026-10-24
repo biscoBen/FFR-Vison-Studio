@@ -4,6 +4,32 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Individual table reuse and Christine's teleporter crystal — 2026-10-24
+
+[Verified Windows download / run 40120000643](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40120000643/Sephira-Studio-Test.zip)
+(code `23dfd43`, extension **1.2.80**; **74.0 MB**).
+
+Repeat builds now reuse individual unchanged native packages and Fina's complete body/movie presentation.
+Her current table bindings are separate, so another vision's acquisition or stat change keeps her body cached.
+Build/verifier table snapshots remove repeated JSON parsing; editor data stays live. A native Fina test measured
+83.0s cold / 0.04s unchanged / 6.85s after an unrelated table edit. These are component measurements;
+**the complete sub-two-minute Windows install still needs a warm measurement on your PC**.
+
+Christine's crystal uses the secret cave's persistent world at the former teleporter position, after the original
+vision event completes. Its moved mesh no longer keeps the other map's baked culling ID. Existing saves use their
+original story flag; no new save is needed. Her fight remains level 5. Native readback/packing passes;
+visibility and interaction still need the user's in-game test.
+
+Fina's CG now requests pause/resume of the current battle-music handle for the private movie only, preserving
+volume settings and other sounds. This needs a listening test. **The cave soundtrack itself remains unresolved**;
+the optional browser preview now reports the actual failure instead of a bare internal-server-error page.
+
+Keep **Studio Test Data**, update, rebuild/install and restart the game. The first build fills the new group caches;
+time the following unchanged or acquisition-only install. No Prepare Game or recipe reset is required. To test both
+visions together, keep Christine on her normal route and override only Fina to the Mitra shop; Fina's older manual
+Mitra acquisition setting also remains valid. Windows checks and actual downloaded-ZIP verification pass;
+[validation and measured delivery/CI times](CHANGELOG.md#published-individual-table-reuse-fina-presentation-caching-and-christine-crystal--2026-10-24).
+
 ### Timestamped builds and Christine level-5 trial — 2026-10-24
 
 [Verified Windows download / run 40114191529](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40114191529/Sephira-Studio-Test.zip)

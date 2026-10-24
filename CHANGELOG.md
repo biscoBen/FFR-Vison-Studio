@@ -11,29 +11,6 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
-### Reuse individual tables and complete Fina presentations — 2026-10-24
-
-- Use the returned 405.2-second install profile to target repeated generation and reads: generation 335.0s,
-  verification 54.6s, installation 14.3s; packing was only 2.3s. Preserve existing sprite/menu cache entries.
-- Reuse unchanged native packages individually when the main patch changes; batch only dirty packages in one native
-  invocation. Keep complete clean builds, input/corruption checks, verification and installation rollback.
-- Cache Fina's complete verified body/crystal/glow/runtime presentation and movie wrapper, avoiding repeated large
-  native-model JSON reads and signature churn. Build/verifier CLI processes share immutable decoded native tables;
-  editor reads remain live and every new CLI invocation gets a fresh snapshot. Bind Fina's current table rows separately
-  so an unrelated vision's challenge/stat changes do not recook her body or restore stale rows.
-- Native component checks: Fina presentation 83.018s cold / 0.036s reused, movie wrapper 20.153s / 0.063s;
-  the 344-skill table plus shop patch 6.556s cold / 0.014s unchanged / 0.844s for a shop-only change. Thirty-vision
-  recipe/source reads 23.111s / 1.994s with identical recipes. These executor timings do not establish a complete
-  sub-two-minute Windows install; the first build fills the new group caches.
-- Place Christine's crystal and input interaction in the secret cave's persistent world at the original teleporter
-  position (5260, -45, 75). Reuse native completion flag 147 for visibility/interaction, attach the mesh to its owner,
-  and remove the old map's baked culling ID. Preserve native streams, actors, story gates and the level-5 fight.
-- Optional Fina browser audio now reports its actual failure instead of an unhelpful internal-server-error page.
-  During Fina's private movie only, pause the current native BGM playback handle and resume it when the movie
-  ends or is interrupted. Preserve user/category volumes and other sounds. This runtime control needs live testing.
-  Cave music is still reported silent in game; no successful soundtrack playback fix is claimed in this update.
-  Crystal visibility/interaction on the user's save and full install time still require live testing.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -102,6 +79,53 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published individual table reuse, Fina presentation caching and Christine crystal — 2026-10-24
+
+[Verified Windows test ZIP / run 40120000643](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40120000643/Sephira-Studio-Test.zip),
+code [`23dfd43`](https://github.com/biscoBen/FFR-Vison-Studio/commit/23dfd4381a15a6c46075df714fd69464c3be6147),
+extension **1.2.80**; 73,965,605 bytes. SHA-256
+`e0de0ee78608d2aa2efba98dcc4e1f42aa849317a0eea29cd98075f57257cce0`.
+
+- Use the returned 405.2-second install profile to target repeated generation and reads: generation 335.0s,
+  verification 54.6s, installation 14.3s; packing was only 2.3s. Preserve existing sprite/menu cache entries.
+- Reuse unchanged native packages individually when the main patch changes; batch only dirty packages in one native
+  invocation. Keep complete clean builds, input/corruption checks, verification and installation rollback.
+- Cache Fina's complete verified body/crystal/glow/runtime presentation and movie wrapper, avoiding repeated large
+  native-model JSON reads and signature churn. Build/verifier CLI processes share immutable decoded native tables;
+  editor reads remain live and every new CLI invocation gets a fresh snapshot. Bind Fina's current table rows separately
+  so an unrelated vision's challenge/stat changes do not recook her body or restore stale rows.
+- Native component checks: Fina presentation 83.018s cold / 0.036s reused, movie wrapper 20.153s / 0.063s;
+  the 344-skill table plus shop patch 6.556s cold / 0.014s unchanged / 0.844s for a shop-only change. Thirty-vision
+  recipe/source reads 23.111s / 1.994s with identical recipes. These executor timings do not establish a complete
+  sub-two-minute Windows install; the first build fills the new group caches.
+- Place Christine's crystal and input interaction in the secret cave's persistent world at the original teleporter
+  position (5260, -45, 75). Reuse native completion flag 147 for visibility/interaction, attach the mesh to its owner,
+  and remove the old map's baked culling ID. Preserve native streams, actors, story gates and the level-5 fight.
+- Optional Fina browser audio now reports its actual failure instead of an unhelpful internal-server-error page.
+  During Fina's private movie only, pause the current native BGM playback handle and resume it when the movie
+  ends or is interrupted. Preserve user/category volumes and other sounds. This runtime control needs live testing.
+  Cave music is still reported silent in game; no successful soundtrack playback fix is claimed in this update.
+  Crystal visibility/interaction on the user's save and full install time still require live testing.
+
+Validation: 674 local Python tests (41 platform skips) and 282 local Flutter tests pass. Windows validation,
+fresh frozen-engine setup, full Flutter/Python suites, launcher/updater checks and compilation pass for the same
+commit. Native readback and IoStore packing pass for the persistent cave; cold/reused Fina and movie outputs match.
+An unrelated native design-row edit preserves the body and takes 6.847s to rebind current tables. The downloaded
+ZIP's 69 managed extension and 16 standalone Fina files match the source manifests; all 30 kits, mastery coverage,
+approved movie and audio archives are preserved. The full optional FFBE library remains excluded.
+
+Keep **Studio Test Data**, update, rebuild/install and restart Resonance. No Prepare Game or kit reset is required.
+The original completed-story flag enables Christine on existing saves. Select only Fina in the optional shop override,
+or leave Fina's existing Mitra acquisition choice; keep Christine on her normal acquisition route.
+
+Measured first-complete-candidate to verified-package delivery: **30m 02.3s**, from 2026-10-24 17:57:59.634 UTC to
+18:28:01.960 UTC, including checks, the installer-declaration correction, the final dependency split, extra builds,
+waiting and actual ZIP verification. Final CI wall time **10m 08s**; final runner usage **13m 10s**. All three candidate
+runs used **37m 07s** of runner time: `40118699183` failed (348s wall/546s runner), `40119362623` passed
+(618s/891s), and final `40120000643` passed (608s/790s). The build helper reused the final automatic run and
+its authenticated test-release download; it dispatched no duplicate workflow. This publication-note commit changes
+only README/CHANGELOG and does not relabel the binary or request another build.
 
 ## Published timed builds, batched menus and Christine level-5 trial — 2026-10-24
 
