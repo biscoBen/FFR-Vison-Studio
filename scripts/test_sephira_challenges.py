@@ -118,7 +118,7 @@ class SephiraChallengeTests(unittest.TestCase):
         events = self.built[challenge.COMPOSITE]
         for spec, units in challenge.plans(self.units):
             name = challenge.PREFIX+str(spec['origin'])
-            for key in (name, name+'_Start', name+'_Win'):
+            for key in (name, name+'_Start'):
                 branches = events[key]['ContinuousEventList']
                 self.assertEqual(branches[0]['Condition'], spec['unlock'])
                 self.assertIn('{item:'+str(spec['origin'])+'}>0', branches[0]['Condition'])
@@ -132,18 +132,23 @@ class SephiraChallengeTests(unittest.TestCase):
         # No shared "some legend completed" flag can unlock a different vision.
         self.assertTrue(all('{flag:1017}' not in s['unlock'] for s, _ in challenge.plans(self.units)))
 
-    def test_only_victory_can_reach_rewards_and_each_reward_is_conditional(self):
+    def test_visions_are_guaranteed_victory_loot_with_normal_battle_return(self):
         events = self.built[challenge.COMPOSITE]
         for spec, units in challenge.plans(self.units):
             name = challenge.PREFIX+str(spec['origin'])
             group = self.built[challenge.GROUP][name]
-            self.assertEqual(group['battleFinishEventId'], name+'_Win')
+            self.assertFalse(group['battleFinishEventId'])
             self.assertFalse(group['battleFinishEscapeEventId'])
             self.assertFalse(group['battleFinishLoseEventId'])
-            grant = events[name+'_Grant']
-            self.assertEqual(grant['EventSequence'], '/Game/'+challenge.SEQUENCE+'SEQ_Grant')
-            self.assertEqual(grant['ObtainItemList'], [
-                {'Condition': f'{{item:{u["id"]}}}==0', 'ID': u['id'], 'Num': 1, 'Text': ''} for u in units])
+            self.assertNotIn(name+'_Win',events)
+            self.assertNotIn(name+'_Grant',events)
+            for unit in units:
+                enemy=self.built[challenge.UNIT][challenge.PREFIX+str(unit['id'])]
+                self.assertEqual(enemy['DropNormalItem'],unit['id'])
+                self.assertEqual(enemy['DropNormalItemRate'],100)
+                self.assertEqual(enemy['DropRareItem'],-1)
+                self.assertEqual((enemy['StealNormalItem'],enemy['StealRareItem']),(-1,-1))
+                self.assertEqual(enemy['StealItemRate'],0)
             for suffix in ('', '_Available', '_Menu', '_Start', '_Fight', '_Close', '_Locked', '_Done'):
                 self.assertEqual(events[name+suffix]['ObtainItemList'], [])
             self.assertFalse(group['isResultSkipOnWin'])

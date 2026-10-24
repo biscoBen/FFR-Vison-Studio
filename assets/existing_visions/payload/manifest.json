@@ -1,4 +1,5 @@
 {
+  "schema": 1,
   "files": {
     "_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -38,7 +39,7 @@
     "_ffr_sephira_ffbe.py": "11e159b088c21a846b500ee097453eaa50ccaac4e41c89e66fad940622a2c2b0",
     "_ffr_sephira_lb_audio.py": "d1f0b409f917c46bb8c1d573a2b9cbc899478971a5d15a33815a44f0d8f716e6",
     "_ffr_sephira_sequences.py": "ab6d3836368a65b27eafdda64df7af59bf23513ec0773a69f75c3c9cc104ecd8",
-    "_ffr_shrine_challenges.py": "5a04d775df6bbd3d2694b0cefd1ae9e00591fc5eb93f9e18e5dfed7a674877ba",
+    "_ffr_shrine_challenges.py": "51bb47e6fde2a5daf4a3ea1f7be7a210c30650106ffb63d3f580daa5a07ebf6e",
     "_ffr_testing.py": "a7401129fd028bcf4495bccf43d989aea7bb9fe13647b14dbf012f9e8dadb2b4",
     "ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "ability_live_tests.json": "5146769c870c13923175c8179cba390ae8beef096b54cc972d7a85140e9cc5cc",
@@ -68,6 +69,5 @@
     "sephira_native_presentations.json": "5ed610592815a408180283122aa7608567ec2b5d1fded4a32d653ef72c2fdeed",
     "sephira_visuals.json": "501de528645c5827eb05797bdf76414f510b2af4d759ffa541ef80483d3a91ed",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
-  },
-  "schema": 1
+  }
 }

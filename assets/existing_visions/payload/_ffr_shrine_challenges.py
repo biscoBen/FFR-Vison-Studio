@@ -239,7 +239,9 @@ def prepare_enemies(table, rows, spec, units):
             'HitPoint': 0, 'MagicPoint': stats['MaxMagicPoint'], 'Breakpoint': 0, 'LimitBurstPoint': 0,
             'ElementResistanceList': resistances,
             'passiveSkillList': [], 'WeaponId': -1, 'ArmorId': -1, 'AccessoryIdList': [], 'VisionId': -1,
-            'Experience': 0, 'Money': 0, 'DropNormalItem': -1, 'DropNormalItemRate': 0,
+            # Ordinary victory loot uses the game's result screen and field
+            # return. Never stealable; escaping or losing awards no result loot.
+            'Experience': 0, 'Money': 0, 'DropNormalItem': unit['id'], 'DropNormalItemRate': 100,
             'DropRareItem': -1, 'DropRareItemRate': 0, 'StealNormalItem': -1, 'StealRareItem': -1,
             'StealItemRate': 0, 'BattleVoiceLabel': 'None'})
         base = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
@@ -318,7 +320,7 @@ def prepare_encounter(table, rows, spec, units, root, roster):
     _add(table, rows, GROUP, group_id, 1026, name, {
         'UnitIdList': [boss_id(u) for u in units], 'locationIdList': {1: [10], 2: [6, 15], 3: [20, 6, 15]}[len(units)],
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
-        'battleFinishEventId': name + '_Win',
+        'battleFinishEventId': '',
         'ap': 0, 'isResultSkipOnWin': False, 'isResultSkipOnLose': False})
     # Menus, ownership checks and return-to-field routing are authored from
     # the inspected original repeat events, never the original acquisition row.
@@ -389,10 +391,6 @@ def _events(table, rows, spec, units, group_id, root, roster):
     event(name + '_Start', {'ContinuousEventList': links(unlock, name + '_Fight', locked, name + '_Locked')}, 'link')
     event(name + '_Fight', {'encountGroupId': group_id})
     event(name + '_Close', {})
-    event(name + '_Win', {'ContinuousEventList': links(unlock, name + '_Grant', locked, name + '_Close')}, 'link')
-    event(name + '_Grant', {
-        'EventSequence': '/Game/' + SEQUENCE + 'SEQ_Grant', 'IsOpenDialogByFinishEvent': True,
-        'ObtainItemList': [{'Condition': f'{{item:{u["id"]}}}==0', 'ID': u['id'], 'Num': 1, 'Text': ''} for u in units]}, 'grant')
     choice_key = next(k for k, v in rows(CHOICES).items() if v.get('ChoiceTextList'))
     replay = spec.get('retry')
     memory = replay[:-2] + '02' if replay else None
@@ -593,19 +591,8 @@ def build(units, env):
     testing.build_choices(env, [PREFIX + str(spec['origin']) + suffix
         for spec, _ in selected for suffix in ('_Menu', '_Locked', '_Done')],
         'FFRS/Content/' + SEQUENCE, 'sephira-dialogs')
-    # One small footer-driven sequence grants the current event's conditional
-    # rewards. It is referenced exclusively by victorious challenge groups.
-    env.get('stage', lambda text: print('##stage '+text,flush=True))('Building challenge rewards')
-    source = read(caves.GRANT_DONOR)
-    from dataclasses import replace
-    grant_spec = replace(caves.CaveSpec(), package=SEQUENCE + 'SEQ', name='SEQ')
-    grant = caves.grant_sequence(source, grant_spec)
-    destination = out / ('FFRS/Content/' + SEQUENCE + 'SEQ_Grant.uasset')
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    dump = work / 'grant.json'; dump.write_text(json.dumps(grant), encoding='utf-8')
-    env['run']([*env['FFRDT'], 'fromjson', str(dump), str(destination), '--usmap', env['USMAP']])
-    env['run']([*env['FFRDT'], 'tojson', str(destination), str(dump), '--usmap', env['USMAP']])
-    caves.check_level(grant, json.loads(dump.read_text(encoding='utf-8-sig')))
+    # Each private boss carries its vision as guaranteed ordinary loot. There
+    # is no post-battle event or acquisition sequence to hold the field fade.
     for spec, _ in selected:
         if spec.get('crystalInteraction') and not checked_crystal(env,spec):
             env.get('stage', lambda text: print('##stage '+text,flush=True))('Building Christine cave interaction')
