@@ -4,6 +4,34 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Warm installs, persistent Christine unlock and visible versions — 2026-10-24
+
+[Verified Windows download / run 40124402761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40124402761/Sephira-Studio-Test.zip)
+(code `8394aae`, update **1.2.81**; **74.0 MB**).
+
+Studio now shows **Sephira Test · update 1.2.81** in its main window and About. The installed engine must match that
+update, and build logs/profiles record it too. The host's compatibility version remains 1.0.0/build 15.
+
+Your latest profile took **225.5s**; **115.9s** went to raw sprite/icon sets invalidated by a cave-only edit. Those
+unchanged sets now retain their existing cache keys. Whole-table cache hits skip thousands of temporary recipe writes
+and repeated package indexing/copies. Changed inputs and damaged entries still rebuild. The complete sub-two-minute
+warm install remains a measurement to make on your PC.
+
+Christine's crystal now uses persistent story progress or Tronn ownership: the previous flag is cleared by the next
+story event. It remains at the former teleporter in the secret cave behind Rain's house, with the level-5 fight.
+Explicit **Reset all presets** also restores default acquisition locations and keeps a backup of your previous edits.
+Normal updates preserve edits; resetting is optional.
+
+Fina's preview no longer depends on the unbundled Python `wave` module. Her original cave recording is read from your
+installed game, cached as a short local copy and embedded into the unchanged movie through the previously working
+stereo ADX layout. Private-movie detection now checks component and wrapper sources to pause/resume the current battle
+music handle. The exact packaged movie/audio bytes and native metadata pass readback; live listening and crystal
+visibility/interaction still need your test.
+
+Keep **Studio Test Data**, update, rebuild/install and restart the game. No Prepare Game is required. Keep Christine
+on her normal route and override only Fina to the Mitra shop to test both. Windows checks, the real frozen-engine audio
+helper and the actual downloaded ZIP all pass; [validation and delivery/CI timings](CHANGELOG.md#published-warm-install-reuse-persistent-christine-unlock-and-visible-update-number--2026-10-24).
+
 ### Individual table reuse and Christine's teleporter crystal — 2026-10-24
 
 [Verified Windows download / run 40120000643](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40120000643/Sephira-Studio-Test.zip)

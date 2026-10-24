@@ -5,19 +5,12 @@ on `Sephira's-Update`, compared with the inherited `master` snapshot
 [`d94c685`](https://github.com/biscoBen/FFR-Vison-Studio/commit/d94c685c9dd1b1502c8676e03e679f54a9a05086).
 The original project's release notes are preserved below the fork history.
 
-Windows test packages keep version **1.0.0, build 15** for host compatibility. Their commit and workflow run identify
-which changes they contain. Dates below use America/Los_Angeles. Published entries describe tested branch packages;
+Windows test packages keep version **1.0.0, build 15** for host compatibility. Studio now displays the managed
+test-update version; the commit and workflow run identify the exact package. Dates below use America/Los_Angeles. Published entries describe tested branch packages;
 **Unreleased** entries are work awaiting a successful package build.
 
 ## Unreleased
 
-### Warm-install reuse, persistent Christine unlock and visible update number
-
-- Keep unchanged sprite/icon sets reusable across cave placement and balance edits, including existing 1.2.80 cache entries. Skip per-asset recipe writes and repeated indexing/copying on verified whole-table cache hits; changed packages and corrupted entries still rebuild.
-- Use permanent story progress or original Tronn ownership for Christine's secret-cave crystal. The earlier flag is cleared by the following story event; visibility and interaction now use the same persistent condition. Keep the level-5 fight and original map actors.
-- Explicitly resetting Sephira presets also restores their default acquisition locations, with previous edits retained in the reset backup. Normal updates continue to preserve custom acquisition choices.
-- Show test update **1.2.81** in Studio's main window and About, and record the installed update version in build logs/profiles. Host compatibility remains version 1.0.0/build 15.
-- Remove the unbundled `wave` import behind Fina's bare audio-preview server error. Cache a short original cave recording from the installed game and mux it locally into her unchanged movie using the previously working stereo ADX layout. Broaden private-movie detection for pausing/resuming the current battle BGM handle and log detector startup/source matching. Live cave visibility and soundtrack playback remain user tests.
 
 ### Returned full-game reference audit — 2026-10-22
 
@@ -87,6 +80,46 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published warm-install reuse, persistent Christine unlock and visible update number — 2026-10-24
+
+[Verified Windows test ZIP / run 40124402761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40124402761/Sephira-Studio-Test.zip),
+code [`8394aae`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8394aae4fc139f34ccaf49314f87f88f18d927ca),
+update **1.2.81**; 73,974,837 bytes. SHA-256
+`0ba9cb222a8e796f631afb033e4bc78241180f178272b2c85d4aa6ba9d38f7f5`.
+
+- Keep unchanged sprite/icon sets reusable across cave placement and balance edits, including existing 1.2.80 cache entries. Skip per-asset recipe writes and repeated indexing/copying on verified whole-table cache hits; changed packages and corrupted entries still rebuild.
+- Use permanent story progress or original Tronn ownership for Christine's secret-cave crystal. The earlier flag is cleared by the following story event; visibility and interaction now use the same persistent condition. Keep the level-5 fight and original map actors.
+- Explicitly resetting Sephira presets also restores their default acquisition locations, with previous edits retained in the reset backup. Normal updates continue to preserve custom acquisition choices.
+- Show test update **1.2.81** in Studio's main window and About, and record the installed update version in build logs/profiles. Host compatibility remains version 1.0.0/build 15.
+- Remove the unbundled `wave` import behind Fina's bare audio-preview server error. Cache a short original cave recording from the installed game and mux it locally into her unchanged movie using the previously working stereo ADX layout. Broaden private-movie detection for pausing/resuming the current battle BGM handle and log detector startup/source matching. Live cave visibility and soundtrack playback remain user tests.
+
+
+The returned profile measured **225.5s**, including **115.9s** rebuilding raw sprite/icon sets despite native conversion
+cache hits, **40.1s** for the first table patch, **10.0s** verification and **10.4s** installation/runtime work. The raw
+sets were invalidated by a cave-only source edit. Audit the motion dependency and retain its existing 1.2.80 key when
+unchanged. Whole-patch hits no longer write 1,343 throwaway recipes or restore/copy every package a second time.
+
+Validation: **682** local Python tests pass (41 platform skips), **56** focused Flutter tests and analysis pass.
+Windows full suites, actual frozen-engine import/PCM trimming, fresh setup, launcher/updater and compilation pass for
+this commit. Native map readback and IoStore packing pass. A real 344-skill table/shop patch measures 7.129s cold /
+0.010s unchanged / 0.886s shop-only; the scored movie wrapper measures 17.903s / 0.060s reused. Cold/reused native outputs
+match; independent metadata parsing and companion-pak extraction preserve every color/alpha packet and the exact ADX
+stream. These component measurements do not establish a complete sub-two-minute install on the user's PC.
+
+Verify the actual downloaded ZIP: **70** managed extension files and **16** standalone Fina files match source,
+the compiled app contains the **1.2.81** label, and all 30 kits, 131-passive coverage, elemental impacts and approved
+movie artwork/audio archives remain intact. The optional full FFBE library and original cave recording are excluded.
+The short cave recording is read and encoded locally only when the cinematic is enabled or previewed.
+
+Keep **Studio Test Data**, update, rebuild/install and restart Resonance. No Prepare Game is required. Keep Christine
+on her normal acquisition route and override only Fina to the shop when testing both. Explicit **Reset all presets**
+now restores acquisition defaults too; it is optional and keeps a backup. Live crystal appearance/interaction, movie
+sound and battle-music pause/resume and the next warm install timing still require the user's test.
+
+Measured first complete candidate **19:12:41 UTC** to verified downloaded package **19:25:39 UTC**: **12m 58s**, including
+local checks, Windows waiting and actual ZIP verification. One candidate and one reused automatic Windows run;
+CI wall time **10m 37s**, summed runner usage **14m 48s**. No second build was dispatched.
 
 ## Published individual table reuse, Fina presentation caching and Christine crystal — 2026-10-24
 
