@@ -351,7 +351,6 @@ class NativeVisionTests(unittest.TestCase):
                     changed = built
                     with contextlib.redirect_stdout(io.StringIO()), mock.patch.object(sys.modules['_ffr_crystal_cave'], 'verify_shops'), self.assertRaises(SystemExit) as exit:
                         env['main']()
-            self.assertTrue(sys.modules['_ffr_build_progress']._current.closed)
                     self.assertEqual(exit.exception.code, code)
 
     def test_native_verifier_checks_nested_sprite_and_mastery_fields(self):
@@ -399,7 +398,7 @@ class NativeVisionTests(unittest.TestCase):
                     mock.patch.object(sys.modules['_ffr_testing'], 'verify_table_recipe'):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'native_builder_fixture', 'exec'), env)
                 env['main']()
-            self.assertTrue(sys.modules['_ffr_build_progress']._current.closed)
+                self.assertTrue(sys.modules['_ffr_build_progress']._current.closed)
             result = json.loads((build / 'patch.json').read_text())
             self.assertEqual(converted, [13045]); self.assertEqual(env['UNITS'], [])
             self.assertTrue(all(not t['add'] for t in result['tables']))
@@ -435,7 +434,7 @@ class NativeVisionTests(unittest.TestCase):
                     mock.patch.object(sys.modules['_ffr_testing'], 'verify_table_recipe'):
                 exec(compile(ast.Module(body=[main], type_ignores=[]), 'restored_builder_fixture', 'exec'), env)
                 env['main']()
-            self.assertTrue(sys.modules['_ffr_build_progress']._current.closed)
+                self.assertTrue(sys.modules['_ffr_build_progress']._current.closed)
             result = json.loads((build / 'patch.json').read_text())
             self.assertFalse(stale.exists())
             self.assertEqual(game, before)
