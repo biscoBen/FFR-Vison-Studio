@@ -10,6 +10,7 @@ import tempfile
 import sys
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 import zipfile
 import gzip
 
@@ -279,6 +280,19 @@ class CinematicTests(unittest.TestCase):
         response=routes['/api/testing/fina-cinematic/preview']()
         self.assertEqual(response.media_type,'video/mp4')
         self.assertEqual(response.body,film.payload()[1]['preview.mp4'])
+
+    def test_optional_audio_failure_reports_the_cause_instead_of_a_bare_server_error(self):
+        from fastapi import HTTPException
+        import _ffr_cave_music_preview as preview
+        routes={}
+        class App:
+            def get(self,path,**_):return lambda fn:routes.setdefault(path,fn)
+        film.register(App(), {'ROOT':'unused','ffrenv':object()})
+        with mock.patch.object(preview,'audio',side_effect=RuntimeError('decoder unavailable')):
+            with self.assertRaises(HTTPException) as error:
+                routes['/api/testing/fina-cinematic/audio']()
+        self.assertEqual(error.exception.status_code,422)
+        self.assertIn('decoder unavailable',error.exception.detail)
 
 
 if __name__=='__main__':unittest.main()

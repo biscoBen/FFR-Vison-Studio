@@ -56,3 +56,35 @@ last-sprite stage. A native 45-menu comparison measured 149.386s/180 launches wi
 the old code, 44.433s/50 launches with batching, and 0.020s/zero launches with reuse.
 These are menu-component measurements on this executor. The full Windows install
 still needs the new timed report from the user's PC.
+
+## The returned seven-minute profile
+
+The 2026-10-24 report records **405.2 seconds** total: 335.0s generating, 54.6s
+verifying and 14.3s installing. Sprite/icon sets took 116.1s, but all 270 native
+sprite/texture cooks were already reused: the updated generator had rebuilt its
+30 raw sets once. Menus took 39.6s on their first group-cache population. Packing
+was just 2.3s. Preserve the existing cache when updating.
+
+Extension 1.2.80 adds reuse for individual packages within the initial table/clone
+patch, and for Fina's entire presentation and movie wrapper. A changed shop setting
+can reuse unchanged skills, icons and other tables. Dirty packages share one native
+invocation; in-place timeline edits keep the existing guarded command path.
+Fina's runtime data is restored together with her body, glass, glow and textures.
+Native input hashes and complete sidecars still control reuse; a corrupt entry
+regenerates. Both builder and verifier take their own immutable table snapshot at
+the start of each CLI invocation, avoiding repeated parsing without freezing the
+long-running editor's data.
+
+Native component measurements on this executor (not a complete Windows install):
+
+| Work | Cold | Reused / edited |
+| --- | ---: | ---: |
+| Fina body, crystal, glow and runtime | 80.139s | 0.041s, zero native launches |
+| Fina movie wrapper | 20.153s | 0.063s, companion-pak packing only |
+| 344 skills plus shop table | 6.556s | 0.014s unchanged; 0.844s shop-only edit |
+| 30-vision recipe/source reads | 23.111s | 1.994s using the snapshot |
+
+Readbacks/recipes are identical between the relevant cold and reused paths.
+The first build after this update populates the new group entries. Measure the
+next unchanged or acquisition-only install against the two-minute goal using the
+same profile/log files. No Prepare Game step or recipe reset is needed.

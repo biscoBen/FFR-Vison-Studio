@@ -208,7 +208,8 @@ class SephiraChallengeTests(unittest.TestCase):
         trigger=json.loads(gzip.decompress((path/'crystal-interaction.json.gz').read_bytes()))
         bg=json.loads(gzip.decompress((path/'crystal-background.json.gz').read_bytes()))
         spec=challenge.data()['encounters'][0]
-        views=challenge.christine_views(native['room'],trigger,bg,spec)
+        room=json.loads(gzip.decompress((path/'secret-cave.json.gz').read_bytes()))
+        views=challenge.christine_views(room,trigger,bg,spec)
         collected=[]
         with tempfile.TemporaryDirectory() as root:
             root=Path(root);legacy=root/'legacy';work=root/'work';work.mkdir()
@@ -230,8 +231,7 @@ class SephiraChallengeTests(unittest.TestCase):
                 private=caves.blueprint_mappings(views,env,work)
             self.assertEqual(Path(private).read_bytes(),b'private complete mappings')
             self.assertEqual(mapping.read_bytes(),b'original mappings')
-        self.assertEqual(set(collected),{'BP_MapAreaBox_C','BP_MapTransitionPoint_C',
-                                        'BP_MapTransitionTrigger_C','BP_MapGimmick_EventTrigger_C'})
+        self.assertEqual(set(collected),{'BP_MapGimmick_EventTrigger_C'})
 
     def test_preflight_write_is_reused_once_and_never_after_output_changed(self):
         spec=challenge.data()['encounters'][0]
@@ -239,7 +239,7 @@ class SephiraChallengeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             root=Path(root);out=root/'out';stages=[]
             env={'ROOT':root,'OUT':out,'BUILD':root/'build','LEGACY':root/'legacy','stage':stages.append}
-            rel=spec['crystalInteraction']['mapPackage'].rsplit('/',1)[0]+'/GD/Dng_01Gra_44_01_GD'
+            rel=spec['crystalInteraction']['mapPackage']
             asset=out/('FFRS/Content/'+rel+'.umap')
             def build(*args):
                 asset.parent.mkdir(parents=True,exist_ok=True);asset.write_bytes(b'validated map')
@@ -256,7 +256,7 @@ class SephiraChallengeTests(unittest.TestCase):
     def test_physical_christine_crystal_retains_all_native_cave_streams(self):
         path = ROOT/'scripts/fixtures/sephira_challenges'
         def load(name): return json.loads(gzip.decompress((path/name).read_bytes()))
-        room, trigger, bg = [load(n) for n in ('secret-cave-gimmicks.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
+        room, trigger, bg = [load(n) for n in ('secret-cave.json.gz','crystal-interaction.json.gz','crystal-background.json.gz')]
         before = copy.deepcopy((room,trigger,bg))
         spec = challenge.data()['encounters'][0]
         views = challenge.christine_views(room,trigger,bg,spec)
@@ -267,15 +267,24 @@ class SephiraChallengeTests(unittest.TestCase):
         event, = caves.property_data(owner,'m_EventList')['Value']
         self.assertEqual(caves.property_data(event,'EventId')['Value'],challenge.PREFIX+'13024')
         crystal_id, crystal = caves.export(private,'Studio_ChristineCrystal')
-        self.assertIn(crystal_id,caves.export(private,'PersistentLevel')[1]['Actors'])
+        owner_id=caves.export(private,'BP_MapGimmick_EventTrigger_C_1')[0]
+        self.assertIn(owner_id,caves.export(private,'PersistentLevel')[1]['Actors'])
+        self.assertEqual(crystal['OuterIndex'],owner_id)
+        self.assertEqual(caves.property_data(owner,'VisibleCondition')['Value'],'{flag:147}')
+        self.assertEqual(caves.property_data(owner,'m_MapInteractType')['Value'],'Check_Gimmick')
         self.assertEqual(caves.property_data(owner,'m_UniqueId')['Value'],27500)
-        component = private['Exports'][caves.property_data(crystal,'StaticMeshComponent')['Value']-1]
+        component = crystal
+        self.assertEqual(caves.property_data(component,'VisibilityId')['Value'],-1)
+        self.assertEqual(caves.property_data(component,'Mobility')['Value'],'Movable')
         mesh = private['Imports'][-caves.property_data(component,'StaticMesh')['Value']-1]
         self.assertEqual(mesh['ObjectName'],'SM_Env_Com_magicstone001')
         position=caves.property_data(component,'RelativeLocation')['Value'][0]['Value']
-        self.assertEqual([position[k] for k in ('X','Y','Z')],spec['crystalInteraction']['position'])
+        self.assertEqual([position[k] for k in ('X','Y','Z')],[0.0,0.0,0.0])
+        root_box=private['Exports'][caves.property_data(owner,'m_pRootBoxComponent')['Value']-1]
+        position=caves.property_data(root_box,'RelativeLocation')['Value'][0]['Value']
+        self.assertEqual([position[k] for k in ('X','Y','Z')],[5260.0,-45.0,75.0])
         built=private
-        self.assertTrue(next(iter(views)).endswith('/GD/Dng_01Gra_44_01_GD'))
+        self.assertTrue(next(iter(views)) == spec['crystalInteraction']['mapPackage'])
         self.assertEqual(built['Imports'][:len(room['Imports'])],room['Imports'])
         self.assertEqual(built['NameMap'][:len(room['NameMap'])],room['NameMap'])
         for index,original in enumerate(room['Exports']):

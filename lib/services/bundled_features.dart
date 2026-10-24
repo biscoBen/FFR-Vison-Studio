@@ -272,6 +272,7 @@ class BundledFeatures {
           'payload/vagrant_knight_rain_field.png',
           'payload/overworld_catalog.json',
           'payload/overworld_assets.zip',
+          'payload/_ffr_incremental.py',
           'payload/_ffr_build_progress.py',
           'payload/_ffr_build_cache.py',
           'payload/_ffr_cave_music_preview.py',

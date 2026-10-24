@@ -324,7 +324,8 @@ def register(app, env=None):
           const position=video.currentTime; video.pause(); status.textContent='Loading cave music…';
           music.currentTime=position;music.volume=video.volume;music.muted=video.muted;
           try {await music.play();music.pause();music.currentTime=position;await video.play();await music.play();status.textContent='';}
-          catch(e) {status.textContent='Cave music could not be loaded from the selected game.';await video.play();}
+          catch(e) {try {const response=await fetch(music.src);const error=await response.json();status.textContent=error.detail||'Cave music could not be loaded from the selected game.';}
+            catch (_) {status.textContent='Cave music could not be loaded from the selected game.';}await video.play();}
           finally {starting=false;}
         });
         video.addEventListener('pause',()=>{if(!starting)music.pause();});video.addEventListener('ended',()=>music.pause());
@@ -345,7 +346,10 @@ def register(app, env=None):
         try:
             if env is None: raise ValueError('Select the full game in Studio first.')
             return Response(_ffr_cave_music_preview.audio(env['ROOT'],env['ffrenv']),media_type='audio/wav')
-        except (OSError,ValueError) as error:raise HTTPException(422,str(error)) from error
+        except Exception as error:
+            # Optional preview failures must stay inspectable, including frozen
+            # runtime/import and decoder errors that previously became bare 500s.
+            raise HTTPException(422, 'Cave music: ' + type(error).__name__ + ': ' + str(error)) from error
     @app.get('/api/testing/fina-cinematic/poster')
     def poster():
         from fastapi.responses import Response

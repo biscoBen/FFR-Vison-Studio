@@ -11,6 +11,26 @@ which changes they contain. Dates below use America/Los_Angeles. Published entri
 
 ## Unreleased
 
+### Reuse individual tables and complete Fina presentations — 2026-10-24
+
+- Use the returned 405.2-second install profile to target repeated generation and reads: generation 335.0s,
+  verification 54.6s, installation 14.3s; packing was only 2.3s. Preserve existing sprite/menu cache entries.
+- Reuse unchanged native packages individually when the main patch changes; batch only dirty packages in one native
+  invocation. Keep complete clean builds, input/corruption checks, verification and installation rollback.
+- Cache Fina's complete verified body/crystal/glow/runtime presentation and movie wrapper, avoiding repeated large
+  native-model JSON reads and signature churn. Build/verifier CLI processes share immutable decoded native tables;
+  editor reads remain live and every new CLI invocation gets a fresh snapshot.
+- Native component checks: Fina presentation 80.139s cold / 0.041s reused, movie wrapper 20.153s / 0.063s;
+  the 344-skill table plus shop patch 6.556s cold / 0.014s unchanged / 0.844s for a shop-only change. Thirty-vision
+  recipe/source reads 23.111s / 1.994s with identical recipes. These executor timings do not establish a complete
+  sub-two-minute Windows install; the first build fills the new group caches.
+- Place Christine's crystal and input interaction in the secret cave's persistent world at the original teleporter
+  position (5260, -45, 75). Reuse native completion flag 147 for visibility/interaction, attach the mesh to its owner,
+  and remove the old map's baked culling ID. Preserve native streams, actors, story gates and the level-5 fight.
+- Optional Fina browser audio now reports its actual failure instead of an unhelpful internal-server-error page.
+  Cave music is still reported silent in game; no successful playback fix is claimed in this speed update.
+  Crystal visibility/interaction on the user's save and full install time still require live testing.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

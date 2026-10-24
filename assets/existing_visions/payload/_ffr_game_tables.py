@@ -110,8 +110,67 @@ class NativeTables:
         return tables
 
 
+class _FrozenDict(dict):
+    def _readonly(self, *args, **kwargs):
+        raise TypeError('Native build tables are read-only; copy the row before editing it.')
+    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = __ior__ = _readonly
+
+    def __deepcopy__(self, memo):
+        result = {}; memo[id(self)] = result
+        result.update((copy.deepcopy(k, memo), copy.deepcopy(v, memo)) for k, v in self.items())
+        return result
+
+
+class _FrozenList(list):
+    def _readonly(self, *args, **kwargs):
+        raise TypeError('Native build tables are read-only; copy the row before editing it.')
+    __setitem__ = __delitem__ = append = clear = extend = insert = pop = remove = reverse = sort = __iadd__ = __imul__ = _readonly
+
+    def __deepcopy__(self, memo):
+        result = []; memo[id(self)] = result
+        result.extend(copy.deepcopy(v, memo) for v in self)
+        return result
+
+
+def _freeze(value):
+    if isinstance(value, _FrozenDict) or isinstance(value, _FrozenList): return value
+    if isinstance(value, dict): return _FrozenDict((k, _freeze(v)) for k, v in value.items())
+    if isinstance(value, list): return _FrozenList(_freeze(v) for v in value)
+    return value
+
+
+class BuildTables(NativeTables):
+    """One immutable snapshot per CLI build; the editor still reads live data."""
+    def __init__(self, root, source=None):
+        super().__init__(root, source)
+        original = self.source
+        self._raw_source = source
+        physical = {}
+        def read(rel):
+            if rel not in physical: physical[rel] = _freeze(original(rel))
+            return physical[rel]
+        self.source = read
+        self.logical = {}
+
+    def __call__(self, rel):
+        if rel not in self.logical: self.logical[rel] = _freeze(super().__call__(rel))
+        return self.logical[rel]
+
+
+_snapshots = {}
+
+
+def snapshot(root, source=None):
+    """Opt in only in the short-lived builder/verifier process."""
+    key = str(Path(root).resolve())
+    if isinstance(source, BuildTables): source = source._raw_source
+    _snapshots[key] = BuildTables(root, source)
+    return _snapshots[key]
+
+
 def reader(root, source=None):
-    return source if isinstance(source, NativeTables) else NativeTables(root, source)
+    if isinstance(source, NativeTables): return source
+    return _snapshots.get(str(Path(root).resolve())) or NativeTables(root, source)
 
 
 def normalize(root, tables, rows=None):
