@@ -11,6 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Confirm-button shrine challenges — 2026-10-25
+
+- Require A/Confirm on all 13 native shrine repeat crystals with enabled Sephira challenges, including Warrior of Light's Crystal Fina/Lenneth encounter. Choosing Leave returns control without movement immediately reopening the menu. Apply the same native button-operated class to Christine's cave crystal.
+- Change only each selected repeat actor and its component archetypes. Keep original vision grants, replay targets, unlock checks, event movement, actor positions and unrelated story triggers. Omitted/shop-overridden challenge groups do not patch their shrine map.
+- Validate native level serialization before sprite work and reuse those verified outputs later in the build. Keep the existing sprite-motion cache contract; changing this interaction does not invalidate sprite/icon conversion. Native data checks do not replace a live controller retest.
+
 ### Recover the saved walking appearance callback — 2026-10-25
 
 - Address the reported 1.2.95 regression where Rain remains visible after selecting Fina. The returned UE4SS log shows the field controller starts, followed by callback collection and `Ref was not function`; the existing Fina presentation uses a persistent game-thread loop successfully in that same log.

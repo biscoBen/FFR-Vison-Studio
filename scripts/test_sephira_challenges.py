@@ -337,7 +337,83 @@ class SephiraChallengeTests(unittest.TestCase):
                 private=caves.blueprint_mappings(views,env,work)
             self.assertEqual(Path(private).read_bytes(),b'private complete mappings')
             self.assertEqual(mapping.read_bytes(),b'original mappings')
-        self.assertEqual(set(collected),{'BP_MapGimmick_EventTrigger_C'})
+        self.assertEqual(set(collected),{'BP_MapGimmick_InteractEventTrigger_C'})
+
+    def test_all_repeat_crystals_require_confirm_and_preserve_native_story_data(self):
+        path=ROOT/'scripts/fixtures/sephira_challenges/repeat-crystals.json.gz'
+        native=json.loads(gzip.decompress(path.read_bytes()))
+        specs=[s for s in challenge.data()['encounters'] if s.get('retry')]
+        self.assertEqual(len(specs),13)
+        for spec in specs:
+            with self.subTest(origin=spec['origin']):
+                original=native[str(spec['origin'])];before=copy.deepcopy(original)
+                view=challenge.shrine_view(original,spec)
+                self.assertEqual(original,before)
+                self.assertEqual(view['Imports'][:len(original['Imports'])],original['Imports'])
+                self.assertEqual(view['NameMap'][:len(original['NameMap'])],original['NameMap'])
+                owner_id,owner=next((i,e) for i,e in enumerate(view['Exports'],1)
+                    if spec['retry'] in json.dumps(e.get('Data',[])))
+                self.assertEqual(view['Imports'][-owner['ClassIndex']-1]['ObjectName'],
+                                 'BP_MapGimmick_InteractEventTrigger_C')
+                self.assertEqual(view['Imports'][-owner['TemplateIndex']-1]['ObjectName'],
+                                 'Default__BP_MapGimmick_InteractEventTrigger_C')
+                for name in ('m_MapInteractType','interactType'):
+                    self.assertEqual(caves.property_data(owner,name)['Value'],'Check_Gimmick')
+                self.assertNotIn('m_MoveTargetPoint',[p['Name'] for p in owner['Data']])
+                # Original events still own their movement, gates and replay path.
+                old_owner=original['Exports'][owner_id-1]
+                self.assertEqual(caves.property_data(owner,'m_EventList'),caves.property_data(old_owner,'m_EventList'))
+                for old in old_owner['Data']:
+                    if old['Name']!='m_MoveTargetPoint':self.assertIn(old,owner['Data'])
+                changed=[]
+                for index,(old,new) in enumerate(zip(original['Exports'],view['Exports']),1):
+                    if old==new:continue
+                    changed.append(index)
+                    self.assertTrue(index==owner_id or old['OuterIndex']==owner_id)
+                    self.assertEqual(new['ObjectName'],old['ObjectName'])
+                    if index!=owner_id:
+                        self.assertEqual(new['Data'],old['Data'])
+                        archetype=view['Imports'][-new['TemplateIndex']-1]
+                        outer=view['Imports'][-archetype['OuterIndex']-1]
+                        self.assertIn('InteractEventTrigger',outer['ObjectName'])
+                self.assertEqual(len(changed),3) # actor, root box and head-widget archetypes
+                caves.check_object_names(view)
+
+    def test_repeat_conversion_selects_only_exact_event_and_rejects_changed_reference(self):
+        view=json.loads(gzip.decompress((ROOT/'scripts/fixtures/sephira_challenges/crystal-interaction.json.gz').read_bytes()))
+        spec=next(s for s in challenge.data()['encounters'] if s['origin']==13100)
+        # Another actor can use the same native class without being a challenge.
+        other=copy.deepcopy(view['Exports'][1]);other['ObjectName']='UnrelatedStoryTrigger'
+        caves.set_value(caves.property_data(other,'m_EventList')['Value'][0],'EventId','Unrelated_Story')
+        view['Exports'].append(other);view['DependsMap'].append([])
+        built=challenge.shrine_view(view,spec)
+        self.assertEqual(built['Exports'][-1],other)
+        for retry in ('Unknown_Crystal', 'Unrelated_Story'):
+            bad=copy.deepcopy(spec);bad['retry']=retry
+            if retry=='Unrelated_Story':
+                duplicate=copy.deepcopy(other);duplicate['ObjectName']='DuplicateStoryTrigger'
+                view['Exports'].append(duplicate);view['DependsMap'].append([])
+            with self.assertRaisesRegex(ValueError,'Expected one native repeat crystal'):
+                challenge.shrine_view(view,bad)
+
+    def test_only_selected_shrine_maps_are_preflighted_and_reused(self):
+        units=[copy.deepcopy(u) for u in self.units if challenge.route(u)==13100]
+        self.assertEqual(len(units),2)
+        spec=next(s for s in challenge.data()['encounters'] if s['origin']==13100)
+        with tempfile.TemporaryDirectory() as root:
+            root=Path(root);env={'ROOT':root,'OUT':root/'out','BUILD':root/'build','LEGACY':root/'legacy','stage':lambda _:None}
+            def build(env,work,read,selected):
+                self.assertEqual(selected,spec)
+                target=env['OUT']/('FFRS/Content/'+challenge.crystal_package(selected)+'.umap')
+                target.parent.mkdir(parents=True,exist_ok=True)
+                for ext in ('.umap','.uexp'):target.with_suffix(ext).write_bytes(b'validated crystal')
+            with mock.patch.object(challenge,'build_crystal_interaction',side_effect=build) as native_build:
+                challenge.preflight(units,env)
+                self.assertTrue(challenge.checked_crystal(env,spec))
+                self.assertFalse(challenge.checked_crystal(env,spec))
+                for unit in units:unit['studioAcquisition']={'version':1,'location':'mitra_shop','random':False,'hideSpoilers':True}
+                challenge.preflight(units,env)
+                self.assertEqual(native_build.call_count,1)
 
     def test_preflight_write_is_reused_once_and_never_after_output_changed(self):
         spec=challenge.data()['encounters'][0]
@@ -379,6 +455,8 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(caves.property_data(owner,'VisibleCondition')['Value'],'{item:13024}>0|{progress:0}>=1090')
         self.assertEqual(caves.property_data(owner,'m_FlagCondition')['Value'],spec['unlock'])
         self.assertEqual(caves.property_data(owner,'m_MapInteractType')['Value'],'Check_Gimmick')
+        self.assertEqual(private['Imports'][-owner['ClassIndex']-1]['ObjectName'],
+                         'BP_MapGimmick_InteractEventTrigger_C')
         self.assertEqual(caves.property_data(owner,'m_UniqueId')['Value'],27500)
         component = crystal
         self.assertEqual(caves.property_data(component,'VisibilityId')['Value'],-1)

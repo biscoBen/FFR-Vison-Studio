@@ -512,6 +512,90 @@ def final_rows(rel, expected, units, root):
 _CHECKED_CRYSTALS = {}
 
 
+def button_interaction(view, owner_id):
+    """Convert only this repeat crystal to the native confirm-button class.
+
+    The overlap class has three extra native fields; changing an interaction
+    enum on that class still starts its event when the player enters the box.
+    Keep its actor/component indices, event movement, conditions and placement.
+    Append the new class/archetype imports so unrelated story actors retain
+    their original references.
+    """
+    import _ffr_crystal_cave as caves
+    old = 'BP_MapGimmick_EventTrigger'
+    new = 'BP_MapGimmick_InteractEventTrigger'
+    package = '/Game/BP/Map/Gimmick/' + old
+    owner = view['Exports'][owner_id - 1]
+    identity = owner['ClassIndex']
+    if identity >= 0 or view['Imports'][-identity - 1]['ObjectName'] != old + '_C':
+        raise ValueError('The native repeat-crystal trigger class changed.')
+    original = copy.deepcopy(view['Imports'])
+    def belongs(index):
+        if index >= 0: return False
+        item = original[-index - 1]
+        return (item['ObjectName'] == package or item.get('ClassPackage') == package
+                or belongs(item['OuterIndex']))
+    imported = {}
+    def ref(index):
+        if index >= 0 or not belongs(index): return index
+        if index not in imported:
+            item = copy.deepcopy(original[-index - 1])
+            for key, value in item.items():
+                if isinstance(value, str): item[key] = value.replace(old, new)
+            item['OuterIndex'] = ref(item['OuterIndex'])
+            try: target = -(view['Imports'].index(item) + 1)
+            except ValueError:
+                view['Imports'].append(item); target = -len(view['Imports'])
+            imported[index] = target
+        return imported[index]
+    def remap(value):
+        if isinstance(value, list): return [remap(v) for v in value]
+        if not isinstance(value, dict): return value
+        result = {k: remap(v) for k, v in value.items()}
+        if value.get('$type', '').split('.')[-1] == 'ObjectPropertyData, UAssetAPI':
+            result['Value'] = ref(value['Value'])
+        if 'Delegate' in value and 'Object' in value: result['Object'] = ref(value['Object'])
+        return result
+    def owned(index):
+        return index == owner_id or index > 0 and owned(view['Exports'][index - 1]['OuterIndex'])
+    for index, item in enumerate(view['Exports'], 1):
+        if not owned(index): continue
+        item['Data'] = remap(item['Data'])
+        for key in ('ClassIndex', 'SuperIndex', 'TemplateIndex'):
+            item[key] = ref(item[key])
+        for key in ('SerializationBeforeSerializationDependencies', 'CreateBeforeSerializationDependencies',
+                    'SerializationBeforeCreateDependencies', 'CreateBeforeCreateDependencies'):
+            item[key] = [ref(i) for i in item[key]]
+        view['DependsMap'][index - 1] = [ref(i) for i in (view['DependsMap'][index - 1] or [])]
+    owner['Data'] = [p for p in owner['Data'] if p['Name'] not in
+                    ('m_MoveTargetPoint', 'm_MoveType', 'm_EventPreActionInfo', 'm_MapInteractType', 'interactType')]
+    for name in ('m_MapInteractType', 'interactType'):
+        owner['Data'].append(caves.data_property(name, 'Check_Gimmick', 'EnumPropertyData',
+                                                EnumType='eMapInteractType', InnerType='ByteProperty'))
+    caves.names(view, [view['Imports'], owner['Data']])
+
+
+def shrine_view(original, spec):
+    import _ffr_crystal_cave as caves
+    view = copy.deepcopy(original)
+    owners = []
+    for index, item in enumerate(view['Exports'], 1):
+        events = next((p for p in item.get('Data', []) if p['Name'] == 'm_EventList'), None)
+        if events and any(caves.property_data(e, 'EventId')['Value'] == spec['retry'] for e in events['Value']):
+            owners.append(index)
+    if len(owners) != 1: raise ValueError('Expected one native repeat crystal for ' + spec['mapRow'])
+    button_interaction(view, owners[0])
+    return view
+
+
+def crystal_package(spec):
+    if spec.get('crystalInteraction'): return spec['crystalInteraction']['mapPackage']
+    if spec.get('retry'):
+        row = spec['mapRow']
+        return f'Map/Com/00Com/{row}/EV/Com_{row}_EV'
+    return None
+
+
 def asset_reader(env, work):
     legacy, root = Path(env['LEGACY']), Path(env['ROOT'])
     def read(package, suffix='.uasset'):
@@ -533,11 +617,11 @@ def preflight(units, env):
     """Validate native cave writes before spending time on thirty sprites."""
     _CHECKED_CRYSTALS.clear()
     for spec,_ in plans(units):
-        if not spec.get('crystalInteraction'):continue
+        if not crystal_package(spec):continue
         env.get('stage', lambda text: print('##stage '+text,flush=True))('Checking cave interactions before sprite conversion')
         work=Path(env['BUILD'])/'sephira-challenges';work.mkdir(parents=True,exist_ok=True)
-        build_christine_interaction(env,work,asset_reader(env,work),spec)
-        room=spec['crystalInteraction']['mapPackage']
+        build_crystal_interaction(env,work,asset_reader(env,work),spec)
+        room=crystal_package(spec)
         target=Path(env['OUT'])/('FFRS/Content/'+room+'.umap')
         import _ffr_build_cache
         _CHECKED_CRYSTALS[crystal_key(env,spec)]=[(target.with_suffix(ext),_ffr_build_cache.sha(target.with_suffix(ext)))
@@ -597,9 +681,9 @@ def build(units, env):
     # Each private boss carries its vision as guaranteed ordinary loot. There
     # is no post-battle event or acquisition sequence to hold the field fade.
     for spec, _ in selected:
-        if spec.get('crystalInteraction') and not checked_crystal(env,spec):
-            env.get('stage', lambda text: print('##stage '+text,flush=True))('Building Christine cave interaction')
-            build_christine_interaction(env, work, read, spec)
+        if crystal_package(spec) and not checked_crystal(env,spec):
+            env.get('stage', lambda text: print('##stage '+text,flush=True))('Building crystal button interaction')
+            build_crystal_interaction(env, work, read, spec)
     for spec, members in selected:
         stats = team_stats(env['rows'], spec['level'], members)
         print(f'  {spec["name"]} challenge: level {spec["level"]}, ' + ', '.join(u['en'] for u in members)
@@ -629,9 +713,7 @@ def christine_views(original, source, background, spec):
     # condition for both appearance and interaction, including existing saves.
     owner['Data'] += [caves.data_property('VisibleCondition', spec['unlock'], 'StrPropertyData'),
         caves.data_property('m_FlagCondition', spec['unlock'], 'StrPropertyData'),
-        caves.data_property('bIsBeginPlaySycnVisibleCall', True, 'BoolPropertyData'),
-        caves.data_property('m_MapInteractType', 'Check_Gimmick', 'EnumPropertyData',
-                            EnumType='eMapInteractType', InnerType='ByteProperty')]
+        caves.data_property('bIsBeginPlaySycnVisibleCall', True, 'BoolPropertyData')]
     point_id = caves.property_data(owner, 'm_MoveTargetPoint')['Value']
     point = trigger['Exports'][point_id - 1]
     caves.set_value(point, 'm_Direction', 'North')
@@ -644,6 +726,7 @@ def christine_views(original, source, background, spec):
     caves.vector(box, 'BoxExtent', (180.0, 200.0, 220.0))
     point_root = trigger['Exports'][caves.property_data(point, 'RootComponent')['Value'] - 1]
     caves.vector(point_root, 'RelativeLocation', destination['approach'])
+    button_interaction(trigger, owner_id)
     # A single native blue shrine crystal, with its original material. Mesh 002
     # is the other shrine crystal, not a second layer of the same object.
     crystal = copy.deepcopy(background)
@@ -706,12 +789,39 @@ def build_christine_interaction(env, work, read, spec):
                 str(decoded), '--usmap', str(mapping)])
     source = json.loads(decoded.read_text(encoding='utf-8-sig'))
     views = christine_views(original, source, background, spec)
+    write_crystal_views(views, env, work)
+
+
+def build_crystal_interaction(env, work, read, spec):
+    if spec.get('crystalInteraction'):
+        return build_christine_interaction(env, work, read, spec)
+    import _ffr_crystal_cave as caves
+    package = crystal_package(spec)
+    blueprint = read('BP/Map/Gimmick/BP_MapGimmick_EventTrigger')
+    _, cl = caves.export(blueprint, 'BP_MapGimmick_EventTrigger_C')
+    mapping = work / 'repeat-crystal-mappings.usmap'
+    mapping.write_bytes(caves.map_mappings(Path(env['USMAP']).read_bytes(), {cl['ObjectName']: (blueprint, cl)}))
+    read(package, '.umap')
+    decoded = work / (Path(package).name + '-trigger.json')
+    env['run']([*env['FFRDT'], 'tojson', str(Path(env['LEGACY']) / ('FFRS/Content/' + package + '.umap')),
+                str(decoded), '--usmap', str(mapping)])
+    view = shrine_view(json.loads(decoded.read_text(encoding='utf-8-sig')), spec)
+    write_crystal_views({package: view}, env, work)
+
+
+def write_crystal_views(views, env, work):
+    import _ffr_crystal_cave as caves
     # The native GD can decode additional Blueprint actors when their packages
     # are already extracted. JSON serialization needs those exact declarations
     # too, including inherited fields; the trigger-only mapping is insufficient.
     mapping = caves.blueprint_mappings(views, env, work)
     for rel, view in views.items():
         caves.names(view, view['Exports'])
+        # Numbered actor names serialize as a base FName plus an instance
+        # number. The old class no longer supplies that base when Christine's
+        # actor is imported into the cave with the new interaction class.
+        caves.names(view, [e['ObjectName'].rsplit('_', 1)[0] for e in view['Exports']
+                           if e['ObjectName'].rsplit('_', 1)[-1].isdigit()])
         dump = work / (Path(rel).name + '-built.json'); dump.write_text(json.dumps(view), encoding='utf-8')
         target = Path(env['OUT']) / ('FFRS/Content/' + rel + '.umap'); target.parent.mkdir(parents=True, exist_ok=True)
         env['run']([*env['FFRDT'], 'fromjson', str(dump), str(target), '--usmap', str(mapping)])

@@ -11,6 +11,10 @@ World interactions and Blueprint declarations were subsequently supplied in the 
 `rows.json.gz` retains the native donors used by the challenge builder, original grant/replay rows, boss curve
 anchors and item prices. The source-correction regression additionally retains all native MR rows, passive/effect definitions, equipment bonus references, the Mitra inventory and the new enemy-skill donors. `tronn-room.json.gz` is the original Com_00Com_237_PL, with its two dynamic streams.
 `crystal-interaction.json.gz` is the decoded native WoL repeat-crystal interaction, Com_00Com_223_EV.
+`repeat-crystals.json.gz` retains all 13 native shrine repeat-interaction levels from the same world reference.
+The decoded Blueprint fixture also includes the native button-operated `BP_MapGimmick_InteractEventTrigger`,
+whose C++ parent differs from the automatic overlap trigger. These fixtures verify targeted class/archetype
+replacement while preserving unrelated story actors, original event movement, conditions and replay paths.
 All gzip streams have deterministic timestamps. The boss bytecode fixture is shared with the earlier Fina test.
 
 The accessibility regression also retains the native `01Gra_44` secret-cave row
