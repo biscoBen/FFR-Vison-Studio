@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Original cutscene appearances and native Charlotte walking — 2026-10-25
+
+[Verified Windows download / run 40235225775](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40235225775/Sephira-Studio-Test.zip)
+(code `c981429`, update **1.2.95**; **74.0 MB**).
+
+Your chosen overworld appearance stays active while idle, walking or running. Cutscenes consistently use the original
+character, then restore your choice when field control returns. The fix works with party cycling off and retains your
+saved selection. **Charlotte (Resonance)** is now in **Edit overworld appearance**, using her native field model and
+animations, without a FFBE download. Her original NPC/story assets and the eight party identities remain intact.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. No preset reset, Prepare Game or Fina reselection is
+needed. The existing UE4SS runtime is used automatically. Windows/package/native-table and controller checks pass;
+live cutscene transitions and Charlotte walking remain to be tested.
+[Checks and measured timings](CHANGELOG.md#published-original-cutscene-appearances-and-native-charlotte-walking--2026-10-25).
+
 ### Complete MR rewards, native walking choices and automatic Fina movie — 2026-10-25
 
 [Verified Windows download / run 40227331721](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40227331721/Sephira-Studio-Test.zip)

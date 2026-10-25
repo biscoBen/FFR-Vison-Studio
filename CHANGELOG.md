@@ -11,14 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Original characters throughout cutscenes — 2026-10-25
-
-- Preserve every native map-animation slot, including the primary idle slot. Put saved native/FFBE overworld choices in a separate cosmetic slot so cutscene idles and gestures consistently use the original character.
-- Apply the saved replacement during normal field idle, walking and running. Restore the original before dialogue/event entry or disabled player input, keep native story animation slots intact, then reapply the saved choice when field control returns.
-- Stage the cosmetic runtime automatically for an overworld choice, independently of the optional party-cycling switch. Turning cycling off leaves LB/L1 and F6 untouched. Removing the overworld choice removes its extra slot and controller unless another enabled feature needs the runtime.
-- Add **Charlotte (Resonance)** to the overworld picker using her original `npc0470` field project and textures. Keep her NPC/story/vision assets intact. Supply player idle/directional aliases on the private clone, reusing native walking clips when a separate run family is absent; no FFBE artwork or sprite download is used.
-- Keep battle appearances, identities, voices, story flags, camera/movement controls and saved appearance choices unchanged. Reuse the existing managed UE4SS installation and owned-file rollback. Local controller/table checks cover idle, scene gestures, story slots, post-scene idle, menus, encounters, vehicles and actor recreation; live cutscene transitions still need in-game confirmation.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -87,6 +79,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published original cutscene appearances and native Charlotte walking — 2026-10-25
+
+[Verified Windows ZIP / run 40235225775](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40235225775/Sephira-Studio-Test.zip), code `c981429`, update **1.2.95** (74.0 MB).
+SHA-256 `fbf9249e6824c083f0738bc68b8b7eca30e8bcd58aaaaeaf43d5e2a42a516424`.
+
+- Overworld replacements previously occupied the native primary slot, so cutscenes alternated the chosen model's idle with the original character's gestures. Preserve the complete original slot prefix and put the walking choice in a separate cosmetic slot. Rain remains Rain throughout scenes; the saved replacement returns when field control resumes, including while standing still.
+- Keep the replacement for normal field idle, walking and running. Restore before native event entry or disabled player input, and respect story costume slots, menus, encounters and vehicles. Stage the existing cosmetic runtime automatically for a saved walking choice. It works with party cycling off and does not bind LB/L1 or F6 in that mode. Existing saved choices need no migration or reselection.
+- Add **Charlotte (Resonance)** to **Edit overworld appearance**, using her original `npc0470` field project and textures. Preserve her NPC/story/vision assets and every original party animation slot. Private aliases supply player directional/idle names; an NPC walking clip supplies running when a distinct run family is absent. Use the existing bundled Charlotte portrait, with no FFBE pack download. Charlotte does not become an extra party identity or battle-voice option.
+- Retain battle models, voices, progression, acquisition, mastery rewards, Fina movie/audio and all other character choices. Reuse the owned UE4SS deployment/rollback path. Saved field choices now require the same existing runtime loader used by cycling and native Fina effects; a missing loader is reported before game packages change.
+
+Validation: **725 Python tests** pass locally (42 platform skips), **70 focused Flutter tests** pass, and analysis is
+clean. Executable Lua checks cover field idle/movement, synchronous event restoration, gestures and idle inside a
+scene, native story slots, post-scene idle, input/menu/battle/vehicle guards and actor recreation without enabling
+cycling. Actual native table writing/readback covers eight saved choices with cycling off/on and Rain → Charlotte,
+preserving every original primary/story slot and Charlotte's complete NPC row. Synthetic native SS6 checks cover the
+NPC package rename and drawable walk-to-run/directional/field-idle aliases. The real Charlotte project is validated
+against the selected game during build; its live walking appearance is not established by the synthetic fixture.
+The existing sprite cache stays byte-identical to its pinned version and sprite reuse tests pass. Full Windows
+validation, compilation, engine setup and launcher/updater checks pass for this same commit. The downloaded ZIP
+matches provenance/SHA-256, all **75** extension and **16** standalone Fina hashes, the compiled 1.2.95 label,
+cutscene guard, native Charlotte choice/portrait and unchanged Sephira kits.
+**Live cutscene transitions and Charlotte walking still need in-game confirmation.** Keep Studio Test Data, update,
+rebuild/install and restart. No preset reset, Prepare Game or Fina appearance reselection is required.
+
+Measured delivery: first complete cutscene candidate 14:15:46
+to verified package 14:33:52 America/Los_Angeles,
+**18m 05s**, including the subsequent native Charlotte request, local checks, the picker-count fixture
+correction, native serialization proof, waiting and package verification (including the Windows catalog line-ending
+check correction); the timer was not reset. Measured Windows
+CI wall time is **9m 41s**; summed job runtime is **13m 39s**. The matching automatic push run was reused;
+no duplicate build was dispatched. Publication notes are a separate README/CHANGELOG-only commit.
 
 ## Published transferable MR rewards, native walking choices and automatic Fina cinematic — 2026-10-25
 
