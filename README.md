@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Challenge balance, victory rewards and Fina movie audio — 2026-10-24
+
+[Verified Windows download / run 40146427534](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40146427534/Sephira-Studio-Test.zip)
+(code `a10f83b`, update **1.2.87**; **74.0 MB**).
+
+Rebalance all 28 vision challenge enemies using Christine's approach: stronger attacks, about 15% faster turns,
+spell basics for casters and thematic elemental resistance/weakness. Preserve combined HP/break budgets, encounter
+levels and original unlock gates. Christine keeps her tested speed and Slumber Mist, with the requested extra
+Blizzard/Freezing Spike damage. [Encounter levels and budgets](docs/SEPHIRA_CHALLENGE_BALANCE.md).
+
+Vision rewards now use a win-only item event without an acquisition sequence, fade, camera or map transition.
+Fina's movie score uses stereo ADX with metadata matching the original movies, including on cached installs.
+The approved artwork and picture/opacity packets stay unchanged. The default-model and Windows voice fixes from
+1.2.86 are included. Keep **Studio Test Data**, update, rebuild/install and restart; no Prepare Game or preset reset.
+
+Windows validation, compilation and downloaded-ZIP checks pass. **Retest Christine's reward and field return, the
+other fights at your actual level, and Fina's movie audio in game.**
+[Checks and measured timings](CHANGELOG.md#published-challenge-balance-victory-grants-and-movie-audio--2026-10-24).
+
 ### Default model replacement and Windows voice extraction — 2026-10-24
 
 [Verified Windows download / run 40144253062](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40144253062/Sephira-Studio-Test.zip)

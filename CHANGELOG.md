@@ -11,16 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Vision challenge pressure, victory rewards and movie audio
-
-- Apply Christine’s boss approach to all 28 challenge enemies across 15 encounters: approximately 15% faster turns, stronger physical/magic offense, bounded attacks +50% and damaging signatures +75%, divided across partners. Give casters spell basics and add thematic elemental resistances/weaknesses. Keep encounter levels, original unlock gates and shared HP/break budgets. Christine keeps her tested speed, durability and Slumber Mist; Blizzard/Freezing Spike receive the requested extra potency. See [the balance table](docs/SEPHIRA_CHALLENGE_BALANCE.md).
-- Replace unsupported vision enemy drops with a win-only native item event, using the ordinary item dispatcher without an acquisition sequence, fade, camera or map transition. Preserve ordinary field return and empty escape/loss rewards. The user confirms the prior return no longer goes black; the new item grant still needs a live retest.
-- Restore Fina’s movie soundtrack as one stereo ADX stream, correcting metadata field types to match original movie headers and both native stereo descriptors. Keep the approved color/opacity packets unchanged, preserve once-only playback and battle-music pause/resume, and retain the same score on cached installs. Stop with an actionable error instead of silently building a muted movie if soundtrack preparation fails. Offline encoding/readback does not establish live playback; in-game audio still needs a listen.
-- Retain all 1.2.86 default-model naming and Windows voice extraction fixes, and preserve the existing sprite/icon cache.
-
-Local validation: 700 Python tests pass (41 platform skips), 68 targeted Flutter tests pass (one Windows-only local skip), and analysis reports no issues. Actual native table, 28 AI, 45 menu and cave-actor readbacks pass. Both movie descriptors retain the matching stereo track; all approved color/opacity packets survive unchanged and cold/warm movie outputs match. Windows compilation, validation and downloaded-ZIP verification are pending.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -89,6 +79,32 @@ Local validation: 700 Python tests pass (41 platform skips), 68 targeted Flutter
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published challenge balance, victory grants and movie audio — 2026-10-24
+
+[Verified Windows ZIP / run 40146427534](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40146427534/Sephira-Studio-Test.zip), code `a10f83b`, update **1.2.87** (74.0 MB).
+SHA-256 `1965895138f7a28efaa0fab51e4f59dba95b203df144049b97d603db3d0671e4`.
+
+- Apply Christine’s boss approach to all 28 challenge enemies across 15 encounters: approximately 15% faster turns, stronger physical/magic offense, bounded attacks +50% and damaging signatures +75%, divided across partners. Give casters spell basics and add thematic elemental resistances/weaknesses. Keep encounter levels, original unlock gates and shared HP/break budgets. Christine keeps her tested speed, durability and Slumber Mist; Blizzard/Freezing Spike receive the requested extra potency. See [the balance table](docs/SEPHIRA_CHALLENGE_BALANCE.md).
+- Replace unsupported vision enemy drops with a win-only native item event, using the ordinary item dispatcher without an acquisition sequence, fade, camera or map transition. Preserve ordinary field return and empty escape/loss rewards. The user confirms the prior return no longer goes black; the new item grant still needs a live retest.
+- Restore Fina’s movie soundtrack as one stereo ADX stream, correcting metadata field types to match original movie headers and both native stereo descriptors. Keep the approved color/opacity packets unchanged, preserve once-only playback and battle-music pause/resume, and retain the same score on cached installs. Stop with an actionable error instead of silently building a muted movie if soundtrack preparation fails. Offline encoding/readback does not establish live playback; in-game audio still needs a listen.
+- Retain all 1.2.86 default-model naming and Windows voice extraction fixes, and preserve the existing sprite/icon cache.
+
+Validation: 700 Python tests pass locally (41 platform skips), 68 targeted Flutter tests pass (one Windows-only local
+skip), and analysis reports no issues. Real native readback passes for the challenge tables, all 28 AI assets, 45 menus
+and cave placement. Native stereo descriptors and ADX metadata match; every approved color/opacity packet is unchanged.
+With the score already encoded, the native movie stage took 18.0 seconds cold and 0.05 seconds warm, with identical
+output and the same score. This measures that stage only, not soundtrack preparation or a complete install. Windows validation and compilation both pass for this
+commit; the downloaded ZIP matches all 72 managed extension and 16 standalone Fina manifest files and its checksum.
+No animation-library download is included. Keep Studio Test Data, update, rebuild/install and restart. No preset reset
+or Prepare Game is required. Live reward delivery, return-to-field behavior, fight difficulty and movie sound still
+need testing in the game; serialized asset checks cannot establish those outcomes.
+
+First complete candidate 23:46:35 UTC to this verified ZIP 00:32:46 UTC:
+**46m 11s**, including the intermediate 1.2.86 delivery, user-requested follow-up scope, local corrections, native
+proofs, Windows waiting and ZIP verification. This package's CI wall time **9m 56s**; summed runner usage
+**14m 01s**. The earlier 1.2.86 run used 10m 02s wall and 13m 53s runner time. Two exact automatic runs joined
+across the task; no duplicate/manual dispatch.
 
 ## Published default model naming and Windows voice extraction — 2026-10-24
 
