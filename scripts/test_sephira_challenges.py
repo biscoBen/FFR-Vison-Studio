@@ -28,6 +28,67 @@ def roster():
             for p in catalog['presets']]
 
 
+def execute_target(asset, scheduled, friendly_hp):
+    """Execute the authored routing and the collected native base helper."""
+    base=json.loads(gzip.decompress((ROOT/'scripts/fixtures/sephira_challenges/base-ai.json.gz').read_bytes()))
+    state={'skill':None,'target':None}
+    def run(view,function,arguments=()):
+        method=next(e for e in view['Exports'] if e['ObjectName']==function);code=method['ScriptBytecode']
+        parameters=[p['Name'] for p in method['LoadedProperties'] if 'CPF_Parm' in p['PropertyFlags'] and 'CPF_ReturnParm' not in p['PropertyFlags']]
+        positions={};offset=0;local={(name,):value for name,value in zip(parameters,arguments)}
+        def kind(node):return node['$type'].split('.')[-1].split(',')[0]
+        def size(node):
+            if kind(node)=='EX_UnicodeStringConst':return 1+2*(len(node['Value'])+1)
+            if kind(node)=='EX_StructMemberContext':return 9+size(node['StructExpression'])
+            if kind(node) in ('EX_FinalFunction','EX_CallMath','EX_LocalVirtualFunction'):
+                return (14 if kind(node)=='EX_LocalVirtualFunction' else 10)+sum(size(p) for p in node['Parameters'])
+            if kind(node)=='EX_Let':return 9+size(node['Variable'])+size(node['Expression'])
+            if kind(node) in ('EX_LetObj','EX_LetBool'):return 1+size(node['VariableExpression'])+size(node['AssignmentExpression'])
+            return fina.size(node)
+        for node in code:positions[offset]=node;offset+=size(node)
+        def path(node):return tuple(node['Variable']['New']['Path'])
+        def evaluate(node):
+            op=kind(node)
+            if op in ('EX_IntConst','EX_ByteConst','EX_UnicodeStringConst'):return node['Value']
+            if op=='EX_Nothing':return None
+            if op in ('EX_LocalVariable','EX_LocalOutVariable'):return local.get(path(node))
+            if op=='EX_StructMemberContext':return evaluate(node['StructExpression'])[node['StructMemberExpression']['New']['Path'][0]]
+            if op=='EX_LocalVirtualFunction':
+                if node['VirtualFunctionName']=='AIDebugPrintString':return None
+                return run(base,node['VirtualFunctionName'],[evaluate(p) for p in node['Parameters']])
+            if op in ('EX_FinalFunction','EX_CallMath'):
+                name=view['Imports'][-node['StackNode']-1]['ObjectName'];args=[evaluate(p) for p in node['Parameters']]
+                if name=='GetScheduledSkill':return scheduled
+                if name=='NotEqual_IntInt':return args[0]!=args[1]
+                if name=='EqualEqual_ByteByte':return args[0]==args[1]
+                if name=='SetSkill':state['skill']=args[0];return None
+                if name=='GetSkillDataById':return {'targetType':1,'defaultTargetRelation':1}
+                if name=='GetUnitWithLowestHitPoint':
+                    assert args==[1]
+                    return min(friendly_hp,key=friendly_hp.get)
+                if name=='SetTarget':state['target']=args[0];return None
+                if name=='SetTargetRandom':state['target']='native-random';return None
+                if name in ('Conv_IntToString','MakeLiteralString'):return str(args[0])
+                if name=='Concat_StrStr':return ''.join(args)
+                raise AssertionError(name)
+            raise AssertionError(op)
+        pc=0
+        for _ in range(100):
+            node=positions[pc];op=kind(node);next_pc=pc+size(node)
+            if op=='EX_Let':local[path(node['Variable'])]=evaluate(node['Expression'])
+            elif op=='EX_LetBool':local[path(node['VariableExpression'])]=evaluate(node['AssignmentExpression'])
+            elif op=='EX_LetObj':local[path(node['VariableExpression'])]=evaluate(node['AssignmentExpression'])
+            elif op=='EX_Jump':next_pc=node['CodeOffset']
+            elif op=='EX_JumpIfNot':
+                if not evaluate(node['BooleanExpression']):next_pc=node['CodeOffset']
+            elif op=='EX_Return':return evaluate(node['ReturnExpression'])
+            else:evaluate(node)
+            pc=next_pc
+        raise AssertionError('Target routing did not finish')
+    run(asset,'ExecuteInner')
+    return state
+
+
 class SephiraChallengeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -278,6 +339,37 @@ class SephiraChallengeTests(unittest.TestCase):
                 row = next(v for v in self.built[challenge.UNIT].values() if v['ID']==identity)
                 self.assertEqual(row['Level'], spec['level'])
                 self.assertEqual(row['Experience']+row['Money'], 0)
+
+    def test_fina_casts_bounded_cure_every_two_or_three_actions_when_hurt(self):
+        rows=lambda rel:self.native[rel]
+        spec,units=next((s,u) for s,u in challenge.plans(self.units) if s['origin']==13100)
+        self.assertEqual({u['sephiraVision']['preset'] for u in units},{'crystal_fina','lenneth'})
+        for index,unit in enumerate(units):
+            recipes=challenge.kit(unit,rows,2)
+            actions=challenge.rotation(unit,recipes,index)
+            if unit['sephiraVision']['preset']=='lenneth':
+                self.assertFalse(any('healThreshold' in r for r in actions))
+                continue
+            cure=next(r for r in recipes if r['source']==210010)
+            original=next(v for v in rows(challenge.SKILL).values() if v['ID']==210010)
+            fields=testing.apply_fields(original,cure['fields'])
+            self.assertEqual(fields['Name'],original['Name'])
+            self.assertEqual((fields['TargetType'],fields['defaultTargetRelation'],fields['magnification']),('Single','Friendlies',15))
+            authored=fina.author_ai(native_ai(),actions)
+            heals=[turn for turn in range(24) if choose(authored,turn,.7)==cure['id']]
+            self.assertEqual(len(heals),9)
+            self.assertEqual({b-a for a,b in zip(heals,heals[1:])},{2,3})
+            for turn in heals:
+                self.assertEqual(choose(authored,turn,.85),cure['id'])
+                self.assertEqual(choose(authored,turn,.851),actions[0]['id'])
+                self.assertEqual(choose(authored,turn,1,ally_hp=.7),cure['id'])
+                self.assertEqual(choose(authored,turn,1,ally_hp=1),actions[0]['id'])
+            for health,expected in [({'Fina':1,'Lenneth':.7},'Lenneth'),({'Fina':.7,'Lenneth':1},'Fina'),
+                                    ({'Fina':.6,'Lenneth':.3},'Lenneth')]:
+                self.assertEqual(execute_target(authored,cure['id'],health),{'skill':cure['id'],'target':expected})
+            self.assertEqual(execute_target(authored,actions[0]['id'],{'Fina':1,'Lenneth':.2}),
+                             {'skill':actions[0]['id'],'target':'native-random'})
+            self.assertEqual(cure.get('healThreshold'),None) # no mutation of the player/private skill recipe
 
     def test_moved_removed_and_disabled_profiles_cannot_spawn_challenge_rewards(self):
         moved = copy.deepcopy(self.units)

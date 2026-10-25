@@ -523,6 +523,7 @@
       }
     },
     "crystal_fina": {
+      "healing": 210010,
       "attacks": [
         210250,
         503630,

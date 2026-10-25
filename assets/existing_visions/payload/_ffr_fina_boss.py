@@ -147,6 +147,8 @@ def size(node):
     if op in ('EX_LocalVariable', 'EX_LocalOutVariable', 'EX_InstanceVariable'): return 9
     if op in ('EX_IntConst', 'EX_Jump'): return 5
     if op == 'EX_DoubleConst': return 9
+    if op == 'EX_ByteConst': return 2
+    if op == 'EX_PrimitiveCast': return 2 + size(node['Target'])
     if op in ('EX_True', 'EX_False', 'EX_EndOfScript', 'EX_Nothing'): return 1
     if op in ('EX_FinalFunction', 'EX_CallMath', 'EX_LocalVirtualFunction'):
         return (14 if op == 'EX_LocalVirtualFunction' else 10) + sum(size(p) for p in node['Parameters'])
@@ -156,6 +158,60 @@ def size(node):
     if op == 'EX_JumpIfNot': return 5 + size(node['BooleanExpression'])
     if op == 'EX_Return': return 1 + size(node['ReturnExpression'])
     raise ValueError('Unsupported boss AI bytecode: ' + op)
+
+
+def ally_recovery(asset, rotation):
+    """Use native friendly-unit HP selection in both think and execute phases.
+
+    The inherited ExecuteInner normally chooses a random target. Its native
+    lowest-HP helper instead reads the skill's friendly relation and sets that
+    target explicitly, so an injured partner can receive single-target Cure.
+    """
+    def imported(name):
+        return next(-i for i, v in enumerate(asset['Imports'], 1) if v['ObjectName'] == name)
+    def add(name, owner, template):
+        item = copy.deepcopy(asset['Imports'][-imported(template)-1])
+        item.update(ObjectName=name, OuterIndex=imported(owner))
+        try: return -(asset['Imports'].index(item)+1)
+        except ValueError:
+            asset['Imports'].append(item); return -len(asset['Imports'])
+    for name in ('CPP_BtlUnit', 'CPP_UnitParameter'): add(name, '/Script/mucha', 'CPP_BtlUnitAI')
+    for name, owner in (('GetUnitWithLowestHitPoint', 'CPP_BtlUnitAI'),
+                        ('GetScheduledSkill', 'CPP_BtlUnitAI'), ('GetUnitParameter', 'CPP_BtlUnit'),
+                        ('GetHitPointRatio', 'CPP_UnitParameter'), ('GreaterEqual_DoubleDouble', 'KismetMathLibrary')):
+        add(name, owner, 'GetOwnerUnitParameter')
+    def call(name, *args, math=False):
+        return expr('EX_CallMath' if math else 'EX_FinalFunction', StackNode=imported(name), Parameters=list(args))
+    def context(owner, value):
+        return expr('EX_Context', ObjectExpression=owner, Offset=size(value), PropertyType=0,
+                    RValuePointer={'$type':'UAssetAPI.Kismet.Bytecode.KismetPropertyPointer, UAssetAPI',
+                        'New':{'$type':'UAssetAPI.UnrealTypes.FFieldPath, UAssetAPI', 'Path':[], 'ResolvedOwner':0}},
+                    ContextExpression=value)
+    # eRelation::Friendlies = 1 in the collected full-game mappings.
+    ally = call('GetUnitWithLowestHitPoint', expr('EX_ByteConst', Value=1))
+    parameter = context(ally, call('GetUnitParameter'))
+    ratio = context(parameter, call('GetHitPointRatio'))
+    def condition(threshold):
+        return call('GreaterEqual_DoubleDouble', expr('EX_DoubleConst', Value=threshold),
+                    expr('EX_PrimitiveCast', ConversionType=4, Target=copy.deepcopy(ratio)), math=True)
+    execute = next(e for e in asset['Exports'] if e['ObjectName'] == 'ExecuteInner')
+    original = execute['ScriptBytecode']
+    if len(original) != 3 or original[0].get('VirtualFunctionName') != 'SetSkillAndTargetWithScheduledSkill':
+        raise ValueError('The native boss target-routing function changed.')
+    heals = {r['id'] for r in rotation if r.get('healAllies')}
+    if len(heals) != 1: raise ValueError('Expected one reviewed friendly recovery skill.')
+    test = call('NotEqual_IntInt', call('GetScheduledSkill'), expr('EX_IntConst', Value=next(iter(heals))), math=True)
+    branch = expr('EX_JumpIfNot', CodeOffset=0, BooleanExpression=test)
+    skip = expr('EX_Jump', CodeOffset=0)
+    heal = expr('EX_LocalVirtualFunction', VirtualFunctionName='Set Skill and Lowest Hit Point Target',
+                Parameters=[call('GetScheduledSkill')])
+    code = [branch, copy.deepcopy(original[0]), skip, heal, *copy.deepcopy(original[1:])]
+    branch['CodeOffset'] = sum(map(size, code[:3]))
+    skip['CodeOffset'] = sum(map(size, code[:4]))
+    execute.update(ScriptBytecode=code, ScriptBytecodeRaw=None, ScriptBytecodeSize=sum(map(size, code)))
+    import _ffr_crystal_cave as caves
+    caves.names(asset, [asset['Imports'], code])
+    return condition
 
 
 def author_ai(asset, rotation=None):
@@ -177,6 +233,7 @@ def author_ai(asset, rotation=None):
         if len(rotation) != 8 or any(type(r.get('id')) is not int for r in rotation):
             raise ValueError('A vision boss needs eight reviewed actions.')
         actions = [(i, r['id']) for i, r in enumerate(rotation)]
+    recovery = ally_recovery(asset, rotation) if rotation and any(r.get('healAllies') for r in rotation) else None
     labels, pending = {}, []
     def jump(label, condition=None):
         n = expr('EX_JumpIfNot', CodeOffset=0, BooleanExpression=condition) if condition else expr('EX_Jump', CodeOffset=0)
@@ -189,8 +246,10 @@ def author_ai(asset, rotation=None):
     for turn, identity in actions:
         label(str(turn))
         if (rotation[turn]['healing'] if rotation is not None else turn == 5):
-            jump('basic', expr('EX_LocalVirtualFunction', VirtualFunctionName='HP判定',
-                Parameters=[expr('EX_DoubleConst', Value=.5), expr('EX_True')]))
+            guard = recovery(rotation[turn]['healThreshold']) if recovery and rotation[turn].get('healAllies') else expr('EX_LocalVirtualFunction', VirtualFunctionName='HP判定',
+                Parameters=[expr('EX_DoubleConst', Value=rotation[turn].get('healThreshold', .5)
+                                 if rotation is not None else .5), expr('EX_True')])
+            jump('basic', guard)
         cast(identity); jump('end')
     label('end'); code.extend(copy.deepcopy(original[-2:]))
     for n, target in pending: n['CodeOffset'] = labels[target]

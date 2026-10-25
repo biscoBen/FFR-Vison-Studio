@@ -19,7 +19,7 @@ FIXTURE = ROOT/'scripts/fixtures/crystal_fina_boss'
 def native_ai(): return json.loads(gzip.decompress((FIXTURE/'ai.json.gz').read_bytes()))
 
 
-def choose(asset, turn, hp):
+def choose(asset, turn, hp, ally_hp=None):
     """Small interpreter for the native instructions authored for this boss.
 
     Unlike a parallel Python rotation, this follows the serialized jump offsets,
@@ -32,15 +32,21 @@ def choose(asset, turn, hp):
     locals_, scheduled = {}, []
     def path(node): return tuple(node['Variable']['New']['Path'])
     def op(node): return node['$type'].split('.')[-1].split(',')[0]
-    def evaluate(node):
+    def evaluate(node, context=None):
         kind = op(node)
-        if kind in ('EX_IntConst', 'EX_DoubleConst'): return node['Value']
+        if kind in ('EX_IntConst', 'EX_DoubleConst', 'EX_ByteConst'): return node['Value']
         if kind == 'EX_True': return True
         if kind in ('EX_LocalVariable', 'EX_LocalOutVariable'): return locals_.get(path(node), False)
         if kind in ('EX_FinalFunction', 'EX_CallMath'):
             name = asset['Imports'][-node['StackNode']-1]['ObjectName']
             args = [evaluate(p) for p in node['Parameters']]
             if name == 'GetOwnerUnitParameter': return 'owner'
+            if name == 'GetUnitWithLowestHitPoint':
+                assert args == [1] # native friendly relation; never target the player party
+                return 'ally' if ally_hp is not None and ally_hp < hp else 'owner'
+            if name == 'GetUnitParameter': return context
+            if name == 'GetHitPointRatio': return ally_hp if context == 'ally' else hp
+            if name == 'GreaterEqual_DoubleDouble': return args[0] >= args[1]
             if name == 'GetThinkNum': return turn
             if name == 'Percent_IntInt': return args[0] % args[1]
             if name == 'NotEqual_IntInt': return args[0] != args[1]
@@ -51,7 +57,10 @@ def choose(asset, turn, hp):
             threshold, below = [evaluate(p) for p in node['Parameters']]
             assert below is True
             return hp <= threshold
-        if kind == 'EX_Context': return evaluate(node['ContextExpression'])
+        if kind == 'EX_Context': return evaluate(node['ContextExpression'], evaluate(node['ObjectExpression'], context))
+        if kind == 'EX_PrimitiveCast':
+            assert node['ConversionType'] == 4
+            return float(evaluate(node['Target'], context))
         raise AssertionError(kind)
     pc = 0
     for _ in range(100):

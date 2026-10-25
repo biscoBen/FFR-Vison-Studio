@@ -164,6 +164,7 @@ def kit(unit, rows, team_size):
         if healing:
             # A threshold-gated self heal is bounded to 15% of this boss's share.
             row.update(TargetType='Self', defaultTargetRelation='Friendlies', damageCalcType='TargetMaxHPRatio', magnification=15)
+            if source == settings.get('healing'): row['TargetType'] = 'Single'
         elif damaging:
             if row['damageCalcType'] not in ('Physic', 'Magic', 'MPAbsorb'):
                 row['damageCalcType'] = 'Physic' if row['DamageType'] == 'Physic' else 'Magic'
@@ -189,6 +190,14 @@ def rotation(unit, recipes, index):
     utility = find(spec.get('utility', 0))
     # Stagger the partners' signatures rather than bursting on the same turn.
     actions = [attack, first, utility, attack, second, attack, first, special]
+    if spec.get('healing'):
+        heal = copy.deepcopy(find(spec['healing']))
+        if not heal['healing']: raise ValueError('Missing reviewed vision boss healing skill.')
+        # Three bounded Cure windows per eight actions: gaps of 3, 3 and 2.
+        # Do not waste a turn overhealing; all other bosses retain their guards.
+        heal['healThreshold'] = .85
+        heal['healAllies'] = True
+        actions = [attack, first, heal, attack, second, heal, special, heal]
     offset = (index * 3) % len(actions)
     actions = actions[offset:] + actions[:offset]
     return actions
@@ -670,10 +679,11 @@ def build(units, env):
             env['run']([*env['FFRDT'], 'fromjson', str(dump), str(target), '--usmap', env['USMAP']])
             env['run']([*env['FFRDT'], 'tojson', str(target), str(dump), '--usmap', env['USMAP']])
             actual = json.loads(dump.read_text(encoding='utf-8-sig'))
-            for field in ('ScriptBytecode', 'ScriptBytecodeSize'):
-                before = next(e[field] for e in authored['Exports'] if e['ObjectName'] == 'ThinkInner')
-                after = next(e[field] for e in actual['Exports'] if e['ObjectName'] == 'ThinkInner')
-                if before != after: raise ValueError('Vision boss AI failed native serialization: ' + name)
+            for function in ('ThinkInner', 'ExecuteInner'):
+                for field in ('ScriptBytecode', 'ScriptBytecodeSize'):
+                    before = next(e[field] for e in authored['Exports'] if e['ObjectName'] == function)
+                    after = next(e[field] for e in actual['Exports'] if e['ObjectName'] == function)
+                    if before != after: raise ValueError('Vision boss AI failed native serialization: ' + name)
     env.get('stage', lambda text: print('##stage '+text,flush=True))('Building challenge menus')
     testing.build_choices(env, [PREFIX + str(spec['origin']) + suffix
         for spec, _ in selected for suffix in ('_Menu', '_Locked', '_Done')],

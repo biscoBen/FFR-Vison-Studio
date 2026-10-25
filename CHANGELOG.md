@@ -11,6 +11,11 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Crystal Fina shrine recovery — 2026-10-25
+
+- Following the user's successful hardest-difficulty test, preserve Lenneth's Sacred Wave and the fight's current damage, speed, durability and break budgets. Give Crystal Fina a Cure opportunity every 2–3 actions when either friendly boss needs recovery, restoring the existing bounded 15% of the target’s maximum HP. Check the lowest-HP friendly unit against an 85% threshold and use the native target-selection helper so Cure can reach Fina or Lenneth. Use her normal light attack when recovery is unnecessary.
+- Keep this change in the private shrine-boss rotation. Player kits, other boss rotations and their existing healing guards are unchanged. Casual's simpler native AI continues to exclude unguarded recovery.
+
 ### Confirm-button shrine challenges — 2026-10-25
 
 - Require A/Confirm on all 13 native shrine repeat crystals with enabled Sephira challenges, including Warrior of Light's Crystal Fina/Lenneth encounter. Choosing Leave returns control without movement immediately reopening the menu. Apply the same native button-operated class to Christine's cave crystal.

@@ -15,6 +15,9 @@ anchors and item prices. The source-correction regression additionally retains a
 The decoded Blueprint fixture also includes the native button-operated `BP_MapGimmick_InteractEventTrigger`,
 whose C++ parent differs from the automatic overlap trigger. These fixtures verify targeted class/archetype
 replacement while preserving unrelated story actors, original event movement, conditions and replay paths.
+`base-ai.json.gz` is the collected native `BP_BtlUnitAI` declaration and bytecode from the same full-game skill
+reference. The recovery regression executes its actual lowest-HP target helper together with the private boss's
+authored routing, checking that Cure can target either friendly boss and that attacks retain normal target selection.
 All gzip streams have deterministic timestamps. The boss bytecode fixture is shared with the earlier Fina test.
 
 The accessibility regression also retains the native `01Gra_44` secret-cave row
