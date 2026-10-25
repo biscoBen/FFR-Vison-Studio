@@ -15,6 +15,34 @@ sys.path.insert(0,str(ROOT/'assets/existing_visions/payload'))
 import _ffr_cave_music_preview as preview
 
 
+def hca_v3_fixture():
+    """Synthetic v3 independent stereo with resolution-zero noise bands.
+
+    No game recording: fixed/delta-free scales and signed prefix coefficients
+    are packed here so consuming v2's extra coefficient bits cannot pass.
+    """
+    header=bytearray(96);header[:8]=b'HCA\0\x03\0\0\x60'
+    header[8:12]=b'fmt\0';header[12]=2;header[13:16]=(48000).to_bytes(3,'big')
+    header[16:20]=(4).to_bytes(4,'big');header[24:28]=b'comp'
+    header[28:40]=bytes((0,64,0,15,1,0,4,4,0,0,0,0))
+    header[40:50]=b'ciph\0\0pad\0'
+    header[-2:]=struct.pack('>H',CaveMusicPreviewTests.crc(header[:-2]))
+    frames=[]
+    for frame in range(4):
+        bits='1'*16+format(180,'09b')+'0'*7
+        for scales in ((50,40,48,0),(48,42,50,0)):
+            bits+='110'+''.join(format(scale,'06b') for scale in scales)
+        for subframe in range(8):
+            for channel in range(2):
+                # res 2 (+/-1): 01/10; res 1 (+/-1): 10/11.
+                positive=(frame+subframe+channel)%2==0
+                r2='01' if positive else '10';r1='10' if positive else '11'
+                bits+=r2+r1 if channel==0 else r1+r2
+        bits+='0'*(62*8-len(bits));raw=int(bits,2).to_bytes(62,'big')
+        frames.append(raw+struct.pack('>H',CaveMusicPreviewTests.crc(raw)))
+    return bytes(header)+b''.join(frames)
+
+
 class CaveMusicPreviewTests(unittest.TestCase):
     @staticmethod
     def crc(data):
@@ -89,6 +117,7 @@ class CaveMusicPreviewTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);tools=root/'tools';tools.mkdir()
             (tools/'cave_music_preview.zip').write_bytes(b'fixture decoder')
+            for name in ('CaveHcaV3.cs','cave_hca_v3.ps1'):(tools/name).write_bytes(b'fixture v3 decoder')
             original=preview.hashlib.sha256
             identity={'sha256':'same game'}
             old_key=original((__import__('json').dumps(identity,sort_keys=True)+original(b'fixture decoder').hexdigest()).encode()).hexdigest()[:24]
@@ -122,6 +151,61 @@ class CaveMusicPreviewTests(unittest.TestCase):
                         self.assertEqual(raw[:2],b'\x80\x00')
                         self.assertEqual(struct.unpack_from('>II',raw,8),(48000,307200))
                         self.assertEqual(raw[7],2)
+
+    @unittest.skipUnless(sys.platform=='win32','Requires the actual Windows PowerShell decoder.')
+    def test_v3_resolution_zero_noise_bands_decode_as_audio_not_v2_garbage(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);payload=ROOT/'assets/existing_visions/payload'
+            with zipfile.ZipFile(payload/'cave_music_preview.zip') as z:
+                (root/'VGAudio.dll').write_bytes(z.read('VGAudio.dll'))
+            source=root/'synthetic.hca';source.write_bytes(hca_v3_fixture());target=root/'decoded.wav'
+            subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',
+                str(payload/'cave_hca_v3.ps1'),str(source),str(target),str(root/'VGAudio.dll')],check=True,capture_output=True)
+            with wave.open(str(target)) as w:
+                self.assertEqual((w.getnchannels(),w.getframerate(),w.getnframes()),(2,48000,4096))
+                pcm=struct.unpack('<8192h',w.readframes(4096))
+            # Independent clHCA v3 reference values for this synthetic frame.
+            expected=(-9,65,-21,78,-32,90,-42,100,-50,109,-57,116,-62,122,-66,126,
+                -68,128,-69,128,-67,127,-64,123,-59,118,-52,111,-44,102,-34,91)
+            for actual,reference in zip(pcm[1024:1056],expected):self.assertLessEqual(abs(actual-reference),1)
+            self.assertAlmostEqual((sum(v*v for v in pcm)/len(pcm))**.5,427.042708,delta=.1)
+
+    def test_preview_uses_v3_decoder_and_does_not_reuse_the_bad_v2_cache(self):
+        import _ffr_fina_cave_music as music
+        import _ffr_deck_sync as sync
+        import hashlib,json
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);tools=root/'tools';tools.mkdir()
+            payload=ROOT/'assets/existing_visions/payload'
+            for name in ('cave_music_preview.zip','CaveHcaV3.cs','cave_hca_v3.ps1'):
+                (tools/name).write_bytes((payload/name).read_bytes())
+            identity={'sha256':'same installed game'}
+            old_fingerprint=hashlib.sha256(json.dumps({'revision':2,'game':identity,'cue':preview.CUE_NAME,
+                'stream':preview.STREAM_ID,'decoder':hashlib.sha256((tools/'cave_music_preview.zip').read_bytes()).hexdigest()},
+                sort_keys=True).encode()).hexdigest()[:24]
+            folder=root/'build/fina-preview-audio';folder.mkdir(parents=True)
+            (folder/(old_fingerprint+'.wav')).write_bytes(b'wrong v2 decode')
+            raw=root/'recording.hca';raw.write_bytes(hca_v3_fixture())
+            output=io.BytesIO()
+            with wave.open(output,'wb') as f:f.setparams((2,2,48000,0,'NONE','not compressed'));f.writeframes(b'\x11\x22\x33\x44'*4096)
+            def decode(command,**kwargs):
+                self.assertEqual(Path(command[command.index('-File')+1]).name,'cave_hca_v3.ps1')
+                self.assertEqual(Path(command[-1]).name,'VGAudio.dll')
+                Path(command[-2]).write_bytes(output.getvalue());return SimpleNamespace(returncode=0)
+            env=SimpleNamespace(game_root=lambda:root)
+            modules={'ffbe_audio':SimpleNamespace(host_config=lambda _:Path('/unused')),
+                'ffbe_effects':ModuleType('ffbe_effects'),
+                'ffbe_effects.hca_host':SimpleNamespace(key_from_config=lambda _:1)}
+            with mock.patch.dict(sys.modules,modules),mock.patch.object(sync,'game_identity',return_value=identity),\
+                    mock.patch.object(music,'recording',return_value=(raw,0)),\
+                    mock.patch.object(preview,'trim_hca',side_effect=lambda v:v),\
+                    mock.patch.object(preview,'decrypt',side_effect=lambda v,*_:v),\
+                    mock.patch.object(preview.subprocess,'run',side_effect=decode) as run:
+                result=preview.audio(root,env)
+                self.assertEqual(result,output.getvalue())
+                self.assertEqual(preview.audio(root,env),result)
+                self.assertEqual(run.call_count,1)
 
 
 

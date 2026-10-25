@@ -11,6 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Clear Fina movie music and HCA v3 preview — 2026-10-25
+
+- Fix the cave recording's washed-out preview: its HCA v3 resolution-zero coefficients were being unpacked with HCA v2 rules. Add a small managed decoder for the recording's independent-channel layout, including v3 noise reconstruction, correct bit consumption and strict header/frame checks. Reuse the existing licensed VGAudio tables/IMDCT, with vgmstream algorithm attribution; no new native executable or game audio is bundled. Invalidate the old preview WAV automatically. The user confirms the independently decoded comparison clip sounds like clear cave music.
+- The private native cue in 1.2.89 remains silent in the user's game. Return to the embedded stereo ADX movie path that previously played, now using the corrected recording rather than the misdecoded samples. Keep matching native audio metadata, battle-music pause/resume, the one-time movie window and every original color/opacity packet. Cache and restore the scored movie on warm installs; do not fall back silently to a movie without sound. Sprite/icon and voice codec caches retain their existing inputs.
+- Local independent decoding matches the corrected preview within one PCM16 unit; independent ADX v4 decoding retains the clear waveform. Windows packaging and live playback of this corrected embedded score are pending.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

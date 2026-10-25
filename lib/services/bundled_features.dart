@@ -281,6 +281,8 @@ class BundledFeatures {
           'payload/_ffr_build_cache.py',
           'payload/_ffr_cave_music_preview.py',
           'payload/cave_music_preview.zip',
+          'payload/CaveHcaV3.cs',
+          'payload/cave_hca_v3.ps1',
           'payload/_ffr_testing.py',
           'payload/_ffr_fina_cinematic.py',
           'payload/_ffr_fina_cave_music.py',
@@ -311,7 +313,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 72) {
+        (manifest['files'] as Map).length != 74) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

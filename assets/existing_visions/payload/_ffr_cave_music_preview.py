@@ -139,8 +139,10 @@ def audio(root, ffrenv):
     import _ffr_deck_sync
     identity=_ffr_deck_sync.game_identity(Path(ffrenv.game_root()))
     archive=root/'tools/cave_music_preview.zip'
-    fingerprint=hashlib.sha256(json.dumps({'revision':2,'game':identity,'cue':CUE_NAME,'stream':STREAM_ID,
-        'decoder':hashlib.sha256(archive.read_bytes()).hexdigest()},sort_keys=True).encode()).hexdigest()[:24]
+    decoder=hashlib.sha256(archive.read_bytes()+b''.join((root/'tools'/name).read_bytes()
+        for name in ('CaveHcaV3.cs','cave_hca_v3.ps1'))).hexdigest()
+    fingerprint=hashlib.sha256(json.dumps({'revision':3,'game':identity,'cue':CUE_NAME,'stream':STREAM_ID,
+        'decoder':decoder},sort_keys=True).encode()).hexdigest()[:24]
     folder=root/'build/fina-preview-audio';folder.mkdir(parents=True,exist_ok=True)
     target=folder/(fingerprint+'.wav')
     with _LOCK:
@@ -157,7 +159,8 @@ def audio(root, ffrenv):
                 if set(z.namelist())!={'VGAudio.dll','LICENSE.txt','decode.ps1','encode.ps1'}:raise ValueError('Invalid preview decoder.')
                 for name in z.namelist():(work/name).write_bytes(z.read(name))
             source=work/'source.hca';source.write_bytes(plain)
-            result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(work/'decode.ps1'),str(source),str(work/'decoded.wav')],capture_output=True)
+            result=subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+                '-File',str(root/'tools/cave_hca_v3.ps1'),str(source),str(work/'decoded.wav'),str(work/'VGAudio.dll')],capture_output=True)
             if result.returncode:raise ValueError('The installed cave recording could not be decoded for browser playback.')
             encoded=trim_wave((work/'decoded.wav').read_bytes())
         temporary=target.with_suffix('.tmp');temporary.write_bytes(encoded);temporary.replace(target)
