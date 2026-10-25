@@ -11,12 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Clear Fina movie music and HCA v3 preview — 2026-10-25
-
-- Fix the cave recording's washed-out preview: its HCA v3 resolution-zero coefficients were being unpacked with HCA v2 rules. Add a small managed decoder for the recording's independent-channel layout, including v3 noise reconstruction, correct bit consumption and strict header/frame checks. Reuse the existing licensed VGAudio tables/IMDCT, with vgmstream algorithm attribution; no new native executable or game audio is bundled. Invalidate the old preview WAV automatically. The user confirms the independently decoded comparison clip sounds like clear cave music.
-- The private native cue in 1.2.89 remains silent in the user's game. Return to the embedded stereo ADX movie path that previously played, now using the corrected recording rather than the misdecoded samples. Keep matching native audio metadata, battle-music pause/resume, the one-time movie window and every original color/opacity packet. Cache and restore the scored movie on warm installs; do not fall back silently to a movie without sound. Sprite/icon and voice codec caches retain their existing inputs.
-- Local independent decoding matches the corrected preview within one PCM16 unit; independent ADX v4 decoding retains the clear waveform. Windows packaging and live playback of this corrected embedded score are pending.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -85,6 +79,33 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published clear Fina movie sound and HCA v3 preview — 2026-10-25
+
+[Verified Windows ZIP / run 40210925843](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40210925843/Sephira-Studio-Test.zip), code `0c9b92e`, update **1.2.90** (74.0 MB).
+SHA-256 `a3e3f114e63716fad0e27f9ba7e433a0bae262f7cac67635f66a7759dd777bd8`.
+
+- Fix the washed-out cave-music preview: the old decoder unpacked HCA v3 resolution-zero coefficients with HCA v2 rules. Add a small managed decoder for this recording's independent-channel layout, including v3 noise reconstruction, correct bit consumption and strict frame checks. Reuse the existing licensed VGAudio tables/IMDCT, with vgmstream algorithm attribution. The user confirms the independently decoded comparison sounds like clear cave music. Invalidate the old preview WAV automatically; no game recording or key is bundled.
+- The private native cue in 1.2.89 stayed silent in game. Restore the embedded stereo ADX soundtrack that previously played, using the corrected samples. Match native movie audio metadata and preserve every picture/opacity packet, the once-only movie window, battle-music pause/resume and the existing sprite LB/cure sound. Cache the scored movie and restore it with sound on warm installs; fail visibly if it cannot be prepared. Existing sprite/icon and voice codec caches keep their inputs.
+
+Validation: 706 Python tests pass locally (42 platform skips), 33 focused Flutter tests pass, and analysis reports no
+issues. The managed preview matches independent clHCA v3 decoding within one PCM16 unit; independent ADX v4 decoding
+retains the clear stereo waveform. Chromium passes sound, pause, seek and volume checks. Native readback confirms
+both movie audio descriptors, inert spare tracks and identical cold/warm output. The cached movie stage measures
+19.71 seconds cold and 0.061 seconds warm, with its recording already prepared; these are not full install timings.
+Windows validation/compilation, the actual Windows HCA v3 fixture, fresh frozen-engine setup and launcher/updater
+checks pass for this commit. The downloaded ZIP matches its checksum, provenance, all 74 managed-extension files,
+16 standalone Fina files, compiled version and unchanged artwork. The animation library and game audio are excluded.
+**The corrected embedded soundtrack still needs in-game listening confirmation.** Keep Studio Test Data, update,
+rebuild/install and restart; no Prepare Game or preset reset is needed.
+
+Measured delivery: first complete candidate 09:03:19
+to verified package 09:26:51 America/Los_Angeles,
+**23m 32s**, including local checks, corrections, waiting and ZIP verification. This run's measured CI wall time
+is **8m 26s**; summed runner usage is **12m 31s**. A first validation attempt caught a stale startup-test
+version expectation and was corrected before publication. Across both attempts, CI wall totals **14m 02s**
+and runner usage totals **22m 02s**. The delivery interval includes that correction; earlier
+completed releases are not included.
 
 ## Published native Fina music, preview sound and matching challenge damage — 2026-10-25
 

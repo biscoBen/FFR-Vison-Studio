@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Clear Fina movie sound — 2026-10-25
+
+[Verified Windows download / run 40210925843](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40210925843/Sephira-Studio-Test.zip)
+(code `0c9b92e`, update **1.2.90**; **74.0 MB**).
+
+The cave recording uses HCA v3. Fix the older decoding rules that produced the washed-out preview; the user confirms
+the corrected comparison clip is clear. Studio automatically replaces the bad cached WAV. In game, restore the embedded
+stereo soundtrack that previously played, now using those corrected samples, since the private cue in 1.2.89 was silent.
+Movie pictures, single playback, battle-music pause/resume and the sprite LB/cure sound stay intact. Warm installs reuse
+the scored movie; sprite/icon and voice caches keep their inputs. No music or game key is bundled with Studio.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. Windows/package and local audio/browser checks pass;
+**the corrected embedded music still needs an in-game listening test**. No Prepare Game or preset reset is required.
+[Checks and measured timings](CHANGELOG.md#published-clear-fina-movie-sound-and-hca-v3-preview--2026-10-25).
+
 ### Matching fight damage and Fina music playback — 2026-10-25
 
 [Verified Windows download / run 40176189690](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40176189690/Sephira-Studio-Test.zip)
