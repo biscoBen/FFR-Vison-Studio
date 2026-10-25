@@ -101,8 +101,10 @@ def payload():
 
 
 def enabled(root):
-    import _ffr_testing
-    return _ffr_testing.settings(root)['finaCinematic']
+    """Legacy callers: the cinematic now follows an included Fina, not a flag."""
+    import _ffr_sephira
+    roster=Path(root)/'mods/EstherTsukiko/units.json'
+    return roster.is_file() and any(matches(u) for u in _ffr_sephira.active_units(json.loads(roster.read_bytes())))
 
 
 def matches(unit):
@@ -111,16 +113,18 @@ def matches(unit):
             and (unit.get('lb_custom') or {}).get('presentation', 'ffbe') == 'ffbe')
 
 
-def ensure_assets(root, extract):
-    if not enabled(root): return
+def ensure_assets(root, extract, units=None):
+    if units is None:
+        if not enabled(root):return
+    elif not any(matches(u) for u in units):return
     for rel in (MASTER, MOVIE, MOVIE + '_vp9'):
         path = Path(root) / 'extracted/legacy' / (rel + '.uasset')
         if not path.is_file(): extract(rel.removeprefix('FFRS/Content/'))
-        if not path.is_file(): raise ValueError('The selected game is missing the Crystal Fina movie test template: ' + rel)
+        if not path.is_file(): raise ValueError('The selected game is missing the Crystal Fina cinematic template: ' + rel)
     master = Path(root) / 'extracted/legacy' / (MASTER + '.uasset')
     for suffix, digest in MASTER_HASHES.items():
         if hashlib.sha256(master.with_suffix(suffix).read_bytes()).hexdigest() != digest:
-            raise ValueError('The native movie template changed. Turn off Test Crystal Fina cinematic until this game build is checked.')
+            raise ValueError('The native movie template changed. This game build needs a compatible Crystal Fina cinematic template.')
 
 
 def attach_audio(unit, skill, bank, events, table):
@@ -203,11 +207,11 @@ def prepare_pak(root, ffrenv, run, video=None):
 def build(units, env):
     root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
     run, tool, usmap = env['run'], env['FFRDT'], env['USMAP']
-    selected = [u for u in units if matches(u)] if enabled(root) else []
+    selected = [u for u in units if matches(u)]
     if not selected:
         prepare_pak(root, env['ffrenv'], run)
         return
-    if len(selected) != 1: raise ValueError('Select one Crystal Fina for the cinematic test.')
+    if len(selected) != 1: raise ValueError('Select one Crystal Fina for her cinematic.')
     unit = selected[0]
     # Same private LB ID allocation as the engine, never a native donor ID.
     sid = env['lb_id'](unit['id'])
@@ -308,18 +312,18 @@ def build(units, env):
         'audio': {'cue': _ffr_fina_cave_music.CUE_NAME, 'codec': 'ADX', 'channels': 2,
                   'sampleRate': 48000, 'samples': 307200, 'startSeconds': 0,
                   'sourceDecoder':'HCA v3 independent channels','embedded':True}}), encoding='utf-8')
-    print('  Crystal Fina: optional 6.4-second illustrated cinematic before her existing LB (in-game test required).')
+    print('  Crystal Fina: 6.4-second resonance cinematic with cave music and her existing LB.')
 
 
 def register(app, env=None):
     @app.get('/crystal-fina-cinematic')
     def page():
         from fastapi.responses import HTMLResponse
-        return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina cinematic test</title>
+        return HTMLResponse('''<!doctype html><meta name="viewport" content="width=device-width"><title>Crystal Fina resonance cinematic</title>
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
-        <h1>Crystal Fina cinematic test</h1><video id="movie" controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
+        <h1>Crystal Fina resonance cinematic</h1><video id="movie" controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
         <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. The secret cave’s music plays from its beginning. In game it leads into Fina’s existing LB animation and cure sound.</p>
-        <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
+        <p>The cinematic is included automatically with Crystal Fina. Include her, rebuild/install and restart the game, then use her resonance.</p>
         <p><button id="play-sound" type="button">Play with sound</button> <span id="audio-status" role="status"></span></p>
         <p>The preview reads the cave music from your selected game on first playback. You can also listen to it separately:</p>
         <audio id="music" controls preload="none" src="/api/testing/fina-cinematic/audio"></audio>

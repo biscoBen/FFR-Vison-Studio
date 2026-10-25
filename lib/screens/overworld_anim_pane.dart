@@ -4,6 +4,23 @@ import 'package:flutter/material.dart';
 
 import '../design/theme.dart';
 import '../services/overworld_appearance.dart';
+import 'party_portrait.dart';
+
+class NativeOverworldPreview extends StatelessWidget {
+  const NativeOverworldPreview({super.key, required this.model});
+  final String model;
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 210,
+    decoration: BoxDecoration(color: Guide.paper2, border: Border.all(color: Guide.ink, width: 2)),
+    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      PartyPortrait(characterId: OverworldAppearance.nativeId(model)!, width: 96, height: 96),
+      const SizedBox(height: 12),
+      Text('Original Resonance field model', style: Guide.strong()),
+      Text('Native walking and running animations', style: Guide.small()),
+    ]),
+  );
+}
 
 /// Preview the actual directional walking sheet used by the field importer.
 class OverworldAnimPane extends StatefulWidget {

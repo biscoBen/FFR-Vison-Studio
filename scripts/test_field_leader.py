@@ -16,6 +16,21 @@ import _ffr_testing as testing
 
 
 class FieldLeaderTests(unittest.TestCase):
+    def test_fina_movie_runtime_is_automatic_with_an_old_off_setting(self):
+        import _ffr_fina_battle as fina
+        import _ffr_fina_cinematic as movie
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            setting=root/testing.CONFIG;setting.parent.mkdir(parents=True)
+            setting.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':False}))
+            unit={'id':13503,'ffbe':{'id':fina.SPRITE,'source':'CUSTOM'}}
+            runtime=root/'build/crystal-fina-battle/runtime.json';runtime.parent.mkdir(parents=True)
+            runtime.write_text(json.dumps({'schema':1,'id':13503}))
+            leader.build([unit],{'ROOT':root,'rows':lambda _:self.fail('No field cycling requires no map reads')})
+            payload=json.loads((root/leader.STAGE).read_bytes())
+            self.assertIn(movie.PRIVATE.replace('FFRS/Content/','/Game/'),payload['files']['Scripts/config.lua'])
+            self.assertIn('cinematicMovie',payload['files']['Scripts/config.lua'])
+
     def field_fixture(self, mid=60):
         # Explicit synthetic FSsValue floats/cell hashes, including the native
         # unversioned nested-value header. No game assets in the fixture.

@@ -101,14 +101,16 @@ void main() {
 
   testWidgets('overworld picker labels genuine models, uses normal images and applies without downloads', (tester) async {
     await picker(tester, dialog: const AddUnitDialog(replaceOverworldId: 1001));
+    expect(find.text('Resonance · 8-way'), findsWidgets);
+    await tester.enterText(find.byType(TextField).first,'Vagrant');
+    await tester.pump();
     expect(find.text('Vagrant Knight Rain'), findsOneWidget);
     expect(find.text('Preview Unit'), findsNothing);
     expect(find.text('Other Unit'), findsNothing);
     expect(find.text('Crystal Fina'), findsNothing);
-    expect(find.text('4-way'), findsWidgets);
-    expect(find.text('8-way'), findsWidgets);
+    expect(find.text('FFBE · 8-way'), findsWidgets);
     expect(find.byIcon(Icons.directions_walk), findsNothing);
-    expect(OverworldAppearance.entries.length, 9);
+    expect(OverworldAppearance.entries.length, 17);
     await tester.tap(find.text('Vagrant Knight Rain'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -136,9 +138,25 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('native Dark Fina can replace Rain walking without a sprite download', (tester) async {
+    await picker(tester,dialog: const AddUnitDialog(replaceOverworldId:1001));
+    await tester.enterText(find.byType(TextField).first,'Dark Fina');await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('field-choice-native_party_1006')));await tester.pump();
+    expect(find.byType(NativeOverworldPreview),findsOneWidget);
+    expect(find.byType(OverworldAnimPane),findsNothing);
+    expect(find.text('Original Resonance field model'),findsOneWidget);
+    await tester.tap(find.text('USE THIS MODEL'));await tester.pump();
+    expect(app.fieldPartyId,1001);
+    expect(app.fieldChoice,{'version':1,'model':'native_party_1006'});
+    expect(api.requested,isEmpty);expect(app.legacyDownloads,isEmpty);
+    await tester.pumpWidget(const SizedBox());await tester.pumpAndSettle();
+    expect(tester.takeException(),isNull);
+  });
+
   testWidgets('four-way field choice previews its own cardinal frames and persists the selected model', (tester) async {
     await picker(tester, dialog: const AddUnitDialog(replaceOverworldId: 1002));
-    await tester.tap(find.text('Lasswell'));
+    await tester.enterText(find.byType(TextField).first,'Lasswell');await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('field-choice-lasswell')));
     await tester.pump();
     await tester.runAsync(() async {
       await OverworldAppearance.assetBytes('lasswell', 'icon');
@@ -148,7 +166,8 @@ void main() {
     final dropdown = tester.widget<DropdownButton<int>>(find.byType(DropdownButton<int>));
     expect(dropdown.items!.map((item) => item.value), [2, 8, 4, 6]);
     expect(find.byType(Image), findsWidgets);
-    expect(tester.widgetList<Image>(find.byType(Image)).every((image) => image.image is MemoryImage), isTrue);
+    expect(tester.widgetList<Image>(find.byType(Image)).any((image) => image.image is MemoryImage), isTrue);
+    expect(tester.widgetList<Image>(find.byType(Image)).any((image) => image.image is NetworkImage), isFalse);
     await tester.tap(find.byType(DropdownButton<String>));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Run').last);

@@ -9,6 +9,19 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('all eight native field choices roundtrip without changing party identity', () {
+    final entries=OverworldAppearance.entries.where((e)=>e['nativeParty']!=null).toList();
+    expect(entries.map((e)=>e['nativeParty']),[1001,1002,1003,1004,1005,1006,1007,1008]);
+    for (final entry in entries) {
+      final choice=OverworldAppearance.profileFor(entry['id'] as String);
+      final rain={'key':'party_1001','id':1001,'jp':'レイン','en':'Rain',
+        'party':{'version':1,'id':1001},'overworld':choice};
+      expect(CharacterConfig.decode(CharacterConfig.encode(rain)),rain);
+      expect(OverworldAppearance.data(entry['id'] as String)['name'],entry['name']);
+    }
+    expect(()=>OverworldAppearance.profileFor('native_party_9999'),throwsFormatException);
+  });
+
   test('Dart and engine share the audited catalog and every portable choice roundtrips', () {
     expect(
       overworldCatalog,

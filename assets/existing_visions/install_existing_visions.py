@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.92'
+VERSION = '1.2.93'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -214,7 +214,7 @@ def hook_builder(raw):
                     'import _ffr_party_voices',
                     '_ffr_party_voices.prepare(objects, clones, post_objects, party_units, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)), seq_dumps)',
-                    '_ffr_testing.ensure_assets(ROOT, lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)))',
+                    '_ffr_testing.ensure_assets(ROOT, lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)), native_units + UNITS)',
                     '_ffr_testing.prepare(tables, party_units + native_units + UNITS, ROOT, rows)',
                     '_ffr_ability_modes.prepare_sequences(tables, clones, authored_sequences, native_units + UNITS, ROOT, rows,',
                     '    lambda folder: run(ffrenv.py(os.path.join(ROOT, "tools", "extract_legacy.py"), "--filter", folder)),',

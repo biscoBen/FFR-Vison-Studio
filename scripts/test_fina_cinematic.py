@@ -1,4 +1,4 @@
-"""Movie transport, audio synchronization and opt-out behavior."""
+"""Movie transport, audio synchronization and automatic Fina inclusion."""
 import copy
 import base64
 import hashlib
@@ -167,12 +167,27 @@ class CinematicTests(unittest.TestCase):
                 changed.writestr(name, b'changed' if name == 'movie.usm' else source.read(name))
         with self.assertRaisesRegex(ValueError, 'checksum'): film.validate(stream.getvalue())
 
-    def test_old_settings_default_off_and_templates_are_not_read(self):
+    def test_no_fina_needs_no_movie_templates_and_old_flags_do_not_control_inclusion(self):
         with tempfile.TemporaryDirectory() as root:
             self.assertFalse(film.enabled(root))
-            film.ensure_assets(root, lambda _: self.fail('Disabled movie should not extract assets'))
+            film.ensure_assets(root, lambda _: self.fail('No Fina should not extract movie assets'))
             film.build([], {'ROOT':root, 'LEGACY':root, 'OUT':root, 'FFRDT':[], 'USMAP':'',
                             'run':lambda _:self.fail('Disabled movie should not run tools'), 'ffrenv':SimpleNamespace()})
+            roster=Path(root)/'mods/EstherTsukiko/units.json';roster.parent.mkdir(parents=True)
+            fina=json.loads((ROOT/'assets/crystal_fina/profile.json').read_bytes())
+            roster.write_text(json.dumps([fina]))
+            settings=Path(root)/testing.CONFIG;settings.parent.mkdir(parents=True,exist_ok=True)
+            settings.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':False}))
+            self.assertTrue(film.enabled(root))
+            calls=[]
+            def extract(path):
+                calls.append(path);asset=Path(root)/'extracted/legacy/FFRS/Content'/(path+'.uasset')
+                asset.parent.mkdir(parents=True,exist_ok=True);asset.write_bytes(b'expected template')
+            with mock.patch.object(film,'MASTER_HASHES',{'.uasset':hashlib.sha256(b'expected template').hexdigest()}):
+                film.ensure_assets(root,extract,[fina])
+            self.assertEqual(len(calls),3)
+            fina['sephiraVision']={'version':1,'preset':'crystal_fina','enabled':False}
+            roster.write_text(json.dumps([fina]));self.assertFalse(film.enabled(root))
         with self.assertRaises(ValueError): testing.validate_settings({'schema':1,'maxMr':False,'finaCinematic':1})
 
     def test_continuation_preserves_every_gameplay_event_and_heal_sound_offset(self):

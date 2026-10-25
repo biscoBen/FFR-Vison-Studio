@@ -87,9 +87,9 @@ def reward(rows):
     return value
 
 
-def ensure_assets(root, extract):
+def ensure_assets(root, extract, units=None):
     import _ffr_fina_cinematic
-    _ffr_fina_cinematic.ensure_assets(root, extract)
+    _ffr_fina_cinematic.ensure_assets(root, extract, units)
     if settings(root)['practiceBattle']:
         path = Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (CHOICES + '.uasset')
         if not path.is_file(): extract('Datatable/' + CHOICES)

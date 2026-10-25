@@ -1,0 +1,1994 @@
+{
+  "schema": 1,
+  "catalogSha256": "374a538fd8e5984fd604083d665382a6c6fb7d0a404b1057836ca649bd3fb61b",
+  "nativeAuditSha256": "0f8ca98ec0e8ba1235d34685f034c8ab47185a0f9d07cefcc64651d4cd72041c",
+  "source": "assets/sephira_visions/native_coverage.json",
+  "summary": {
+    "originalVisions": 15,
+    "originalRewards": 75,
+    "covered_mr": 50,
+    "mr_copy_needs_review": 0,
+    "awakening_only": 25,
+    "missing_from_learned_kits": 0
+  },
+  "rewards": [
+    {
+      "kind": "PassiveSkill",
+      "id": 1281,
+      "name": "Restore MP on Stagger",
+      "originalMr": [
+        {
+          "vision": "Tronn",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "christine",
+          "vision": "Christine",
+          "rank": 1,
+          "grantId": 1281,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "lunafreya",
+          "vision": "Oracle Maiden Lunafreya",
+          "rank": 3,
+          "grantId": 1281,
+          "privateCopy": false
+        },
+        {
+          "preset": "folka",
+          "vision": "Folka",
+          "rank": 2,
+          "grantId": 1281,
+          "privateCopy": false
+        },
+        {
+          "preset": "lunera",
+          "vision": "Lunera",
+          "rank": 3,
+          "grantId": 1281,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1280,
+      "name": "Fill LB on Stagger",
+      "originalMr": [
+        {
+          "vision": "Tronn",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "christine",
+          "vision": "Christine",
+          "rank": 7,
+          "grantId": 1280,
+          "privateCopy": false
+        },
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 9,
+          "grantId": 1280,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400630,
+      "name": "Focus Magic",
+      "originalMr": [
+        {
+          "vision": "Tronn",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "christine",
+          "vision": "Christine",
+          "rank": 2,
+          "grantId": 400630,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1279,
+      "name": "Stagger Power +20%",
+      "originalMr": [
+        {
+          "vision": "Tronn",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 5,
+          "grantId": 1279,
+          "privateCopy": false
+        },
+        {
+          "preset": "nalu",
+          "vision": "Nalu",
+          "rank": 7,
+          "grantId": 1279,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
+          "rank": 3,
+          "grantId": 1279,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1045,
+      "name": "Half MP Cost",
+      "originalMr": [
+        {
+          "vision": "Tronn",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "christine",
+          "vision": "Christine",
+          "rank": 9,
+          "grantId": 1045,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1336,
+      "name": "Strategic Acumen",
+      "originalMr": [
+        {
+          "vision": "Wilhelm",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 3,
+          "grantId": 1336,
+          "privateCopy": false
+        },
+        {
+          "preset": "minfilia",
+          "vision": "Minfilia",
+          "rank": 7,
+          "grantId": 1336,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "lunafreya",
+          "vision": "Oracle Maiden Lunafreya",
+          "rank": 3,
+          "grantId": 1336,
+          "privateCopy": false
+        },
+        {
+          "preset": "mystea",
+          "vision": "Mystea",
+          "rank": 4,
+          "grantId": 1336,
+          "privateCopy": false
+        },
+        {
+          "preset": "elephim",
+          "vision": "Elephim",
+          "rank": 3,
+          "grantId": 1336,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400440,
+      "name": "Chakra",
+      "originalMr": [
+        {
+          "vision": "Wilhelm",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 2,
+          "grantId": 400440,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400640,
+      "name": "Guard",
+      "originalMr": [
+        {
+          "vision": "Wilhelm",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 1,
+          "grantId": 400640,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1333,
+      "name": "Critical Counter",
+      "originalMr": [
+        {
+          "vision": "Wilhelm",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 9,
+          "grantId": 1333,
+          "privateCopy": false
+        },
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 7,
+          "grantId": 1333,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1339,
+      "name": "Riposte",
+      "originalMr": [
+        {
+          "vision": "Wilhelm",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 5,
+          "grantId": 1339,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1284,
+      "name": "Restore HP on Stagger",
+      "originalMr": [
+        {
+          "vision": "Warrior of Light",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 3,
+          "grantId": 1284,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "primm",
+          "vision": "Spirited Heart Primm",
+          "rank": 4,
+          "grantId": 1284,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400390,
+      "name": "Multi-Cover",
+      "originalMr": [
+        {
+          "vision": "Warrior of Light",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 1,
+          "grantId": 400390,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1029,
+      "name": "Physical Counter",
+      "originalMr": [
+        {
+          "vision": "Warrior of Light",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 3,
+          "grantId": 1029,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1409,
+      "name": "Heroic Nature",
+      "originalMr": [
+        {
+          "vision": "Warrior of Light",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 9,
+          "grantId": 1409,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1042,
+      "name": "Grit",
+      "originalMr": [
+        {
+          "vision": "Warrior of Light",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "crystal_fina",
+          "vision": "Crystal Fina",
+          "rank": 9,
+          "grantId": 1042,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 4,
+          "grantId": 1042,
+          "privateCopy": false
+        },
+        {
+          "preset": "mystea",
+          "vision": "Mystea",
+          "rank": 2,
+          "grantId": 1042,
+          "privateCopy": false
+        },
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 4,
+          "grantId": 1042,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1331,
+      "name": "Fill LB when Taking Damage",
+      "originalMr": [
+        {
+          "vision": "Firion",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 5,
+          "grantId": 1331,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 3,
+          "grantId": 1331,
+          "privateCopy": false
+        },
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 4,
+          "grantId": 1331,
+          "privateCopy": false
+        },
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 3,
+          "grantId": 1331,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400310,
+      "name": "Bladeblitz",
+      "originalMr": [
+        {
+          "vision": "Firion",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 2,
+          "grantId": 400310,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1337,
+      "name": "Decimating Attacks",
+      "originalMr": [
+        {
+          "vision": "Firion",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "fran",
+          "vision": "Blue Sky Belle Fran",
+          "rank": 9,
+          "grantId": 1337,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1338,
+      "name": "Recuperate LB",
+      "originalMr": [
+        {
+          "vision": "Firion",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "eiko",
+          "vision": "Eiko",
+          "rank": 5,
+          "grantId": 1338,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "fran",
+          "vision": "Blue Sky Belle Fran",
+          "rank": 3,
+          "grantId": 1338,
+          "privateCopy": false
+        },
+        {
+          "preset": "mystea",
+          "vision": "Mystea",
+          "rank": 3,
+          "grantId": 1338,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400650,
+      "name": "Arms Akimbo",
+      "originalMr": [
+        {
+          "vision": "Firion",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 4,
+          "grantId": 400650,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400240,
+      "name": "Throw",
+      "originalMr": [
+        {
+          "vision": "Onion Knight",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "minfilia",
+          "vision": "Minfilia",
+          "rank": 1,
+          "grantId": 400240,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1258,
+      "name": "Spry Steps",
+      "originalMr": [
+        {
+          "vision": "Onion Knight",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lunera",
+          "vision": "Lunera",
+          "rank": 3,
+          "grantId": 1258,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1465,
+      "name": "Observe and Recover HP",
+      "originalMr": [
+        {
+          "vision": "Onion Knight",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "minfilia",
+          "vision": "Minfilia",
+          "rank": 1,
+          "grantId": 1465,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1358,
+      "name": "Vigorous Attacks",
+      "originalMr": [
+        {
+          "vision": "Onion Knight",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "snow_white",
+          "vision": "Snow White",
+          "rank": 3,
+          "grantId": 1358,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1031,
+      "name": "LB Triple Charge",
+      "originalMr": [
+        {
+          "vision": "Onion Knight",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "eiko",
+          "vision": "Eiko",
+          "rank": 9,
+          "grantId": 1031,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400490,
+      "name": "Darkness",
+      "originalMr": [
+        {
+          "vision": "Cecil",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "snow_white",
+          "vision": "Snow White",
+          "rank": 1,
+          "grantId": 400490,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400380,
+      "name": "Cover",
+      "originalMr": [
+        {
+          "vision": "Cecil",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 1,
+          "grantId": 400380,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1030,
+      "name": "Magic Counter",
+      "originalMr": [
+        {
+          "vision": "Cecil",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "mystea",
+          "vision": "Mystea",
+          "rank": 9,
+          "grantId": 1030,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1405,
+      "name": "Staggeringly Risky",
+      "originalMr": [
+        {
+          "vision": "Cecil",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "snow_white",
+          "vision": "Snow White",
+          "rank": 5,
+          "grantId": 1405,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1369,
+      "name": "Dark Immunity",
+      "originalMr": [
+        {
+          "vision": "Cecil",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lilith",
+          "vision": "Lilith",
+          "rank": 3,
+          "grantId": 1369,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400760,
+      "name": "Wait",
+      "originalMr": [
+        {
+          "vision": "Bartz",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
+          "rank": 1,
+          "grantId": 400760,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1066,
+      "name": "HP Stroll",
+      "originalMr": [
+        {
+          "vision": "Bartz",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 1,
+          "grantId": 1066,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1316,
+      "name": "Speed +5%",
+      "originalMr": [
+        {
+          "vision": "Bartz",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
+          "rank": 1,
+          "grantId": 1316,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1414,
+      "name": "Dual Spellblade",
+      "originalMr": [
+        {
+          "vision": "Bartz",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "fryevia",
+          "vision": "Fryevia",
+          "rank": 9,
+          "grantId": 1414,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400330,
+      "name": "Mimic",
+      "originalMr": [
+        {
+          "vision": "Bartz",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 4,
+          "grantId": 400330,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1323,
+      "name": "Restore MP on Critical Hit",
+      "originalMr": [
+        {
+          "vision": "Cloud",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 1,
+          "grantId": 1323,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400530,
+      "name": "Deathblow",
+      "originalMr": [
+        {
+          "vision": "Cloud",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "alice",
+          "vision": "Alice/Half Nightmare",
+          "rank": 1,
+          "grantId": 400530,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400770,
+      "name": "Fill Gauge",
+      "originalMr": [
+        {
+          "vision": "Cloud",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "primm",
+          "vision": "Spirited Heart Primm",
+          "rank": 4,
+          "grantId": 400770,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1388,
+      "name": "Critical Stagger",
+      "originalMr": [
+        {
+          "vision": "Cloud",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "alice",
+          "vision": "Alice/Half Nightmare",
+          "rank": 9,
+          "grantId": 1388,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1234,
+      "name": "Critical Boost",
+      "originalMr": [
+        {
+          "vision": "Cloud",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "alice",
+          "vision": "Alice/Half Nightmare",
+          "rank": 5,
+          "grantId": 1234,
+          "privateCopy": false
+        },
+        {
+          "preset": "nalu",
+          "vision": "Nalu",
+          "rank": 9,
+          "grantId": 1234,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 4,
+          "grantId": 1234,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1421,
+      "name": "Improvement",
+      "originalMr": [
+        {
+          "vision": "Squall",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 3,
+          "grantId": 1421,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400690,
+      "name": "Gut Rip",
+      "originalMr": [
+        {
+          "vision": "Squall",
+          "rank": 3
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 4,
+          "grantId": 400690,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1422,
+      "name": "Trigger",
+      "originalMr": [
+        {
+          "vision": "Squall",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 5,
+          "grantId": 1422,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1124,
+      "name": "Restore MP on Attack",
+      "originalMr": [
+        {
+          "vision": "Squall",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "nalu",
+          "vision": "Nalu",
+          "rank": 1,
+          "grantId": 1124,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 2,
+          "grantId": 1124,
+          "privateCopy": false
+        },
+        {
+          "preset": "alice",
+          "vision": "Alice/Half Nightmare",
+          "rank": 3,
+          "grantId": 1124,
+          "privateCopy": false
+        },
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 4,
+          "grantId": 1124,
+          "privateCopy": false
+        },
+        {
+          "preset": "elza",
+          "vision": "Elza",
+          "rank": 4,
+          "grantId": 1124,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400710,
+      "name": "Double Action",
+      "originalMr": [
+        {
+          "vision": "Squall",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 4,
+          "grantId": 400710,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400260,
+      "name": "Steal",
+      "originalMr": [
+        {
+          "vision": "Zidane",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 1,
+          "grantId": 400260,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1425,
+      "name": "Insult to Injury",
+      "originalMr": [
+        {
+          "vision": "Zidane",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lunafreya",
+          "vision": "Oracle Maiden Lunafreya",
+          "rank": 7,
+          "grantId": 1425,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400270,
+      "name": "Mug",
+      "originalMr": [
+        {
+          "vision": "Zidane",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 2,
+          "grantId": 400270,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1468,
+      "name": "Aggravation",
+      "originalMr": [
+        {
+          "vision": "Zidane",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "lunafreya",
+          "vision": "Oracle Maiden Lunafreya",
+          "rank": 9,
+          "grantId": 1468,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400750,
+      "name": "Misfortune",
+      "originalMr": [
+        {
+          "vision": "Zidane",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 4,
+          "grantId": 400750,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400460,
+      "name": "Focus",
+      "originalMr": [
+        {
+          "vision": "Tidus",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "ariana",
+          "vision": "Charming Kitty Ariana",
+          "rank": 1,
+          "grantId": 400460,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1049,
+      "name": "First Strike",
+      "originalMr": [
+        {
+          "vision": "Tidus",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
+          "rank": 9,
+          "grantId": 1049,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400700,
+      "name": "Reckless Abandonment",
+      "originalMr": [
+        {
+          "vision": "Tidus",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 4,
+          "grantId": 400700,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1428,
+      "name": "Tip-Top Shape",
+      "originalMr": [
+        {
+          "vision": "Tidus",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "elza",
+          "vision": "Elza",
+          "rank": 9,
+          "grantId": 1428,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1348,
+      "name": "Water Eater",
+      "originalMr": [
+        {
+          "vision": "Tidus",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "folka",
+          "vision": "Folka",
+          "rank": 7,
+          "grantId": 1348,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1319,
+      "name": "Restore MP on Defeating Foes",
+      "originalMr": [
+        {
+          "vision": "Shantotto",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 3,
+          "grantId": 1319,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1431,
+      "name": "Dark Rite",
+      "originalMr": [
+        {
+          "vision": "Shantotto",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "snow_white",
+          "vision": "Snow White",
+          "rank": 7,
+          "grantId": 1431,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1307,
+      "name": "MP Stroll",
+      "originalMr": [
+        {
+          "vision": "Shantotto",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "folka",
+          "vision": "Folka",
+          "rank": 3,
+          "grantId": 1307,
+          "privateCopy": false
+        },
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 9,
+          "grantId": 1307,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 4,
+          "grantId": 1307,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1351,
+      "name": "Area Effect Adept",
+      "originalMr": [
+        {
+          "vision": "Shantotto",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 7,
+          "grantId": 1351,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400730,
+      "name": "Dualcast",
+      "originalMr": [
+        {
+          "vision": "Shantotto",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 4,
+          "grantId": 400730,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400400,
+      "name": "Gil Farmer",
+      "originalMr": [
+        {
+          "vision": "Vaan",
+          "rank": 1
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 4,
+          "grantId": 400400,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1386,
+      "name": "Gil Farmer on Stagger",
+      "originalMr": [
+        {
+          "vision": "Vaan",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "elephim",
+          "vision": "Elephim",
+          "rank": 9,
+          "grantId": 1386,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400250,
+      "name": "Gil Toss",
+      "originalMr": [
+        {
+          "vision": "Vaan",
+          "rank": 5
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "rikku",
+          "vision": "Rikku (FFX-2)",
+          "rank": 4,
+          "grantId": 400250,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1343,
+      "name": "Observe and Attack",
+      "originalMr": [
+        {
+          "vision": "Vaan",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "minfilia",
+          "vision": "Minfilia",
+          "rank": 3,
+          "grantId": 1343,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1050,
+      "name": "Double Gil",
+      "originalMr": [
+        {
+          "vision": "Vaan",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "ariana",
+          "vision": "Charming Kitty Ariana",
+          "rank": 9,
+          "grantId": 1050,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1320,
+      "name": "Fill LB on Defeating Foes",
+      "originalMr": [
+        {
+          "vision": "Noctis",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
+          "rank": 5,
+          "grantId": 1320,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
+          "rank": 4,
+          "grantId": 1320,
+          "privateCopy": false
+        },
+        {
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
+          "rank": 4,
+          "grantId": 1320,
+          "privateCopy": false
+        },
+        {
+          "preset": "elza",
+          "vision": "Elza",
+          "rank": 4,
+          "grantId": 1320,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1257,
+      "name": "Reflex",
+      "originalMr": [
+        {
+          "vision": "Noctis",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
+          "rank": 3,
+          "grantId": 1257,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1399,
+      "name": "Scan and Strike",
+      "originalMr": [
+        {
+          "vision": "Noctis",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "nalu",
+          "vision": "Nalu",
+          "rank": 5,
+          "grantId": 1399,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1335,
+      "name": "Bonus Damage",
+      "originalMr": [
+        {
+          "vision": "Noctis",
+          "rank": 7
+        }
+      ],
+      "mr": [
+        {
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
+          "rank": 7,
+          "grantId": 1335,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
+          "rank": 4,
+          "grantId": 1335,
+          "privateCopy": false
+        }
+      ],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400300,
+      "name": "Barrage",
+      "originalMr": [
+        {
+          "vision": "Noctis",
+          "rank": 9
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "a2",
+          "vision": "A2",
+          "rank": 4,
+          "grantId": 400300,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1371,
+      "name": "Vigorous Staggerer",
+      "originalMr": [
+        {
+          "vision": "Clive",
+          "rank": 1
+        }
+      ],
+      "mr": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 7,
+          "grantId": 1371,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1318,
+      "name": "Restore HP on Defeating Foes",
+      "originalMr": [
+        {
+          "vision": "Clive",
+          "rank": 3
+        }
+      ],
+      "mr": [
+        {
+          "preset": "snow_white",
+          "vision": "Snow White",
+          "rank": 1,
+          "grantId": 1318,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1385,
+      "name": "Power Stagger",
+      "originalMr": [
+        {
+          "vision": "Clive",
+          "rank": 5
+        }
+      ],
+      "mr": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 5,
+          "grantId": 1385,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    },
+    {
+      "kind": "ActiveSkill",
+      "id": 400670,
+      "name": "Mirage",
+      "originalMr": [
+        {
+          "vision": "Clive",
+          "rank": 7
+        }
+      ],
+      "mr": [],
+      "awakening": [
+        {
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
+          "rank": 4,
+          "grantId": 400670,
+          "privateCopy": false
+        }
+      ],
+      "status": "awakening_only"
+    },
+    {
+      "kind": "PassiveSkill",
+      "id": 1038,
+      "name": "Fire Eater",
+      "originalMr": [
+        {
+          "vision": "Clive",
+          "rank": 9
+        }
+      ],
+      "mr": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 1,
+          "grantId": 1038,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [],
+      "status": "covered_mr"
+    }
+  ],
+  "spiritWrappers": [
+    {
+      "vision": "Tronn",
+      "ids": [
+        1302400
+      ]
+    },
+    {
+      "vision": "Wilhelm",
+      "ids": [
+        1306200
+      ]
+    },
+    {
+      "vision": "Warrior of Light",
+      "ids": [
+        1310000
+      ]
+    },
+    {
+      "vision": "Firion",
+      "ids": [
+        1310100
+      ]
+    },
+    {
+      "vision": "Onion Knight",
+      "ids": [
+        1310200
+      ]
+    },
+    {
+      "vision": "Cecil",
+      "ids": [
+        1310300
+      ]
+    },
+    {
+      "vision": "Bartz",
+      "ids": [
+        1310500
+      ]
+    },
+    {
+      "vision": "Cloud",
+      "ids": [
+        1311000
+      ]
+    },
+    {
+      "vision": "Squall",
+      "ids": [
+        1311600
+      ]
+    },
+    {
+      "vision": "Zidane",
+      "ids": [
+        1311800
+      ]
+    },
+    {
+      "vision": "Tidus",
+      "ids": [
+        1312000
+      ]
+    },
+    {
+      "vision": "Shantotto",
+      "ids": [
+        1312300
+      ]
+    },
+    {
+      "vision": "Vaan",
+      "ids": [
+        1312400
+      ]
+    },
+    {
+      "vision": "Noctis",
+      "ids": [
+        1312800
+      ]
+    },
+    {
+      "vision": "Clive",
+      "ids": [
+        1313000
+      ]
+    }
+  ]
+}

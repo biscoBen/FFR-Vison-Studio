@@ -87,7 +87,9 @@ class PartyCharacterScreen extends StatelessWidget {
                 Text('Overworld appearance', style: Guide.h2()),
                 const SizedBox(height: 12),
                 if (unit['overworld'] != null) ...[
-                  SizedBox(width: 360, child: OverworldAnimPane(model: unit['overworld']['model'] as String)),
+                  SizedBox(width: 360, child: OverworldAppearance.nativeId(unit['overworld']['model'] as String) != null
+                    ? NativeOverworldPreview(model: unit['overworld']['model'] as String)
+                    : OverworldAnimPane(model: unit['overworld']['model'] as String)),
                   const SizedBox(height: 12),
                   Text(OverworldAppearance.data(unit['overworld']['model'] as String)['name'] as String, style: Guide.text()),
                 ] else Text('Original walking model', style: Guide.text()),

@@ -203,15 +203,6 @@ class HomeScreen extends StatelessWidget {
                     try { await app.setTestingMaxMr(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
-                SwitchListTile(
-                  key: const Key('testing-fina-cinematic'), contentPadding: EdgeInsets.zero,
-                  title: Text('Test Crystal Fina cinematic', style: Guide.text()),
-                  subtitle: Text('Adds a 6.4-second illustrated movie before Crystal Fina’s own resonance. Include Crystal Fina, rebuild/install and restart the game. Experimental: movie playback and transitions need in-game testing.', style: Guide.small()),
-                  value: app.finaCinematic,
-                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
-                    try { await app.setFinaCinematic(value); } catch (e) { app.showNotice('$e'); }
-                  },
-                ),
                 Align(alignment: Alignment.centerLeft, child: GuideButton('Preview Crystal Fina cinematic',
                   key: const Key('preview-fina-cinematic'), icon: Icons.movie_outlined,
                   onPressed: app.api == null ? null : () => launchUrl(Uri.parse('${app.api!.base}/crystal-fina-cinematic')))),

@@ -131,7 +131,6 @@ def flags(root):
         if (challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units)):
             enabled.append('Sephira vision challenges and story shop')
     for key, label in (('ffbeNeedles', 'FFBE 1,000 Needles import'), ('practiceBattle', 'Shop practice battle'),
-                       ('finaCinematic', 'Crystal Fina cinematic test'),
                        ('maxMr', 'One-battle MR'), ('crystalCave', 'Legacy Crystal Fina cave'),
                        ('crystalCaveTest', 'Legacy Crystal Fina test cave'), ('fieldLeader', 'Walking-character cycling')):
         if t[key]: enabled.append(label)

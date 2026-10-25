@@ -17,6 +17,17 @@ TABLE = 'Asset/Map/DT_MapUnitAsset'
 DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (7, 6), (9, 7))
 
 
+def native_id(choice):
+    import _ffr_party
+    name=choice.get('model') if isinstance(choice,dict) else None
+    return next((id for id,*_ in _ffr_party.CHARACTERS if name==f'native_party_{id}'),None)
+
+
+def native_package(id):
+    mid=(id-1000)*10
+    return f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
+
+
 @lru_cache(maxsize=1)
 def catalog():
     value = json.loads(Path(__file__).with_name('overworld_catalog.json').read_bytes())
@@ -28,7 +39,7 @@ def catalog():
 def validate(choice):
     if (not isinstance(choice, dict) or type(choice.get('version')) is not int
             or set(choice) != {'version', 'model'} or choice['version'] != 1
-            or not isinstance(choice['model'], str) or choice['model'] not in catalog()['models']):
+            or not isinstance(choice['model'], str) or (native_id(choice) is None and choice['model'] not in catalog()['models'])):
         raise ValueError('This overworld model has no supported directional sprite sheet.')
 
 
@@ -51,14 +62,16 @@ def asset_bytes(entry, kind):
 
 
 def package(u):
-    name = f'pc{(u["id"] - 1000) * 10:04d}'
+    name = f'pc{((native_id(u.get("overworld")) or u["id"]) - 1000) * 10:04d}'
     return f'/Game/Chara/StudioOverworld/party{u["id"]}/{name}'
 
 
 def updates(u):
     validate(u['overworld'])
     path = package(u)
-    return {'animationAssetList[0].' + k: path + suffix for k, suffix in (
+    source=native_id(u['overworld'])
+    texture=native_package(source) if source is not None else path
+    return {'animationAssetList[0].' + k: (path if k=='Ss6Project' else texture) + suffix for k, suffix in (
         ('Ss6Project', ''), ('textureBaseColor', '_tex'),
         ('textureNormal', '_normal'), ('textureMetallicRoughness', '_mreo'))}
 
@@ -72,6 +85,17 @@ def prepare(tables, units, rows):
         animations = row.get('animationAssetList', [])
         if row.get('ID') != map_id or not animations or animations[0].get('Ss6Project') != original:
             raise ValueError('The original party field assets changed; prepare the game files again.')
+        donor=native_id(u['overworld'])
+        if donor is not None:
+            import _ffr_party
+            source=rows(TABLE).get(_ffr_party.identity(donor)[1],{})
+            model=(source.get('animationAssetList') or [{}])[0]
+            path=native_package(donor)
+            if (source.get('ID')!=(donor-1000)*10 or model.get('Ss6Project')!=path
+                    or any(model.get(key)!=path+suffix for key,suffix in (
+                        ('textureBaseColor','_tex'),('textureNormal','_normal'),('textureMetallicRoughness','_mreo')))
+                    or model.get('Material')!=animations[0].get('Material')):
+                raise ValueError('The selected original party field model is unavailable in this game build.')
         table = tables.setdefault(TABLE, {'asset': 'FFRS/Content/Datatable/' + TABLE, 'add': [], 'set': []})
         table['set'].append({'row': u['jp'], 'set': updates(u)})
 
@@ -119,6 +143,10 @@ def spec(name, choice=None):
 
 
 def generate(u, env):
+    validate(u['overworld'])
+    donor=native_id(u['overworld'])
+    if donor is not None:
+        return generate_native(u,donor,env)
     from PIL import Image
     import io
     validate(u['overworld'])
@@ -152,6 +180,30 @@ def generate(u, env):
                     old + suffix, target + suffix, f'summon13110={name}', '--usmap', usmap])
 
 
+def generate_native(u, donor, env):
+    """Reuse native textures and cache one private, direction-complete project."""
+    import _ffr_field_leader as leader
+    import _ffr_build_cache as reuse
+    root,legacy,out=(Path(env[n]) for n in ('ROOT','LEGACY','OUT'))
+    path=native_package(donor);source=legacy/('FFRS/Content/'+path.removeprefix('/Game/')+'.uasset')
+    if any(not source.with_suffix(ext).is_file() for ext in ('.uasset','.uexp')):
+        env['run'](env['ffrenv'].py(str(root/'tools/extract_legacy.py'),'--filter',path.removeprefix('/Game/').rsplit('/',1)[0]+'/'))
+    work=root/'build/overworld'/u['key'];work.mkdir(parents=True,exist_ok=True)
+    target=out/('FFRS/Content/'+package(u).removeprefix('/Game/')+'.uasset');target.parent.mkdir(parents=True,exist_ok=True)
+    def build():
+        view=work/'native-original.json';edited=work/'native.json'
+        env['run'](env['FFRDT']+['tojson',str(source),str(view),'--usmap',env['USMAP']])
+        result=leader.field_aliases(json.loads(view.read_text(encoding='utf-8-sig')),(donor-1000)*10,target_package=package(u))
+        edited.write_text(json.dumps(result),encoding='utf-8')
+        env['run'](env['FFRDT']+['fromjson',str(edited),str(target),'--usmap',env['USMAP']])
+    cache=reuse._active
+    if cache is None:build()
+    else:
+        hit=cache.execute('party-native-field',{'revision':1,'donor':donor,'target':package(u)},
+            [source,Path(__file__),Path(leader.__file__)], [target],build)
+        if hit:print(f'  {u["en"]}: reused original party walking model.',flush=True)
+
+
 def verify(root, tool, usmap, units):
     import subprocess
     import _ffr_testing
@@ -171,7 +223,7 @@ def verify(root, tool, usmap, units):
     _ffr_testing.check_rows(*views, operations[TABLE])
     for u in selected:
         path = root / 'build/visions_mod/assets/FFRS/Content' / package(u).removeprefix('/Game/')
-        for suffix in ('', '_tex', '_normal', '_mreo'):
+        for suffix in (('',) if native_id(u['overworld']) is not None else ('', '_tex', '_normal', '_mreo')):
             for extension in ('.uasset', '.uexp'):
                 if not path.with_name(path.name + suffix).with_suffix(extension).is_file():
                     raise ValueError('A generated party overworld asset is missing: ' + str(path))

@@ -31,6 +31,57 @@ def map_rows():
 
 
 class OverworldTests(unittest.TestCase):
+    def test_native_party_choices_keep_source_textures_story_slots_and_battle_identity(self):
+        original=map_rows();before=copy.deepcopy(original)
+        for donor,source_jp,*_ in party.CHARACTERS:
+            rain=unit();rain['overworld']={'version':1,'model':f'native_party_{donor}'}
+            snapshot=copy.deepcopy(rain);party.validate(rain)
+            operations={};field.prepare(operations,[rain],lambda _:original)
+            edit,=operations[field.TABLE]['set'];built=copy.deepcopy(original)
+            for name,value in edit['set'].items():built[rain['jp']]['animationAssetList'][0][name.split('.')[-1]]=value
+            field.check_rows(original,built,[rain])
+            self.assertEqual(len(edit['set']),4)
+            self.assertEqual(built[rain['jp']]['animationAssetList'][1:],original[rain['jp']]['animationAssetList'][1:])
+            for texture in ('textureBaseColor','textureNormal','textureMetallicRoughness'):
+                self.assertEqual(built[rain['jp']]['animationAssetList'][0][texture],original[source_jp]['animationAssetList'][0][texture])
+            self.assertIn('/StudioOverworld/party1001/',built[rain['jp']]['animationAssetList'][0]['Ss6Project'])
+            self.assertEqual(rain,snapshot)
+        self.assertEqual(original,before)
+        with self.assertRaises(ValueError):field.validate({'version':1,'model':'native_party_9999'})
+        broken=copy.deepcopy(original);broken['魔人フィーナ']['animationAssetList'][0]['textureBaseColor']='unexpected'
+        with self.assertRaisesRegex(ValueError,'selected original'):
+            field.prepare({},[dict(unit(),overworld={'version':1,'model':'native_party_1006'})],lambda _:broken)
+
+    def test_native_generation_keeps_drawable_native_clips_and_reuses_the_project_on_warm_builds(self):
+        from test_field_leader import FieldLeaderTests
+        import _ffr_build_cache as cache
+        import _ffr_field_leader as leader
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);rain=unit();rain['overworld']={'version':1,'model':'native_party_1006'}
+            source=root/'legacy/FFRS/Content/Chara/Field_Unit/pc0060/pc0060.uasset';source.parent.mkdir(parents=True)
+            source.write_bytes(b'original project');source.with_suffix('.uexp').write_bytes(b'original payload')
+            original=FieldLeaderTests().field_fixture(60)[0];calls=[]
+            def run(cmd):
+                calls.append(cmd)
+                if cmd[1]=='tojson':Path(cmd[3]).write_text(json.dumps(original))
+                elif cmd[1]=='fromjson':
+                    target=Path(cmd[3]);target.write_bytes(Path(cmd[2]).read_bytes());target.with_suffix('.uexp').write_bytes(b'native copied payload')
+                else:self.fail('Native field choice must not convert sprites/textures or download artwork')
+            env={'ROOT':root,'LEGACY':root/'legacy','OUT':root/'out','FFRDT':['tool'],'USMAP':'fixture','run':run}
+            reuse=cache.Cache(root,{'nativeField':1})
+            with mock.patch.object(cache,'_active',reuse):
+                field.generate(rain,env)
+                target=root/'out/FFRS/Content/Chara/StudioOverworld/party1001/pc0060.uasset'
+                output=target.read_bytes();built=json.loads(output)
+                self.assertIn(field.package(rain),built['NameMap'])
+                self.assertNotIn('fieldidle9', [v for v in built['NameMap'] if v.startswith('/Game/')])
+                self.assertEqual(leader.field_aliases(built,60,target_package=field.package(rain)),built)
+                target.unlink();target.with_suffix('.uexp').unlink()
+                field.generate(rain,env)
+                self.assertEqual(target.read_bytes(),output)
+                self.assertEqual(len(calls),2)
+                self.assertEqual(reuse.stats['party-native-field']['reused'],1)
+
     def test_every_catalog_loop_has_character_pixels_and_no_inserted_standing_pose(self):
         from PIL import Image
         from build_overworld_catalog import audit, cell, has_character

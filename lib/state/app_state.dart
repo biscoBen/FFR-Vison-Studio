@@ -63,7 +63,6 @@ class AppState extends ChangeNotifier {
   String testingPracticeEncounter = 'standard';
   bool surviveAtOne = false;
   bool ffbeNeedles = false;
-  bool finaCinematic = false;
   bool crystalCave = false;
   bool crystalCaveTest = false;
   bool fieldLeader = false;
@@ -442,8 +441,6 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load survival testing settings: $e'; }
     try { ffbeNeedles = await api!.ffbeNeedles(); }
     catch (e) { notice = 'Could not load the FFBE animation test setting: $e'; }
-    try { finaCinematic = await api!.finaCinematic(); }
-    catch (e) { notice = 'Could not load the Crystal Fina cinematic setting: $e'; }
     try { crystalCave = await api!.crystalCave(); }
     catch (e) { notice = 'Could not load Crystal Fina cave settings: $e'; }
     try { crystalCaveTest = await api!.crystalCaveTest(); }
@@ -1175,13 +1172,6 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveFfbeNeedles(value);
     ffbeNeedles = value; notifyListeners();
-  });
-
-  Future<void> setFinaCinematic(bool value) => _withRoster(() async {
-    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
-    if (building) { throw StateError('Wait for the current build to finish.'); }
-    await api!.saveFinaCinematic(value);
-    finaCinematic = value; notifyListeners();
   });
 
   /// Convert retired switches into an editable per-vision cave assignment.

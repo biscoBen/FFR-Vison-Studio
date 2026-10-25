@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 
 import 'overworld_catalog.dart';
+import 'battle_voice.dart';
 
 class OverworldAppearance {
   // Keep existing portable Vagrant Rain choices valid.
@@ -13,16 +14,26 @@ class OverworldAppearance {
   static Map<String, dynamic> get models =>
       overworldCatalog['models'] as Map<String, dynamic>;
 
-  static Map<String, dynamic> data(String model) =>
-      models[model] as Map<String, dynamic>;
+  static int? nativeId(String model) => BattleVoice.names.keys
+      .where((id) => model == 'native_party_$id').firstOrNull;
+  static Map<String, dynamic> data(String model) {
+    final id = nativeId(model);
+    return id != null
+      ? {'name': BattleVoice.names[id], 'directions': 8, 'nativeParty': id, 'form': model}
+      : models[model] as Map<String, dynamic>;
+  }
   static Map<String, dynamic> profileFor(String model) {
-    if (!models.containsKey(model)) {
+    if (!models.containsKey(model) && nativeId(model) == null) {
       throw FormatException('Unsupported overworld model.');
     }
     return {'version': 1, 'model': model};
   }
 
   static List<Map<String, dynamic>> get entries => [
+    for (final e in BattleVoice.names.entries)
+      {'id':'native_party_${e.key}', 'name':e.value, 'jpname':'',
+       'nativeParty':e.key, 'packs':['native_party_${e.key}'], 'hasSprites':true, 'directions':8},
+    ...([
     for (final entry in models.entries)
       {
         'id': entry.key,
@@ -34,7 +45,8 @@ class OverworldAppearance {
         'hasSprites': true,
         'directions': entry.value['directions'],
       },
-  ]..sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+    ]..sort((a, b) => (a['name'] as String).compareTo(b['name'] as String))),
+  ];
 
   static Map<String, dynamic> detailFor(String model) {
     final entry = data(model);
@@ -53,7 +65,7 @@ class OverworldAppearance {
       value['version'] is int &&
       value['version'] == 1 &&
       value['model'] is String &&
-      models.containsKey(value['model']);
+      (models.containsKey(value['model']) || nativeId(value['model'] as String) != null);
 
   static Archive? _archive;
   static Future<Archive>? _loading;

@@ -11,6 +11,14 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native party walking appearances and automatic Fina cinematic — 2026-10-25
+
+- Add the eight original Resonance party characters to **Edit overworld appearance**, alongside the existing FFBE walking models. Rain can walk as Dark Fina while retaining his own battle model, voice, identity, equipment and progression. Choices roundtrip through character configs and can be reverted independently.
+- Reuse the installed character's native textures and cache a private walking project, preserving its clips and supplying missing directional/field-idle aliases. Story costume slots and other characters' assets remain intact. Native choices require no sprite download or texture conversion.
+- Make Crystal Fina's cinematic part of her resonance automatically and remove its test toggle. Existing saved off settings are ignored. Include the movie only when Fina is present; removing her removes the companion movie package. Retain the verified playback path and the new music fades.
+- Automated checks cover native selection, save/revert, table preservation, directional aliases, warm reuse and inclusion with old settings. Live native walking swaps and automatic cinematic playback still need in-game confirmation.
+- Add a reproducible MR coverage report for the 15 excluded originals. Of their 75 individual equipable MR abilities, all 50 passives are Sephira MR rewards; 25 active skills are currently awakening-only and missing from transferable MR rewards. List every original rank and current location, and reject stale reports in checks. This audit makes no kit changes.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

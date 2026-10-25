@@ -124,7 +124,7 @@ def animation_payloads(animations, encoded, names, cells=None):
     return result
 
 
-def field_aliases(view, mid):
+def field_aliases(view, mid, *, target_package=None):
     """Private player-compatible clips; keep genuine usable diagonals intact."""
     view = copy.deepcopy(view)
     project = view['Exports'][0]
@@ -177,7 +177,7 @@ def field_aliases(view, mid):
     animation_payloads(animations, project['Extras'], view['NameMap'])
     old = f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
     def rename(value):
-        if isinstance(value, str): return package(mid) if value == old else value
+        if isinstance(value, str): return (target_package or package(mid)) if value == old else value
         if isinstance(value, list): return [rename(v) for v in value]
         if isinstance(value, dict): return {k: rename(v) for k, v in value.items()}
         return value
@@ -202,7 +202,7 @@ def build(units, env):
             if native.get('schema') != 1 or native.get('id') != selected['id']:
                 raise ValueError('Rebuild Crystal Fina battle assets before staging her runtime.')
             import _ffr_fina_cinematic
-            if _ffr_fina_cinematic.enabled(root):
+            if any(_ffr_fina_cinematic.matches(u) and u['id']==selected['id'] for u in units):
                 native['cinematicMovie'] = _ffr_fina_cinematic.PRIVATE.replace('FFRS/Content/', '/Game/')
             config['fina'] = native
             code = '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)()\n'

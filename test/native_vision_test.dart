@@ -856,26 +856,14 @@ void main() {
   });
 
   testWidgets(
-    'cinematic toggle saves independently and keeps failed edits out of UI state',
+    'Fina cinematic preview remains available without a test toggle',
     (tester) async {
       await show(tester);
-      final control = find.byKey(const Key('testing-fina-cinematic'));
-      await tester.ensureVisible(control);
-      await tester.tap(control);
-      await wait(tester, () => app.finaCinematic);
-      expect(api.cinematicValue, isTrue);
-      api.failCinematic = true;
-      await tester.tap(control);
-      await wait(
-        tester,
-        () => app.notice?.contains('Cinematic setting write failed') == true,
-      );
-      expect(app.finaCinematic, isTrue);
-      await tester.pump(const Duration(seconds: 6));
-      app.buildState = {'running': true};
-      app.notifyListeners();
-      await tester.pump();
-      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+      expect(find.byKey(const Key('testing-fina-cinematic')), findsNothing);
+      final preview = find.byKey(const Key('preview-fina-cinematic'));
+      await tester.ensureVisible(preview);
+      expect(tester.widget<GuideButton>(preview).onPressed, isNotNull);
+      expect(api.cinematicValue, isFalse);
     },
   );
 

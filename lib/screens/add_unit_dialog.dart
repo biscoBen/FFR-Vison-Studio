@@ -11,6 +11,7 @@ import '../services/crystal_fina.dart';
 import '../services/sephira_visions.dart';
 import '../services/overworld_appearance.dart';
 import 'overworld_anim_pane.dart';
+import 'party_portrait.dart';
 
 Future<void> showAddUnit(BuildContext context) => showDialog<void>(context: context, builder: (_) => const AddUnitDialog());
 
@@ -169,6 +170,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                             return Material(
                               color: active ? Guide.paper3 : (i.isOdd ? Guide.paper2 : Guide.paper),
                               child: InkWell(
+                                key: widget.overworld ? ValueKey('field-choice-${u['id']}') : null,
                                 onTap: () => pick(u),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -178,7 +180,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                                     Expanded(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                         Text((u['name'] ?? u['jpname'] ?? u['id']).toString(), style: Guide.strong(has ? Guide.ink : Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                        Text(widget.overworld ? '${u['directions']}-way' : '${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        Text(widget.overworld ? '${u['nativeParty'] != null ? 'Resonance' : 'FFBE'} · ${u['directions']}-way' : '${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
                                       ]),
                                     ),
                                     if (here) _chip('in mod', Guide.blue) else if (!has) _chip('no sprites yet', Guide.inkFaint),
@@ -268,12 +270,16 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         child: Text(t.toUpperCase(), style: Guide.label(c).copyWith(fontSize: 11)),
       );
 
-  Widget _fieldIcon(String model) => FutureBuilder<Uint8List>(
+  Widget _fieldIcon(String model) {
+    final id = OverworldAppearance.nativeId(model);
+    return id != null ? PartyPortrait(characterId: id, width: 44, height: 30)
+    : FutureBuilder<Uint8List>(
     key: ValueKey('field-icon-$model'), future: OverworldAppearance.assetBytes(model, 'icon'),
     builder: (_, snapshot) => snapshot.hasData
         ? Image.memory(snapshot.data!, fit: BoxFit.contain, filterQuality: FilterQuality.none, gaplessPlayback: true)
         : const SizedBox.shrink(),
   );
+  }
 
   Widget _detail(AppState app, bool hasPack, Set<String> packs) {
     final d = detail!;
@@ -315,7 +321,9 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ])),
       ]),
       const SizedBox(height: 10),
-      if (widget.overworld) OverworldAnimPane(key: ValueKey('field-viewer-${sel!['id']}'), model: sel!['id'] as String) else AnimViewer(
+      if (widget.overworld && OverworldAppearance.nativeId(sel!['id'] as String) != null)
+        NativeOverworldPreview(model: sel!['id'] as String)
+      else if (widget.overworld) OverworldAnimPane(key: ValueKey('field-viewer-${sel!['id']}'), model: sel!['id'] as String) else AnimViewer(
         key: ValueKey('viewer$form'),
         anims: hasPack ? ordered : const [],
         url: (a) => app.api!.animUrl(form, a, nativePreview: widget.replacePartyId == null),
