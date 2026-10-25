@@ -1,5 +1,6 @@
 """Native movie audio metadata and every original picture must survive rescoring."""
 import hashlib
+import io
 from pathlib import Path
 import struct
 import sys
@@ -7,6 +8,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest import mock
+import wave
 import zipfile
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -22,7 +24,52 @@ def adx_fixture():
     return bytes(header)+bytes(307200//32*36)+bytes.fromhex('8001000e')+bytes(14)
 
 
+def wave_fixture():
+    output=io.BytesIO()
+    with wave.open(output,'wb') as f:
+        f.setparams((2,2,48000,0,'NONE','not compressed'))
+        f.writeframes(struct.pack('<hh',12000,-8000)*307200)
+    return output.getvalue()
+
+
 class MovieAudioTests(unittest.TestCase):
+    def test_music_edges_fade_to_silence_without_changing_stereo_duration_or_middle(self):
+        raw=wave_fixture();faded=music.fade_audio(raw)
+        self.assertEqual(len(faded),len(raw));self.assertEqual(faded[:44],raw[:44])
+        sample=lambda frame:struct.unpack_from('<hh',faded,44+frame*4)
+        self.assertEqual(sample(0),(0,0));self.assertEqual(sample(307199),(0,0))
+        # Both fades rise smoothly from silence, with the same gain per channel.
+        for frames in (range(0,19200,64),range(307199,268799,-64)):
+            values=[sample(i) for i in frames]
+            self.assertEqual([v[0] for v in values],sorted(v[0] for v in values))
+            self.assertEqual([v[1] for v in values],sorted((v[1] for v in values),reverse=True))
+            self.assertTrue(all(abs(left*2+right*3)<=3 for left,right in values))
+        self.assertEqual(sample(19200),(12000,-8000))
+        self.assertEqual(sample(268799),(12000,-8000))
+        self.assertEqual(faded[44+19200*4:44+268800*4],raw[44+19200*4:44+268800*4])
+        self.assertEqual(music.fade_audio(raw),faded)
+        self.assertEqual(raw,wave_fixture())
+
+    def test_fades_reject_truncation_and_an_unexpected_pcm_format(self):
+        raw=wave_fixture()
+        for value in (b'bad',raw[:-1]):
+            with self.assertRaises(ValueError):music.fade_audio(value)
+        wrong=bytearray(raw);struct.pack_into('<I',wrong,24,44100)
+        with self.assertRaisesRegex(ValueError,'stereo PCM'):music.fade_audio(wrong)
+
+    def test_preview_serves_the_same_faded_wave_used_by_the_movie_encoder(self):
+        import _ffr_fina_cinematic as film
+        import _ffr_cave_music_preview as preview
+        routes={}
+        class App:
+            def get(self,path,**_):return lambda fn:routes.setdefault(path,fn)
+        film.register(App(),{'ROOT':'unused','ffrenv':object()})
+        raw=wave_fixture()
+        with mock.patch.object(preview,'audio',return_value=raw):
+            response=routes['/api/testing/fina-cinematic/audio']()
+        self.assertEqual(response.media_type,'audio/wav')
+        self.assertEqual(response.body,music.fade_audio(raw))
+
     def test_mux_preserves_all_color_and_alpha_packets_and_exact_native_adx(self):
         with zipfile.ZipFile(ROOT/'assets/existing_visions/payload/fina_cinematic.zip') as z:raw=z.read('movie.usm')
         adx=adx_fixture();result,report=movie.with_soundtrack(raw,adx)
@@ -53,12 +100,20 @@ class MovieAudioTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);tools=root/'tools';tools.mkdir()
             (tools/'cave_music_preview.zip').write_bytes((ROOT/'assets/existing_visions/payload/cave_music_preview.zip').read_bytes())
+            raw=wave_fixture();pictures=b'pictures'
+            # A verified movie from before the fade must not hide the change.
+            key=hashlib.sha256(pictures+raw+(tools/'cave_music_preview.zip').read_bytes()+Path(movie.__file__).read_bytes()).hexdigest()
+            old=root/'build/fina-cinematic/native-audio'/(key[:24]+'.usm');old.parent.mkdir(parents=True)
+            old.write_bytes(b'old unfaded movie')
+            old.with_suffix('.json').write_text(__import__('json').dumps({'sha256':hashlib.sha256(old.read_bytes()).hexdigest()}))
             def encode(cmd,**kwargs):
                 self.assertTrue(cmd[-1].endswith('VGAudio.dll'))
+                self.assertEqual(Path(cmd[-3]).read_bytes(),music.fade_audio(raw))
                 Path(cmd[-2]).write_bytes(adx_fixture());return SimpleNamespace(returncode=0)
-            with mock.patch.object(preview,'audio',return_value=b'wave'),mock.patch.object(music.subprocess,'run',side_effect=encode) as run,mock.patch.object(movie,'with_soundtrack',return_value=(b'local movie',{})):
+            with mock.patch.object(preview,'audio',return_value=raw),mock.patch.object(music.subprocess,'run',side_effect=encode) as run,mock.patch.object(movie,'with_soundtrack',return_value=(b'local movie',{})):
                 first=music.movie_audio({'ROOT':root,'ffrenv':None},b'pictures')
                 self.assertIsNotNone(first);self.assertEqual(first.read_bytes(),b'local movie')
+                self.assertNotEqual(first,old);self.assertEqual(old.read_bytes(),b'old unfaded movie')
                 self.assertEqual(music.movie_audio({'ROOT':root,'ffrenv':None},b'pictures'),first)
                 self.assertEqual(run.call_count,1)
                 first.write_bytes(b'corrupt');music.movie_audio({'ROOT':root,'ffrenv':None},b'pictures')

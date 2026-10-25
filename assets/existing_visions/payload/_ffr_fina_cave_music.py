@@ -15,6 +15,36 @@ SHEET = 'FFRS/Content/Sound/Cri/Studio/Studio_FinaCaveMusic'
 BANK_DONOR = 'FFRS/Content/Sound/Cri/Se/SE_PP/SE_BTL_PP/SE_BTL_PP'
 SOUND = 'FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Sound_001'
 NATIVE_START, NATIVE_END = 48000, 363503
+FADE_IN_SECONDS, FADE_OUT_SECONDS = .4, .8
+
+
+def fade_audio(raw):
+    """Soften only the ends of the proven 6.4-second stereo PCM recording.
+
+    Keep every sample position and the untouched middle, then use the existing
+    ADX encoder/muxer. Smoothstep reaches silence without a sharp gain change.
+    No wave-module dependency is available in the frozen engine.
+    """
+    if len(raw)<12 or raw[:4]!=b'RIFF' or raw[8:12]!=b'WAVE':
+        raise ValueError('Invalid cave music WAV for fading.')
+    pos=12;fmt=None;data=None
+    while pos+8<=len(raw):
+        kind=raw[pos:pos+4];size=struct.unpack_from('<I',raw,pos+4)[0];start=pos+8
+        if start+size>len(raw):raise ValueError('Incomplete cave music WAV for fading.')
+        if kind==b'fmt ':fmt=raw[start:start+size]
+        elif kind==b'data':data=(start,size)
+        pos=start+size+(size&1)
+    if (fmt is None or len(fmt)<16 or struct.unpack_from('<HHIIHH',fmt)!=(1,2,48000,192000,4,16)
+            or data is None or data[1]!=307200*4):
+        raise ValueError('Cave music fades require the decoded 6.4-second stereo PCM recording.')
+    result=bytearray(raw);start,size=data;frames=size//4
+    for count,reverse in ((round(FADE_IN_SECONDS*48000),False),(round(FADE_OUT_SECONDS*48000),True)):
+        for index in range(count):
+            x=index/(count-1);gain=x*x*(3-2*x)
+            offset=start+(frames-1-index if reverse else index)*4
+            left,right=struct.unpack_from('<hh',raw,offset)
+            struct.pack_into('<hh',result,offset,round(left*gain),round(right*gain))
+    return bytes(result)
 
 
 def recording(env):
@@ -63,7 +93,7 @@ def movie_audio(env, pictures):
     try:
         import _ffr_cave_music_preview as preview
         import _ffr_movie_audio as movie
-        wave=preview.audio(root,env['ffrenv'])
+        wave=fade_audio(preview.audio(root,env['ffrenv']))
         archive=root/'tools/cave_music_preview.zip'
         identity=hashlib.sha256(pictures+wave+archive.read_bytes()+Path(movie.__file__).read_bytes()).hexdigest()
         folder=root/'build/fina-cinematic/native-audio';folder.mkdir(parents=True,exist_ok=True)
@@ -84,7 +114,7 @@ def movie_audio(env, pictures):
             data, report=movie.with_soundtrack(pictures,encoded.read_bytes())
         temporary=target.with_suffix('.tmp');temporary.write_bytes(data);temporary.replace(target)
         marker.write_text(json.dumps({'schema':1,'sha256':hashlib.sha256(data).hexdigest(),'report':report}))
-        print('  Crystal Fina: cached original cave recording from its beginning in the native stereo ADX movie.',flush=True)
+        print('  Crystal Fina: cached cave music with a 0.4-second fade in and 0.8-second fade out in the native stereo ADX movie.',flush=True)
         return target
     except Exception as error:
         print('  ! Crystal Fina movie soundtrack unavailable: '+type(error).__name__+': '+str(error),flush=True)

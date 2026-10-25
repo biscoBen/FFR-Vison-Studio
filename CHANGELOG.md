@@ -11,6 +11,11 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Gentle Crystal Fina movie music fades — 2026-10-25
+
+- Add a 0.4-second fade in and 0.8-second fade out to the cave music in Fina's movie and Studio preview. Shape the decoded stereo samples before the existing ADX encoder; keep the working decoder, movie packets, duration, audio format, single playback and battle-music pause/resume path.
+- Replace the cached scored movie automatically; warm installs reuse the faded copy. Existing sprite/icon and voice caches keep their inputs. The user confirms the previous update's movie music now plays in game. The new fades still need a live listening check.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

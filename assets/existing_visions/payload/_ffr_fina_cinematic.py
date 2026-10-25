@@ -371,8 +371,9 @@ def register(app, env=None):
         from fastapi.responses import Response
         try:
             import _ffr_cave_music_preview
+            import _ffr_fina_cave_music
             if env is None: raise ValueError('Select the full game in Studio first.')
-            return Response(_ffr_cave_music_preview.audio(env['ROOT'],env['ffrenv']),media_type='audio/wav')
+            return Response(_ffr_fina_cave_music.fade_audio(_ffr_cave_music_preview.audio(env['ROOT'],env['ffrenv'])),media_type='audio/wav')
         except Exception as error:
             # Optional preview failures must stay inspectable, including frozen
             # runtime/import and decoder errors that previously became bare 500s.
