@@ -39,7 +39,7 @@ Some passives move between visions to make room for the complete original collec
 | Elza | Resist Dark (1253) | Speed +20% (1317) | Imbue Dark (1528) † | Skyward Dreams (1434) | Tip-Top Shape (1428) |
 | Lunera | Resist Wind (1248) | Spry Steps (1258) | Lingering Debuffs (1510) † | Guiding Wind (1458) | Double MRP (1051) † |
 
-† One of the 19 additional bonus slots. Aria's reviewed Water kit intentionally shares Imbue Water with Folka, leaving 149 distinct MR passives in 150 slots. All 131 original passives remain covered. Original provenance and exact mechanics remain in `assets/sephira_visions/native_coverage.json`.
+† One of the 19 additional bonus slots. Aria's reviewed Water kit intentionally shares Imbue Water with Folka. The current 150 MR slots contain 141 distinct passives after the command-bound traits moved to awakening. All 131 original passives remain covered in the complete kits. Original provenance and exact mechanics remain in `assets/sephira_visions/native_coverage.json`.
 
 Spirit of Crystal Fina and Spirit of Aria retain their vision and reward IDs. Each follows its owner's current five MR passives, including Aria's Water imbue; awakening bonuses and permanent MR stats are not copied into the Spirit. See [the reviewed healer kits](SEPHIRA_USER_KITS.md).
 

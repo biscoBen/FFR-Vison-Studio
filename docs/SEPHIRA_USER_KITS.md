@@ -17,4 +17,4 @@ Both Spirits retain their IDs and point to their own vision's current MR data. S
 
 Studio applies this kit revision once after writing a character-config backup. It preserves existing private skills and combat edits, IDs, artwork, acquisition and MR stat grants. Removed learned grants no longer appear in the new tiers, but their definitions remain for older save references. Additional unrelated learned grants survive where there is room. If a tier would exceed eight entries, automatic migration leaves the vision intact; **Apply kit and MR updates** reports the tier to free. Subsequent deliberate edits are preserved.
 
-All 160 original active skills and 131 original passives from the excluded visions remain represented across the collection. Aria intentionally shares Imbue Water with Folka, so 150 MR passive slots now contain 149 distinct choices.
+All 160 original active skills and 131 original passives from the excluded visions remain represented across the collection. Aria intentionally shares Imbue Water with Folka. Each vision still has five MR passives; command-bound original passives remain in awakening.
