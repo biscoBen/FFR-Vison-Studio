@@ -8,6 +8,7 @@ import wave
 import zipfile
 from unittest import mock
 import tempfile
+from types import ModuleType, SimpleNamespace
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'assets/existing_visions/payload'))
@@ -15,6 +16,40 @@ import _ffr_cave_music_preview as preview
 
 
 class CaveMusicPreviewTests(unittest.TestCase):
+    @staticmethod
+    def crc(data):
+        result=0
+        for byte in data:
+            result^=byte<<8
+            for _ in range(8):result=((result<<1)^(0x8005 if result&0x8000 else 0))&0xffff
+        return result
+
+    def test_native_prefix_keeps_encrypted_frames_and_removes_looping_without_decoding(self):
+        header=bytearray(80);header[:8]=b'HCA\0\x03\0\0P'
+        header[8:12]=b'fmt\0';header[12]=2;header[13:16]=(48000).to_bytes(3,'big')
+        header[16:20]=(400).to_bytes(4,'big');header[20:22]=(2565).to_bytes(2,'big')
+        header[24:28]=b'comp';header[28:30]=(32).to_bytes(2,'big')
+        header[40:44]=b'loop';header[56:62]=b'ciph\0\x38';header[62:66]=b'pad\0'
+        for offset in (0,8,24,40,56,62):
+            header[offset:offset+4]=bytes(v|128 if v else 0 for v in header[offset:offset+4])
+        header[-2:]=struct.pack('>H',self.crc(header[:-2]))
+        frame=b'\xff\xff'+b'A'*28;frame+=struct.pack('>H',self.crc(frame))
+        original=bytes(header)+frame*400
+        with mock.patch.dict(sys.modules,{'ffbe_effects':ModuleType('ffbe_effects'),
+                'ffbe_effects.hca_host':SimpleNamespace(crc=self.crc)}):
+            result=preview.trim_hca(original)
+            size=int.from_bytes(result[6:8],'big')
+            self.assertEqual(size,64)
+            self.assertEqual(self.crc(result[:size]),0)
+            self.assertNotIn(b'loop',bytes(v&127 for v in result[:size]))
+            frames=int.from_bytes(result[16:20],'big');padding=int.from_bytes(result[22:24],'big')
+            self.assertEqual(frames*1024-2565-padding,307200)
+            self.assertEqual(result[size:],original[80:80+frames*32])
+            self.assertEqual(result[4:6],b'\x03\0')
+            for raw in (original[:-1],original[:70]):
+                with self.assertRaises(ValueError):preview.trim_hca(raw)
+            with self.assertRaises(ValueError):preview.trim_hca(original,10)
+
     def bank(self):
         # Two distinct recordings, padded with native AFS2 alignment.
         return b'AFS2'+bytes([2,4,2,0])+struct.pack('<IHH',2,32,17)+struct.pack('<HHIII',50,51,32,96,160)+b'A'*64+b'B'*64

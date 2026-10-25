@@ -86,10 +86,51 @@ def trim_wave(raw,seconds=6.4):
     if codec==65534 and len(fmt)>=40 and fmt[24:40]==bytes.fromhex('0100000000001000800000aa00389b71'):codec=1
     if codec!=1 or bits not in (8,16,24,32) or not 1<=channels<=8 or not 8000<=rate<=192000 or align!=channels*bits//8 or byte_rate!=rate*align or len(data)%align:
         raise ValueError('Unsupported decoded cave WAV format.')
+    if channels<=2:fmt=struct.pack('<HHIIHH',1,channels,rate,byte_rate,align,bits)
     data=data[:round(seconds*rate)*align]
     def chunk(tag,value):return tag+struct.pack('<I',len(value))+value+bytes(len(value)&1)
     body=b'WAVE'+chunk(b'fmt ',fmt)+chunk(b'data',data)
     return b'RIFF'+struct.pack('<I',len(body))+body
+
+
+def read_recording(root,ffrenv):
+    """Read the original encrypted recording and its native AWB subkey."""
+    root=Path(root);loose=Path(ffrenv.game_root())/ENTRY
+    if loose.is_file():
+        with loose.open('rb') as stream:return extract_wave(stream)
+    for pak in sorted(Path(ffrenv.game_paks()).glob('FFRS-Windows*.pak'),reverse=True):
+        process=subprocess.Popen([str(root/'tools/repak/repak.exe'),'get',str(pak),ENTRY],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
+        try:return extract_wave(process.stdout)
+        except ValueError:continue
+        finally:
+            process.stdout.close()
+            if process.poll() is None:process.kill()
+            process.wait()
+    raise ValueError('The installed cave audio bank could not be read.')
+
+
+def trim_hca(raw,seconds=6.4):
+    """Keep native compressed/encrypted frames; only trim time and remove looping."""
+    from ffbe_effects.hca_host import crc
+    if len(raw)<64:raise ValueError('Incomplete native cave recording.')
+    size=int.from_bytes(raw[6:8],'big');header=bytearray(raw[:size])
+    clear=bytes(v&127 for v in header)
+    if (clear[:4]!=b'HCA\0' or raw[4:6]!=b'\x03\0' or clear[8:12]!=b'fmt\0'
+            or clear[24:28]!=b'comp' or raw[12]!=2 or int.from_bytes(raw[13:16],'big')!=48000
+            or not 64<=size<=4096 or crc(header)):
+        raise ValueError('The native cave HCA layout changed.')
+    count=int.from_bytes(raw[16:20],'big');delay=int.from_bytes(raw[20:22],'big')
+    padding=int.from_bytes(raw[22:24],'big');frame_size=int.from_bytes(raw[28:30],'big')
+    samples=round(seconds*48000);frames=(samples+delay+1023)//1024
+    if not frame_size or len(raw)!=size+count*frame_size or count*1024-delay-padding<samples:
+        raise ValueError('The native cave recording is incomplete or too short.')
+    loops=[i for i in range(40,size-17) if clear[i:i+4]==b'loop']
+    if len(loops)>1:raise ValueError('Ambiguous native cave loop metadata.')
+    if loops:del header[loops[0]:loops[0]+16]
+    header[6:8]=len(header).to_bytes(2,'big');header[16:20]=frames.to_bytes(4,'big')
+    header[22:24]=(frames*1024-delay-samples).to_bytes(2,'big')
+    header[-2:]=struct.pack('>H',crc(header[:-2]))
+    return bytes(header)+raw[size:size+frames*frame_size]
 
 
 def audio(root, ffrenv):
@@ -98,31 +139,18 @@ def audio(root, ffrenv):
     import _ffr_deck_sync
     identity=_ffr_deck_sync.game_identity(Path(ffrenv.game_root()))
     archive=root/'tools/cave_music_preview.zip'
-    fingerprint=hashlib.sha256(json.dumps({'game':identity,'cue':CUE_NAME,'stream':STREAM_ID,
+    fingerprint=hashlib.sha256(json.dumps({'revision':2,'game':identity,'cue':CUE_NAME,'stream':STREAM_ID,
         'decoder':hashlib.sha256(archive.read_bytes()).hexdigest()},sort_keys=True).encode()).hexdigest()[:24]
     folder=root/'build/fina-preview-audio';folder.mkdir(parents=True,exist_ok=True)
     target=folder/(fingerprint+'.wav')
     with _LOCK:
         if target.is_file():return target.read_bytes()
-        raw=None
-        # Loose installed files and official pak entries use the same AFS2 data.
-        loose=Path(ffrenv.game_root())/ENTRY
-        if loose.is_file():
-            with loose.open('rb') as stream:raw,subkey=extract_wave(stream)
-        else:
-            paks=Path(ffrenv.game_paks())
-            for pak in sorted(paks.glob('FFRS-Windows*.pak'),reverse=True):
-                process=subprocess.Popen([str(root/'tools/repak/repak.exe'),'get',str(pak),ENTRY],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
-                try:raw,subkey=extract_wave(process.stdout);break
-                except ValueError:continue
-                finally:
-                    process.stdout.close()
-                    if process.poll() is None:process.kill()
-                    process.wait()
-        if raw is None:raise ValueError('The installed cave audio bank could not be read.')
+        import _ffr_fina_cave_music
+        path,subkey=_ffr_fina_cave_music.recording({'ROOT':root,'ffrenv':ffrenv})
+        raw=path.read_bytes()
         import ffbe_audio
         from ffbe_effects.hca_host import key_from_config
-        plain=decrypt(raw,key_from_config(ffbe_audio.host_config({})),subkey)
+        plain=decrypt(trim_hca(raw),key_from_config(ffbe_audio.host_config({})),subkey)
         with tempfile.TemporaryDirectory(prefix='decode-',dir=folder) as temporary:
             work=Path(temporary)
             with zipfile.ZipFile(archive) as z:

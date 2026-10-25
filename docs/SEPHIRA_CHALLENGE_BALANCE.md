@@ -4,10 +4,10 @@ This pass applies Christine’s tested approach to all 15 encounters (28 enemy v
 
 - Preserve the existing encounter level, combined HP and shared break budget. Split attack power across partners, and stagger their signature turns.
 - Increase physical and magic offensive stats by 50% over the original challenge curve, and speed by about 15%. Christine already had the magic/speed adjustment; her speed is unchanged in this pass.
-- Increase bounded attack/spell potency by 50%, or 75% for a configured damaging signature, before dividing it between partners. Healing remains capped at 15%; control effects keep their existing mechanics.
+- Apply the earlier bounded attack/spell increases (+50%, or +75% for a configured damaging signature), divide between partners, then apply the additional 50% used by the approved Christine fight. This affects physical and magical damage. Native integer rounding applies; healing remains capped at 15% and control effects keep their existing mechanics.
 - Give caster roles spell basics. Apply explicit elemental resistance/weakness pairs where the vision has a clear theme. Other elements remain neutral.
-- Christine remains level 5 with 2,750 HP and 162 break. The latest follow-up adds another 50% to Blizzard, Blizzara and Freezing Spike: Blizzard potency becomes 39 and Freezing Spike becomes 78. Slumber Mist stays unchanged.
-- Vision rewards use ordinary battle loot with the native guaranteed-drop value (1). No post-battle reward event or acquisition sequence runs. The result screen should list and grant the vision before returning to the cave; that still needs a live retest. Escape/loss give no reward.
+- Christine remains level 5 with 2,750 HP and 162 break. Christine’s approved values stay at Blizzard 39, Blizzara 50 and Freezing Spike 78. The extra factor is not applied twice to her. Slumber Mist stays unchanged.
+- Vision rewards use ordinary battle loot with the native guaranteed-drop value (1). No post-battle reward event or acquisition sequence runs. The user confirms Christine now grants her vision in the result screen and returns without a black screen. Other encounters use the same path. Escape/loss give no reward.
 
 | Original unlock | Opponents | Level | Combined HP | Combined break | Speed | Basic actions |
 | --- | --- | ---: | ---: | ---: | ---: | --- |

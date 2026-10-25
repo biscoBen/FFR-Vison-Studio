@@ -45,7 +45,7 @@ class IncrementalTests(unittest.TestCase):
         self.assertFalse(self.run_stage(Cache(self.root,{'game':'two','code':'two'})))
         self.assertEqual(self.calls,4)
 
-    def test_cached_fina_movie_repackages_its_score_and_invalidates_changed_audio(self):
+    def test_cached_fina_movie_keeps_silent_pictures_and_invalidates_changed_native_audio(self):
         import _ffr_incremental as inc
         import _ffr_fina_cinematic as film
         import _ffr_fina_cave_music as music
@@ -64,21 +64,22 @@ class IncrementalTests(unittest.TestCase):
             calls.append(True)
             paths=[master,*[master.parent/'Track'/f'SEQ_Battle_444011_{s}.uasset'
                             for s in ('Cut_000','Sound_001','Effect_000')],
-                   *[self.out/(film.PRIVATE+s+'.uasset') for s in ('','_vp9')]]
+                   *[self.out/(film.PRIVATE+s+'.uasset') for s in ('','_vp9')],
+                   *[self.out/(p+'.uasset') for p in (music.SHEET,music.CUE)]]
             for path in paths:
                 path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(score.read_bytes())
                 path.with_suffix('.uexp').write_bytes(b'export')
             timeline=self.root/'build/fina-cinematic/timeline.json'
             timeline.parent.mkdir(parents=True,exist_ok=True);timeline.write_text('{}')
         with mock.patch.object(film,'enabled',return_value=True),mock.patch.object(film,'matches',return_value=True),mock.patch.object(
-                music,'movie_audio',return_value=score),mock.patch.object(inc,'_ensure_native'),mock.patch.object(film,'prepare_pak') as pak,mock.patch.object(
+                music,'recording',return_value=(score,17)),mock.patch.object(inc,'_ensure_native'),mock.patch.object(film,'prepare_pak') as pak,mock.patch.object(
                 reuse,'_active',Cache(self.root,{})),mock.patch.dict(sys.modules,{'ffbe_resonance':SimpleNamespace(SHELL='shell',__file__=str(self.source))}):
             wrapped=inc._cinematic(generate)
             wrapped([{'id':13500}],env)
             master.write_bytes(b'original');master.with_suffix('.uexp').write_bytes(b'original export')
             wrapped([{'id':13500}],env)
             self.assertEqual(len(calls),1)
-            self.assertEqual(pak.call_args.args[-1],b'picture and audio')
+            self.assertEqual(pak.call_args.args[-1],film.payload()[1]['movie.usm'])
             score.write_bytes(b'new audio with same pictures')
             master.write_bytes(b'original');master.with_suffix('.uexp').write_bytes(b'original export')
             wrapped([{'id':13500}],env)

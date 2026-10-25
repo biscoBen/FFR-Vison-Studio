@@ -114,7 +114,8 @@ def matches(unit):
 def ensure_assets(root, extract):
     if not enabled(root): return
     import _ffr_fina_cave_music
-    for rel in (MASTER, MOVIE, MOVIE + '_vp9', _ffr_fina_cave_music.CUE_DONOR, _ffr_fina_cave_music.SOUND):
+    for rel in (MASTER, MOVIE, MOVIE + '_vp9', _ffr_fina_cave_music.CUE_DONOR,
+                _ffr_fina_cave_music.SOUND, _ffr_fina_cave_music.BANK_DONOR):
         path = Path(root) / 'extracted/legacy' / (rel + '.uasset')
         if not path.is_file(): extract(rel.removeprefix('FFRS/Content/'))
         if not path.is_file(): raise ValueError('The selected game is missing the Crystal Fina movie test template: ' + rel)
@@ -237,17 +238,14 @@ def build(units, env):
     # Save Fina's event-only shell as three private children before replacing its
     # root with the native movie master. Cached binding IDs stay binary-native.
     import ffbe_resonance
-    for suffix in ('Cut_000', 'Sound_001', 'Effect_000'):
+    for suffix in ('Cut_000', 'Sound_001'):
         child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{suffix}').as_posix()
         clone(native(ffbe_resonance.SHELL), child,
               [('SEQ_Battle_440111_Cut_000', Path(child).name)])
         child_plan = plan if suffix == 'Cut_000' else {'duration': plan['duration'], 'events': [{'time': 0, 'set': {'EventType': 'None'}}]}
         ffbe_resonance.build({'asset': child, 'plan': child_plan}, str(out), str(work), tool, usmap, run)
-    # Match the original movies' typed stereo ADX metadata. The attempted Atom
-    # child remained silent in game; the movie decoder now owns its one score.
-    soundtrack = _ffr_fina_cave_music.movie_audio(env, files['movie.usm'])
-    if soundtrack is None:
-        raise ValueError('Crystal Fina movie music could not be prepared. Check the soundtrack error above.')
+    sound_child=(Path(job['asset']).parent/'Track'/f'SEQ_Battle_{sid + 1}_Effect_000').as_posix()
+    _ffr_fina_cave_music.build(sound_child,env,work,native,clone,START,END,plan['duration'])
     rename = [('440110', str(sid)), ('440111', str(sid + 1)),
               ('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
               ('MV_Skill440110', Path(PRIVATE).name)]
@@ -290,10 +288,9 @@ def build(units, env):
                 prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
-        tracks = prop(data, 'AudioTracks')['Value']
-        if len(tracks) != 1: raise ValueError('The native stereo movie audio descriptor changed.')
-        for name,value in (('NumChannels',2),('SamplingRate',48000),('TotalSamples',307200),('bIsAmbisonics',False)):
-            prop(tracks[0]['Value'],name)['Value'] = value
+        # Only the native sound cue plays music. Mana receives the unchanged
+        # silent pictures/opacity, with no competing converted audio stream.
+        prop(data,'AudioTracks')['Value']=[]
         fields = {'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
@@ -302,11 +299,12 @@ def build(units, env):
         for name, value in fields.items(): prop(data, name)['Value'] = value
         description.write_text(json.dumps(view), encoding='utf-8')
         run([*tool, 'fromjson', str(description), str(target), '--usmap', usmap])
-    prepare_pak(root, env['ffrenv'], run, soundtrack.read_bytes())
+    prepare_pak(root, env['ffrenv'], run, files['movie.usm'])
     (work / 'timeline.json').write_text(json.dumps({'schema': 1, 'movieStart': START, 'movieEnd': END,
         'duration': plan['duration'], 'asset': job['asset'], 'plan': plan,
-        'audio': {'cue': _ffr_fina_cave_music.CUE_NAME, 'codec': 'ADX', 'channels': 2,
-                  'sampleRate': 48000, 'samples': 307200, 'startSeconds': 0}}), encoding='utf-8')
+        'audio': {'cue': _ffr_fina_cave_music.CUE_NAME, 'codec': 'original HCA', 'channels': 2,
+                  'sampleRate': 48000, 'samples': 307200, 'startSeconds': 0,
+                  'cueSheet':_ffr_fina_cave_music.SHEET,'reencoded':False}}), encoding='utf-8')
     print('  Crystal Fina: optional 6.4-second illustrated cinematic before her existing LB (in-game test required).')
 
 
@@ -319,24 +317,46 @@ def register(app, env=None):
         <h1>Crystal Fina cinematic test</h1><video id="movie" controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
         <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. The secret cave’s music plays from its beginning. In game it leads into Fina’s existing LB animation and cure sound.</p>
         <p>Turn on <b>Test Crystal Fina cinematic</b> in Studio, include Crystal Fina, rebuild/install and restart the game. Use her resonance to test playback. Turn the switch off and rebuild/install to remove the intro.</p>
-        <p>The preview reads the original cave music from your selected game on first playback, then saves a short local copy. The movie pictures are unchanged. <span id="audio-status"></span></p><audio id="music" preload="none" src="/api/testing/fina-cinematic/audio"></audio>
+        <p><button id="play-sound" type="button">Play with sound</button> <span id="audio-status" role="status"></span></p>
+        <p>The preview reads the cave music from your selected game on first playback. You can also listen to it separately:</p>
+        <audio id="music" controls preload="none" src="/api/testing/fina-cinematic/audio"></audio>
         <script>
-        const video=document.getElementById('movie'), music=document.getElementById('music'), status=document.getElementById('audio-status');
-        let starting=false;
-        video.addEventListener('play',async()=>{
-          if(starting)return; starting=true;
-          const position=video.currentTime; video.pause(); status.textContent='Loading cave music…';
-          music.currentTime=position;music.volume=video.volume;music.muted=video.muted;
-          try {await music.play();music.pause();music.currentTime=position;await video.play();await music.play();status.textContent='';}
-          catch(e) {try {const response=await fetch(music.src);const error=await response.json();status.textContent=error.detail||'Cave music could not be loaded from the selected game.';}
-            catch (_) {status.textContent='Cave music could not be loaded from the selected game.';}await video.play();}
-          finally {starting=false;}
+        const video=document.getElementById('movie'), music=document.getElementById('music'), status=document.getElementById('audio-status'), button=document.getElementById('play-sound');
+        let context, buffer, gain, source, loading=false;
+        function stopSound(){if(source){source.stop();source.disconnect();source=null;}}
+        function startSound(){
+          stopSound();if(!buffer||context.state!=='running'||video.paused||video.currentTime>=buffer.duration)return;
+          source=context.createBufferSource();source.buffer=buffer;source.playbackRate.value=video.playbackRate;
+          source.connect(gain);gain.gain.value=video.muted?0:video.volume;source.start(0,video.currentTime);
+        }
+        async function playWithSound(){
+          if(loading)return;loading=true;button.disabled=true;video.pause();music.pause();
+          try{
+            context=context||new (window.AudioContext||window.webkitAudioContext)();
+            await context.resume();
+            if(!gain){gain=context.createGain();gain.connect(context.destination);}
+            if(!buffer){
+              status.textContent='Loading cave music…';const response=await fetch(music.src);
+              if(!response.ok){let detail;try{detail=(await response.json()).detail;}catch(_){}
+                throw new Error(detail||'Cave music could not be loaded ('+response.status+').');}
+              buffer=await context.decodeAudioData(await response.arrayBuffer());
+            }
+            video.muted=false;await video.play();status.textContent='';
+          }catch(error){status.textContent=error.message||'Click Play with sound to enable audio.';}
+          finally{loading=false;button.disabled=false;}
+        }
+        button.addEventListener('click',playWithSound);
+        video.addEventListener('play',()=>{if(buffer&&context.state==='running')startSound();else if(!loading)playWithSound();});
+        video.addEventListener('pause',stopSound);video.addEventListener('ended',stopSound);
+        video.addEventListener('seeked',startSound);video.addEventListener('ratechange',startSound);
+        video.addEventListener('volumechange',()=>{
+          if(gain)gain.gain.value=video.muted?0:video.volume;
+          if(music.volume!==video.volume)music.volume=video.volume;if(music.muted!==video.muted)music.muted=video.muted;
         });
-        video.addEventListener('pause',()=>{if(!starting)music.pause();});video.addEventListener('ended',()=>music.pause());
-        video.addEventListener('seeked',()=>{music.currentTime=video.currentTime;});
-        video.addEventListener('volumechange',()=>{music.volume=video.volume;music.muted=video.muted;});
-        music.addEventListener('canplay',()=>{music.currentTime=video.currentTime;});
-        music.addEventListener('error',()=>{status.textContent='Cave music could not be loaded from the selected game.';});
+        music.addEventListener('volumechange',()=>{
+          if(video.volume!==music.volume)video.volume=music.volume;if(video.muted!==music.muted)video.muted=music.muted;
+        });
+        music.addEventListener('play',()=>{video.pause();stopSound();});
         </script>''')
     @app.get('/api/testing/fina-cinematic/preview')
     def preview():

@@ -6,12 +6,55 @@ import hashlib
 import subprocess
 import tempfile
 import zipfile
+import struct
 
 CUE_NAME = 'BGM_PP_EVENT_VISIONS_INST'
 CUE_DONOR = 'FFRS/Content/Sound/Cri/Bgm/BGM_PP/BGM_PP_BATTLE1_Cue'
 CUE = 'FFRS/Content/Sound/Cri/Studio/Studio_FinaCaveMusic_Cue'
+SHEET = 'FFRS/Content/Sound/Cri/Studio/Studio_FinaCaveMusic'
+BANK_DONOR = 'FFRS/Content/Sound/Cri/Se/SE_PP/SE_BTL_PP/SE_BTL_PP'
 SOUND = 'FFRS/Content/Sequencer/Battle/Skill/440110/440111/Track/SEQ_Battle_440111_Sound_001'
 NATIVE_START, NATIVE_END = 48000, 363503
+
+
+def recording(env):
+    """Cache only the original six-second HCA prefix; never re-encode its frames."""
+    import _ffr_cave_music_preview as preview
+    import _ffr_deck_sync as sync
+    root=Path(env['ROOT']);identity=sync.game_identity(Path(env['ffrenv'].game_root()))
+    key=hashlib.sha256(json.dumps(identity,sort_keys=True).encode()+Path(preview.__file__).read_bytes()).hexdigest()[:24]
+    folder=root/'build/fina-cinematic/native-score';folder.mkdir(parents=True,exist_ok=True)
+    target=folder/(key+'.hca');marker=target.with_suffix('.json')
+    if target.is_file() and marker.is_file():
+        try:
+            saved=json.loads(marker.read_bytes())
+            if saved['sha256']==hashlib.sha256(target.read_bytes()).hexdigest():return target,int(saved['subkey'])
+        except (ValueError,KeyError,TypeError):pass
+    raw,subkey=preview.read_recording(root,env['ffrenv']);clip=preview.trim_hca(raw)
+    target.write_bytes(clip);marker.write_text(json.dumps({'sha256':hashlib.sha256(clip).hexdigest(),'subkey':subkey}))
+    return target,subkey
+
+
+def native_bank(native,clip,subkey,name):
+    """Use native one-shot metadata with the game's unchanged encrypted HCA frames."""
+    from ffbe_effects import acb_native,hca_host
+    from ffbe_effects.acb_cues import utf
+    import _ffr_sephira_lb_audio
+    # The adapter supplies the proven one-shot structure. Its temporary sound
+    # is replaced before serialization; only the original cave frames ship.
+    for path,stub in _ffr_sephira_lb_audio.payload()[1].items():
+        if not path.endswith('.hca'):continue
+        try:hca_host.validate_layout(stub);break
+        except ValueError:continue
+    else:raise ValueError('The native sound metadata template is unavailable.')
+    rec={'sourceWaveId':0,'name':CUE_NAME,'durationMs':6400,'samples':307200,
+         'sampleRate':48000,'channels':2,'sourceCueId':1,'variation':0}
+    bank=acb_native.build(b'',native,name,[rec],gain=1.0,raw_waves={0:stub})
+    header=utf(bank)[1][0];header['AwbFile']=acb_native.encode_awb([clip],subkey)
+    result=acb_native.encode_table('Header',acb_native.schema(bank),[header])
+    check=utf(result)[1][0]
+    if list(acb_native.awb_files(check['AwbFile']).values())!=[clip]:raise ValueError('The native cave score changed a source frame.')
+    return result
 
 
 def movie_audio(env, pictures):
@@ -119,23 +162,42 @@ def check_active_child(master, suffix='Effect_000'):
 
 
 def build(child, env, work, native, clone, start, end, duration):
-    """Private cue references the installed BGM_PP sheet and streamed audio."""
+    """Private embedded native recording avoids Mana decoding and BGM stream state."""
     import _ffr_crystal_cave as assets
+    import ffbe_audio
     run, tool, usmap = env['run'], env['FFRDT'], env['USMAP']
     out = Path(env['OUT'])
+    clip,subkey=recording(env)
+    source=native(ffbe_audio.SHELL).with_suffix('.uexp').read_bytes();at=source.index(b'@UTF')
+    source=source[at:at+int.from_bytes(source[at+4:at+8],'big')+8]
+    acb=native_bank(source,clip.read_bytes(),subkey,Path(SHEET).name)
+    bank=work/'native-cave-score.acb';bank.write_bytes(acb)
+    plan=work/'native-cave-bank.json';plan.write_text(json.dumps({'legacyRoot':str(env['LEGACY']),'outRoot':str(out),
+        'atomBanks':[{'from':ffbe_audio.SHELL,'to':SHEET,'acb':str(bank),'sha256':hashlib.sha256(acb).hexdigest(),
+                      'cues':[{'id':1,'name':CUE_NAME,'durationMs':6400}]}]}))
+    run([*tool,'patch',str(plan),'--usmap',usmap])
     clone(native(CUE_DONOR), CUE,
-          [(Path(CUE_DONOR).name, Path(CUE).name)])
+          [(Path(CUE_DONOR).name, Path(CUE).name),
+           ('/Game/Sound/Cri/Bgm/BGM_PP/BGM_PP',SHEET.replace('FFRS/Content/','/Game/')),
+           ('BGM_PP',Path(SHEET).name)])
     cue_asset = out / (CUE + '.uasset'); cue_json = work / 'cave-cue.json'
     run([*tool, 'tojson', str(cue_asset), str(cue_json), '--usmap', usmap])
     cue = json.loads(cue_json.read_text(encoding='utf-8-sig'))
     owner, = cue['Exports']
-    if assets.property_data(owner, 'CueName')['Value'] != 'BGM_PP_BATTLE1':
-        raise ValueError('The native cave music cue template changed.')
     assets.set_value(owner, 'CueName', CUE_NAME)
-    assets.set_value(owner, 'FirstWaveDuration', 7523899 / 48000)
+    for field in ('Duration','FirstWaveDuration'):
+        if any(p['Name']==field for p in owner['Data']):assets.set_value(owner,field,6.4)
     assets.names(cue, cue['Exports'])
     cue_json.write_text(json.dumps(cue), encoding='utf-8')
     run([*tool, 'fromjson', str(cue_json), str(cue_asset), '--usmap', usmap])
+    run([*tool,'tojson',str(cue_asset),str(cue_json),'--usmap',usmap])
+    checked=json.loads(cue_json.read_text(encoding='utf-8-sig'))
+    from _ffr_party_voices import import_name
+    props={p['Name']:p['Value'] for p in checked['Exports'][0]['Data']}
+    sheet=checked['Imports'][-props['CueSheet']-1]
+    if (props['CueName']!=CUE_NAME or sheet['ObjectName']!=Path(SHEET).name
+            or import_name(checked,sheet['OuterIndex'])!=SHEET.replace('FFRS/Content/','/Game/')):
+        raise ValueError('The Fina music cue does not reference its private recording.')
     clone(native(SOUND), child, [('SEQ_Battle_440111_Sound_001', Path(child).name)])
     target = out / (child + '.uasset'); dump = work / 'cave-soundtrack.json'
     run([*tool, 'tojson', str(target), str(dump), '--usmap', usmap])
@@ -145,4 +207,4 @@ def build(child, env, work, native, clone, start, end, duration):
     run([*tool, 'fromjson', str(dump), str(target), '--usmap', usmap])
     run([*tool, 'tojson', str(target), str(dump), '--usmap', usmap])
     assets.check_level(authored, json.loads(dump.read_text(encoding='utf-8-sig')))
-    print('  Crystal Fina: original BGM_PP_EVENT_VISIONS_INST cue from 0:00; native Atom playback, no movie audio conversion.', flush=True)
+    print('  Crystal Fina: original cave music from 0:00; native HCA frames, private one-shot cue, no audio re-encoding.', flush=True)

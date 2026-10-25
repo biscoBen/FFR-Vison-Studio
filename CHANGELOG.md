@@ -11,6 +11,15 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native Fina score, audible Studio preview and matching fight pressure
+
+- Apply the additional 50% attack-power increase from Christine’s approved fight to every other vision challenge, for physical and magical damage. Preserve team damage sharing, HP/break budgets, levels, speed, healing and control effects. Christine stays at her approved powers (39 Blizzard, 50 Blizzara, 78 Freezing Spike), with no second application of the factor. The user confirms her current difficulty, result-screen reward and normal field return work.
+- Replace Fina’s distorted converted movie soundtrack with a private native sound cue containing the original cave recording’s compressed/encrypted frames. Trim it losslessly to 6.4 seconds from the beginning, remove looping, retain its AWB subkey, and stop at the movie endpoint. Embed the short recording in its own sound sheet so playback does not depend on the cave’s streaming BGM state. Mana carries the unchanged silent movie/opacity, so no converted second soundtrack competes. Keep battle music pause/resume and once-only movie timing.
+- Add explicit Play with sound and separate audio controls to Studio’s preview. Unlock browser audio through the button, synchronize pause/seek/rate/volume, and show the actual audio endpoint error when loading fails. Normalize the short WAV header for browser playback. All original picture packets/artwork stay unchanged; no new game recording is bundled with Studio.
+
+Local validation: 704 Python tests pass (41 platform skips), 31 targeted Flutter tests pass (one Windows-only local skip), and analysis reports no issues. Native readback confirms all challenge loot/offense rows, original encrypted HCA frames in the private sound bank, cue references and silent Mana descriptors. Cold/warm movie assets match. Chromium with user-gesture autoplay restrictions plays the preview with an active audio buffer, including pause, seek/resume and volume. Live Windows preview and in-game score still need a listen. Windows compilation/validation and downloaded-package checks are pending.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

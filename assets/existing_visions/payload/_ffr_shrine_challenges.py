@@ -170,7 +170,7 @@ def kit(unit, rows, team_size):
             cap = 40 if row['TargetType'] in ('Group', 'All', 'SingleAndGroup') else 60
             multiplier = 1.75 if source == settings['attacks'][-1] else 1.5
             row['magnification'] = max(1, round(min(row['magnification'], cap) * multiplier / team_size))
-            row['magnification'] = max(1, round(row['magnification'] * settings.get('potencyMultipliers', {}).get(str(source), 1)))
+            row['magnification'] = max(1, round(row['magnification'] * settings.get('potencyMultipliers', {}).get(str(source), data().get('potencyScale', 1))))
         import _ffr_testing as testing
         result.append({'id': enemy_id, 'learned': identity, 'source': source, 'clone': key,
                        'name': PREFIX + str(unit['id']) + '_Skill_' + str(index),

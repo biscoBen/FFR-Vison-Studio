@@ -266,7 +266,6 @@ def _cinematic(original):
     def build(units, env):
         import _ffr_fina_cinematic as movie
         import _ffr_fina_cave_music as music
-        import _ffr_movie_audio as audio
         import _ffr_crystal_cave as cave
         cache = reuse._active
         selected = [u for u in units if movie.matches(u)] if movie.enabled(env['ROOT']) else []
@@ -276,22 +275,24 @@ def _cinematic(original):
         sid = env['lb_id'](selected[0]['id'])
         job, = [j for j in env['authored_sequences'] if f'/Skill/{sid}/{sid + 1}/' in j['asset']]
         inputs = [legacy / (rel + '.uasset') for rel in
-                  (movie.MASTER, movie.MOVIE, movie.MOVIE+'_vp9', ffbe_resonance.SHELL)]
+                  (movie.MASTER, movie.MOVIE, movie.MOVIE+'_vp9', ffbe_resonance.SHELL,
+                   music.CUE_DONOR,music.SOUND,music.BANK_DONOR)]
         _ensure_native(env, inputs)
-        soundtrack = music.movie_audio(env, movie.payload()[1]['movie.usm'])
-        if soundtrack is None: raise ValueError('Crystal Fina movie music could not be prepared. Check the soundtrack error above.')
+        recording,subkey=music.recording(env)
         inputs += [out / (job['asset'] + '.uasset'), root / 'tools/fina_cinematic.zip', env['USMAP'],
-                   soundtrack, root / 'tools/cave_music_preview.zip',
-                   *_sources(root, [movie, music, audio, cave, ffbe_resonance])]
+                   recording,root/'tools/sephira_lb_audio.zip',root/'tools/_ffr_cave_music_preview.py',
+                   root/'tools/ffbe_effects/acb_native.py',
+                   *_sources(root, [movie, music, cave, ffbe_resonance])]
         outputs = [out / (job['asset'] + '.uasset')]
         outputs += [out / (str(Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{s}') + '.uasset')
                     for s in ('Cut_000', 'Sound_001', 'Effect_000')]
         outputs += [out / (p + '.uasset') for p in (movie.PRIVATE, movie.PRIVATE+'_vp9')]
+        outputs += [out/(p+'.uasset') for p in (music.SHEET,music.CUE)]
         outputs += [root / 'build/fina-cinematic/timeline.json']
-        hit = cache.execute('fina-movie', {'revision': 2, 'asset': job['asset'], 'plan': job['plan']}, inputs, outputs,
+        hit = cache.execute('fina-movie', {'revision': 3, 'asset': job['asset'], 'plan': job['plan'],'scoreSubkey':subkey}, inputs, outputs,
                             lambda: original(units, env))
         if hit:
-            movie.prepare_pak(root, env['ffrenv'], env['run'], soundtrack.read_bytes())
+            movie.prepare_pak(root, env['ffrenv'], env['run'], movie.payload()[1]['movie.usm'])
             print('  Crystal Fina movie/music: reused verified native timeline and movie descriptors.', flush=True)
     build._incremental = True
     return build

@@ -227,9 +227,11 @@ class SephiraChallengeTests(unittest.TestCase):
                     cap=40 if original['TargetType'] in ('Group','All','SingleAndGroup') else 60
                     factor=1.75 if recipe['source']==config['attacks'][-1] else 1.5
                     expected=max(1,round(min(original['magnification'],cap)*factor/len(units)))
-                    expected=max(1,round(expected*config.get('potencyMultipliers',{}).get(str(recipe['source']),1)))
+                    expected=max(1,round(expected*config.get('potencyMultipliers',{}).get(str(recipe['source']),challenge.data().get('potencyScale',1))))
                     actual=testing.apply_fields(native_skills[recipe['source']],recipe['fields'])
                     self.assertEqual(actual['magnification'],expected)
+                    self.assertEqual(actual['DamageType'],original['DamageType'])
+                    self.assertEqual(actual['element'],original['element'])
         christine=next(u for u in self.units if u['sephiraVision']['preset']=='christine')
         recipes=challenge.kit(christine,lambda p:self.native[p],1)
         self.assertEqual(testing.apply_fields(native_skills[220050],recipes[0]['fields'])['magnification'],39)

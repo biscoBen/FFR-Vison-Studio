@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "potencyScale": 1.5,
   "gameFingerprint": "8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4",
   "encounters": [
     {
