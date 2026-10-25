@@ -82,8 +82,8 @@ def main():
     catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
     source=json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())
     report=audit(catalog,source)
-    (ROOT/'docs/SEPHIRA_MR_COVERAGE.json').write_text(json.dumps(report,indent=2)+'\n')
-    (ROOT/'docs/SEPHIRA_MR_COVERAGE.md').write_text(describe(report))
+    (ROOT/'docs/SEPHIRA_MR_COVERAGE.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    (ROOT/'docs/SEPHIRA_MR_COVERAGE.md').write_text(describe(report),encoding='utf-8')
     print(json.dumps(report['summary']))
 
 

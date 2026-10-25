@@ -14,7 +14,7 @@ class MrCoverageTests(unittest.TestCase):
         source=json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())
         actual=audit(catalog,source)
         self.assertEqual(actual,json.loads((ROOT/'docs/SEPHIRA_MR_COVERAGE.json').read_bytes()))
-        self.assertEqual(describe(actual),(ROOT/'docs/SEPHIRA_MR_COVERAGE.md').read_text())
+        self.assertEqual(describe(actual),(ROOT/'docs/SEPHIRA_MR_COVERAGE.md').read_text(encoding='utf-8'))
         self.assertEqual(actual['summary']['originalRewards'],75)
         self.assertEqual(len(actual['spiritWrappers']),15)
 
