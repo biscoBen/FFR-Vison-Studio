@@ -121,11 +121,10 @@ def team_stats(rows, level, units):
         row['MaxHitPoint'] = round(total['MaxHitPoint'] * weight / sum(weights))
         row['MaxBreakPoint'] = max(60, round(total['MaxBreakPoint'] * weight / sum(weights)))
         row.update(Level=level, LevelParamId=-1)
-        # Christine's level-five test keeps its approved durability. Increase
-        # spell pressure and only the requested 15% turn-speed adjustment.
-        if unit['sephiraVision']['preset'] == 'christine':
-            row['Intelligence'] = round(total['Intelligence'] * 1.5)
-            row['Agility'] = round(total['Agility'] * 1.15)
+        # Keep the established shared durability budget. Hybrid kits need both
+        # offensive stats; the same 15% speed adjustment applies to each role.
+        for field in ('Attack', 'Intelligence'): row[field] = round(total[field] * 1.5)
+        row['Agility'] = round(total['Agility'] * 1.15)
         budgets.append(row)
     budgets[-1]['MaxHitPoint'] += total['MaxHitPoint'] - sum(r['MaxHitPoint'] for r in budgets)
     return budgets
@@ -142,7 +141,8 @@ def kit(unit, rows, team_size):
     for field in ('awakening', 'synchro'):
         chosen.extend(g[1] for tier in unit[field] for g in tier if g[0] == 'ActiveSkill')
     result = []
-    basic = data()['kits'][unit['sephiraVision']['preset']].get('basic', 500010)
+    settings = data()['kits'][unit['sephiraVision']['preset']]
+    basic = settings.get('basic', 500010)
     for index, identity in enumerate([0, *dict.fromkeys(chosen)]):
         recipe = (unit.get('skills') or {}).get(identity, (unit.get('skills') or {}).get(str(identity), {}))
         source = recipe.get('from', identity) if identity else basic
@@ -158,7 +158,7 @@ def kit(unit, rows, team_size):
                    voiceLabel='None', selfSkillActivateVoiceLabel='None', isRemovable=False)
         if recipe.get('en'): row['Name'] = recipe['en']
         if identity == 0 and basic == 500010: row.update(Name='Attack', element='None', magnification=12)
-        elif identity == 0: row['Name'] = 'Blizzard'
+        elif identity == 0 and settings.get('basicName'): row['Name'] = settings['basicName']
         healing = row['parameterVariationType'] == 'Increase' and row['parameterType'] == 'HitPoint'
         damaging = row['parameterVariationType'] == 'Decrease' and row['DamageType'] in ('Magic', 'Physic')
         if healing:
@@ -168,7 +168,8 @@ def kit(unit, rows, team_size):
             if row['damageCalcType'] not in ('Physic', 'Magic', 'MPAbsorb'):
                 row['damageCalcType'] = 'Physic' if row['DamageType'] == 'Physic' else 'Magic'
             cap = 40 if row['TargetType'] in ('Group', 'All', 'SingleAndGroup') else 60
-            row['magnification'] = max(1, round(min(row['magnification'], cap) / team_size))
+            multiplier = 1.75 if source == settings['attacks'][-1] else 1.5
+            row['magnification'] = max(1, round(min(row['magnification'], cap) * multiplier / team_size))
         import _ffr_testing as testing
         result.append({'id': enemy_id, 'learned': identity, 'source': source, 'clone': key,
                        'name': PREFIX + str(unit['id']) + '_Skill_' + str(index),
@@ -239,9 +240,9 @@ def prepare_enemies(table, rows, spec, units):
             'HitPoint': 0, 'MagicPoint': stats['MaxMagicPoint'], 'Breakpoint': 0, 'LimitBurstPoint': 0,
             'ElementResistanceList': resistances,
             'passiveSkillList': [], 'WeaponId': -1, 'ArmorId': -1, 'AccessoryIdList': [], 'VisionId': -1,
-            # Ordinary victory loot uses the game's result screen and field
-            # return. Never stealable; escaping or losing awards no result loot.
-            'Experience': 0, 'Money': 0, 'DropNormalItem': unit['id'], 'DropNormalItemRate': 100,
+            # Visions are not supported by the ordinary enemy-loot path. The
+            # win-only parameter reward below uses the native item dispatcher.
+            'Experience': 0, 'Money': 0, 'DropNormalItem': -1, 'DropNormalItemRate': 0,
             'DropRareItem': -1, 'DropRareItemRate': 0, 'StealNormalItem': -1, 'StealRareItem': -1,
             'StealItemRate': 0, 'BattleVoiceLabel': 'None'})
         base = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
@@ -320,8 +321,9 @@ def prepare_encounter(table, rows, spec, units, root, roster):
     _add(table, rows, GROUP, group_id, 1026, name, {
         'UnitIdList': [boss_id(u) for u in units], 'locationIdList': {1: [10], 2: [6, 15], 3: [20, 6, 15]}[len(units)],
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
-        # Inherit the verified empty native finish-event names. The native
-        # patcher cannot insert a new empty FString into an FName name map.
+        # Inherit the verified empty loss/escape names. The native patcher
+        # cannot insert a new empty FString into an FName name map.
+        'battleFinishEventId': name + '_Reward',
         'ap': 0, 'isResultSkipOnWin': False, 'isResultSkipOnLose': False})
     # Menus, ownership checks and return-to-field routing are authored from
     # the inspected original repeat events, never the original acquisition row.
@@ -391,6 +393,12 @@ def _events(table, rows, spec, units, group_id, root, roster):
     # Recheck the prerequisite immediately before entering battle.
     event(name + '_Start', {'ContinuousEventList': links(unlock, name + '_Fight', locked, name + '_Locked')}, 'link')
     event(name + '_Fight', {'encountGroupId': group_id})
+    # A parameter-only finish event: no acquisition movie, fade, camera or map
+    # transition. The engine dispatches vision items through ObtainItemList;
+    # ordinary enemy drops do not grant them. Escape/loss have no finish event.
+    event(name + '_Reward', {'ObtainItemList': [
+        {'Condition': f'{{item:{u["id"]}}}==0', 'ID': u['id'], 'Num': 1, 'Text': ''} for u in units],
+        'IsOpenDialogByFinishEvent': True}, 'grant')
     event(name + '_Close', {})
     choice_key = next(k for k, v in rows(CHOICES).items() if v.get('ChoiceTextList'))
     replay = spec.get('retry')

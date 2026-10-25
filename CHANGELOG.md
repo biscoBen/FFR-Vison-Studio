@@ -11,6 +11,16 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Vision challenge pressure, victory rewards and movie audio
+
+- Apply Christine’s boss approach to all 28 challenge enemies across 15 encounters: approximately 15% faster turns, stronger physical/magic offense, bounded attacks +50% and damaging signatures +75%, divided across partners. Give casters spell basics and add thematic elemental resistances/weaknesses. Keep encounter levels, original unlock gates and shared HP/break budgets. Christine keeps her tested speed, durability and Slumber Mist; Blizzard/Freezing Spike receive the requested extra potency. See [the balance table](docs/SEPHIRA_CHALLENGE_BALANCE.md).
+- Replace unsupported vision enemy drops with a win-only native item event, using the ordinary item dispatcher without an acquisition sequence, fade, camera or map transition. Preserve ordinary field return and empty escape/loss rewards. The user confirms the prior return no longer goes black; the new item grant still needs a live retest.
+- Restore Fina’s movie soundtrack as one stereo ADX stream, correcting metadata field types to match original movie headers and both native stereo descriptors. Keep the approved color/opacity packets unchanged, preserve once-only playback and battle-music pause/resume, and retain the same score on cached installs. Stop with an actionable error instead of silently building a muted movie if soundtrack preparation fails. Offline encoding/readback does not establish live playback; in-game audio still needs a listen.
+- Retain all 1.2.86 default-model naming and Windows voice extraction fixes, and preserve the existing sprite/icon cache.
+
+Local validation: 700 Python tests pass (41 platform skips), 68 targeted Flutter tests pass (one Windows-only local skip), and analysis reports no issues. Actual native table, 28 AI, 45 menu and cave-actor readbacks pass. Both movie descriptors retain the matching stereo track; all approved color/opacity packets survive unchanged and cold/warm movie outputs match. Windows compilation, validation and downloaded-ZIP verification are pending.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

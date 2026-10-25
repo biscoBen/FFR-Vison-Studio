@@ -45,6 +45,45 @@ class IncrementalTests(unittest.TestCase):
         self.assertFalse(self.run_stage(Cache(self.root,{'game':'two','code':'two'})))
         self.assertEqual(self.calls,4)
 
+    def test_cached_fina_movie_repackages_its_score_and_invalidates_changed_audio(self):
+        import _ffr_incremental as inc
+        import _ffr_fina_cinematic as film
+        import _ffr_fina_cave_music as music
+        legacy=self.root/'legacy';mapping=self.root/'mapping.usmap';mapping.write_bytes(b'mapping')
+        tools=self.root/'tools';tools.mkdir()
+        for name in ('fina_cinematic.zip','cave_music_preview.zip'):(tools/name).write_bytes(b'payload')
+        asset='FFRS/Content/Sequencer/Battle/Skill/444010/444011/SEQ_Battle_444011_Master'
+        master=self.out/(asset+'.uasset');master.parent.mkdir(parents=True);master.write_bytes(b'original')
+        master.with_suffix('.uexp').write_bytes(b'original export')
+        score=self.root/'scored.usm';score.write_bytes(b'picture and audio')
+        env={'ROOT':self.root,'LEGACY':legacy,'OUT':self.out,'USMAP':mapping,'lb_id':lambda _:444010,
+             'authored_sequences':[{'asset':asset,'plan':{'duration':400000}}],
+             'run':lambda _:None,'ffrenv':SimpleNamespace()}
+        calls=[]
+        def generate(units,env):
+            calls.append(True)
+            paths=[master,*[master.parent/'Track'/f'SEQ_Battle_444011_{s}.uasset'
+                            for s in ('Cut_000','Sound_001','Effect_000')],
+                   *[self.out/(film.PRIVATE+s+'.uasset') for s in ('','_vp9')]]
+            for path in paths:
+                path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(score.read_bytes())
+                path.with_suffix('.uexp').write_bytes(b'export')
+            timeline=self.root/'build/fina-cinematic/timeline.json'
+            timeline.parent.mkdir(parents=True,exist_ok=True);timeline.write_text('{}')
+        with mock.patch.object(film,'enabled',return_value=True),mock.patch.object(film,'matches',return_value=True),mock.patch.object(
+                music,'movie_audio',return_value=score),mock.patch.object(inc,'_ensure_native'),mock.patch.object(film,'prepare_pak') as pak,mock.patch.object(
+                reuse,'_active',Cache(self.root,{})),mock.patch.dict(sys.modules,{'ffbe_resonance':SimpleNamespace(SHELL='shell',__file__=str(self.source))}):
+            wrapped=inc._cinematic(generate)
+            wrapped([{'id':13500}],env)
+            master.write_bytes(b'original');master.with_suffix('.uexp').write_bytes(b'original export')
+            wrapped([{'id':13500}],env)
+            self.assertEqual(len(calls),1)
+            self.assertEqual(pak.call_args.args[-1],b'picture and audio')
+            score.write_bytes(b'new audio with same pictures')
+            master.write_bytes(b'original');master.with_suffix('.uexp').write_bytes(b'original export')
+            wrapped([{'id':13500}],env)
+            self.assertEqual(len(calls),2)
+
     def test_corruption_and_incomplete_manifest_trigger_regeneration(self):
         self.run_stage();folder=next((self.root/'build/reuse').glob('*/*'))
         (folder/'0.bin').write_bytes(b'broken');self.assertFalse(self.run_stage())

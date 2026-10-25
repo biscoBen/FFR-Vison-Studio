@@ -237,21 +237,17 @@ def build(units, env):
     # Save Fina's event-only shell as three private children before replacing its
     # root with the native movie master. Cached binding IDs stay binary-native.
     import ffbe_resonance
-    for suffix in ('Cut_000', 'Sound_001'):
+    for suffix in ('Cut_000', 'Sound_001', 'Effect_000'):
         child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_{suffix}').as_posix()
         clone(native(ffbe_resonance.SHELL), child,
               [('SEQ_Battle_440111_Cut_000', Path(child).name)])
         child_plan = plan if suffix == 'Cut_000' else {'duration': plan['duration'], 'events': [{'time': 0, 'set': {'EventType': 'None'}}]}
         ffbe_resonance.build({'asset': child, 'plan': child_plan}, str(out), str(work), tool, usmap, run)
-    # The native Sound_001 subtrack is disabled in the cooked master.
-    # Effect_000 is active in both its live tracks and compiled hierarchy.
-    sound_child = (Path(job['asset']).parent / 'Track' / f'SEQ_Battle_{sid + 1}_Effect_000').as_posix()
-    # The encoded ADX is clean when decoded outside the game, but Mana's movie
-    # audio path garbles it at runtime. Play the installed recording directly
-    # through the game's native Atom track instead; no lossy conversion or
-    # embedded soundtrack competes with it. The movie music hook pauses only
-    # the battle BGM handle, leaving this private cue audible.
-    _ffr_fina_cave_music.build(sound_child, env, work, native, clone, START, END, plan['duration'])
+    # Match the original movies' typed stereo ADX metadata. The attempted Atom
+    # child remained silent in game; the movie decoder now owns its one score.
+    soundtrack = _ffr_fina_cave_music.movie_audio(env, files['movie.usm'])
+    if soundtrack is None:
+        raise ValueError('Crystal Fina movie music could not be prepared. Check the soundtrack error above.')
     rename = [('440110', str(sid)), ('440111', str(sid + 1)),
               ('/Game/Movies/Skill/MV_Skill440110', PRIVATE.replace('FFRS/Content/', '/Game/')),
               ('MV_Skill440110', Path(PRIVATE).name)]
@@ -294,9 +290,10 @@ def build(units, env):
                 prop(track['Value'], name)['Value'][0]['Value'] = [spec['width'], spec['height']]
             for name, value in (('FrameRate', spec['fps']), ('TotalFrames', spec['frames'])):
                 prop(track['Value'], name)['Value'] = value
-        # Only the native Atom cue carries music. Mana must not decode or play
-        # a second audio stream while the original recording is playing.
-        prop(data, 'AudioTracks')['Value'] = []
+        tracks = prop(data, 'AudioTracks')['Value']
+        if len(tracks) != 1: raise ValueError('The native stereo movie audio descriptor changed.')
+        for name,value in (('NumChannels',2),('SamplingRate',48000),('TotalSamples',307200),('bIsAmbisonics',False)):
+            prop(tracks[0]['Value'],name)['Value'] = value
         fields = {'bIsAlpha': True}
         if suffix:
             maximum = ((spec['maxPictureDataSize'] + 2047) // 2048 + 1) * 2048
@@ -305,9 +302,11 @@ def build(units, env):
         for name, value in fields.items(): prop(data, name)['Value'] = value
         description.write_text(json.dumps(view), encoding='utf-8')
         run([*tool, 'fromjson', str(description), str(target), '--usmap', usmap])
-    prepare_pak(root, env['ffrenv'], run, files['movie.usm'])
+    prepare_pak(root, env['ffrenv'], run, soundtrack.read_bytes())
     (work / 'timeline.json').write_text(json.dumps({'schema': 1, 'movieStart': START, 'movieEnd': END,
-        'duration': plan['duration'], 'asset': job['asset'], 'plan': plan}), encoding='utf-8')
+        'duration': plan['duration'], 'asset': job['asset'], 'plan': plan,
+        'audio': {'cue': _ffr_fina_cave_music.CUE_NAME, 'codec': 'ADX', 'channels': 2,
+                  'sampleRate': 48000, 'samples': 307200, 'startSeconds': 0}}), encoding='utf-8')
     print('  Crystal Fina: optional 6.4-second illustrated cinematic before her existing LB (in-game test required).')
 
 

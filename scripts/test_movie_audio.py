@@ -36,7 +36,8 @@ class MovieAudioTests(unittest.TestCase):
         self.assertEqual(movie._read_utf(header['payload'])[2][0],{'audio_codec':2,'sampling_rate':48000,'total_samples':307200,'num_channels':2,'metadata_count':0,'metadata_size':0,'ixsize':27860,'ambisonics':0,'channel_config':0})
         directory=movie._read_utf(parts[0]['payload'])[2]
         self.assertEqual(directory[0]['filesize'],len(result))
-        self.assertEqual(directory[-1]['stmid'],int.from_bytes(b'@SFA','big'))
+        self.assertEqual([r['stmid'] for r in directory],[0,*map(lambda v:int.from_bytes(v,'big'),(b'@SFV',b'@SFA',b'@ALP'))])
+        self.assertEqual(dict(movie._read_utf(header['payload'])[1]),{'audio_codec':0,'sampling_rate':4,'total_samples':4,'num_channels':0,'metadata_count':4,'metadata_size':4,'ixsize':4,'ambisonics':0,'channel_config':4})
         with self.assertRaises(ValueError):movie.with_soundtrack(result,adx)
         with self.assertRaises(ValueError):movie.native_adx(adx[:-1])
         changed=bytearray(adx);changed[7]=1

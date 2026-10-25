@@ -513,7 +513,8 @@
         220060,
         220080
       ],
-      "utility": 500570
+      "utility": 500570,
+      "basicName": "Blizzard"
     },
     "crystal_fina": {
       "attacks": [
@@ -521,7 +522,13 @@
         503630,
         210190
       ],
-      "utility": 501930
+      "utility": 501930,
+      "basic": 210250,
+      "basicName": "Banish",
+      "resistances": {
+        "Light": "Halved",
+        "Dark": "Weakness"
+      }
     },
     "barusa": {
       "attacks": [
@@ -529,7 +536,11 @@
         414700,
         414810
       ],
-      "utility": 414710
+      "utility": 414710,
+      "resistances": {
+        "Earth": "Halved",
+        "Wind": "Weakness"
+      }
     },
     "fran": {
       "attacks": [
@@ -545,7 +556,13 @@
         446820,
         501420
       ],
-      "utility": 500500
+      "utility": 500500,
+      "basic": 220130,
+      "basicName": "Water",
+      "resistances": {
+        "Water": "Halved",
+        "Thunder": "Weakness"
+      }
     },
     "minfilia": {
       "attacks": [
@@ -553,7 +570,13 @@
         445200,
         220240
       ],
-      "utility": 230040
+      "utility": 230040,
+      "basic": 220210,
+      "basicName": "Stone",
+      "resistances": {
+        "Earth": "Halved",
+        "Wind": "Weakness"
+      }
     },
     "fryevia": {
       "attacks": [
@@ -561,7 +584,11 @@
         421080,
         420270
       ],
-      "utility": 500920
+      "utility": 500920,
+      "resistances": {
+        "Ice": "Halved",
+        "Fire": "Weakness"
+      }
     },
     "lenneth": {
       "attacks": [
@@ -569,7 +596,11 @@
         445020,
         500020
       ],
-      "utility": 505530
+      "utility": 505530,
+      "resistances": {
+        "Light": "Halved",
+        "Dark": "Weakness"
+      }
     },
     "lila": {
       "attacks": [
@@ -585,7 +616,9 @@
         500310,
         503980
       ],
-      "utility": 230060
+      "utility": 230060,
+      "basic": 220390,
+      "basicName": "Dark"
     },
     "reberta": {
       "attacks": [
@@ -601,7 +634,11 @@
         570710,
         500510
       ],
-      "utility": 0
+      "utility": 0,
+      "resistances": {
+        "Dark": "Halved",
+        "Light": "Weakness"
+      }
     },
     "eiko": {
       "attacks": [
@@ -609,7 +646,13 @@
         225020,
         225050
       ],
-      "utility": 245020
+      "utility": 245020,
+      "basic": 210250,
+      "basicName": "Banish",
+      "resistances": {
+        "Light": "Halved",
+        "Dark": "Weakness"
+      }
     },
     "alice": {
       "attacks": [
@@ -617,7 +660,11 @@
         421370,
         446310
       ],
-      "utility": 501700
+      "utility": 501700,
+      "resistances": {
+        "Ice": "Halved",
+        "Fire": "Weakness"
+      }
     },
     "mog": {
       "attacks": [
@@ -625,7 +672,13 @@
         500410,
         505280
       ],
-      "utility": 230130
+      "utility": 230130,
+      "basic": 220170,
+      "basicName": "Aero",
+      "resistances": {
+        "Wind": "Halved",
+        "Earth": "Weakness"
+      }
     },
     "lilith": {
       "attacks": [
@@ -633,7 +686,11 @@
         445310,
         506040
       ],
-      "utility": 505570
+      "utility": 505570,
+      "resistances": {
+        "Dark": "Halved",
+        "Light": "Weakness"
+      }
     },
     "freya": {
       "attacks": [
@@ -649,7 +706,13 @@
         447300,
         220350
       ],
-      "utility": 0
+      "utility": 0,
+      "basic": 220010,
+      "basicName": "Fire",
+      "resistances": {
+        "Fire": "Halved",
+        "Ice": "Weakness"
+      }
     },
     "ariana": {
       "attacks": [
@@ -657,7 +720,9 @@
         250170,
         503910
       ],
-      "utility": 215000
+      "utility": 215000,
+      "basic": 250170,
+      "basicName": "Wind Aria"
     },
     "elephim": {
       "attacks": [
@@ -665,7 +730,9 @@
         414210,
         570420
       ],
-      "utility": 230110
+      "utility": 230110,
+      "basic": 500340,
+      "basicName": "Burning Notes"
     },
     "jade": {
       "attacks": [
@@ -673,7 +740,11 @@
         420070,
         500180
       ],
-      "utility": 0
+      "utility": 0,
+      "resistances": {
+        "Thunder": "Halved",
+        "Water": "Weakness"
+      }
     },
     "primm": {
       "attacks": [
@@ -689,7 +760,9 @@
         500970,
         220330
       ],
-      "utility": 250300
+      "utility": 250300,
+      "basic": 220090,
+      "basicName": "Thunder"
     },
     "rikku": {
       "attacks": [
@@ -705,7 +778,11 @@
         446010,
         447500
       ],
-      "utility": 0
+      "utility": 0,
+      "resistances": {
+        "Thunder": "Halved",
+        "Water": "Weakness"
+      }
     },
     "elza": {
       "attacks": [
@@ -713,7 +790,11 @@
         447010,
         422050
       ],
-      "utility": 0
+      "utility": 0,
+      "resistances": {
+        "Dark": "Halved",
+        "Light": "Weakness"
+      }
     },
     "lunera": {
       "attacks": [
@@ -721,7 +802,11 @@
         445510,
         420130
       ],
-      "utility": 0
+      "utility": 0,
+      "resistances": {
+        "Wind": "Halved",
+        "Earth": "Weakness"
+      }
     }
   },
   "folkaUnlock": "{progress:0}>=3150",

@@ -156,20 +156,30 @@ class SephiraChallengeTests(unittest.TestCase):
         # No shared "some legend completed" flag can unlock a different vision.
         self.assertTrue(all('{flag:1017}' not in s['unlock'] for s, _ in challenge.plans(self.units)))
 
-    def test_visions_are_guaranteed_victory_loot_with_normal_battle_return(self):
+    def test_win_only_item_rewards_have_no_acquisition_sequence_or_transition(self):
         events = self.built[challenge.COMPOSITE]
         for spec, units in challenge.plans(self.units):
             name = challenge.PREFIX+str(spec['origin'])
             group = self.built[challenge.GROUP][name]
-            self.assertFalse(group['battleFinishEventId'])
+            self.assertEqual(group['battleFinishEventId'],name+'_Reward')
+            reward=events[name+'_Reward']
+            self.assertEqual(reward['EventSequence'],'None')
+            self.assertEqual(reward['EventBlueprint'],'None')
+            self.assertEqual(reward['TalkEventDataTable'],'None')
+            self.assertEqual(reward['ContinuousEventList'],[])
+            self.assertFalse(reward['IsHiddenFieldUI'])
+            self.assertEqual(reward['MapStartupSettings']['ChangeBGM'],'NotChange')
+            self.assertEqual(reward['TransitionLocation']['mapId'],-1)
+            self.assertTrue(reward['IsOpenDialogByFinishEvent'])
+            self.assertEqual(reward['ObtainItemList'],[{'Condition':f"{{item:{u['id']}}}==0",'ID':u['id'],'Num':1,'Text':''} for u in units])
             self.assertFalse(group['battleFinishEscapeEventId'])
             self.assertFalse(group['battleFinishLoseEventId'])
             self.assertNotIn(name+'_Win',events)
             self.assertNotIn(name+'_Grant',events)
             for unit in units:
                 enemy=self.built[challenge.UNIT][challenge.PREFIX+str(unit['id'])]
-                self.assertEqual(enemy['DropNormalItem'],unit['id'])
-                self.assertEqual(enemy['DropNormalItemRate'],100)
+                self.assertEqual(enemy['DropNormalItem'],-1)
+                self.assertEqual(enemy['DropNormalItemRate'],0)
                 self.assertEqual(enemy['DropRareItem'],-1)
                 self.assertEqual((enemy['StealNormalItem'],enemy['StealRareItem']),(-1,-1))
                 self.assertEqual(enemy['StealItemRate'],0)
@@ -190,7 +200,7 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(enemy['Level'],5)
         expected=challenge.curve(lambda rel:self.native[rel],5)
         for field in challenge.PARAMETERS:
-            factor = {'Intelligence':1.5, 'Agility':1.15}.get(field,1)
+            factor = {'Attack':1.5, 'Intelligence':1.5, 'Agility':1.15}.get(field,1)
             self.assertEqual(enemy[field],round(expected[field]*factor))
         self.assertEqual((enemy['MaxHitPoint'],enemy['MaxBreakPoint']),(2750,162))
         self.assertEqual(enemy['ElementResistanceList']['eElement::Ice'],'eResistance::Halved')
@@ -204,6 +214,34 @@ class SephiraChallengeTests(unittest.TestCase):
         slumber=next(r for r in kit if r['source']==500570)
         self.assertEqual(testing.apply_fields(originals[500570],slumber['fields'])['effectBundleList'],
                          originals[500570]['effectBundleList'])
+
+    def test_offensive_pressure_and_role_basics_apply_to_all_28_challenge_visions(self):
+        native_skills={v['ID']:v for v in self.native[challenge.SKILL].values()}
+        for spec,units in challenge.plans(self.units):
+            curve=challenge.curve(lambda p:self.native[p],spec['level'])
+            stats=challenge.team_stats(lambda p:self.native[p],spec['level'],units)
+            for unit,enemy in zip(units,stats):
+                for field,factor in [('Attack',1.5),('Intelligence',1.5),('Agility',1.15)]:
+                    self.assertEqual(enemy[field],round(curve[field]*factor))
+                config=challenge.data()['kits'][unit['sephiraVision']['preset']]
+                recipes=challenge.kit(unit,lambda p:self.native[p],len(units))
+                if unit['attackType']=='Magic':
+                    self.assertEqual(native_skills[recipes[0]['source']]['DamageType'],'Magic')
+                    self.assertNotEqual(recipes[0]['source'],500010)
+                for recipe in recipes:
+                    if not recipe['damaging']:continue
+                    learned=unit.get('skills',{}).get(str(recipe['learned']),{})
+                    original=testing.apply_fields(native_skills[recipe['source']],learned.get('set',{}))
+                    cap=40 if original['TargetType'] in ('Group','All','SingleAndGroup') else 60
+                    factor=1.75 if recipe['source']==config['attacks'][-1] else 1.5
+                    expected=max(1,round(min(original['magnification'],cap)*factor/len(units)))
+                    actual=testing.apply_fields(native_skills[recipe['source']],recipe['fields'])
+                    self.assertEqual(actual['magnification'],expected)
+        christine=next(u for u in self.units if u['sephiraVision']['preset']=='christine')
+        recipes=challenge.kit(christine,lambda p:self.native[p],1)
+        self.assertEqual(testing.apply_fields(native_skills[220050],recipes[0]['fields'])['magnification'],26)
+        spike=next(r for r in recipes if r['source']==220080)
+        self.assertEqual(testing.apply_fields(native_skills[220080],spike['fields'])['magnification'],52)
 
     def test_casual_ai_uses_reviewed_moves_without_unguarded_heals(self):
         for spec, units in challenge.plans(self.units):

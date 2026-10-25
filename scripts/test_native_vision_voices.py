@@ -20,7 +20,7 @@ import _ffr_native_voices as voices
 def movie_fixture():
     with zipfile.ZipFile(ROOT/'assets/existing_visions/payload/fina_cinematic.zip') as z:raw=z.read('movie.usm')
     raw=movie.with_soundtrack(raw,adx_fixture())[0];parts=movie.chunks(raw)
-    name,columns,rows=movie._read_utf(parts[0]['payload']);rows[-1]['filename']='VO_NATIVE_TEST.sfa'
+    name,columns,rows=movie._read_utf(parts[0]['payload']);next(r for r in rows if r['stmid']==int.from_bytes(b'@SFA','big'))['filename']='VO_NATIVE_TEST.sfa'
     parts[0]['payload']=bytearray(movie._write_utf(name,columns,rows))
     header=next(p for p in parts if p['type']==b'@SFA' and p['kind']==1)
     name,columns,rows=movie._read_utf(header['payload'])
@@ -64,7 +64,7 @@ class NativeVisionVoiceTests(unittest.TestCase):
         types=dict(movie._read_utf(header['payload'])[1]);self.assertEqual(types['num_channels'],0);self.assertEqual(types['total_samples'],4)
 
     def test_mixed_or_unfamiliar_movie_soundtracks_are_rejected(self):
-        parts=movie.chunks(self.movie);name,cols,rows=movie._read_utf(parts[0]['payload']);rows[-1]['filename']='BGM_MIXED.sfa'
+        parts=movie.chunks(self.movie);name,cols,rows=movie._read_utf(parts[0]['payload']);next(r for r in rows if r['stmid']==int.from_bytes(b'@SFA','big'))['filename']='BGM_MIXED.sfa'
         parts[0]['payload']=bytearray(movie._write_utf(name,cols,rows))
         with self.assertRaisesRegex(ValueError,'effects/music'):voices.adx_stream(movie.pack_chunks(parts))
 

@@ -233,10 +233,15 @@ def with_soundtrack(raw, adx):
     audio.update(filename='cave.adx', filesize=len(adx), datasize=0,
                  stmid=int.from_bytes(b'@SFA','big'), chno=0, minchk=1,
                  minbuf=27860, avbps=round(len(adx)*8/(samples/rate)))
-    parts[0]['payload'] = bytearray(_write_utf(name, columns, [*rows,audio]))
-    fields = [('audio_codec',1,2), ('sampling_rate',5,rate), ('total_samples',5,samples),
-              ('num_channels',5,channels), ('metadata_count',5,0), ('metadata_size',5,0),
-              ('ixsize',5,27860), ('ambisonics',1,0), ('channel_config',5,0)]
+    at = next((i for i,r in enumerate(rows) if r['stmid']==int.from_bytes(b'@ALP','big')),len(rows))
+    rows.insert(at,audio)
+    parts[0]['payload'] = bytearray(_write_utf(name, columns, rows))
+    # Mana uses typed reads: native channels/codec are uint8, sample fields are
+    # uint32. A signed int32 channel cell can decode cleanly offline yet leave
+    # the game's audio reader using an incorrect channel layout.
+    fields = [('audio_codec',0,2), ('sampling_rate',4,rate), ('total_samples',4,samples),
+              ('num_channels',0,channels), ('metadata_count',4,0), ('metadata_size',4,0),
+              ('ixsize',4,27860), ('ambisonics',0,0), ('channel_config',4,0)]
     info = _write_utf('AUDIO_HDRINFO',[(key,kind) for key,kind,val in fields],
                       [{key:val for key,kind,val in fields}])
     def chunk(kind, payload, tick=0):
@@ -249,6 +254,8 @@ def with_soundtrack(raw, adx):
     parts.insert(metadata, chunk(2,b'#HEADER END     ===============\0'))
     first_data = next(i for i,p in enumerate(parts) if p['kind']==0)
     prefix, stream = parts[:first_data], parts[first_data:]
+    order={b'CRID':-1,b'@SFV':0,b'@SFA':1,b'@ALP':2}
+    prefix.sort(key=lambda p:(0,-1) if p['type']==b'CRID' else (p['kind'],order[p['type']]))
     audio_packets = [chunk(0,adx[:header_size])]
     body=adx[header_size:-18]
     for index in range(192):
@@ -259,6 +266,7 @@ def with_soundtrack(raw, adx):
                struct.unpack_from('>I',p['header'],20)[0])
     ending = [p for p in stream if p['kind']!=0]
     ending.append(chunk(2,b'#CONTENTS END   ===============\0'))
+    ending.sort(key=lambda p:order[p['type']])
     result, report = normalize(pack_chunks([*prefix,*media,*ending]), opaque_alpha=True, soundtrack=True)
     return result, {**report, 'audioPackets':len(audio_packets), 'audioSamples':samples,
                     'audioSha256':hashlib.sha256(adx).hexdigest()}
