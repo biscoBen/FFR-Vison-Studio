@@ -420,6 +420,13 @@ class AppState extends ChangeNotifier {
       units = kits;
       dirty = true;
     }
+    final mrEquipables=[for (final u in units) SephiraVisions.repairEquipableMr(u as JsonMap,sephiraPresets)];
+    if (mrEquipables.asMap().entries.any((e)=>!identical(e.value,units[e.key]))) {
+      final backup=File(p.join(paths.configBackups,'sephira-mr-equipables-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive:true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units),flush:true);
+      units=mrEquipables;dirty=true;
+    }
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);

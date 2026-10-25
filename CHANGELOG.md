@@ -11,13 +11,14 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Native party walking appearances and automatic Fina cinematic — 2026-10-25
+### Transferable MR rewards, native walking appearances and automatic Fina cinematic — 2026-10-25
 
 - Add the eight original Resonance party characters to **Edit overworld appearance**, alongside the existing FFBE walking models. Rain can walk as Dark Fina while retaining his own battle model, voice, identity, equipment and progression. Choices roundtrip through character configs and can be reverted independently.
 - Reuse the installed character's native textures and cache a private walking project, preserving its clips and supplying missing directional/field-idle aliases. Story costume slots and other characters' assets remain intact. Native choices require no sprite download or texture conversion.
 - Make Crystal Fina's cinematic part of her resonance automatically and remove its test toggle. Existing saved off settings are ignored. Include the movie only when Fina is present; removing her removes the companion movie package. Retain the verified playback path and the new music fades.
 - Automated checks cover native selection, save/revert, table preservation, directional aliases, warm reuse and inclusion with old settings. Live native walking swaps and automatic cinematic playback still need in-game confirmation.
-- Add a reproducible MR coverage report for the 15 excluded originals. Of their 75 individual equipable MR abilities, all 50 passives are Sephira MR rewards; 25 active skills are currently awakening-only and missing from transferable MR rewards. List every original rank and current location, and reject stale reports in checks. This audit makes no kit changes.
+- Restore all 75 individual equipable MR rewards from the 15 excluded originals as Sephira MR rewards. The 25 active rewards retain their original MR ranks, acquisition gates, mechanics and equip costs. Relocate supplemental passives into awakening, retaining all 131 original passives, one ability per odd MR rank, native counterpart passive counts and passive AP budgets within 20%. Keep the approved Crystal Fina/Aria kits unchanged. Add reproducible coverage and allocation reports.
+- Back up and migrate untouched saved layouts once; preserve private recipes, artwork, permanent rewards, IDs and acquisition edits. Report conflicting MR edits or full awakening tiers before building instead of discarding them. Native table readback covers the complete roster, independent Fina, Spirit owner bindings and unchanged stock MR active rows; live equipment/balance still need confirmation.
 
 ### Returned full-game reference audit — 2026-10-22
 

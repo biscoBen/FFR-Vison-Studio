@@ -97,8 +97,8 @@ def revise(catalog, rows, english):
 
 def write_report(catalog, names):
     lines = ['# Sephira awakening bonus balance', '',
-        'Revision 7 restores the missing awakening bonus layer while preserving every revision 6 MR reward, '
-        'all 131 distinct excluded-original passives, active skills, permanent stats and acquisition settings. '
+        'The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, '
+        'all 131 distinct excluded-original passives across the complete kits, permanent stats and acquisition settings. '
         'Each complete kit has the same number of passives as its native stat/Resonance counterpart. '
         'This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.', '',
         'Choices follow each unit’s role. Native effects and AP equip costs are unchanged, so these are learned '
@@ -109,7 +109,7 @@ def write_report(catalog, names):
         'The earlier rule reserving passives for MR is extended here at the user’s request: supplementary passives '
         'are awakening bonuses and stay out of battle commands. MR still has one reward per rank, with three at MR 9. '
         'Kept original visions’ MR rewards are still excluded.', '',
-        '| Vision | Native counterpart | Total passives | Added awakening bonuses | Passive AP total (original) |',
+        '| Vision | Native counterpart | Total passives | Awakening bonuses | Passive AP total (original) |',
         '|---|---|---:|---|---:|']
     for p in catalog['presets']:
         b = p['awakeningBalance']
@@ -117,7 +117,9 @@ def write_report(catalog, names):
         bonuses = '; '.join(f"A{g['rank']+1}: {display(g['id'])}" for g in b['grants'])
         lines.append(f"| {p['name']} | {b['nativeName']} | {b['totalPassiveCount']} | {bonuses} | {b['equipCost']} ({b['nativeEquipCost']}) |")
     lines += ['', 'For saved collection entries, use **Apply MR and acquisition update**, then rebuild/install. '
-        'It backs up the roster and adds only missing awakening choices. Existing MR edits, active skills, '
-        'artwork, identities and locations are retained. A full edited awakening kit reports a capacity error '
-        'before saving rather than deleting a skill. New/restored presets include the bonuses.', '']
-    Path(__file__).resolve().parents[1].joinpath('docs/SEPHIRA_AWAKENING_BALANCE.md').write_text('\n'.join(lines))
+        'Unedited saved reward layouts migrate automatically with a roster backup. The MR restoration replaces '
+        '25 supplemental MR passives with the original active rewards and moves supplemental passives into awakening. '
+        'Deliberate edits to affected MR slots and full awakening kits report conflicts before saving. '
+        'Artwork, identities, private combat recipes, permanent rewards and locations are retained. '
+        'New/restored presets include the current layout. See [the MR restoration](SEPHIRA_MR_RESTORATION.md).', '']
+    Path(__file__).resolve().parents[1].joinpath('docs/SEPHIRA_AWAKENING_BALANCE.md').write_text('\n'.join(lines),encoding='utf-8')

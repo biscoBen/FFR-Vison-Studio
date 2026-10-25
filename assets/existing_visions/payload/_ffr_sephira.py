@@ -238,6 +238,42 @@ def repair_kit_rewards(unit):
                 labels['1524']={'name':'Imbue Water','desc':'Add water to non-elemental standard attacks and battle skills.'}
 
 
+_mr_restoration_cache = None
+
+
+def mr_restoration():
+    global _mr_restoration_cache
+    if _mr_restoration_cache is None:
+        value=json.loads(Path(__file__).with_name('sephira_mr_restoration.json').read_bytes())
+        if value.get('schema')!=1:raise ValueError('Unsupported Sephira MR restoration data.')
+        _mr_restoration_cache=value['presets']
+    return _mr_restoration_cache
+
+
+def repair_equipable_mr(unit):
+    value=runtime_membership(unit)
+    update=mr_restoration().get(value['preset']) if value else None
+    if (not update or unit.get('sephiraMrRevision',0)>=update['version']
+            or unit.get('sephiraRecipe',0)<7):return
+    # Validate every edited MR slot before making any in-memory changes.
+    def same(a,b):return a[:2]==b[:2] and (a[2] if len(a)>2 else -1)==(b[2] if len(b)>2 else -1)
+    for op in update['mr']:
+        grants=[g for g in unit['synchro'][op['rank']] if g[0] in ('ActiveSkill','PassiveSkill')]
+        if len(grants)!=1 or not (same(grants[0],op['from']) or same(grants[0],op['to'])):
+            raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Resolve it in Apply kit and MR updates before building.')
+    for op in update['mr']:
+        tier=unit['synchro'][op['rank']]
+        tier[:]=[list(op['to']) if same(g,op['from']) else g for g in tier]
+    for _,kind,identity in update['remove']:
+        for tier in unit['awakening']:tier[:]=[g for g in tier if g[:2]!=[kind,identity]]
+    for preferred,kind,identity in update['add']:
+        if any(g[:2]==[kind,identity] for f in ('awakening','synchro') for t in unit[f] for g in t):continue
+        rank=next((r for r in range(preferred,4) if len(unit['awakening'][r])<8),None)
+        if rank is None:raise ValueError(f'{unit["en"]} needs an awakening slot for its MR update. Resolve it in Studio before building.')
+        unit['awakening'][rank].append([kind,identity,-1])
+    unit['sephiraMrRevision']=update['version']
+
+
 def player_units(units, rows):
     """Normalize private learned commands and pure healing outside battle.
 
@@ -249,7 +285,9 @@ def player_units(units, rows):
     if not selected: return result
     native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     for unit in selected:
+        repair_mastery_scope(unit)
         repair_kit_rewards(unit)
+        repair_equipable_mr(unit)
         learned = {g[1] for tier in unit.get('synchro', []) for g in tier if g[0] == 'ActiveSkill'}
         command = unit['command']['id']
         for identity, recipe in unit['skills'].items():
@@ -427,6 +465,7 @@ def bind_units(units, rows):
         if value is None: continue
         repair_mastery_scope(u)
         repair_kit_rewards(u)
+        repair_equipable_mr(u)
         owned = {int(sid) for sid in u.get('skills', {})}
         if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)
         if native_skills & owned:

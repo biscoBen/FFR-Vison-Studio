@@ -1,0 +1,886 @@
+{
+  "schema": 1,
+  "presets": {
+    "a2": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1309,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1421,
+            -1
+          ]
+        },
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1421,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400690,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1424,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400710,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          3,
+          "ActiveSkill",
+          400690
+        ],
+        [
+          3,
+          "ActiveSkill",
+          400710
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1309
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1424
+        ]
+      ]
+    },
+    "christine": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1407,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400630,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          1,
+          "ActiveSkill",
+          400630
+        ]
+      ],
+      "add": [
+        [
+          1,
+          "PassiveSkill",
+          1407
+        ]
+      ]
+    },
+    "barusa": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1336,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400440,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1452,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400640,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400640
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1452
+        ],
+        [
+          1,
+          "PassiveSkill",
+          1336
+        ]
+      ]
+    },
+    "lunafreya": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1275,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400250,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1275
+        ]
+      ]
+    },
+    "minfilia": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1465,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400240,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1313,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1465,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400240
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1313
+        ]
+      ]
+    },
+    "lenneth": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1290,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1284,
+            -1
+          ]
+        },
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1029,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400390,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1331,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1029,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400390
+        ]
+      ],
+      "add": [
+        [
+          1,
+          "PassiveSkill",
+          1290
+        ]
+      ]
+    },
+    "lila": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1379,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1331,
+            -1
+          ]
+        },
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1284,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400310,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1353,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400650,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          3,
+          "ActiveSkill",
+          400650
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1331
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1353
+        ],
+        [
+          2,
+          "PassiveSkill",
+          1284
+        ],
+        [
+          2,
+          "PassiveSkill",
+          1379
+        ]
+      ]
+    },
+    "reberta": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1257,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1318,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1320,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1385,
+            -1
+          ]
+        },
+        {
+          "rank": 7,
+          "from": [
+            "PassiveSkill",
+            1335,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400670,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          3,
+          "ActiveSkill",
+          400670
+        ]
+      ],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1335
+        ]
+      ]
+    },
+    "snow_white": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1318,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400490,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400490
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1318
+        ]
+      ]
+    },
+    "mog": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1316,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400460,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          2,
+          "PassiveSkill",
+          1292
+        ]
+      ]
+    },
+    "lilith": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1369,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400380,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1413,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1369,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400380
+        ]
+      ],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1413
+        ]
+      ]
+    },
+    "freya": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1116,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1320,
+            -1
+          ]
+        },
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1362,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1257,
+            -1
+          ]
+        },
+        {
+          "rank": 7,
+          "from": [
+            "PassiveSkill",
+            1466,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1335,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1357,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400300,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          3,
+          "PassiveSkill",
+          1335
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1320
+        ]
+      ],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1357
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1362
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1466
+        ]
+      ]
+    },
+    "trance_terra": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1307,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400730,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          3,
+          "ActiveSkill",
+          400730
+        ]
+      ],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1307
+        ]
+      ]
+    },
+    "elephim": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1250,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400400,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          1,
+          "PassiveSkill",
+          1250
+        ]
+      ]
+    },
+    "jade": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1385,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400770,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          2,
+          "PassiveSkill",
+          1385
+        ]
+      ]
+    },
+    "rikku": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1056,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400260,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1426,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400270,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1436,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400750,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          0,
+          "ActiveSkill",
+          400260
+        ],
+        [
+          1,
+          "ActiveSkill",
+          400270
+        ],
+        [
+          3,
+          "ActiveSkill",
+          400750
+        ]
+      ],
+      "add": [
+        [
+          0,
+          "PassiveSkill",
+          1426
+        ],
+        [
+          1,
+          "PassiveSkill",
+          1056
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1436
+        ]
+      ]
+    },
+    "nalu": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 3,
+          "from": [
+            "PassiveSkill",
+            1523,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400530,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          1,
+          "PassiveSkill",
+          1523
+        ]
+      ]
+    },
+    "elza": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1528,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400700,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1528
+        ]
+      ]
+    },
+    "lunera": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1248,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400760,
+            -1
+          ]
+        },
+        {
+          "rank": 5,
+          "from": [
+            "PassiveSkill",
+            1510,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1316,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1051,
+            -1
+          ],
+          "to": [
+            "ActiveSkill",
+            400330,
+            -1
+          ]
+        }
+      ],
+      "remove": [
+        [
+          1,
+          "PassiveSkill",
+          1277
+        ]
+      ],
+      "add": [
+        [
+          1,
+          "PassiveSkill",
+          1248
+        ],
+        [
+          2,
+          "PassiveSkill",
+          1510
+        ],
+        [
+          3,
+          "PassiveSkill",
+          1051
+        ]
+      ]
+    }
+  }
+}

@@ -61,6 +61,7 @@ class SephiraTests(unittest.TestCase):
                         # The user's healer layouts deliberately share these
                         # native spells; every audited original owner remains.
                         shared={230040,230050,210140,210160,210120,210130}
+                        shared.update(row[2] for row in json.loads((ROOT/'scripts/fixtures/sephira_mr_restoration_plan.json').read_bytes())['placements'])
                         if id not in shared:self.assertNotIn(key,seen,key)
                         seen.setdefault(key,set()).add(p['id'])
         for e in audit['entries']:
@@ -92,7 +93,7 @@ class SephiraTests(unittest.TestCase):
             self.assertEqual(len(mr),b['mrSkillCount'])
             self.assertEqual(len(grants)+len(mr),b['totalSkillCount'])
             self.assertEqual(b['passiveCount'], len(p['awakeningBalance']['grants']))
-            self.assertEqual(b['mrPassiveCount'], 5)
+            self.assertEqual(b['mrPassiveCount']+b['mrActiveCount'], 5)
             visual_ids=set()
             for sid in map(int,u['skills']):
                 self.assertFalse(visual_ids & {sid,sid+1,sid+2})
@@ -123,6 +124,8 @@ class SephiraTests(unittest.TestCase):
     def test_mastery_rebalance_retains_every_previous_learned_reward(self):
         catalog=json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
         baseline=json.loads((ROOT/'scripts/fixtures/sephira_mr_revision2.json').read_bytes())
+        moved={sid for _,_,sid in json.loads((ROOT/'scripts/fixtures/sephira_mr_restoration_plan.json').read_bytes())['placements']}
+        globally_learned={tuple(g) for p in catalog['presets'] for f in ('awakening','synchro') for t in p['profile'][f] for g in t}
         self.assertEqual({p['id'] for p in catalog['presets']},set(baseline))
         for p in catalog['presets']:
             learned = {tuple(g) for field in ('awakening', 'synchro')
@@ -131,7 +134,9 @@ class SephiraTests(unittest.TestCase):
             previous = {tuple(g) for tier in baseline[p['id']] for g in tier
                         if g[0] in ('ActiveSkill', 'PassiveSkill')}
             replaced = {(r['oldKind'], r['oldId'], -1) for r in p['rewardReplacements']}
-            self.assertLessEqual({g for g in previous - replaced if g[0] == 'ActiveSkill'}, learned, p['id'])
+            retained={g for g in previous-replaced if g[0]=='ActiveSkill'}
+            self.assertLessEqual({g for g in retained if g[1] not in moved},learned,p['id'])
+            self.assertLessEqual({g for g in retained if g[1] in moved},globally_learned,p['id'])
             self.assertEqual(p['profile']['sephiraRecipe'],7)
 
     def test_new_support_copies_use_finite_player_effects_and_bonus_dependencies(self):

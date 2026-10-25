@@ -57,8 +57,51 @@ class SephiraVisions {
       final latest = profile is Map ? profile['sephiraRecipe'] : null;
       return p['id'] == id && latest is int &&
           (latest > (current is int ? current : 0) ||
-           (p['kitUpdate'] is Map && (unit['sephiraKitRevision'] as int? ?? 0) < p['kitUpdate']['version']));
+           (p['kitUpdate'] is Map && (unit['sephiraKitRevision'] as int? ?? 0) < p['kitUpdate']['version']) ||
+           (p['mrRestoration'] is Map && (unit['sephiraMrRevision'] as int? ?? 0) < p['mrRestoration']['version']));
     });
+  }
+
+  /// Restore the original equipable MR skills once, retaining custom recipes,
+  /// permanent rewards and all unrelated settings. Full edited tiers stay open.
+  static Map<String, dynamic> repairEquipableMr(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets, {bool strict = false,
+  }) {
+    if (!member(unit) || (unit['sephiraRecipe'] as int? ?? 0) < 7) return unit;
+    final update = presets.where((p)=>p['id']==presetId(unit)).firstOrNull?['mrRestoration'];
+    if (update is! Map || (unit['sephiraMrRevision'] as int? ?? 0)>=update['version']) return unit;
+    try {
+      final result=CharacterConfig.copy(unit);
+      bool same(List a,List b)=>a[0]==b[0] && a[1]==b[1] && (a.length>2?a[2]:-1)==(b.length>2?b[2]:-1);
+      for (final op in update['mr'] as List) {
+        final choices=(result['synchro'][op['rank']] as List).where((g)=>['ActiveSkill','PassiveSkill'].contains(g[0])).toList();
+        if (choices.length!=1 || (!same(choices.single as List,op['from'] as List) && !same(choices.single as List,op['to'] as List))) {
+          throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve this reward before applying its MR update.');
+        }
+      }
+      for (final op in update['mr'] as List) {
+        result['synchro'][op['rank']]=[for (final g in result['synchro'][op['rank']] as List)
+          if (same(g as List,op['from'] as List)) List<dynamic>.from(op['to'] as List) else g];
+      }
+      for (final op in update['remove'] as List) {
+        for (final tier in result['awakening'] as List) {
+          (tier as List).removeWhere((g)=>g[0]==op[1] && g[1]==op[2]);
+        }
+      }
+      for (final op in update['add'] as List) {
+        if (['awakening','synchro'].any((f)=>(result[f] as List).any((t)=>(t as List).any((g)=>g[0]==op[1] && g[1]==op[2])))) continue;
+        final preferred=op[0] as int;
+        final rank=[for (var r=preferred;r<4;r++) r].where((r)=>(result['awakening'][r] as List).length<8).firstOrNull;
+        if (rank==null) throw StateError('${unit['en']} needs an awakening slot for its MR update. Move an extra ability first.');
+        (result['awakening'][rank] as List).add([op[1],op[2],-1]);
+      }
+      result['sephiraMrRevision']=update['version'];
+      CharacterConfig.validate(result);
+      return result;
+    } on StateError {
+      if (strict) rethrow;
+      return unit;
+    }
   }
 
   /// Apply the two reviewed kits once. Preserve private skill identities and
@@ -311,8 +354,16 @@ class SephiraVisions {
     Map<String, dynamic> unit, Map<String, dynamic> preset,
   ) {
     final latest = preset['profile']['sephiraRecipe'] as int;
+    if (latest>=7 && preset['mrRestoration'] is Map && (unit['sephiraRecipe'] as int? ?? 0)<7) {
+      final legacy=CharacterConfig.copy(preset);
+      (legacy['profile'] as Map).addAll(CharacterConfig.copy(preset['mrRestoration']['before'] as Map<String,dynamic>));
+      legacy['awakeningBalance']=CharacterConfig.copy(preset['mrRestoration']['beforeAwakeningBalance'] as Map<String,dynamic>);
+      (legacy['profile'] as Map).remove('sephiraMrRevision');
+      legacy.remove('mrRestoration');
+      return repairEquipableMr(updateProgression(unit,legacy),[preset],strict:true);
+    }
     if ((unit['sephiraRecipe'] as int? ?? 0) >= latest) {
-      return repairKit(repairMasteryScope(CharacterConfig.copy(unit), [preset]), [preset], strict: true);
+      return repairEquipableMr(repairKit(repairMasteryScope(CharacterConfig.copy(unit), [preset]), [preset], strict: true),[preset],strict:true);
     }
     if (latest >= 7) {
       var previous = unit;
@@ -342,7 +393,7 @@ class SephiraVisions {
       }
       result['sephiraRecipe'] = 7;
       CharacterConfig.validate(result);
-      return repairKit(repairMasteryScope(result, [preset]), [preset], strict: true);
+      return repairEquipableMr(repairKit(repairMasteryScope(result, [preset]), [preset], strict: true),[preset],strict:true);
     }
     if (latest >= 6) {
       var previous = unit;

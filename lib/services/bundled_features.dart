@@ -263,6 +263,7 @@ class BundledFeatures {
           'payload/sephira_blood_recovery.zip',
           'payload/_ffr_sephira_sequences.py',
           'payload/sephira_native_presentations.json',
+          'payload/sephira_mr_restoration.json',
           'payload/sephira_visuals.json',
           'payload/_ffr_party.py',
           'payload/_ffr_party_voices.py',
@@ -313,7 +314,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 74) {
+        (manifest['files'] as Map).length != 75) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

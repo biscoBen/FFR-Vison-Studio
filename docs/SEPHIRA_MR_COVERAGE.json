@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "catalogSha256": "374a538fd8e5984fd604083d665382a6c6fb7d0a404b1057836ca649bd3fb61b",
-  "nativeAuditSha256": "0f8ca98ec0e8ba1235d34685f034c8ab47185a0f9d07cefcc64651d4cd72041c",
+  "catalogSha256": "34ccd4675051bca76d9312006b71b204b7c5118e58c0f505e031435a654c53b7",
+  "nativeAuditSha256": "422f69d1ccbe01d689c61bac51ecbddf739de41a184fb82bc8fbc94850f58d4d",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
     "originalVisions": 15,
     "originalRewards": 75,
-    "covered_mr": 50,
+    "covered_mr": 75,
     "mr_copy_needs_review": 0,
-    "awakening_only": 25,
+    "awakening_only": 0,
     "missing_from_learned_kits": 0
   },
   "rewards": [
@@ -95,17 +95,17 @@
           "rank": 5
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "christine",
           "vision": "Christine",
-          "rank": 2,
+          "rank": 5,
           "grantId": 400630,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -178,13 +178,6 @@
       ],
       "mr": [
         {
-          "preset": "barusa",
-          "vision": "Barusa",
-          "rank": 3,
-          "grantId": 1336,
-          "privateCopy": false
-        },
-        {
           "preset": "minfilia",
           "vision": "Minfilia",
           "rank": 7,
@@ -193,6 +186,13 @@
         }
       ],
       "awakening": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 2,
+          "grantId": 1336,
+          "privateCopy": false
+        },
         {
           "preset": "lunafreya",
           "vision": "Oracle Maiden Lunafreya",
@@ -227,7 +227,15 @@
           "rank": 3
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 3,
+          "grantId": 400440,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "lila",
@@ -237,7 +245,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -249,17 +257,17 @@
           "rank": 5
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "barusa",
           "vision": "Barusa",
-          "rank": 1,
+          "rank": 5,
           "grantId": 400640,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -324,14 +332,21 @@
       ],
       "mr": [
         {
-          "preset": "lila",
-          "vision": "Lila",
-          "rank": 3,
+          "preset": "lenneth",
+          "vision": "Lenneth",
+          "rank": 1,
           "grantId": 1284,
           "privateCopy": false
         }
       ],
       "awakening": [
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 3,
+          "grantId": 1284,
+          "privateCopy": false
+        },
         {
           "preset": "primm",
           "vision": "Spirited Heart Primm",
@@ -352,17 +367,17 @@
           "rank": 3
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "lenneth",
           "vision": "Lenneth",
-          "rank": 1,
+          "rank": 3,
           "grantId": 400390,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -378,7 +393,7 @@
         {
           "preset": "lenneth",
           "vision": "Lenneth",
-          "rank": 3,
+          "rank": 5,
           "grantId": 1029,
           "privateCopy": false
         }
@@ -464,9 +479,9 @@
       ],
       "mr": [
         {
-          "preset": "lenneth",
-          "vision": "Lenneth",
-          "rank": 5,
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 1,
           "grantId": 1331,
           "privateCopy": false
         }
@@ -476,13 +491,6 @@
           "preset": "barusa",
           "vision": "Barusa",
           "rank": 3,
-          "grantId": 1331,
-          "privateCopy": false
-        },
-        {
-          "preset": "lila",
-          "vision": "Lila",
-          "rank": 4,
           "grantId": 1331,
           "privateCopy": false
         },
@@ -506,7 +514,15 @@
           "rank": 3
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "lila",
+          "vision": "Lila",
+          "rank": 3,
+          "grantId": 400310,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "jade",
@@ -516,7 +532,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -587,17 +603,17 @@
           "rank": 9
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "lila",
           "vision": "Lila",
-          "rank": 4,
+          "rank": 9,
           "grantId": 400650,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -609,8 +625,7 @@
           "rank": 1
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "minfilia",
           "vision": "Minfilia",
@@ -619,7 +634,8 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -657,7 +673,7 @@
         {
           "preset": "minfilia",
           "vision": "Minfilia",
-          "rank": 1,
+          "rank": 5,
           "grantId": 1465,
           "privateCopy": false
         }
@@ -719,8 +735,7 @@
           "rank": 1
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "snow_white",
           "vision": "Snow White",
@@ -729,7 +744,8 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -741,17 +757,17 @@
           "rank": 3
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "lilith",
           "vision": "Lilith",
-          "rank": 1,
+          "rank": 3,
           "grantId": 400380,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -811,7 +827,7 @@
         {
           "preset": "lilith",
           "vision": "Lilith",
-          "rank": 3,
+          "rank": 9,
           "grantId": 1369,
           "privateCopy": false
         }
@@ -829,7 +845,15 @@
           "rank": 1
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "lunera",
+          "vision": "Lunera",
+          "rank": 1,
+          "grantId": 400760,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "mog",
@@ -839,7 +863,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -875,9 +899,9 @@
       ],
       "mr": [
         {
-          "preset": "mog",
-          "vision": "Moogle of Narshe Mog",
-          "rank": 1,
+          "preset": "lunera",
+          "vision": "Lunera",
+          "rank": 5,
           "grantId": 1316,
           "privateCopy": false
         }
@@ -917,7 +941,15 @@
           "rank": 9
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "lunera",
+          "vision": "Lunera",
+          "rank": 9,
+          "grantId": 400330,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "relm",
@@ -927,7 +959,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -961,7 +993,15 @@
           "rank": 3
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "nalu",
+          "vision": "Nalu",
+          "rank": 3,
+          "grantId": 400530,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "alice",
@@ -971,7 +1011,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -983,7 +1023,15 @@
           "rank": 5
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 5,
+          "grantId": 400770,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "primm",
@@ -993,7 +1041,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1068,7 +1116,7 @@
         {
           "preset": "a2",
           "vision": "A2",
-          "rank": 3,
+          "rank": 1,
           "grantId": 1421,
           "privateCopy": false
         }
@@ -1086,17 +1134,17 @@
           "rank": 3
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "a2",
           "vision": "A2",
-          "rank": 4,
+          "rank": 3,
           "grantId": 400690,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1181,17 +1229,17 @@
           "rank": 9
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "a2",
           "vision": "A2",
-          "rank": 4,
+          "rank": 9,
           "grantId": 400710,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -1203,8 +1251,7 @@
           "rank": 1
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "rikku",
           "vision": "Rikku (FFX-2)",
@@ -1213,7 +1260,8 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1247,17 +1295,17 @@
           "rank": 5
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "rikku",
           "vision": "Rikku (FFX-2)",
-          "rank": 2,
+          "rank": 5,
           "grantId": 400270,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1291,17 +1339,17 @@
           "rank": 9
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "rikku",
           "vision": "Rikku (FFX-2)",
-          "rank": 4,
+          "rank": 9,
           "grantId": 400750,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -1313,7 +1361,15 @@
           "rank": 1
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
+          "rank": 1,
+          "grantId": 400460,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "ariana",
@@ -1323,7 +1379,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1357,7 +1413,15 @@
           "rank": 5
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "elza",
+          "vision": "Elza",
+          "rank": 5,
+          "grantId": 400700,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "jade",
@@ -1367,7 +1431,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1474,16 +1538,16 @@
           "rank": 3,
           "grantId": 1307,
           "privateCopy": false
-        },
-        {
-          "preset": "trance_terra",
-          "vision": "Trance Terra",
-          "rank": 9,
-          "grantId": 1307,
-          "privateCopy": false
         }
       ],
       "awakening": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 4,
+          "grantId": 1307,
+          "privateCopy": false
+        },
         {
           "preset": "relm",
           "vision": "Relm",
@@ -1526,17 +1590,17 @@
           "rank": 9
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "trance_terra",
           "vision": "Trance Terra",
-          "rank": 4,
+          "rank": 9,
           "grantId": 400730,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "ActiveSkill",
@@ -1548,7 +1612,15 @@
           "rank": 1
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "elephim",
+          "vision": "Elephim",
+          "rank": 1,
+          "grantId": 400400,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "rikku",
@@ -1558,7 +1630,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1592,7 +1664,15 @@
           "rank": 5
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "lunafreya",
+          "vision": "Oracle Maiden Lunafreya",
+          "rank": 5,
+          "grantId": 400250,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "rikku",
@@ -1602,7 +1682,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1660,9 +1740,9 @@
       ],
       "mr": [
         {
-          "preset": "reberta",
-          "vision": "Reberta (JP)",
-          "rank": 5,
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
+          "rank": 1,
           "grantId": 1320,
           "privateCopy": false
         }
@@ -1671,13 +1751,6 @@
         {
           "preset": "mog",
           "vision": "Moogle of Narshe Mog",
-          "rank": 4,
-          "grantId": 1320,
-          "privateCopy": false
-        },
-        {
-          "preset": "freya",
-          "vision": "Dragon Knight Freya",
           "rank": 4,
           "grantId": 1320,
           "privateCopy": false
@@ -1704,8 +1777,8 @@
       ],
       "mr": [
         {
-          "preset": "reberta",
-          "vision": "Reberta (JP)",
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
           "rank": 3,
           "grantId": 1257,
           "privateCopy": false
@@ -1748,8 +1821,8 @@
       ],
       "mr": [
         {
-          "preset": "reberta",
-          "vision": "Reberta (JP)",
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
           "rank": 7,
           "grantId": 1335,
           "privateCopy": false
@@ -1757,8 +1830,8 @@
       ],
       "awakening": [
         {
-          "preset": "freya",
-          "vision": "Dragon Knight Freya",
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
           "rank": 4,
           "grantId": 1335,
           "privateCopy": false
@@ -1776,7 +1849,15 @@
           "rank": 9
         }
       ],
-      "mr": [],
+      "mr": [
+        {
+          "preset": "freya",
+          "vision": "Dragon Knight Freya",
+          "rank": 9,
+          "grantId": 400300,
+          "privateCopy": false
+        }
+      ],
       "awakening": [
         {
           "preset": "a2",
@@ -1786,7 +1867,7 @@
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",
@@ -1822,6 +1903,15 @@
       ],
       "mr": [
         {
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
+          "rank": 3,
+          "grantId": 1318,
+          "privateCopy": false
+        }
+      ],
+      "awakening": [
+        {
           "preset": "snow_white",
           "vision": "Snow White",
           "rank": 1,
@@ -1829,7 +1919,6 @@
           "privateCopy": false
         }
       ],
-      "awakening": [],
       "status": "covered_mr"
     },
     {
@@ -1844,14 +1933,22 @@
       ],
       "mr": [
         {
-          "preset": "jade",
-          "vision": "Jade",
+          "preset": "reberta",
+          "vision": "Reberta (JP)",
           "rank": 5,
           "grantId": 1385,
           "privateCopy": false
         }
       ],
-      "awakening": [],
+      "awakening": [
+        {
+          "preset": "jade",
+          "vision": "Jade",
+          "rank": 3,
+          "grantId": 1385,
+          "privateCopy": false
+        }
+      ],
       "status": "covered_mr"
     },
     {
@@ -1864,17 +1961,17 @@
           "rank": 7
         }
       ],
-      "mr": [],
-      "awakening": [
+      "mr": [
         {
           "preset": "reberta",
           "vision": "Reberta (JP)",
-          "rank": 4,
+          "rank": 7,
           "grantId": 400670,
           "privateCopy": false
         }
       ],
-      "status": "awakening_only"
+      "awakening": [],
+      "status": "covered_mr"
     },
     {
       "kind": "PassiveSkill",

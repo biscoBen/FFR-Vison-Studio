@@ -7803,6 +7803,5381 @@
       "filters": [
         0
       ]
+    },
+    "\u306a\u3052\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Throw",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": true,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 18,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 1,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ITM_02_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400240,
+      "SortId": 101200,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400240"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400240"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u305c\u306b\u306a\u3052": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "ThrowMoney",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "ThrowMoney",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Group",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": true,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 1,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ITM_02_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400250,
+      "SortId": 101210,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400250"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400250"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u76d7\u3080": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": true,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 1030,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ATK_01_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400260,
+      "SortId": 105030,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400260"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400260"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u3076\u3093\u3069\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": true,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 50002,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ATK_01_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": false,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400270,
+      "SortId": 101100,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400270"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400270"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 20,
+      "filters": [
+        0
+      ]
+    },
+    "\u307f\u3060\u308c\u3046\u3061": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Random",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 20,
+      "magnification": 32,
+      "breakDamageValue": 35,
+      "accuracy": 100,
+      "criticalHitRate": 1,
+      "statusCondition": "None",
+      "hitCount": 4,
+      "hitDamageRatioList": [
+        0.25,
+        0.25,
+        0.25,
+        0.25,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 1253,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "BeforeDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_02_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400300,
+      "SortId": 101120,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400300"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400300"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 20,
+      "filters": [
+        0
+      ]
+    },
+    "\u305c\u3093\u304e\u308a": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Group",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 10,
+      "breakDamageValue": 20,
+      "accuracy": 100,
+      "criticalHitRate": 2,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_02_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400310,
+      "SortId": 101070,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400310"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400310"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 25,
+      "filters": [
+        0
+      ]
+    },
+    "\u3082\u306e\u307e\u306d": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Mimic",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_01_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400330,
+      "SortId": 105080,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400330"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400330"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 40,
+      "filters": [
+        0
+      ]
+    },
+    "\u304b\u3070\u3046": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": true,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": true,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 5,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 19025,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_17_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400380,
+      "SortId": 103110,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400380"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400380"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u5168\u4f53\u304b\u3070\u3046": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Group",
+      "isTargetIgnoreSelf": true,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": true,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 10,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 19026,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_17_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400390,
+      "SortId": 103120,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400390"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400390"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 25,
+      "filters": [
+        0
+      ]
+    },
+    "\u30ae\u30eb\u30cf\u30f3\u30c8": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": true,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 0,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 50000,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ATK_01_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400400,
+      "SortId": 105040,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400400"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400400"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 10,
+      "filters": [
+        0
+      ]
+    },
+    "\u30c1\u30e3\u30af\u30e9": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "Magic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 100,
+      "breakDamageValue": 50,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": true,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 1025,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_16_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400440,
+      "SortId": 102010,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400440"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400440"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Heal"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u305f\u3081\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 15,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 12907,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": 1382,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Default",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400460,
+      "SortId": 103020,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400460"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400460"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 10,
+      "filters": [
+        0
+      ]
+    },
+    "\u3042\u3093\u3053\u304f": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Group",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 19,
+      "breakDamageValue": 25,
+      "accuracy": 100,
+      "criticalHitRate": 1,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ATK_02_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400490,
+      "SortId": 101040,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400490"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400490"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u3072\u3063\u3055\u3064": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "DamageAndRecovery",
+      "parameterVariationType": "Decrease",
+      "DamageType": "Physic",
+      "damageCalcType": "Physic",
+      "parameterType": "HitPoint",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 25,
+      "accuracy": 50,
+      "criticalHitRate": 100,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_02_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400530,
+      "SortId": 101010,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400530"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400530"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Command.Icon.Attack"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u9b54\u529b\u3092\u305f\u3081\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 15060,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400630,
+      "SortId": 103030,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400630"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400630"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 10,
+      "filters": [
+        0
+      ]
+    },
+    "\u307e\u3082\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 12,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 1383,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": 1384,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": 1413,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400640,
+      "SortId": 103100,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400640"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400640"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "W\u30a2\u30fc\u30e0\u30ba": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 40,
+      "magnification": 12,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": false,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "None",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400650,
+      "SortId": 105100,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400650"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400650"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 60,
+      "filters": [
+        0
+      ]
+    },
+    "\u3076\u3093\u3057\u3093": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 10,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 19011,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400670,
+      "SortId": 103070,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400670"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400670"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 20,
+      "filters": [
+        0
+      ]
+    },
+    "\u6025\u6240\u72d9\u3044": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 13200,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400690,
+      "SortId": 103080,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400690"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400690"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "\u4f53\u5d29\u3057": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 15112,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "BeforeDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": 61003,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "BeforeDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "None",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400700,
+      "SortId": 103180,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400700"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400700"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
+    },
+    "W\u30a2\u30af\u30b7\u30e7\u30f3": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": false,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "None",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400710,
+      "SortId": 105110,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400710"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400710"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 50,
+      "filters": [
+        0
+      ]
+    },
+    "\u308c\u3093\u305e\u304f\u307e": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": false,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "None",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400730,
+      "SortId": 105120,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400730"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400730"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 50,
+      "filters": [
+        0
+      ]
+    },
+    "\u5c0f\u5384\u707d": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Single",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 10,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 11901,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_07_",
+      "totalDamageDisplayRule": "Hidden",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400750,
+      "SortId": 106010,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400750"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400750"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.BadStatus"
+      },
+      "isRemovable": true,
+      "equipCost": 30,
+      "filters": [
+        0
+      ]
+    },
+    "\u69d8\u5b50\u3092\u898b\u308b": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 54204,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "None",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400760,
+      "SortId": 105070,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400760"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400760"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 10,
+      "filters": [
+        0
+      ]
+    },
+    "\u30ea\u30df\u30c3\u30c8\u30c1\u30e3\u30fc\u30b8": {
+      "hasUnit": "All",
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        900,
+        -1
+      ],
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "DamageType": "None",
+      "damageCalcType": "None",
+      "parameterType": "None",
+      "element": "None",
+      "TargetType": "Self",
+      "isTargetIgnoreSelf": false,
+      "targetRage": "None",
+      "defaultTargetRelation": "Friendlies",
+      "defaultTargetState": "Alive",
+      "isSameRelationTargetingDisabled": false,
+      "isHostilityRelationTargetingDisabled": false,
+      "isAliveOnly": true,
+      "canTargetStoneUnit": false,
+      "Cost": 0,
+      "magnification": 0,
+      "breakDamageValue": 0,
+      "accuracy": 100,
+      "criticalHitRate": 3,
+      "statusCondition": "None",
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "isVisibleSkillName": true,
+      "auraSize": "None",
+      "isReflectPenetration": false,
+      "isReverseDamageToUndead": false,
+      "isUnusableInCannotEscapeBattle": false,
+      "isApplyAllMag": false,
+      "skillIdAfterModeChange": -1,
+      "isMimicEnabled": true,
+      "effectBundleList": [
+        {
+          "effectId": 16500,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        },
+        {
+          "effectId": -1,
+          "TargetType": "Self",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "sequencerIdWhenTargetFriendlies": -1,
+      "playSequencerId": -1,
+      "voiceLabel": "VO_BTL_ABL_15_",
+      "totalDamageDisplayRule": "Visible",
+      "isAvailableWhenDead": false,
+      "isIgnoreUnselectable": false,
+      "isSharedWithLinkedUnit": false,
+      "isMsgIgnorePlayRate": false,
+      "isParallelExecutable": true,
+      "mimicableUnitId": -1,
+      "selfSkillActivateVoiceLabel": "None",
+      "isStopSystemVoice": false,
+      "isStopVoiceOnEnemyTarget": false,
+      "isGuestOrSummonNonTargetable": false,
+      "bDisableDeathCounter": false,
+      "ID": 400770,
+      "SortId": 103090,
+      "Name": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillName.ST_SkillName",
+        "key": "SkillName400770"
+      },
+      "Description": {
+        "table": "/Game/Datatable/Strings/ST_Skill/ST_SkillDescription.ST_SkillDescription",
+        "key": "SkillDescription400770"
+      },
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "isRemovable": true,
+      "equipCost": 15,
+      "filters": [
+        0
+      ]
     }
   }
 }

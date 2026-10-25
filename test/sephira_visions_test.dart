@@ -40,6 +40,16 @@ Map<String, dynamic> revision5Preset(Map<String, dynamic> value) {
   return result;
 }
 
+Map<String,dynamic> beforeMrRestoration(Map<String,dynamic> value) {
+  final p=CharacterConfig.copy(value);final update=p.remove('mrRestoration');
+  if(update is Map) {
+    (p['profile'] as Map).addAll(CharacterConfig.copy(update['before'] as Map<String,dynamic>));
+    p['awakeningBalance']=CharacterConfig.copy(update['beforeAwakeningBalance'] as Map<String,dynamic>);
+    (p['profile'] as Map).remove('sephiraMrRevision');
+  }
+  return p;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   test('All shipped technical skill and donor resonance text migrates without kit changes', () async {
@@ -410,7 +420,7 @@ void main() {
   });
 
   test('revision 6 curates all 131 original passives and keeps active skills, edits and permanent stats', () async {
-    final presets = await SephiraVisions.bundled;
+    final presets = (await SephiraVisions.bundled).map(beforeMrRestoration).toList();
     final occupied = presets.map((p) => p['profile']).toList();
     final passiveIds = <int>[];
     for (final preset in presets) {
@@ -457,7 +467,7 @@ void main() {
   });
 
   test('revision 7 adds awakening bonuses without resetting edited MR or active skills', () async {
-    final presets = await SephiraVisions.bundled;
+    final presets = (await SephiraVisions.bundled).map(beforeMrRestoration).toList();
     var additions = 0;
     for (final preset in presets) {
       final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
@@ -510,7 +520,7 @@ void main() {
   });
 
   test('unit-bound MR defaults swap with general awakening bonuses without changing the kit', () async {
-    final presets = await SephiraVisions.bundled;
+    final presets = (await SephiraVisions.bundled).map(beforeMrRestoration).toList();
     var swaps = 0;
     for (final preset in presets.where((p) => p['masteryScopeUpdate'] is Map)) {
       final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
