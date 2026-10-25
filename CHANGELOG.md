@@ -11,13 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Reviewed Crystal Fina and Aria kits — 2026-10-25
-
-- Apply the supplied four-tier layouts to both saved and newly added visions, including the independent Crystal Fina preset. Fina learns Protect and Raise earlier; Aria focuses on Water blades, Water magic and healing. Use the native 40-MP Reraise spell instead of its internal zero-MP revive event.
-- Change Aria's MR9 to Imbue Water while retaining her previous private reward ID. Both Spirits keep their owner and reward IDs and follow the current five MR passives. Awakening bonuses remain outside the Spirit. All 131 original passives and 160 original active skills remain represented in the collection.
-- Back up existing rosters before applying the layouts once. Retain skill definitions and private IDs, combat edits, permanent MR stats, acquisition choices and artwork. If an extra edited skill would overfill a tier, keep that vision intact and let **Apply kit and MR updates** explain the conflict. Later kit edits remain yours.
-- Automated migration and native-table readback checks cover the new grants and Spirit ownership. Live gameplay testing of the revised healer kits remains pending.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -86,6 +79,30 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published reviewed Crystal Fina and Aria kits — 2026-10-25
+
+[Verified Windows ZIP / run 40216026078](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40216026078/Sephira-Studio-Test.zip), code `a729e0d`, update **1.2.91** (74.0 MB).
+SHA-256 `a942c08edb95e27c942d97a2fed67b1703cbfc4fd563ae0d6915382bc973db7f`.
+
+- Apply the user's four-tier ability/awakening layouts to Crystal Fina and Aria, including the independent Fina preset. Fina gains earlier protection and revival; Aria focuses on Water blades, Water magic and healing. Both use native 40-MP Reraise rather than the internal zero-MP revive event. Keep physical Water Blades physical.
+- Aria's MR9 and Spirit now use Imbue Water. Retain the former private Light reward ID (1910), both Spirit IDs and their own vision references. Spirits follow their owner's current five MR passives; awakening bonuses and permanent MR stats are excluded. All 160 original active skills and 131 original passives remain represented across the collection.
+- Back up existing rosters and apply this kit revision once, preserving skill definitions/private IDs, combat edits, MR stat grants, acquisition and artwork. Keep unrelated extra learned grants where they fit. Overfilled tiers remain intact, with a readable conflict from **Apply kit and MR updates**. Later deliberate edits remain yours. Give independent and collection Fina's copied skill rows distinct names so they can coexist.
+
+Validation: **710 Python tests** pass locally (42 platform skips), **63 focused Flutter tests** pass, and analysis is clean.
+Real native serialization/readback checks all four awakening tiers, ten MR ranks and Spirit ownership/descriptions for
+both Fina versions and Aria; Aria's private reward retains ID 1910 and uses native Water effect 40207. Full Windows
+validation, compilation, fresh engine setup and launcher/updater checks pass for the same commit. The downloaded ZIP
+matches provenance, SHA-256, all **74** extension and **16** standalone Fina resource hashes, the catalog and compiled
+1.2.91 label. Warm sprite/icon cache code and existing cinematic/audio bytes are unchanged. No game recording, key or
+animation library is bundled. **The revised healer kits still need live gameplay confirmation.** Keep Studio Test Data,
+update, rebuild/install and restart. No preset reset or Prepare Game is required.
+
+Measured delivery: first complete candidate 10:17:02
+to verified package 10:33:02 America/Los_Angeles,
+**15m 59s**, including local checks, the independent row-name correction, waiting and package verification.
+This run's measured CI wall time is **9m 51s**; summed runner usage is **13m 45s**. One matching automatic
+run was reused; no duplicate build was dispatched.
 
 ## Published clear Fina movie sound and HCA v3 preview — 2026-10-25
 

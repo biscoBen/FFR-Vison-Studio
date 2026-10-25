@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Reviewed Crystal Fina and Aria kits — 2026-10-25
+
+[Verified Windows download / run 40216026078](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40216026078/Sephira-Studio-Test.zip)
+(code `a729e0d`, update **1.2.91**; **74.0 MB**).
+
+Apply the supplied healer layouts, including the independent Fina preset. Aria focuses on Water and healing; MR9
+and Spirit of Aria use Imbue Water. Both Spirits retain their IDs and follow their owner's MR passives. Fina's MR
+choices remain unchanged. Use the actual 40-MP Reraise spell on both visions. All original skill/passive coverage remains.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. Existing kits migrate once after a backup, retaining
+combat edits, identities, artwork and acquisition. Later edits remain yours. No preset reset or Prepare Game is needed.
+[Exact layouts and Spirit behavior](docs/SEPHIRA_USER_KITS.md). Windows/native/package checks pass; live testing of the
+revised kits remains pending. [Validation and measured timings](CHANGELOG.md#published-reviewed-crystal-fina-and-aria-kits--2026-10-25).
+
 ### Clear Fina movie sound — 2026-10-25
 
 [Verified Windows download / run 40210925843](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40210925843/Sephira-Studio-Test.zip)
