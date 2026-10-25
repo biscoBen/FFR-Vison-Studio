@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Walking appearance recovery and button-operated crystals — 2026-10-25
+
+[Verified Windows download / run 40241100839](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40241100839/Sephira-Studio-Test.zip)
+(code `59205a0`, update **1.2.98**; **74.0 MB**).
+
+Recover the saved walking appearance when 1.2.95 leaves Rain visible. Keep your chosen character while idle,
+walking or running and restore original characters during cutscenes. Native Charlotte and optional cycling remain
+available. Sephira shrine challenges now require **A/Confirm** at the crystal, including Crystal Fina/Lenneth at
+the Warrior of Light sanctum and Christine's cave. Leave closes the menu until you interact again. Fina can cast a bounded Cure on herself or Lenneth every 2–3 actions when recovery is needed; Sacred Wave retains its current damage.
+
+Keep **Studio Test Data**, update, rebuild/install, restart and re-enter the room. No reset or Prepare Game is
+needed. Existing sprites/icons keep their cache signature. Windows/package, native map and executable callback
+checks pass; the user's in-game retest remains necessary.
+[Checks and measured timings](CHANGELOG.md#published-walking-callback-recovery-and-crystal-interaction--2026-10-25).
+
 ### Original cutscene appearances and native Charlotte walking — 2026-10-25
 
 [Verified Windows download / run 40235225775](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40235225775/Sephira-Studio-Test.zip)

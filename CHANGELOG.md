@@ -11,24 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Crystal Fina shrine recovery — 2026-10-25
-
-- Following the user's successful hardest-difficulty test, preserve Lenneth's Sacred Wave and the fight's current damage, speed, durability and break budgets. Give Crystal Fina a Cure opportunity every 2–3 actions when either friendly boss needs recovery, restoring the existing bounded 15% of the target’s maximum HP. Check the lowest-HP friendly unit against an 85% threshold and use the native target-selection helper so Cure can reach Fina or Lenneth. Use her normal light attack when recovery is unnecessary.
-- Keep this change in the private shrine-boss rotation. Player kits, other boss rotations and their existing healing guards are unchanged. Casual's simpler native AI continues to exclude unguarded recovery.
-
-### Confirm-button shrine challenges — 2026-10-25
-
-- Require A/Confirm on all 13 native shrine repeat crystals with enabled Sephira challenges, including Warrior of Light's Crystal Fina/Lenneth encounter. Choosing Leave returns control without movement immediately reopening the menu. Apply the same native button-operated class to Christine's cave crystal.
-- Change only each selected repeat actor and its component archetypes. Keep original vision grants, replay targets, unlock checks, event movement, actor positions and unrelated story triggers. Omitted/shop-overridden challenge groups do not patch their shrine map.
-- Validate native level serialization before sprite work and reuse those verified outputs later in the build. Keep the existing sprite-motion cache contract; changing this interaction does not invalidate sprite/icon conversion. Native data checks do not replace a live controller retest.
-
-### Recover the saved walking appearance callback — 2026-10-25
-
-- Address the reported 1.2.95 regression where Rain remains visible after selecting Fina. The returned UE4SS log shows the field controller starts, followed by callback collection and `Ref was not function`; the existing Fina presentation uses a persistent game-thread loop successfully in that same log.
-- Use that persistent game-thread loop for walking updates, and keep loop/hook/key callbacks strongly reachable in Lua. An executable weak-reference fixture reproduces the lost callback in the shipped 1.2.95 code; the revised controller retains it and applies the saved walking slot after collection.
-- Retain the older-loader bridge with a retained request, bounded retry after a lost callback, and inert late callbacks. Retry transient title/load/actor errors instead of disabling the walking appearance for the session. Recheck scene/input guards when the queued update actually runs.
-- Log state changes and the active map-unit/slot so a blocked walking choice no longer reports only the startup message. Keep original cutscene slots, scene restoration, idle/walk/run selection, optional cycling, native Charlotte, battle models and saved choices unchanged. Runtime-only logic; sprite conversion inputs and game-table recipes are unchanged. Live playback still needs the user's retest.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -97,6 +79,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published walking callback recovery and crystal interaction — 2026-10-25
+
+[Verified Windows ZIP / run 40241100839](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40241100839/Sephira-Studio-Test.zip), code `59205a0`, update **1.2.98** (74.0 MB).
+SHA-256 `9fc1bbdf79e7bf1725cff20ce60e03f1776d5830de2eb879f099e073b29f7ea4`.
+
+- Address the 1.2.95 regression where Rain remains visible after saving Fina as an overworld appearance. The returned UE4SS log shows callback collection followed by `Ref was not function`. An executable weak-reference fixture reproduces that lost callback in the shipped controller. Use the persistent game-thread loop already working for Fina's presentation, retain loop/hook/key callbacks, and recover lost updates and transient loading errors.
+- Keep the saved replacement for ordinary field idle, walking and running; restore original characters for cutscenes and reapply the saved choice when control returns. Retain input/menu/vehicle/encounter/story guards, optional party cycling and native Charlotte. Log state changes and the active map-unit/slot for any further runtime diagnosis.
+- Require **A/Confirm** at all **13** native repeat crystals with enabled Sephira challenges, including Crystal Fina/Lenneth at Warrior of Light's sanctum. Selecting Leave no longer starts another challenge dialog merely from moving in the overlap area. Use the same button-operated native class for Christine's cave crystal.
+- Replace only each selected repeat actor's class and component archetypes. Preserve native original-vision grants, replay targets, unlock conditions, event movement, placement and unrelated story actors. Groups moved to the shop or omitted from the build do not alter their shrine level. Validate native map serialization before sprite work and reuse those outputs later in the build.
+- Give Crystal Fina a guarded Cure opportunity every **2–3 actions**, using the native lowest-HP friendly target helper so she can heal either herself or Lenneth. Recover **15%** of the target's maximum HP when the selected friendly unit is at or below **85%** HP; otherwise use her light attack. **Sacred Wave stays at its tested damage.** The player kit and the other 27 boss rotations are unchanged.
+- Preserve the sprite-motion cache signature and the pinned cache implementation. Walking model generation, native field table recipes, sprites/icons, Fina movie/music, the approved Fina/Aria kits and all **75/75** equipable MR rewards are unchanged.
+
+Validation: **735 Python tests** pass locally (42 platform skips), **78 focused Flutter tests** pass, and analysis is
+clean. Executable Lua checks cover callback collection, failed scheduling, lost/late callbacks, scene transitions,
+field idle/movement and transient actor errors. Native fromjson/readback checks pass for all **14** affected maps,
+including the sanctum and Christine's cave, preserving actor references and original level data. A numbered-actor
+FName serialization issue found in the first native proof was corrected before the final candidate; all 14 writes
+then passed. The exact native clone/fromjson/readback pipeline also passes for both updated Fina AI functions. Native Kismet binary write/readback and real-engine jump-size checks pass, and an interpreter executes the collected base target helper to confirm Cure reaches either friendly boss while attacks retain native random routing. All 28 bosses keep their offensive skill rows and stats; only Fina's Cure changes from self to friendly single-target. Full Windows validation, compilation, fresh engine setup and launcher/updater checks pass for the final
+commit. The actual ZIP matches provenance/SHA-256, all **75** extension and **16** standalone Fina hashes, the compiled
+1.2.98 label, the retained controller and the delivered shrine module exercised against all 13 native repeat maps.
+**The user's live controller and interaction retest remains necessary.** Keep Studio Test Data, update,
+rebuild/install, restart and re-enter the room. No preset reset or Prepare Game is needed.
+
+Measured delivery: first complete walking candidate 15:02:36
+to verified combined package 15:50:05 America/Los_Angeles,
+**47m 29s**, including local checks, the subsequent shrine and healing requests, their checks and corrections, all three builds,
+waiting and package verification. The timer was not reset. The earlier walking-only 1.2.96 run **40238424891**
+passed, as did the shrine update run **40239800056**. The subsequent friendly-healing request required the final 1.2.98 candidate. All three exact automatic push runs were joined
+through the unchanged build helper; no duplicate dispatch was made. Final CI wall time is **10m 13s** and
+summed job runtime **14m 39s**; the earlier CI wall times were **9m 42s** and **13m 21s**, with **45m 43s**
+total summed job runtime across all three runs. Publication notes are a separate README/CHANGELOG-only commit.
 
 ## Published original cutscene appearances and native Charlotte walking — 2026-10-25
 
