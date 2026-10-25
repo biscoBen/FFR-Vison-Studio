@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Gentle Fina movie music fades — 2026-10-25
+
+[Verified Windows download / run 40218872561](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40218872561/Sephira-Studio-Test.zip)
+(code `4308e0e`, update **1.2.92**; **74.0 MB**).
+
+The user confirms the cave music now plays correctly in Fina's movie. Add a gentle **0.4-second fade in** and
+**0.8-second fade out** in the game and Studio preview. The fades are applied before the existing audio encoder,
+keeping the working playback setup, pictures, duration and stereo format. Cached movies refresh automatically.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. Windows/package and real audio encoding checks pass;
+the new fade lengths still need a live listening test. No preset reset or Prepare Game is needed.
+[Checks and measured timings](CHANGELOG.md#published-gentle-fina-movie-music-fades--2026-10-25).
+
 ### Reviewed Crystal Fina and Aria kits — 2026-10-25
 
 [Verified Windows download / run 40216026078](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40216026078/Sephira-Studio-Test.zip)

@@ -11,11 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Gentle Crystal Fina movie music fades — 2026-10-25
-
-- Add a 0.4-second fade in and 0.8-second fade out to the cave music in Fina's movie and Studio preview. Shape the decoded stereo samples before the existing ADX encoder; keep the working decoder, movie packets, duration, audio format, single playback and battle-music pause/resume path.
-- Replace the cached scored movie automatically; warm installs reuse the faded copy. Existing sprite/icon and voice caches keep their inputs. The user confirms the previous update's movie music now plays in game. The new fades still need a live listening check.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -84,6 +79,30 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published gentle Fina movie music fades — 2026-10-25
+
+[Verified Windows ZIP / run 40218872561](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40218872561/Sephira-Studio-Test.zip), code `4308e0e`, update **1.2.92** (74.0 MB).
+SHA-256 `8591e24e958ab12120b261e3b88fae56dd4e55fc1db9b800cb60ec647015aeef`.
+
+- The user confirms Crystal Fina's music now works in game. Soften its start and ending with a **0.4-second fade in** and **0.8-second fade out**, using a smooth volume envelope on both stereo channels before the existing ADX encoding step. Studio's preview uses the same faded samples.
+- Preserve the working HCA v3 decoder, ADX encoder/muxer, movie pictures, 6.4-second duration, stereo format, single playback and battle-music pause/resume behavior. Replace only the cached scored movie automatically; the decoded source, sprite/icon and voice caches retain their inputs. Fades are prepared during the build and add no per-cast processing.
+
+Validation: **713 Python tests** pass locally (42 platform skips), **31 focused Flutter tests** pass, and analysis is
+clean. Synthetic stereo checks verify silent endpoints, smooth channel-matched fades, exact duration and an unchanged
+middle. The actual cave recording passes the existing ADX encoder and independent ADX v4 decoding at **47.38 dB SNR**
+against the faded samples. All 192 picture and opacity packets retain their timestamps and bytes. Cache checks replace
+the old unfaded movie and reuse the verified faded copy on the next build. Full Windows validation, compilation,
+fresh engine setup and launcher/updater checks pass for this commit. The downloaded ZIP matches provenance/SHA-256,
+all **74** extension and **16** standalone Fina hashes, the compiled 1.2.92 label and unchanged codec/artwork assets.
+No game recording or key is bundled. **The new fades still need an in-game listening check.** Keep Studio Test Data,
+update, rebuild/install and restart; no preset reset or Prepare Game is required.
+
+Measured delivery: first complete candidate 10:54:42
+to verified package 11:07:49 America/Los_Angeles,
+**13m 06s**, including local checks, encoding proof, waiting and package verification. This run's measured
+CI wall time is **10m 01s**; summed runner usage is **14m 22s**. The matching automatic build was reused;
+no duplicate build was dispatched.
 
 ## Published reviewed Crystal Fina and Aria kits — 2026-10-25
 
