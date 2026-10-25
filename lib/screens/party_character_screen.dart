@@ -49,7 +49,7 @@ class PartyCharacterScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Choose battle and walking appearances independently. Abilities, equipment and progression keep ${unit['en']}’s original configuration.',
+                  'Choose battle and walking appearances independently. Walking choices include field idle; cutscenes use the original character. Abilities, equipment and progression keep ${unit['en']}’s original configuration.',
                   style: Guide.text(),
                 ),
                 const SizedBox(height: 16),

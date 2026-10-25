@@ -110,7 +110,7 @@ void main() {
     expect(find.text('Crystal Fina'), findsNothing);
     expect(find.text('FFBE · 8-way'), findsWidgets);
     expect(find.byIcon(Icons.directions_walk), findsNothing);
-    expect(OverworldAppearance.entries.length, 17);
+    expect(OverworldAppearance.entries.length, 18);
     await tester.tap(find.text('Vagrant Knight Rain'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
@@ -148,6 +148,19 @@ void main() {
     await tester.tap(find.text('USE THIS MODEL'));await tester.pump();
     expect(app.fieldPartyId,1001);
     expect(app.fieldChoice,{'version':1,'model':'native_party_1006'});
+    expect(api.requested,isEmpty);expect(app.legacyDownloads,isEmpty);
+    await tester.pumpWidget(const SizedBox());await tester.pumpAndSettle();
+    expect(tester.takeException(),isNull);
+  });
+
+  testWidgets('native Charlotte uses her existing portrait and requires no FFBE download', (tester) async {
+    await picker(tester,dialog:const AddUnitDialog(replaceOverworldId:1001));
+    await tester.enterText(find.byType(TextField).first,'Charlotte');await tester.pump();
+    await tester.tap(find.byKey(const ValueKey('field-choice-native_charlotte')));await tester.pump();
+    expect(find.byType(NativeOverworldPreview),findsOneWidget);
+    expect(find.text('Resonance · 4-way'),findsOneWidget);
+    await tester.tap(find.text('USE THIS MODEL'));await tester.pump();
+    expect(app.fieldChoice,{'version':1,'model':'native_charlotte'});
     expect(api.requested,isEmpty);expect(app.legacyDownloads,isEmpty);
     await tester.pumpWidget(const SizedBox());await tester.pumpAndSettle();
     expect(tester.takeException(),isNull);

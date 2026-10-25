@@ -13,10 +13,15 @@ class OverworldAppearance {
   static const profile = <String, dynamic>{'version': 1, 'model': model};
   static Map<String, dynamic> get models =>
       overworldCatalog['models'] as Map<String, dynamic>;
+  static const nativeGuests = <String,Map<String,dynamic>>{
+    'native_charlotte': {'name':'Charlotte','nativeId':1016,'nativeField':470,'directions':4,
+      'portrait':'assets/native_portraits/100004306.png','form':'native_charlotte'},
+  };
 
-  static int? nativeId(String model) => BattleVoice.names.keys
+  static int? nativeId(String model) => nativeGuests[model]?['nativeId'] as int? ?? BattleVoice.names.keys
       .where((id) => model == 'native_party_$id').firstOrNull;
   static Map<String, dynamic> data(String model) {
+    if (nativeGuests.containsKey(model)) return Map<String,dynamic>.from(nativeGuests[model]!);
     final id = nativeId(model);
     return id != null
       ? {'name': BattleVoice.names[id], 'directions': 8, 'nativeParty': id, 'form': model}
@@ -33,6 +38,8 @@ class OverworldAppearance {
     for (final e in BattleVoice.names.entries)
       {'id':'native_party_${e.key}', 'name':e.value, 'jpname':'',
        'nativeParty':e.key, 'packs':['native_party_${e.key}'], 'hasSprites':true, 'directions':8},
+    for (final e in nativeGuests.entries)
+      {...e.value,'id':e.key,'jpname':'','packs':[e.key],'hasSprites':true},
     ...([
     for (final entry in models.entries)
       {

@@ -8,7 +8,7 @@ local function obj(value)
     return value
 end
 actor = obj({m_AnimationAssetIndex = 0, m_IsEnableMovement = true, input = true,
-    m_AnimationName = {ToString = function() return 'move9' end}, id = 10,
+    m_AnimationName = {ToString = function() return actor.animationName or 'move9' end}, id = 10,
     GetFullName = function(self) return 'Player' .. tostring(self.serial or 1) end,
     GetMapUnitId = function(self) return self.id end,
     GetMapMovementMethod = function(self) return self.vehicle and 3 or 1 end,
@@ -16,7 +16,7 @@ actor = obj({m_AnimationAssetIndex = 0, m_IsEnableMovement = true, input = true,
     IsEnableUnitInput = function(self) return self.input end,
     IsPaused = function(self) return self.paused or false end,
     IsA = function(self) return not self.vehicle end,
-    PlayAnimation = function(self, name, same) assert(name == 'move9' and same) end})
+    PlayAnimation = function(self, name, same) assert(name == (self.animationName or 'move9') and same) end})
 local function context(value) return {get = function() return value end} end
 actor.ChangeAnimationAsset = function(self, index)
     local h = hooks['/Script/mucha.CPP_Unit:ChangeAnimationAsset']
@@ -93,4 +93,42 @@ function run_tests()
     -- No supported party members: do not force an unavailable or old leader.
     party = {9999}; button(); assert(actor.m_AnimationAssetIndex == 0)
     assert(tick() == false)
+end
+
+function run_saved_choice_tests()
+    assert(not keys[Key.F6] and not hooks['/Script/mucha.CPP_MapUnit_Playable:InputL1'])
+    actor.animationName = 'fieldidle2'; tick()
+    assert(actor.m_AnimationAssetIndex == 5, 'Saved replacement must cover standing still')
+    assert(not input.bound, 'An appearance choice must not enable cycling')
+    for _, name in ipairs({'idle2','move9','dash6','fieldidle8'}) do
+        actor.animationName = name; tick(); assert(actor.m_AnimationAssetIndex == 5)
+    end
+    -- Restore synchronously on entry, then stay native through gestures,
+    -- custom scene slots and the native idle poses between dialogue lines.
+    hooks['/Script/mucha.CPP_BFL_TalkEvent:PlayEvent'][1](context(actor))
+    assert(actor.m_AnimationAssetIndex == 0)
+    event = true
+    for _, name in ipairs({'fieldidle2','gesture','idle8'}) do
+        actor.animationName = name; tick(); assert(actor.m_AnimationAssetIndex == 0)
+    end
+    actor:ChangeAnimationAsset(2); tick(); assert(actor.m_AnimationAssetIndex == 2)
+    actor:ChangeAnimationAsset(0); tick(); assert(actor.m_AnimationAssetIndex == 0)
+    event = false; actor.input = false; tick(); assert(actor.m_AnimationAssetIndex == 0)
+    actor.input = true; actor.animationName = 'idle2'; tick()
+    assert(actor.m_AnimationAssetIndex == 5, 'Restore replacement when field control returns, even while idle')
+    for _, flag in ipairs({'battle','inMenu','disabledInput'}) do
+        _G[flag]=true; tick(); assert(actor.m_AnimationAssetIndex==0,flag)
+        _G[flag]=false; tick(); assert(actor.m_AnimationAssetIndex==5,flag)
+    end
+    actor.vehicle=true; tick(); assert(actor.m_AnimationAssetIndex==0)
+    actor.vehicle=false; tick(); assert(actor.m_AnimationAssetIndex==5)
+    actor:ChangeAnimationAsset(3); tick(); assert(actor.m_AnimationAssetIndex==3,'Keep unowned story slot')
+    actor:ChangeAnimationAsset(0); tick(); assert(actor.m_AnimationAssetIndex==5)
+    -- A recreated player uses its own original and saved walking slot.
+    actor.serial=2; actor.id=60; actor.m_AnimationAssetIndex=0; tick()
+    assert(actor.m_AnimationAssetIndex==4)
+    actor.input=false
+    hooks['/Script/mucha.CPP_MapUnit_Playable:DisableUnitInput'][1](context(actor))
+    assert(actor.m_AnimationAssetIndex==0)
+    actor.input=true; tick(); assert(actor.m_AnimationAssetIndex==4)
 end

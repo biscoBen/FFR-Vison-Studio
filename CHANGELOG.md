@@ -11,6 +11,14 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Original characters throughout cutscenes — 2026-10-25
+
+- Preserve every native map-animation slot, including the primary idle slot. Put saved native/FFBE overworld choices in a separate cosmetic slot so cutscene idles and gestures consistently use the original character.
+- Apply the saved replacement during normal field idle, walking and running. Restore the original before dialogue/event entry or disabled player input, keep native story animation slots intact, then reapply the saved choice when field control returns.
+- Stage the cosmetic runtime automatically for an overworld choice, independently of the optional party-cycling switch. Turning cycling off leaves LB/L1 and F6 untouched. Removing the overworld choice removes its extra slot and controller unless another enabled feature needs the runtime.
+- Add **Charlotte (Resonance)** to the overworld picker using her original `npc0470` field project and textures. Keep her NPC/story/vision assets intact. Supply player idle/directional aliases on the private clone, reusing native walking clips when a separate run family is absent; no FFBE artwork or sprite download is used.
+- Keep battle appearances, identities, voices, story flags, camera/movement controls and saved appearance choices unchanged. Reuse the existing managed UE4SS installation and owned-file rollback. Local controller/table checks cover idle, scene gestures, story slots, post-scene idle, menus, encounters, vehicles and actor recreation; live cutscene transitions still need in-game confirmation.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

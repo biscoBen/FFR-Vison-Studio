@@ -52,6 +52,17 @@ void main() {
     }
   });
 
+  test('native Charlotte roundtrips as a field choice without adding a party identity', () {
+    final choice=OverworldAppearance.profileFor('native_charlotte');
+    final rain={'key':'party_1001','id':1001,'jp':'レイン','en':'Rain',
+      'party':{'version':1,'id':1001},'overworld':choice};
+    expect(CharacterConfig.decode(CharacterConfig.encode(rain)),rain);
+    expect(OverworldAppearance.nativeId('native_charlotte'),1016);
+    expect(OverworldAppearance.data('native_charlotte')['nativeField'],470);
+    final entry=OverworldAppearance.entries.singleWhere((e)=>e['id']=='native_charlotte');
+    expect(entry['name'],'Charlotte');expect(entry['nativeParty'],isNull);
+  });
+
   test('all normal images and directional sheets are bundled with verified checksums', () async {
     for (final model in OverworldAppearance.models.keys) {
       expect(await OverworldAppearance.assetBytes(model, 'icon'), isNotEmpty);

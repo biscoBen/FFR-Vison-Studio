@@ -11,7 +11,6 @@ import '../services/crystal_fina.dart';
 import '../services/sephira_visions.dart';
 import '../services/overworld_appearance.dart';
 import 'overworld_anim_pane.dart';
-import 'party_portrait.dart';
 
 Future<void> showAddUnit(BuildContext context) => showDialog<void>(context: context, builder: (_) => const AddUnitDialog());
 
@@ -180,7 +179,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
                                     Expanded(
                                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                                         Text((u['name'] ?? u['jpname'] ?? u['id']).toString(), style: Guide.strong(has ? Guide.ink : Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                        Text(widget.overworld ? '${u['nativeParty'] != null ? 'Resonance' : 'FFBE'} · ${u['directions']}-way' : '${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                        Text(widget.overworld ? '${OverworldAppearance.nativeId(u['id'] as String) != null ? 'Resonance' : 'FFBE'} · ${u['directions']}-way' : '${u['bundledPreset'] == CrystalFina.presetId ? 'Bundled custom · NV' : rarityRange(u['rarity_min'], u['rarity_max'])} · ${((u['roles'] as List?) ?? []).join(', ')}', style: Guide.small(Guide.inkFaint), maxLines: 1, overflow: TextOverflow.ellipsis),
                                       ]),
                                     ),
                                     if (here) _chip('in mod', Guide.blue) else if (!has) _chip('no sprites yet', Guide.inkFaint),
@@ -272,7 +271,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
 
   Widget _fieldIcon(String model) {
     final id = OverworldAppearance.nativeId(model);
-    return id != null ? PartyPortrait(characterId: id, width: 44, height: 30)
+    return id != null ? NativeOverworldIcon(model:model, width: 44, height: 30)
     : FutureBuilder<Uint8List>(
     key: ValueKey('field-icon-$model'), future: OverworldAppearance.assetBytes(model, 'icon'),
     builder: (_, snapshot) => snapshot.hasData
@@ -344,7 +343,7 @@ class _AddUnitDialogState extends State<AddUnitDialog> {
         ]),
       ),
       const SizedBox(height: 6),
-      Text(widget.overworld ? 'Replaces normal walking sprites in the world and towns. Scenes using that model also show this appearance. Your battle model is chosen separately.' : widget.replacePartyId != null ? 'This model replaces the character only during battles. Their name, abilities, equipment and story appearance stay original.' : widget.replacing ? 'Uses this model and its name. The vision keeps its abilities, stats, MR and Resonance.' : sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
+      Text(widget.overworld ? 'Replaces field idle, walking and running in the world and towns. Cutscenes use the original character, then your walking choice returns. Your battle model is chosen separately.' : widget.replacePartyId != null ? 'This model replaces the character only during battles. Their name, abilities, equipment and story appearance stay original.' : widget.replacing ? 'Uses this model and its name. The vision keeps its abilities, stats, MR and Resonance.' : sel?['bundledPreset'] == CrystalFina.presetId ? 'Your saved Crystal Fina preset, including Crystal Restoration.' : 'Level 1 values for FINAL FANTASY RESONANCE, scaled from the Brave Exvius maximums.', style: Guide.small(Guide.inkFaint)),
       if (!hasPack) ...[const SizedBox(height: 8), Box(fill: Guide.warn, child: Text('No sprite pack for this look is on the host yet, so it cannot be added. Pick another look, or ask for it to be added.', style: Guide.small(Guide.ink)))],
     ]);
   }

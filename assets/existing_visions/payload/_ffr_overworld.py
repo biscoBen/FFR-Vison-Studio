@@ -15,17 +15,28 @@ TABLE = 'Asset/Map/DT_MapUnitAsset'
 # FFBE's rows: south, north, west, east, southwest, southeast,
 # northwest, northeast. Resonance uses keypad directions, including 9.
 DIRECTIONS = ((2, 0), (8, 1), (4, 2), (6, 3), (1, 4), (3, 5), (7, 6), (9, 7))
+# Charlotte is a native guest/NPC field model, not an additional party identity
+# or battle-voice choice. Keep the saved choice independent of either list.
+CHARLOTTE = 1016
+CHARLOTTE_CHOICE = 'native_charlotte'
 
 
 def native_id(choice):
     import _ffr_party
     name=choice.get('model') if isinstance(choice,dict) else None
+    if name==CHARLOTTE_CHOICE:return CHARLOTTE
     return next((id for id,*_ in _ffr_party.CHARACTERS if name==f'native_party_{id}'),None)
 
 
 def native_package(id):
+    if id==CHARLOTTE:return '/Game/Chara/Field_Unit/npc0470/npc0470'
     mid=(id-1000)*10
     return f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
+
+
+def native_source(id):
+    import _ffr_party
+    return ('シャルロット',470) if id==CHARLOTTE else (_ffr_party.identity(id)[1],(id-1000)*10)
 
 
 @lru_cache(maxsize=1)
@@ -62,7 +73,8 @@ def asset_bytes(entry, kind):
 
 
 def package(u):
-    name = f'pc{((native_id(u.get("overworld")) or u["id"]) - 1000) * 10:04d}'
+    donor=native_id(u.get('overworld'))
+    name=native_package(donor).rsplit('/',1)[-1] if donor is not None else f'pc{(u["id"]-1000)*10:04d}'
     return f'/Game/Chara/StudioOverworld/party{u["id"]}/{name}'
 
 
@@ -87,25 +99,43 @@ def prepare(tables, units, rows):
             raise ValueError('The original party field assets changed; prepare the game files again.')
         donor=native_id(u['overworld'])
         if donor is not None:
-            import _ffr_party
-            source=rows(TABLE).get(_ffr_party.identity(donor)[1],{})
+            row_name,source_mid=native_source(donor)
+            source=rows(TABLE).get(row_name,{})
             model=(source.get('animationAssetList') or [{}])[0]
             path=native_package(donor)
-            if (source.get('ID')!=(donor-1000)*10 or model.get('Ss6Project')!=path
+            if (source.get('ID')!=source_mid or model.get('Ss6Project')!=path
                     or any(model.get(key)!=path+suffix for key,suffix in (
                         ('textureBaseColor','_tex'),('textureNormal','_normal'),('textureMetallicRoughness','_mreo')))
                     or model.get('Material')!=animations[0].get('Material')):
                 raise ValueError('The selected original party field model is unavailable in this game build.')
         table = tables.setdefault(TABLE, {'asset': 'FFRS/Content/Datatable/' + TABLE, 'add': [], 'set': []})
-        table['set'].append({'row': u['jp'], 'set': updates(u)})
+        # Cutscenes request the native primary slot even for ordinary idle
+        # poses. Preserve it and every story slot; use a runtime-only append.
+        walking = copy.deepcopy(animations[0])
+        for key,value in updates(u).items(): walking[key.split('.')[-1]]=value
+        table['set'].append({'row': u['jp'], 'set': {
+            'animationAssetList': copy.deepcopy(animations)+[walking]}})
+
+
+def runtime_config(units, rows):
+    """Saved walking choices, independent of optional party-member cycling."""
+    selected=[u for u in units if u.get('party') and u.get('overworld')]
+    operations={};prepare(operations,selected,rows)
+    edits={e['row']:e for e in operations.get(TABLE,{}).get('set',[])}
+    config={'schema':1,'cycling':0,'actors':{},'defaults':{}}
+    for u in selected:
+        mid=str((u['id']-1000)*10)
+        slot=len(edits[u['jp']]['set']['animationAssetList'])-1
+        config['actors'][mid]={str(u['id']):slot}
+        config['defaults'][mid]=slot
+    return config
 
 
 def check_rows(original, built, units):
     expected = copy.deepcopy(original)
-    for u in units:
-        if not u.get('overworld'): continue
-        for key, value in updates(u).items():
-            expected[u['jp']]['animationAssetList'][0][key.split('.')[-1]] = value
+    operations={};prepare(operations,units,lambda _:original)
+    for edit in operations.get(TABLE,{}).get('set',[]):
+        expected[edit['row']]['animationAssetList']=edit['set']['animationAssetList']
     if built != expected:
         raise ValueError('Party field assets differ from the selected model or an unrelated field changed.')
 
@@ -193,7 +223,8 @@ def generate_native(u, donor, env):
     def build():
         view=work/'native-original.json';edited=work/'native.json'
         env['run'](env['FFRDT']+['tojson',str(source),str(view),'--usmap',env['USMAP']])
-        result=leader.field_aliases(json.loads(view.read_text(encoding='utf-8-sig')),(donor-1000)*10,target_package=package(u))
+        result=leader.field_aliases(json.loads(view.read_text(encoding='utf-8-sig')),native_source(donor)[1],
+            target_package=package(u),source_package=native_package(donor),walk_run_fallback=donor==CHARLOTTE)
         edited.write_text(json.dumps(result),encoding='utf-8')
         env['run'](env['FFRDT']+['fromjson',str(edited),str(target),'--usmap',env['USMAP']])
     cache=reuse._active

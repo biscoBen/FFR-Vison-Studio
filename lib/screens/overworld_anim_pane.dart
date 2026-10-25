@@ -6,6 +6,19 @@ import '../design/theme.dart';
 import '../services/overworld_appearance.dart';
 import 'party_portrait.dart';
 
+class NativeOverworldIcon extends StatelessWidget {
+  const NativeOverworldIcon({super.key,required this.model,required this.width,required this.height});
+  final String model;
+  final double width,height;
+  @override
+  Widget build(BuildContext context) {
+    final data=OverworldAppearance.data(model);
+    return data['portrait'] is String
+      ? Image.asset(data['portrait'] as String,width:width,height:height,fit:BoxFit.contain,filterQuality:FilterQuality.none)
+      : PartyPortrait(characterId:OverworldAppearance.nativeId(model)!,width:width,height:height);
+  }
+}
+
 class NativeOverworldPreview extends StatelessWidget {
   const NativeOverworldPreview({super.key, required this.model});
   final String model;
@@ -14,7 +27,7 @@ class NativeOverworldPreview extends StatelessWidget {
     height: 210,
     decoration: BoxDecoration(color: Guide.paper2, border: Border.all(color: Guide.ink, width: 2)),
     child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      PartyPortrait(characterId: OverworldAppearance.nativeId(model)!, width: 96, height: 96),
+      NativeOverworldIcon(model:model, width: 96, height: 96),
       const SizedBox(height: 12),
       Text('Original Resonance field model', style: Guide.strong()),
       Text('Native walking and running animations', style: Guide.small()),

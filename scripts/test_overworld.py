@@ -27,10 +27,53 @@ def map_rows():
             {'Ss6Project': path, 'Material': 'native field shader', 'textureBaseColor': path+'_tex',
              'textureNormal': path+'_normal', 'textureMetallicRoughness': path+'_mreo', 'isVisionCharacter': False},
             {'Ss6Project': path+'_scene'}]}
+    path='/Game/Chara/Field_Unit/npc0470/npc0470'
+    charlotte=copy.deepcopy(rows['レイン'])
+    charlotte.update(ID=470,Name='シャルロット')
+    charlotte['animationAssetList']=[dict(charlotte['animationAssetList'][0],Ss6Project=path,
+        textureBaseColor=path+'_tex',textureNormal=path+'_normal',textureMetallicRoughness=path+'_mreo'),
+        {'Ss6Project':path+'_00'},{'Ss6Project':path+'_01'},{'Ss6Project':'native Charlotte vision'}]
+    rows['シャルロット']=charlotte
     return rows
 
 
 class OverworldTests(unittest.TestCase):
+    def test_charlotte_uses_the_native_npc_project_and_preserves_her_original_story_and_vision_slots(self):
+        source=map_rows();before=copy.deepcopy(source)
+        for uid,*_ in party.CHARACTERS:
+            rain=unit(uid);rain.pop('ffbe');rain['overworld']={'version':1,'model':'native_charlotte'}
+            party.validate(rain);ops={};field.prepare(ops,[rain],lambda _:source)
+            built=copy.deepcopy(source);edit,=ops[field.TABLE]['set'];built[rain['jp']].update(edit['set'])
+            field.check_rows(source,built,[rain])
+            self.assertEqual(built['シャルロット'],before['シャルロット'])
+            self.assertEqual(built[rain['jp']]['animationAssetList'][:-1],source[rain['jp']]['animationAssetList'])
+            appended=built[rain['jp']]['animationAssetList'][-1]
+            self.assertEqual(appended['Ss6Project'],f'/Game/Chara/StudioOverworld/party{uid}/npc0470')
+            for key in ('textureBaseColor','textureNormal','textureMetallicRoughness'):
+                self.assertEqual(appended[key],source['シャルロット']['animationAssetList'][0][key])
+        self.assertEqual(source,before)
+
+    def test_charlotte_generation_clones_native_npc_animation_without_texture_conversion(self):
+        from test_field_leader import FieldLeaderTests
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);rain=unit();rain.pop('ffbe');rain['overworld']={'version':1,'model':'native_charlotte'}
+            source=root/'legacy/FFRS/Content/Chara/Field_Unit/npc0470/npc0470.uasset';source.parent.mkdir(parents=True)
+            source.write_bytes(b'original project');source.with_suffix('.uexp').write_bytes(b'original payload')
+            original=FieldLeaderTests().field_fixture(470)[0]
+            original=json.loads(json.dumps(original).replace('pc0470','npc0470'));calls=[]
+            def run(cmd):
+                calls.append(cmd)
+                if cmd[1]=='tojson':Path(cmd[3]).write_text(json.dumps(original))
+                elif cmd[1]=='fromjson':
+                    target=Path(cmd[3]);target.write_bytes(Path(cmd[2]).read_bytes());target.with_suffix('.uexp').write_bytes(b'payload')
+                else:self.fail('A native NPC must not convert textures or use FFBE packs')
+            field.generate(rain,{'ROOT':root,'LEGACY':root/'legacy','OUT':root/'out','FFRDT':['tool'],'USMAP':'fixture','run':run})
+            target=root/'out/FFRS/Content/Chara/StudioOverworld/party1001/npc0470.uasset'
+            view=json.loads(target.read_bytes())
+            self.assertIn(field.package(rain),view['NameMap'])
+            self.assertNotIn(field.native_package(field.CHARLOTTE),view['NameMap'])
+            self.assertEqual([c[1] for c in calls],['tojson','fromjson'])
+
     def test_native_party_choices_keep_source_textures_story_slots_and_battle_identity(self):
         original=map_rows();before=copy.deepcopy(original)
         for donor,source_jp,*_ in party.CHARACTERS:
@@ -38,13 +81,13 @@ class OverworldTests(unittest.TestCase):
             snapshot=copy.deepcopy(rain);party.validate(rain)
             operations={};field.prepare(operations,[rain],lambda _:original)
             edit,=operations[field.TABLE]['set'];built=copy.deepcopy(original)
-            for name,value in edit['set'].items():built[rain['jp']]['animationAssetList'][0][name.split('.')[-1]]=value
+            built[rain['jp']].update(edit['set'])
             field.check_rows(original,built,[rain])
-            self.assertEqual(len(edit['set']),4)
-            self.assertEqual(built[rain['jp']]['animationAssetList'][1:],original[rain['jp']]['animationAssetList'][1:])
+            self.assertEqual(len(edit['set']),1)
+            self.assertEqual(built[rain['jp']]['animationAssetList'][:-1],original[rain['jp']]['animationAssetList'])
             for texture in ('textureBaseColor','textureNormal','textureMetallicRoughness'):
-                self.assertEqual(built[rain['jp']]['animationAssetList'][0][texture],original[source_jp]['animationAssetList'][0][texture])
-            self.assertIn('/StudioOverworld/party1001/',built[rain['jp']]['animationAssetList'][0]['Ss6Project'])
+                self.assertEqual(built[rain['jp']]['animationAssetList'][-1][texture],original[source_jp]['animationAssetList'][0][texture])
+            self.assertIn('/StudioOverworld/party1001/',built[rain['jp']]['animationAssetList'][-1]['Ss6Project'])
             self.assertEqual(rain,snapshot)
         self.assertEqual(original,before)
         with self.assertRaises(ValueError):field.validate({'version':1,'model':'native_party_9999'})
@@ -216,11 +259,11 @@ class OverworldTests(unittest.TestCase):
             operations = {}; party.prepare(operations, [u], lambda rel: copy.deepcopy(source[rel]))
             self.assertEqual(set(operations), {field.TABLE, party.TABLE})
             field_op = operations[field.TABLE]['set'][0]
-            self.assertEqual(field_op['row'], jp); self.assertEqual(len(field_op['set']), 4)
+            self.assertEqual(field_op['row'], jp); self.assertEqual(len(field_op['set']), 1)
             built = copy.deepcopy(originals)
-            for key, value in field_op['set'].items(): built[jp]['animationAssetList'][0][key.split('.')[-1]] = value
+            built[jp].update(field_op['set'])
             field.check_rows(originals, built, [u])
-            self.assertEqual(built[jp]['animationAssetList'][1:], originals[jp]['animationAssetList'][1:])
+            self.assertEqual(built[jp]['animationAssetList'][:-1], originals[jp]['animationAssetList'])
             self.assertEqual(built[jp]['animationAssetList'][0]['Material'], 'native field shader')
             changed = copy.deepcopy(built); changed[jp]['Name'] = 'Vagrant Rain'
             with self.assertRaises(ValueError): field.check_rows(originals, changed, [u])

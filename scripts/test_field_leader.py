@@ -78,6 +78,23 @@ class FieldLeaderTests(unittest.TestCase):
         self.assertEqual(leader.field_aliases(built, 60), built)
         self.assertEqual(view['NamesReferencedFromExportDataCount'], 1)
 
+    def test_npc_walking_clips_supply_player_move_dash_and_field_idle_without_empty_poses(self):
+        view,chunks,animations=self.field_fixture(470)
+        view=json.loads(json.dumps(view).replace('pc0470','npc0470'))
+        clips=view['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value'];del clips[8:]
+        for clip in clips[4:]:clip['Value'][0]['Value']=clip['Value'][0]['Value'].replace('move','walk')
+        view['Exports'][0]['Extras']=base64.b64encode(b''.join(chunks[:8])).decode()
+        built=leader.field_aliases(view,470,target_package='/Game/Chara/StudioOverworld/party1001/npc0470',
+            source_package='/Game/Chara/Field_Unit/npc0470/npc0470',walk_run_fallback=True)
+        clips=built['Exports'][0]['Data'][0]['Value'][0]['Value'][0]['Value']
+        names=[a['Value'][0]['Value'] for a in clips]
+        payload=leader.animation_payloads(clips,built['Exports'][0]['Extras'],built['NameMap'])
+        self.assertEqual(payload[:8],chunks[:8])
+        by=dict(zip(names,payload))
+        for motion in ('idle','move','dash','fieldidle'):
+            for d in leader.DIRECTIONS:self.assertIn(f'{motion}{d}',by)
+        self.assertEqual(by['move9'],by['walk8']);self.assertEqual(by['dash9'],by['walk8'])
+
     def test_existing_empty_diagonal_cells_fall_back_but_real_diagonal_pose_is_preserved(self):
         view, chunks, animations = self.field_fixture(20)
         for destination, source in (('idle1', animations[0]), ('move1', animations[4])):
@@ -126,13 +143,14 @@ class FieldLeaderTests(unittest.TestCase):
         changes, config = leader.bank([rain], rows)
         for edit in changes:
             name = edit['row']; assets = edit['set']['animationAssetList']
-            self.assertEqual(assets[1:2], originals[name]['animationAssetList'][1:])
+            self.assertEqual(assets[:2], originals[name]['animationAssetList'])
             self.assertEqual(len(assets), 10)
             self.assertEqual(config['actors'][str(originals[name]['ID'])]['1002'], 3)
             self.assertIn('StudioOverworld/party1001', assets[2]['Ss6Project'])
             self.assertEqual(assets[7]['Ss6Project'], leader.DFINA)
             expected = dict(originals['ラスウェル']['animationAssetList'][0], Ss6Project=leader.package(20))
             self.assertEqual(assets[3], expected)
+            self.assertEqual(config['defaults'][str(originals[name]['ID'])],2 if name==rain['jp'] else 0)
         self.assertEqual(originals, before)
         originals['フィーナ']['ID'] = 999
         with self.assertRaisesRegex(ValueError, 'assets changed'): leader.bank([], rows)
@@ -219,6 +237,31 @@ class FieldLeaderTests(unittest.TestCase):
         lua.execute(fixture)
         lua.execute((ROOT / 'assets/existing_visions/payload/field_leader.lua').read_text())
         lua.execute('run_tests()')
+
+    def test_saved_walking_choice_stages_story_guards_without_enabling_cycling(self):
+        for native in (False,True):
+            with self.subTest(native=native),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);rain=unit();rain.pop('ffbe')
+                rain['overworld']={'version':1,'model':'native_party_1006'} if native else choice()
+                rows=lambda _:map_rows()
+                config=__import__('_ffr_overworld').runtime_config([rain],rows)
+                self.assertEqual(config,{'schema':1,'cycling':0,'actors':{'10':{'1001':2}},'defaults':{'10':2}})
+                # Staging the controller never regenerates an animation project.
+                leader.build([rain],{'ROOT':root,'rows':rows})
+                payload=json.loads((root/leader.STAGE).read_bytes())
+                self.assertIn('["cycling"]=0',payload['files']['Scripts/config.lua'])
+                self.assertIn('native characters return during events',payload['files']['Scripts/main.lua'])
+                leader.build([],{'ROOT':root,'rows':lambda _:self.fail('Removed choice must not read tables')})
+                self.assertEqual(json.loads((root/leader.STAGE).read_bytes())['files'],{})
+
+    def test_lua_saved_choice_covers_field_idle_and_yields_for_entire_cutscene(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/field_leader_runtime.lua').read_text())
+        lua.execute('package.preload.config = function() return {schema=1,cycling=0, '
+                    'actors={["10"]={["1001"]=5},["60"]={["1006"]=4}},defaults={["10"]=5,["60"]=4}} end')
+        lua.execute((ROOT/'assets/existing_visions/payload/field_leader.lua').read_text())
+        lua.execute('run_saved_choice_tests()')
 
     def test_missing_controller_hook_disables_cycling_without_appearance_writes(self):
         from lupa.lua54 import LuaRuntime

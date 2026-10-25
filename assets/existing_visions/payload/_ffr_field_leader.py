@@ -47,17 +47,17 @@ def bank(units, rows):
             for path, value in _ffr_overworld.updates(u).items():
                 models[u['id']][path.split('.')[-1]] = value
     # Preserve all original indices, including story costumes and battle assets.
-    changes = []; config = {'schema': 1, 'actors': {}}
+    changes = []; config = {'schema': 1, 'cycling': 1, 'actors': {}, 'defaults': {}}
     for uid, jp, _, _ in _ffr_party.CHARACTERS:
         mid = (uid - 1000) * 10
         source = copy.deepcopy(originals[jp]['animationAssetList'])
-        # Other modules may replace only the primary field slot. Keep that choice.
+        # The game owns the complete native prefix, including primary idle.
+        # Saved walking choices exist only in the appended cosmetic bank.
         replacement = next((u for u in units if u.get('id') == uid and u.get('overworld')), None)
-        if replacement:
-            for path, value in _ffr_overworld.updates(replacement).items(): source[0][path.split('.')[-1]] = value
         slots = {str(id): len(source) + i for i, id in enumerate(models)}
         changes.append({'row': jp, 'set': {'animationAssetList': source + list(models.values())}})
         config['actors'][str(mid)] = slots
+        config['defaults'][str(mid)] = slots[str(uid)] if replacement else 0
     return changes, config
 
 
@@ -124,7 +124,7 @@ def animation_payloads(animations, encoded, names, cells=None):
     return result
 
 
-def field_aliases(view, mid, *, target_package=None):
+def field_aliases(view, mid, *, target_package=None, source_package=None, walk_run_fallback=False):
     """Private player-compatible clips; keep genuine usable diagonals intact."""
     view = copy.deepcopy(view)
     project = view['Exports'][0]
@@ -155,8 +155,15 @@ def field_aliases(view, mid, *, target_package=None):
     aliases = []
     for motion in ('idle', 'move', 'dash'):
         for direction in (2, 4, 6, 8):
-            if not usable.get(f'{motion}{direction}'):
-                raise ValueError(f'Native field clip {motion}{direction} has no usable sprite cells.')
+            destination=f'{motion}{direction}'
+            if not usable.get(destination):
+                # Native NPCs can have a walk family without a distinct dash.
+                # Reuse an actual drawable walk; never invent empty clips.
+                donors = ([f'walk{direction}',f'dash{direction}'] if motion=='move'
+                          else [f'move{direction}',f'walk{direction}'] if motion=='dash' else [])
+                source=next((n for n in donors if usable.get(n)),None) if walk_run_fallback else None
+                if source is None:raise ValueError(f'Native field clip {destination} has no usable sprite cells.')
+                aliases.append((destination,source));usable[destination]=True
         for direction, fallback in ((1, 2), (3, 2), (7, 8), (9, 8)):
             destination = f'{motion}{direction}'
             if not usable.get(destination): aliases.append((destination, f'{motion}{fallback}'))
@@ -175,7 +182,7 @@ def field_aliases(view, mid, *, target_package=None):
         if destination not in view['NameMap']: view['NameMap'].append(destination)
     project['Extras'] = base64.b64encode(b''.join(payloads)).decode('ascii')
     animation_payloads(animations, project['Extras'], view['NameMap'])
-    old = f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
+    old = source_package or f'/Game/Chara/Field_Unit/pc{mid:04d}/pc{mid:04d}'
     def rename(value):
         if isinstance(value, str): return (target_package or package(mid)) if value == old else value
         if isinstance(value, list): return [rename(v) for v in value]
@@ -194,8 +201,10 @@ def build(units, env):
     import _ffr_fina_battle as fina
     selected = fina.selected(units, root)
     field = enabled(root)
-    if field or selected:
-        config = bank(units, env['rows'])[1] if field else {'schema': 1, 'actors': {}}
+    walking = any(u.get('party') and u.get('overworld') for u in units)
+    if field or walking or selected:
+        import _ffr_overworld
+        config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
         if selected:
             native = json.loads((root / 'build/crystal-fina-battle/runtime.json').read_bytes())
@@ -206,7 +215,7 @@ def build(units, env):
                 native['cinematicMovie'] = _ffr_fina_cinematic.PRIVATE.replace('FFRS/Content/', '/Game/')
             config['fina'] = native
             code = '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)()\n'
-        if field: code += Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')
+        if field or walking: code += Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')
         payload['files'] = {'enabled.txt': '', 'Scripts/config.lua': 'return ' + lua(config) + '\n', 'Scripts/main.lua': code}
     if field:
         for mid in range(20, 81, 10):
@@ -332,7 +341,7 @@ def loader_plan(root, game, previous, enabled):
                 changes[relative] = raw
                 copied[relative] = hashlib.sha256(raw).hexdigest()
         return before, changes, copied
-    raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field cycling and native Crystal Fina battle effects. Prepare it before installing.')
+    raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field appearances/cycling and native Crystal Fina battle effects. Prepare it before installing.')
 
 
 def install_plan(root, game, payload=None):

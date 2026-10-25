@@ -1,6 +1,7 @@
 -- Verified against the user's UE5.6 native SDK. Cosmetic only: no save setters,
 -- actor respawn, party reorder, movement/collision/camera or story flag writes.
 local config = require("config")
+local cycling = config.cycling ~= 0
 local current, chosen, originalIndex, appliedIndex = nil, nil, nil, nil
 local changing, active, queued = false, false, false
 local lastCycle = -1
@@ -54,20 +55,24 @@ local function context()
         or menu.bIsTransitioning then return nil end
     -- Some builds expose UnitL1 without binding it. Connect the existing field
     -- action to its native receiver only when absent; never replace a binding.
-    if not input:IsBound("UnitL1") then
+    if cycling and not input:IsBound("UnitL1") then
         input:BindAction(1, "UnitL1", 1, true, actor, FName("InputL1"))
     end
-    local party = library("mucha.Default__CPP_BFL_SaveDataParty")
-    local count = party:GetPartyMax()
-    assert(count >= 0 and count <= 8, "Unexpected active party slot count")
     local ids, seen = {}, {}
-    for i = 0, count - 1 do
-        local id = party:GetPartyUnitIdFromIndex(i)
-        if slots[tostring(id)] and not seen[id] then ids[#ids + 1] = id; seen[id] = true end
+    if cycling then
+        local party = library("mucha.Default__CPP_BFL_SaveDataParty")
+        local count = party:GetPartyMax()
+        assert(count >= 0 and count <= 8, "Unexpected active party slot count")
+        for i = 0, count - 1 do
+            local id = party:GetPartyUnitIdFromIndex(i)
+            if slots[tostring(id)] and not seen[id] then ids[#ids + 1] = id; seen[id] = true end
+        end
     end
-    return {actor = actor, slots = slots, ids = ids}
+    local fallback = (config.defaults or {})[tostring(actor:GetMapUnitId())] or 0
+    return {actor = actor, slots = slots, ids = ids, fallback = fallback}
 end
 local function update(cycle, source)
+    if cycle and not cycling then return end
     local c = context()
     if not c then restore(); return end
     if source and not same(source, c.actor) then return end
@@ -83,17 +88,20 @@ local function update(cycle, source)
         local time = library("Engine.Default__GameplayStatics"):GetTimeSeconds(current)
         if time >= lastCycle and time - lastCycle < 0.2 then return end
         lastCycle = time
-        if #c.ids == 0 then restore(); chosen = nil; return end
-        if not selected then
+        if #c.ids > 0 and not selected then
             local nativeId = 1000 + current:GetMapUnitId() // 10
             for i, id in ipairs(c.ids) do if id == nativeId then selected = i; break end end
         end
-        chosen = c.ids[((selected or 0) % #c.ids) + 1]
-        log("Walking appearance: party unit " .. chosen)
+        if #c.ids > 0 then
+            chosen = c.ids[((selected or 0) % #c.ids) + 1]
+            selected = ((selected or 0) % #c.ids) + 1
+            log("Walking appearance: party unit " .. chosen)
+        else chosen = nil end
     elseif not selected then
-        restore(); chosen = nil; return
+        chosen = nil
     end
-    local target = c.slots[tostring(chosen)]
+    local target = chosen and c.slots[tostring(chosen)] or c.fallback
+    if target == 0 then restore(); return end
     if target and target ~= current.m_AnimationAssetIndex then
         setAsset(current, target, true); appliedIndex = target
     end
@@ -106,9 +114,11 @@ local ok, error = pcall(function()
     assert(config.schema == 1, "Unsupported field leader bank")
     -- UnitL1 is released by the native LB/L1 input action. This callback stays
     -- on the game thread and never binds over battle/menu/cutscene controls.
-    hook("/Script/mucha.CPP_MapUnit_Playable:InputL1", function() end, function(context)
-        guarded(function() update(true, context:get()) end)
-    end)
+    if cycling then
+        hook("/Script/mucha.CPP_MapUnit_Playable:InputL1", function() end, function(context)
+            guarded(function() update(true, context:get()) end)
+        end)
+    end
     hook("/Script/mucha.CPP_MapUnit_Playable:DisableUnitInput", function(context)
         guarded(function() if same(current, context:get()) then restore() end end)
     end)
@@ -119,9 +129,11 @@ local ok, error = pcall(function()
     hook("/Script/mucha.CPP_BFL_TalkEvent:PlayEvent", function() guarded(restore) end)
     hook("/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition", function() guarded(restore) end)
     hook("/Script/mucha.CPP_MapManager:Encount", function() guarded(restore) end)
-    RegisterKeyBind(Key.F6, function()
-        ExecuteInGameThread(function() guarded(function() update(true) end) end)
-    end)
+    if cycling then
+        RegisterKeyBind(Key.F6, function()
+            ExecuteInGameThread(function() guarded(function() update(true) end) end)
+        end)
+    end
     active = true
     LoopAsync(150, function()
         if not active then return true end
@@ -131,6 +143,7 @@ local ok, error = pcall(function()
         end
         return false
     end)
-    log("Ready. LB/L1 or F6 cycles the active party while freely walking.")
+    log(cycling and "Ready. LB/L1 or F6 cycles the active party while freely walking."
+        or "Ready. Saved field appearance includes idle; native characters return during events.")
 end)
 if not ok then fail(error) end
