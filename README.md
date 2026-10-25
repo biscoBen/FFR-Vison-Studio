@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Matching fight damage and Fina music playback — 2026-10-25
+
+[Verified Windows download / run 40176189690](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40176189690/Sephira-Studio-Test.zip)
+(code `961a89d`, update **1.2.89**; **74.0 MB**).
+
+The other vision challenges receive the same additional 50% attack-power increase as Christine, including physical
+skills and magic. Her approved powers stay at Blizzard 39, Blizzara 50 and Freezing Spike 78. Preserve combined boss
+HP/break budgets, team damage sharing, levels, speed, healing and control effects.
+
+Fina's movie music now uses a short copy of the original cave recording through a private native sound cue, preserving
+its compressed frames without re-encoding. It starts at the beginning, has no loop and stops with the movie. The movie
+pictures remain unchanged. Studio adds **Play with sound** plus separate audio controls, with pause/seek/volume support.
+The recording is read from your selected game and cached locally; it is not shipped with Studio.
+
+Includes the 1.2.88 battle-name, result reward and default-voice format fixes. The user confirms Christine's current
+balance, vision reward and normal field return work. Keep **Studio Test Data**, update, rebuild/install and restart;
+no preset reset or Prepare Game. Windows/package checks and the local browser test pass. **Listen to Fina's music in
+game and try Play with sound in Studio; the new audio path still needs live confirmation.**
+[Checks and measured timings](CHANGELOG.md#published-native-fina-music-preview-sound-and-matching-challenge-damage--2026-10-25).
+
 ### Default battle names, Christine damage, result rewards and voices — 2026-10-25
 
 [Verified Windows download / run 40172348648](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40172348648/Sephira-Studio-Test.zip)
