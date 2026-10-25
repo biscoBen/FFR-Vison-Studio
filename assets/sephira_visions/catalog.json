@@ -4306,7 +4306,7 @@
         "master": {
           "id": 1350200,
           "en": "Spirit of Crystal Fina",
-          "desc": "Crystal Fina's learned mastery rewards flow into the wearer."
+          "desc": "Grants all of Crystal Fina's mastery abilities."
         },
         "price": 1000,
         "skills": {
@@ -4565,6 +4565,21 @@
               -1
             ],
             [
+              "ActiveSkill",
+              485236,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              230040,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              210140,
+              -1
+            ],
+            [
               "PassiveSkill",
               1381,
               -1
@@ -4598,12 +4613,17 @@
             ],
             [
               "ActiveSkill",
-              485236,
+              485218,
               -1
             ],
             [
               "ActiveSkill",
-              485218,
+              230050,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              210130,
               -1
             ],
             [
@@ -4634,6 +4654,16 @@
               -1
             ],
             [
+              "ActiveSkill",
+              485209,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              485230,
+              -1
+            ],
+            [
               "PassiveSkill",
               1455,
               -1
@@ -4642,27 +4672,12 @@
           [
             [
               "ActiveSkill",
-              210130,
-              -1
-            ],
-            [
-              "ActiveSkill",
               485203,
               -1
             ],
             [
               "ActiveSkill",
-              485206,
-              -1
-            ],
-            [
-              "ActiveSkill",
-              485209,
-              -1
-            ],
-            [
-              "ActiveSkill",
-              485230,
+              210160,
               -1
             ],
             [
@@ -4828,19 +4843,20 @@
             "name": "LB Charge on Action",
             "desc": "Fill the LB gauge by 10% at the start of each action."
           }
-        }
+        },
+        "sephiraKitRevision": 1
       },
       "balance": {
         "nativeBudget": 13051,
         "nativeName": "Ayaka",
         "growthDonor": 13108,
-        "activeCount": 17,
+        "activeCount": 20,
         "passiveCount": 5,
-        "kitCount": 22,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 27,
+        "totalSkillCount": 30,
         "previousCount": 15,
         "additionalPassives": [
           1551,
@@ -4961,10 +4977,7 @@
               1026,
               20015
             ],
-            "unlock": [
-              "awakening",
-              3
-            ]
+            "unlock": null
           },
           {
             "id": 485209,
@@ -5021,7 +5034,7 @@
             "effects": [],
             "unlock": [
               "awakening",
-              3
+              2
             ]
           },
           {
@@ -5199,7 +5212,7 @@
             "effects": [],
             "unlock": [
               "awakening",
-              3
+              2
             ]
           },
           {
@@ -5323,7 +5336,7 @@
             ],
             "unlock": [
               "awakening",
-              1
+              0
             ]
           },
           {
@@ -5851,6 +5864,42 @@
           "before": "Native Ayaka resonance mechanics; Crystal Fina's own sprite animation.",
           "after": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies."
         }
+      },
+      "kitUpdate": {
+        "version": 1,
+        "managed": [
+          "ActiveSkill:210010",
+          "ActiveSkill:210020",
+          "ActiveSkill:210030",
+          "ActiveSkill:210130",
+          "ActiveSkill:210140",
+          "ActiveSkill:210150",
+          "ActiveSkill:210160",
+          "ActiveSkill:210240",
+          "ActiveSkill:210250",
+          "ActiveSkill:210260",
+          "ActiveSkill:210270",
+          "ActiveSkill:230040",
+          "ActiveSkill:230050",
+          "PassiveSkill:1107",
+          "PassiveSkill:1277",
+          "PassiveSkill:1381",
+          "PassiveSkill:1455",
+          "PassiveSkill:1456",
+          "custom:210190",
+          "custom:210240",
+          "custom:215020",
+          "custom:240190",
+          "custom:501930",
+          "custom:503210",
+          "custom:503630",
+          "custom:506110",
+          "custom:570690"
+        ],
+        "masterDescriptions": [
+          "Crystal Fina's learned mastery rewards flow into the wearer.",
+          "Crystal Fina's resonance flows into the wearer."
+        ]
       }
     },
     {
@@ -26625,7 +26674,7 @@
     {
       "id": "aria",
       "name": "Aria",
-      "theme": "Water support, healing and water blade",
+      "theme": "Water magic, water blades and healing",
       "profile": {
         "key": "sephira_aria",
         "id": 13514,
@@ -26656,7 +26705,7 @@
         "master": {
           "id": 1351400,
           "en": "Spirit of Aria",
-          "desc": "Aria's learned mastery rewards flow into the wearer."
+          "desc": "Grants all of Aria's mastery abilities."
         },
         "price": 1000,
         "skills": {
@@ -27053,17 +27102,17 @@
             ],
             [
               "ActiveSkill",
-              486418,
-              -1
-            ],
-            [
-              "ActiveSkill",
               486430,
               -1
             ],
             [
               "ActiveSkill",
               486421,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              210120,
               -1
             ],
             [
@@ -27105,12 +27154,12 @@
             ],
             [
               "ActiveSkill",
-              486436,
+              210140,
               -1
             ],
             [
-              "ActiveSkill",
-              486442,
+              "PassiveSkill",
+              1111,
               -1
             ]
           ],
@@ -27132,17 +27181,12 @@
             ],
             [
               "ActiveSkill",
-              486439,
-              -1
-            ],
-            [
-              "ActiveSkill",
               486424,
               -1
             ],
             [
-              "PassiveSkill",
-              1111,
+              "ActiveSkill",
+              210130,
               -1
             ],
             [
@@ -27159,7 +27203,7 @@
           [
             [
               "ActiveSkill",
-              486427,
+              210160,
               -1
             ],
             [
@@ -27230,7 +27274,7 @@
           [
             [
               "PassiveSkill",
-              1527,
+              1524,
               -1
             ],
             [
@@ -27289,26 +27333,27 @@
           "hideSpoilers": true
         },
         "sephiraPassiveText": {
-          "1527": {
-            "name": "Imbue Light",
-            "desc": "Add light to non-elemental standard attacks and battle skills."
+          "1524": {
+            "name": "Imbue Water",
+            "desc": "Add water to non-elemental standard attacks and battle skills."
           }
-        }
+        },
+        "sephiraKitRevision": 1
       },
       "balance": {
         "nativeBudget": 13045,
         "nativeName": "Leah",
         "growthDonor": 13108,
-        "activeCount": 21,
+        "activeCount": 20,
         "passiveCount": 5,
-        "kitCount": 26,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 31,
+        "totalSkillCount": 30,
         "previousCount": 14,
         "additionalPassives": [
-          1527
+          1524
         ],
         "playerCopies": [
           {
@@ -27657,10 +27702,7 @@
               "breakDamageValue": 17
             },
             "effects": [],
-            "unlock": [
-              "awakening",
-              0
-            ]
+            "unlock": null
           },
           {
             "id": 486430,
@@ -27838,10 +27880,7 @@
             "effects": [
               1023
             ],
-            "unlock": [
-              "awakening",
-              1
-            ]
+            "unlock": null
           },
           {
             "id": 486439,
@@ -27898,10 +27937,7 @@
               "breakDamageValue": 40
             },
             "effects": [],
-            "unlock": [
-              "awakening",
-              2
-            ]
+            "unlock": null
           },
           {
             "id": 486442,
@@ -27958,10 +27994,7 @@
             "effects": [
               1027
             ],
-            "unlock": [
-              "awakening",
-              1
-            ]
+            "unlock": null
           },
           {
             "id": 486421,
@@ -28140,10 +28173,7 @@
               "breakDamageValue": 0
             },
             "effects": [],
-            "unlock": [
-              "awakening",
-              3
-            ]
+            "unlock": null
           }
         ],
         "masteryStats": [
@@ -28529,7 +28559,7 @@
           1311
         ],
         "extraPassives": [
-          1527
+          1524
         ]
       },
       "awakeningBalance": {
@@ -28546,7 +28576,7 @@
             "id": 1375
           },
           {
-            "rank": 2,
+            "rank": 1,
             "id": 1111
           },
           {
@@ -28668,6 +28698,48 @@
           "before": "Native Leah resonance mechanics; Aria's own sprite animation.",
           "after": "Heal all allies and cast Regen on them. Heal effect can exceed max HP."
         }
+      },
+      "kitUpdate": {
+        "version": 1,
+        "managed": [
+          "ActiveSkill:210120",
+          "ActiveSkill:210130",
+          "ActiveSkill:210140",
+          "ActiveSkill:210160",
+          "ActiveSkill:220480",
+          "ActiveSkill:220490",
+          "ActiveSkill:220500",
+          "ActiveSkill:414500",
+          "ActiveSkill:420100",
+          "ActiveSkill:420110",
+          "ActiveSkill:420120",
+          "PassiveSkill:1111",
+          "PassiveSkill:1300",
+          "PassiveSkill:1301",
+          "PassiveSkill:1352",
+          "PassiveSkill:1375",
+          "custom:225090",
+          "custom:240230",
+          "custom:245000",
+          "custom:245010",
+          "custom:250130",
+          "custom:255190",
+          "custom:501400",
+          "custom:501440",
+          "custom:501680",
+          "custom:502020",
+          "custom:503870",
+          "custom:503970",
+          "custom:570620",
+          "custom:570820"
+        ],
+        "masterDescriptions": [
+          "Aria's learned mastery rewards flow into the wearer."
+        ],
+        "passiveReplacement": [
+          1527,
+          1524
+        ]
       }
     },
     {
@@ -61515,6 +61587,7 @@
     "revision": 6,
     "originalCount": 131,
     "extraCount": 19,
-    "totalCount": 150
+    "totalCount": 150,
+    "distinctCount": 141
   }
 }

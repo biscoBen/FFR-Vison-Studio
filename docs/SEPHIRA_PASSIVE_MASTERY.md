@@ -22,7 +22,7 @@ Some passives move between visions to make room for the complete original collec
 | Mystea | Physical Defense +20% (1313) | Magic Defense +20% (1315) | Shell at Half HP (1299) | Magic Evasion +20% (1530) † | Magic Counter (1030) |
 | Reberta (JP) | Opening Honed Senses (1507) † | Reflex (1257) | Fill LB on Defeating Foes (1320) | Bonus Damage (1335) | Clive’s Limit Break (1442) |
 | Snow White | Restore HP on Defeating Foes (1318) | Vigorous Attacks (1358) | Staggeringly Risky (1405) | Dark Rite (1431) | Dark Sword (1457) |
-| Aria | Nullify Poison (1104) | Resist Water (1251) | MP +20% (1381) | Magic Attack +20% (1311) | Imbue Light (1527) † |
+| Aria | Nullify Poison (1104) | Resist Water (1251) | MP +20% (1381) | Magic Attack +20% (1311) | Imbue Water (1524) † |
 | Eiko | Double EXP (1009) † | Nullify Silence (1107) | Recuperate LB (1338) | Peaceful LB Engine (1498) † | LB Triple Charge (1031) |
 | Alice/Half Nightmare | Nullify Sleep (1106) | Critical Hit Rate +10% (1247) | Critical Boost (1234) | Bravery Opener (1294) | Critical Stagger (1388) |
 | Moogle of Narshe Mog | Speed +5% (1316) | Haste on Stagger (1287) | Speed +10% (1277) | Opening Good Luck (1511) † | First Strike (1049) |
@@ -39,6 +39,8 @@ Some passives move between visions to make room for the complete original collec
 | Elza | Resist Dark (1253) | Speed +20% (1317) | Imbue Dark (1528) † | Skyward Dreams (1434) | Tip-Top Shape (1428) |
 | Lunera | Resist Wind (1248) | Spry Steps (1258) | Lingering Debuffs (1510) † | Guiding Wind (1458) | Double MRP (1051) † |
 
-† One of the 19 additional bonuses. Original provenance and exact mechanics remain in `assets/sephira_visions/native_coverage.json`.
+† One of the 19 additional bonus slots. Aria's reviewed Water kit intentionally shares Imbue Water with Folka, leaving 149 distinct MR passives in 150 slots. All 131 original passives remain covered. Original provenance and exact mechanics remain in `assets/sephira_visions/native_coverage.json`.
 
-Use **Apply MR and acquisition update** once for saved collection entries, then rebuild/install. The backed-up migration replaces the passive selection, preserves active skill edits and learned active grants, and keeps existing permanent rewards, artwork, IDs and acquisition settings. New and restored presets already include this allocation. Later edits remain yours.
+Spirit of Crystal Fina and Spirit of Aria retain their vision and reward IDs. Each follows its owner's current five MR passives, including Aria's Water imbue; awakening bonuses and permanent MR stats are not copied into the Spirit. See [the reviewed healer kits](SEPHIRA_USER_KITS.md).
+
+Use **Apply kit and MR updates** once for saved collection entries, then rebuild/install. The backed-up migration replaces the passive selection, preserves active skill edits and learned active grants, and keeps existing permanent rewards, artwork, IDs and acquisition settings. New and restored presets already include this allocation. Later edits remain yours.

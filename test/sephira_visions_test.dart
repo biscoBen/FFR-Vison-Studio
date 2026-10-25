@@ -448,7 +448,8 @@ void main() {
       CharacterConfig.decode(CharacterConfig.encode(next));
     }
     expect(passiveIds,hasLength(150));
-    expect(passiveIds.toSet(),hasLength(150));
+    // Aria now shares the requested Water imbue with Folka.
+    expect(passiveIds.toSet(),hasLength(149));
     final coverage = json.decode(File('assets/sephira_visions/native_coverage.json').readAsStringSync()) as Map;
     final originals = (coverage['entries'] as List).where((e) => e['kind']=='PassiveSkill').map((e) => e['id']).toSet();
     expect(originals,hasLength(131));

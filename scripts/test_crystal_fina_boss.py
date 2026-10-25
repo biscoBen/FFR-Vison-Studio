@@ -109,7 +109,9 @@ class CrystalFinaBossTests(unittest.TestCase):
         self.assertEqual(row['ElementResistanceList']['eElement::Dark'], 'eResistance::Weakness')
         self.assertEqual(row['Experience']+row['Money'],0); self.assertEqual(row['DropNormalItem'], -1)
         self.assertEqual(source, before)
-        preset = next(v['profile'] for v in json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())['presets'] if v['id']=='crystal_fina')
+        # This separate level-10 practice boss keeps its tested rotation and
+        # bounded healing; player kit edits must not silently retune it.
+        preset = json.loads((ROOT/'scripts/fixtures/sephira_user_kits_before.json').read_bytes())['crystal_fina']
         abilities = {g[1] for tier in preset['awakening'] for g in tier if g[0]=='ActiveSkill'}
         self.assertEqual(set(boss.skill_ids()), abilities | {0})
         ray = next(v for v in built[boss.SKILLS].values() if v['ID'] == boss.skill_ids()[485212])

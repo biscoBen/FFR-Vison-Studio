@@ -11,6 +11,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Reviewed Crystal Fina and Aria kits — 2026-10-25
+
+- Apply the supplied four-tier layouts to both saved and newly added visions, including the independent Crystal Fina preset. Fina learns Protect and Raise earlier; Aria focuses on Water blades, Water magic and healing. Use the native 40-MP Reraise spell instead of its internal zero-MP revive event.
+- Change Aria's MR9 to Imbue Water while retaining her previous private reward ID. Both Spirits keep their owner and reward IDs and follow the current five MR passives. Awakening bonuses remain outside the Spirit. All 131 original passives and 160 original active skills remain represented in the collection.
+- Back up existing rosters before applying the layouts once. Retain skill definitions and private IDs, combat edits, permanent MR stats, acquisition choices and artwork. If an extra edited skill would overfill a tier, keep that vision intact and let **Apply kit and MR updates** explain the conflict. Later kit edits remain yours.
+- Automated migration and native-table readback checks cover the new grants and Spirit ownership. Live gameplay testing of the revised healer kits remains pending.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

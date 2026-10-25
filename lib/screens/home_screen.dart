@@ -295,11 +295,11 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(app.sephiraWorking ? app.sephiraProgress ?? 'Preparing visions…'
-                  : app.sephiraRecipeUpdate ? 'MR and acquisition update available. Apply it below, then build/install.'
+                  : app.sephiraRecipeUpdate ? 'Kit and MR update available. Apply it below, then build/install.'
                   : app.sephiraEnabled ? '${entries.length} presets enabled. Build/install to apply.'
                   : 'Off. Presets and edits are kept; build/install to remove them from the game.', style: Guide.small()),
               Wrap(spacing: 8, children: [
-                if (app.sephiraRecipeUpdate) GuideButton('Apply MR and acquisition update',
+                if (app.sephiraRecipeUpdate) GuideButton('Apply kit and MR updates',
                   key: const Key('sephira-progression-update'),
                   onPressed: (app.building || app.deckWorking) || app.sephiraWorking || app.api == null ? null : () async {
                     try { await app.updateSephiraProgression(); } catch (e) { app.showNotice('$e'); }

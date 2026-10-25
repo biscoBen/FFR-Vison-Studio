@@ -56,8 +56,97 @@ class SephiraVisions {
       final profile = p['profile'];
       final latest = profile is Map ? profile['sephiraRecipe'] : null;
       return p['id'] == id && latest is int &&
-          latest > (current is int ? current : 0);
+          (latest > (current is int ? current : 0) ||
+           (p['kitUpdate'] is Map && (unit['sephiraKitRevision'] as int? ?? 0) < p['kitUpdate']['version']));
     });
+  }
+
+  /// Apply the two reviewed kits once. Preserve private skill identities and
+  /// combat edits, unrelated learned grants, stats, artwork and acquisition.
+  /// A full edited tier stays openable; the explicit update reports the issue.
+  static Map<String, dynamic> repairKit(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets, {bool strict = false,
+  }) {
+    if (unit['native'] != null || unit['party'] != null) return unit;
+    final id = presetId(unit) ?? (CrystalFina.matches(unit) ? 'crystal_fina' : null);
+    final preset = presets.where((p) => p['id'] == id).firstOrNull;
+    final update = preset?['kitUpdate'];
+    if (update is! Map || (unit['sephiraKitRevision'] as int? ?? 0) >= update['version']) return unit;
+    try {
+      final result = CharacterConfig.copy(unit);
+      final template = CharacterConfig.restore(preset!['profile'] as Map<String, dynamic>, [], replacing: unit);
+      final owned = result['skills'] as Map;
+      String grantKey(List g) {
+        final recipe = g[0] == 'ActiveSkill' ? owned[g[1].toString()] as Map? : null;
+        return recipe != null ? 'custom:${recipe['from']}' : '${g[0]}:${g[1]}';
+      }
+      final managed = Set<String>.from(update['managed'] as List);
+      if (!member(unit) && id == 'crystal_fina') {
+        // The earlier independent preset had a different borrowed kit.
+        for (final source in [240230,240010,210050,230060,210120,445020,230070,230140,300110]) {
+          managed.add('ActiveSkill:$source');
+        }
+        managed.add('custom:445020');
+      }
+      final awakening = <List<dynamic>>[];
+      for (var rank = 0; rank < 4; rank++) {
+        final grants = <dynamic>[];
+        for (final raw in template['awakening'][rank] as List) {
+          final grant = List<dynamic>.from(raw as List);
+          final recipe = grant[0] == 'ActiveSkill' ? template['skills'][grant[1].toString()] as Map? : null;
+          if (recipe != null) {
+            final existing = owned.entries.where((e) => (e.value as Map)['from'] == recipe['from']).toList();
+            if (existing.length > 1) throw StateError('${unit['en']} has multiple copies of ${recipe['en']}. Choose one before applying its kit update.');
+            if (existing.isNotEmpty) {
+              grant[1] = int.parse(existing.single.key.toString());
+            } else {
+              final occupied = {for (final key in owned.keys) for (final delta in [0,1,2]) int.parse(key.toString()) + delta};
+              final base = CharacterConfig.skillBase(unit['id'] as int);
+              final target = [grant[1] as int, for (var n = 1; n < 32; n++) base+n*3]
+                  .where((v) => [v,v+1,v+2].every((x) => !occupied.contains(x))).firstOrNull;
+              if (target == null) throw StateError('${unit['en']} has no space for the updated kit.');
+              final copy = CharacterConfig.copy(recipe as Map<String, dynamic>);
+              copy['jp'] = '${copy['jp']}_KitUpdate_$target';
+              owned[target.toString()] = copy;
+              grant[1] = target;
+            }
+          }
+          grants.add(grant);
+        }
+        grants.addAll((result['awakening'][rank] as List).where((g) => !managed.contains(grantKey(g as List))));
+        if (grants.length > 8) throw StateError('${unit['en']} tier ${rank+1} has no room for its kit update. Move an extra ability first.');
+        awakening.add(grants);
+      }
+      result['awakening'] = awakening;
+      final replacement = update['passiveReplacement'];
+      if (replacement is List) {
+        for (final tier in result['synchro'] as List) {
+          for (final g in tier as List) {
+            if (g[0] == 'PassiveSkill' && g[1] == replacement[0]) g[1] = replacement[1];
+          }
+        }
+        final labels = Map<String, dynamic>.from(result['sephiraPassiveText'] as Map? ?? {});
+        final retained = {for (final f in ['awakening','synchro']) for (final tier in result[f] as List)
+          for (final g in tier as List) if (g[0] == 'PassiveSkill') g[1]};
+        if (!retained.contains(replacement[0])) labels.remove(replacement[0].toString());
+        labels[replacement[1].toString()] = preset['profile']['sephiraPassiveText'][replacement[1].toString()];
+        result['sephiraPassiveText'] = labels;
+      }
+      // Retain old recipe definitions for already-learned/save references.
+      // Their removed awakening grants no longer expose them in this kit.
+      // Spirits read this vision's MR rows through their stable VisionId. Only
+      // replace our previous generic text, retaining deliberate descriptions.
+      final master = result['master'] as Map;
+      if ((update['masterDescriptions'] as List? ?? []).contains(master['desc'])) {
+        master['desc'] = template['master']['desc'];
+      }
+      result['sephiraKitRevision'] = update['version'];
+      CharacterConfig.validate(result);
+      return result;
+    } on StateError {
+      if (strict) rethrow;
+      return unit;
+    }
   }
 
   static bool valid(dynamic value) => value is Map && value.length == 3 &&
@@ -223,7 +312,7 @@ class SephiraVisions {
   ) {
     final latest = preset['profile']['sephiraRecipe'] as int;
     if ((unit['sephiraRecipe'] as int? ?? 0) >= latest) {
-      return repairMasteryScope(CharacterConfig.copy(unit), [preset]);
+      return repairKit(repairMasteryScope(CharacterConfig.copy(unit), [preset]), [preset], strict: true);
     }
     if (latest >= 7) {
       var previous = unit;
@@ -253,7 +342,7 @@ class SephiraVisions {
       }
       result['sephiraRecipe'] = 7;
       CharacterConfig.validate(result);
-      return repairMasteryScope(result, [preset]);
+      return repairKit(repairMasteryScope(result, [preset]), [preset], strict: true);
     }
     if (latest >= 6) {
       var previous = unit;

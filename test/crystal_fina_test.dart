@@ -13,6 +13,7 @@ import 'package:ffr_vision_studio/services/character_config.dart';
 import 'package:ffr_vision_studio/services/crystal_fina.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
 import 'package:ffr_vision_studio/state/app_state.dart';
+import 'package:ffr_vision_studio/version.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,7 +101,7 @@ void main() {
     result['stats']['MaxHitPoint'] = 999;
     expect(source['stats']['MaxHitPoint'], 600);
     expect(result['lb_custom']['en'], 'Crystal Restoration');
-    expect(result['awakening'].map((tier) => tier.length).toList(), [7, 6, 5, 3]);
+    expect(result['awakening'].map((tier) => tier.length).toList(), [7, 8, 7, 3]);
     expect(result['synchro'][3].single[0], 'PassiveSkill');
     expect(result['synchro'][7].single[0], 'PassiveSkill');
     expect((result['awakening'] as List).expand((t) => t as List).any((g) => g[0]=='ActiveSkill' && result['skills'][g[1].toString()]?['from']==506110),isTrue);
@@ -249,7 +250,7 @@ void main() {
             File('assets/existing_visions/payload/$resource').readAsBytesSync());
         }
       }
-      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.90' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': action == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? sephiraUpdateVersion : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     await features.prepareEngine(paths, engineRunning: false);
@@ -285,7 +286,7 @@ void main() {
         final source = existing ? 'assets/existing_visions/payload/$relative' : '${CrystalFina.assetRoot}/engine/payload/$relative';
         expect(staged.readAsBytesSync(), File(source).readAsBytesSync());
       }
-      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? '1.2.90' : '1.1.1'}), '');
+      return ProcessResult(1, 0, json.encode({'status': args.last == 'Restore' ? 'restored' : 'active', 'patchVersion': existing ? sephiraUpdateVersion : '1.1.1'}), '');
     });
     await features.prepareEngine(paths, engineRunning: false);
     final material = Directory(p.join(paths.root, 'bundled')).listSync(recursive: true).whereType<File>().singleWhere((file) => file.path.endsWith('M_CrystalFina_AlphaTest_13503.uasset'));

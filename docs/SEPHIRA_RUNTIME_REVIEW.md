@@ -66,7 +66,7 @@ Counts include every awakening and MR tier. Each private passive and each learne
 | --- | ---: | ---: | ---: |
 | A2 | 19 | 14 | 6 |
 | Christine | 16 | 10 | 3 |
-| Crystal Fina | 17 | 9 | 3 |
+| Crystal Fina | 20 | 9 | 3 |
 | Barusa | 16 | 7 | 7 |
 | Blue Sky Belle Fran | 17 | 9 | 3 |
 | Oracle Maiden Lunafreya | 17 | 9 | 4 |
@@ -78,7 +78,7 @@ Counts include every awakening and MR tier. Each private passive and each learne
 | Mystea | 15 | 10 | 4 |
 | Reberta (JP) | 18 | 9 | 5 |
 | Snow White | 19 | 12 | 6 |
-| Aria | 21 | 14 | 4 |
+| Aria | 20 | 14 | 4 |
 | Eiko | 17 | 10 | 3 |
 | Alice/Half Nightmare | 17 | 14 | 10 |
 | Moogle of Narshe Mog | 16 | 8 | 3 |

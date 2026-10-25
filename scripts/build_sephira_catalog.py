@@ -425,8 +425,10 @@ def generate(reference):
     revise_awakening_bonuses(catalog, rows, english)
     revise_mastery_scope(catalog, english)
     revise_descriptions(catalog, rows, english)
+    from sephira_user_kits import revise as revise_user_kits, standalone as standalone_user_kit
+    revise_user_kits(catalog)
     independent = ROOT/'assets/crystal_fina/profile.json'
-    independent.write_text(json.dumps(standalone_descriptions(json.loads(independent.read_bytes()), catalog),indent=2)+'\n')
+    independent.write_text(json.dumps(standalone_user_kit(standalone_descriptions(json.loads(independent.read_bytes()), catalog),catalog),indent=2)+'\n')
     audit['status'] = 'All 160 original active skills and 131 original passives retain canonical allocations; unit-bound traits are awakening bonuses, and transferable MR bonuses may be shared.'
     (ROOT/'assets/sephira_visions/native_coverage.json').write_text(json.dumps(audit,indent=2)+'\n')
     (ROOT/'assets/sephira_visions/catalog.json').write_text(json.dumps(catalog,indent=2)+'\n')

@@ -31,13 +31,15 @@ Levels come from ordinary enemies in the encounter volume containing each shrine
 
 ## Kit sizes
 
-Use **Apply MR and acquisition update** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, permanent stat rewards, combat recipes and active learned abilities. For revision 6 entries, it adds only the missing awakening bonuses and retains edited MR rewards. Older entries first receive the five-passive MR curation and move MR actives to awakening. Saved acquisition choices are preserved. See [the complete passive allocation](docs/SEPHIRA_PASSIVE_MASTERY.md). Earlier recipes also receive the MR schedule and challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.
+The reviewed Crystal Fina and Aria layouts apply once to existing rosters after a backup. Aria’s MR9 and Spirit use Imbue Water. See [the healer kit update](docs/SEPHIRA_USER_KITS.md).
+
+Use **Apply kit and MR updates** for existing saved presets, then build/install. It backs up the roster and preserves allocated IDs, artwork, permanent stat rewards, combat recipes and active learned abilities. For revision 6 entries, it adds only the missing awakening bonuses and retains edited MR rewards. Older entries first receive the five-passive MR curation and move MR actives to awakening. Saved acquisition choices are preserved. See [the complete passive allocation](docs/SEPHIRA_PASSIVE_MASTERY.md). Earlier recipes also receive the MR schedule and challenge/shop locations. New presets include the revision automatically. Later edits to updated presets remain yours.
 
 | Vision | Awakening abilities | Awakening bonuses | Awakening total | Additional MR abilities | Additional MR bonuses |
 |---|---:|---:|---:|---:|---:|
 | A2 | 19 | 5 | 24 | 0 | 5 |
 | Christine | 16 | 5 | 21 | 0 | 5 |
-| Crystal Fina | 17 | 5 | 22 | 0 | 5 |
+| Crystal Fina | 20 | 5 | 25 | 0 | 5 |
 | Barusa | 16 | 6 | 22 | 0 | 5 |
 | Blue Sky Belle Fran | 17 | 4 | 21 | 0 | 5 |
 | Oracle Maiden Lunafreya | 17 | 7 | 24 | 0 | 5 |
@@ -49,7 +51,7 @@ Use **Apply MR and acquisition update** for existing saved presets, then build/i
 | Mystea | 15 | 5 | 20 | 0 | 5 |
 | Reberta (JP) | 18 | 7 | 25 | 0 | 5 |
 | Snow White | 19 | 5 | 24 | 0 | 5 |
-| Aria | 21 | 5 | 26 | 0 | 5 |
+| Aria | 20 | 5 | 25 | 0 | 5 |
 | Eiko | 17 | 5 | 22 | 0 | 5 |
 | Alice/Half Nightmare | 17 | 5 | 22 | 0 | 5 |
 | Moogle of Narshe Mog | 16 | 5 | 21 | 0 | 5 |
@@ -146,10 +148,10 @@ Healing, cleansing and light magic.
 
 Sprite `99887755552703` (CUSTOM); base-stat budget: Ayaka. Growth: Terra.
 
-- Awakening 1: Cure [210010]; Banish [210250]; MP +20% [1381]; Nullify Silence [1107].
-- Awakening 2: Cura [210020]; Banishra [210260]; Crystal Ray [485212]; Restore [485215]; Purify [485236]; Crystal Renewal [485218]; Speed +10% [1277].
-- Awakening 3: Curaga [210030]; Banishga [210270]; Arise [210150]; Crystal Renewal [485233]; Alabastrine Blessing [1455].
-- Awakening 4: Esunaga [210130]; Holy [485203]; Reraise [485206]; Radiant Restoration [485209]; Crystal Sanctification [485230]; Divine Tidings [1456].
+- Awakening 1: Cure [210010]; Banish [210250]; Purify [485236]; Protect [230040]; Raise [210140]; MP +20% [1381]; Nullify Silence [1107].
+- Awakening 2: Cura [210020]; Banishra [210260]; Crystal Ray [485212]; Restore [485215]; Crystal Renewal [485218]; Protectga [230050]; Esunaga [210130]; Speed +10% [1277].
+- Awakening 3: Curaga [210030]; Banishga [210270]; Arise [210150]; Crystal Renewal [485233]; Radiant Restoration [485209]; Crystal Sanctification [485230]; Alabastrine Blessing [1455].
+- Awakening 4: Holy [485203]; Reraise [210160]; Divine Tidings [1456].
 - MR 1: Healing Magic +20% [1283].
 - MR 2: HP +30 (permanent).
 - MR 3: Magic Evasion +15% [1551].
@@ -159,6 +161,8 @@ Sprite `99887755552703` (CUSTOM); base-stat budget: Ayaka. Growth: Terra.
 - MR 7: LB Charge on Action [1552].
 - MR 8: Mind +15 (permanent).
 - MR 9: Grit [1042]; AP +8 (permanent); Spirit of Crystal Fina.
+
+Removed learned grants retain their definitions for old saves; they are not additional awakening abilities. See [the reviewed healer kits](docs/SEPHIRA_USER_KITS.md).
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -537,14 +541,14 @@ Supplemental player copies (native source ID; final MP/power):
 
 ### Aria — 5
 
-Water support, healing and water blade.
+Water magic, water blades and healing.
 
 Sprite `203000905` (GL); base-stat budget: Leah. Growth: Terra.
 
-- Awakening 1: Water Blade [420100]; Cure of the Seventh Dawn [220480]; Healing Rain [486403]; Rejuvenate [486409]; Banish Ray [486418]; Water Chorus [486430]; Aether Current [486421]; Healing Magic +30% [1375].
-- Awakening 2: Watera Blade [420110]; Cure II of the Seventh Dawn [220490]; Purify [414500]; Soothing Rain [486406]; Undertow [486412]; Bubble Breath [486415]; Cleansing Miasma [486436]; Mist Veil [486442].
-- Awakening 3: Waterga Blade [420120]; Cure III of the Seventh Dawn [220500]; Ocean Requiem [486433]; Radiant Pulse [486439]; Waterdrop [486424]; Nullify Charm [1111]; Protect at Half HP [1300]; Haste at Half HP [1301].
-- Awakening 4: Soothing Current [486427]; Preventive Care [1352].
+- Awakening 1: Water Blade [420100]; Cure of the Seventh Dawn [220480]; Healing Rain [486403]; Rejuvenate [486409]; Water Chorus [486430]; Aether Current [486421]; Esuna [210120]; Healing Magic +30% [1375].
+- Awakening 2: Watera Blade [420110]; Cure II of the Seventh Dawn [220490]; Purify [414500]; Soothing Rain [486406]; Undertow [486412]; Bubble Breath [486415]; Raise [210140]; Nullify Charm [1111].
+- Awakening 3: Waterga Blade [420120]; Cure III of the Seventh Dawn [220500]; Ocean Requiem [486433]; Waterdrop [486424]; Esunaga [210130]; Protect at Half HP [1300]; Haste at Half HP [1301].
+- Awakening 4: Reraise [210160]; Preventive Care [1352].
 - MR 1: Nullify Poison [1104].
 - MR 2: MP +10 (permanent).
 - MR 3: Resist Water [1251].
@@ -553,7 +557,9 @@ Sprite `203000905` (GL); base-stat budget: Leah. Growth: Terra.
 - MR 6: Magic +10 (permanent).
 - MR 7: Magic Attack +20% [1311].
 - MR 8: Mind +15 (permanent).
-- MR 9: Imbue Light [1527]; AP +8 (permanent); Spirit of Aria.
+- MR 9: Imbue Water [1524]; AP +8 (permanent); Spirit of Aria.
+
+Removed learned grants retain their definitions for old saves; they are not additional awakening abilities. See [the reviewed healer kits](docs/SEPHIRA_USER_KITS.md).
 
 Supplemental player copies (native source ID; final MP/power):
 

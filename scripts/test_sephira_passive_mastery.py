@@ -23,6 +23,7 @@ class PassiveMasteryTests(unittest.TestCase):
             expected = list(REWARDS[preset['id']])
             for rank, bound, general, _ in pack.MASTERY_SCOPE.get(preset['id'], []):
                 expected[(rank-1)//2] = general
+            if preset['id']=='aria':expected[-1]=1524
             self.assertEqual([g[1] for g in choices], expected)
             self.assertFalse({g[1] for g in choices} & pack.BINDINGS.keys())
             learned.update(g[1] for f in ('awakening','synchro') for t in unit[f]
@@ -30,7 +31,8 @@ class PassiveMasteryTests(unittest.TestCase):
             actual.extend(g[1] for g in choices)
             previous = {g[1] for field in ('awakening','synchro')
                         for tier in preset['revision5Progression'][field] for g in tier if g[0]=='ActiveSkill'}
-            self.assertEqual({g[1] for tier in unit['awakening'] for g in tier if g[0]=='ActiveSkill'}, previous)
+            if not preset.get('kitUpdate'):
+                self.assertEqual({g[1] for tier in unit['awakening'] for g in tier if g[0]=='ActiveSkill'}, previous)
         self.assertEqual(len(required), 131)
         self.assertEqual(len(actual), 150)
         self.assertLessEqual(required, learned)

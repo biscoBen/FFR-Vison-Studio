@@ -213,6 +213,9 @@ _FALLBACK_FIRST = 1970
 
 
 def private_passive_id(preset, source):
+    # Aria's requested Water replacement keeps the already-learned Spirit/MR
+    # passive identity of her former Light imbue. Other visions keep their IDs.
+    if preset == 'aria' and source == 1524: source = 1527
     key = (preset, source)
     if key in _PRIVATE_PASSIVES: return _PRIVATE_PASSIVES[key]
     # Preserve support for explicitly edited/imported membership names without
@@ -220,6 +223,19 @@ def private_passive_id(preset, source):
     import hashlib
     first = _FALLBACK_FIRST
     return first + int.from_bytes(hashlib.sha256(f'{preset}:{source}'.encode()).digest()[:4], 'big') % (2000 - first)
+
+
+def repair_kit_rewards(unit):
+    """The old Aria draft must also build Water with the unchanged MR/Spirit ID."""
+    value=runtime_membership(unit)
+    if value is None or value['preset']!='aria' or unit.get('sephiraKitRevision',0)>=1:return
+    for tier in unit.get('synchro',[]):
+        for grant in tier:
+            if grant[:2]==['PassiveSkill',1527]:
+                grant[1]=1524
+                labels=unit.setdefault('sephiraPassiveText',{})
+                labels.pop('1527',None)
+                labels['1524']={'name':'Imbue Water','desc':'Add water to non-elemental standard attacks and battle skills.'}
 
 
 def player_units(units, rows):
@@ -233,6 +249,7 @@ def player_units(units, rows):
     if not selected: return result
     native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     for unit in selected:
+        repair_kit_rewards(unit)
         learned = {g[1] for tier in unit.get('synchro', []) for g in tier if g[0] == 'ActiveSkill'}
         command = unit['command']['id']
         for identity, recipe in unit['skills'].items():
@@ -346,6 +363,9 @@ def verify_runtime_rows(root, tool, usmap, units, rows):
     lookups = {kind: {r['ID']: r for r in built[rel].values()} for kind, rel in (
         ('ActiveSkill', rels[0]), ('PassiveSkill', PASSIVE), ('MasterSkill', rels[2]))}
     for unit in selected:
+        master=lookups['MasterSkill'].get(unit['master']['id'])
+        if not master or master.get('VisionId')!=unit['id']:
+            raise ValueError(f'{unit["en"]}: its Spirit points to another vision\'s mastery rewards.')
         for field, rel in [('awakening', rels[3]), ('synchro', rels[4])]:
             for rank, grants in enumerate(unit[field]):
                 found = [r for r in built[rel].values() if r['ID'] == unit['id'] and r['Level'] == rank]
@@ -406,6 +426,7 @@ def bind_units(units, rows):
         value = runtime_membership(u)
         if value is None: continue
         repair_mastery_scope(u)
+        repair_kit_rewards(u)
         owned = {int(sid) for sid in u.get('skills', {})}
         if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)
         if native_skills & owned:

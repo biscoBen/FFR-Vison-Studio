@@ -22,7 +22,7 @@ The earlier rule reserving passives for MR is extended here at the user’s requ
 | Mystea | Cecil | 10 | A1: HP +30%; A1: Resist Dark; A2: Grit; A3: Recuperate LB; A4: Strategic Acumen | 315 (370) |
 | Reberta (JP) | Clive | 12 | A1: Physical Attack +20%; A1: Resist Fire; A2: HP +20%; A2: Regen on Stagger; A3: Regen Opener; A4: Critical Hit Rate +10%; A4: Stagger Power +30% | 385 (365) |
 | Snow White | Cecil | 10 | A1: Physical Attack +20%; A3: Resist Dark; A3: HP +20%; A3: Physical Defense +20%; A4: Auto-Regen | 310 (370) |
-| Aria | Leah | 10 | A1: Healing Magic +30%; A3: Nullify Charm; A3: Protect at Half HP; A3: Haste at Half HP; A4: Preventive Care | 270 (270) |
+| Aria | Leah | 10 | A1: Healing Magic +30%; A2: Nullify Charm; A3: Protect at Half HP; A3: Haste at Half HP; A4: Preventive Care | 270 (270) |
 | Eiko | Ayaka | 10 | A1: Healing Magic +30%; A1: Nullify Sleep; A2: MP +20%; A3: Speed +10%; A4: Alabastrine Blessing | 285 (275) |
 | Alice/Half Nightmare | Squall | 10 | A2: Physical Attack +20%; A2: Nullify Blind; A2: HP +20%; A3: Restore MP on Attack; A4: Stagger Power +30% | 310 (305) |
 | Moogle of Narshe Mog | Tidus | 10 | A1: Magic Attack +20%; A1: Resist Water; A2: HP +20%; A3: Regen on Stagger; A4: Fill LB on Defeating Foes | 260 (300) |

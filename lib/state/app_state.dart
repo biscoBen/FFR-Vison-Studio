@@ -412,6 +412,15 @@ class AppState extends ChangeNotifier {
       units = descriptions;
       dirty = true;
     }
+    final kits = [for (final u in units)
+      SephiraVisions.repairKit(u as JsonMap, sephiraPresets)];
+    if (kits.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      final backup = File(p.join(paths.configBackups, 'sephira-user-kits-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = kits;
+      dirty = true;
+    }
     if (sephiraUnits.isNotEmpty) {
       sephiraInitialized = true;
       sephiraEnabled = sephiraUnits.any(SephiraVisions.included);
@@ -662,7 +671,7 @@ class AppState extends ChangeNotifier {
     await _savePending();
     try {
       sephiraWorking = true;
-      sephiraProgress = 'Updating MR rewards and acquisition…';
+      sephiraProgress = 'Updating kits, MR rewards and acquisition…';
       notifyListeners();
       if (sephiraPresets.isEmpty) sephiraPresets = await SephiraVisions.bundled;
       final current = _mergePending(await api!.spec());
@@ -678,7 +687,7 @@ class AppState extends ChangeNotifier {
       await backup.writeAsString(CharacterConfig.encodeAll(current), flush: true);
       if (revision != _rosterRevision) throw StateError('A character changed during the update. Retry; your edits were kept.');
       await _commitSephira(next, enabled: sephiraEnabled);
-      showNotice('MR rewards and acquisition updated. Previous roster backed up. Build/install to apply.');
+      showNotice('Kits, MR rewards and acquisition updated. Previous roster backed up. Build/install to apply.');
     } finally {
       sephiraWorking = false; sephiraProgress = null; notifyListeners();
     }

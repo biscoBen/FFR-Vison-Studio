@@ -1,0 +1,1558 @@
+{
+  "crystal_fina": {
+    "key": "sephira_crystal_fina",
+    "id": 13502,
+    "sort": 13572,
+    "jp": "Sephira_crystal_fina",
+    "en": "Crystal Fina",
+    "desc": "Healing, cleansing and light magic. A Sephira vision with native-budget Resonance skills.",
+    "donor": 13108,
+    "attackType": "Magic",
+    "stats": {
+      "MaxHitPoint": 600,
+      "MaxMagicPoint": 100,
+      "Attack": 30,
+      "Defence": 30,
+      "Intelligence": 40,
+      "Mind": 50,
+      "Agility": 30
+    },
+    "roles": [
+      "eUnitRole::Healer"
+    ],
+    "elemRes": {},
+    "command": {
+      "id": 322,
+      "en": "Crystal Fina Skills",
+      "desc": "Healing, cleansing and light magic."
+    },
+    "master": {
+      "id": 1350200,
+      "en": "Spirit of Crystal Fina",
+      "desc": "Crystal Fina's learned mastery rewards flow into the wearer."
+    },
+    "price": 1000,
+    "skills": {
+      "485203": {
+        "from": 210190,
+        "visuals": 210250,
+        "jp": "Sephira_crystal_fina_Kit_1",
+        "en": "Holy",
+        "desc": "Deal Light magic damage to an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 63,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+        }
+      },
+      "485206": {
+        "from": 210240,
+        "visuals": 400630,
+        "jp": "Sephira_crystal_fina_Kit_2",
+        "en": "Reraise",
+        "desc": "Grant Reraise to an ally.",
+        "descAuto": false,
+        "set": {
+          "Cost": 60,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "485209": {
+        "from": 215020,
+        "visuals": 215020,
+        "jp": "Sephira_crystal_fina_Kit_3",
+        "en": "Radiant Restoration",
+        "desc": "Restore all allies\u2019 HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 65,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "485212": {
+        "from": 503630,
+        "visuals": 210260,
+        "jp": "Sephira_crystal_fina_Kit_4",
+        "en": "Crystal Ray",
+        "desc": "Deal Light magic damage to an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 24,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+        }
+      },
+      "485215": {
+        "from": 501930,
+        "visuals": 210010,
+        "jp": "Sephira_crystal_fina_Kit_5",
+        "en": "Restore",
+        "desc": "Restore 20% of an ally\u2019s max HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 18,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "485230": {
+        "from": 240190,
+        "visuals": 210260,
+        "jp": "Sephira_crystal_fina_Kit_10",
+        "en": "Crystal Sanctification",
+        "desc": "Deal Light magic damage to all enemies.",
+        "descAuto": false,
+        "set": {
+          "Cost": 45,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "TargetType": "Group",
+          "magnification": 40,
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+        }
+      },
+      "485233": {
+        "from": 503210,
+        "visuals": 210010,
+        "jp": "Sephira_crystal_fina_Kit_11",
+        "en": "Crystal Renewal",
+        "desc": "Restore 10% of all allies\u2019 max HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 35,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "TargetType": "Group",
+          "magnification": 10
+        }
+      },
+      "485236": {
+        "from": 570690,
+        "visuals": 400630,
+        "jp": "Sephira_crystal_fina_Kit_12",
+        "en": "Purify",
+        "desc": "Remove an ally\u2019s ailments.",
+        "descAuto": false,
+        "set": {
+          "Cost": 15,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "defaultTargetRelation": "Friendlies"
+        }
+      },
+      "485218": {
+        "from": 506110,
+        "visuals": 210020,
+        "jp": "Sephira_crystal_fina_Kit_6",
+        "en": "Crystal Renewal",
+        "desc": "Restore all allies\u2019 HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 50,
+          "accuracy": 100,
+          "belongCommandList": [
+            322
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            322,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "magnification": 400,
+          "defaultTargetRelation": "Friendlies"
+        }
+      }
+    },
+    "ffbeMap": {
+      "skills": {},
+      "passives": {}
+    },
+    "menuScale": 2.52,
+    "sephiraRecipe": 7,
+    "awakening": [
+      [
+        [
+          "ActiveSkill",
+          210010,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          210250,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1381,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1107,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          210020,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          210260,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485212,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485215,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485236,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485218,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1277,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          210030,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          210270,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          210150,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485233,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1455,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          210130,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485203,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485206,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485209,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          485230,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1456,
+          -1
+        ]
+      ]
+    ],
+    "synchro": [
+      [],
+      [
+        [
+          "PassiveSkill",
+          1283,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          1,
+          30
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1551,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          11,
+          8
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1077,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          2,
+          20
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1552,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          8,
+          15
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1042,
+          -1
+        ],
+        [
+          "BaseParameter",
+          11,
+          8
+        ],
+        [
+          "MasterSkill",
+          1350200,
+          -1
+        ]
+      ]
+    ],
+    "ffbe": {
+      "dir": "units/custom/crystal_fina_2/sprites/99887755552703",
+      "id": "99887755552703",
+      "source": "CUSTOM",
+      "base": "99887755552703"
+    },
+    "custom": {
+      "schema": 1,
+      "animations": [
+        "idle",
+        "atk",
+        "limitatk"
+      ],
+      "warnings": [
+        "move was not supplied; the idle animation will be used.",
+        "magic was not supplied; the idle animation will be used.",
+        "down was not supplied; the idle animation will be used.",
+        "victory was not supplied; the idle animation will be used."
+      ]
+    },
+    "icon": {
+      "style": "border",
+      "rarity": "NV"
+    },
+    "bundledPreset": "custom.crystal_fina.v1",
+    "lb": 412510,
+    "lb_custom": {
+      "from": 412510,
+      "presentation": "ffbe",
+      "field_color_mode": "element",
+      "audio": "native",
+      "audio_codec": "host",
+      "visuals": 440110,
+      "target_effect": null,
+      "clone_sequence": true,
+      "mute": [
+        "VO_"
+      ],
+      "caption_from": 440280,
+      "jp": "Sephira_crystal_fina_Resonance",
+      "en": "Crystal Fina Resonance",
+      "nameAuto": false,
+      "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
+      "set": {
+        "element": "None",
+        "hitCount": 1,
+        "DamageType": "Magic",
+        "damageCalcType": "Magic"
+      },
+      "sequence_edits": {},
+      "effect_swaps": [],
+      "mechanics": "custom",
+      "descAuto": false,
+      "ffbe_lb_id": "99887755552703",
+      "ffbe_lb": "units/custom/crystal_fina_2/resonance.json",
+      "sephiraAudio": 1
+    },
+    "sephiraAcquisition": {
+      "version": 3,
+      "location": "sephira_13100",
+      "random": false,
+      "hideSpoilers": true,
+      "cave": null
+    },
+    "studioAcquisition": {
+      "version": 3,
+      "location": "sephira_13100",
+      "random": false,
+      "hideSpoilers": true,
+      "cave": null
+    },
+    "sephiraPassiveText": {
+      "1551": {
+        "name": "Magic Evasion +15%",
+        "desc": "Evade magic attacks with a 15% chance."
+      },
+      "1552": {
+        "name": "LB Charge on Action",
+        "desc": "Fill the LB gauge by 10% at the start of each action."
+      }
+    }
+  },
+  "aria": {
+    "key": "sephira_aria",
+    "id": 13514,
+    "sort": 13584,
+    "jp": "Sephira_aria",
+    "en": "Aria",
+    "desc": "Water support, healing and water blade. A Sephira vision with native-budget Resonance skills.",
+    "donor": 13108,
+    "attackType": "Magic",
+    "stats": {
+      "MaxHitPoint": 800,
+      "MaxMagicPoint": 100,
+      "Attack": 25,
+      "Defence": 30,
+      "Intelligence": 10,
+      "Mind": 20,
+      "Agility": 15
+    },
+    "roles": [
+      "eUnitRole::Healer"
+    ],
+    "elemRes": {},
+    "command": {
+      "id": 334,
+      "en": "Aria Skills",
+      "desc": "Water support, healing and water blade."
+    },
+    "master": {
+      "id": 1351400,
+      "en": "Spirit of Aria",
+      "desc": "Aria's learned mastery rewards flow into the wearer."
+    },
+    "price": 1000,
+    "skills": {
+      "486403": {
+        "from": 245000,
+        "visuals": 245000,
+        "jp": "Sephira_aria_Kit_1",
+        "en": "Healing Rain",
+        "desc": "Restore all allies\u2019 HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 10,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486406": {
+        "from": 245010,
+        "visuals": 210010,
+        "jp": "Sephira_aria_Kit_2",
+        "en": "Soothing Rain",
+        "desc": "Restore all allies\u2019 HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 18,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486409": {
+        "from": 502020,
+        "visuals": 210010,
+        "jp": "Sephira_aria_Kit_3",
+        "en": "Rejuvenate",
+        "desc": "Restore 20% of own max HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 12,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486412": {
+        "from": 501400,
+        "visuals": 220130,
+        "jp": "Sephira_aria_Kit_4",
+        "en": "Undertow",
+        "desc": "Deal Water magic damage to all enemies 3 times. reduce enemy physical and magic defense.",
+        "descAuto": false,
+        "set": {
+          "Cost": 20,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+        }
+      },
+      "486415": {
+        "from": 501680,
+        "visuals": 220140,
+        "jp": "Sephira_aria_Kit_5",
+        "en": "Bubble Breath",
+        "desc": "Deal Water magic damage to all enemies 3 times.",
+        "descAuto": false,
+        "set": {
+          "Cost": 24,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+        }
+      },
+      "486418": {
+        "from": 240230,
+        "visuals": 240230,
+        "jp": "Sephira_aria_Kit_6",
+        "en": "Banish Ray",
+        "desc": "Deal Light magic damage to an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 5,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+        }
+      },
+      "486430": {
+        "from": 225090,
+        "visuals": 225090,
+        "jp": "Sephira_aria_Kit_10",
+        "en": "Water Chorus",
+        "desc": "Deal Water magic damage to all enemies.",
+        "descAuto": false,
+        "set": {
+          "Cost": 12,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+        }
+      },
+      "486433": {
+        "from": 501440,
+        "visuals": 220140,
+        "jp": "Sephira_aria_Kit_11",
+        "en": "Ocean Requiem",
+        "desc": "Deal Water magic damage to all enemies 3 times. Lower defense and spirit.",
+        "descAuto": false,
+        "set": {
+          "Cost": 40,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "magnification": 40,
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+        }
+      },
+      "486436": {
+        "from": 255190,
+        "visuals": 255190,
+        "jp": "Sephira_aria_Kit_12",
+        "en": "Cleansing Miasma",
+        "desc": "Deal magic damage to all enemies. Inflict Poison.",
+        "descAuto": false,
+        "set": {
+          "Cost": 20,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486439": {
+        "from": 503870,
+        "visuals": 210260,
+        "jp": "Sephira_aria_Kit_13",
+        "en": "Radiant Pulse",
+        "desc": "Deal Light magic damage to an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 36,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "magnification": 40,
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+        }
+      },
+      "486442": {
+        "from": 570820,
+        "visuals": 400630,
+        "jp": "Sephira_aria_Kit_14",
+        "en": "Mist Veil",
+        "desc": "Inflict Blind.",
+        "descAuto": false,
+        "set": {
+          "Cost": 20,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486421": {
+        "from": 503970,
+        "visuals": 400630,
+        "jp": "Sephira_aria_Kit_7",
+        "en": "Aether Current",
+        "desc": "Drain MP from an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 8,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None"
+        }
+      },
+      "486424": {
+        "from": 250130,
+        "visuals": 250130,
+        "jp": "Sephira_aria_Kit_8",
+        "en": "Waterdrop",
+        "desc": "Deal Water magic damage to an enemy.",
+        "descAuto": false,
+        "set": {
+          "Cost": 6,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "element": "Water",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+        }
+      },
+      "486427": {
+        "from": 570620,
+        "visuals": 210010,
+        "jp": "Sephira_aria_Kit_9",
+        "en": "Soothing Current",
+        "desc": "Restore 200 HP to an ally.",
+        "descAuto": false,
+        "set": {
+          "Cost": 14,
+          "accuracy": 100,
+          "belongCommandList": [
+            334
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            334,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "TargetType": "Single",
+          "defaultTargetRelation": "Friendlies"
+        }
+      }
+    },
+    "ffbeMap": {
+      "skills": {},
+      "passives": {}
+    },
+    "menuScale": 2.0,
+    "sephiraRecipe": 7,
+    "awakening": [
+      [
+        [
+          "ActiveSkill",
+          420100,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          220480,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486403,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486409,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486418,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486430,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486421,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1375,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          420110,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          220490,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          414500,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486406,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486412,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486415,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486436,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486442,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          420120,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          220500,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486433,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486439,
+          -1
+        ],
+        [
+          "ActiveSkill",
+          486424,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1111,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1300,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1301,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          486427,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1352,
+          -1
+        ]
+      ]
+    ],
+    "synchro": [
+      [],
+      [
+        [
+          "PassiveSkill",
+          1104,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          2,
+          10
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1251,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          11,
+          8
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1381,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          7,
+          10
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1311,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          8,
+          15
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1527,
+          -1
+        ],
+        [
+          "BaseParameter",
+          11,
+          8
+        ],
+        [
+          "MasterSkill",
+          1351400,
+          -1
+        ]
+      ]
+    ],
+    "ffbe": {
+      "id": "203000905",
+      "base": "203000904",
+      "source": "GL",
+      "dir": "units/ffbe/sephira_aria/sprites/203000905"
+    },
+    "lb": 414100,
+    "lb_custom": {
+      "from": 414100,
+      "presentation": "ffbe",
+      "mechanics": "custom",
+      "audio": "native",
+      "visuals": 440110,
+      "clone_sequence": true,
+      "mute": [
+        "VO_"
+      ],
+      "field_color_mode": "element",
+      "ffbe_lb_id": "203000905",
+      "movement": {
+        "enabled": false
+      },
+      "set": {},
+      "jp": "Sephira_aria_Resonance",
+      "en": "Aria Resonance",
+      "desc": "Heal all allies and cast Regen on them. Heal effect can exceed max HP.",
+      "descAuto": false,
+      "nameAuto": false,
+      "audio_codec": "host",
+      "sephiraAudio": 1
+    },
+    "sephiraAcquisition": {
+      "version": 1,
+      "location": "mitra_shop",
+      "random": false,
+      "hideSpoilers": true
+    },
+    "studioAcquisition": {
+      "version": 1,
+      "location": "mitra_shop",
+      "random": false,
+      "hideSpoilers": true
+    },
+    "sephiraPassiveText": {
+      "1527": {
+        "name": "Imbue Light",
+        "desc": "Add light to non-elemental standard attacks and battle skills."
+      }
+    }
+  },
+  "independent_fina": {
+    "key": "crystal_fina_2",
+    "jp": "Crystal Fina 2",
+    "en": "Crystal Fina",
+    "id": 13503,
+    "sort": 13573,
+    "desc": "An original vision.",
+    "donor": 13108,
+    "ffbe": {
+      "dir": "units/custom/crystal_fina_2/sprites/99887755552703",
+      "id": "99887755552703",
+      "source": "CUSTOM",
+      "base": "99887755552703"
+    },
+    "attackType": "Magic",
+    "roles": [
+      "eUnitRole::Healer"
+    ],
+    "stats": {
+      "MaxHitPoint": 600,
+      "MaxMagicPoint": 100,
+      "Attack": 30,
+      "Defence": 30,
+      "Intelligence": 40,
+      "Mind": 50,
+      "Agility": 30
+    },
+    "elemRes": {
+      "eElement::Light": "eResistance::Halved"
+    },
+    "command": {
+      "id": 323,
+      "en": "Crystal Fina Skills",
+      "desc": "Skills unique to Crystal Fina 2."
+    },
+    "master": {
+      "id": 1350300,
+      "en": "Spirit of Crystal Fina",
+      "desc": "Crystal Fina's resonance flows into the wearer."
+    },
+    "price": 1,
+    "menuScale": 2.52,
+    "icon": {
+      "style": "border",
+      "rarity": "NV"
+    },
+    "lb": 440090,
+    "lb_custom": {
+      "from": 412510,
+      "presentation": "ffbe",
+      "field_color_mode": "element",
+      "audio": "native",
+      "audio_codec": "host",
+      "visuals": 440110,
+      "target_effect": null,
+      "clone_sequence": true,
+      "mute": [
+        "VO_"
+      ],
+      "caption_from": 440280,
+      "jp": "Crystal Fina 2_LB",
+      "en": "Crystal Restoration",
+      "nameAuto": false,
+      "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
+      "set": {
+        "element": "None",
+        "hitCount": 1,
+        "DamageType": "Magic",
+        "damageCalcType": "Magic"
+      },
+      "sequence_edits": {},
+      "effect_swaps": [],
+      "mechanics": "custom",
+      "descAuto": false,
+      "ffbe_lb_id": "99887755552703",
+      "ffbe_lb": "units/custom/crystal_fina_2/resonance.json",
+      "sephiraAudio": 1
+    },
+    "skills": {
+      "485300": {
+        "from": 445020,
+        "visuals": 445020,
+        "jp": "Crystal Fina 2_Raegen Blast",
+        "en": "Raegen Blast",
+        "desc": "Staggers every enemy instantly. No damage.",
+        "descAuto": false,
+        "set": {
+          "magnification": 0,
+          "breakDamageValue": 9999,
+          "accuracy": 500,
+          "Cost": 0,
+          "element": "Thunder",
+          "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder",
+          "effectBundleList[0].effectId": -1,
+          "effectBundleList[1].effectId": -1,
+          "totalDamageDisplayRule": "Hidden"
+        },
+        "studio": "raegen_blast"
+      },
+      "485318": {
+        "from": 506110,
+        "visuals": 210020,
+        "jp": "CrystalFina_MR_485318",
+        "en": "Crystal Renewal",
+        "desc": "Restore all allies\u2019 HP.",
+        "descAuto": false,
+        "set": {
+          "Cost": 50,
+          "accuracy": 100,
+          "belongCommandList": [
+            323
+          ],
+          "commandIdBelongDebuggingAllSkills": [
+            323,
+            -1
+          ],
+          "skillIdAfterModeChange": -1,
+          "isApplyAllMag": false,
+          "playSequencerId": -1,
+          "sequencerIdWhenTargetFriendlies": -1,
+          "voiceLabel": "None",
+          "selfSkillActivateVoiceLabel": "None",
+          "magnification": 400,
+          "defaultTargetRelation": "Friendlies"
+        }
+      }
+    },
+    "awakening": [
+      [
+        [
+          "ActiveSkill",
+          240230
+        ],
+        [
+          "ActiveSkill",
+          240010
+        ],
+        [
+          "ActiveSkill",
+          210050
+        ],
+        [
+          "ActiveSkill",
+          230040
+        ],
+        [
+          "ActiveSkill",
+          485318,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1381,
+          -1
+        ],
+        [
+          "PassiveSkill",
+          1107,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          210260
+        ],
+        [
+          "ActiveSkill",
+          210120
+        ],
+        [
+          "ActiveSkill",
+          210020
+        ],
+        [
+          "ActiveSkill",
+          230060
+        ],
+        [
+          "ActiveSkill",
+          210140
+        ],
+        [
+          "PassiveSkill",
+          1277,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          445020
+        ],
+        [
+          "ActiveSkill",
+          210030
+        ],
+        [
+          "ActiveSkill",
+          230050
+        ],
+        [
+          "ActiveSkill",
+          230070
+        ],
+        [
+          "PassiveSkill",
+          1455,
+          -1
+        ]
+      ],
+      [
+        [
+          "ActiveSkill",
+          230140
+        ],
+        [
+          "ActiveSkill",
+          300110
+        ],
+        [
+          "PassiveSkill",
+          1456,
+          -1
+        ]
+      ]
+    ],
+    "synchro": [
+      [],
+      [
+        [
+          "PassiveSkill",
+          1283,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          1,
+          30
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1551,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          11,
+          8
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1077,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          2,
+          20
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1552,
+          -1
+        ]
+      ],
+      [
+        [
+          "BaseParameter",
+          8,
+          15
+        ]
+      ],
+      [
+        [
+          "PassiveSkill",
+          1042,
+          -1
+        ],
+        [
+          "BaseParameter",
+          11,
+          8
+        ],
+        [
+          "MasterSkill",
+          1350300,
+          -1
+        ]
+      ]
+    ],
+    "ffbeMap": {
+      "skills": {},
+      "passives": {}
+    },
+    "custom": {
+      "schema": 1,
+      "animations": [
+        "idle",
+        "atk",
+        "limitatk"
+      ],
+      "warnings": [
+        "move was not supplied; the idle animation will be used.",
+        "magic was not supplied; the idle animation will be used.",
+        "down was not supplied; the idle animation will be used.",
+        "victory was not supplied; the idle animation will be used."
+      ]
+    },
+    "sephiraPassiveText": {
+      "1551": {
+        "name": "Magic Evasion +15%",
+        "desc": "Evade magic attacks with a 15% chance."
+      },
+      "1552": {
+        "name": "LB Charge on Action",
+        "desc": "Fill the LB gauge by 10% at the start of each action."
+      }
+    },
+    "sephiraRecipe": 7
+  }
+}

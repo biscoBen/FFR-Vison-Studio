@@ -58,14 +58,17 @@ class SephiraTests(unittest.TestCase):
                         # traits now remain in their owner's awakening kit.
                         if kind=='PassiveSkill': continue
                         key=f'{kind}:{id}'
-                        self.assertNotIn(key,seen,key)
-                        seen[key]=p['id']
+                        # The user's healer layouts deliberately share these
+                        # native spells; every audited original owner remains.
+                        shared={230040,230050,210140,210160,210120,210130}
+                        if id not in shared:self.assertNotIn(key,seen,key)
+                        seen.setdefault(key,set()).add(p['id'])
         for e in audit['entries']:
             if e['kind']=='PassiveSkill':
                 owner=next(p['profile'] for p in catalog['presets'] if p['id']==e['assignedTo'])
                 self.assertIn(e['id'],{g[1] for f in ('awakening','synchro') for t in owner[f]
                                       for g in t if g[0]=='PassiveSkill'})
-            else:self.assertEqual(seen[f"{e['kind']}:{e['id']}"],e['assignedTo'])
+            else:self.assertIn(e['assignedTo'],seen[f"{e['kind']}:{e['id']}"])
         self.assertEqual(len(audit['entries']),291)
         excluded={v['id'] for v in audit['excludedVisions']}
         budgets={p['balance']['nativeBudget'] for p in catalog['presets']}
