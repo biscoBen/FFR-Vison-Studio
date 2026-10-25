@@ -11,15 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Transferable MR rewards, native walking appearances and automatic Fina cinematic — 2026-10-25
-
-- Add the eight original Resonance party characters to **Edit overworld appearance**, alongside the existing FFBE walking models. Rain can walk as Dark Fina while retaining his own battle model, voice, identity, equipment and progression. Choices roundtrip through character configs and can be reverted independently.
-- Reuse the installed character's native textures and cache a private walking project, preserving its clips and supplying missing directional/field-idle aliases. Story costume slots and other characters' assets remain intact. Native choices require no sprite download or texture conversion.
-- Make Crystal Fina's cinematic part of her resonance automatically and remove its test toggle. Existing saved off settings are ignored. Include the movie only when Fina is present; removing her removes the companion movie package. Retain the verified playback path and the new music fades.
-- Automated checks cover native selection, save/revert, table preservation, directional aliases, warm reuse and inclusion with old settings. Live native walking swaps and automatic cinematic playback still need in-game confirmation.
-- Restore all 75 individual equipable MR rewards from the 15 excluded originals as Sephira MR rewards. The 25 active rewards retain their original MR ranks, acquisition gates, mechanics and equip costs. Relocate supplemental passives into awakening, retaining all 131 original passives, one ability per odd MR rank, native counterpart passive counts and passive AP budgets within 20%. Keep the approved Crystal Fina/Aria kits unchanged. Add reproducible coverage and allocation reports.
-- Back up and migrate untouched saved layouts once; preserve private recipes, artwork, permanent rewards, IDs and acquisition edits. Report conflicting MR edits or full awakening tiers before building instead of discarding them. Native table readback covers the complete roster, independent Fina, Spirit owner bindings and unchanged stock MR active rows; live equipment/balance still need confirmation.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -88,6 +79,40 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published transferable MR rewards, native walking choices and automatic Fina cinematic — 2026-10-25
+
+[Verified Windows ZIP / run 40227331721](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40227331721/Sephira-Studio-Test.zip), code `22f8bf9`, update **1.2.94** (74.0 MB).
+SHA-256 `cf23e1a36b8972baecbc35c586d503c583b0ae0ac157e05f244fad3116c63f2f`.
+
+- Restore all **75 individual equipable MR rewards** from the 15 excluded original visions as Sephira MR rewards. The 25 restored active rewards keep their original MR ranks and acquisition gates, stock mechanics, equip/MP costs and animation references. Keep all 50 original passive MR rewards transferable. Move supplemental passives into awakening to make room, retaining all **131 original passives** across the kits. Each odd MR rank still has one ability; MR9 retains its ability, permanent AP and Spirit.
+- Match each vision's native counterpart passive count and keep passive AP totals within 20%. Keep themed awakening versions on other units where appropriate, such as Relm's Mimic, while the MR teacher matches the original gate. Preserve Crystal Fina and Aria's approved kits, Spirits, artwork, permanent stats, private combat recipes and acquisition choices. [Allocation and migration](docs/SEPHIRA_MR_RESTORATION.md); [75/75 MR audit](docs/SEPHIRA_MR_COVERAGE.md).
+- Back up and migrate untouched saved layouts once. Deliberate edits to affected MR slots and full awakening tiers remain intact and report a conflict before building. Later edits remain user choices. Existing IDs, artwork and acquisition overrides stay intact; no preset reset is needed.
+- Add all eight native Resonance party characters to **Edit overworld appearance**, alongside FFBE. Rain can walk as Dark Fina while retaining his battle identity and progression. Reuse native textures and animation clips through cached private walking projects; story costume slots and unrelated assets are preserved. Native choices require no sprite download or texture conversion.
+- Remove **Test Crystal Fina cinematic**. Her cinematic is included automatically when she is in the build, even if the old saved toggle was off. Removing Fina removes the companion movie package. Preserve the chosen artwork, working HCA v3/ADX audio path, single playback, battle-music pause/resume and the 0.4s/0.8s fades from 1.2.92.
+
+Validation: **720 Python tests** pass locally (42 platform skips), **92 focused Flutter tests** pass, and analysis is
+clean. Native writing/readback checks cover all 30 kits plus an independent Fina, every Spirit owner and the complete
+unchanged stock rows for all 25 restored MR actives. Native map tables preserve all eight walking swaps and unrelated
+story rows. A real Fina build with the old toggle off passes stereo movie descriptor and picture-preservation checks;
+its verified warm movie reuse takes about 0.060s. The existing sprite cache remains byte-identical to its pinned
+version and MR/acquisition changes retain sprite reuse. Full Windows validation, compilation, engine setup and
+launcher/updater checks pass for the same commit. The actual downloaded ZIP matches provenance/SHA-256, all **75**
+extension and **16** standalone Fina hashes, the compiled 1.2.94 label, native choices, removed switch and 75/75 MR audit.
+**Live native walking swaps, the new equipable reward placements and automatic cinematic playback still need in-game
+confirmation.** Keep Studio Test Data, update, rebuild/install and restart; no Prepare Game or preset reset is required.
+
+Measured delivery: first complete candidate 11:19:47
+to verified package 12:51:50 America/Los_Angeles,
+**92m 03s**. This includes the initial native/cinematic/audit candidate, the Windows report-encoding correction,
+the subsequently requested MR restoration, local test/fixture/packaging/cache corrections, waiting and package
+verification; the timer was not restarted. The final run's measured CI wall time is **8m 23s**, and summed
+job runtime is **12m 40s**. Across the three automatic Windows runs, summed CI wall intervals are
+**28m 30s** and summed job runtime is
+**41m 10s**. The first run failed the new report's Windows text
+encoding check; its corrected run passed. The final requested MR restoration was built at its own commit.
+The matching automatic runs were reused; no duplicate build was dispatched. Publication notes are a separate
+README/CHANGELOG-only commit and do not request another binary.
 
 ## Published gentle Fina movie music fades — 2026-10-25
 

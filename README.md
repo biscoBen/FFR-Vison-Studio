@@ -4,6 +4,24 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Complete MR rewards, native walking choices and automatic Fina movie — 2026-10-25
+
+[Verified Windows download / run 40227331721](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40227331721/Sephira-Studio-Test.zip)
+(code `22f8bf9`, update **1.2.94**; **74.0 MB**).
+
+All **75 original equipable MR rewards** from the excluded visions are now Sephira MR rewards. The 25 restored active
+rewards keep their original mastery ranks and acquisition gates. Supplemental passives move into awakening, retaining
+all 131 original passives, native passive-count/AP budgets and the approved Fina/Aria kits. [Exact MR allocation](docs/SEPHIRA_MR_RESTORATION.md).
+
+**Edit overworld appearance** now includes the eight native Resonance party characters, including Dark Fina.
+Crystal Fina's cinematic is automatic; its test toggle is removed and old off settings no longer suppress it.
+The working music, artwork and gentle fades remain.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. Untouched saved layouts migrate once with a backup;
+conflicting MR edits are reported before building. No preset reset or Prepare Game is needed. Windows/package/native
+checks pass; new walking swaps, equipable reward placements and automatic movie playback still need live testing.
+[Checks and measured timings](CHANGELOG.md#published-transferable-mr-rewards-native-walking-choices-and-automatic-fina-cinematic--2026-10-25).
+
 ### Gentle Fina movie music fades — 2026-10-25
 
 [Verified Windows download / run 40218872561](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40218872561/Sephira-Studio-Test.zip)
