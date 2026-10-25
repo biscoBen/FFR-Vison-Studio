@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Default model replacement and Windows voice extraction — 2026-10-24
+
+[Verified Windows download / run 40144253062](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40144253062/Sephira-Studio-Test.zip)
+(code `45c4f64`, update **1.2.86**; **74.0 MB**).
+
+Fixes the “selected model has no name” regression when changing a default vision's model. The selected model's catalog
+name is passed with its appearance, while preserving the native kit and chosen voice. Ordinary FFBE models now have
+full-picker tests alongside bundled Crystal Fina. Windows voice extraction also uses normalized package filters, fixing
+the zero-file extraction and missing-voice-track build error. Existing sprite/icon reuse is preserved.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. No Prepare Game or preset reset is required.
+Windows validation, compilation and downloaded-ZIP checks pass; live voice playback remains a test to make.
+Christine's missing reward, further battle balance and Fina's silent movie remain active follow-up work.
+[Validation and measured timings](CHANGELOG.md#published-default-model-naming-and-windows-voice-extraction--2026-10-24).
+
 ### Vision rewards, battle balance and default voices — 2026-10-24
 
 [Verified Windows download / run 40141095549](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40141095549/Sephira-Studio-Test.zip)

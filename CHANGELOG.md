@@ -11,12 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Default model replacement and Windows voice extraction
-
-- Fix the 1.2.85 regression that rejected ordinary default-vision model replacements with “The selected model has no name.” Pass the selected catalog name alongside the appearance-only model response, preserving automatic naming, the native kit and independently selected voice. Bundled Crystal Fina and ordinary Add unit keep their existing paths.
-- Normalize native voice extraction filters to forward-slash package paths and remove the content prefix after normalization. Windows paths previously extracted zero sound tracks and caused the “Expected either native voice cues or one movie voice track” error. Fetch missing sound tracks when only a resonance master is cached.
-- Add full-picker regressions for hosted and engine catalogs, plus Windows filter and uncached-track discovery checks. Keep existing sprite/icon reuse and voice/audio generation unchanged. Live voice playback still needs testing after a successful install.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -85,6 +79,29 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published default model naming and Windows voice extraction — 2026-10-24
+
+[Verified Windows ZIP / run 40144253062](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40144253062/Sephira-Studio-Test.zip), code `45c4f64`, update **1.2.86** (74.0 MB).
+SHA-256 `ba8cc457d0b80b5f00091feaa454f5520e35efda00b983d70ebc84a8b94e3fb6`.
+
+- Fix the 1.2.85 regression that rejected ordinary default-vision model replacements with “The selected model has no name.” Pass the selected catalog name alongside the appearance-only model response, preserving automatic naming, the native kit and independently selected voice. Bundled Crystal Fina and ordinary Add unit keep their existing paths.
+- Normalize native voice extraction filters to forward-slash package paths and remove the content prefix after normalization. Windows paths previously extracted zero sound tracks and caused the “Expected either native voice cues or one movie voice track” error. Fetch missing sound tracks when only a resonance master is cached.
+- Add full-picker regressions for hosted and engine catalogs, plus Windows filter and uncached-track discovery checks. Keep existing sprite/icon reuse and voice/audio generation unchanged. Live voice playback still needs testing after a successful install.
+
+Validation: 698 Python tests pass locally (41 platform skips), 97 targeted Flutter tests pass (one Windows-only local
+skip), and analysis reports no issues. The exact commit passes full Windows validation and compilation, including fresh
+frozen-engine setup, launcher/updater and extension checks. The downloaded ZIP matches all 72 managed extension and 16
+standalone Fina manifest files. No animation-library download is included. Keep Studio Test Data, update, rebuild/install
+and restart; no preset reset or Prepare Game is needed.
+
+The user now confirms Christine returns without a black screen, but reports no vision reward and continued silence in
+Fina's movie. Reward, battle balance and movie audio work continue in the next update; this package fixes model selection
+and the Windows voice-build error.
+
+First complete candidate 23:46:35 UTC to verified ZIP 00:04:04 UTC:
+**17m 29s**, including local checks, Windows waiting and verification. CI wall time **10m 02s**; summed runner
+usage **13m 53s**. One matching automatic run joined, with no manual dispatch.
 
 ## Published vision battle rewards, transferable MR and native voices — 2026-10-24
 
