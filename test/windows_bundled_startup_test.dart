@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:ffr_vision_studio/services/bundled_features.dart';
 import 'package:ffr_vision_studio/services/paths.dart';
+import 'package:ffr_vision_studio/version.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -64,7 +65,7 @@ void main() {
         File(p.join(paths.engineDir, '.ffr-existing-visions/state.json'))
             .readAsStringSync(),
       ) as Map;
-      expect(state['version'], '1.2.89');
+      expect(state['version'], sephiraUpdateVersion);
       for (final name in [
         '_ffr_existingvisions.py',
         '_ffr_build_progress.py',
@@ -85,6 +86,8 @@ void main() {
         '_ffr_movie_audio.py',
         '_ffr_cave_music_preview.py',
         'cave_music_preview.zip',
+        'CaveHcaV3.cs',
+        'cave_hca_v3.ps1',
         'fina_cinematic.zip',
         '_ffr_deck_sync.py',
         '_ffr_party.py',
