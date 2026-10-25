@@ -11,6 +11,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Recover the saved walking appearance callback — 2026-10-25
+
+- Address the reported 1.2.95 regression where Rain remains visible after selecting Fina. The returned UE4SS log shows the field controller starts, followed by callback collection and `Ref was not function`; the existing Fina presentation uses a persistent game-thread loop successfully in that same log.
+- Use that persistent game-thread loop for walking updates, and keep loop/hook/key callbacks strongly reachable in Lua. An executable weak-reference fixture reproduces the lost callback in the shipped 1.2.95 code; the revised controller retains it and applies the saved walking slot after collection.
+- Retain the older-loader bridge with a retained request, bounded retry after a lost callback, and inert late callbacks. Retry transient title/load/actor errors instead of disabling the walking appearance for the session. Recheck scene/input guards when the queued update actually runs.
+- Log state changes and the active map-unit/slot so a blocked walking choice no longer reports only the startup message. Keep original cutscene slots, scene restoration, idle/walk/run selection, optional cycling, native Charlotte, battle models and saved choices unchanged. Runtime-only logic; sprite conversion inputs and game-table recipes are unchanged. Live playback still needs the user's retest.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

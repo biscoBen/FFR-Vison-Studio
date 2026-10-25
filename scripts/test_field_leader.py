@@ -263,6 +263,84 @@ class FieldLeaderTests(unittest.TestCase):
         lua.execute((ROOT/'assets/existing_visions/payload/field_leader.lua').read_text())
         lua.execute('run_saved_choice_tests()')
 
+    def walking_runtime(self,before=''):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/field_leader_runtime.lua').read_text())
+        lua.execute('package.preload.config = function() return {schema=1,cycling=0, '
+                    'actors={["10"]={["1001"]=5},["60"]={["1006"]=4}},defaults={["10"]=5,["60"]=4}} end')
+        if before:lua.execute(before)
+        lua.execute((ROOT/'assets/existing_visions/payload/field_leader.lua').read_text())
+        return lua
+
+    def test_persistent_game_thread_loop_retains_callbacks_through_collection_and_scene_changes(self):
+        lua=self.walking_runtime('''
+            local weak=setmetatable({},{__mode='v'})
+            function LoopInGameThreadWithDelay(ms,fn)
+                assert(ms==150);weak[1]=fn
+                tick=function() assert(weak[1],'Lost native walking callback');return weak[1]() end
+            end
+            function LoopAsync() error('Native loop needs no async bridge') end
+            function ExecuteInGameThread() error('Already on the game thread') end
+        ''')
+        lua.execute("collectgarbage('collect'); run_saved_choice_tests(); "
+                    "for _=1,30 do collectgarbage('collect');assert(tick()==false) end")
+
+    def test_async_loop_and_scene_hooks_remain_reachable_when_the_loader_only_keeps_weak_references(self):
+        lua=self.walking_runtime('''
+            local weak=setmetatable({},{__mode='v'})
+            function LoopAsync(ms,fn)
+                assert(ms==150);weak[1]=fn
+                tick=function() assert(weak[1],'Lost async walking callback');return weak[1]() end
+            end
+            function RegisterHook(path,pre,post) hooks[path]=setmetatable({pre,post},{__mode='v'}) end
+        ''')
+        lua.execute("collectgarbage('collect');run_saved_choice_tests()")
+
+    def test_failed_native_loop_registration_uses_the_recoverable_bridge(self):
+        lua=self.walking_runtime("function LoopInGameThreadWithDelay() error('unavailable fixture') end")
+        lua.execute('run_saved_choice_tests()')
+
+    def test_failed_queue_does_not_disable_saved_walking_for_the_session(self):
+        lua=self.walking_runtime()
+        lua.execute('''
+            local original=ExecuteInGameThread
+            ExecuteInGameThread=function() error('queue failure fixture') end
+            assert(tick()==false and actor.m_AnimationAssetIndex==0)
+            ExecuteInGameThread=original
+            assert(tick()==false and actor.m_AnimationAssetIndex==5)
+        ''')
+
+    def test_lost_callback_retries_and_late_callbacks_cannot_release_new_requests_or_override_a_scene(self):
+        lua=self.walking_runtime()
+        lua.execute('''
+            local original=ExecuteInGameThread
+            local waiting={}
+            ExecuteInGameThread=function(fn) waiting[#waiting+1]=fn end
+            tick();assert(#waiting==1)
+            collectgarbage('collect')
+            for _=1,19 do tick() end
+            assert(#waiting==1,'Avoid flooding a busy game thread')
+            tick();assert(#waiting==2)
+            waiting[1]();assert(actor.m_AnimationAssetIndex==0)
+            tick();assert(#waiting==2,'Late callback must not release the new request')
+            event=true;waiting[2]();assert(actor.m_AnimationAssetIndex==0,'Fresh scene guards run at execution')
+            event=false;ExecuteInGameThread=original
+            tick();assert(actor.m_AnimationAssetIndex==5)
+        ''')
+
+    def test_transient_title_or_actor_lookup_error_retries_without_losing_scene_guards(self):
+        lua=self.walking_runtime()
+        lua.execute('''
+            local original=actor.GetMapUnitId
+            actor.GetMapUnitId=function() error('actor transition fixture') end
+            assert(tick()==false and actor.m_AnimationAssetIndex==0)
+            actor.GetMapUnitId=original
+            assert(tick()==false and actor.m_AnimationAssetIndex==5)
+            event=true;tick();assert(actor.m_AnimationAssetIndex==0)
+            event=false;tick();assert(actor.m_AnimationAssetIndex==5)
+        ''')
+
     def test_missing_controller_hook_disables_cycling_without_appearance_writes(self):
         from lupa.lua54 import LuaRuntime
         lua = LuaRuntime()
