@@ -4,6 +4,27 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Default battle names, Christine damage, result rewards and voices — 2026-10-25
+
+[Verified Windows download / run 40172348648](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40172348648/Sephira-Studio-Test.zip)
+(code `93fba5d`, update **1.2.88**; **74.0 MB**).
+
+Default-model replacements now rename their automatic battle command too: Tronn changed to 21O no longer keeps
+“Tronn's Skills”. Existing saved replacements are covered; custom command labels/descriptions stay yours. Christine's
+Blizzard, Blizzara and Freezing Spike receive another 50% potency increase. Her speed, Slumber Mist, durability and
+player skill values keep their existing settings.
+
+Vision challenge rewards now use ordinary result-screen loot with the native guaranteed-drop value (1). The earlier
+100 was a reciprocal chance. Remove every post-battle reward event so the vision can be listed and granted in the
+results before normal field return. Movie-sourced voice replacements now use native encrypted mono HCA v3 through the
+same adapter as working sounds, replacing the unadapted stereo v2 path. Sprite/icon reuse stays intact.
+
+Keep **Studio Test Data**, update, rebuild/install and restart; no Prepare Game, preset reset or model reselection.
+Windows and downloaded-ZIP checks pass. **Retest the result-screen vision reward, field return, Christine's ice damage,
+and Lightning's voice.** The supplied native audio proof covers Cloud/Tronn, and live Lightning playback remains open.
+Fina's newly reported distorted movie music is being addressed separately; this package keeps its current soundtrack.
+[Checks and measured timings](CHANGELOG.md#published-battle-labels-christine-tuning-result-rewards-and-voice-format--2026-10-25).
+
 ### Challenge balance, victory rewards and Fina movie audio — 2026-10-24
 
 [Verified Windows download / run 40146427534](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40146427534/Sephira-Studio-Test.zip)

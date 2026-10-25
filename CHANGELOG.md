@@ -11,16 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Default battle labels, Christine tuning, result-screen rewards and voice format
-
-- Make automatic battle command labels follow default-vision model names, including existing saved replacements such as Tronn → 21O. Preserve native punctuation, command IDs, kit/voice settings and custom command labels/descriptions. Repeated model changes and Use original model update automatic labels consistently.
-- Increase Christine’s enemy Blizzard, Blizzara and Freezing Spike by another 50% from 1.2.87 (Blizzard potency 26 → 39; Blizzara 33 → 50; Freezing Spike 52 → 78). Keep her tested speed, HP/break budget and Slumber Mist, and keep player skill values.
-- Remove every post-battle challenge reward event after the user reported the black return again. Put each vision on its enemy’s normal result-screen loot using the native boss guaranteed-drop value **1**. The earlier value **100** was a reciprocal chance, rather than 100 percent. Results should list and grant the vision before returning normally; live confirmation is still needed. Escape/loss have no reward event and enemies cannot be stolen from.
-- Convert movie-only voice selections to the proven native mono HCA v3 bank format, with matching waveform metadata and host encryption. Previously the private voice bank kept the encoder’s stereo v2 stream without native adaptation. Preserve voice timing, native voice-volume routing and original movie pictures/non-voice sections. Invalidate only prepared voice entries; retain sprite/icon reuse. Native bank readback/decode passes for Cloud’s movie voice routed onto Tronn; Lightning’s exact movie was not included in the supplied reference and still needs an in-game listen.
-
-Local validation: 703 Python tests pass (41 platform skips), 105 targeted Flutter tests pass (one Windows-only local skip), and analysis reports no issues. Native readback passes for renamed command rows, Christine’s ice powers and all 28 battle loot entries with no finish callbacks. All four native voice routing combinations pass, and every generated encrypted mono HCA v3 clip decodes successfully. Windows compilation/validation and downloaded-ZIP verification are pending.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -89,6 +79,34 @@ Local validation: 703 Python tests pass (41 platform skips), 105 targeted Flutte
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published battle labels, Christine tuning, result rewards and voice format — 2026-10-25
+
+[Verified Windows ZIP / run 40172348648](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40172348648/Sephira-Studio-Test.zip), code `93fba5d`, update **1.2.88** (74.0 MB).
+SHA-256 `9717705b7e87d327c90e4343f8f90a1d27d3195da6a4857575510dc391243780`.
+
+- Make automatic battle command labels follow default-vision model names, including existing saved replacements such as Tronn → 21O. Preserve native punctuation, command IDs, kit/voice settings and custom command labels/descriptions. Repeated model changes and Use original model update automatic labels consistently.
+- Increase Christine’s enemy Blizzard, Blizzara and Freezing Spike by another 50% from 1.2.87 (Blizzard potency 26 → 39; Blizzara 33 → 50; Freezing Spike 52 → 78). Keep her tested speed, HP/break budget and Slumber Mist, and keep player skill values.
+- Remove every post-battle challenge reward event after the user reported the black return again. Put each vision on its enemy’s normal result-screen loot using the native boss guaranteed-drop value **1**. The earlier value **100** was a reciprocal chance, rather than 100 percent. Results should list and grant the vision before returning normally; live confirmation is still needed. Escape/loss have no reward event and enemies cannot be stolen from.
+- Convert movie-only voice selections to the proven native mono HCA v3 bank format, with matching waveform metadata and host encryption. Previously the private voice bank kept the encoder’s stereo v2 stream without native adaptation. Preserve voice timing, native voice-volume routing and original movie pictures/non-voice sections. Invalidate only prepared voice entries; retain sprite/icon reuse. Native bank readback/decode passes for Cloud’s movie voice routed onto Tronn; Lightning’s exact movie was not included in the supplied reference and still needs an in-game listen.
+
+Validation: 703 Python tests pass locally (41 platform skips), 105 targeted Flutter tests pass (one Windows-only local
+skip), and analysis reports no issues. Native readback passes for command labels, Christine's ice attacks, all 28 loot
+entries and empty battle finish callbacks. All four native voice routing combinations pass; generated voice banks
+contain encrypted mono HCA v3 with matching waveform metadata, and every clip decodes successfully. This proves the
+converted bank path with supplied Cloud/Tronn samples, not live Lightning playback. Windows validation and compilation
+both pass for this commit. The downloaded ZIP matches its checksum, compiled version and all 72 managed extension / 16
+standalone Fina manifest files. No animation-library download is included. Keep Studio Test Data, update, rebuild/install
+and restart. Existing default-model replacements get the command-label fix without reselecting them. No preset reset
+or Prepare Game is required. Confirm the vision is listed/granted on the battle result screen, normal field return,
+Christine's damage and Lightning's voice in game.
+
+The user's new report of distorted Fina movie music remains active follow-up work; this intermediate package does not change that soundtrack.
+
+First complete candidate 07:11:29 UTC to verified ZIP 07:34:53 UTC:
+**23m 23s**, including focused/full local checks, native proofs, Windows waiting and downloaded-package
+verification. CI wall time **10m 20s**; summed runner usage **14m 45s**. One exact automatic run joined;
+no duplicate/manual dispatch.
 
 ## Published challenge balance, victory grants and movie audio — 2026-10-24
 
