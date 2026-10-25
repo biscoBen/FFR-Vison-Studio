@@ -170,6 +170,7 @@ def kit(unit, rows, team_size):
             cap = 40 if row['TargetType'] in ('Group', 'All', 'SingleAndGroup') else 60
             multiplier = 1.75 if source == settings['attacks'][-1] else 1.5
             row['magnification'] = max(1, round(min(row['magnification'], cap) * multiplier / team_size))
+            row['magnification'] = max(1, round(row['magnification'] * settings.get('potencyMultipliers', {}).get(str(source), 1)))
         import _ffr_testing as testing
         result.append({'id': enemy_id, 'learned': identity, 'source': source, 'clone': key,
                        'name': PREFIX + str(unit['id']) + '_Skill_' + str(index),
@@ -240,9 +241,9 @@ def prepare_enemies(table, rows, spec, units):
             'HitPoint': 0, 'MagicPoint': stats['MaxMagicPoint'], 'Breakpoint': 0, 'LimitBurstPoint': 0,
             'ElementResistanceList': resistances,
             'passiveSkillList': [], 'WeaponId': -1, 'ArmorId': -1, 'AccessoryIdList': [], 'VisionId': -1,
-            # Visions are not supported by the ordinary enemy-loot path. The
-            # win-only parameter reward below uses the native item dispatcher.
-            'Experience': 0, 'Money': 0, 'DropNormalItem': -1, 'DropNormalItemRate': 0,
+            # Native boss rewards use a reciprocal rate: 1 is guaranteed.
+            # 100 made the previous result-screen attempt a one-in-100 drop.
+            'Experience': 0, 'Money': 0, 'DropNormalItem': unit['id'], 'DropNormalItemRate': 1,
             'DropRareItem': -1, 'DropRareItemRate': 0, 'StealNormalItem': -1, 'StealRareItem': -1,
             'StealItemRate': 0, 'BattleVoiceLabel': 'None'})
         base = f'/Game/Chara/summon/summon{unit["id"]}/summon{unit["id"]}'
@@ -321,9 +322,8 @@ def prepare_encounter(table, rows, spec, units, root, roster):
     _add(table, rows, GROUP, group_id, 1026, name, {
         'UnitIdList': [boss_id(u) for u in units], 'locationIdList': {1: [10], 2: [6, 15], 3: [20, 6, 15]}[len(units)],
         'CanEscape': True, 'probabilityOfSuccessfulEscape': 100.0,
-        # Inherit the verified empty loss/escape names. The native patcher
+        # Inherit all three verified empty finish-event names. The native patcher
         # cannot insert a new empty FString into an FName name map.
-        'battleFinishEventId': name + '_Reward',
         'ap': 0, 'isResultSkipOnWin': False, 'isResultSkipOnLose': False})
     # Menus, ownership checks and return-to-field routing are authored from
     # the inspected original repeat events, never the original acquisition row.
@@ -393,12 +393,6 @@ def _events(table, rows, spec, units, group_id, root, roster):
     # Recheck the prerequisite immediately before entering battle.
     event(name + '_Start', {'ContinuousEventList': links(unlock, name + '_Fight', locked, name + '_Locked')}, 'link')
     event(name + '_Fight', {'encountGroupId': group_id})
-    # A parameter-only finish event: no acquisition movie, fade, camera or map
-    # transition. The engine dispatches vision items through ObtainItemList;
-    # ordinary enemy drops do not grant them. Escape/loss have no finish event.
-    event(name + '_Reward', {'ObtainItemList': [
-        {'Condition': f'{{item:{u["id"]}}}==0', 'ID': u['id'], 'Num': 1, 'Text': ''} for u in units],
-        'IsOpenDialogByFinishEvent': True}, 'grant')
     event(name + '_Close', {})
     choice_key = next(k for k, v in rows(CHOICES).items() if v.get('ChoiceTextList'))
     replay = spec.get('retry')

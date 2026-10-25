@@ -77,6 +77,13 @@ class NativeVisionVoiceTests(unittest.TestCase):
         self.assertEqual([voices.choose(['open','middle','finish'],i,2) for i in range(2)],['open','finish'])
         with self.assertRaisesRegex(ValueError,'audible'):voices.phrases([(0,0)]*100)
 
+    def test_movie_voice_downmix_preserves_sample_count_without_clipping(self):
+        samples=[(30000,30000),(30000,-30000),(1000,3000),(-30000,-30000)]
+        mono=voices.wave(samples,channels=1)
+        self.assertEqual(voices.pcm(mono),[(30000,30000),(0,0),(2000,2000),(-30000,-30000)])
+        self.assertEqual(voices.pcm(voices.wave(samples)),samples)
+        with self.assertRaises(ValueError):voices.wave(samples,channels=3)
+
     def test_direct_cues_change_only_voice_references(self):
         view=track([('VO_BTL_TEST_004_Cue',8800),('SE_IMPACT_Cue',20000),('VO_BTL_TEST_005_Cue',64800)])
         view['Imports'].extend([{'ObjectName':'/Game/Sound/OldVoice'},{'ObjectName':'/Game/Sound/Effect'}])

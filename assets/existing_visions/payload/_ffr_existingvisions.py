@@ -246,6 +246,15 @@ def verify_command_icons(root, tool, usmap, units):
     print(f'OK: {len(units)} added visions have their own command and Spirit icons')
 
 
+def command_name(unit):
+    """Older model replacements saved the new name with the untouched command."""
+    base = unit['native']['baseline']
+    original = base['command']['en']
+    if unit['en'] != base['en'] and unit['command']['en'] == original:
+        return original.replace(base['en'], unit['en']) if base['en'] in original else unit['en'] + "'s Skills"
+    return unit['command']['en']
+
+
 def prepare(tables, objects, units, root, rows):
     def put(rel, row, updates):
         if updates: tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})['set'].append({'row': row, 'set': updates})
@@ -264,7 +273,8 @@ def prepare(tables, objects, units, root, rows):
         if u['lb'] != base['lb']: vu['finishBlowSkill'] = u['lb']
         for field, rel in (('command', 'Skill/DT_CommandSkillData'), ('master', 'Skill/DT_MasterSkillData')):
             key, _ = one(rows, rel, 'ID', base[field]['id'])
-            updates = {target: u[field][source] for source, target in (('en', 'Name'), ('desc', 'Description')) if u[field][source] != base[field][source]}
+            values = {**u[field], 'en': command_name(u)} if field == 'command' else u[field]
+            updates = {target: values[source] for source, target in (('en', 'Name'), ('desc', 'Description')) if values[source] != base[field][source]}
             put(rel, key, updates)
         for rel, field in ((AWAKENING, 'awakening'), (SYNCHRO, 'synchro')):
             values = sorted([(k, r) for k, r in rows(rel).items() if r['ID'] == vid], key=lambda pair: pair[1]['Level'])

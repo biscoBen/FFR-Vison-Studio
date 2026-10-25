@@ -296,6 +296,7 @@ void main() {
       ..['en'] = profile()['en']
       ..['ffbe'] = profile()['ffbe']
       ..['menuScale'] = profile()['menuScale'] ?? 2.52;
+    expected['command']['en'] = '${profile()['en']} skills';
     if (profile()['icon'] != null) {
       expected['icon'] = profile()['icon'];
     }
@@ -331,6 +332,30 @@ void main() {
       );
     },
   );
+
+  test('battle command names follow repeated model changes and restore with the original', () async {
+    final first = await app.editNativeVision(13024, appearance: {...profile(), 'en':'21O'});
+    expect(first['command']['en'], '21O skills');
+    final second = await app.editNativeVision(13024, appearance: {...profile(), 'en':'A2'});
+    expect(second['command']['en'], 'A2 skills');
+    expect(second['command']['id'], 200);
+    expect(second['native']['baseline'], originalFixture(id:13024,name:'Tronn')['native']['baseline']);
+    app.useOriginalModel(second);
+    await app.save();
+    expect(api.roster.last, originalFixture(id:13024,name:'Tronn'));
+  });
+
+  test('model changes preserve a custom battle command label and its description', () async {
+    final first = await app.editNativeVision(13024);
+    first['command']['en']='My custom skills';
+    first['command']['desc']='My description';
+    app.update(first);
+    final changed=await app.editNativeVision(13024,appearance:{...profile(),'en':'21O'});
+    expect(changed['command'],{'id':200,'en':'My custom skills','desc':'My description'});
+    app.useOriginalModel(changed);
+    await app.save();
+    expect(api.roster.last['command'],changed['command']);
+  });
 
   test('failed reset keeps every native override available', () async {
     await app.editNativeVision(13110, appearance: profile());
@@ -1314,7 +1339,7 @@ void main() {
       expect(modelApi.models,hasLength(1));
       expect(modelApi.models.single.containsKey('en'),isFalse);
       expect(api.roster,hasLength(2));expect(api.roster.first,profile());
-      expect(app.selected,{...before,'en':'A2','ffbe':modelApi.models.single['ffbe'],'menuScale':2.52});
+      expect(app.selected,{...before,'en':'A2','command':{...before['command'] as Map,'en':'A2 skills'},'ffbe':modelApi.models.single['ffbe'],'menuScale':2.52});
       expect(app.selected!['nativeVoice'],13024);
       expect(find.textContaining('The selected model has no name'),findsNothing);
       expect(tester.takeException(),isNull);

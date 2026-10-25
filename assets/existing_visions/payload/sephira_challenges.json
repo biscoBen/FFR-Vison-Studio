@@ -514,7 +514,12 @@
         220080
       ],
       "utility": 500570,
-      "basicName": "Blizzard"
+      "basicName": "Blizzard",
+      "potencyMultipliers": {
+        "220050": 1.5,
+        "220060": 1.5,
+        "220080": 1.5
+      }
     },
     "crystal_fina": {
       "attacks": [

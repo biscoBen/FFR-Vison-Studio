@@ -11,6 +11,16 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Default battle labels, Christine tuning, result-screen rewards and voice format
+
+- Make automatic battle command labels follow default-vision model names, including existing saved replacements such as Tronn → 21O. Preserve native punctuation, command IDs, kit/voice settings and custom command labels/descriptions. Repeated model changes and Use original model update automatic labels consistently.
+- Increase Christine’s enemy Blizzard, Blizzara and Freezing Spike by another 50% from 1.2.87 (Blizzard potency 26 → 39; Blizzara 33 → 50; Freezing Spike 52 → 78). Keep her tested speed, HP/break budget and Slumber Mist, and keep player skill values.
+- Remove every post-battle challenge reward event after the user reported the black return again. Put each vision on its enemy’s normal result-screen loot using the native boss guaranteed-drop value **1**. The earlier value **100** was a reciprocal chance, rather than 100 percent. Results should list and grant the vision before returning normally; live confirmation is still needed. Escape/loss have no reward event and enemies cannot be stolen from.
+- Convert movie-only voice selections to the proven native mono HCA v3 bank format, with matching waveform metadata and host encryption. Previously the private voice bank kept the encoder’s stereo v2 stream without native adaptation. Preserve voice timing, native voice-volume routing and original movie pictures/non-voice sections. Invalidate only prepared voice entries; retain sprite/icon reuse. Native bank readback/decode passes for Cloud’s movie voice routed onto Tronn; Lightning’s exact movie was not included in the supplied reference and still needs an in-game listen.
+
+Local validation: 703 Python tests pass (41 platform skips), 105 targeted Flutter tests pass (one Windows-only local skip), and analysis reports no issues. Native readback passes for renamed command rows, Christine’s ice powers and all 28 battle loot entries with no finish callbacks. All four native voice routing combinations pass, and every generated encrypted mono HCA v3 clip decodes successfully. Windows compilation/validation and downloaded-ZIP verification are pending.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

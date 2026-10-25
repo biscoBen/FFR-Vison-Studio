@@ -14,6 +14,20 @@ class CharacterConfig {
   static Map<String, dynamic> copy(Map<String, dynamic> unit) =>
       json.decode(json.encode(unit)) as Map<String, dynamic>;
 
+  /// Follow model names for automatic battle labels; retain custom labels.
+  static void renameNativeVision(Map<String, dynamic> unit, String name) {
+    final base = unit['native']['baseline'] as Map;
+    final original = base['command']['en'] as String;
+    String label(String value) => value == base['en'] ? original
+        : original.contains(base['en'] as String)
+            ? original.replaceAll(base['en'] as String, value) : "$value's Skills";
+    final command = unit['command'] as Map;
+    if (command['en'] == original || command['en'] == label(unit['en'] as String)) {
+      command['en'] = label(name);
+    }
+    unit['en'] = name;
+  }
+
   /// Remove retired comparison abilities while retaining their original skills.
   /// Saved files stay intact; only the restored/in-memory roster is upgraded.
   static Map<String, dynamic> retireComparisonAbilities(Map<String, dynamic> unit) {

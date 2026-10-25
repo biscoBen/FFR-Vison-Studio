@@ -243,6 +243,31 @@ class NativeVisionTests(unittest.TestCase):
         native.prepare(tables, objects, [spec], '/unused', rows)
         self.assertEqual(tables, {}); self.assertEqual(objects, [])
 
+    def test_saved_native_model_names_also_rename_the_battle_command_for_every_default(self):
+        for vid in CATALOG_IDS:
+            with self.subTest(vid=vid):
+                game,rows,spec=fixture(vid);before=copy.deepcopy(spec)
+                spec['en']='21O' # Existing saved replacement: command name was never changed.
+                patch={};native.prepare(patch,[],[spec],'/unused',rows)
+                self.assertEqual(patch['Skill/DT_CommandSkillData']['set'],[
+                    {'row':'Cloud command','set':{'Name':'21O skills'}}])
+                self.assertNotIn('Skill/DT_MasterSkillData',patch)
+                self.assertEqual(spec,{**before,'en':'21O'})
+                self.assertEqual(game[native.UNIT]['Cloud']['SaveId'],vid)
+                # A user-edited command label and description remain authoritative.
+                spec['command'].update(en='My custom command',desc='Custom description')
+                patch={};native.prepare(patch,[],[spec],'/unused',rows)
+                self.assertEqual(patch['Skill/DT_CommandSkillData']['set'],[
+                    {'row':'Cloud command','set':{'Name':'My custom command','Description':'Custom description'}}])
+
+    def test_native_command_name_keeps_native_punctuation_or_uses_a_generic_fallback(self):
+        _,rows,spec=fixture(13024)
+        for original,expected in [("Cloud’s Skills","21O’s Skills"),('Vision Arts',"21O's Skills")]:
+            spec['native']['baseline']['command']['en']=original
+            spec['command']['en']=original
+            spec['en']='21O'
+            self.assertEqual(native.command_name(spec),expected)
+
     def test_sprite_only_changes_no_stats_progression_mastery_shop_or_skill_rows(self):
         original, rows, spec = fixture(); before = copy.deepcopy(original)
         spec['ffbe'] = {'id': '207000117', 'source': 'JP'}

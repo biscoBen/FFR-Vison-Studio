@@ -1061,7 +1061,7 @@ class AppState extends ChangeNotifier {
     if (appearance != null) {
       final name = appearance['en'];
       if (name is! String || name.trim().isEmpty) throw StateError('The selected model has no name.');
-      unit['en'] = name;
+      CharacterConfig.renameNativeVision(unit, name);
       unit['ffbe'] = CharacterConfig.copy(appearance['ffbe'] as JsonMap);
       unit['menuScale'] = appearance['menuScale'] ?? 2.52;
       if (appearance['icon'] != null) { unit['icon'] = CharacterConfig.copy(appearance['icon'] as JsonMap); }
@@ -1279,7 +1279,7 @@ class AppState extends ChangeNotifier {
   void useOriginalModel(JsonMap unit) {
     final restored = CharacterConfig.copy(unit);
     final baseline = restored['native']['baseline'] as Map;
-    restored['en'] = baseline['en'];
+    CharacterConfig.renameNativeVision(restored, baseline['en'] as String);
     for (final field in ['ffbe', 'menuScale', 'icon']) {
       if (baseline.containsKey(field)) { restored[field] = json.decode(json.encode(baseline[field])); }
       else { restored.remove(field); }

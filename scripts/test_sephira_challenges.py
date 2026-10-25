@@ -156,30 +156,22 @@ class SephiraChallengeTests(unittest.TestCase):
         # No shared "some legend completed" flag can unlock a different vision.
         self.assertTrue(all('{flag:1017}' not in s['unlock'] for s, _ in challenge.plans(self.units)))
 
-    def test_win_only_item_rewards_have_no_acquisition_sequence_or_transition(self):
+    def test_guaranteed_battle_result_rewards_have_no_post_battle_event(self):
         events = self.built[challenge.COMPOSITE]
         for spec, units in challenge.plans(self.units):
             name = challenge.PREFIX+str(spec['origin'])
             group = self.built[challenge.GROUP][name]
-            self.assertEqual(group['battleFinishEventId'],name+'_Reward')
-            reward=events[name+'_Reward']
-            self.assertEqual(reward['EventSequence'],'None')
-            self.assertEqual(reward['EventBlueprint'],'None')
-            self.assertEqual(reward['TalkEventDataTable'],'None')
-            self.assertEqual(reward['ContinuousEventList'],[])
-            self.assertFalse(reward['IsHiddenFieldUI'])
-            self.assertEqual(reward['MapStartupSettings']['ChangeBGM'],'NotChange')
-            self.assertEqual(reward['TransitionLocation']['mapId'],-1)
-            self.assertTrue(reward['IsOpenDialogByFinishEvent'])
-            self.assertEqual(reward['ObtainItemList'],[{'Condition':f"{{item:{u['id']}}}==0",'ID':u['id'],'Num':1,'Text':''} for u in units])
+            self.assertFalse(group['battleFinishEventId'])
+            self.assertNotIn(name+'_Reward',events)
             self.assertFalse(group['battleFinishEscapeEventId'])
             self.assertFalse(group['battleFinishLoseEventId'])
             self.assertNotIn(name+'_Win',events)
             self.assertNotIn(name+'_Grant',events)
             for unit in units:
                 enemy=self.built[challenge.UNIT][challenge.PREFIX+str(unit['id'])]
-                self.assertEqual(enemy['DropNormalItem'],-1)
-                self.assertEqual(enemy['DropNormalItemRate'],0)
+                self.assertEqual(enemy['DropNormalItem'],unit['id'])
+                self.assertEqual(enemy['DropNormalItemRate'],self.native[challenge.UNIT]['ベルモーダー']['DropNormalItemRate'])
+                self.assertEqual(enemy['DropNormalItemRate'],1)
                 self.assertEqual(enemy['DropRareItem'],-1)
                 self.assertEqual((enemy['StealNormalItem'],enemy['StealRareItem']),(-1,-1))
                 self.assertEqual(enemy['StealItemRate'],0)
@@ -235,13 +227,17 @@ class SephiraChallengeTests(unittest.TestCase):
                     cap=40 if original['TargetType'] in ('Group','All','SingleAndGroup') else 60
                     factor=1.75 if recipe['source']==config['attacks'][-1] else 1.5
                     expected=max(1,round(min(original['magnification'],cap)*factor/len(units)))
+                    expected=max(1,round(expected*config.get('potencyMultipliers',{}).get(str(recipe['source']),1)))
                     actual=testing.apply_fields(native_skills[recipe['source']],recipe['fields'])
                     self.assertEqual(actual['magnification'],expected)
         christine=next(u for u in self.units if u['sephiraVision']['preset']=='christine')
         recipes=challenge.kit(christine,lambda p:self.native[p],1)
-        self.assertEqual(testing.apply_fields(native_skills[220050],recipes[0]['fields'])['magnification'],26)
+        self.assertEqual(testing.apply_fields(native_skills[220050],recipes[0]['fields'])['magnification'],39)
         spike=next(r for r in recipes if r['source']==220080)
-        self.assertEqual(testing.apply_fields(native_skills[220080],spike['fields'])['magnification'],52)
+        self.assertEqual(testing.apply_fields(native_skills[220080],spike['fields'])['magnification'],78)
+        blizzara=next(r for r in recipes if r['source']==220060)
+        old_power=round(native_skills[220060]['magnification']*1.5)
+        self.assertEqual(testing.apply_fields(native_skills[220060],blizzara['fields'])['magnification'],round(old_power*1.5))
 
     def test_casual_ai_uses_reviewed_moves_without_unguarded_heals(self):
         for spec, units in challenge.plans(self.units):

@@ -6,8 +6,8 @@ This pass applies Christine’s tested approach to all 15 encounters (28 enemy v
 - Increase physical and magic offensive stats by 50% over the original challenge curve, and speed by about 15%. Christine already had the magic/speed adjustment; her speed is unchanged in this pass.
 - Increase bounded attack/spell potency by 50%, or 75% for a configured damaging signature, before dividing it between partners. Healing remains capped at 15%; control effects keep their existing mechanics.
 - Give caster roles spell basics. Apply explicit elemental resistance/weakness pairs where the vision has a clear theme. Other elements remain neutral.
-- Christine remains level 5 with 2,750 HP and 162 break. Blizzard potency becomes 26 (previously 17); Freezing Spike becomes 52 (previously 30). Slumber Mist stays unchanged.
-- Win-only item events replace enemy loot for vision rewards. They have no acquisition sequence, camera, fade, story changes or map transition. Escape/loss give no vision. Reward delivery and the field return require a live retest.
+- Christine remains level 5 with 2,750 HP and 162 break. The latest follow-up adds another 50% to Blizzard, Blizzara and Freezing Spike: Blizzard potency becomes 39 and Freezing Spike becomes 78. Slumber Mist stays unchanged.
+- Vision rewards use ordinary battle loot with the native guaranteed-drop value (1). No post-battle reward event or acquisition sequence runs. The result screen should list and grant the vision before returning to the cave; that still needs a live retest. Escape/loss give no reward.
 
 | Original unlock | Opponents | Level | Combined HP | Combined break | Speed | Basic actions |
 | --- | --- | ---: | ---: | ---: | ---: | --- |

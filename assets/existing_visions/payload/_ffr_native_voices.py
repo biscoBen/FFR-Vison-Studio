@@ -17,7 +17,7 @@ import zipfile
 import _ffr_movie_audio as movie
 import _ffr_party_voices as party
 
-REVISION = 1
+REVISION = 2
 VISION = 'Item/Vision/DT_VisionItemData'
 
 
@@ -151,9 +151,11 @@ def pcm(raw):
     return list(zip(values[::2],values[1::2]))
 
 
-def wave(samples):
-    data=struct.pack('<'+'h'*(len(samples)*2),*(max(-32768,min(32767,v)) for pair in samples for v in pair))
-    fmt=struct.pack('<HHIIHH',1,2,48000,192000,4,16)
+def wave(samples, channels=2):
+    if channels not in (1,2): raise ValueError('Expected mono or stereo native voice.')
+    values=(round((left+right)/2) for left,right in samples) if channels==1 else (v for pair in samples for v in pair)
+    data=struct.pack('<'+'h'*(len(samples)*channels),*(max(-32768,min(32767,v)) for v in values))
+    fmt=struct.pack('<HHIIHH',1,channels,48000,96000*channels,2*channels,16)
     return b'RIFF'+struct.pack('<I',36+len(data))+b'WAVEfmt '+struct.pack('<I',16)+fmt+b'data'+struct.pack('<I',len(data))+data
 
 
@@ -327,15 +329,19 @@ class Builder:
         """Movie-only voices become ordinary native one-shot HCA cues for Atom targets."""
         import ffbe_audio
         from ffbe_effects import acb_native
+        from ffbe_effects import hca_host
         from ffbe_effects.acb_cues import utf
-        # The engine's proven HCA bank adapter handles routing, encryption and cue classes.
+        # Match the native Atom voice pool through the same mono HCA v3 adapter
+        # as working FFBE sounds. Stereo v2 output bypassed that adaptation.
         waves={};records=[]
         for i,samples in enumerate(recordings):
-            waves[i]=self.convert('wave-hca',wave(samples))
-            records.append({'sourceWaveId':i,'name':f'voice_{i}','durationMs':round(len(samples)*1000/48000),'samples':len(samples),'sampleRate':48000,'channels':2,'sourceCueId':i,'variation':0})
+            waves[i]=self.convert('wave-hca',wave(samples,channels=1))
+            hca_host.validate_layout(waves[i])
+            records.append({'sourceWaveId':i,'name':f'voice_{i}','durationMs':round(len(samples)*1000/48000),'samples':len(samples),'sampleRate':48000,'channels':1,'sourceCueId':i,'variation':0})
         name=f'StudioNativeVoice_{source_id}';self.view(ffbe_audio.SHELL)
         raw=(self.legacy/(ffbe_audio.SHELL+'.uexp')).read_bytes();at=raw.index(b'@UTF');native=raw[at:at+int.from_bytes(raw[at+4:at+8],'big')+8]
-        acb=acb_native.build(b'',native,name,records,gain=1.0,raw_waves=waves)
+        profile={'revision':1,'version':0x300,'key':hca_host.key_from_config(ffbe_audio.host_config({}))}
+        acb=acb_native.build(b'',native,name,records,gain=1.0,waveform_profile=profile,raw_waves=waves)
         # Use the game's voice volume categories, rather than the adapter's SE category.
         header=utf(acb)[1][0]
         refs=utf(header['AcfReferenceTable'])[1]
