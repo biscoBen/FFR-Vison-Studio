@@ -4,6 +4,18 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Eiko boss spell power tuning — 2026-10-26
+
+[Verified Windows download / run 40378174047](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40378174047/Sephira-Studio-Test.zip)
+(code `6fd60ea`, update **1.2.104**; **74.1 MB**).
+
+Eiko's boss **Firaga Burst is power 20** and **Blizzaga Burst is power 25**. The other attacks, HP/break gauges,
+speed and action order keep their current tuning. Playable skills and the permanent vision IDs are preserved.
+
+Update Studio, rebuild/install and restart Resonance. Keep Studio Test Data; no reset or Prepare Game is needed.
+Native and Windows/ZIP checks pass; retest the fight to check difficulty.
+[Checks and measured timings](CHANGELOG.md#published-eiko-boss-spell-power-tuning--2026-10-26).
+
 ### Permanent Sephira IDs and automatic roster recovery — 2026-10-26
 
 [Verified Windows download / run 40373555255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40373555255/Sephira-Studio-Test.zip)

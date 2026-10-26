@@ -11,10 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Lower Eiko's boss spell powers — 2026-10-26
-
-- Set boss **Firaga Burst to power 20** (from 25) and **Blizzaga Burst to power 25** (from 29) in the paired Eiko/Rikku fight. Keep the other attacks, shared durability budget, speed, rotation and playable skills at their current values. Rebuild/install and restart Resonance to apply; no roster or game-save reset is needed.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -83,6 +79,31 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Eiko boss spell power tuning — 2026-10-26
+
+[Verified Windows ZIP / run 40378174047](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40378174047/Sephira-Studio-Test.zip), code `6fd60ea`, update **1.2.104** (74.1 MB).
+SHA-256 `ead9b1d058168f8b0d1b7f19239991cd58af95462fc185d854839b9d67043bec`.
+
+- Set Eiko's boss **Firaga Burst to power 20** (from 25) and **Blizzaga Burst to power 25** (from 29) in the paired Eiko/Rikku encounter, following the latest in-game test.
+- Preserve White Whorl, Light of the Eidolons, Flash Bomb, all other attacks, the shared HP/break budget, speed and rotation. Original and playable skills, all other encounters and the permanent vision-ID recovery remain unchanged.
+- Apply on rebuild/install with existing rosters and caches. No preset reset, Prepare Game, save edit or new sprite/icon conversion is needed for these coefficients.
+
+Validation: **32** focused encounter/cache tests pass. Native patch/readback checks all **528** generated boss
+recipes and confirms exactly two changed rows: Eiko's private Firaga Burst **815130**, **25 → 20**, and Blizzaga
+Burst **815140**, **29 → 25**. All **526** other recipes, all **28** boss stat budgets/action orders and every
+original skill row are preserved. Full Windows validation, compilation, fresh-engine setup, Python/Flutter and
+launcher/updater checks pass for this commit. The actual downloaded ZIP matches provenance/SHA-256, all **75**
+extension and **16** standalone Fina hashes, the compiled **1.2.104** label and the packaged recipes' exact powers
+**20 / 25**. The pinned sprite-cache implementation is unchanged. The next in-game test determines battle feel.
+
+Update Studio, rebuild/install and restart Resonance. Keep the existing Studio Test Data.
+
+Measured delivery: first complete candidate 11:27:50 to verified package
+11:42:28 America/Los_Angeles, **14m 38s**, including local/native
+checks, CI waiting and package verification. The timer was not reset. Measured CI wall time is **12m 05s**,
+with **16m 26s** summed job runtime. The exact automatic push run was joined through the unchanged build
+helper; no duplicate build was dispatched. Publication notes are a separate README/CHANGELOG-only commit.
 
 ## Published permanent Sephira vision IDs and roster recovery — 2026-10-26
 
