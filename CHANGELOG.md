@@ -11,22 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
-
-- Rework Eiko's MR rewards into equipable esper damage +20%, 5% summoner MP recovery per esper action,
-  one extra ordinary action plus esper HP +20%, and 50% early-special chances with a guaranteed native finale.
-  Keep Nullify Silence at MR1, remove direct summon commands and Double EXP, add early party Cure/Regen,
-  and set tier 3/4 bonuses to Half MP Cost / Auto MP Restore (L).
-- Give Mog Focus / First Strike / Recuperate LB / Peaceful LB Engine / LB Triple Charge at MR1/3/5/7/9.
-  Swap Mystea's MR1/2 and MR5/9 choices while keeping AP/Spirit at MR9. Preserve stable save IDs and migrate
-  the default kits once with backups; retain definitions for previously learned private equipment rewards.
-- Retain all 131 original passive effects across the collection. Verify Rikku already has Vaan's native
-  eight-hit all-enemy Fire resonance and guaranteed stealing, with Rikku's own presentation.
-- Add native table readback, migration and executable Lua lifecycle checks; the new esper effects still need
-  in-game validation. Existing challenge rotations, tuned damage and shared stat budgets are preserved.
-  See [Eiko esper mastery](docs/EIKO_ESPER_MASTERY.md) for the reward table, Carbuncle support behavior and limits.
-- Use native immediate-recovery events and native actor addresses on UE4SS 3.0.1. Fresh Lua wrappers must
-  not repeat HP/damage bonuses or reset the extra-action counter; the wrapper regression is reproduced and fixed.
 
 ### Returned full-game reference audit — 2026-10-22
 
@@ -96,6 +80,50 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
+
+[Verified Windows ZIP / run 40399517353](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40399517353/Sephira-Studio-Test.zip), code `1716763`, update **1.2.107** (74.1 MB).
+SHA-256 `32db28c5f228581e2985291c9709b355104a3bef5cafee0dd155302a4a24c9d5`.
+
+- Rework Eiko's MR rewards into equipable esper damage +20%, 5% summoner MP recovery per esper action,
+  one extra ordinary action plus esper HP +20%, and 50% early-special chances with a guaranteed native finale.
+  Keep Nullify Silence at MR1, remove direct summon commands and Double EXP, add early party Cure/Regen,
+  and set tier 3/4 bonuses to Half MP Cost / Auto MP Restore (L).
+- Give Mog Focus / First Strike / Recuperate LB / Peaceful LB Engine / LB Triple Charge at MR1/3/5/7/9.
+  Swap Mystea's MR1/2 and MR5/9 choices while keeping AP/Spirit at MR9. Preserve stable save IDs and migrate
+  the default kits once with backups; retain definitions for previously learned private equipment rewards.
+- Retain all 131 original passive effects across the collection. Verify Rikku already has Vaan's native
+  eight-hit all-enemy Fire resonance and guaranteed stealing, with Rikku's own presentation.
+- Add native table readback, migration and executable Lua lifecycle checks; the new esper effects still need
+  in-game validation. Existing challenge rotations, tuned damage and shared stat budgets are preserved.
+  See [Eiko esper mastery](docs/EIKO_ESPER_MASTERY.md) for the reward table, Carbuncle support behavior and limits.
+- Use native immediate-recovery events and native actor addresses on UE4SS 3.0.1. Fresh Lua wrappers must
+  not repeat HP/damage bonuses or reset the extra-action counter; the wrapper regression is reproduced and fixed.
+
+Validation: **318 Flutter tests** pass (one skipped), **744 Python tests** pass (45 skipped locally),
+analysis is clean, and focused native/runtime checks pass. The native patch/readback covers all new passive/effect
+rows, Eiko/Mog/Mystea MR and Spirit owner links, both healing skills and Rikku's Vaan mechanics. All **28** boss
+stat budgets/action rotations and the other **27** playable visions are preserved. The original **75** MR equipables
+remain available through MR and all **131** original passive effects remain represented across the collection.
+A fresh-wrapper fixture reproduces the earlier userdata-identity failure and confirms the native-address fix.
+
+Full Windows validation, compilation, fresh-engine setup, Flutter/Python and launcher/updater gates pass for
+this exact commit. The downloaded ZIP passes the unchanged build helper's provenance/checksum checks,
+all **78** extension and **16** standalone Fina hashes, the compiled **1.2.107** label, packaged kit migrations,
+native immediate-recovery settings and all-nine-esper Lua contracts. The pinned sprite-cache implementation is
+unchanged. The new esper effects and Spirit behavior still require an in-game check; no live game pass is claimed.
+
+First complete candidate: **20:10:10 UTC**; final ZIP verified: **21:04:53 UTC**,
+**54m 43s** later. Delivery notes prepared at **21:06:20 UTC**
+(**56m 09s** from that same candidate). This includes local checks/corrections,
+three automatic Windows runs, waiting, download and verification; the timer was not restarted for either correction.
+Final CI wall time: **10m 51s**; final runner usage: **14m 56s**.
+Across all three successful runs, runner usage totals **45m 10s**.
+These are measured development/package timings, not game-install benchmarks.
+
+Update Studio, rebuild/install and restart Resonance. Keep Studio Test Data. Current default kits migrate once
+with backups; edited MR conflicts remain visible for deliberate resolution. No preset reset or Prepare Game is needed.
 
 ## Published Eiko boss spell power tuning — 2026-10-26
 

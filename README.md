@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
+
+[Verified Windows download / run 40399517353](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40399517353/Sephira-Studio-Test.zip)
+(code `1716763`, update **1.2.107**; **74.1 MB**).
+
+Eiko gains equipable esper damage, MP recovery, extra-action/HP and early-special rewards; the native final special
+stays guaranteed. Her direct summon commands are removed, with early party Cure/Regen and revised awakening
+bonuses. Mog receives the requested LB rewards, and Mystea swaps MR1/2 and MR5/9 while keeping AP/Spirit at MR9.
+Rikku's resonance is verified to retain Vaan's native eight-hit Fire attack against all enemies and guaranteed stealing.
+
+Update, rebuild/install and restart the game. Keep Studio Test Data; current defaults migrate with backups.
+The new esper runtime needs an in-game check. [Reward details and limits](docs/EIKO_ESPER_MASTERY.md).
+[Checks and measured timings](CHANGELOG.md#published-eiko-esper-mastery-mog-lb-rewards-and-mystea-mr-swaps--2026-10-26).
+
 ### Eiko boss spell power tuning — 2026-10-26
 
 [Verified Windows download / run 40378174047](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40378174047/Sephira-Studio-Test.zip)
