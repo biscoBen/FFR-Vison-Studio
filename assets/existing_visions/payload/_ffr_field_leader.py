@@ -210,7 +210,9 @@ def build(units, env):
         code = ''
         if espers:
             config['esperMastery'] = 1
-            code += '(function()\n' + Path(__file__).with_name('esper_mastery.lua').read_text(encoding='utf-8') + '\nend)()\n'
+            # A newline does not terminate a Lua call. The next parenthesized
+            # block would call this nil result and abort the entire mod startup.
+            code += '(function()\n' + Path(__file__).with_name('esper_mastery.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if selected:
             native = json.loads((root / 'build/crystal-fina-battle/runtime.json').read_bytes())
             if native.get('schema') != 1 or native.get('id') != selected['id']:
@@ -219,7 +221,7 @@ def build(units, env):
             if any(_ffr_fina_cinematic.matches(u) and u['id']==selected['id'] for u in units):
                 native['cinematicMovie'] = _ffr_fina_cinematic.PRIVATE.replace('FFRS/Content/', '/Game/')
             config['fina'] = native
-            code += '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)()\n'
+            code += '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if field or walking: code += Path(__file__).with_name('field_leader.lua').read_text(encoding='utf-8')
         payload['files'] = {'enabled.txt': '', 'Scripts/config.lua': 'return ' + lua(config) + '\n', 'Scripts/main.lua': code}
     if field:

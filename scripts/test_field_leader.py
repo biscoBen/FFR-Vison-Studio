@@ -16,6 +16,56 @@ import _ffr_testing as testing
 
 
 class FieldLeaderTests(unittest.TestCase):
+    def combined_startup(self, esper=True, fina=True, walking=True):
+        from lupa.lua54 import LuaRuntime
+        import _ffr_fina_battle as battle
+        import _ffr_overworld as overworld
+        units=[]
+        if esper: units.append({'id':13515,'synchro':[[['PassiveSkill',1960,-1]]]})
+        if fina: units.append({'id':13503,'ffbe':{'id':battle.SPRITE,'source':'CUSTOM'}})
+        if walking: units.append({'id':1001,'party':True,'overworld':{'version':1,'model':'native_party_1006'}})
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            runtime=root/'build/crystal-fina-battle/runtime.json';runtime.parent.mkdir(parents=True)
+            runtime.write_text(json.dumps({'schema':1,'id':13503,'attackPlayRate':.8}))
+            with mock.patch.object(overworld,'runtime_config',return_value={'schema':1,'cycling':0,'actors':{},'defaults':{}}):
+                leader.build(units,{'ROOT':root,'rows':lambda _:self.fail('Startup needs no game data reads')})
+            staged=json.loads((root/leader.STAGE).read_bytes())['files']
+        lua=LuaRuntime()
+        lua.execute('''
+            messages={}; loops={}; hooks={}
+            function print(s) messages[#messages+1]=s end
+            function LoopAsync(ms,fn) loops[ms]=fn end
+            function RegisterHook(path,pre,post) hooks[path]={pre,post} end
+            function StaticFindObject() return {IsValid=function() return true end} end
+            function ExecuteInGameThread(fn) fn() end
+        ''')
+        lua.execute('package.preload.config=function() '+staged['Scripts/config.lua']+' end')
+        return lua,staged['Scripts/main.lua']
+
+    def test_complete_generated_runtime_starts_esper_fina_and_walking_together(self):
+        # Standalone Lua sources pass even when adjoining IIFEs crash the
+        # installed main.lua. Execute the exact output of the real builder.
+        for esper,fina,walking in ((True,True,True),(True,True,False),(True,False,True),
+                                   (False,True,True),(True,False,False),(False,True,False)):
+            with self.subTest(esper=esper,fina=fina,walking=walking):
+                lua,code=self.combined_startup(esper,fina,walking)
+                lua.execute(code,name='@FFRStudioFieldLeader/Scripts/main.lua')
+                messages=''.join(lua.globals().messages.values())
+                self.assertEqual('Esper mastery ready' in messages,esper)
+                self.assertEqual('Battle presentation ready' in messages,fina)
+                self.assertEqual('Saved field appearance includes idle' in messages,walking)
+                self.assertEqual(set(lua.globals().loops.keys()),
+                                 ({200} if esper else set())|({33} if fina else set())|({150} if walking else set()))
+                if esper:self.assertEqual(len(lua.globals().FFRStudioEsperMastery.callbacks),6)
+
+    def test_old_adjoining_blocks_reproduce_users_exact_startup_failure(self):
+        lua,code=self.combined_startup()
+        broken=code.replace('\nend)();\n','\nend)()\n')
+        with self.assertRaisesRegex(Exception,r'main.lua:213: attempt to call a nil value'):
+            lua.execute(broken,name='@FFRStudioFieldLeader/Scripts/main.lua')
+        self.assertNotIn('Battle presentation ready',''.join(lua.globals().messages.values()))
+
     def test_fina_movie_runtime_is_automatic_with_an_old_off_setting(self):
         import _ffr_fina_battle as fina
         import _ffr_fina_cinematic as movie

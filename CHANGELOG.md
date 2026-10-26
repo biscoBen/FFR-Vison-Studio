@@ -11,6 +11,23 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Combined esper/Fina runtime startup — 2026-10-26
+
+- Fix the exact `FFRStudioFieldLeader/Scripts/main.lua:213: attempt to call a nil value` reported
+  with Eiko's esper mastery and Crystal Fina installed together. Explicitly terminate each isolated
+  Lua block so the next block cannot call the first block's nil return value. Execute the complete
+  generated script across six feature combinations, and reproduce the old line-213 failure as a
+  regression control. No summon mechanics, reward IDs, kits or battle tuning change.
+- The new esper modifiers still require a live-game retest after rebuilding/installing and restarting.
+  The standalone observer can distinguish remaining activation or native-call failures.
+
+### Esper mastery diagnostic helper — 2026-10-26
+
+- Add a standalone read-only observer and collector for Eiko's equipable esper rewards. Record Fina's
+  actual mastery markers, native unit/owner IDs, HP/MP, action counts and selected skills alongside
+  the installed runtime configuration and existing activation/error messages. Use F8 snapshots and
+  an optional unequipped comparison to investigate live-game reports; 100 ms polling cannot prove
+  the absence of short events. The helper uses the existing UE4SS and needs no Studio rebuild.
 
 ### Returned full-game reference audit — 2026-10-22
 
