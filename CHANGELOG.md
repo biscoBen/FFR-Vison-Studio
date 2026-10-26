@@ -11,13 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Reduce the Rikku/Eiko shrine's opening burst — 2026-10-25
-
-- Reduce boss Rikku's White Whorl and boss Eiko's Firaga Burst by approximately 45%, following the level-15 hardest-difficulty party wipe report. Each private skill's power changes from 45 to 25 after integer rounding (44.4% less); the per-skill multiplier is 55% of its former value.
-- Keep the encounter at level 12 with its current HP, break gauges, speed, rotation and other attacks. Playable Rikku/Eiko skills, original game skills, and the other vision encounters are unchanged. The new values apply on rebuild without resetting presets or converting sprites/icons again.
-- Verify the generated enemy-skill rows against native serialization. Difficulty and real damage still need the user's in-game retest.
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -86,6 +79,31 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Rikku/Eiko boss burst reduction — 2026-10-25
+
+[Verified Windows ZIP / run 40279755866](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40279755866/Sephira-Studio-Test.zip), code `0db2aeb`, update **1.2.100** (74.1 MB).
+SHA-256 `a560c435a9bd73f0ba8dc321e4c485e29e5dea3d938963b5a88d188e680f9f9b`.
+
+- Address the reported level-15 party wipe in the level-12 Rikku/Eiko encounter on the hardest difficulty. Reduce boss **White Whorl** and **Firaga Burst** by approximately **45%**: private skill power **45 → 25**, a **44.4%** reduction after integer rounding. Each per-skill coefficient is 55% of its former value.
+- Keep their current HP, break gauges, speed, action order, other attacks and level. The original and playable versions of both skills, all other vision fights, Nalu's size/animation update, Fina's friendly Cure, walking replacements and crystal interactions are unchanged.
+- Apply on the next rebuild with existing saved visions. Preserve the sprite-motion cache signature and pinned cache implementation; unchanged sprites/icons do not need converting for these coefficient changes.
+
+Validation: **735 Python tests** pass locally (42 platform skips), including the existing encounter pressure and
+cache checks. Native patch/readback checks all **528** generated boss skill recipes and confirms exactly **two**
+changed rows: Eiko's private Firaga Burst **815130** and Rikku's private White Whorl **827090**, both power 25.
+All other generated skills, all **28** boss stat budgets/action orders and every original skill-table row are
+preserved. Full Windows validation, compilation, fresh engine and launcher/updater checks pass for this commit.
+The actual downloaded ZIP matches provenance/SHA-256, all **75** extension and **16** standalone Fina hashes,
+the compiled **1.2.100** label and the two intended coefficient overrides. The playable catalog is unchanged.
+**Real damage and encounter difficulty still need the user's in-game retest.** Keep Studio Test Data, update,
+rebuild/install and restart. No preset reset or Prepare Game is needed.
+
+Measured delivery: first complete candidate 23:21:13 to verified package
+23:39:25 America/Los_Angeles, **18m 12s**, including local/native
+checks, CI waiting and package verification. The timer was not reset. Measured CI wall time is **10m 13s**,
+with **14m 25s** summed job runtime. The exact automatic push run was joined through the unchanged build
+helper; no duplicate build was dispatched. Publication notes are a separate README/CHANGELOG-only commit.
 
 ## Published smaller playable Nalu and Lance Launcher animation — 2026-10-25
 

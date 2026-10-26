@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Rikku/Eiko boss burst reduction — 2026-10-25
+
+[Verified Windows download / run 40279755866](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40279755866/Sephira-Studio-Test.zip)
+(code `0db2aeb`, update **1.2.100**; **74.1 MB**).
+
+Boss White Whorl and Firaga Burst are approximately **45% weaker**, reducing their private power from **45 to 25**.
+The fight keeps its existing HP, break gauges, speed, rotation and other moves. Playable skills and all other fights
+are unchanged. Nalu's smaller battle sprite and Lance Launcher animation from 1.2.99 remain included.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. No reset, Prepare Game or new sprite/icon conversion
+is needed for the tuning change. Native and Windows/package checks pass; please retest the fight on your difficulty.
+[Checks and measured timings](CHANGELOG.md#published-rikkueiko-boss-burst-reduction--2026-10-25).
+
 ### Smaller playable Nalu and Lance Launcher animation — 2026-10-25
 
 [Verified Windows download / run 40251214869](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40251214869/Sephira-Studio-Test.zip)
