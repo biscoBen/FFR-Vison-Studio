@@ -76,9 +76,14 @@ def prepare(tables, rows, units):
     effect(196001,12003,'DamageMultiplier',damage,effectEndActionNum=-1,isUnremovable=True)
     # ParameterVariation: amount, HP/MP, percentage arithmetic. Apply now once;
     # neither resource recovery becomes a recurring self-turn regeneration.
-    for identity,resource,amount in ((196101,2,5),(196202,0,20)):
-        params=list(fx[1284][1]['ParamList']);params[:3]=[amount,resource,2]
-        effect(identity,1284,'ParameterVariation',params,applyTiming='None',proceedTiming='None',effectEndActionNum=1)
+    for identity,source,amount in ((196101,1019,5),(196202,21304,20)):
+        original=fx[source][1]
+        expected=[5,2,2] if source==1019 else [10,1,2]
+        if (original['ParamList'][:3]!=expected or original['applyTiming']!='AddEffect'
+                or original['proceedTiming']!='AddEffect' or original['effectEndActionNum']!=1):
+            raise ValueError('The native immediate resource recovery template changed.')
+        params=list(original['ParamList']);params[0]=amount
+        effect(identity,source,'ParameterVariation',params)
 
 
 def repair(unit):

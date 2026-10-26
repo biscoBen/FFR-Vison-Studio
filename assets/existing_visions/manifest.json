@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "3be8a838db2b4e68e42a680523376bcc0b1744b822d4972e0646ae825ebe94a4",
+    "install_existing_visions.py": "1e3c5eea6556b3adf412462b4480d9b46ed1094282ee013d9de939c04297e769",
     "payload/CaveHcaV3.cs": "d2e381c4deb8c6986a30aee4c4f74fe2c6094075b115c9bab51e718e44566b4c",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -13,7 +13,7 @@
     "payload/_ffr_crystal_cave.py": "63933c8e9d4eb929ae96a34ace12bb7c5133e26b210f478f255480b966033436",
     "payload/_ffr_crystal_mesh.py": "8ee7ccf20d35566ba0e9f4ecc11c150a3368e995801e07348d45bef0826b0ce9",
     "payload/_ffr_deck_sync.py": "c18b59c85bf47af890c97ced3028cc692763d62d224ac10fb1ecf2037e7083eb",
-    "payload/_ffr_esper_mastery.py": "6c97bd2b2d663ec894300439ccff4427f1b26cc8ef786fa66b3af0c4ee673398",
+    "payload/_ffr_esper_mastery.py": "66b3235cf0cddf28cc80923c35adcfcc11187992b4e92971eb63d1a34774a198",
     "payload/_ffr_existingvisions.py": "5037cfa7c1135b4e64b295bf5721a0ec0dbb2f2e03df8ea3b9c243c3552b208b",
     "payload/_ffr_ffbe_download.py": "01fc9af7b3e120a9b74304823b377947c142823523baa657ad336bccb5db86a3",
     "payload/_ffr_ffbe_library.py": "c9bc91ad448e18e90011622b20d73ab0aeeff22f0703c11cc19e6494becebd47",
@@ -66,7 +66,7 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "e00a332c7883b34caff9ff171334f3c895fbe453b37d3b056c1a9d736ebfb8ad",
+    "payload/manifest.json": "8bdb1f3875a53cd7d16692f7860461d593637467f14506eb49cd2992afe59bfc",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",
     "payload/native_voice_codec.ps1": "5fed5026524d6905cabd7518baf4118660207153bd619c5ed2f77fe15a717ad7",
     "payload/overworld_assets.zip": "4763fafb6ae323a7993cb1c5a22dd0d680da0a8851db28a4b8fc6f9162f97137",

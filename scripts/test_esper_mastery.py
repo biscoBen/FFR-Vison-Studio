@@ -67,7 +67,9 @@ class EsperMasteryTests(unittest.TestCase):
         _,rows,units=inputs();before=copy.deepcopy(rows);tables={}
         esper.prepare(tables,rows.__getitem__,units)
         self.assertEqual(rows,before)
-        passives=tables[esper.PASSIVE]['add'];fx={op['set']['ID']:op['set'] for op in tables[esper.EFFECT]['add']}
+        from _ffr_testing import apply_fields
+        passives=tables[esper.PASSIVE]['add']
+        fx={op['set']['ID']:apply_fields(rows[esper.EFFECT][op['cloneFrom']],op['set']) for op in tables[esper.EFFECT]['add']}
         self.assertLessEqual(set(esper.IDS),{p['set']['ID'] for p in passives})
         retired={pack.private_passive_id(p['preset'],p['source']) for p in esper.data()['retiredPassives']}
         self.assertEqual({p['set']['ID'] for p in passives},set(esper.IDS)|retired)
@@ -80,9 +82,10 @@ class EsperMasteryTests(unittest.TestCase):
         self.assertEqual(fx[196001]['ParamList'][0],20)
         self.assertEqual(fx[196201]['ParamList'][0],20)
         self.assertEqual(fx[196101]['ParamList'][:3],[5,2,2])
-        self.assertEqual(fx[196101]['applyTiming'],'None')
-        self.assertEqual(fx[196101]['proceedTiming'],'None')
+        self.assertEqual(fx[196101]['applyTiming'],'AddEffect')
+        self.assertEqual(fx[196101]['proceedTiming'],'AddEffect')
         self.assertEqual(fx[196101]['effectEndActionNum'],1)
+        self.assertEqual(fx[196202]['ParamList'][:3],[20,1,2])
         cat=esper.catalog({'passives':[]})
         self.assertEqual(len(cat['passives']),4)
         with self.assertRaisesRegex(ValueError,'overlaps'):esper.catalog(cat)
