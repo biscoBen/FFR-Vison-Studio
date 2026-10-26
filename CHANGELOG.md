@@ -11,6 +11,10 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Lower Eiko's boss spell powers — 2026-10-26
+
+- Set boss **Firaga Burst to power 20** (from 25) and **Blizzaga Burst to power 25** (from 29) in the paired Eiko/Rikku fight. Keep the other attacks, shared durability budget, speed, rotation and playable skills at their current values. Rebuild/install and restart Resonance to apply; no roster or game-save reset is needed.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
