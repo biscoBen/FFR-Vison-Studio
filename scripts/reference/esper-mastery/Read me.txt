@@ -1,4 +1,4 @@
-Esper mastery diagnostics (updated for the returned 1.2.107 capture)
+Esper mastery diagnostics (updated for the returned 1.2.109 capture)
 
 1. Extract this entire ZIP. Close Resonance. Run Install Esper Diagnostics.cmd.
    It finds the full game at D:\Steam\steamapps\common\FINAL FANTASY RESONANCE
@@ -29,6 +29,8 @@ What is recorded:
 - Existing [FFR Esper] activation/errors, plus separate [FFR Esper Trace] data.
 - Fina's actual continuous effect IDs, active passive IDs and equipped vision.
   The vision's own active rewards are recorded too, as a separate battle unit.
+- Native reflected signatures of the effect/passive readers, to identify the
+  actual parameter types if a different game/loader interface is encountered.
 - Battle unit IDs, allegiance, AI class, owner links, HP/MP, action counts,
   selected skills and sampled active skill jobs. Other unit IDs are retained
   so a different esper variant can be identified instead of silently ignored.

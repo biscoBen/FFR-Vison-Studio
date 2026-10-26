@@ -19,7 +19,8 @@ local function read(label, fn)
     end
 end
 local function valid(o)
-    return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid()
+    return o ~= nil and (type(o) == 'userdata' or type(o) == 'table')
+        and type(o.IsValid) == 'function' and o:IsValid()
 end
 local function value(v) return v == nil and '?' or tostring(v) end
 local function name(o) return valid(o) and o:GetFullName() or '-' end
@@ -37,20 +38,30 @@ local function effects(parameter)
         local function add(effect)
             if valid(effect) then ids[#ids+1] = effect:GetEffectData().ID end
         end
+        local function visit(effect)
+            if (type(effect)=='table' or type(effect)=='userdata') and type(effect.get)=='function' then
+                effect=effect:get()
+            end
+            add(effect)
+        end
         if type(list) == 'table' and type(list.ForEach) ~= 'function' then
-            for _, effect in pairs(list) do add(effect) end
-        elseif list then list:ForEach(function(_, wrapped) add(wrapped:get()) end) end
+            for _, effect in ipairs(list) do visit(effect) end
+        elseif list then list:ForEach(function(_, wrapped) visit(wrapped) end) end
         table.sort(ids)
         return ids
     end)
 end
 local function passives(parameter)
     return read('GetPassiveSkillList', function()
-        local ids = {}; local source = parameter:GetPassiveSkillList()
-        local function add(id) if type(id) == 'number' then ids[#ids+1] = id end end
+        local ids, source = {}, {}
+        parameter:GetPassiveSkillList(source)
+        local function add(id)
+            if (type(id)=='table' or type(id)=='userdata') and type(id.get)=='function' then id=id:get() end
+            if type(id) == 'number' then ids[#ids+1] = id end
+        end
         if type(source) == 'table' and type(source.ForEach) ~= 'function' then
-            for _, id in pairs(source) do add(id) end
-        elseif source then source:ForEach(function(_, wrapped) add(wrapped:get()) end) end
+            for _, id in ipairs(source) do add(id) end
+        elseif source then source:ForEach(function(_, wrapped) add(wrapped) end) end
         table.sort(ids); return ids
     end)
 end
@@ -126,6 +137,20 @@ local function snapshot(force)
     for key in pairs(last) do if not seen[key] then emit('ENDED', {key}) end end
     last = seen
 end
+local signaturesRead = false
+local function signatures()
+    if signaturesRead then return end
+    signaturesRead = true
+    for _, method in ipairs({'GetContEffectList','GetPassiveSkillList'}) do
+        read('signature:' .. method, function()
+            local fn = StaticFindObject('/Script/mucha.CPP_UnitParameter:' .. method)
+            if not valid(fn) then error('Native function unavailable') end
+            local fields = {method}
+            fn:ForEachProperty(function(property) fields[#fields+1] = property:GetFullName() end)
+            emit('FUNCTION_SIGNATURE', fields)
+        end)
+    end
+end
 local function stop(reason)
     if stopped then return end
     emit('STOPPED', {reason})
@@ -140,6 +165,7 @@ local function sample(force)
         if stopped then return end
         force = force or forcePending; forcePending = false
         if force then bookmark = bookmark + 1; emit('BOOKMARK', {'number=' .. bookmark}) end
+        signatures()
         read('snapshot', function() snapshot(force) end)
         if lines >= LIMIT-1 or ticks >= 9000 then stop('15-minute battle/event limit') end
     end)

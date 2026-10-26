@@ -97,6 +97,25 @@ class EsperMasteryTests(unittest.TestCase):
         lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
         lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
         lua.globals().run_tests()
+        lua.globals().run_reader_failure_tests()
+
+    def test_returned_capture_contract_rejects_old_unwrapped_and_no_argument_reads(self):
+        try:from lupa.lua54 import LuaRuntime
+        except ImportError:self.skipTest('lupa is needed for executable Lua checks')
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute('''
+            fina.parameter.effects[196000]=true
+            local list=fina.parameter:GetContEffectList()
+            assert(type(list)=='table' and type(list[1].get)=='function')
+            local ok,error=pcall(function() return list[1]:IsValid() end)
+            assert(not ok and error:find('IsValid',1,true))
+            ok,error=pcall(function() return fina.parameter:GetPassiveSkillList() end)
+            assert(not ok and error:find('expected 1 parameters',1,true))
+            fina.parameter.passives={1960,1961,1962,1963}
+            local out={};fina.parameter:GetPassiveSkillList(out)
+            assert(#out==4 and out[1]:get()==1960)
+        ''')
 
 
 if __name__=='__main__':unittest.main()

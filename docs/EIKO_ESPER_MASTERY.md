@@ -67,3 +67,15 @@ readback, Carbuncle's support rotation and higher-level esper variants.
 
 The runtime logs concise `[FFR Esper]` entries to UE4SS.log for spawn bonuses,
 extra actions, early specials, MP recovery and any unavailable native call.
+
+On the user's UE4SS build `e3ba1016`, a UFunction-returned array is a Lua list
+of `RemoteUnrealParam` elements. Unwrap each with `get()` before reading the
+effect or passive ID. The native passive-list getter fills a caller-supplied
+output table; it is not a zero-argument return-list getter. Each reward reader
+is isolated so an unavailable optional read does not discard the other source.
+The observer also records reflected function signatures for future diagnostics.
+The loader contracts are documented in its
+[array and UFunction pushers](https://github.com/UE4SS-RE/RE-UE4SS/blob/e3ba1016/UE4SS/src/LuaType/LuaUObject.cpp).
+Fixtures model those wrapped lists, the output parameter, both failure cases
+from the returned trace, and independent reader failure. In-game confirmation
+is still required.

@@ -59,13 +59,19 @@ class EsperObserverTests(unittest.TestCase):
                     GetMaxMagicPoint=function() return state.maxmp end,
                     GetActionCountInBattle=function() return state.action end,
                     GetThinkNum=function() error('Hooked think getter must never be queried') end,
-                    GetPassiveSkillList=function() return state.passives end,
+                    GetPassiveSkillList=function(_,output)
+                        assert(type(output)=='table','UFunction expected 1 parameters, received 0')
+                        for i,id in ipairs(state.passives) do output[i]={get=function() return id end} end
+                    end,
                     GetContEffectList=function()
                         local effects={}
                         for _,id in ipairs(state.ids) do
                             effects[#effects+1]=obj('Effect'..id,{GetEffectData=function() return {ID=id} end})
                         end
-                        if not state.returnTArray then return effects end
+                        if not state.returnTArray then
+                            local result={}; for i,effect in ipairs(effects) do result[i]={get=function() return effect end} end
+                            return result
+                        end
                         return {ForEach=function(_,fn) for i,effect in ipairs(effects) do
                             fn(i,{get=function() return effect end}) end end}
                     end}
@@ -81,6 +87,15 @@ class EsperObserverTests(unittest.TestCase):
             esper,esperState=unit(10452,'Esper')
             skill=obj('Skill',{GetSkillId=function() error('Unavailable native skill interface method') end})
             job=obj('SkillJob',{m_pActionUnit=esper,m_pSkill=skill})
+            function StaticFindObject(path)
+                assert(inThread)
+                local method=path:match(':(%w+)$')
+                assert(method=='GetContEffectList' or method=='GetPassiveSkillList')
+                return obj(path,{ForEachProperty=function(_,fn)
+                    local prop=obj('ArrayProperty '..path..':List')
+                    fn(prop)
+                end})
+            end
             classes.CPP_BtlUnit={fina,esper}; classes.CPP_BtlJobSkill={job}
         ''')
         lua.execute((FOLDER / 'main.lua').read_text())
@@ -92,6 +107,9 @@ class EsperObserverTests(unittest.TestCase):
             finaState.ids={196000,196100,196200,196300}; sample()
             assert(contains('READY') and contains('role=Fina') and contains('role=nativeEsper'))
             assert(contains('masteryMarkers=damage:true,mp:true,extraHP:true,earlySpecial:true'))
+            assert(contains('FUNCTION_SIGNATURE | GetPassiveSkillList | ArrayProperty'))
+            finaState.passives={1960,1961,1962,1963}; sample()
+            assert(contains('activePassiveIds=1960,1961,1962,1963'))
             assert(contains('SKILL_JOB') and contains('selectedSkill=414010'))
             local before=#messages; sample(); assert(#messages==before)
             finaState.returnTArray=true; sample(); finaState.returnTArray=false

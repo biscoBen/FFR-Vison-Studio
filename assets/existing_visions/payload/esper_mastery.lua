@@ -5,14 +5,24 @@ if config.esperMastery ~= 1 then return end
 local runtime = {states={}, callbacks={}, guarded=false, queued=false, errors={}}
 _G.FFRStudioEsperMastery = runtime -- UE4SS callbacks must retain a strong root.
 local function log(message) print('[FFR Esper] ' .. message .. '\n') end
-local function valid(o) return o and o:IsValid() end
+local function valid(o)
+    return o and (type(o)=='table' or type(o)=='userdata')
+        and type(o.IsValid)=='function' and o:IsValid()
+end
 local function each(list, fn)
     if not list then return end
-    -- Reflected UFunction return arrays are ordinary Lua tables in the user's
-    -- UE4SS. Property TArrays expose ForEach/RemoteUnrealParam instead.
+    local function visit(value)
+        -- UE4SS e3ba1016 push_arrayproperty(GetNonTrivialLocal) creates a
+        -- Lua list whose elements are GetParam RemoteUnrealParam wrappers.
+        -- The list itself is local; each value still needs get().
+        if (type(value)=='table' or type(value)=='userdata') and type(value.get)=='function' then
+            value=value:get()
+        end
+        fn(value)
+    end
     if type(list)=='table' and type(list.ForEach)~='function' then
-        for _,value in pairs(list) do fn(value) end
-    else list:ForEach(function(_, value) fn(value:get()) end) end
+        for _,value in ipairs(list) do visit(value) end
+    else list:ForEach(function(_,value) visit(value) end) end
 end
 local function native(name) return StaticFindObject('/Script/' .. name) end
 local function safe(label, fn)
@@ -22,13 +32,19 @@ local function safe(label, fn)
 end
 local function markers(parameter)
     local found={}
-    each(parameter:GetContEffectList(), function(effect)
-        if valid(effect) then found[effect:GetEffectData().ID]=true end
+    safe('active effect markers',function()
+        each(parameter:GetContEffectList(), function(effect)
+            if valid(effect) then found[effect:GetEffectData().ID]=true end
+        end)
     end)
     -- Let the game decide which learned/equipped passives are active. MR
     -- rewards supplied by the equipped vision need no duplicate AP equip.
-    each(parameter:GetPassiveSkillList(),function(id)
-        if type(id)=='number' and id>=1960 and id<=1963 then found[id*100]=true end
+    safe('active passive IDs',function()
+        local output={}
+        parameter:GetPassiveSkillList(output)
+        each(output,function(id)
+            if type(id)=='number' and id>=1960 and id<=1963 then found[id*100]=true end
+        end)
     end)
     return found
 end

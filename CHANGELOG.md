@@ -11,6 +11,17 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native esper reward readers — 2026-10-26
+
+- Correct the remaining reward-detection failures in the returned Siren trace. UE4SS e3ba1016 returns
+  a Lua list of `RemoteUnrealParam` values; unwrap each element before treating it as an effect or ID.
+  Supply the native passive-list output table instead of calling its getter without arguments.
+  A failed optional passive read no longer discards successfully read continuous-effect markers.
+- Update runtime fixtures to model wrapped values and the required output argument, and add native
+  function signatures to the standalone observer. Preserve native MR activation through equipped Eiko,
+  individual rewards and Spirit, without duplicate bonuses or reward/kit/balance changes. In-game
+  confirmation is still required; modeled runtime checks do not constitute a live-game pass.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

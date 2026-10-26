@@ -1,5 +1,7 @@
--- Reflected signatures checked against the native SDK; native table effects are
--- serialized/read back separately. This fixture does not claim an in-game pass.
+-- Returned arrays follow the actual UE4SS e3ba1016 property pusher: a Lua list
+-- of RemoteUnrealParam wrappers. The out-list getter follows the returned game
+-- diagnostic contract. Native table effects are checked separately, not here.
+-- This fixture does not claim an in-game pass.
 local function object(t)
     t=t or {};t.address=t.address or {}
     t.IsValid=function(self) return not self.invalid end
@@ -28,9 +30,16 @@ local function parameter(id)
     p.GetContEffectList=function(self)
         local list={};for id in pairs(self.effects) do
             list[#list+1]=object({GetEffectData=function() return {ID=id} end})
-        end;return self.returnTArray and array(list) or list
+        end
+        if self.returnTArray then return array(list) end
+        if self.returnDirect then return list end
+        local wrapped={};for i,value in ipairs(list) do wrapped[i]=context(value) end
+        return wrapped
     end
-    p.GetPassiveSkillList=function(self) return self.passives end
+    p.GetPassiveSkillList=function(self,output)
+        assert(type(output)=='table','UFunction expected 1 parameters, received 0')
+        for i,id in ipairs(self.passives) do output[i]=context(id) end
+    end
     p.GetActionCountInBattle=function(self) return self.count end
     p.GetThinkNum=function(self) return call('/Script/mucha.CPP_BtlUnitParameter:GetThinkNum',self,function() return self.think end) end
     p.GetMaxHitPoint=function(self) return self.maxhp end
@@ -102,6 +111,7 @@ function run_tests()
     assert(a.ai.effectCalls[196001]==1 and a.ai.effectCalls[196201]==1)
     -- Both native UFunction-return tables and property TArray wrappers work.
     fina.parameter.returnTArray=true;tick();fina.parameter.returnTArray=false
+    fina.parameter.returnDirect=true;tick();fina.parameter.returnDirect=false
     assert(a.ai.effectCalls[196001]==1 and a.ai.effectCalls[196201]==1)
     a.parameter.hp=45;tick();assert(a.parameter.hp==45,'Spawn health must never repeat-heal')
     a.wrappers=true
@@ -213,4 +223,23 @@ function run_tests()
     assert(fina.parameter.mp==15)
     fina.parameter.passives={}
     assert(_G.FFRStudioEsperMastery and #_G.FFRStudioEsperMastery.callbacks==6)
+end
+
+function run_reader_failure_tests()
+    fina.parameter.hp=100;fina.parameter.mp=10;fina.parameter.m_pVision=nil
+    fina.parameter.passives={}
+    flags(196000,196100,196200,196300)
+    local passiveGetter=fina.parameter.GetPassiveSkillList
+    fina.parameter.GetPassiveSkillList=function() error('Unavailable passive reader fixture') end
+    local a=actor(10452,'EffectsSurviveReaderFailure');actors={fina,a};tick()
+    assert(a.parameter.maxhp==120 and a.ai.effectCalls[196001]==1)
+    a.parameter.count=1;finish(a,414010);assert(fina.parameter.mp==15)
+    fina.parameter.GetPassiveSkillList=passiveGetter
+    local effectGetter=fina.parameter.GetContEffectList
+    fina.parameter.GetContEffectList=function() error('Unavailable continuous reader fixture') end
+    flags();fina.parameter.passives={1960,1961,1962,1963}
+    a=actor(10452,'PassivesSurviveReaderFailure');actors={fina,a};tick()
+    assert(a.parameter.maxhp==120 and a.ai.effectCalls[196001]==1)
+    fina.parameter.GetContEffectList=effectGetter
+    fina.parameter.passives={}
 end
