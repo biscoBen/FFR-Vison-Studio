@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native esper reward readers — 2026-10-26
+
+[Verified Windows download / run 40412719255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40412719255/Sephira-Studio-Test.zip)
+(code `babf5a2`, update **1.2.110**; **74.1 MB**).
+
+Fix the remaining reward-reader errors from the Siren capture: unwrap the loader's returned parameter values
+and supply the passive-list output table. A failed optional reader no longer discards other detected rewards.
+Normal MR activation through equipped Eiko, individual rewards or Spirit stays in place without duplicate bonuses.
+
+Update, rebuild/install and restart the game; no preset reset is needed. Full Windows checks and packaged
+runtime fixtures pass; the modifiers still need an in-game retest.
+[Checks and measured timings](CHANGELOG.md#published-native-esper-reward-readers--2026-10-26).
+
 ### Esper runtime activation fixes — 2026-10-26
 
 [Verified Windows download / run 40408382806](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40408382806/Sephira-Studio-Test.zip)

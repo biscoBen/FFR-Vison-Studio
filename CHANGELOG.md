@@ -11,17 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Native esper reward readers — 2026-10-26
-
-- Correct the remaining reward-detection failures in the returned Siren trace. UE4SS e3ba1016 returns
-  a Lua list of `RemoteUnrealParam` values; unwrap each element before treating it as an effect or ID.
-  Supply the native passive-list output table instead of calling its getter without arguments.
-  A failed optional passive read no longer discards successfully read continuous-effect markers.
-- Update runtime fixtures to model wrapped values and the required output argument, and add native
-  function signatures to the standalone observer. Preserve native MR activation through equipped Eiko,
-  individual rewards and Spirit, without duplicate bonuses or reward/kit/balance changes. In-game
-  confirmation is still required; modeled runtime checks do not constitute a live-game pass.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -90,6 +79,45 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native esper reward readers — 2026-10-26
+
+[Verified Windows ZIP / run 40412719255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40412719255/Sephira-Studio-Test.zip), code `babf5a2`, update **1.2.110** (74.1 MB).
+SHA-256 `de8fcf18cc475eef9fee8d2c06c6756909bc1e3806d1b2dc0fe95c313663a80b`.
+
+- Correct the remaining reward-detection failures in the returned Siren trace. UE4SS e3ba1016 returns
+  a Lua list of `RemoteUnrealParam` values; unwrap each element before treating it as an effect or ID.
+  Supply the native passive-list output table instead of calling its getter without arguments.
+  A failed optional passive read no longer discards successfully read continuous-effect markers.
+- Update runtime fixtures to model wrapped values and the required output argument, and add native
+  function signatures to the standalone observer. Preserve native MR activation through equipped Eiko,
+  individual rewards and Spirit, without duplicate bonuses or reward/kit/balance changes. In-game
+  confirmation is still required; modeled runtime checks do not constitute a live-game pass.
+
+Validation: **753 Python tests** pass locally (45 skipped). Native-shaped fixtures reproduce the unwrapped
+`IsValid` failure and missing-output-argument failure, then check wrapped returned lists, output values,
+property TArrays, all-nine-esper lifecycle behavior, equipped Eiko/individual/Spirit activation and isolated
+reader failure. Complete generated-script startup remains covered across six feature combinations.
+Full Windows validation and compilation pass for the same commit, including Flutter analysis/tests, fresh
+engine setup and launcher/updater checks. The downloaded ZIP passes provenance/checksum verification,
+all **78** extension and **16** standalone Fina hashes, its compiled **1.2.110** label, and execution of the
+actual packaged runtime against those fixtures. Native reward tables, roster/catalog, battle tuning and
+the pinned sprite cache are unchanged. The returned reader-only capture confirms the native `OutList` signature and all four passive/marker IDs
+on Fina with only Eiko equipped after the MR unlock battle. The initial absence was before earning those
+rewards; native MR activation needs no extra fallback. The modifiers themselves still need an in-game
+retest with the fixed runtime; fixtures and reader snapshots are not a live modifier pass.
+
+First complete candidate: **22:28:00 UTC**. Final ZIP verified: **22:46:13 UTC**,
+**18m 13s** later. Delivery notes prepared: **22:46:42 UTC**
+(**18m 41s** from the same candidate). This includes checks, waiting for the
+single matching automatic Windows run, download and verification; the timer was not restarted.
+Measured CI wall time: **11m 07s**; runner usage: **15m 48s**. These are development/package timings,
+not game-install benchmarks.
+
+Update Studio, rebuild/install and restart Resonance before retesting. No preset reset or Prepare Game is needed.
+The [updated standalone observer](https://raw.githubusercontent.com/biscoBen/FFR-Vison-Studio/babf5a240da20b0fb083396942d8b9f1bdfc1454/scripts/reference/esper-mastery/Esper-Mastery-Diagnostics.zip)
+also works on the current installation without a Studio rebuild; installing the observer requires a game restart.
+It records native function signatures, correctly unwrapped effects and active passive IDs.
 
 ## Published esper runtime activation fixes — 2026-10-26
 
