@@ -648,7 +648,7 @@
       }
     },
     "eiko": {
-      "potencyMultipliers": {"225020": 0.825},
+      "potencyMultipliers": {"225020": 0.825, "225050": 0.825},
       "attacks": [
         225290,
         225020,

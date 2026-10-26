@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.102'
+VERSION = '1.2.103'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
