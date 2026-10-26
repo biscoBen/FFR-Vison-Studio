@@ -21,15 +21,16 @@ local function call(path,obj,body,...)
     return result
 end
 local function parameter(id)
-    local p=object({id=id,hp=100,maxhp=100,mp=10,maxmp=100,effects={},count=0,think=1,relation=1})
+    local p=object({id=id,hp=100,maxhp=100,mp=10,maxmp=100,effects={},passives={},count=0,think=1,relation=1})
     p.GetUnitId=function(self) return self.id end
     p.GetRelation=function(self) return self.relation end
     p.IsDead=function(self) return self.hp<=0 end
     p.GetContEffectList=function(self)
         local list={};for id in pairs(self.effects) do
             list[#list+1]=object({GetEffectData=function() return {ID=id} end})
-        end;return array(list)
+        end;return self.returnTArray and array(list) or list
     end
+    p.GetPassiveSkillList=function(self) return self.passives end
     p.GetActionCountInBattle=function(self) return self.count end
     p.GetThinkNum=function(self) return call('/Script/mucha.CPP_BtlUnitParameter:GetThinkNum',self,function() return self.think end) end
     p.GetMaxHitPoint=function(self) return self.maxhp end
@@ -84,18 +85,23 @@ package.preload.config=function() return {esperMastery=1} end
 local function flags(...)
     fina.parameter.effects={};for _,id in ipairs({...}) do fina.parameter.effects[id]=true end
 end
-local function finish(a,skill)
-    local job=object({m_pActionUnit=a,m_pSkill=object({GetSkillId=function() return skill end})})
+local function finish(a,skill,selected)
+    a.ai.m_SkillId=selected or skill
+    local job=object({m_pActionUnit=a,m_pSkill=object({GetSkillId=function()
+        error('The native CPP_BtlSkill has no callable GetSkillId object method') end})})
     hooks['/Script/mucha.CPP_BtlJobSkill:OnFinishedSkillSequence'][2](context(job))
 end
 function run_tests()
     local a=actor(10452,'Ifrit');actors={fina,a}
     tick();assert(a.ai:GetRemainingActionNumSummonedUnit()==2)
     assert(next(a.ai.effectCalls)==nil)
-    -- Learning a reward alone grants no effect. It must be equipped on Fina.
+    -- Learning alone without the vision/reward equipped grants no effect.
     a.parameter.learned={1960,1961,1962,1963};tick();assert(next(a.ai.effectCalls)==nil)
     flags(196000,196100,196200,196300);tick()
     assert(a.parameter.maxhp==120 and a.parameter.hp==120)
+    assert(a.ai.effectCalls[196001]==1 and a.ai.effectCalls[196201]==1)
+    -- Both native UFunction-return tables and property TArray wrappers work.
+    fina.parameter.returnTArray=true;tick();fina.parameter.returnTArray=false
     assert(a.ai.effectCalls[196001]==1 and a.ai.effectCalls[196201]==1)
     a.parameter.hp=45;tick();assert(a.parameter.hp==45,'Spawn health must never repeat-heal')
     a.wrappers=true
@@ -128,7 +134,7 @@ function run_tests()
     -- One MP payment per completed logical action, including the finale. A
     -- multi-hit sequence callback and the following dismiss are not extra pay.
     fina.parameter.mp=10;a.parameter.count=6
-    finish(a,300020);finish(a,300020);finish(a,431100);assert(fina.parameter.mp==15)
+    finish(a,300020,-1);finish(a,300020,-1);finish(a,431100);assert(fina.parameter.mp==15)
     a.parameter.count=7;finish(a,414010);assert(fina.parameter.mp==20)
     fina.parameter.mp=99;a.parameter.count=8;finish(a,414010);assert(fina.parameter.mp==100)
     -- The same markers supplied through Spirit of Eiko have identical meaning;
@@ -171,5 +177,40 @@ function run_tests()
     assert(survivor.ai:GetRemainingActionNumSummonedUnit()==1,'Caster KO must not remove the extra action')
     local mp=fina.parameter.mp;finish(survivor,414010);assert(fina.parameter.mp==mp)
     fina.parameter.hp=100
+    -- A summon dismissed before any action is not an MP-recovery event.
+    local unused=actor(10452,'Unused');actors={fina,unused};tick()
+    local before=fina.parameter.mp;finish(unused,431100,-1);assert(fina.parameter.mp==before)
+    -- Native learned MR passives supplied by Eiko herself activate all bonuses
+    -- without equipping the same rewards individually. Both sources dedupe.
+    fina.parameter.hp=100;flags()
+    local eiko=actor(13515,'EquippedEiko');fina.parameter.m_pVision=eiko
+    eiko.parameter.passives={1960,1961,1962,1963}
+    local throughVision=actor(10452,'ThroughEiko');actors={fina,eiko,throughVision};tick()
+    assert(throughVision.parameter.maxhp==120 and throughVision.ai.effectCalls[196001]==1)
+    throughVision.parameter.count=1;fina.parameter.mp=10;finish(throughVision,414010)
+    assert(fina.parameter.mp==15,'Equipped Eiko must supply her learned MP reward')
+    throughVision.parameter.count=2;throughVision.ai.remaining=0
+    assert(throughVision.ai:GetRemainingActionNumSummonedUnit()==1)
+    flags(196000,196100,196200,196300);tick()
+    assert(throughVision.ai.effectCalls[196201]==1,'Vision and individually equipped rewards must not stack')
+    local rng=math.random;math.random=function() return 1 end
+    throughVision.parameter.count=3;throughVision.ai.remaining=1;throughVision.ai:GetRemainingActionNumSummonedUnit()
+    throughVision.ai:SetSkill(414010);assert(throughVision.ai.skill==300020)
+    math.random=rng
+    -- Unequipping both removes activation on the next summon; simply owning
+    -- Eiko/learning the rewards in save data is not enough.
+    flags();eiko.parameter.passives={}
+    local unlearned=actor(10452,'UnlearnedEiko');actors={fina,eiko,unlearned};tick()
+    assert(next(unlearned.ai.effectCalls)==nil,'Equipped Eiko must not supply unlearned rewards')
+    fina.parameter.m_pVision=nil
+    local without=actor(10452,'WithoutEiko');actors={fina,without};tick()
+    assert(next(without.ai.effectCalls)==nil)
+    -- Spirit/native passive list on Fina also works before marker inspection.
+    fina.parameter.passives={1960,1961,1962,1963}
+    local throughSpirit=actor(10452,'ThroughSpirit');actors={fina,throughSpirit};tick()
+    assert(throughSpirit.parameter.maxhp==120)
+    throughSpirit.parameter.count=1;fina.parameter.mp=10;finish(throughSpirit,414010)
+    assert(fina.parameter.mp==15)
+    fina.parameter.passives={}
     assert(_G.FFRStudioEsperMastery and #_G.FFRStudioEsperMastery.callbacks==6)
 end

@@ -34,12 +34,24 @@ local function effects(parameter)
     return read('GetContEffectList', function()
         local ids = {}
         local list = parameter:GetContEffectList()
-        if list then list:ForEach(function(_, wrapped)
-            local effect = wrapped:get()
+        local function add(effect)
             if valid(effect) then ids[#ids+1] = effect:GetEffectData().ID end
-        end) end
+        end
+        if type(list) == 'table' and type(list.ForEach) ~= 'function' then
+            for _, effect in pairs(list) do add(effect) end
+        elseif list then list:ForEach(function(_, wrapped) add(wrapped:get()) end) end
         table.sort(ids)
         return ids
+    end)
+end
+local function passives(parameter)
+    return read('GetPassiveSkillList', function()
+        local ids = {}; local source = parameter:GetPassiveSkillList()
+        local function add(id) if type(id) == 'number' then ids[#ids+1] = id end end
+        if type(source) == 'table' and type(source.ForEach) ~= 'function' then
+            for _, id in pairs(source) do add(id) end
+        elseif source then source:ForEach(function(_, wrapped) add(wrapped:get()) end) end
+        table.sort(ids); return ids
     end)
 end
 local function list(ids)
@@ -68,6 +80,7 @@ local function unit(seen, actor, force)
     local key = name(actor) .. '@' .. value(read('GetAddress', function() return actor:GetAddress() end))
     local ai = read('GetUnitAI', function() return actor:GetUnitAI() end)
     local ids = effects(p)
+    local passiveIds = passives(p)
     local owner = field(p, 'm_pVisionOwner')
     local ownerP = parameter(owner)
     local fields = {key, 'role=' .. role, 'unitId=' .. id,
@@ -81,7 +94,8 @@ local function unit(seen, actor, force)
         'AI=' .. name(ai), 'selectedSkill=' .. value(valid(ai) and field(ai, 'm_SkillId') or nil),
         'visionOwner=' .. name(owner),
         'visionOwnerId=' .. value(valid(ownerP) and read('owner:GetUnitId', function() return ownerP:GetUnitId() end) or nil),
-        'effectIds=' .. list(ids)}
+        'effectIds=' .. list(ids), 'activePassiveIds=' .. list(passiveIds),
+        'equippedVision=' .. name(field(p, 'm_pVision'))}
     if role == 'Fina' then fields[#fields+1] = 'masteryMarkers=' .. flags(ids) end
     changed(seen, 'unit:' .. key, 'UNIT', fields, force)
 end
@@ -91,8 +105,10 @@ local function job(seen, o, force)
     local p = parameter(actor)
     if not valid(p) then return end
     local skill = field(o, 'm_pSkill')
+    local ai = read('GetUnitAI', function() return actor:GetUnitAI() end)
     local fields = {name(o), 'actor=' .. name(actor), 'unitId=' .. p:GetUnitId(),
-        'skillId=' .. value(valid(skill) and read('GetSkillId', function() return skill:GetSkillId() end) or nil),
+        'skillObject=' .. name(skill),
+        'selectedSkill=' .. value(valid(ai) and field(ai, 'm_SkillId') or nil),
         'actions=' .. value(read('GetActionCountInBattle', function() return p:GetActionCountInBattle() end))}
     changed(seen, 'job:' .. name(o), 'SKILL_JOB', fields, force)
 end

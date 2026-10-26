@@ -1,4 +1,4 @@
-Esper mastery diagnostics for Studio 1.2.107
+Esper mastery diagnostics (updated for the returned 1.2.107 capture)
 
 1. Extract this entire ZIP. Close Resonance. Run Install Esper Diagnostics.cmd.
    It finds the full game at D:\Steam\steamapps\common\FINAL FANTASY RESONANCE
@@ -6,9 +6,10 @@ Esper mastery diagnostics for Studio 1.2.107
    It adds its own read-only observer to the existing UE4SS installation.
    No Studio rebuild or mod reinstall is required.
 
-2. Start Resonance. Equip Eiko's learned esper MR rewards ON PARTY FINA
-   (or equip Spirit of Eiko on her). Learning them or equipping Eiko alone is
-   not enough: these are equipable rewards. Use Fina's native summon command.
+2. Start Resonance. Equip Eiko on party Fina with the relevant MR rewards learned,
+   OR equip her learned esper rewards individually on Fina with any vision,
+   OR equip Spirit of Eiko on Fina. All follow native learned MR activation.
+   Use Fina's native summon command.
    Spend some MP first so MP recovery has room to show up.
 
 3. In battle, press F8 before summoning, again with the esper present, then
@@ -26,7 +27,8 @@ Esper mastery diagnostics for Studio 1.2.107
 What is recorded:
 - Whether the installed Studio runtime contains/enables esper mastery.
 - Existing [FFR Esper] activation/errors, plus separate [FFR Esper Trace] data.
-- Fina's actual continuous effect IDs and the four mastery marker IDs.
+- Fina's actual continuous effect IDs, active passive IDs and equipped vision.
+  The vision's own active rewards are recorded too, as a separate battle unit.
 - Battle unit IDs, allegiance, AI class, owner links, HP/MP, action counts,
   selected skills and sampled active skill jobs. Other unit IDs are retained
   so a different esper variant can be identified instead of silently ignored.

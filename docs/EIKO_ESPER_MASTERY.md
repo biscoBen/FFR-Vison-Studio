@@ -1,8 +1,10 @@
 # Eiko esper mastery and reviewed reward moves
 
-The four new esper passives are equipable MR rewards. They take effect on the
-summoner, party Fina, with any vision equipped. Spirit of Eiko includes these
-same MR effects. Learning a reward without equipping it does not activate it.
+The four new esper passives are equipable MR rewards. They follow the normal
+native MR behavior: learned rewards are active through equipped Eiko, or can be
+equipped individually on party Fina with any vision. Spirit of Eiko includes the
+same MR effects. Vision/reward/Spirit sources apply each bonus once. Learning a
+reward without equipping Eiko, that reward or Spirit does not activate it.
 Summoning remains Fina's native command; Eiko no longer grants Ifrit or Shiva.
 
 | Rank | Eiko | Equip cost |
@@ -49,8 +51,8 @@ learned private equipment rewards retain their definitions for old saves.
 ## Implementation and validation limits
 
 Custom passives 1960–1963 use private continuous markers on the equipping actor.
-The owned UE4SS runtime checks the actual friendly native esper and Fina's
-equipped effects. It adds native damage/HP operations to that summon, restores
+The owned UE4SS runtime checks the actual friendly native esper, Fina's active
+effects/passives and her equipped vision's native effects/passives. It adds native damage/HP operations to that summon, restores
 MP once per completed action, and adjusts native ordinary-action selection.
 The final-special/dismissal stack is never replaced. Multi-hit callbacks and
 dismissal do not create extra MP payments. No save or loadout mutation is used.

@@ -108,7 +108,7 @@ try {
         Copy-Item -LiteralPath $source -Destination (Join-Path $folder 'Scripts/main.lua') -Force
         [IO.File]::WriteAllText($enabled,'')
         Write-Host 'Read-only esper observer installed. No Studio rebuild/install is needed.' -ForegroundColor Green
-        Write-Host 'Start the game. Equip the MR rewards or Spirit of Eiko ON FINA, then summon an esper.'
+        Write-Host 'On Fina: equip Eiko with learned MR rewards, OR the rewards individually, OR Spirit of Eiko.'
         Write-Host 'F8: before summoning, while the esper is present, and after its final special. F9 stops tracing.'
         Write-Host 'Run Collect Esper Diagnostics.cmd BEFORE restarting the game; send the resulting ZIP.'
         return
@@ -167,7 +167,7 @@ try {
     $masteryReady = @($trace | Where-Object { $_ -match '\[FFR Esper\] Esper mastery ready' }).Count
     [pscustomobject]@{schema=1;collectedUtc=[DateTime]::UtcNow.ToString('o');game=$game;
         files=$records;errors=$errors;traceLines=$trace.Count;observerReadyMarkers=$ready;
-        masteryReadyMarkers=$masteryReady;esperMasteryConfigured=($configText -match '\besperMastery\s*=\s*1\b');
+        masteryReadyMarkers=$masteryReady;esperMasteryConfigured=($configText -match '(?:\besperMastery|\["esperMastery"\])\s*=\s*1\b');
         runtimeContainsEsperCode=$runtimeText.Contains('Esper mastery ready');
         sampled=$true;intervalMs=100;logTailLimitBytes=16MB;absenceProvesNoActivation=$false} |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $root 'report.json') -Encoding UTF8

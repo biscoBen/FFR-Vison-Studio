@@ -7,7 +7,12 @@ _G.FFRStudioEsperMastery = runtime -- UE4SS callbacks must retain a strong root.
 local function log(message) print('[FFR Esper] ' .. message .. '\n') end
 local function valid(o) return o and o:IsValid() end
 local function each(list, fn)
-    if list then list:ForEach(function(_, value) fn(value:get()) end) end
+    if not list then return end
+    -- Reflected UFunction return arrays are ordinary Lua tables in the user's
+    -- UE4SS. Property TArrays expose ForEach/RemoteUnrealParam instead.
+    if type(list)=='table' and type(list.ForEach)~='function' then
+        for _,value in pairs(list) do fn(value) end
+    else list:ForEach(function(_, value) fn(value:get()) end) end
 end
 local function native(name) return StaticFindObject('/Script/' .. name) end
 local function safe(label, fn)
@@ -19,6 +24,11 @@ local function markers(parameter)
     local found={}
     each(parameter:GetContEffectList(), function(effect)
         if valid(effect) then found[effect:GetEffectData().ID]=true end
+    end)
+    -- Let the game decide which learned/equipped passives are active. MR
+    -- rewards supplied by the equipped vision need no duplicate AP equip.
+    each(parameter:GetPassiveSkillList(),function(id)
+        if type(id)=='number' and id>=1960 and id<=1963 then found[id*100]=true end
     end)
     return found
 end
@@ -57,6 +67,13 @@ local function state(ai)
     end
     s.actor=actor;s.parameter=parameter;s.ai=ai;s.caster=caster;s.wearer=wearer
     s.flags=markers(wearer)
+    local vision=wearer.m_pVision
+    if valid(vision) then
+        local p=vision:GetUnitParameter()
+        if valid(p) then
+            for id in pairs(markers(p)) do s.flags[id]=true end
+        end
+    end
     return s
 end
 local function prepare(s)
@@ -162,9 +179,13 @@ local function finished(context)
         if not valid(actor) then return end
         local s=state(actor:GetUnitAI())
         if not s or s.wearer:IsDead() or not s.flags[196100] or not valid(job.m_pSkill) then return end
-        local skill=job.m_pSkill:GetSkillId()
-        if skill<=0 or skill==431080 or skill==431100 then return end
+        -- CPP_BtlSkill does not expose the interface's GetSkillId as an object
+        -- method on this loader. Read the AI's reflected selection instead.
+        -- Native finale stacks leave it at -1: they still count as an action.
+        local skill=s.ai.m_SkillId
+        if skill==431080 or skill==431100 then return end
         local count=s.parameter:GetActionCountInBattle()
+        if count<=0 then return end -- No payment for a dismissed, unused summon.
         if s.paidAt==count then return end -- One payment for a multi-hit/stacked action.
         s.paidAt=count
         local ai=s.caster:GetUnitAI()
@@ -206,4 +227,4 @@ runtime.loop=function()
     return false
 end
 LoopAsync(200,runtime.loop)
-log('Esper mastery ready; equipped rewards only; ordinary procs preserve the final special')
+log('Esper mastery ready; native active rewards on Fina/equipped vision; ordinary procs preserve the final special')

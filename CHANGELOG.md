@@ -20,6 +20,15 @@ test-update version; the commit and workflow run identify the exact package. Dat
   regression control. No summon mechanics, reward IDs, kits or battle tuning change.
 - The new esper modifiers still require a live-game retest after rebuilding/installing and restarting.
   The standalone observer can distinguish remaining activation or native-call failures.
+- The returned Siren trace also identifies a second activation failure: `GetContEffectList()` returns
+  a plain Lua table, so `ForEach` fails before any mastery marker can be read. Support both returned
+  Lua lists and property TArrays. Use the AI's reflected skill selection in the MP callback instead
+  of the unavailable `CPP_BtlSkill:GetSkillId` object method; retain one payment per completed action,
+  final-stack recovery, and dismissal/multi-hit guards. Correct the observer and its quoted-config-key
+  detection alongside these fixes. Actual in-game behavior still needs confirmation.
+- Preserve normal native MR activation through equipped Eiko, individually equipped rewards with any
+  vision, or Spirit of Eiko. Read the game's active passive lists on Fina and her equipped vision;
+  do not grant unlearned rewards or stack the same bonus when both sources are present.
 
 ### Esper mastery diagnostic helper — 2026-10-26
 

@@ -51,7 +51,7 @@ class EsperObserverTests(unittest.TestCase):
             function contains(s) return table.concat(messages):find(s,1,true)~=nil end
             function count(s) local n=0; for _,m in ipairs(messages) do if m:find(s,1,true) then n=n+1 end end; return n end
             function unit(id,label)
-                local state={hp=120,maxhp=120,mp=10,maxmp=100,action=0,skill=414010,ids={}}
+                local state={hp=120,maxhp=120,mp=10,maxmp=100,action=0,skill=414010,ids={},passives={}}
                 local parameterFields={
                     GetUnitId=function() return id end,GetRelation=function() return 1 end,
                     IsDead=function() return false end,GetHitPoint=function() return state.hp end,
@@ -59,23 +59,27 @@ class EsperObserverTests(unittest.TestCase):
                     GetMaxMagicPoint=function() return state.maxmp end,
                     GetActionCountInBattle=function() return state.action end,
                     GetThinkNum=function() error('Hooked think getter must never be queried') end,
+                    GetPassiveSkillList=function() return state.passives end,
                     GetContEffectList=function()
-                        return {ForEach=function(_,fn)
-                            for i,id in ipairs(state.ids) do
-                                local effect=obj('Effect'..id,{GetEffectData=function() return {ID=id} end})
-                                fn(i,{get=function() return effect end})
-                            end
-                        end}
+                        local effects={}
+                        for _,id in ipairs(state.ids) do
+                            effects[#effects+1]=obj('Effect'..id,{GetEffectData=function() return {ID=id} end})
+                        end
+                        if not state.returnTArray then return effects end
+                        return {ForEach=function(_,fn) for i,effect in ipairs(effects) do
+                            fn(i,{get=function() return effect end}) end end}
                     end}
                 local p=obj('Parameter'..id,parameterFields)
-                local ai=obj('NativeEsperAI'..id,{
-                    GetRemainingActionNumSummonedUnit=function() error('Hooked remaining getter must never be queried') end})
+                local aiFields=setmetatable({
+                    GetRemainingActionNumSummonedUnit=function() error('Hooked remaining getter must never be queried') end},
+                    {__index=function(_,key) if key=='m_SkillId' then return state.skill end end})
+                local ai=obj('NativeEsperAI'..id,aiFields)
                 local actor=obj(label, {GetUnitParameter=function() return p end,GetUnitAI=function() return ai end})
                 return actor,state,parameterFields
             end
             fina,finaState,finaFields=unit(1003,'Fina')
             esper,esperState=unit(10452,'Esper')
-            skill=obj('Skill',{GetSkillId=function() return esperState.skill end})
+            skill=obj('Skill',{GetSkillId=function() error('Unavailable native skill interface method') end})
             job=obj('SkillJob',{m_pActionUnit=esper,m_pSkill=skill})
             classes.CPP_BtlUnit={fina,esper}; classes.CPP_BtlJobSkill={job}
         ''')
@@ -88,10 +92,12 @@ class EsperObserverTests(unittest.TestCase):
             finaState.ids={196000,196100,196200,196300}; sample()
             assert(contains('READY') and contains('role=Fina') and contains('role=nativeEsper'))
             assert(contains('masteryMarkers=damage:true,mp:true,extraHP:true,earlySpecial:true'))
-            assert(contains('SKILL_JOB') and contains('skillId=414010'))
+            assert(contains('SKILL_JOB') and contains('selectedSkill=414010'))
             local before=#messages; sample(); assert(#messages==before)
+            finaState.returnTArray=true; sample(); finaState.returnTArray=false
+            assert(#messages==before, 'Both native array shapes must report the same markers')
             finaState.mp=15; esperState.action=1; esperState.skill=300020; sample()
-            assert(contains('MP=15') and contains('actions=1') and contains('skillId=300020'))
+            assert(contains('MP=15') and contains('actions=1') and contains('selectedSkill=300020'))
             assert(not contains('READ_UNAVAILABLE'))
             classes.CPP_BtlUnit={fina}; classes.CPP_BtlJobSkill={}; sample()
             assert(contains('ENDED | unit:Esper') and contains('ENDED | job:SkillJob'))
@@ -131,7 +137,7 @@ class EsperDiagnosticHelperTests(unittest.TestCase):
         self.mods.mkdir(parents=True)
         self.runtime = self.mods / 'FFRStudioFieldLeader/Scripts'; self.runtime.mkdir(parents=True)
         (self.runtime/'main.lua').write_text('-- Esper mastery ready; unchanged gameplay runtime')
-        (self.runtime/'config.lua').write_text('return {esperMastery = 1}\n')
+        (self.runtime/'config.lua').write_text('return {["esperMastery"]=1}\n')
         (self.runtime.parent/'enabled.txt').write_text('')
         self.loader = self.binary/'ue4ss/UE4SS.dll'; self.loader.write_bytes(b'original loader')
         self.mods_txt = self.mods/'mods.txt'; self.mods_txt.write_text('OtherMod : 1\n')

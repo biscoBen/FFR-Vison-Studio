@@ -62,7 +62,7 @@ class FieldLeaderTests(unittest.TestCase):
     def test_old_adjoining_blocks_reproduce_users_exact_startup_failure(self):
         lua,code=self.combined_startup()
         broken=code.replace('\nend)();\n','\nend)()\n')
-        with self.assertRaisesRegex(Exception,r'main.lua:213: attempt to call a nil value'):
+        with self.assertRaisesRegex(Exception,r'main.lua:\d+: attempt to call a nil value'):
             lua.execute(broken,name='@FFRStudioFieldLeader/Scripts/main.lua')
         self.assertNotIn('Battle presentation ready',''.join(lua.globals().messages.values()))
 
