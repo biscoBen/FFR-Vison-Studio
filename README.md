@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Eiko early support spells — 2026-10-26
+
+[Verified Windows download / run 40419653308](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40419653308/Sephira-Studio-Test.zip)
+(code `658242d`, update **1.2.111**; **74.1 MB**).
+
+Raise moves to Eiko's awakening tier 1, and the native party Shellga joins tier 2. Existing Eiko presets
+update automatically while retaining their MR rewards and private skill identities. The working esper
+modifiers and boss battles keep their current behavior.
+
+Update, rebuild/install and restart the game; no preset reset is needed. Windows checks and packaged
+migration checks pass; the new tier placement still needs an in-game check.
+[Checks and measured timings](CHANGELOG.md#published-eiko-early-support-spells--2026-10-26).
+
 ### Native esper reward readers — 2026-10-26
 
 [Verified Windows download / run 40412719255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40412719255/Sephira-Studio-Test.zip)

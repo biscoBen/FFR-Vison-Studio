@@ -11,15 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Eiko early support spells — 2026-10-26
-
-- Move Eiko's Raise to awakening tier 1 and add the native party Shellga to tier 2.
-  Existing Eiko presets update automatically without a reset, preserving mastery rewards,
-  private skill IDs and unrelated edits. Tier limits remain within eight grants.
-- The user confirms the other esper modifiers work in game on 1.2.110; the HP increase
-  remains unverified because the esper's HP is not displayed. This support-spell update
-  leaves the working esper runtime unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -88,6 +79,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Eiko early support spells — 2026-10-26
+
+[Verified Windows ZIP / run 40419653308](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40419653308/Sephira-Studio-Test.zip), code `658242d`, update **1.2.111** (74.1 MB).
+SHA-256 `8aedd9877d82fa776ced15b684140bfaf16b8c313490e01c0296e67c68d3ab6e`.
+
+- Move Eiko's Raise to awakening tier 1 and add the native party Shellga to tier 2.
+  Existing Eiko presets update automatically without a reset, preserving mastery rewards,
+  private skill IDs and unrelated edits. Tier limits remain within eight grants.
+- The user confirms the other esper modifiers work in game on 1.2.110; the HP increase
+  remains unverified because the esper's HP is not displayed. This support-spell update
+  leaves the working esper runtime unchanged.
+
+Validation: **754 Python tests** pass locally (45 skipped), plus all four focused Studio kit tests.
+The migration updates both the previous esper kit and older defaults exactly once while preserving custom
+edits, private skill IDs, mastery and Spirit links. Native patch/readback verifies the awakening rows and
+unchanged original rows. All 75 original equipable MR rewards remain covered; all 28 boss rotations and
+stat budgets are unchanged. Eiko's tiers contain **6 / 4 / 6 / 7** grants, within the eight-grant limit.
+Full Windows validation and compilation pass for the same commit. The downloaded ZIP passes provenance
+and checksum checks, all **78** extension and **16** standalone Fina hashes, its compiled **1.2.111** label,
+and migration checks using the actual packaged data. The other 29 presets, esper runtime, battle tuning
+and pinned sprite cache are unchanged. The new tier placement still needs an in-game check.
+
+First complete candidate: **16:23:19 PDT**. Final ZIP verified:
+**16:37:18 PDT**, **13m 59s** later.
+Delivery notes prepared: **16:37:23 PDT**
+(**14m 05s** from the same candidate).
+This includes local checks, corrections, waiting for one matching automatic Windows run, download and
+verification; the timer was not restarted. Measured CI wall time: **10m 53s**; runner usage:
+**14m 26s**. These are development/package timings, not game-install benchmarks.
+
+Update Studio, rebuild/install and restart Resonance. No preset reset or Prepare Game is needed.
 
 ## Published native esper reward readers — 2026-10-26
 
