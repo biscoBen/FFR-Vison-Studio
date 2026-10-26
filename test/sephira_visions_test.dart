@@ -41,7 +41,13 @@ Map<String, dynamic> revision5Preset(Map<String, dynamic> value) {
 }
 
 Map<String,dynamic> beforeMrRestoration(Map<String,dynamic> value) {
-  final p=CharacterConfig.copy(value);final update=p.remove('mrRestoration');
+  final p=CharacterConfig.copy(value);
+  final previous=p.remove('esperKitBefore');
+  if (previous is Map<String,dynamic>) {
+    p['profile']=CharacterConfig.copy(previous);
+    p.remove('kitUpdate');
+  }
+  final update=p.remove('mrRestoration');
   if(update is Map) {
     (p['profile'] as Map).addAll(CharacterConfig.copy(update['before'] as Map<String,dynamic>));
     p['awakeningBalance']=CharacterConfig.copy(update['beforeAwakeningBalance'] as Map<String,dynamic>);

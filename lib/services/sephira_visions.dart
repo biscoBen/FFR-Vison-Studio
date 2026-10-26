@@ -162,6 +162,18 @@ class SephiraVisions {
       final result = CharacterConfig.copy(unit);
       final template = CharacterConfig.restore(preset!['profile'] as Map<String, dynamic>, [], replacing: unit);
       final owned = result['skills'] as Map;
+      // Explicit reward moves are reviewed together with the awakening kit.
+      // Validate the whole batch before changing anything, keeping edited MRs open.
+      final rewardMoves = update['mr'] as List? ?? [];
+      for (final op in rewardMoves) {
+        final kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]};
+        final choices = (result['synchro'][op['rank']] as List)
+            .where((g) => kinds.contains(g[0])).toList();
+        if (choices.length!=1 ||
+            (json.encode(choices.single)!=json.encode(op['from']) && json.encode(choices.single)!=json.encode(op['to']))) {
+          throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve it before applying its kit update.');
+        }
+      }
       String grantKey(List g) {
         final recipe = g[0] == 'ActiveSkill' ? owned[g[1].toString()] as Map? : null;
         return recipe != null ? 'custom:${recipe['from']}' : '${g[0]}:${g[1]}';
@@ -204,6 +216,14 @@ class SephiraVisions {
         awakening.add(grants);
       }
       result['awakening'] = awakening;
+      for (final op in rewardMoves) {
+        result['synchro'][op['rank']] = [for (final grant in result['synchro'][op['rank']] as List)
+          if (json.encode(grant)==json.encode(op['from']) || json.encode(grant)==json.encode(op['to']))
+            List<dynamic>.from(op['to'] as List) else grant];
+      }
+      if (rewardMoves.isNotEmpty) {
+        result['sephiraPassiveText'] = CharacterConfig.copy(template['sephiraPassiveText'] as Map<String,dynamic>);
+      }
       final replacement = update['passiveReplacement'];
       if (replacement is List) {
         for (final tier in result['synchro'] as List) {

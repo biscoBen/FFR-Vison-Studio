@@ -18,7 +18,8 @@ class PassiveMasteryTests(unittest.TestCase):
         required = {e['id'] for e in audit['entries'] if e['kind'] == 'PassiveSkill'}
         actual = []; learned = set()
         for preset, unit in zip(catalog['presets'], units):
-            choices = [unit['synchro'][rank][0] for rank in (1, 3, 5, 7, 9)]
+            ranks=(2,3,5,7,9) if preset['id']=='mystea' else (1,3,5,7,9)
+            choices = [unit['synchro'][rank][0] for rank in ranks]
             self.assertTrue(all(g[0] in ('ActiveSkill','PassiveSkill') for g in choices))
             expected = list(REWARDS[preset['id']])
             for rank, bound, general, _ in pack.MASTERY_SCOPE.get(preset['id'], []):
@@ -26,6 +27,8 @@ class PassiveMasteryTests(unittest.TestCase):
             if preset['id']=='aria':expected[-1]=1524
             if preset.get('mrRestoration'):
                 for op in preset['mrRestoration']['mr']:expected[(op['rank']-1)//2]=op['to'][1]
+            for op in preset.get('kitUpdate',{}).get('mr',[]):
+                if op['rank'] in ranks:expected[ranks.index(op['rank'])]=op['to'][1]
             self.assertEqual([g[1] for g in choices], expected)
             self.assertFalse({g[1] for g in choices} & pack.BINDINGS.keys())
             learned.update(g[1] for f in ('awakening','synchro') for t in unit[f]
@@ -90,6 +93,8 @@ class PassiveMasteryTests(unittest.TestCase):
                                      (unit['key'],group))
             self.assertTrue(all(len(t)<=8 for t in unit['awakening']))
             native_passives = {p['ID']:p for p in rows[pack.PASSIVE].values()}
+            from sephira_esper_kits import PASSIVES
+            native_passives.update({sid:{'equipCost':p['cost']} for sid,p in PASSIVES.items()})
             cost = sum(native_passives[s]['equipCost'] or 20 for s in ids)
             self.assertTrue(.8*original['cost'] <= cost <= 1.2*original['cost'],unit['key'])
         tronn = next(p for p in catalog['presets'] if p['id']=='christine')['profile']

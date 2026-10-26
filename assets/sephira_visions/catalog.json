@@ -23321,7 +23321,7 @@
         "master": {
           "id": 1351100,
           "en": "Spirit of Mystea",
-          "desc": "Mystea's learned mastery rewards flow into the wearer."
+          "desc": "Grants all of Mystea's mastery abilities."
         },
         "price": 1000,
         "skills": {
@@ -23807,16 +23807,16 @@
           [],
           [
             [
-              "PassiveSkill",
-              1313,
-              -1
+              "BaseParameter",
+              1,
+              30
             ]
           ],
           [
             [
-              "BaseParameter",
-              1,
-              30
+              "PassiveSkill",
+              1313,
+              -1
             ]
           ],
           [
@@ -23836,7 +23836,7 @@
           [
             [
               "PassiveSkill",
-              1299,
+              1030,
               -1
             ]
           ],
@@ -23864,7 +23864,7 @@
           [
             [
               "PassiveSkill",
-              1030,
+              1299,
               -1
             ],
             [
@@ -23929,7 +23929,8 @@
             "name": "Magic Evasion +20%",
             "desc": "Evade magic attacks with a 20% chance."
           }
-        }
+        },
+        "sephiraKitRevision": 1
       },
       "balance": {
         "nativeBudget": 13103,
@@ -25229,6 +25230,728 @@
           "before": "Native Cecil resonance mechanics; Mystea's own sprite animation.",
           "after": "Activate a barrier on all allies that reduces damage taken by 70% once."
         }
+      },
+      "esperKitBefore": {
+        "key": "sephira_mystea",
+        "id": 13511,
+        "sort": 13581,
+        "jp": "Sephira_mystea",
+        "en": "Mystea",
+        "desc": "Magic tank, barriers and counter magic. A Sephira vision with native-budget Resonance skills.",
+        "donor": 13108,
+        "attackType": "Magic",
+        "stats": {
+          "MaxHitPoint": 800,
+          "MaxMagicPoint": 100,
+          "Attack": 25,
+          "Defence": 30,
+          "Intelligence": 10,
+          "Mind": 20,
+          "Agility": 15
+        },
+        "roles": [
+          "eUnitRole::Defender"
+        ],
+        "elemRes": {},
+        "command": {
+          "id": 331,
+          "en": "Mystea Skills",
+          "desc": "Magic tank, barriers and counter magic."
+        },
+        "master": {
+          "id": 1351100,
+          "en": "Spirit of Mystea",
+          "desc": "Mystea's learned mastery rewards flow into the wearer."
+        },
+        "price": 1000,
+        "skills": {
+          "486103": {
+            "from": 500860,
+            "visuals": 400630,
+            "jp": "Sephira_mystea_Kit_1",
+            "en": "Mighty Guard",
+            "desc": "Reduce party physical and magic damage taken by 30%.",
+            "descAuto": false,
+            "set": {
+              "Cost": 40,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486109": {
+            "from": 500700,
+            "visuals": 400630,
+            "jp": "Sephira_mystea_Kit_3",
+            "en": "Evasion Ward",
+            "desc": "Increase own physical evasion by 50%.",
+            "descAuto": false,
+            "set": {
+              "Cost": 20,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486112": {
+            "from": 500310,
+            "visuals": 500310,
+            "jp": "Sephira_mystea_Kit_4",
+            "en": "Light Ray",
+            "desc": "Deal Light magic damage to an enemy.",
+            "descAuto": false,
+            "set": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+            }
+          },
+          "486115": {
+            "from": 505860,
+            "visuals": 408050,
+            "jp": "Sephira_mystea_Kit_5",
+            "en": "Dystopia",
+            "desc": "Deal Dark magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 26,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
+            }
+          },
+          "486118": {
+            "from": 500690,
+            "visuals": 400630,
+            "jp": "Sephira_mystea_Kit_6",
+            "en": "Dazing Mist",
+            "desc": "Inflict Confusion.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486121": {
+            "from": 240240,
+            "visuals": 240240,
+            "jp": "Sephira_mystea_Kit_7",
+            "en": "Banishra Ray",
+            "desc": "Deal Light magic damage to an enemy 2 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 15,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+            }
+          },
+          "486130": {
+            "from": 505430,
+            "visuals": 400630,
+            "jp": "Sephira_mystea_Kit_10",
+            "en": "Magic Ward",
+            "desc": "Reduce own magic damage taken by 30% for 3 turns.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "effectBundleList": [
+                {
+                  "effectId": 1163,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "SkillTarget",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                },
+                {
+                  "effectId": -1,
+                  "TargetType": "Self",
+                  "targetRelation": "Friendlies",
+                  "activeSkillAddTiming": "AfterDamageCalculation",
+                  "passiveSkillAddTiming": "None",
+                  "conditionData": {
+                    "Condition": "None",
+                    "param1": -1,
+                    "param2": -1,
+                    "param3": -1
+                  }
+                }
+              ]
+            }
+          },
+          "486133": {
+            "from": 503980,
+            "visuals": 400630,
+            "jp": "Sephira_mystea_Kit_11",
+            "en": "Barrier Burst",
+            "desc": "Deal magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 35,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486136": {
+            "from": 255260,
+            "visuals": 408050,
+            "jp": "Sephira_mystea_Kit_12",
+            "en": "Dark Pulse",
+            "desc": "Deal Dark magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
+            }
+          },
+          "486139": {
+            "from": 250520,
+            "visuals": 408050,
+            "jp": "Sephira_mystea_Kit_13",
+            "en": "Focused Dark Pulse",
+            "desc": "Deal Dark magic damage to an enemy 2 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 18,
+              "accuracy": 100,
+              "belongCommandList": [
+                331
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                331,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
+            }
+          }
+        },
+        "ffbeMap": {
+          "skills": {},
+          "passives": {}
+        },
+        "menuScale": 2.0,
+        "sephiraRecipe": 7,
+        "awakening": [
+          [
+            [
+              "ActiveSkill",
+              230060,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486112,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486118,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486130,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486136,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1379,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1253,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              230070,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              220410,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486109,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486121,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486139,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1042,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              230120,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486103,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486115,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486133,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1338,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              220510,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1336,
+              -1
+            ]
+          ]
+        ],
+        "synchro": [
+          [],
+          [
+            [
+              "PassiveSkill",
+              1313,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              1,
+              30
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1315,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              11,
+              8
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1299,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              6,
+              10
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1530,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              8,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1030,
+              -1
+            ],
+            [
+              "BaseParameter",
+              11,
+              8
+            ],
+            [
+              "MasterSkill",
+              1351100,
+              -1
+            ]
+          ]
+        ],
+        "ffbe": {
+          "id": "100011005",
+          "base": "100011004",
+          "source": "GL",
+          "dir": "units/ffbe/sephira_mystea/sprites/100011005"
+        },
+        "lb": 412620,
+        "lb_custom": {
+          "from": 412620,
+          "presentation": "ffbe",
+          "mechanics": "custom",
+          "audio": "native",
+          "visuals": 440110,
+          "clone_sequence": true,
+          "mute": [
+            "VO_"
+          ],
+          "field_color_mode": "element",
+          "ffbe_lb_id": "100011005",
+          "movement": {
+            "enabled": false
+          },
+          "set": {},
+          "jp": "Sephira_mystea_Resonance",
+          "en": "Mystea Resonance",
+          "desc": "Activate a barrier on all allies that reduces damage taken by 70% once.",
+          "descAuto": false,
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13103",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "sephiraPassiveText": {
+          "1530": {
+            "name": "Magic Evasion +20%",
+            "desc": "Evade magic attacks with a 20% chance."
+          }
+        }
+      },
+      "kitUpdate": {
+        "version": 1,
+        "managed": [
+          "ActiveSkill:220410",
+          "ActiveSkill:220510",
+          "ActiveSkill:230060",
+          "ActiveSkill:230070",
+          "ActiveSkill:230120",
+          "PassiveSkill:1042",
+          "PassiveSkill:1253",
+          "PassiveSkill:1336",
+          "PassiveSkill:1338",
+          "PassiveSkill:1379",
+          "custom:240240",
+          "custom:250520",
+          "custom:255260",
+          "custom:500310",
+          "custom:500690",
+          "custom:500700",
+          "custom:500860",
+          "custom:503980",
+          "custom:505430",
+          "custom:505860"
+        ],
+        "mr": [
+          {
+            "rank": 1,
+            "from": [
+              "PassiveSkill",
+              1313,
+              -1
+            ],
+            "to": [
+              "BaseParameter",
+              1,
+              30
+            ]
+          },
+          {
+            "rank": 2,
+            "from": [
+              "BaseParameter",
+              1,
+              30
+            ],
+            "to": [
+              "PassiveSkill",
+              1313,
+              -1
+            ]
+          },
+          {
+            "rank": 5,
+            "from": [
+              "PassiveSkill",
+              1299,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1030,
+              -1
+            ]
+          },
+          {
+            "rank": 9,
+            "from": [
+              "PassiveSkill",
+              1030,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1299,
+              -1
+            ]
+          }
+        ],
+        "masterDescriptions": [
+          "Mystea's learned mastery rewards flow into the wearer."
+        ]
       }
     },
     {
@@ -31503,7 +32226,7 @@
     {
       "id": "eiko",
       "name": "Eiko",
-      "theme": "Summoner with wind magic and revival",
+      "theme": "Esper mastery, wind magic and healing",
       "profile": {
         "key": "sephira_eiko",
         "id": 13515,
@@ -31534,7 +32257,7 @@
         "master": {
           "id": 1351500,
           "en": "Spirit of Eiko",
-          "desc": "Eiko's learned mastery rewards flow into the wearer."
+          "desc": "Grants all of Eiko's mastery abilities."
         },
         "price": 1000,
         "skills": {
@@ -31796,6 +32519,48 @@
               "selfSkillActivateVoiceLabel": "None",
               "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder"
             }
+          },
+          "486545": {
+            "from": 215000,
+            "visuals": 215000,
+            "jp": "Sephira_eiko_EsperKit_486545",
+            "en": "Healing Light",
+            "desc": "Restore a small amount of HP for all allies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "TargetType": "Group",
+              "isApplyAllMag": false,
+              "skillIdAfterModeChange": -1
+            }
+          },
+          "486548": {
+            "from": 210050,
+            "visuals": 210050,
+            "jp": "Sephira_eiko_EsperKit_486548",
+            "en": "Eidolon\u2019s Reprieve",
+            "desc": "Grant Regen to all allies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 25,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "TargetType": "Group",
+              "isApplyAllMag": false,
+              "skillIdAfterModeChange": -1
+            }
           }
         },
         "ffbeMap": {
@@ -31814,6 +32579,11 @@
             [
               "ActiveSkill",
               486530,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486545,
               -1
             ],
             [
@@ -31839,22 +32609,17 @@
               -1
             ],
             [
+              "ActiveSkill",
+              486548,
+              -1
+            ],
+            [
               "PassiveSkill",
               1381,
               -1
             ]
           ],
           [
-            [
-              "ActiveSkill",
-              430990,
-              -1
-            ],
-            [
-              "ActiveSkill",
-              431000,
-              -1
-            ],
             [
               "ActiveSkill",
               220470,
@@ -31882,7 +32647,7 @@
             ],
             [
               "PassiveSkill",
-              1277,
+              1045,
               -1
             ]
           ],
@@ -31919,7 +32684,7 @@
             ],
             [
               "PassiveSkill",
-              1455,
+              1256,
               -1
             ]
           ]
@@ -31929,7 +32694,7 @@
           [
             [
               "PassiveSkill",
-              1009,
+              1107,
               -1
             ]
           ],
@@ -31943,7 +32708,7 @@
           [
             [
               "PassiveSkill",
-              1107,
+              1960,
               -1
             ]
           ],
@@ -31957,7 +32722,7 @@
           [
             [
               "PassiveSkill",
-              1338,
+              1961,
               -1
             ]
           ],
@@ -31971,7 +32736,7 @@
           [
             [
               "PassiveSkill",
-              1498,
+              1962,
               -1
             ]
           ],
@@ -31985,7 +32750,7 @@
           [
             [
               "PassiveSkill",
-              1031,
+              1963,
               -1
             ],
             [
@@ -32048,15 +32813,24 @@
           "cave": null
         },
         "sephiraPassiveText": {
-          "1009": {
-            "name": "Double EXP",
-            "desc": "Double EXP gained."
+          "1960": {
+            "name": "Esper Power",
+            "desc": "Increase damage dealt by summoned espers by 20%."
           },
-          "1498": {
-            "name": "Peaceful LB Engine",
-            "desc": "Fill the LB gauge by 10% when acting without dealing damage."
+          "1961": {
+            "name": "Esper Communion",
+            "desc": "Restore 5% of the summoner\u2019s max MP whenever their esper acts."
+          },
+          "1962": {
+            "name": "Enduring Eidolons",
+            "desc": "Summoned espers gain 20% max HP and one extra action before their final special."
+          },
+          "1963": {
+            "name": "Eidolon Revelry",
+            "desc": "Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed."
           }
-        }
+        },
+        "sephiraKitRevision": 1
       },
       "balance": {
         "nativeBudget": 13051,
@@ -33089,6 +33863,661 @@
           "before": "Native Ayaka resonance mechanics; Eiko's own sprite animation.",
           "after": "Deal Light magic damage to all enemies."
         }
+      },
+      "esperKitBefore": {
+        "key": "sephira_eiko",
+        "id": 13515,
+        "sort": 13585,
+        "jp": "Sephira_eiko",
+        "en": "Eiko",
+        "desc": "Summoner with wind magic and revival. A Sephira vision with native-budget Resonance skills.",
+        "donor": 13108,
+        "attackType": "Magic",
+        "stats": {
+          "MaxHitPoint": 600,
+          "MaxMagicPoint": 100,
+          "Attack": 30,
+          "Defence": 30,
+          "Intelligence": 40,
+          "Mind": 50,
+          "Agility": 30
+        },
+        "roles": [
+          "eUnitRole::Attacker"
+        ],
+        "elemRes": {},
+        "command": {
+          "id": 335,
+          "en": "Eiko Skills",
+          "desc": "Summoner with wind magic and revival."
+        },
+        "master": {
+          "id": 1351500,
+          "en": "Spirit of Eiko",
+          "desc": "Eiko's learned mastery rewards flow into the wearer."
+        },
+        "price": 1000,
+        "skills": {
+          "486503": {
+            "from": 225020,
+            "visuals": 225020,
+            "jp": "Sephira_eiko_Kit_1",
+            "en": "Firaga Burst",
+            "desc": "Deal Fire magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 60,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+            }
+          },
+          "486506": {
+            "from": 225050,
+            "visuals": 225050,
+            "jp": "Sephira_eiko_Kit_2",
+            "en": "Blizzaga Burst",
+            "desc": "Deal Ice magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 60,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Ice"
+            }
+          },
+          "486509": {
+            "from": 240250,
+            "visuals": 210260,
+            "jp": "Sephira_eiko_Kit_3",
+            "en": "Banishga Ray",
+            "desc": "Deal Light magic damage to an enemy 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 25,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+            }
+          },
+          "486512": {
+            "from": 225130,
+            "visuals": 225130,
+            "jp": "Sephira_eiko_Kit_4",
+            "en": "Aerora Gust",
+            "desc": "Deal Wind magic damage to all enemies 2 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          },
+          "486515": {
+            "from": 245020,
+            "visuals": 210020,
+            "jp": "Sephira_eiko_Kit_5",
+            "en": "Healing Breeze",
+            "desc": "Restore all allies\u2019 HP.",
+            "descAuto": false,
+            "set": {
+              "Cost": 35,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486530": {
+            "from": 225290,
+            "visuals": 225290,
+            "jp": "Sephira_eiko_Kit_10",
+            "en": "Light of the Eidolons",
+            "desc": "Deal Light magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+            }
+          },
+          "486533": {
+            "from": 225310,
+            "visuals": 210250,
+            "jp": "Sephira_eiko_Kit_11",
+            "en": "Eidolon Radiance",
+            "desc": "Deal Light magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 60,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+            }
+          },
+          "486536": {
+            "from": 225170,
+            "visuals": 225170,
+            "jp": "Sephira_eiko_Kit_12",
+            "en": "Guardian\u2019s Earth",
+            "desc": "Deal Earth magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 60,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+            }
+          },
+          "486539": {
+            "from": 250190,
+            "visuals": 220180,
+            "jp": "Sephira_eiko_Kit_13",
+            "en": "Focused Gale",
+            "desc": "Deal Wind magic damage to an enemy 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 25,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          },
+          "486542": {
+            "from": 225080,
+            "visuals": 225080,
+            "jp": "Sephira_eiko_Kit_14",
+            "en": "Guardian\u2019s Lightning",
+            "desc": "Deal Lightning magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 60,
+              "accuracy": 100,
+              "belongCommandList": [
+                335
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                335,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder"
+            }
+          }
+        },
+        "ffbeMap": {
+          "skills": {},
+          "passives": {}
+        },
+        "menuScale": 2.0,
+        "sephiraRecipe": 7,
+        "awakening": [
+          [
+            [
+              "ActiveSkill",
+              220450,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486530,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1375,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1106,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              220460,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              210140,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1381,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              430990,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              431000,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              220470,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486509,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486512,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486515,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486539,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1277,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              210160,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486503,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486506,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486533,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486536,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486542,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1455,
+              -1
+            ]
+          ]
+        ],
+        "synchro": [
+          [],
+          [
+            [
+              "PassiveSkill",
+              1009,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              8,
+              5
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1107,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              11,
+              8
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1338,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              2,
+              20
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1498,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              7,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1031,
+              -1
+            ],
+            [
+              "BaseParameter",
+              11,
+              8
+            ],
+            [
+              "MasterSkill",
+              1351500,
+              -1
+            ]
+          ]
+        ],
+        "ffbe": {
+          "id": "209000707",
+          "base": "209000705",
+          "source": "GL",
+          "dir": "units/ffbe/sephira_eiko/sprites/209000707"
+        },
+        "lb": 440090,
+        "lb_custom": {
+          "from": 440090,
+          "presentation": "ffbe",
+          "mechanics": "custom",
+          "audio": "native",
+          "visuals": 440110,
+          "clone_sequence": true,
+          "mute": [
+            "VO_"
+          ],
+          "field_color_mode": "element",
+          "ffbe_lb_id": "209000707",
+          "movement": {
+            "enabled": false
+          },
+          "set": {
+            "element": "Light"
+          },
+          "jp": "Sephira_eiko_Resonance",
+          "en": "Eiko Resonance",
+          "desc": "Deal Light magic damage to all enemies.",
+          "descAuto": false,
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "sephiraPassiveText": {
+          "1009": {
+            "name": "Double EXP",
+            "desc": "Double EXP gained."
+          },
+          "1498": {
+            "name": "Peaceful LB Engine",
+            "desc": "Fill the LB gauge by 10% when acting without dealing damage."
+          }
+        }
+      },
+      "kitUpdate": {
+        "version": 1,
+        "managed": [
+          "ActiveSkill:210140",
+          "ActiveSkill:210160",
+          "ActiveSkill:220450",
+          "ActiveSkill:220460",
+          "ActiveSkill:220470",
+          "ActiveSkill:430990",
+          "ActiveSkill:431000",
+          "PassiveSkill:1045",
+          "PassiveSkill:1106",
+          "PassiveSkill:1256",
+          "PassiveSkill:1277",
+          "PassiveSkill:1375",
+          "PassiveSkill:1381",
+          "PassiveSkill:1455",
+          "custom:210050",
+          "custom:215000",
+          "custom:225020",
+          "custom:225050",
+          "custom:225080",
+          "custom:225130",
+          "custom:225170",
+          "custom:225290",
+          "custom:225310",
+          "custom:240250",
+          "custom:245020",
+          "custom:250190"
+        ],
+        "mr": [
+          {
+            "rank": 1,
+            "from": [
+              "PassiveSkill",
+              1009,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1107,
+              -1
+            ]
+          },
+          {
+            "rank": 3,
+            "from": [
+              "PassiveSkill",
+              1107,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1960,
+              -1
+            ]
+          },
+          {
+            "rank": 5,
+            "from": [
+              "PassiveSkill",
+              1338,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1961,
+              -1
+            ]
+          },
+          {
+            "rank": 7,
+            "from": [
+              "PassiveSkill",
+              1498,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1962,
+              -1
+            ]
+          },
+          {
+            "rank": 9,
+            "from": [
+              "PassiveSkill",
+              1031,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1963,
+              -1
+            ]
+          }
+        ],
+        "masterDescriptions": [
+          "Eiko's learned mastery rewards flow into the wearer."
+        ]
       }
     },
     {
@@ -35223,7 +36652,7 @@
         "master": {
           "id": 1351700,
           "en": "Spirit of Moogle of Narshe Mog",
-          "desc": "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
+          "desc": "Grants all of Moogle of Narshe Mog's mastery abilities."
         },
         "price": 1000,
         "skills": {
@@ -35581,7 +37010,7 @@
           [
             [
               "PassiveSkill",
-              1287,
+              1049,
               -1
             ]
           ],
@@ -35595,7 +37024,7 @@
           [
             [
               "PassiveSkill",
-              1277,
+              1338,
               -1
             ]
           ],
@@ -35609,7 +37038,7 @@
           [
             [
               "PassiveSkill",
-              1511,
+              1498,
               -1
             ]
           ],
@@ -35623,7 +37052,7 @@
           [
             [
               "PassiveSkill",
-              1049,
+              1031,
               -1
             ],
             [
@@ -35688,12 +37117,13 @@
           "cave": null
         },
         "sephiraPassiveText": {
-          "1511": {
-            "name": "Opening Good Luck",
-            "desc": "Begin battle with 8 stacks of Good Luck."
+          "1498": {
+            "name": "Peaceful LB Engine",
+            "desc": "Fill the LB gauge by 10% when acting without dealing damage."
           }
         },
-        "sephiraMrRevision": 1
+        "sephiraMrRevision": 1,
+        "sephiraKitRevision": 1
       },
       "balance": {
         "nativeBudget": 13120,
@@ -36837,6 +38267,592 @@
             "PassiveSkill",
             1292
           ]
+        ]
+      },
+      "esperKitBefore": {
+        "key": "sephira_mog",
+        "id": 13517,
+        "sort": 13587,
+        "jp": "Sephira_mog",
+        "en": "Moogle of Narshe Mog",
+        "desc": "Wind magic, dance and speed support. A Sephira vision with native-budget Resonance skills.",
+        "donor": 13108,
+        "attackType": "Magic",
+        "stats": {
+          "MaxHitPoint": 800,
+          "MaxMagicPoint": 100,
+          "Attack": 25,
+          "Defence": 30,
+          "Intelligence": 10,
+          "Mind": 20,
+          "Agility": 15
+        },
+        "roles": [
+          "eUnitRole::Attacker"
+        ],
+        "elemRes": {},
+        "command": {
+          "id": 337,
+          "en": "Moogle of Narshe Mog Skills",
+          "desc": "Wind magic, dance and speed support."
+        },
+        "master": {
+          "id": 1351700,
+          "en": "Spirit of Moogle of Narshe Mog",
+          "desc": "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
+        },
+        "price": 1000,
+        "skills": {
+          "486703": {
+            "from": 500430,
+            "visuals": 500430,
+            "jp": "Sephira_mog_Kit_1",
+            "en": "Gust Dance",
+            "desc": "Deal Wind magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "DamageType": "Magic",
+              "damageCalcType": "Magic",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          },
+          "486706": {
+            "from": 500410,
+            "visuals": 220180,
+            "jp": "Sephira_mog_Kit_2",
+            "en": "Cyclone",
+            "desc": "Deal Wind magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 22,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          },
+          "486709": {
+            "from": 570450,
+            "visuals": 400630,
+            "jp": "Sephira_mog_Kit_3",
+            "en": "Mystery Waltz",
+            "desc": "Drain MP from an enemy.",
+            "descAuto": false,
+            "set": {
+              "Cost": 12,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 10
+            }
+          },
+          "486712": {
+            "from": 570430,
+            "visuals": 400630,
+            "jp": "Sephira_mog_Kit_4",
+            "en": "Alluring Dance",
+            "desc": "Inflict Charm.",
+            "descAuto": false,
+            "set": {
+              "Cost": 32,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486715": {
+            "from": 235080,
+            "visuals": 400630,
+            "jp": "Sephira_mog_Kit_5",
+            "en": "Mega Berserk",
+            "desc": "Inflict Berserk.",
+            "descAuto": false,
+            "set": {
+              "Cost": 22,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486730": {
+            "from": 505280,
+            "visuals": 220180,
+            "jp": "Sephira_mog_Kit_10",
+            "en": "Heavenly Wind",
+            "desc": "Deal Wind magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 40,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 40,
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          },
+          "486733": {
+            "from": 570410,
+            "visuals": 400630,
+            "jp": "Sephira_mog_Kit_11",
+            "en": "Berserker Step",
+            "desc": "Inflict Berserk.",
+            "descAuto": false,
+            "set": {
+              "Cost": 6,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "486736": {
+            "from": 503920,
+            "visuals": 220170,
+            "jp": "Sephira_mog_Kit_12",
+            "en": "Gale Dance",
+            "desc": "Deal Wind magic damage to all enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 22,
+              "accuracy": 100,
+              "belongCommandList": [
+                337
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                337,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+            }
+          }
+        },
+        "ffbeMap": {
+          "skills": {},
+          "passives": {}
+        },
+        "menuScale": 2.0,
+        "sephiraRecipe": 7,
+        "awakening": [
+          [
+            [
+              "ActiveSkill",
+              220170,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              230130,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486703,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486709,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486733,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400760,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1251,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1311,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              220180,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486706,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486715,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486736,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              220190,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              230150,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486712,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              486730,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1286,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1292,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              230160,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              230140,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1320,
+              -1
+            ]
+          ]
+        ],
+        "synchro": [
+          [],
+          [
+            [
+              "ActiveSkill",
+              400460,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              7,
+              5
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1287,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              11,
+              8
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1277,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              2,
+              20
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1511,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              9,
+              15
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1049,
+              -1
+            ],
+            [
+              "BaseParameter",
+              11,
+              8
+            ],
+            [
+              "MasterSkill",
+              1351700,
+              -1
+            ]
+          ]
+        ],
+        "ffbe": {
+          "id": "206003005",
+          "base": "206003005",
+          "source": "GL",
+          "dir": "units/ffbe/sephira_mog/sprites/206003005"
+        },
+        "lb": 440210,
+        "lb_custom": {
+          "from": 440210,
+          "presentation": "ffbe",
+          "mechanics": "custom",
+          "audio": "native",
+          "visuals": 440110,
+          "clone_sequence": true,
+          "mute": [
+            "VO_"
+          ],
+          "field_color_mode": "element",
+          "ffbe_lb_id": "206003005",
+          "movement": {
+            "enabled": false
+          },
+          "set": {
+            "element": "Wind",
+            "DamageType": "Magic",
+            "damageCalcType": "Magic"
+          },
+          "jp": "Sephira_mog_Resonance",
+          "en": "Moogle of Narshe Mog Resonance",
+          "desc": "Deal Wind magic damage to an enemy. The last hit targets all enemies.",
+          "descAuto": false,
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13120",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "sephiraPassiveText": {
+          "1511": {
+            "name": "Opening Good Luck",
+            "desc": "Begin battle with 8 stacks of Good Luck."
+          }
+        },
+        "sephiraMrRevision": 1
+      },
+      "kitUpdate": {
+        "version": 1,
+        "managed": [
+          "ActiveSkill:220170",
+          "ActiveSkill:220180",
+          "ActiveSkill:220190",
+          "ActiveSkill:230130",
+          "ActiveSkill:230140",
+          "ActiveSkill:230150",
+          "ActiveSkill:230160",
+          "ActiveSkill:400760",
+          "PassiveSkill:1251",
+          "PassiveSkill:1286",
+          "PassiveSkill:1292",
+          "PassiveSkill:1311",
+          "PassiveSkill:1320",
+          "PassiveSkill:1378",
+          "custom:235080",
+          "custom:500410",
+          "custom:500430",
+          "custom:503920",
+          "custom:505280",
+          "custom:570410",
+          "custom:570430",
+          "custom:570450"
+        ],
+        "mr": [
+          {
+            "rank": 3,
+            "from": [
+              "PassiveSkill",
+              1287,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1049,
+              -1
+            ]
+          },
+          {
+            "rank": 5,
+            "from": [
+              "PassiveSkill",
+              1277,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1338,
+              -1
+            ]
+          },
+          {
+            "rank": 7,
+            "from": [
+              "PassiveSkill",
+              1511,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1498,
+              -1
+            ]
+          },
+          {
+            "rank": 9,
+            "from": [
+              "PassiveSkill",
+              1049,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1031,
+              -1
+            ]
+          }
+        ],
+        "masterDescriptions": [
+          "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
         ]
       }
     },

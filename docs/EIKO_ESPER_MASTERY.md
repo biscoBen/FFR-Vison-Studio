@@ -1,0 +1,65 @@
+# Eiko esper mastery and reviewed reward moves
+
+The four new esper passives are equipable MR rewards. They take effect on the
+summoner, party Fina, with any vision equipped. Spirit of Eiko includes these
+same MR effects. Learning a reward without equipping it does not activate it.
+Summoning remains Fina's native command; Eiko no longer grants Ifrit or Shiva.
+
+| Rank | Eiko | Equip cost |
+| --- | --- | --- |
+| MR1 | Nullify Silence | 10 |
+| MR3 | Esper Power: esper damage +20% | 30 |
+| MR5 | Esper Communion: recover 5% of the summoner's maximum MP per esper action | 20 |
+| MR7 | Enduring Eidolons: one extra ordinary action before the finisher, esper max HP +20% | 40 |
+| MR9 | Eidolon Revelry: 50% chance for each ordinary action to become a special; the final special stays guaranteed | 50 |
+
+The native summon effects specify two ordinary actions before the final special.
+Eight offensive espers check their remaining-action counter, then schedule their
+special followed by dismissal. Their ordinary skills can include level-dependent
+spells. Carbuncle instead uses a three-phase support rotation. The extra-action
+reward repeats the opening phase before advancing the native rotation. Its early
+special proc uses Glittering Ruby; its native support finale is retained.
+
+Eiko also gains Healing Light (party Cure, 12 MP) in tier 1 and Eidolon's Reprieve
+(party Regen, 25 MP) in tier 2. Her tier 3 bonus becomes Half MP Cost and tier 4
+becomes Auto MP Restore (L). Her existing stats, acquisition, resonance, other
+abilities and permanent MR rewards stay in place. Double EXP is removed from
+her current rewards.
+
+| Rank | Moogle of Narshe Mog |
+| --- | --- |
+| MR1 | Focus |
+| MR3 | First Strike |
+| MR5 | Recuperate LB |
+| MR7 | Peaceful LB Engine |
+| MR9 | LB Triple Charge |
+
+Mystea swaps her MR5/MR9 abilities and MR1/MR2 rewards. AP and Spirit remain at
+MR9. This is an explicit exception to the collection's ordinary odd/even layout.
+All 131 original passive effects remain represented across the collection.
+Rikku's resonance already uses Vaan's native eight-hit Fire attack against all
+enemies, with guaranteed stealing; its mechanics and Rikku's presentation are
+retained and checked against the generated rows.
+
+Existing unedited default rewards migrate once, preserving vision and private
+skill IDs, combat edits, artwork, acquisition and other settings. Edited MR slots
+stay openable and report the conflict when applying the update. Previously
+learned private equipment rewards retain their definitions for old saves.
+
+## Implementation and validation limits
+
+Custom passives 1960–1963 use private continuous markers on the equipping actor.
+The owned UE4SS runtime checks the actual friendly native esper and Fina's
+equipped effects. It adds native damage/HP operations to that summon, restores
+MP once per completed action, and adjusts native ordinary-action selection.
+The final-special/dismissal stack is never replaced. Multi-hit callbacks and
+dismissal do not create extra MP payments. No save or loadout mutation is used.
+
+Validation includes native table serialization/readback, original-row preservation,
+mastery/Spirit owner links, executable Lua ownership/lifecycle fixtures, and
+Studio migration tests. These checks are not a live game test. In-game checks
+are still needed for the four new runtime effects, Spirit activation, MP/HP
+readback, Carbuncle's support rotation and higher-level esper variants.
+
+The runtime logs concise `[FFR Esper]` entries to UE4SS.log for spawn bonuses,
+extra actions, early specials, MP recovery and any unavailable native call.

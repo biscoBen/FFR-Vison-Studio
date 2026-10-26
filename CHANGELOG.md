@@ -11,6 +11,21 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
+
+- Rework Eiko's MR rewards into equipable esper damage +20%, 5% summoner MP recovery per esper action,
+  one extra ordinary action plus esper HP +20%, and 50% early-special chances with a guaranteed native finale.
+  Keep Nullify Silence at MR1, remove direct summon commands and Double EXP, add early party Cure/Regen,
+  and set tier 3/4 bonuses to Half MP Cost / Auto MP Restore (L).
+- Give Mog Focus / First Strike / Recuperate LB / Peaceful LB Engine / LB Triple Charge at MR1/3/5/7/9.
+  Swap Mystea's MR1/2 and MR5/9 choices while keeping AP/Spirit at MR9. Preserve stable save IDs and migrate
+  the default kits once with backups; retain definitions for previously learned private equipment rewards.
+- Retain all 131 original passive effects across the collection. Verify Rikku already has Vaan's native
+  eight-hit all-enemy Fire resonance and guaranteed stealing, with Rikku's own presentation.
+- Add native table readback, migration and executable Lua lifecycle checks; the new esper effects still need
+  in-game validation. Existing challenge rotations, tuned damage and shared stat budgets are preserved.
+  See [Eiko esper mastery](docs/EIKO_ESPER_MASTERY.md) for the reward table, Carbuncle support behavior and limits.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

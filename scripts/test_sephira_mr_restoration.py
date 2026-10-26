@@ -31,7 +31,10 @@ class MrRestorationTests(unittest.TestCase):
 
     def test_old_rosters_receive_only_the_declared_progression_changes_once(self):
         catalog,_,_=inputs()
-        for preset in catalog['presets']:
+        for current in catalog['presets']:
+            preset=copy.deepcopy(current)
+            if preset.get('esperKitBefore'):
+                preset['profile']=copy.deepcopy(preset['esperKitBefore'])
             op=preset.get('mrRestoration')
             if not op:continue
             unit=copy.deepcopy(preset['profile']);unit.update(copy.deepcopy(op['before']));unit.pop('sephiraMrRevision',None)

@@ -257,6 +257,9 @@ class BundledFeatures {
           'payload/ffbe_library.html',
           'payload/_ffr_deck_sync.py',
           'payload/_ffr_sephira.py',
+          'payload/_ffr_esper_mastery.py',
+          'payload/esper_mastery.json',
+          'payload/esper_mastery.lua',
           'payload/_ffr_sephira_lb_audio.py',
           'payload/sephira_lb_audio.zip',
           'payload/_ffr_sephira_ffbe.py',
@@ -314,7 +317,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 75) {
+        (manifest['files'] as Map).length != 78) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

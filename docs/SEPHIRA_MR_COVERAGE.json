@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "catalogSha256": "34ccd4675051bca76d9312006b71b204b7c5118e58c0f505e031435a654c53b7",
+  "catalogSha256": "8ee43d7aa86dba055074766751c5dc918024481c1ebdb5c1f904682e0108741c",
   "nativeAuditSha256": "422f69d1ccbe01d689c61bac51ecbddf739de41a184fb82bc8fbc94850f58d4d",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
@@ -163,7 +163,15 @@
           "privateCopy": false
         }
       ],
-      "awakening": [],
+      "awakening": [
+        {
+          "preset": "eiko",
+          "vision": "Eiko",
+          "rank": 3,
+          "grantId": 1045,
+          "privateCopy": false
+        }
+      ],
       "status": "covered_mr"
     },
     {
@@ -568,8 +576,8 @@
       ],
       "mr": [
         {
-          "preset": "eiko",
-          "vision": "Eiko",
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
           "rank": 5,
           "grantId": 1338,
           "privateCopy": false
@@ -715,8 +723,8 @@
       ],
       "mr": [
         {
-          "preset": "eiko",
-          "vision": "Eiko",
+          "preset": "mog",
+          "vision": "Moogle of Narshe Mog",
           "rank": 9,
           "grantId": 1031,
           "privateCopy": false
@@ -783,7 +791,7 @@
         {
           "preset": "mystea",
           "vision": "Mystea",
-          "rank": 9,
+          "rank": 5,
           "grantId": 1030,
           "privateCopy": false
         }
@@ -1395,7 +1403,7 @@
         {
           "preset": "mog",
           "vision": "Moogle of Narshe Mog",
-          "rank": 9,
+          "rank": 3,
           "grantId": 1049,
           "privateCopy": false
         }

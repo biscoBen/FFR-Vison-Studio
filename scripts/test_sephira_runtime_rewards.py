@@ -72,12 +72,12 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         private = [b['passive'] for u in bound for b in u['_sephiraBindings']]
         identities = [r['set']['ID'] for r in private]
         native_ids = {r['ID'] for r in native[pack.PASSIVE].values()}
-        self.assertEqual(len(identities), 26)
-        self.assertEqual(len(set(identities)), 26)
+        self.assertEqual(len(identities), 24)
+        self.assertEqual(len(set(identities)), 24)
         self.assertTrue(all(1000 <= sid < 2000 for sid in identities))
         self.assertFalse(set(identities) & native_ids)
         for unit in bound:
-            available = native_ids | {b['passive']['set']['ID'] for b in unit['_sephiraBindings']}
+            available = native_ids | {1960,1961,1962,1963} | {b['passive']['set']['ID'] for b in unit['_sephiraBindings']}
             for field in ('awakening', 'synchro'):
                 for tier in unit[field]:
                     for grant in tier:

@@ -167,6 +167,8 @@ def prepare(tables, units, root, rows):
     _ffr_sephira.prepare_battle_sizes(tables, units, rows)
     import _ffr_field_leader
     _ffr_field_leader.prepare(tables, units, root, rows)
+    import _ffr_esper_mastery
+    _ffr_esper_mastery.prepare(tables, rows, units)
     return tables
 
 

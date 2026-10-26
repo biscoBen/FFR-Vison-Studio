@@ -35,16 +35,16 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Firion | 1 | Fill LB when Taking Damage (1331) | Lila MR1 | covered mr |
 | Firion | 3 | Bladeblitz (400310) | Lila MR3 | covered mr |
 | Firion | 5 | Decimating Attacks (1337) | Blue Sky Belle Fran MR9 | covered mr |
-| Firion | 7 | Recuperate LB (1338) | Eiko MR5 | covered mr |
+| Firion | 7 | Recuperate LB (1338) | Moogle of Narshe Mog MR5 | covered mr |
 | Firion | 9 | Arms Akimbo (400650) | Lila MR9 | covered mr |
 | Onion Knight | 1 | Throw (400240) | Minfilia MR1 | covered mr |
 | Onion Knight | 3 | Spry Steps (1258) | Lunera MR3 | covered mr |
 | Onion Knight | 5 | Observe and Recover HP (1465) | Minfilia MR5 | covered mr |
 | Onion Knight | 7 | Vigorous Attacks (1358) | Snow White MR3 | covered mr |
-| Onion Knight | 9 | LB Triple Charge (1031) | Eiko MR9 | covered mr |
+| Onion Knight | 9 | LB Triple Charge (1031) | Moogle of Narshe Mog MR9 | covered mr |
 | Cecil | 1 | Darkness (400490) | Snow White MR1 | covered mr |
 | Cecil | 3 | Cover (400380) | Lilith MR3 | covered mr |
-| Cecil | 5 | Magic Counter (1030) | Mystea MR9 | covered mr |
+| Cecil | 5 | Magic Counter (1030) | Mystea MR5 | covered mr |
 | Cecil | 7 | Staggeringly Risky (1405) | Snow White MR5 | covered mr |
 | Cecil | 9 | Dark Immunity (1369) | Lilith MR9 | covered mr |
 | Bartz | 1 | Wait (400760) | Lunera MR1 | covered mr |
@@ -68,7 +68,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Zidane | 7 | Aggravation (1468) | Oracle Maiden Lunafreya MR9 | covered mr |
 | Zidane | 9 | Misfortune (400750) | Rikku (FFX-2) MR9 | covered mr |
 | Tidus | 1 | Focus (400460) | Moogle of Narshe Mog MR1 | covered mr |
-| Tidus | 3 | First Strike (1049) | Moogle of Narshe Mog MR9 | covered mr |
+| Tidus | 3 | First Strike (1049) | Moogle of Narshe Mog MR3 | covered mr |
 | Tidus | 5 | Reckless Abandonment (400700) | Elza MR5 | covered mr |
 | Tidus | 7 | Tip-Top Shape (1428) | Elza MR9 | covered mr |
 | Tidus | 9 | Water Eater (1348) | Folka MR7 | covered mr |
@@ -97,5 +97,5 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `34ccd4675051bca76d9312006b71b204b7c5118e58c0f505e031435a654c53b7`.
+Catalog fingerprint: `8ee43d7aa86dba055074766751c5dc918024481c1ebdb5c1f904682e0108741c`.
 Native coverage fingerprint: `422f69d1ccbe01d689c61bac51ecbddf739de41a184fb82bc8fbc94850f58d4d`.

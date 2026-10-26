@@ -348,6 +348,7 @@ def install(catalog_module, root):
         from _ffr_ability_modes import catalog_controls
         from _ffr_sephira import settings as sephira_settings
         enriched = {**catalog, 'duplicatePolicy': metadata}
-        return {**enriched, 'animationPolicy': effect_policy(enriched), **catalog_controls(enriched, root),
-                'sephiraSettings': sephira_settings(root)}
+        import _ffr_esper_mastery
+        return _ffr_esper_mastery.catalog({**enriched, 'animationPolicy': effect_policy(enriched), **catalog_controls(enriched, root),
+                'sephiraSettings': sephira_settings(root)})
     catalog_module.load = load

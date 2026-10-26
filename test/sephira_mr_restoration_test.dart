@@ -26,7 +26,14 @@ void main() {
   });
   test('remapped saved rosters migrate once while preserving stats, private recipes and acquisition',() async {
     final presets=await SephiraVisions.bundled;
-    for(final preset in presets.where((p)=>p['mrRestoration'] is Map)) {
+    for(final current in presets.where((p)=>p['mrRestoration'] is Map)) {
+      // Exercise the earlier MR-restoration migration separately from the
+      // later reviewed Eiko/Mog/Mystea kit revision.
+      final preset=CharacterConfig.copy(current);
+      if (preset['esperKitBefore'] is Map<String,dynamic>) {
+        preset['profile']=CharacterConfig.copy(preset['esperKitBefore'] as Map<String,dynamic>);
+        preset.remove('kitUpdate');
+      }
       // Reproduce an allocation made by an older Studio. New imports must not
       // renumber tagged presets; loading an already-remapped legacy save must
       // still migrate its kit without changing that historical identity.
@@ -46,7 +53,11 @@ void main() {
         expect(next[f],before[f],reason:'${preset['id']} $f');
       }
       expect(u,before);
-      expect(SephiraVisions.hasRecipeUpdate(next,presets),isFalse);
+      expect(SephiraVisions.hasRecipeUpdate(next,[preset]),isFalse);
+      if (current['kitUpdate'] is Map) {
+        expect(SephiraVisions.hasRecipeUpdate(next,presets),isTrue,
+            reason:'The later reviewed kit remains a separate available update.');
+      }
       expect(identical(SephiraVisions.repairEquipableMr(next,presets),next),isTrue);
       next['synchro'][1][0]=['PassiveSkill',1009,-1];
       expect(identical(SephiraVisions.repairEquipableMr(next,presets),next),isTrue);

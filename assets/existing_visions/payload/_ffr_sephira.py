@@ -209,6 +209,8 @@ _PASSIVE_CONDITIONALS = (1406, 1410, 1411, 1418, 1420, 1432, 1433, 1443, 1448, 1
 _PASSIVE_LABELS = (('crystal_fina', 1551), ('crystal_fina', 1552), ('lunafreya', 1510), ('lunafreya', 1517), ('folka', 1535), ('fryevia', 1522), ('mystea', 1530), ('mystea', 1274), ('mystea', 1513), ('reberta', 1507), ('aria', 1527), ('aria', 1519), ('eiko', 1498), ('eiko', 1373), ('alice', 1481), ('alice', 1531), ('mog', 1511), ('freya', 1529), ('freya', 1516), ('freya', 1497), ('freya', 1539), ('trance_terra', 1532), ('ariana', 1515), ('ariana', 1499), ('ariana', 1518), ('primm', 1521), ('primm', 1525), ('relm', 1500), ('rikku', 1009), ('nalu', 1523), ('nalu', 1537), ('nalu', 1496), ('elza', 1528), ('elza', 1495), ('elza', 1506), ('elza', 1276), ('lunera', 1051), ('folka', 1524), ('barusa', 1526), ('lilith', 1513), ('eiko', 1009), ('fryevia', 1539), ('primm', 1531), ('lunera', 1510))
 _PASSIVE_KEYS = [(preset, sid) for preset in _PASSIVE_PRESETS for sid in _PASSIVE_CONDITIONALS] + list(_PASSIVE_LABELS)
 _PRIVATE_PASSIVES = {key: 1600 + index for index, key in enumerate(_PASSIVE_KEYS)}
+# Appended independently: never shift the established private passive IDs.
+_PRIVATE_PASSIVES[('mog',1498)] = 1944
 _FALLBACK_FIRST = 1970
 
 
@@ -285,6 +287,8 @@ def player_units(units, rows):
     if not selected: return result
     native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     for unit in selected:
+        import _ffr_esper_mastery
+        _ffr_esper_mastery.repair(unit)
         repair_mastery_scope(unit)
         repair_kit_rewards(unit)
         repair_equipable_mr(unit)
@@ -483,6 +487,8 @@ def bind_units(units, rows):
     for u in result:
         value = runtime_membership(u)
         if value is None: continue
+        import _ffr_esper_mastery
+        _ffr_esper_mastery.repair(u)
         repair_mastery_scope(u)
         repair_kit_rewards(u)
         repair_equipable_mr(u)
@@ -497,6 +503,7 @@ def bind_units(units, rows):
         for field in ['awakening', 'synchro']:
             for tier in u[field]:
                 for g in tier:
+                    if g[0]=='PassiveSkill' and g[1] in _ffr_esper_mastery.IDS: continue
                     if g[0] == 'PassiveSkill' and str(g[1]) in labels and g[1] not in BINDINGS:
                         sid = g[1]
                         pk, passive = passives[sid]
