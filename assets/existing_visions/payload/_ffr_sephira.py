@@ -385,6 +385,26 @@ def native_motion_names(unit):
     return policy.get('modelMotions', {}).get(value['preset'], [])
 
 
+def prepare_battle_sizes(tables, units, rows):
+    """Shrink playable Nalu only; boss design rows keep their separate scale."""
+    rel = 'Battle/Unit/DT_BtlUnitDesignParameter'
+    for unit in units:
+        member = membership(unit)
+        if member is None or not member['enabled'] or member['preset'] != 'nalu': continue
+        sources = [(key, value) for key, value in rows(rel).items() if value['ID'] == unit['donor']]
+        if len(sources) != 1: raise ValueError('The native Nalu battle-size donor is unavailable.')
+        key, source = sources[0]
+        scale = source['Scale']
+        scale = round((scale if scale > 0 else 1.0) * .65, 6)
+        table = tables.setdefault(rel, {'asset': 'FFRS/Content/Datatable/' + rel, 'add': [], 'set': []})
+        edits = [e for e in table['add'] if e['row'] == unit['jp']]
+        if edits:
+            edits[0]['set']['Scale'] = scale
+        else:
+            table['add'].append({'row': unit['jp'], 'cloneFrom': key,
+                                 'set': {'ID': unit['id'], 'Scale': scale}})
+
+
 def verify_runtime_rows(root, tool, usmap, units, rows):
     """Read back every selected kit's grants before converting any sprites."""
     selected = [u for u in units if runtime_membership(u) is not None]

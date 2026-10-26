@@ -1,7 +1,7 @@
 """Give Sephira's private skills their own guarded original player timelines.
 
-Only the original source is used. Native/global skill rows and enemy routes are
-untouched; this is independent of the optional borrowed-visuals/library switches.
+Reviewed visual swaps retain the original damage master. Native/global skill
+rows and enemy routes are untouched, independently of borrowed-visual switches.
 """
 import copy
 import hashlib
@@ -14,7 +14,18 @@ RELS = ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo')
 POLICY = 'sephira_native_presentations.json'
 
 
-def selections(units, *, impact_sources=(), definitions=None):
+def presentation_source(unit, recipe, overrides):
+    import _ffr_sephira
+    preset = _ffr_sephira.runtime_membership(unit)['preset']
+    source = recipe['from']
+    target = overrides.get(preset, {}).get(str(source))
+    if target is None: return source
+    borrowed = json.loads(Path(_ffr_sephira.__file__).with_name('sephira_visuals.json').read_bytes())['presets']
+    if recipe.get('visuals', source) not in (source, borrowed.get(preset, {}).get(str(source))): return source
+    return target
+
+
+def selections(units, *, impact_sources=(), definitions=None, overrides=None):
     import _ffr_sephira
     borrowed = json.loads(Path(_ffr_sephira.__file__).with_name('sephira_visuals.json').read_bytes())['presets'] if impact_sources else {}
     for unit in units:
@@ -24,6 +35,9 @@ def selections(units, *, impact_sources=(), definitions=None):
                     or recipe.get('motion') or recipe.get('sequence_edits')):
                 continue
             visual = recipe.get('visuals', recipe['from'])
+            if presentation_source(unit, recipe, overrides or {}) != recipe['from']:
+                yield int(identity), recipe, unit
+                continue
             if visual != recipe['from']:
                 # An optional elemental spell already supplies its own effect.
                 # A stock non-elemental substitute can now use the recovered
@@ -69,6 +83,39 @@ def direction_edits(rule, recipe, native):
     return edits
 
 
+def retain_damage_master(rule, recipe, sid, binding, clones, support, root, extract, definitions):
+    """Keep Lance Launcher's two native damage markers with Thunder Spear's tracks.
+
+    Replacing a two-hit master with a one-hit master would lose half the damage.
+    Reuse the original damage master and its cooked evaluation data verbatim;
+    the private cut/effect/sound children provide the selected appearance.
+    """
+    source = recipe['from']; folder = Path(root) / 'extracted/legacy/FFRS/Content' / rule['folder']
+    name = f'SEQ_Battle_{rule["sourceSequence"]}_Master'
+    if digest(definitions[source]) != rule['definitionSha256']:
+        raise ValueError('The original Lance Launcher mechanics changed; re-audit its animation swap.')
+    if not all((folder / (name + ext)).is_file() for ext in ('.uasset', '.uexp')): extract(rule['folder'] + '/')
+    for ext in ('.uasset', '.uexp'):
+        if hashlib.sha256((folder / (name + ext)).read_bytes()).hexdigest() != rule['files'][name + ext]:
+            raise ValueError('The original Lance Launcher damage master changed.')
+    events = support['dumps'](str(folder / (name + '.uasset')))[1]
+    hits = [event for _, kind, event in support['keys'](str(folder / (name + '.uasset'))) if kind == 'OtherReaction']
+    count = recipe.get('set', {}).get('hitCount', definitions[source]['hitCount'])
+    if (len(hits) != count or any(next(v for k,v in events.items() if k.split(':',1)[1] == event)
+            .get('Other_Reaction_Id') != source for event in hits)):
+        raise ValueError('Lance Launcher needs its original reviewed damage markers.')
+    destination = binding['LevelSequence'].removeprefix('/Game/')
+    asset = 'FFRS/Content/' + destination
+    clone, = [entry for entry in clones if entry['to'] == asset]
+    clone.update({'from': 'FFRS/Content/' + rule['folder'] + '/' + name,
+                  'rename': [['/Game/' + rule['folder'], '/Game/' + destination.rsplit('/',1)[0]],
+                             [name.removesuffix('_Master'), Path(destination).name.removesuffix('_Master')]]})
+    support['bytecode'][:] = [entry for entry in support['bytecode'] if entry['asset'] != asset]
+    support['bytecode'].append({'asset': asset, 'export': '*',
+        'match': {'EventType':'OtherReaction','Other_Reaction_Id':source}, 'set':{'Other_Reaction_Id':sid}})
+    return count
+
+
 def prepare(tables, clones, units, root, rows, extract, support):
     import _ffr_sephira
     if not any(_ffr_sephira.runtime_membership(u) is not None for u in units): return []
@@ -76,14 +123,15 @@ def prepare(tables, clones, units, root, rows, extract, support):
     if policy.get('schema') != 1: raise ValueError('Unsupported Sephira native presentation policy.')
     definitions = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     impacts = policy.get('elementalImpacts', {})
-    chosen = list(selections(units, impact_sources=impacts.get('sources', {}), definitions=definitions))
+    overrides = policy.get('presentationOverrides', {})
+    chosen = list(selections(units, impact_sources=impacts.get('sources', {}), definitions=definitions, overrides=overrides))
     if not chosen: return []
     assets = {rel: {r['ID']: (k, r) for k, r in rows(rel).items()} for rel in RELS}
     reactions = {r['ID']: (k, r) for k, r in rows('Battle/Sequencer/DT_BtlHitEffectData').items()}
     verified = set(); reports = []
     for sid, recipe, unit in chosen:
-        source = recipe['from']; rule = policy['skills'].get(str(source))
-        entry = {'id': sid, 'source': source, 'vision': unit['en'], 'name': recipe['en'], 'inGameValidated': False}
+        source = presentation_source(unit, recipe, overrides); rule = policy['skills'].get(str(source))
+        entry = {'id': sid, 'source': recipe['from'], 'vision': unit['en'], 'name': recipe['en'], 'inGameValidated': False}
         reports.append(entry)
         import _ffr_sephira_ffbe
         if _ffr_sephira_ffbe.selected(unit, recipe):
@@ -146,6 +194,10 @@ def prepare(tables, clones, units, root, rows, extract, support):
                           f'Studio_Sephira_Impact_{sid}', {'ID': sid})
         binding = support['clone'](donors[RELS[0]][1], rule['sourceSequence'], sid, target, (), clones,
                                     support['objects'], (), edits, support['bytecode'])
+        if source != recipe['from']:
+            entry['visualSource'] = source
+            entry['preservedHitCount'] = retain_damage_master(policy['skills'][str(recipe['from'])], recipe, sid,
+                binding, clones, support, root, extract, definitions)
         target_folder = binding['LevelSequence'].removeprefix('/Game/').rsplit('/', 1)[0]
         def copied(name):
             return 'FFRS/Content/' + target_folder + '/' + name.removesuffix('.uasset').replace(

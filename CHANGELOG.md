@@ -11,6 +11,16 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Smaller playable Nalu battle sprite — 2026-10-25
+
+- Reduce Nalu's playable battle sprite to 65% of its previous size (35% smaller), using only her private native battle-design scale. Existing saved Nalu entries receive the change on their next build without a preset reset.
+- Preserve her boss appearance and the tested Nalu/Jade encounter, other visions, menu sprites/icons, skills and stats. Keep sprite/icon conversion cache inputs unchanged; no pixel or animation conversion is needed for the size adjustment.
+- Use the same composed recipe for generation and native readback verification, so the build checks the smaller player row while retaining the independent boss row.
+- Give Nalu's playable Lance Launcher the Thunder Spear caster/effect/sound tracks. Keep its original two-hit damage master and cooked evaluation data, physical Lightning damage, power, MP cost and hit ratios. Apply to existing saved default recipes with borrowed visuals on or off; explicitly authored user animations retain precedence. The boss's animation is unchanged.
+- Native size and timeline readback checks pass for both borrowed-visual modes. The visual size and attack timing still need an in-game retest.
+
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

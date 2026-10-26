@@ -2,6 +2,7 @@
   "schema": 1,
   "reference": "Full-game 8ce7a0746d0cc1b2; returned 2026-10-22",
   "inGameValidated": false,
+  "presentationOverrides": {"nalu": {"500880": 501000}},
   "skills": {
     "210190": {
       "sourceBinding": 210191,

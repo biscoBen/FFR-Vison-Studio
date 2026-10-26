@@ -163,6 +163,8 @@ def prepare(tables, units, root, rows):
     _ffr_crystal_cave.prepare(tables, units, root, rows)
     import _ffr_shrine_challenges
     _ffr_shrine_challenges.prepare(tables, units, root, rows)
+    import _ffr_sephira
+    _ffr_sephira.prepare_battle_sizes(tables, units, rows)
     import _ffr_field_leader
     _ffr_field_leader.prepare(tables, units, root, rows)
     return tables
