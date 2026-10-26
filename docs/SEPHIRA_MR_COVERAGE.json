@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "catalogSha256": "8ee43d7aa86dba055074766751c5dc918024481c1ebdb5c1f904682e0108741c",
+  "catalogSha256": "a1a5692580b5fd9e30c1b873959d8300e0a98ed0c2115687ee92dfda1f7dc2c7",
   "nativeAuditSha256": "422f69d1ccbe01d689c61bac51ecbddf739de41a184fb82bc8fbc94850f58d4d",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {

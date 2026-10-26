@@ -6,6 +6,32 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('Eiko support update moves Raise and adds Shellga to an existing kit', () async {
+    final presets = await SephiraVisions.bundled;
+    final p = presets.singleWhere((p) => p['id'] == 'eiko');
+    final unit = CharacterConfig.copy(p['profile'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'eiko', 'enabled': true};
+    final raise = ['ActiveSkill', 210140, -1];
+    final shellga = ['ActiveSkill', 230070, -1];
+    unit['awakening'][0].removeWhere((g) => g[1] == 210140);
+    unit['awakening'][1].removeWhere((g) => g[1] == 230070);
+    unit['awakening'][1].insert(1, raise);
+    unit['sephiraKitRevision'] = 1;
+    unit['awakening'][0].add(['ActiveSkill', 210120, -1]);
+    final before = CharacterConfig.copy(unit);
+    final actual = SephiraVisions.repairKit(unit, presets, strict: true);
+    expect(actual['awakening'][0], contains(equals(raise)));
+    expect(actual['awakening'][1], isNot(contains(equals(raise))));
+    expect(actual['awakening'][1], contains(equals(shellga)));
+    expect(actual['awakening'][0], contains(equals(['ActiveSkill', 210120, -1])));
+    for (final field in before.keys.where((k) => k != 'awakening' && k != 'sephiraKitRevision')) {
+      expect(actual[field], before[field], reason: field);
+    }
+    expect((actual['awakening'] as List).every((t) => (t as List).length <= 8), isTrue);
+    expect(identical(SephiraVisions.repairKit(actual, presets), actual), isTrue);
+    expect(unit, before);
+    CharacterConfig.decode(CharacterConfig.encode(actual));
+  });
   test('Eiko and Mog reward moves migrate once while keeping save IDs and edits', () async {
     final presets=await SephiraVisions.bundled;
     for (final id in ['eiko','mog','mystea']) {

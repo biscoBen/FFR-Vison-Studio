@@ -66,6 +66,20 @@ def revise(catalog):
         balance['passiveCount']=sum(g[0]=='PassiveSkill' for tier in unit['awakening'] for g in tier)
         balance['kitCount']=sum(map(len,unit['awakening']))
         balance['totalSkillCount']=balance['kitCount']+5
+    eiko = next(p for p in catalog['presets'] if p['id'] == 'eiko')
+    unit = eiko['profile']
+    if unit.get('sephiraKitRevision', 0) < 2:
+        raise_grant = ['ActiveSkill', 210140, -1]
+        unit['awakening'][1].remove(raise_grant)
+        unit['awakening'][0].insert(3, raise_grant)
+        unit['awakening'][1].insert(1, ['ActiveSkill', 230070, -1])
+        unit['sephiraKitRevision'] = 2
+        eiko['kitUpdate']['version'] = 2
+        eiko['kitUpdate']['managed'] = sorted({*eiko['kitUpdate']['managed'], 'ActiveSkill:230070'})
+        balance = eiko['balance']
+        balance['activeCount'] += 1
+        balance['kitCount'] += 1
+        balance['totalSkillCount'] += 1
     return catalog
 
 

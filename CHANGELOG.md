@@ -11,6 +11,15 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Eiko early support spells — 2026-10-26
+
+- Move Eiko's Raise to awakening tier 1 and add the native party Shellga to tier 2.
+  Existing Eiko presets update automatically without a reset, preserving mastery rewards,
+  private skill IDs and unrelated edits. Tier limits remain within eight grants.
+- The user confirms the other esper modifiers work in game on 1.2.110; the HP increase
+  remains unverified because the esper's HP is not displayed. This support-spell update
+  leaves the working esper runtime unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

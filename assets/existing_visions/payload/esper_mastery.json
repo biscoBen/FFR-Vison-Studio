@@ -1113,6 +1113,11 @@
               -1
             ],
             [
+              "ActiveSkill",
+              210140,
+              -1
+            ],
+            [
               "PassiveSkill",
               1375,
               -1
@@ -1131,7 +1136,7 @@
             ],
             [
               "ActiveSkill",
-              210140,
+              230070,
               -1
             ],
             [
@@ -1356,16 +1361,17 @@
             "desc": "Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed."
           }
         },
-        "sephiraKitRevision": 1
+        "sephiraKitRevision": 2
       },
       "kitUpdate": {
-        "version": 1,
+        "version": 2,
         "managed": [
           "ActiveSkill:210140",
           "ActiveSkill:210160",
           "ActiveSkill:220450",
           "ActiveSkill:220460",
           "ActiveSkill:220470",
+          "ActiveSkill:230070",
           "ActiveSkill:430990",
           "ActiveSkill:431000",
           "PassiveSkill:1045",

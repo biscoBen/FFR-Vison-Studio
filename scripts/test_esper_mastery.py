@@ -13,6 +13,29 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class EsperMasteryTests(unittest.TestCase):
+    def test_eiko_support_update_migrates_current_kit_without_touching_mastery(self):
+        catalog,_,_=inputs()
+        p=next(p for p in catalog['presets'] if p['id']=='eiko')
+        unit=copy.deepcopy(p['profile'])
+        unit['sephiraVision']={'version':1,'preset':'eiko','enabled':True}
+        raise_grant=['ActiveSkill',210140,-1]
+        shellga=['ActiveSkill',230070,-1]
+        unit['awakening'][0].remove(raise_grant)
+        unit['awakening'][1].remove(shellga)
+        unit['awakening'][1].insert(1,raise_grant)
+        unit['sephiraKitRevision']=1
+        unit['awakening'][0].append(['ActiveSkill',210120,-1])
+        before=copy.deepcopy(unit)
+        esper.repair(unit)
+        self.assertIn(raise_grant,unit['awakening'][0])
+        self.assertNotIn(raise_grant,unit['awakening'][1])
+        self.assertIn(shellga,unit['awakening'][1])
+        self.assertIn(['ActiveSkill',210120,-1],unit['awakening'][0])
+        for field in before.keys()-{'awakening','sephiraKitRevision'}:
+            self.assertEqual(unit[field],before[field],field)
+        self.assertTrue(all(len(t)<=8 for t in unit['awakening']))
+        fixed=copy.deepcopy(unit);esper.repair(unit);self.assertEqual(unit,fixed)
+
     def test_mystea_swaps_keep_master_and_ap_at_rank_nine(self):
         catalog,_,_=inputs();p=next(p for p in catalog['presets'] if p['id']=='mystea')
         unit=copy.deepcopy(p['esperKitBefore']);before=copy.deepcopy(unit)

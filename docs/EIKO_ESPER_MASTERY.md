@@ -23,7 +23,8 @@ reward repeats the opening phase before advancing the native rotation. Its early
 special proc uses Glittering Ruby; its native support finale is retained.
 
 Eiko also gains Healing Light (party Cure, 12 MP) in tier 1 and Eidolon's Reprieve
-(party Regen, 25 MP) in tier 2. Her tier 3 bonus becomes Half MP Cost and tier 4
+(party Regen, 25 MP) in tier 2. Raise is available in tier 1, and Shellga joins tier 2.
+Her tier 3 bonus becomes Half MP Cost and tier 4
 becomes Auto MP Restore (L). Her existing stats, acquisition, resonance, other
 abilities and permanent MR rewards stay in place. Double EXP is removed from
 her current rewards.
