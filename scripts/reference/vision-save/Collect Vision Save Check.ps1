@@ -121,7 +121,8 @@ try {
     }
     if ($engine) { Copy-ReportFile (Join-Path $engine 'mods/EstherTsukiko/units.json') 'roster/units.json' 16777216 }
     [ordered]@{schema=1; purpose='Read-only vision ownership audit'; saveCount=$sources.Count;
-        rosterIncluded=[bool]$engine; files=$script:files} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $script:root 'report.json') -Encoding UTF8
+        rosterIncluded=[bool]$engine; rosterSource=$engine; files=$script:files} | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $script:root 'report.json') -Encoding UTF8
+    if ($engine) { Write-Host ('Roster copied from ' + $engine + '. Check this is your active Studio folder.') }
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = $script:root + '.zip'
     [IO.Compression.ZipFile]::CreateFromDirectory($script:root, $archive)

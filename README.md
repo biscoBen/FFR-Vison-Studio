@@ -1786,7 +1786,8 @@ the roster is written once; a missing asset or invalid entry prevents the entire
 saved units are adjusted together if necessary. A full roster backup is kept before applying the import.
 
 When moving between computers with the **same game save**, use **Save all character configs** on the working
-computer, carry that file to the other computer and choose **Restore roster for same save**. It replaces the complete
+computer, carry that file to the other computer and choose **Restore roster for same save** using the two-arrow
+button beside **Load all character configs**. It replaces the complete
 local roster with the saved roster and preserves every numeric identity without reallocating collisions. A backup
 is saved before replacement. Rebuild/install and restart Resonance afterward. Use this same roster on both PCs;
 a fresh preset collection can have different IDs from an older custom collection. Ordinary **Load all character

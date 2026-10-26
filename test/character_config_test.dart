@@ -968,7 +968,7 @@ void main() {
     picker.loadPath = p.join(temporary.path, 'same-save.visions.json');
     File(picker.loadPath!).writeAsStringSync(CharacterConfig.encodeAll([saved]));
     await buttons(tester, includeAll: true);
-    await tester.tap(find.text('Restore roster for same save'));
+    await tester.tap(find.byKey(const Key('restore-roster-same-save')));
     await completeIo(tester);
     expect(find.text('Restore roster for the same game save?'), findsOneWidget);
     await tester.tap(find.text('Restore saved roster'));

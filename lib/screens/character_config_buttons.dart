@@ -297,21 +297,23 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
                   : () => _save(app, null, all: true),
             ),
             const SizedBox(height: 8),
-            GuideButton(
-              'Load all character configs',
-              icon: Icons.folder_open,
-              onPressed:
-                  busy || app.api == null || app.engineDown || app.building
-                  ? null
-                  : () => _load(app, all: true),
-            ),
-            const SizedBox(height: 8),
-            GuideButton(
-              'Restore roster for same save',
-              icon: Icons.swap_horiz,
-              onPressed: busy || app.api == null || app.engineDown || app.building
-                  ? null : () => _load(app, all: true, sameSave: true),
-            ),
+            Row(children: [
+              Expanded(child: GuideButton(
+                'Load all character configs',
+                icon: Icons.folder_open,
+                onPressed: busy || app.api == null || app.engineDown || app.building
+                    ? null : () => _load(app, all: true),
+              )),
+              IconButton(
+                key: const Key('restore-roster-same-save'),
+                tooltip: 'Restore roster for same save',
+                constraints: const BoxConstraints.tightFor(width: 38, height: 36),
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.swap_horiz),
+                onPressed: busy || app.api == null || app.engineDown || app.building
+                    ? null : () => _load(app, all: true, sameSave: true),
+              ),
+            ]),
           ],
         ],
       ),
