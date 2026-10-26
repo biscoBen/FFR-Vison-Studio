@@ -11,14 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Preserve vision identities when moving between computers — 2026-10-26
-
-- Reduce Eiko's boss **Blizzaga Burst** by approximately 45%, power **52 → 29** after rounding. Keep the previously reduced Firaga Burst and White Whorl, Light of the Eidolons, Flash Bomb, playable skills and the rest of the encounter unchanged.
-- Hard-code all 30 Sephira save IDs. Fina uses 13503; the other 29 follow the reviewed roster. New collections, missing-preset restoration and resets use those fixed identities. On loading, back up older allocations and move only their identities and linked private IDs to the fixed scheme, preserving kits, stats, acquisition and appearances. Occupied unrelated IDs stop with a clear conflict before any roster write. Both PCs can use the same Steam-synced save without transferring Studio configurations.
-- Add **Restore roster for same save** beside the character-config buttons. Use a file made with **Save all character configs** on the working computer. This mode replaces the full destination roster and preserves every vision, skill, command and Spirit ID, including swapped or occupied local IDs. The existing merge import stays available and explains the distinction.
-- Check the whole input and prepare artwork before writing, back up the destination roster, reject a changed destination and prevent editor updates from restoring former IDs during transfer. No game save is changed or transferred. Current IDs are not forced to bundled defaults; existing saves may use older allocations.
-- Add a small **Vision Save Check** collector. It copies local Resonance saves and the current roster for inspection, with hashes and size limits; it does not interpret ownership, edit saves, install a runtime or infer that a vision is missing from a raw ID difference. Save-format and ownership verification require an actual returned save.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -87,6 +79,40 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published permanent Sephira vision IDs and roster recovery — 2026-10-26
+
+[Verified Windows ZIP / run 40373555255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40373555255/Sephira-Studio-Test.zip), code `5f75568`, update **1.2.103** (74.1 MB).
+SHA-256 `76cec0d9d6fd9a71039b34b86a86bc4ed63f5520405eaaf49e8d6638922b4aed`.
+
+- Fix an owned vision appearing locked after switching PCs: game saves retain numeric vision identities, while older Studio collections could allocate different IDs. Hard-code all **30** Sephira identities, including Crystal Fina **13503**. New collections, restores and resets use this scheme; occupied IDs stop instead of silently allocating another vision.
+- Reduce boss **Blizzaga Burst** by approximately **45%**, power **52 → 29** after rounding. Firaga Burst and White Whorl keep their earlier reductions; Light of the Eidolons, Flash Bomb, all playable skills and the rest of the encounter are unchanged. Native readback checks all **528** boss recipes and confirms this is the only changed skill.
+- Back up and correct older Sephira allocations on loading. Remap their private skills, commands, Spirits and cross-vision references together while preserving kits, stats, acquisition and artwork. Unrelated characters keep their identities. With this update on both PCs, the same Steam-synced save works without transferring Studio configuration files. This scheme follows the reviewed playthrough; a different historical save may need an ownership audit first.
+- Add **Restore roster for same save**, using the two-arrow button beside **Load all character configs**, for users who can transfer configuration files. It restores the complete roster with exact saved IDs and a backup, rather than merging destination identities. Ordinary imports now reject renumbering a tagged Sephira vision. Keep the control within the existing footer height so the vision grids and drag targets remain usable.
+- Add the read-only [Vision Save Check collector](scripts/reference/vision-save/Vision-Save-Check.zip). It copies saves and a detected roster for inspection, records hashes and the roster's source, and edits no save or installed mod. A returned save's checksum, structure and actual ownership/progression must be checked; catalog differences alone are not ownership evidence. Personal saves and rosters are not part of this release.
+
+Validation: **315 Flutter tests** pass locally (one Windows-only test skipped), analysis is clean, and **739 Python
+tests** pass locally (42 platform skips). Fixed-ID tests cover all 30 presets, reverse order, reset/missing entries,
+legacy identity normalization, occupied native/private IDs and older kit migrations. Transfer checks cover swapped
+identities, cross-vision references, backup/write failure and stale editor updates. The collector passes executable
+PowerShell byte/hash preservation and source/output separation checks. A native round trip preserves every original
+row and confirms Fina's unit SaveId **13503**, item **13503**, command **323** and Spirit **1350300**.
+Full Windows validation, compilation, fresh-engine startup, launcher/updater checks and publication pass for this
+commit. The actual downloaded ZIP matches provenance/SHA-256, all **75** extension and **16** standalone Fina
+hashes, the compiled **1.2.103** label and the transfer/identity migration controls. Sprite-cache implementation
+remains pinned and unchanged. The user has confirmed the corrected roster restores Fina; the automatic update and new Blizzaga tuning need the next live test.
+
+Update both PCs, reopen Studio, rebuild/install and restart Resonance. The old roster is backed up automatically.
+No preset reset, Prepare Game, game-save edit or between-PC Studio transfer is needed for this playthrough.
+The user confirmed Fina's recovery with the corrected roster; automated recovery and Blizzaga tuning still need the next in-game test.
+
+Measured delivery: first complete candidate 10:10:50 to verified package
+11:11:53 America/Los_Angeles, **61m 03s**, including the footer fix,
+returned-save audit, requested permanent-ID/automatic recovery work, local/native checks, four builds, waiting and
+package verification. The timer was not reset. Final-run CI wall time is **12m 46s**, with **17m 29s** summed
+job runtime; all four runs use **58m 10s** summed job runtime. Matching automatic push runs were joined
+through the unchanged build helper; no duplicate build was dispatched. Publication notes are a separate
+README/CHANGELOG-only commit.
 
 ## Published Rikku/Eiko boss burst reduction — 2026-10-25
 

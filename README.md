@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Permanent Sephira IDs and automatic roster recovery — 2026-10-26
+
+[Verified Windows download / run 40373555255](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40373555255/Sephira-Studio-Test.zip)
+(code `5f75568`, update **1.2.103**; **74.1 MB**).
+
+All **30** Sephira visions now have permanent IDs, including Crystal Fina **13503**. Older roster allocations
+are backed up and corrected automatically while preserving their full kits and edits. This reconnects the reviewed
+Steam-synced save's ownership and progression; the save itself is unchanged. Both PCs can use the same save
+without transferring Studio configuration files. Occupied unrelated IDs produce a conflict instead of reallocation.
+
+Update Studio on both PCs, rebuild/install and restart Resonance. No preset reset or Prepare Game is needed.
+An optional same-save roster transfer is available through the two-arrow button beside **Load all character configs**.
+The [read-only save collector](scripts/reference/vision-save/Vision-Save-Check.zip) supports ownership investigations.
+Boss Blizzaga Burst is also reduced from power **52 to 29**, matching the earlier burst reductions.
+Windows and actual ZIP checks pass; the user has confirmed Fina's corrected roster works. Retest the new Blizzaga tuning.
+[Checks and measured timings](CHANGELOG.md#published-permanent-sephira-vision-ids-and-roster-recovery--2026-10-26).
+
 ### Rikku/Eiko boss burst reduction — 2026-10-25
 
 [Verified Windows download / run 40279755866](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40279755866/Sephira-Studio-Test.zip)
