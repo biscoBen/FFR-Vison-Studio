@@ -47,11 +47,15 @@ local function state(ai)
     local caster,wearer=owner(parameter)
     if not valid(caster) or not valid(wearer) then return nil end
     local key=actor:GetFullName()
+    local address=actor:GetAddress()
     local s=runtime.states[key]
-    if not s or not valid(s.actor) or s.actor~=actor then
-        s={actor=actor,parameter=parameter,ai=ai,id=id,caster=caster,wearer=wearer}
+    -- UE4SS 3.0.1 compares Lua userdata wrappers, not their native pointers.
+    -- A fresh wrapper must not grant HP/damage again or reset the extra action.
+    if not s or not valid(s.actor) or s.address~=address then
+        s={address=address,id=id}
         runtime.states[key]=s
     end
+    s.actor=actor;s.parameter=parameter;s.ai=ai;s.caster=caster;s.wearer=wearer
     s.flags=markers(wearer)
     return s
 end

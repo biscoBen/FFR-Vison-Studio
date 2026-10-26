@@ -1,7 +1,10 @@
 -- Reflected signatures checked against the native SDK; native table effects are
 -- serialized/read back separately. This fixture does not claim an in-game pass.
 local function object(t)
-    t=t or {};t.IsValid=function(self) return not self.invalid end;return t
+    t=t or {};t.address=t.address or {}
+    t.IsValid=function(self) return not self.invalid end
+    t.GetAddress=function(self) return self.address end
+    return t
 end
 local function context(x) return {get=function() return x end,set=function(_,v) x=v end} end
 local function array(items)
@@ -41,7 +44,7 @@ function actor(id,key)
     a.GetFullName=function(self) return self.name end
     a.GetUnitParameter=function(self) return self.parameter end
     a.GetUnitAI=function(self) return self.ai end
-    ai.GetOwnerUnit=function() return a end
+    ai.GetOwnerUnit=function() return a.wrappers and setmetatable({}, {__index=a}) or a end
     ai.GetSkillIdInSkillList=function(_,list,index)
         assert(list==(id==10455 and 1 or 0) and index==(id==10455 and 1 or 0))
         return ({[10451]=300010,[10452]=300020,[10453]=300040,[10454]=300050,
@@ -95,6 +98,9 @@ function run_tests()
     assert(a.parameter.maxhp==120 and a.parameter.hp==120)
     assert(a.ai.effectCalls[196001]==1 and a.ai.effectCalls[196201]==1)
     a.parameter.hp=45;tick();assert(a.parameter.hp==45,'Spawn health must never repeat-heal')
+    a.wrappers=true
+    for _=1,8 do tick() end
+    assert(a.parameter.hp==45 and a.parameter.maxhp==120,'Fresh native wrappers must not repeat the spawn bonus')
     assert(a.ai.effectCalls[196201]==1)
     -- The native counter can clamp at zero. Queries/predictions do not spend
     -- the bonus, while a later action reaches the guaranteed final stack.

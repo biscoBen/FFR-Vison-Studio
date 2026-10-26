@@ -25,6 +25,8 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Add native table readback, migration and executable Lua lifecycle checks; the new esper effects still need
   in-game validation. Existing challenge rotations, tuned damage and shared stat budgets are preserved.
   See [Eiko esper mastery](docs/EIKO_ESPER_MASTERY.md) for the reward table, Carbuncle support behavior and limits.
+- Use native immediate-recovery events and native actor addresses on UE4SS 3.0.1. Fresh Lua wrappers must
+  not repeat HP/damage bonuses or reset the extra-action counter; the wrapper regression is reproduced and fixed.
 
 ### Returned full-game reference audit — 2026-10-22
 

@@ -54,6 +54,8 @@ equipped effects. It adds native damage/HP operations to that summon, restores
 MP once per completed action, and adjusts native ordinary-action selection.
 The final-special/dismissal stack is never replaced. Multi-hit callbacks and
 dismissal do not create extra MP payments. No save or loadout mutation is used.
+Native actor addresses preserve the same tracking across fresh Lua wrappers on
+UE4SS 3.0.1, preventing repeated spawn bonuses or an indefinitely extended turn.
 
 Validation includes native table serialization/readback, original-row preservation,
 mastery/Spirit owner links, executable Lua ownership/lifecycle fixtures, and
