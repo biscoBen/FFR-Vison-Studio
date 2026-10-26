@@ -648,6 +648,7 @@
       }
     },
     "eiko": {
+      "potencyMultipliers": {"225020": 0.825},
       "attacks": [
         225290,
         225020,
@@ -772,6 +773,7 @@
       "basicName": "Thunder"
     },
     "rikku": {
+      "potencyMultipliers": {"447410": 0.825},
       "attacks": [
         447400,
         447410,

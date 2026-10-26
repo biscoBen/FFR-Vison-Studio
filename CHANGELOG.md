@@ -11,6 +11,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Reduce the Rikku/Eiko shrine's opening burst — 2026-10-25
+
+- Reduce boss Rikku's White Whorl and boss Eiko's Firaga Burst by approximately 45%, following the level-15 hardest-difficulty party wipe report. Each private skill's power changes from 45 to 25 after integer rounding (44.4% less); the per-skill multiplier is 55% of its former value.
+- Keep the encounter at level 12 with its current HP, break gauges, speed, rotation and other attacks. Playable Rikku/Eiko skills, original game skills, and the other vision encounters are unchanged. The new values apply on rebuild without resetting presets or converting sprites/icons again.
+- Verify the generated enemy-skill rows against native serialization. Difficulty and real damage still need the user's in-game retest.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
