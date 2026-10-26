@@ -12,6 +12,49 @@ class SephiraVisions {
   static const field = 'sephiraVision';
   static const asset = 'assets/sephira_visions/catalog.json';
   static const retired = {'great_dragon'};
+  /// Permanent save identities. Never reuse retired slots or choose an ID by
+  /// roster order. These also match the standalone Fina identity (13503).
+  static const fixedIds = <String, int>{
+    'a2': 13502, 'christine': 13501, 'crystal_fina': 13503,
+    'barusa': 13531, 'fran': 13504, 'lunafreya': 13505,
+    'minfilia': 13506, 'folka': 13507, 'fryevia': 13508,
+    'lenneth': 13509, 'lila': 13510, 'mystea': 13511,
+    'reberta': 13512, 'snow_white': 13513, 'aria': 13514,
+    'eiko': 13515, 'alice': 13516, 'mog': 13517, 'lilith': 13518,
+    'freya': 13519, 'trance_terra': 13521, 'ariana': 13522,
+    'elephim': 13523, 'jade': 13524, 'primm': 13525, 'relm': 13526,
+    'rikku': 13527, 'nalu': 13528, 'elza': 13529, 'lunera': 13530,
+  };
+
+  /// Kit templates retain their historical IDs for migration comparisons.
+  /// Instantiate them at the permanent identity with all private links remapped.
+  static Map<String, dynamic> fixedProfile(Map<String, dynamic> preset) {
+    final profile = preset['profile'] as Map<String, dynamic>?;
+    final id = fixedIds[preset['id']];
+    if (profile == null || id == null) throw StateError('This Sephira preset has no fixed save identity.');
+    return CharacterConfig.restore(profile, [], replacing: {...profile, 'id': id});
+  }
+
+  /// Repair older allocations by preset identity, preserving whole kits and all
+  /// cross-vision references. Unrelated characters may never be renumbered to
+  /// make room; an occupied fixed slot fails before the caller writes anything.
+  static List<dynamic> pinIdentities(List<dynamic> units) {
+    final ids = [for (final u in units)
+      member(u as Map) ? fixedIds[presetId(u)] ?? u['id'] : u['id']];
+    if (!units.asMap().entries.any((e) => e.value['id'] != ids[e.key])) return units;
+    final sources = [for (final u in units) CharacterConfig.copy(u as Map<String,dynamic>)..remove(field)];
+    final targets = [for (var i=0; i<units.length; i++) {...units[i] as Map<String,dynamic>, 'id':ids[i]}];
+    final next = CharacterConfig.restoreAll(sources, [], targets);
+    for (var i=0; i<next.length; i++) {
+      if (next[i]['id'] != ids[i]) {
+        throw StateError('A fixed Sephira vision ID is occupied by another character. '
+            'Your roster was kept; remove the conflicting added entry before applying the update.');
+      }
+      if ((units[i] as Map).containsKey(field)) next[i][field] = CharacterConfig.copy(units[i] as Map<String,dynamic>)[field];
+    }
+    CharacterConfig.validateAll(next);
+    return next;
+  }
   static Future<List<Map<String, dynamic>>> get bundled async =>
       parse(await rootBundle.loadString(asset));
 
@@ -343,7 +386,7 @@ class SephiraVisions {
     if (profile is! Map<String, dynamic>) {
       throw StateError('The version and kit for ${preset['name']} are not finalized yet.');
     }
-    final result = CharacterConfig.restore(profile, roster, replacing: replacing);
+    final result = CharacterConfig.restoreAll([fixedProfile(preset)], roster, [replacing], requireSavedIds: true).single;
     result[field] = {'version': 1, 'preset': preset['id'], 'enabled': enabled};
     return result;
   }

@@ -1793,6 +1793,11 @@ is saved before replacement. Rebuild/install and restart Resonance afterward. Us
 a fresh preset collection can have different IDs from an older custom collection. Ordinary **Load all character
 configs** merges setups and keeps existing local IDs, so it is not the transfer mode for an existing game save.
 The transfer contains Studio configuration, not the game save or MR/awakening progress; those remain in the save.
+New and reset Sephira presets now use 30 fixed IDs, including Crystal Fina **13503**. On loading an older roster,
+Studio backs it up and updates its Sephira identities and linked private IDs while preserving the full kits and edits.
+An occupied unrelated ID stops the migration before writing rather than renumbering another character. Keep both
+PCs on this update and rebuild/install on each; the Steam-synced save can be used without transferring Studio files.
+These IDs follow the reviewed playthrough. A different historical game save may require an ownership audit first.
 
 For an ownership investigation, [Vision Save Check](scripts/reference/vision-save/Vision-Save-Check.zip) copies
 Resonance saves and the current roster without modifying them. Close the game first; keep the save from before

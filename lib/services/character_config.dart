@@ -183,6 +183,7 @@ class CharacterConfig {
     List<dynamic> roster,
     List<Map<String, dynamic>?> replacing, {
     Set<int> reservedSkillIds = const {},
+    bool requireSavedIds = false,
   }) {
     validateAll(saved);
     if (saved.length != replacing.length) {
@@ -223,6 +224,15 @@ class CharacterConfig {
       );
     }
     final activeIds = <int, int>{}, masterIds = <int, int>{};
+    if (requireSavedIds) {
+      for (var i = 0; i < saved.length; i++) {
+        if (loaded[i]['id'] != saved[i]['id']) {
+          throw StateError('${saved[i]['en']} must keep its fixed vision ID ${saved[i]['id']}. '
+              'That identity is occupied or this roster uses an older identity. '
+              'Your roster was kept. Restore the matching roster for this game save instead of reallocating IDs.');
+        }
+      }
+    }
     for (var i = 0; i < saved.length; i++) {
       if (saved[i]['party'] != null) { continue; }
       final oldId = saved[i]['id'] as int, newId = loaded[i]['id'] as int;
@@ -591,6 +601,10 @@ class CharacterConfig {
       while (!free(id)) {
         id++;
       }
+    }
+    if (SephiraVisions.member(saved) && id != oldId) {
+      throw StateError('${saved['en']} must keep its saved vision ID $oldId. '
+          'Your roster was kept. Use Restore roster for same save, or resolve the occupied ID first.');
     }
     if (id != oldId) {
       final remap = {

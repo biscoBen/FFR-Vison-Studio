@@ -691,18 +691,80 @@ void main() {
     expect(app.units.single['stats']['Mind'], 57);
   });
 
-  test('preset allocation reserves native skills as well as user roster IDs', () async {
+  test('fixed preset conflicts with native skills stop before artwork or roster writes', () async {
     final reserved = {
       CharacterConfig.resonanceId(13503),
       CharacterConfig.resonanceId(13500),
       CharacterConfig.skillBase(13501),
     };
     app.catalog = {'skills': [for (final id in reserved) {'id': id}]};
-    await app.setSephiraEnabled(true);
-    for (final u in app.sephiraUnits) {
-      final owned = {CharacterConfig.resonanceId(u['id'] as int),
-        ...(u['skills'] as Map).keys.map((k) => int.parse(k.toString()))};
-      expect(owned.intersection(reserved), isEmpty);
+    final before = clone(api.roster);
+    await expectLater(app.setSephiraEnabled(true), throwsStateError);
+    expect(api.roster, before);
+    expect(api.preparations, isEmpty);
+    expect(api.saves, 0);
+  });
+
+  test('all 30 preset identities stay fixed across order, resets and missing entries', () async {
+    final presets = await SephiraVisions.bundled;
+    expect(SephiraVisions.fixedIds.length, 30);
+    expect(SephiraVisions.fixedIds.values.toSet().length, 30);
+    expect(SephiraVisions.fixedIds['crystal_fina'], 13503);
+    final roster = <Map<String,dynamic>>[];
+    for (final preset in presets.reversed) {
+      final unit = SephiraVisions.instantiate(preset, roster, enabled: true);
+      roster.add(unit);
+      final id = SephiraVisions.fixedIds[preset['id']];
+      expect(unit['id'], id);
+      expect(unit['command']['id'], 320 + id! - 13500);
+      expect(unit['master']['id'], id * 100);
+      expect(unit['stats'], preset['profile']['stats']);
     }
+    CharacterConfig.validateAll(roster);
+    for (final preset in presets) {
+      final existing = roster.singleWhere((u) => SephiraVisions.presetId(u) == preset['id']);
+      expect(SephiraVisions.instantiate(preset, roster, enabled: true, replacing: existing), existing);
+      expect(SephiraVisions.instantiate(preset, [], enabled: true), existing);
+    }
+  });
+
+  test('fixed identities refuse occupied slots and preserve older imported identities', () async {
+    final preset = (await SephiraVisions.bundled).singleWhere((p) => p['id']=='crystal_fina');
+    final occupied = profile();
+    final before = CharacterConfig.copy(occupied);
+    expect(() => SephiraVisions.instantiate(preset, [occupied], enabled: true), throwsStateError);
+    expect(occupied, before);
+    final older = CharacterConfig.restore(SephiraVisions.fixedProfile(preset), [occupied]);
+    older[SephiraVisions.field] = {'version':1,'preset':'crystal_fina','enabled':true};
+    expect(() => SephiraVisions.instantiate(preset, [older], enabled: true, replacing: older), throwsStateError);
+    final exact = CharacterConfig.restore(older, [], replacing: older);
+    expect(exact['id'], older['id']);
+    expect(() => CharacterConfig.restore(older, [], replacing: occupied), throwsStateError);
+  });
+
+  test('legacy allocations normalize to fixed IDs without resetting kits or unrelated entries', () async {
+    final presets = await SephiraVisions.bundled;
+    final legacy = [for (final p in presets) {
+      ...CharacterConfig.copy(p['profile'] as Map<String,dynamic>),
+      SephiraVisions.field: {'version':1,'preset':p['id'],'enabled':true},
+    }];
+    legacy.first['stats']['Attack']=123;
+    legacy.first['studioAcquisition']={'version':1,'location':'mitra_shop','random':false,'hideSpoilers':false};
+    final before=clone(legacy);
+    final fixed=SephiraVisions.pinIdentities(legacy);
+    for(var i=0;i<fixed.length;i++) {
+      expect(fixed[i]['id'],SephiraVisions.fixedIds[presets[i]['id']]);
+      for(final field in ['en','stats','ffbe','studioAcquisition','lb_custom',SephiraVisions.field]) {
+        expect(fixed[i][field],legacy[i][field]);
+      }
+      expect((fixed[i]['skills'] as Map).length,(legacy[i]['skills'] as Map).length);
+      expect([for(final t in fixed[i]['synchro'] as List) (t as List).length],
+          [for(final t in legacy[i]['synchro'] as List) (t as List).length]);
+    }
+    expect(legacy,before);
+    expect(SephiraVisions.pinIdentities(fixed),same(fixed));
+    final occupied=CharacterConfig.restore(profile(),[],replacing:{...profile(),'id':13531});
+    expect(()=>SephiraVisions.pinIdentities([...legacy,occupied]),throwsStateError);
+    expect(legacy,before);
   });
 }

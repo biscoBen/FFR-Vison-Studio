@@ -27,7 +27,12 @@ void main() {
   test('remapped saved rosters migrate once while preserving stats, private recipes and acquisition',() async {
     final presets=await SephiraVisions.bundled;
     for(final preset in presets.where((p)=>p['mrRestoration'] is Map)) {
-      final u=CharacterConfig.restore(oldUnit(preset),presets.map((p)=>p['profile']).toList());
+      // Reproduce an allocation made by an older Studio. New imports must not
+      // renumber tagged presets; loading an already-remapped legacy save must
+      // still migrate its kit without changing that historical identity.
+      final legacy=oldUnit(preset)..remove(SephiraVisions.field);
+      final u=CharacterConfig.restore(legacy,presets.map((p)=>p['profile']).toList());
+      u[SephiraVisions.field]={'version':1,'preset':preset['id'],'enabled':true};
       u['stats']['Attack']=77;u['studioAcquisition']={'version':1,'location':'mitra_shop','random':false,'hideSpoilers':false};
       (u['skills'] as Map).values.first['set']['Cost']=17;
       final before=CharacterConfig.copy(u);

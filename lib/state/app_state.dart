@@ -363,6 +363,15 @@ class AppState extends ChangeNotifier {
     catalog = await api!.catalog();
     units = await api!.spec();
     sephiraPresets = await SephiraVisions.bundled;
+    final pinned = SephiraVisions.pinIdentities(units);
+    if (!identical(pinned, units)) {
+      final backup = File(p.join(paths.configBackups, 'sephira-save-ids-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = pinned;
+      dirty = true;
+      notice = 'Fixed Sephira vision IDs applied; your previous roster was backed up. Rebuild/install and restart Resonance.';
+    }
     final repaired = await _repairKnownFinaRewards(units);
     if (!identical(repaired, units)) dirty = true;
     units = repaired;
@@ -721,6 +730,10 @@ class AppState extends ChangeNotifier {
           u['party'] == null && CrystalFina.matches(u) && !SephiraVisions.member(u)).toList();
       if (candidates.length > 1) throw StateError('More than one Crystal Fina is in the roster. Keep one before enabling the collection.');
       if (candidates.isNotEmpty) {
+        if (candidates.single['id'] != SephiraVisions.fixedIds['crystal_fina']) {
+          throw StateError('Existing Crystal Fina uses vision ID ${candidates.single['id']}, '
+              'rather than fixed ID 13503. Your roster was kept. Restore the matching roster for this game save first.');
+        }
         adoptedKey = candidates.single['key'] as String;
         final adopted = {...candidates.single, SephiraVisions.field:
           {'version': 1, 'preset': 'crystal_fina', 'enabled': sephiraEnabled}};
@@ -740,7 +753,7 @@ class AppState extends ChangeNotifier {
     if (wanted.isEmpty) return current;
     final targets = wanted.map((p) => existing[p['id']]).toList();
     final sources = [for (final p in wanted) {
-      ...CharacterConfig.copy(p['profile'] as JsonMap),
+      ...SephiraVisions.fixedProfile(p),
       SephiraVisions.field: {'version': 1, 'preset': p['id'], 'enabled': sephiraEnabled},
       if (!reset && existing[p['id']]?.containsKey(Acquisition.field) == true)
         Acquisition.field: CharacterConfig.copy(existing[p['id']]![Acquisition.field] as JsonMap),
@@ -749,7 +762,8 @@ class AppState extends ChangeNotifier {
       for (final skill in catalog?['skills'] as List? ?? [])
         if (skill['id'] is num) (skill['id'] as num).toInt(),
     };
-    final loaded = CharacterConfig.restoreAll(sources, current, targets, reservedSkillIds: reservedSkills);
+    final loaded = CharacterConfig.restoreAll(sources, current, targets,
+        reservedSkillIds: reservedSkills, requireSavedIds: true);
     final revision = _rosterRevision;
     for (var i = 0; i < loaded.length; i++) {
       sephiraProgress = 'Preparing ${wanted[i]['name']} (${i + 1}/${loaded.length})';
