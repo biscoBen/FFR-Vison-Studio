@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Smaller playable Nalu and Lance Launcher animation — 2026-10-25
+
+[Verified Windows download / run 40251214869](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40251214869/Sephira-Studio-Test.zip)
+(code `1f38713`, update **1.2.99**; **74.1 MB**).
+
+Nalu's playable battle sprite is **35% smaller**. Lance Launcher uses Thunder Spear's animation and effects while
+retaining both hits and its original damage and cost. Nalu's boss size and the tested Nalu/Jade fight are unchanged.
+The animation swap applies with borrowed visuals on or off; existing sprite/icon conversions remain reusable.
+
+Keep **Studio Test Data**, update, rebuild/install and restart. Existing Nalu entries need no preset reset or
+Prepare Game. Native readback and Windows/package checks pass; please retest the size and attack in game.
+[Checks and measured timings](CHANGELOG.md#published-smaller-playable-nalu-and-lance-launcher-animation--2026-10-25).
+
 ### Walking appearance recovery and button-operated crystals — 2026-10-25
 
 [Verified Windows download / run 40241100839](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40241100839/Sephira-Studio-Test.zip)

@@ -11,16 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Smaller playable Nalu battle sprite — 2026-10-25
-
-- Reduce Nalu's playable battle sprite to 65% of its previous size (35% smaller), using only her private native battle-design scale. Existing saved Nalu entries receive the change on their next build without a preset reset.
-- Preserve her boss appearance and the tested Nalu/Jade encounter, other visions, menu sprites/icons, skills and stats. Keep sprite/icon conversion cache inputs unchanged; no pixel or animation conversion is needed for the size adjustment.
-- Use the same composed recipe for generation and native readback verification, so the build checks the smaller player row while retaining the independent boss row.
-- Give Nalu's playable Lance Launcher the Thunder Spear caster/effect/sound tracks. Keep its original two-hit damage master and cooked evaluation data, physical Lightning damage, power, MP cost and hit ratios. Apply to existing saved default recipes with borrowed visuals on or off; explicitly authored user animations retain precedence. The boss's animation is unchanged.
-- Native size and timeline readback checks pass for both borrowed-visual modes. The visual size and attack timing still need an in-game retest.
-
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -89,6 +79,35 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published smaller playable Nalu and Lance Launcher animation — 2026-10-25
+
+[Verified Windows ZIP / run 40251214869](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40251214869/Sephira-Studio-Test.zip), code `1f38713`, update **1.2.99** (74.1 MB).
+SHA-256 `f4748b3daf80deb367223a403adda651284b88e9889239dcdd0836ede951d473`.
+
+- Make Nalu's playable battle sprite **35% smaller**: her native battle-design scale changes from **1.00 to 0.65**. Existing saved Nalu entries receive the change on their next build without a preset reset. Menu sprites/icons and the shared converted sprite assets are unchanged.
+- Keep Nalu's boss scale at **1.30**, with the tested Nalu/Jade fight unchanged. The size adjustment targets only the playable vision's private design row, including allocated/imported identities. Other visions' sizes, stats, skills and acquisition routes are unchanged.
+- Give playable **Lance Launcher** the **Thunder Spear** caster, effect and sound tracks. Preserve Lance Launcher's original two-hit master and cooked evaluator: swapping in Thunder Spear's one-hit master would lose a damage marker. Keep both original hit times, two 50% damage packets, physical Lightning damage, power 12 and MP cost 10.
+- Apply the reviewed animation swap to existing default recipes with borrowed visuals on or off. Explicitly authored user animations retain precedence. The playable skill and all native/global and boss routes remain separate. Retain the sprite-motion cache signature and pinned cache implementation, so this adjustment reuses unchanged sprite/icon conversion.
+
+Validation: **735 Python tests** pass locally (42 platform skips), focused presentation/cache/shrine checks pass,
+and analysis is clean. The native design-table patch/readback verifies Nalu at 0.65, both Nalu/Jade bosses at 1.30,
+Jade's playable size at 1.00 and every original design row intact. The actual builder's clone/patch/readback path
+passes for Lance Launcher with borrowed visuals **off and on**: the cut/effect/sound children come from Thunder
+Spear, the original two-hit master and opaque cooked evaluator are retained, and skill-table readback preserves
+both hit ratios, power, cost, damage type and element. The same recipe generates and verifies the player scale.
+Full Windows validation, compilation, fresh engine and launcher/updater checks pass for this commit. The downloaded
+ZIP matches provenance/SHA-256, all **75** extension and **16** standalone Fina hashes and the compiled 1.2.99 label.
+The catalog, working walking controller, shrine logic, Fina's friendly Cure and movie/audio remain intact.
+**Live visual size and animation timing still need the user's retest.** Keep Studio Test Data, update,
+rebuild/install and restart. No reset or Prepare Game is needed.
+
+Measured delivery: first complete size candidate 17:33:19 to verified package
+18:01:56 America/Los_Angeles, **28m 36s**, including the subsequent
+animation request, native prototype/readback checks, local regression checks, CI waiting and package verification.
+The timer was not reset. Measured CI wall time is **10m 05s**, with **15m 08s** summed job runtime.
+The exact automatic push run was joined through the unchanged build helper; no duplicate build was dispatched.
+Publication notes are a separate README/CHANGELOG-only commit.
 
 ## Published walking callback recovery and crystal interaction — 2026-10-25
 
