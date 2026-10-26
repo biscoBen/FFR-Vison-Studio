@@ -1785,6 +1785,20 @@ confirmation, while keeping other units in the current roster. Every saved entry
 the roster is written once; a missing asset or invalid entry prevents the entire import. IDs and references between
 saved units are adjusted together if necessary. A full roster backup is kept before applying the import.
 
+When moving between computers with the **same game save**, use **Save all character configs** on the working
+computer, carry that file to the other computer and choose **Restore roster for same save**. It replaces the complete
+local roster with the saved roster and preserves every numeric identity without reallocating collisions. A backup
+is saved before replacement. Rebuild/install and restart Resonance afterward. Use this same roster on both PCs;
+a fresh preset collection can have different IDs from an older custom collection. Ordinary **Load all character
+configs** merges setups and keeps existing local IDs, so it is not the transfer mode for an existing game save.
+The transfer contains Studio configuration, not the game save or MR/awakening progress; those remain in the save.
+
+For an ownership investigation, [Vision Save Check](scripts/reference/vision-save/Vision-Save-Check.zip) copies
+Resonance saves and the current roster without modifying them. Close the game first; keep the save from before
+the issue, and use a separate slot if making a new save. Inspect the returned
+save's format and actual ownership fields before changing identities; a difference from the current preset catalog
+alone does not establish which vision the save owns.
+
 ## Editing original game visions
 
 After game preparation, **Your visions** also lists the original game visions, including the nine original FFBE visions

@@ -475,6 +475,7 @@ class AppState extends ChangeNotifier {
   void select(String? key) { selectedKey = key; notifyListeners(); }
 
   void update(JsonMap unit) {
+    if (_restoringRoster) { throw StateError('Wait for the roster transfer to finish before editing a character.'); }
     units = units.map((u) => (u as JsonMap)['key'] == unit['key'] ? unit : u).toList();
     dirty = true;
     _pendingEdits[unit['key'] as String] = unit;
@@ -487,6 +488,7 @@ class AppState extends ChangeNotifier {
   Future<void> _rosterQueue = Future<void>.value();
   final _pendingEdits = <String, JsonMap>{};
   int _rosterRevision = 0;
+  bool _restoringRoster = false;
 
   Future<T> _withRoster<T>(Future<T> Function() action) {
     final result = _rosterQueue.then((_) => action());
@@ -951,6 +953,42 @@ class AppState extends ChangeNotifier {
       throw StateError('The artwork for ${saved['en']} is missing. Add or import this character using Add a unit first, then load its saved config.');
     }
   }
+
+  /// A game save refers to numeric identities, not names. Transfer the complete
+  /// roster without collision allocation or merging identities from this PC.
+  Future<void> restoreRosterForSameSave(List<JsonMap> saved, {required List<dynamic> expectedRoster}) => _withRoster(() async {
+    CharacterConfig.validateAll(saved);
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    _saveTimer?.cancel();
+    await _savePending();
+    final current = _mergePending(await api!.spec());
+    if (json.encode(current) != json.encode(expectedRoster)) {
+      throw StateError('The roster changed while choosing the file. Choose it again to review the transfer.');
+    }
+    // The modal owns this operation. Prevent an editor from queuing a full old
+    // identity over the imported one while artwork or the engine write awaits.
+    _restoringRoster = true;
+    try {
+      final next = saved.map(CharacterConfig.copy).toList();
+      for (final unit in next) { await _checkCharacterArtwork(unit); }
+      final backup = File(p.join(paths.configBackups, 'same-save-roster-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(const JsonEncoder.withIndent('  ').convert(current), flush: true);
+      await api!.saveSpec(next);
+      units = next;
+      dirty = false;
+      _pendingEdits.clear();
+      _rosterRevision++;
+      sephiraInitialized = sephiraUnits.isNotEmpty;
+      sephiraEnabled = sephiraUnits.any(SephiraVisions.included);
+      _anims.clear();
+      selectedKey = null;
+    } finally {
+      _restoringRoster = false;
+      notifyListeners();
+    }
+  });
 
   Future<List<JsonMap>> loadAllCharacterConfigs(List<JsonMap> saved, {required List<String?> expectedTargetKeys}) => _withRoster(() async {
     CharacterConfig.validateAll(saved);

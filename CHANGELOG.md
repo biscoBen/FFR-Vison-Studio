@@ -11,6 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Preserve vision identities when moving between computers — 2026-10-26
+
+- Add **Restore roster for same save** beside the character-config buttons. Use a file made with **Save all character configs** on the working computer. This mode replaces the full destination roster and preserves every vision, skill, command and Spirit ID, including swapped or occupied local IDs. The existing merge import stays available and explains the distinction.
+- Check the whole input and prepare artwork before writing, back up the destination roster, reject a changed destination and prevent editor updates from restoring former IDs during transfer. No game save is changed or transferred. Current IDs are not forced to bundled defaults; existing saves may use older allocations.
+- Add a small **Vision Save Check** collector. It copies local Resonance saves and the current roster for inspection, with hashes and size limits; it does not interpret ownership, edit saves, install a runtime or infer that a vision is missing from a raw ID difference. Save-format and ownership verification require an actual returned save.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

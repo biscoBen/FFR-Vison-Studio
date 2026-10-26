@@ -908,6 +908,76 @@ void main() {
     },
   );
 
+  test('same-save transfer preserves complete identities despite swapped local IDs', () async {
+    final second = other();
+    cacheArtwork(second);
+    saved['synchro'][0].add(['MasterSkill', second['master']['id']]);
+    final swappedFirst = CharacterConfig.restore(saved, [], replacing: {...saved, 'id': second['id']});
+    final swappedSecond = CharacterConfig.restore(second, [], replacing: {...second, 'id': saved['id']});
+    final extra = CharacterConfig.restore(second, [swappedFirst, swappedSecond])..['key'] = 'extra';
+    api.roster = [swappedFirst, swappedSecond, extra];
+    app.units = clone(api.roster) as List;
+    final before = clone(app.units) as List;
+    await app.restoreRosterForSameSave([saved, second], expectedRoster: before);
+    expect(api.roster, [saved, second]);
+    expect(app.units, [saved, second]);
+    expect(api.saves, 1);
+    expect(app.selectedKey, isNull);
+    expect(json.decode(Directory(app.paths.configBackups).listSync().whereType<File>().single.readAsStringSync()), before);
+    expect(app.units.first['synchro'][0].last, ['MasterSkill', second['master']['id']]);
+  });
+
+  test('same-save transfer fails without replacing anything when input or roster changes', () async {
+    final before = clone(app.units) as List;
+    await expectLater(app.restoreRosterForSameSave([{'key': 'invalid'}], expectedRoster: before), throwsFormatException);
+    await expectLater(app.restoreRosterForSameSave([saved], expectedRoster: []), throwsStateError);
+    final missing = other()..['ffbe']['id'] = '123456789';
+    await expectLater(app.restoreRosterForSameSave([missing], expectedRoster: before), throwsA(predicate((e) => e.toString().contains('artwork'))));
+    expect(api.roster, before);
+    expect(app.units, before);
+    expect(api.saves, 0);
+  });
+
+  test('same-save engine failure retains the old roster and recovery backup', () async {
+    final before = clone(app.units) as List;
+    api.fail = true;
+    await expectLater(app.restoreRosterForSameSave([saved], expectedRoster: before), throwsStateError);
+    expect(app.units, before);
+    expect(api.roster, before);
+    expect(Directory(app.paths.configBackups).listSync(), hasLength(1));
+    app.update(CharacterConfig.copy(saved)..['stats']['Attack'] = 123);
+    expect(app.units.single['stats']['Attack'], 123);
+  });
+
+  test('same-save write cannot receive an editor update with the former IDs', () async {
+    final before = clone(app.units) as List;
+    var blocked = false;
+    api.beforeSave = () async {
+      expect(() => app.update(CharacterConfig.copy(saved)), throwsStateError);
+      blocked = true;
+    };
+    await app.restoreRosterForSameSave([saved], expectedRoster: before);
+    expect(blocked, isTrue);
+    expect(app.units, [saved]);
+    expect(app.dirty, isFalse);
+  });
+
+  testWidgets('same-save restore uses the saved identity instead of the local identity', (tester) async {
+    final current = CharacterConfig.restore(saved, [saved]);
+    api.roster = [current]; app.units = clone(api.roster) as List;
+    picker.loadPath = p.join(temporary.path, 'same-save.visions.json');
+    File(picker.loadPath!).writeAsStringSync(CharacterConfig.encodeAll([saved]));
+    await buttons(tester, includeAll: true);
+    await tester.tap(find.text('Restore roster for same save'));
+    await completeIo(tester);
+    expect(find.text('Restore roster for the same game save?'), findsOneWidget);
+    await tester.tap(find.text('Restore saved roster'));
+    await completeIo(tester);
+    expect(find.text('Roster restored with saved IDs'), findsOneWidget);
+    expect(api.roster, [saved]);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('bulk buttons appear only on the main-page footer', (
     tester,
   ) async {

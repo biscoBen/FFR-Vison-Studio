@@ -68,7 +68,7 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
         _message(
           all ? 'All character configs saved' : 'Character config saved',
           all
-              ? '${units.length} character setups were saved to:\n$path\n\nLoad this file later to restore all of them.'
+              ? '${units.length} character setups were saved to:\n$path\n\nWhen moving between computers with the same game save, use Restore roster for same save. It preserves every vision ID.'
               : '${units.single['en']} was saved to:\n$path\n\nYou can remove the character and load this file later to restore its setup.',
         );
       }
@@ -88,14 +88,16 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
     }
   }
 
-  Future<void> _load(AppState app, {bool all = false}) async {
+  Future<void> _load(AppState app, {bool all = false, bool sameSave = false}) async {
     final navigator = Navigator.of(context);
     setState(() => busy = true);
     var progressOpen = false;
     try {
       await Directory(app.paths.characterConfigs).create(recursive: true);
       final picked = await FilePicker.platform.pickFiles(
-        dialogTitle: all
+        dialogTitle: sameSave
+            ? 'Restore roster for same save'
+            : all
             ? 'Load all character configs'
             : 'Load character config',
         initialDirectory: app.paths.characterConfigs,
@@ -117,11 +119,14 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
       final saved = all
           ? CharacterConfig.decodeAll(contents)
           : [CharacterConfig.decode(contents)];
-      final targets = all
+      final targets = sameSave
+          ? List<Map<String, dynamic>?>.filled(saved.length, null)
+          : all
           ? CharacterConfig.targets(saved, app.units)
           : [CharacterConfig.target(saved.single, app.units)];
       final replaced = targets.whereType<Map>().length;
       final target = targets.first;
+      final expectedRoster = app.units.map((u) => CharacterConfig.copy(u as Map<String, dynamic>)).toList();
       if (!mounted) {
         return;
       }
@@ -132,7 +137,9 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
           backgroundColor: Guide.paper,
           shape: Border.fromBorderSide(Guide.frame),
           title: Text(
-            all
+            sameSave
+                ? 'Restore roster for the same game save?'
+                : all
                 ? 'Load all character configs?'
                 : target == null
                 ? 'Restore ${saved.single['en']}?'
@@ -140,8 +147,10 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
             style: Guide.h2(),
           ),
           content: Text(
-            all
-                ? 'Loads ${_count(saved.length, 'saved character setup')}: ${saved.map((u) => u['en']).join(', ')}.\n\nRestores ${_count(saved.length - replaced, 'missing unit')} and replaces ${_count(replaced, 'matching setup')}. Keeps ${_count(app.units.length - replaced, 'other unit')}. A backup of your current roster is kept automatically.'
+            sameSave
+                ? 'Replaces all ${app.units.length} current character setups with the ${saved.length} saved setups. Keeps their exact vision, command, skill and Spirit IDs.\n\nUse the file saved on the computer where this game save last worked. Local entries absent from the file are removed from the roster. A backup is saved first.\n\nThis transfers Studio configuration; it does not change or transfer game saves, MR progress or magicite. Rebuild/install and restart Resonance afterward.'
+                : all
+                ? 'Loads ${_count(saved.length, 'saved character setup')}: ${saved.map((u) => u['en']).join(', ')}.\n\nRestores ${_count(saved.length - replaced, 'missing unit')} and replaces ${_count(replaced, 'matching setup')}. Keeps ${_count(app.units.length - replaced, 'other unit')}. A backup of your current roster is kept automatically.\n\nThis mode keeps current IDs for existing visions. When moving computers with the same game save, cancel and use Restore roster for same save instead.'
                 : saved.single['party'] != null
                 ? 'Restores ${saved.single['en']}\'s saved battle model. A backup of your current roster is kept automatically.'
                 : target == null
@@ -152,7 +161,7 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
           actions: [
             GuideButton('Cancel', onPressed: () => Navigator.pop(c, false)),
             GuideButton(
-              all ? 'Load all character configs' : 'Load character config',
+              sameSave ? 'Restore saved roster' : all ? 'Load all character configs' : 'Load character config',
               onPressed: () => Navigator.pop(c, true),
             ),
           ],
@@ -190,7 +199,9 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
           ),
         ),
       );
-      if (all) {
+      if (sameSave) {
+        await app.restoreRosterForSameSave(saved, expectedRoster: expectedRoster);
+      } else if (all) {
         await app.loadAllCharacterConfigs(
           saved,
           expectedTargetKeys: targets.map((u) => u?['key'] as String?).toList(),
@@ -207,8 +218,10 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
       }
       if (navigator.mounted) {
         _message(
-          all ? 'All character configs loaded' : 'Character config loaded',
-          all
+          sameSave ? 'Roster restored with saved IDs' : all ? 'All character configs loaded' : 'Character config loaded',
+          sameSave
+              ? '${saved.length} character setups are ready with their original IDs. Rebuild/install, restart Resonance and load the same game save.'
+              : all
               ? '${saved.length} character setups are ready. Build or install the mod to apply them to the game.'
               : '${saved.single['en']} is ready with its saved setup. Build or install the mod to apply it to the game.',
           dialogContext: navigator.context,
@@ -291,6 +304,13 @@ class _CharacterConfigButtonsState extends State<CharacterConfigButtons> {
                   busy || app.api == null || app.engineDown || app.building
                   ? null
                   : () => _load(app, all: true),
+            ),
+            const SizedBox(height: 8),
+            GuideButton(
+              'Restore roster for same save',
+              icon: Icons.swap_horiz,
+              onPressed: busy || app.api == null || app.engineDown || app.building
+                  ? null : () => _load(app, all: true, sameSave: true),
             ),
           ],
         ],
