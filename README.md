@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Esper runtime activation fixes — 2026-10-26
+
+[Verified Windows download / run 40408382806](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40408382806/Sephira-Studio-Test.zip)
+(code `5810e1d`, update **1.2.109**; **74.1 MB**).
+
+Fix the combined esper/Crystal Fina startup crash and the native array/skill-access failures found in the
+Siren capture. Learned esper MR rewards work through equipped Eiko, individual rewards with any vision,
+or Spirit of Eiko, with each bonus applied once. Normal native MR rules and existing kits/balance stay in place.
+
+Update, rebuild/install and restart the game; no preset reset is needed. Full Windows checks and packaged
+runtime fixtures pass; the modifiers still need an in-game retest.
+[Checks and measured timings](CHANGELOG.md#published-esper-runtime-activation-fixes--2026-10-26).
+
 ### Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
 
 [Verified Windows download / run 40399517353](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40399517353/Sephira-Studio-Test.zip)

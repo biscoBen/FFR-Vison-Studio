@@ -11,33 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Combined esper/Fina runtime startup — 2026-10-26
-
-- Fix the exact `FFRStudioFieldLeader/Scripts/main.lua:213: attempt to call a nil value` reported
-  with Eiko's esper mastery and Crystal Fina installed together. Explicitly terminate each isolated
-  Lua block so the next block cannot call the first block's nil return value. Execute the complete
-  generated script across six feature combinations, and reproduce the old line-213 failure as a
-  regression control. No summon mechanics, reward IDs, kits or battle tuning change.
-- The new esper modifiers still require a live-game retest after rebuilding/installing and restarting.
-  The standalone observer can distinguish remaining activation or native-call failures.
-- The returned Siren trace also identifies a second activation failure: `GetContEffectList()` returns
-  a plain Lua table, so `ForEach` fails before any mastery marker can be read. Support both returned
-  Lua lists and property TArrays. Use the AI's reflected skill selection in the MP callback instead
-  of the unavailable `CPP_BtlSkill:GetSkillId` object method; retain one payment per completed action,
-  final-stack recovery, and dismissal/multi-hit guards. Correct the observer and its quoted-config-key
-  detection alongside these fixes. Actual in-game behavior still needs confirmation.
-- Preserve normal native MR activation through equipped Eiko, individually equipped rewards with any
-  vision, or Spirit of Eiko. Read the game's active passive lists on Fina and her equipped vision;
-  do not grant unlearned rewards or stack the same bonus when both sources are present.
-
-### Esper mastery diagnostic helper — 2026-10-26
-
-- Add a standalone read-only observer and collector for Eiko's equipable esper rewards. Record Fina's
-  actual mastery markers, native unit/owner IDs, HP/MP, action counts and selected skills alongside
-  the installed runtime configuration and existing activation/error messages. Use F8 snapshots and
-  an optional unequipped comparison to investigate live-game reports; 100 ms polling cannot prove
-  the absence of short events. The helper uses the existing UE4SS and needs no Studio rebuild.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -106,6 +79,59 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published esper runtime activation fixes — 2026-10-26
+
+[Verified Windows ZIP / run 40408382806](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40408382806/Sephira-Studio-Test.zip), code `5810e1d`, update **1.2.109** (74.1 MB).
+SHA-256 `d43b0fcbc6507cfbbb195200768a1701e49698df838f88b15c17536d6e0602d7`.
+
+### Combined esper/Fina runtime startup — 2026-10-26
+
+- Fix the exact `FFRStudioFieldLeader/Scripts/main.lua:213: attempt to call a nil value` reported
+  with Eiko's esper mastery and Crystal Fina installed together. Explicitly terminate each isolated
+  Lua block so the next block cannot call the first block's nil return value. Execute the complete
+  generated script across six feature combinations, and reproduce the old line-213 failure as a
+  regression control. No summon mechanics, reward IDs, kits or battle tuning change.
+- The new esper modifiers still require a live-game retest after rebuilding/installing and restarting.
+  The standalone observer can distinguish remaining activation or native-call failures.
+- The returned Siren trace also identifies a second activation failure: `GetContEffectList()` returns
+  a plain Lua table, so `ForEach` fails before any mastery marker can be read. Support both returned
+  Lua lists and property TArrays. Use the AI's reflected skill selection in the MP callback instead
+  of the unavailable `CPP_BtlSkill:GetSkillId` object method; retain one payment per completed action,
+  final-stack recovery, and dismissal/multi-hit guards. Correct the observer and its quoted-config-key
+  detection alongside these fixes. Actual in-game behavior still needs confirmation.
+- Preserve normal native MR activation through equipped Eiko, individually equipped rewards with any
+  vision, or Spirit of Eiko. Read the game's active passive lists on Fina and her equipped vision;
+  do not grant unlearned rewards or stack the same bonus when both sources are present.
+
+### Esper mastery diagnostic helper — 2026-10-26
+
+- Add a standalone read-only observer and collector for Eiko's equipable esper rewards. Record Fina's
+  actual mastery markers, native unit/owner IDs, HP/MP, action counts and selected skills alongside
+  the installed runtime configuration and existing activation/error messages. Use F8 snapshots and
+  an optional unequipped comparison to investigate live-game reports; 100 ms polling cannot prove
+  the absence of short events. The helper uses the existing UE4SS and needs no Studio rebuild.
+
+Validation: **752 Python tests** pass locally (45 skipped), including six complete generated-script startup
+combinations, both native array formats, all-nine-esper lifecycle checks and learned vision/individual/Spirit
+activation without duplicate bonuses. The original startup failure is reproduced as a regression control.
+Full Windows validation and compilation pass for this exact commit, including Flutter analysis/tests, fresh
+bundled-engine startup and launcher/updater checks. The downloaded ZIP passes provenance/checksum verification,
+all **78** extension and **16** standalone Fina hashes, its compiled **1.2.109** label, and execution of its actual
+packaged builder/runtime against those fixtures. Native reward tables, roster/catalog, battle tuning and the
+pinned sprite cache are unchanged. An in-game retest is still required; fixture checks are not a live-game pass.
+
+First complete candidate: **21:45:02 UTC**. Final ZIP verified: **22:09:59 UTC**,
+**24m 56s** later. Delivery notes prepared: **22:10:24 UTC**
+(**25m 22s** from the same candidate). This includes local checks, the returned
+diagnostic corrections, both automatic Windows runs, waiting, download and verification; the timer was not restarted.
+Final CI wall time: **12m 23s**; final runner usage: **17m 09s**.
+Total runner usage across both runs: **32m 23s**. These are development/package timings,
+not game-install benchmarks.
+
+Update Studio, rebuild/install and restart Resonance before retesting. No preset reset or Prepare Game is needed.
+Use the [updated standalone observer](https://raw.githubusercontent.com/biscoBen/FFR-Vison-Studio/5810e1db87258fe84206ecfc7f287f222358061b/scripts/reference/esper-mastery/Esper-Mastery-Diagnostics.zip)
+for another capture if the modifiers still fail. [Reward behavior and limits](docs/EIKO_ESPER_MASTERY.md).
 
 ## Published Eiko esper mastery, Mog LB rewards and Mystea MR swaps — 2026-10-26
 
