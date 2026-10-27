@@ -91,6 +91,30 @@ class SephiraVisions {
   static bool included(Map unit) => !member(unit) ||
       (!retiredMember(unit) && unit[field]['enabled'] == true);
 
+  /// Change the reviewed artwork/resonance once, retaining the saved identity,
+  /// complete regular kit, mastery grants and acquisition edits.
+  static Map<String, dynamic> repairAppearance(
+    Map<String, dynamic> unit, List<Map<String, dynamic>> presets,
+  ) {
+    if (!member(unit) || unit['native'] != null || unit['party'] != null) return unit;
+    final update = presets.where((p) => p['id'] == presetId(unit)).firstOrNull?['appearanceUpdate'];
+    if (update is! Map || update['schema'] != 1 ||
+        (unit['sephiraAppearanceRevision'] as int? ?? 0) >= update['version'] ||
+        unit['ffbe']?['id'] != update['from']) {
+      return unit;
+    }
+    final result = CharacterConfig.copy(unit);
+    for (final entry in (update['fields'] as Map).entries) {
+      result[entry.key as String] = json.decode(json.encode(entry.value));
+    }
+    result['ffbe']['dir'] = 'units/ffbe/${unit['key']}/sprites/${result['ffbe']['id']}';
+    (result['command'] as Map).addAll(update['command'] as Map);
+    (result['master'] as Map).addAll(update['master'] as Map);
+    result['sephiraAppearanceRevision'] = update['version'];
+    CharacterConfig.validate(result);
+    return result;
+  }
+
   static bool hasRecipeUpdate(Map unit, List<Map<String, dynamic>> presets) {
     final id = presetId(unit);
     if (id == null) return false;

@@ -77,8 +77,8 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Shantotto | 5 | MP Stroll (1307) | Folka MR3 | covered mr |
 | Shantotto | 7 | Area Effect Adept (1351) | Trance Terra MR7 | covered mr |
 | Shantotto | 9 | Dualcast (400730) | Trance Terra MR9 | covered mr |
-| Vaan | 1 | Gil Farmer (400400) | Elephim MR1 | covered mr |
-| Vaan | 3 | Gil Farmer on Stagger (1386) | Elephim MR9 | covered mr |
+| Vaan | 1 | Gil Farmer (400400) | Aerith MR1 | covered mr |
+| Vaan | 3 | Gil Farmer on Stagger (1386) | Aerith MR9 | covered mr |
 | Vaan | 5 | Gil Toss (400250) | Oracle Maiden Lunafreya MR5 | covered mr |
 | Vaan | 7 | Observe and Attack (1343) | Minfilia MR3 | covered mr |
 | Vaan | 9 | Double Gil (1050) | Charming Kitty Ariana MR9 | covered mr |
@@ -97,5 +97,5 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `b86116fdaddf3b8c9eb33cbada8c044a36e834db6b92ab376ae54899c97ebeff`.
+Catalog fingerprint: `2d13a30e61eba209ff3b0d34521bf64c5850739809a3ba3407b2fcfd3af7f5ee`.
 Native coverage fingerprint: `f49a8900446318b04b727aaeefb8f771905386bfff6ed5578857fda675f8cb7c`.

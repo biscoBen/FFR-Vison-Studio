@@ -429,6 +429,8 @@ def generate(reference):
     revise_user_kits(catalog)
     from sephira_mr_restoration import revise as restore_mr_equipables, write_reports as mr_reports
     restore_mr_equipables(catalog,audit,rows)
+    from sephira_aerith import revise as revise_aerith
+    revise_aerith(catalog)
     mr_reports(catalog,audit,english)
     independent = ROOT/'assets/crystal_fina/profile.json'
     independent.write_text(json.dumps(standalone_user_kit(standalone_descriptions(json.loads(independent.read_bytes()), catalog),catalog),indent=2)+'\n')
@@ -463,7 +465,7 @@ def describe(catalog, reference):
         'The excluded originals are Tronn, Wilhelm, Warrior of Light, Firion, Onion Knight, Cecil, Bartz, Cloud, Squall, Zidane, Tidus, Shantotto, Vaan, Noctis and Clive. Their exact grants, native ranks, descriptions, mechanics and allocations are retained in `assets/sephira_visions/native_coverage.json`.', '',
         '## Acquiring the visions', '',
         'After obtaining the matched original, talk to its crystal again and select Challenge. The original replay remains available. Ownership or the original’s individual completion flag is checked before the menu, immediately before battle, and before rewards. Wilhelm uses his final quest step, not quest acceptance. Winning grants only missing team members; leaving, escaping or losing grants none. There are no farmable boss drops or XP. Each team shares one local-level boss budget, with staggered eight-action rotations and bounded healing. These are authored starting values; live balance still needs playtesting.', '',
-        'Tronn → Christine; Wilhelm → Barusa/Ariana; Warrior of Light → Lenneth/Crystal Fina; Firion → Lila/Fran; Onion Knight → Minfilia/Primm; Cecil → Snow White/Lilith/Mystea; Bartz → Fryevia/Lunera; Cloud → Nalu/Jade; Squall → A2/Alice; Zidane → Rikku/Eiko; Tidus → Elza/Mog; Shantotto → Trance Terra/Relm; Vaan → Lunafreya/Elephim; Noctis → Freya; Clive → Reberta.', '',
+        'Tronn → Christine; Wilhelm → Barusa/Ariana; Warrior of Light → Lenneth/Crystal Fina; Firion → Lila/Fran; Onion Knight → Minfilia/Primm; Cecil → Snow White/Lilith/Mystea; Bartz → Fryevia/Lunera; Cloud → Nalu/Jade; Squall → A2/Alice; Zidane → Rikku/Eiko; Tidus → Elza/Mog; Shantotto → Trance Terra/Relm; Vaan → Lunafreya/Aerith; Noctis → Freya; Clive → Reberta.', '',
         'Levels come from ordinary enemies in the encounter volume containing each shrine entrance (Earth Shrine’s inner floor for Tronn). See `assets/existing_visions/payload/sephira_challenges.json` for the native source tables, unlock evidence and local levels.', '',
         '**Sephira visions: 1-gil Mitra shop** temporarily sells every enabled collection vision in Mitra’s item shop, without its normal story/challenge gate. Rebuild/install after switching. Turning it off restores the saved cave, crystal or shop assignments and prices; saved recipes and locations are never rewritten. Already purchased visions remain owned.', '',
         '## Kit sizes', '',
@@ -506,7 +508,7 @@ def describe(catalog, reference):
 
 
 def write_visual_policy(catalog):
-    policy = {'schema': 1, 'presets': {
+    policy = {'schema': 1, 'appearanceUpdates': {p['id']: p['appearanceUpdate'] for p in catalog['presets'] if p.get('appearanceUpdate')}, 'presets': {
         p['id']: {str(s['from']): s['visuals'] for s in p['profile']['skills'].values()
                   if s.get('visuals', s['from']) != s['from']}
         for p in catalog['presets']}}

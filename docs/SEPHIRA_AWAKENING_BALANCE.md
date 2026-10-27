@@ -30,7 +30,7 @@ The earlier rule reserving passives for MR is extended here at the user’s requ
 | Dragon Knight Freya | Noctis | 14 | A2: Critical Hit Rate +10%; A3: Speed +10%; A3: Stagger Power +20%; A1: Physical Attack +20%; A1: Magic Attack +20%; A4: Leaping Cleave; A4: Phase Echo; A4: Fire Immunity; A3: HP +20%; A4: Warp Crit | 425 (410) |
 | Trance Terra | Shantotto | 10 | A1: Nullify Silence; A1: Magic Attack +30%; A4: MP Stroll; A2: MP +20%; A4: The Federation’s Fiend; A4: Play Rough | 340 (310) |
 | Charming Kitty Ariana | Ayaka | 10 | A1: Healing Magic +30%; A1: Nullify Silence; A2: MP +20%; A3: Speed +10%; A4: Alabastrine Blessing | 250 (275) |
-| Elephim | Vaan | 10 | A2: Nullify Silence; A2: Resist Lightning; A4: Speed +10%; A1: Magic Attack +20%; A3: Strategic Acumen; A2: MP +20% | 245 (290) |
+| Aerith | Vaan | 10 | A2: Nullify Silence; A2: Resist Lightning; A4: Speed +10%; A1: Magic Attack +20%; A3: Strategic Acumen; A2: MP +20% | 245 (290) |
 | Jade | Cloud | 11 | A4: Critical Boost; A2: Critical Hit Rate +10%; A1: Resist Lightning; A3: Speed +10%; A1: Physical Attack +20%; A3: HP +20%; A3: Power Stagger | 310 (345) |
 | Spirited Heart Primm | Onion Knight | 11 | A1: Magic Attack +20%; A1: Nullify Slow; A2: MP +20%; A3: Speed +10%; A3: Regen Opener; A4: Restore HP on Stagger | 330 (310) |
 | Relm | Shantotto | 10 | A1: Magic Attack +30%; A1: Nullify Silence; A3: MP +20%; A3: Magic Defense +20%; A4: MP Stroll | 310 (310) |

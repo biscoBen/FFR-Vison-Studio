@@ -86,7 +86,7 @@ Counts include every awakening and MR tier. Each private passive and each learne
 | Dragon Knight Freya | 18 | 13 | 5 |
 | Trance Terra | 17 | 5 | 7 |
 | Charming Kitty Ariana | 18 | 12 | 3 |
-| Elephim | 17 | 11 | 5 |
+| Aerith | 17 | 11 | 5 |
 | Jade | 18 | 10 | 6 |
 | Spirited Heart Primm | 18 | 10 | 4 |
 | Relm | 19 | 14 | 3 |

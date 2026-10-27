@@ -20,7 +20,7 @@ Original LB effect-group recordings are supplied for these 23 selected forms:
 
 - A2, Fran, Lunafreya, Minfilia, Folka, Lenneth, Lila and Mystea.
 - Reberta, Snow White, Aria, Eiko, Alice, Mog and Freya.
-- Trance Terra, Elephim, Jade, Primm, Relm, Rikku, Nalu and Lunera.
+- Trance Terra, Aerith, Jade, Primm, Relm, Rikku, Nalu and Lunera.
 
 Two requested adaptations now accompany those original soundtracks:
 

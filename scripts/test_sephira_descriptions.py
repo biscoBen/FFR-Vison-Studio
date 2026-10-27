@@ -39,7 +39,7 @@ class DescriptionTests(unittest.TestCase):
                 recipe,=[r for r in preset['profile']['skills'].values()
                          if r['from']==edit['from'] and r['en']==edit['name']]
                 recipe['desc']=edit['before']
-            preset['profile']['lb_custom']['desc']=audit['resonance']['before']
+            if 'resonance' in audit: preset['profile']['lb_custom']['desc']=audit['resonance']['before']
         rows=fixture();english=json.loads((ROOT/'scripts/fixtures/sephira_challenges/native-resonance-text.json').read_bytes())
         revise(baseline,lambda rel:{**rows[rel],**english['nativeRows']},english)
         self.assertEqual(baseline,catalog)

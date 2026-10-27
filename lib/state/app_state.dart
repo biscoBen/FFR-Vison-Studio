@@ -375,6 +375,21 @@ class AppState extends ChangeNotifier {
     final repaired = await _repairKnownFinaRewards(units);
     if (!identical(repaired, units)) dirty = true;
     units = repaired;
+    final appearances = [for (final u in units)
+      SephiraVisions.repairAppearance(u as JsonMap, sephiraPresets)];
+    if (appearances.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {
+      // Prepare the replacement before committing it; a failed artwork download
+      // must leave the existing roster and its acquisition edits intact.
+      for (var i = 0; i < appearances.length; i++) {
+        if (!identical(appearances[i], units[i])) await _checkCharacterArtwork(appearances[i]);
+      }
+      final backup = File(p.join(paths.configBackups, 'sephira-appearance-${DateTime.now().microsecondsSinceEpoch}.json'));
+      await backup.parent.create(recursive: true);
+      await backup.writeAsString(CharacterConfig.encodeAll(units), flush: true);
+      units = appearances;
+      dirty = true;
+      notice = 'Aerith 5★ replaces Elephim. Your vision ID, abilities and MR rewards are kept. Rebuild/install and restart Resonance.';
+    }
     final bonuses = [for (final u in units)
       SephiraVisions.repairIndependentBonuses(u as JsonMap, sephiraPresets)];
     if (bonuses.asMap().entries.any((e) => !identical(e.value, units[e.key]))) {

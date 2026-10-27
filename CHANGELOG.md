@@ -11,6 +11,19 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Original 5★ Aerith replaces Elephim — 2026-10-27
+
+- Replace Elephim with original FFBE 5★ Aerith, including her sprites, icons,
+  battle labels, Spirit name and Great Gospel animation with its original audio.
+  Great Gospel uses the native party-heal-and-cleanse resonance and native power.
+- Keep Elephim's complete regular kit, awakening bonuses, MR rewards, stats and
+  acquisition. Retain permanent vision ID **13523**, command/Spirit IDs and the
+  internal preset key for Steam Cloud save compatibility across PCs.
+- Migrate the old default appearance once after preparing Aerith's artwork, with
+  a roster backup; existing kit/acquisition edits and later appearance edits stay
+  intact. A fresh setup and reset use Aerith at the same save slot. In-game playback
+  and healing still need a test after packaging.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

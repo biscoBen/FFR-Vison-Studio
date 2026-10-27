@@ -51,7 +51,7 @@ def visual_units(units, root, rows=None):
     and recipe revisions. Preserve explicitly edited donors and authored sequences.
     Saved recipes keep the borrowed donors so turning the setting on restores them.
     """
-    result = copy.deepcopy(units)
+    result = [repair_appearance(unit) for unit in copy.deepcopy(units)]
     for unit in result: repair_default_acquisition(unit)
     controls = settings(root)
     if controls.get('shopAcquisitionOverride', False):
@@ -355,6 +355,24 @@ def runtime_membership(unit):
                      and '99887755552703' in (str(ffbe.get('id')), str(ffbe.get('base')))))):
         return {'version': 1, 'preset': 'crystal_fina', 'enabled': True}
     return None
+
+
+def repair_appearance(unit):
+    """Match Studio's one-time presentation swap without changing learned data."""
+    if unit.get('native') is not None or unit.get('party') is not None: return unit
+    member = membership(unit)
+    if member is None: return unit
+    policy = json.loads(Path(__file__).with_name('sephira_visuals.json').read_bytes())
+    update = policy.get('appearanceUpdates', {}).get(member['preset'])
+    if (not update or unit.get('sephiraAppearanceRevision', 0) >= update['version']
+            or (unit.get('ffbe') or {}).get('id') != update['from']): return unit
+    result = copy.deepcopy(unit)
+    result.update(copy.deepcopy(update['fields']))
+    result['ffbe']['dir'] = f"units/ffbe/{unit['key']}/sprites/{result['ffbe']['id']}"
+    result['command'].update(update['command'])
+    result['master'].update(update['master'])
+    result['sephiraAppearanceRevision'] = update['version']
+    return result
 
 
 def active_units(units):

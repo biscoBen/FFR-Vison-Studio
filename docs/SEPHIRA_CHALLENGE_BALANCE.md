@@ -23,7 +23,7 @@ This pass applies Christine’s tested approach to all 15 encounters (28 enemy v
 | Zidane | Eiko + Rikku (FFX-2) | 12 | 13,750 | 324 | 60 | Eiko: Banish; Rikku (FFX-2): Attack |
 | Tidus | Moogle of Narshe Mog + Elza | 22 | 38,800 | 950 | 135 | Moogle of Narshe Mog: Aero; Elza: Attack |
 | Shantotto | Trance Terra + Relm | 28 | 50,000 | 1000 | 190 | Trance Terra: Fire; Relm: Thunder |
-| Vaan | Oracle Maiden Lunafreya + Elephim | 35 | 96,000 | 1200 | 241 | Oracle Maiden Lunafreya: Water; Elephim: Burning Notes |
+| Vaan | Oracle Maiden Lunafreya + Aerith | 35 | 96,000 | 1200 | 241 | Oracle Maiden Lunafreya: Water; Aerith: Burning Notes |
 | Noctis | Dragon Knight Freya | 14 | 21,000 | 400 | 72 | Dragon Knight Freya: Attack |
 | Clive | Reberta (JP) | 4 | 2,000 | 145 | 20 | Reberta (JP): Attack |
 

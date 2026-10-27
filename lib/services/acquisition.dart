@@ -36,7 +36,7 @@ class Acquisition {
     'sephira_13118': 'Zidane crystal — Lunafreya and Eiko',
     'sephira_13120': 'Tidus crystal — Elza and Mog',
     'sephira_13123': 'Shantotto crystal — Trance Terra and Relm',
-    'sephira_13124': 'Vaan crystal — Rikku and Elephim',
+    'sephira_13124': 'Vaan crystal — Lunafreya and Aerith',
     'sephira_13128': 'Noctis crystal — Freya',
     'sephira_13130': 'Clive crystal — Reberta',
     'sephira_folka_shop': 'Folka — story-unlocked item shop',

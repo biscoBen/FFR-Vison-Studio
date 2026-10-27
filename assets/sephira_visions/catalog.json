@@ -46748,15 +46748,15 @@
     },
     {
       "id": "elephim",
-      "name": "Elephim",
-      "theme": "Buff/debuff bard with ranged attacks",
+      "name": "Aerith",
+      "theme": "Support and debuff magic with Great Gospel healing",
       "profile": {
         "key": "sephira_elephim",
         "id": 13523,
         "sort": 13593,
         "jp": "Sephira_elephim",
-        "en": "Elephim",
-        "desc": "Buff/debuff bard with ranged attacks. A Sephira vision with native-budget Resonance skills.",
+        "en": "Aerith",
+        "desc": "Support and debuff magic with Great Gospel healing.",
         "donor": 13108,
         "attackType": "Magic",
         "stats": {
@@ -46774,13 +46774,13 @@
         "elemRes": {},
         "command": {
           "id": 343,
-          "en": "Elephim Skills",
-          "desc": "Buff/debuff bard with ranged attacks."
+          "en": "Aerith Skills",
+          "desc": "Support and debuff magic."
         },
         "master": {
           "id": 1352300,
-          "en": "Spirit of Elephim",
-          "desc": "Elephim's learned mastery rewards flow into the wearer."
+          "en": "Spirit of Aerith",
+          "desc": "Aerith's learned mastery rewards flow into the wearer."
         },
         "price": 1000,
         "skills": {
@@ -47273,14 +47273,14 @@
           ]
         ],
         "ffbe": {
-          "id": "100017107",
-          "base": "100017105",
+          "id": "207000405",
+          "base": "207000405",
           "source": "GL",
-          "dir": "units/ffbe/sephira_elephim/sprites/100017107"
+          "dir": "units/ffbe/sephira_elephim/sprites/207000405"
         },
-        "lb": 412620,
+        "lb": 412510,
         "lb_custom": {
-          "from": 412620,
+          "from": 412510,
           "presentation": "ffbe",
           "mechanics": "custom",
           "audio": "native",
@@ -47290,14 +47290,14 @@
             "VO_"
           ],
           "field_color_mode": "element",
-          "ffbe_lb_id": "100017107",
+          "ffbe_lb_id": "207000405",
           "movement": {
             "enabled": false
           },
           "set": {},
           "jp": "Sephira_elephim_Resonance",
-          "en": "Elephim Resonance",
-          "desc": "Activate a barrier on all allies that reduces damage taken by 70% once.",
+          "en": "Great Gospel",
+          "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
           "descAuto": false,
           "nameAuto": false,
           "audio_codec": "host",
@@ -47318,7 +47318,8 @@
           "cave": null
         },
         "sephiraPassiveText": {},
-        "sephiraMrRevision": 1
+        "sephiraMrRevision": 1,
+        "sephiraAppearanceRevision": 1
       },
       "balance": {
         "nativeBudget": 13124,
@@ -48033,9 +48034,9 @@
         ]
       },
       "form": {
-        "id": "100017107",
-        "label": "7",
-        "sha256": "e7552c58717c31bc6d5605f783c99bd6102ef3fce7b384fcd32cddc6656c2ada",
+        "id": "207000405",
+        "label": "5",
+        "sha256": "33548cfcae22899581dfa57341d8074f5c67b989618fe69e3009e825573d2495",
         "source": "GL"
       },
       "masteryFillers": [
@@ -48368,12 +48369,7 @@
             "before": "Wind physical damage; power 12. Single enemies; MP 6; hits 2; accuracy 100; stagger 25.",
             "after": "Deal Wind physical damage to an enemy 2 times."
           }
-        ],
-        "resonance": {
-          "from": 412620,
-          "before": "Native Vaan resonance mechanics; Elephim's own sprite animation.",
-          "after": "Activate a barrier on all allies that reduces damage taken by 70% once."
-        }
+        ]
       },
       "mrRestoration": {
         "version": 1,
@@ -48641,6 +48637,54 @@
             1250
           ]
         ]
+      },
+      "appearanceUpdate": {
+        "schema": 1,
+        "version": 1,
+        "from": "100017107",
+        "fields": {
+          "en": "Aerith",
+          "desc": "Support and debuff magic with Great Gospel healing.",
+          "ffbe": {
+            "id": "207000405",
+            "base": "207000405",
+            "source": "GL",
+            "dir": "units/ffbe/sephira_elephim/sprites/207000405"
+          },
+          "lb": 412510,
+          "lb_custom": {
+            "from": 412510,
+            "presentation": "ffbe",
+            "mechanics": "custom",
+            "audio": "native",
+            "visuals": 440110,
+            "clone_sequence": true,
+            "mute": [
+              "VO_"
+            ],
+            "field_color_mode": "element",
+            "ffbe_lb_id": "207000405",
+            "movement": {
+              "enabled": false
+            },
+            "set": {},
+            "jp": "Sephira_elephim_Resonance",
+            "en": "Great Gospel",
+            "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
+            "descAuto": false,
+            "nameAuto": false,
+            "audio_codec": "host",
+            "sephiraAudio": 1
+          }
+        },
+        "command": {
+          "en": "Aerith Skills",
+          "desc": "Support and debuff magic."
+        },
+        "master": {
+          "en": "Spirit of Aerith",
+          "desc": "Aerith's learned mastery rewards flow into the wearer."
+        }
       }
     },
     {

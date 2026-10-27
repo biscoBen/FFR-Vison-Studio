@@ -287,5 +287,55 @@
       "506150": 220180,
       "502620": 220180
     }
+  },
+  "appearanceUpdates": {
+    "elephim": {
+      "schema": 1,
+      "version": 1,
+      "from": "100017107",
+      "fields": {
+        "en": "Aerith",
+        "desc": "Support and debuff magic with Great Gospel healing.",
+        "ffbe": {
+          "id": "207000405",
+          "base": "207000405",
+          "source": "GL",
+          "dir": "units/ffbe/sephira_elephim/sprites/207000405"
+        },
+        "lb": 412510,
+        "lb_custom": {
+          "from": 412510,
+          "presentation": "ffbe",
+          "mechanics": "custom",
+          "audio": "native",
+          "visuals": 440110,
+          "clone_sequence": true,
+          "mute": [
+            "VO_"
+          ],
+          "field_color_mode": "element",
+          "ffbe_lb_id": "207000405",
+          "movement": {
+            "enabled": false
+          },
+          "set": {},
+          "jp": "Sephira_elephim_Resonance",
+          "en": "Great Gospel",
+          "desc": "Restore HP, remove debuffs, and cure all status ailments other than KO for all allies.",
+          "descAuto": false,
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
+        }
+      },
+      "command": {
+        "en": "Aerith Skills",
+        "desc": "Support and debuff magic."
+      },
+      "master": {
+        "en": "Spirit of Aerith",
+        "desc": "Aerith's learned mastery rewards flow into the wearer."
+      }
+    }
   }
 }

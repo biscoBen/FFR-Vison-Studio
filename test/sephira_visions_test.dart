@@ -71,7 +71,8 @@ void main() {
         recipe['desc'] = text['before'];
         skillsChanged++;
       }
-      unit['lb_custom']['desc'] = updates['resonance']['before'];
+      final resonance = updates['resonance'];
+      if (resonance is Map) unit['lb_custom']['desc'] = resonance['before'];
       final expected = CharacterConfig.copy(unit);
       final next = SephiraVisions.repairDescriptions(unit,presets);
       for (final text in updates['skills'] as List) {
@@ -79,8 +80,10 @@ void main() {
           (r) => r['from']==text['from'] && r['en']==text['name']);
         recipe['desc'] = text['after']; recipe['descAuto'] = false;
       }
-      expected['lb_custom']['desc'] = updates['resonance']['after'];
-      expected['lb_custom']['descAuto'] = false;
+      if (resonance is Map) {
+        expected['lb_custom']['desc'] = resonance['after'];
+        expected['lb_custom']['descAuto'] = false;
+      }
       expect(next,expected,reason:preset['id'] as String);
       expect(SephiraVisions.repairDescriptions(next,presets),same(next));
     }

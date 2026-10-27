@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "catalogSha256": "b86116fdaddf3b8c9eb33cbada8c044a36e834db6b92ab376ae54899c97ebeff",
+  "catalogSha256": "2d13a30e61eba209ff3b0d34521bf64c5850739809a3ba3407b2fcfd3af7f5ee",
   "nativeAuditSha256": "f49a8900446318b04b727aaeefb8f771905386bfff6ed5578857fda675f8cb7c",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
@@ -217,7 +217,7 @@
         },
         {
           "preset": "elephim",
-          "vision": "Elephim",
+          "vision": "Aerith",
           "rank": 3,
           "grantId": 1336,
           "privateCopy": false
@@ -1623,7 +1623,7 @@
       "mr": [
         {
           "preset": "elephim",
-          "vision": "Elephim",
+          "vision": "Aerith",
           "rank": 1,
           "grantId": 400400,
           "privateCopy": false
@@ -1653,7 +1653,7 @@
       "mr": [
         {
           "preset": "elephim",
-          "vision": "Elephim",
+          "vision": "Aerith",
           "rank": 9,
           "grantId": 1386,
           "privateCopy": false

@@ -65,7 +65,8 @@ class SephiraVisualTests(unittest.TestCase):
         policy = json.loads((ROOT / 'assets/existing_visions/payload/sephira_visuals.json').read_bytes())
         expected = {u[pack.FIELD]['preset']: {str(s['from']): s['visuals'] for s in u['skills'].values()
                     if s.get('visuals', s['from']) != s['from']} for u in roster}
-        self.assertEqual(policy, {'schema': 1, 'presets': expected})
+        self.assertEqual(policy, {'schema': 1, 'presets': expected, 'appearanceUpdates': {
+            p['id']: p['appearanceUpdate'] for p in json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())['presets'] if p.get('appearanceUpdate')}})
         with tempfile.TemporaryDirectory() as root:
             write(root, False)
             built = pack.visual_units(roster, root); count = 0

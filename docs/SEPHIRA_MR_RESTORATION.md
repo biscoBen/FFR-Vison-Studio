@@ -27,7 +27,7 @@ Each restored active has its stock native mechanics, equip cost, MP cost, genera
 | Tidus | Focus (400460) | 1 | Moogle of Narshe Mog |
 | Tidus | Reckless Abandonment (400700) | 5 | Elza |
 | Shantotto | Dualcast (400730) | 9 | Trance Terra |
-| Vaan | Gil Farmer (400400) | 1 | Elephim |
+| Vaan | Gil Farmer (400400) | 1 | Aerith |
 | Vaan | Gil Toss (400250) | 5 | Oracle Maiden Lunafreya |
 | Noctis | Barrage (400300) | 9 | Dragon Knight Freya |
 | Clive | Mirage (400670) | 7 | Reberta (JP) |

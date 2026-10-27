@@ -28,7 +28,7 @@ The 130 retained excluded-original passives remain available across the complete
 | Dragon Knight Freya | Fill LB on Defeating Foes (1320) | Reflex (1257) | Deft Warp (1361) | Bonus Damage (1335) | Barrage (400300) |
 | Trance Terra | Fire Eater (1038) | Restore MP on Defeating Foes (1319) | Magic Defense +20% (1315) | Area Effect Adept (1351) | Dualcast (400730) |
 | Charming Kitty Ariana | Nullify Blind (1105) | Nullify Berserk (1114) | Regen Opener (1293) | Growing Good Luck (1499) | Double Gil (1050) |
-| Elephim | Gil Farmer (400400) | Deshell on Stagger (1285) | Deprotect on Stagger (1235) | Haste Opener (1292) | Gil Farmer on Stagger (1386) |
+| Aerith | Gil Farmer (400400) | Deshell on Stagger (1285) | Deprotect on Stagger (1235) | Haste Opener (1292) | Gil Farmer on Stagger (1386) |
 | Jade | Restore MP on Critical Hit (1323) | Lightning Immunity (1366) | Fill Gauge (400770) | Vigorous Staggerer (1371) | Quick Hit (1359) |
 | Spirited Heart Primm | Resist Fire (1011) | HP +20% (1378) | Physical Attack +30% (1273) | Physical Evasion +15% (1531) | Boundless Flames (1460) |
 | Relm | HP Stroll (1066) | Add Confuse (1237) | Stagger Power +20% (1279) | Phase Echo (1360) | Fill LB on Stagger (1280) |

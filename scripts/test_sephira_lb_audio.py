@@ -29,7 +29,7 @@ class LbAudioTests(unittest.TestCase):
         self.assertEqual({k for k,p in metadata['profiles'].items() if p['status']=='requested_adaptation'},
                          {'ariana','crystal_fina'})
         se = json.loads(files['audio/SE.json']); system = json.loads(files['audio/System.json'])
-        self.assertEqual(len(se['cues']), 56)
+        self.assertEqual(len(se['cues']), 58)
         self.assertEqual(se['cues']['617']['name'],'se_limitburst_ariana_6')
         self.assertEqual(metadata['profiles']['ariana']['adaptation']['sourceName'],'Touch It')
         self.assertEqual(system['cues']['45']['name'], 'se_battle_limitopen_1')
