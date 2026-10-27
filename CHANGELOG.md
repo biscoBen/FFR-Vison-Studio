@@ -28,6 +28,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
   native patch/readback across 13 full-game tables: 64 flags change, and all other
   fields match the original rows. OFF produces no encounter edits.
 - Preserve all vision recipes, permanent IDs, rewards, audio and sprite/icon caches.
+  Include both new resources in the strict startup bundle count.
   [Package inspection and behavior](docs/MINIMAP_TREASURE.md).
 
 ### Returned full-game reference audit — 2026-10-22

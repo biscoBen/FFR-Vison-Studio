@@ -321,7 +321,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 80) {
+        (manifest['files'] as Map).length != 82) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
