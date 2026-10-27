@@ -11,17 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Rikku MR7 Pharmacology — 2026-10-26
-
-- Replace Rikku's MR7 One for the Road with the native Pharmacology reward:
-  items are 50% more effective in battle, at the same 30 AP equip cost. Existing
-  default MR7 grants update once, without resetting awakening tiers or other edits.
-  Spirit of Rikku follows the revised MR list. Deliberately edited MR7 slots remain
-  openable and report a conflict when the update is explicitly applied.
-- This explicitly replaces the Vaan-only awakening passive in the collection;
-  the other 130 original passives and all 75 original equipable MR rewards remain.
-  Original game passives, save identities, battle tuning and esper runtime are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -90,6 +79,45 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Rikku MR7 Pharmacology — 2026-10-26
+
+[Verified Windows ZIP / run 40449868455](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40449868455/Sephira-Studio-Test.zip), code `798a642`, update **1.2.112** (74.1 MB).
+SHA-256 `01fea14b4b94e7429a17c680e0199cebbc16cb326ab335e3a8ec29b9ba38e6c8`.
+
+- Replace Rikku's MR7 One for the Road with the native Pharmacology reward:
+  items are 50% more effective in battle, at the same 30 AP equip cost. Existing
+  default MR7 grants update once, without resetting awakening tiers or other edits.
+  Spirit of Rikku follows the revised MR list. Deliberately edited MR7 slots remain
+  openable and report a conflict when the update is explicitly applied.
+- This explicitly replaces the Vaan-only awakening passive in the collection;
+  the other 130 original passives and all 75 original equipable MR rewards remain.
+  Original game passives, save identities, battle tuning and esper runtime are unchanged.
+
+Validation: **755 Python tests** pass locally (45 skipped), plus **39 focused Studio tests**.
+The default MR7 migration changes only the selected reward, preserving awakening edits, labels,
+stats, private skill identities, acquisition and every other MR rank. Edited MR7 conflicts remain
+atomic and later deliberate changes are retained. All 75 original equipable MR rewards remain
+covered; the source audit explicitly records the approved One for the Road replacement instead
+of claiming all 131 original passives are still in the collection. Pharmacology duplicates Leah's
+native reward only in the explicitly approved Rikku MR7 slot.
+
+Native patch/readback verifies Rikku MR7 passive **1044** and Spirit owner **13527**, with original
+rows unchanged. Native Pharmacology retains its 30 AP cost and effect **1097**. All 28 boss rotations
+and stat budgets, the other 29 presets and the esper Lua runtime are unchanged. Full Windows validation
+and compilation pass for this exact commit. The downloaded ZIP passes provenance/checksum checks,
+all **78** extension and **16** standalone Fina hashes, its compiled **1.2.112** label and checks against
+the actual packaged migration. In-game learning/equipment still needs a check.
+
+First complete candidate: **21:25:12 PDT**. Final ZIP verified:
+**21:36:53 PDT**, **11m 40s** later.
+Delivery notes prepared: **21:37:13 PDT**
+(**12m 00s** from the same candidate).
+This includes local checks, corrections, freeing temporary space for tests, waiting for one matching
+automatic Windows run, download and verification; the timer was not restarted. Measured CI wall time:
+**8m 04s**; runner usage: **12m 19s**. These are development/package timings, not game-install benchmarks.
+
+Update Studio, rebuild/install and restart Resonance. No preset reset or Prepare Game is needed.
 
 ## Published Eiko early support spells — 2026-10-26
 

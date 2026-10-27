@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Rikku MR7 Pharmacology — 2026-10-26
+
+[Verified Windows download / run 40449868455](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40449868455/Sephira-Studio-Test.zip)
+(code `798a642`, update **1.2.112**; **74.1 MB**).
+
+Rikku's MR7 now grants native **Pharmacology**: item effects +50% in battle, at the same **30 AP** equip cost.
+It replaces Vaan-only One for the Road. Existing default rewards migrate once while preserving awakening
+tiers and other edits; Spirit of Rikku follows her revised MR list. All 75 original equipable MR rewards stay covered.
+
+Update, rebuild/install and restart the game; no preset reset is needed. Windows and actual ZIP checks pass;
+in-game learning/equipment still needs a check.
+[Checks and measured timings](CHANGELOG.md#published-rikku-mr7-pharmacology--2026-10-26).
+
 ### Eiko early support spells — 2026-10-26
 
 [Verified Windows download / run 40419653308](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40419653308/Sephira-Studio-Test.zip)
