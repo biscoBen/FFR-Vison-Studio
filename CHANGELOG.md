@@ -17,6 +17,9 @@ test-update version; the commit and workflow run identify the exact package. Dat
   portrait, including the brief interval before its deferred migration save
   finishes. This prevents the old portrait being cached under Aerith's new
   form URL. Face, timeline and ability previews use the same updated source.
+- Include the completed appearance revision in Studio's portrait URL so a
+  previously cached image refreshes and later deliberate model changes do not
+  reuse a picture from before the swap.
 - Preserve deliberate later model edits and all kits, IDs, rewards and generated
   game assets. The sprite converter and its cache inputs are unchanged.
 

@@ -132,11 +132,15 @@ class Api {
   Future<Map<String, dynamic>> restoreGame({String? backup}) async => (await post('/api/game/restore', backup == null ? {} : {'backup': backup})) as Map<String, dynamic>;
 
   String iconUrl(String png) => '$base/api/ffr/icon/$png';
-  String unitIcon(String key, String kind, {String? form}) {
+  String unitIcon(String key, String kind, {String? form, int? appearanceRevision}) {
     final url = '$base/api/spec/$key/icon/$kind';
     // A roster slot keeps its key when its appearance changes. Give Flutter's
     // image cache a different URL for each form while keeping the same endpoint.
-    return form == null ? url : '$url?form=${Uri.encodeQueryComponent(form)}';
+    final query = <String, String>{
+      'form': ?form,
+      'appearance': ?appearanceRevision?.toString(),
+    };
+    return query.isEmpty ? url : '$url?${Uri(queryParameters: query).query}';
   }
   String ffbeIcon(String form) => '$base/api/ffbe/icon/$form';
   String _presentation(String form) => form == CrystalFina.spriteId ? '?presentation=${CrystalFina.previewVersion}' : '';

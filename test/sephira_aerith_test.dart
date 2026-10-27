@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ffr_vision_studio/services/character_config.dart';
+import 'package:ffr_vision_studio/services/api.dart';
 import 'package:ffr_vision_studio/services/sephira_visions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,6 +14,19 @@ Map<String,dynamic> before() {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('completed swap separates cached portraits from both pre-swap forms', () {
+    final api = Api('http://studio');
+    final original = api.unitIcon('sephira_elephim','face',form:'100017107');
+    final migrated = api.unitIcon('sephira_elephim','face',form:'207000405',appearanceRevision:1);
+    final earlierMigration = api.unitIcon('sephira_elephim','face',form:'207000405');
+    final laterDeliberateChange = api.unitIcon('sephira_elephim','face',form:'100017107',appearanceRevision:1);
+    expect(migrated,isNot(earlierMigration));
+    expect(laterDeliberateChange,isNot(original));
+    expect(Uri.parse(migrated).queryParameters,{'form':'207000405','appearance':'1'});
+    expect(api.unitIcon('other','face',form:'123'),'http://studio/api/spec/other/icon/face?form=123');
+    expect(api.unitIcon('other','face'),'http://studio/api/spec/other/icon/face');
+  });
 
   test('Aerith replaces only Elephim presentation and resonance while retaining edited kit and save IDs', () async {
     final presets=await SephiraVisions.bundled;
