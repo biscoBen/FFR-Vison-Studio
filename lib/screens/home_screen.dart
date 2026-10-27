@@ -14,6 +14,7 @@ import 'native_vision_dialog.dart';
 import 'native_portrait.dart';
 import 'party_portrait.dart';
 import 'remove_unit_dialog.dart';
+import 'runtime_install_dialog.dart';
 
 /// Left page: your visions as guide entries. Right page: install.
 class HomeScreen extends StatelessWidget {
@@ -209,12 +210,12 @@ class HomeScreen extends StatelessWidget {
                 Text('Drag default visions into Added visions to acquire the originals at the next battle start. Drag them back to stop. Install after changes; test on a clean save without saving, then disable and reinstall before reloading.', style: Guide.small()),
                 const SizedBox(height: 14),
                 Row(children: [
-                  GoButton(busy ? 'Working' : 'Install into the game', busy: busy, onPressed: !canBuild || app.gameRunning || busy || app.sephiraWorking ? null : () => app.startBuild(install: true)),
+                  GoButton(busy ? 'Working' : 'Install into the game', busy: busy, onPressed: !canBuild || app.gameRunning || busy || app.sephiraWorking ? null : () => app.startBuild(install: true, prepareRuntime: () => confirmRuntimeInstall(context, app.api!))),
                 ]),
                 const SizedBox(height: 10),
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   GuideButton('Build without installing', onPressed: !canBuild || busy || app.sephiraWorking ? null : () => app.startBuild(install: false)),
-                  GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : app.installLast),
+                  GuideButton('Install the last build', onPressed: app.gameRunning || busy || app.sephiraWorking ? null : () => app.installLast(prepareRuntime: () => confirmRuntimeInstall(context, app.api!, lastBuild: true))),
                   GuideButton('Game tools & snapshots', key: const Key('launch-preparation'), icon: Icons.fact_check_outlined,
                       onPressed: busy || app.api == null ? null : () async {
                         await app.save();

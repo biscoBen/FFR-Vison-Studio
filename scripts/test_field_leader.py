@@ -252,11 +252,16 @@ class FieldLeaderTests(unittest.TestCase):
             self.assertEqual(other.read_text(), 'existing helper')
             self.assertEqual((binary / 'dwmapi.dll').read_bytes(), b'loader proxy')
 
-    def test_missing_loader_fails_before_game_changes(self):
+    def test_missing_loader_skips_runtime_without_blocking_asset_install(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / 'engine'; game = Path(directory) / 'game'
             payload = {'schema': 1, 'files': {'enabled.txt': '', 'Scripts/main.lua': 'code', 'Scripts/config.lua': 'config'}}
-            with self.assertRaisesRegex(RuntimeError, 'requires the working UE4SS'): leader.install_plan(root, game, payload)
+            plan = leader.install_plan(root, game, payload)
+            self.assertTrue(plan['runtimeSkipped'])
+            messages = []
+            leader.deploy(plan, log=messages.append)
+            self.assertIn('custom esper mastery', messages[0])
+            self.assertFalse((game / leader.REL / 'enabled.txt').exists())
             # Disabling on a clean game needs no loader and never installs one.
             leader.deploy(leader.install_plan(root, game, {'schema': 1, 'files': {}}))
             self.assertFalse((game / 'FFRS/Binaries/Win64/ue4ss/UE4SS.dll').exists())

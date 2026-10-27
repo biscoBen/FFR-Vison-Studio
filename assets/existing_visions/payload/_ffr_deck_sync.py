@@ -34,7 +34,7 @@ BINARY = 'FFRS/Binaries/Win64/'
 LEADER = BINARY + 'ue4ss/Mods/FFRStudioFieldLeader/'
 LEADER_FILES = tuple(LEADER + name for name in ('enabled.txt', 'Scripts/config.lua', 'Scripts/main.lua'))
 LOADER_FILES = tuple(BINARY + name for name in ('dwmapi.dll', 'ue4ss/UE4SS.dll', 'ue4ss/UE4SS-settings.ini',
-                       'ue4ss/VTableLayout.ini', 'ue4ss/MemberVariableLayout.ini'))
+                       'ue4ss/VTableLayout.ini', 'ue4ss/MemberVariableLayout.ini', 'ue4ss/LICENSE'))
 REQUIRED_LOADER = LOADER_FILES[:3]
 MAX_ZIP = 2 * 1024**3
 MAX_TOTAL = 8 * 1024**3

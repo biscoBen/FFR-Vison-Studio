@@ -11,6 +11,19 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Optional UE4SS installer — 2026-10-27
+
+- Offer **Install UE4SS**, **Continue without it** and **Cancel** before building
+  when selected runtime features need a missing loader. The last-build install
+  uses the same prompt. Continuing installs the compiled visions and logs the
+  unavailable overworld, Crystal Fina presentation/music and esper mastery features.
+- Bundle the checksum-pinned official UE4SS production archive and license; copy
+  only its core with the completed mod. Preserve existing complete loaders and
+  other mods, reject conflicting partial loaders and include newly owned files
+  in rollback/restore. No additional download or sprite rebuild is required.
+- Automated fresh-install, skip, prompt, ownership and rollback checks; new loader
+  revision still needs an in-game startup check on the friend's fresh PC.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

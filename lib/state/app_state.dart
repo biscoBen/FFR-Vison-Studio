@@ -1443,7 +1443,15 @@ class AppState extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------- build / install
-  bool get building => buildState?['running'] == true;
+  bool _runtimePreparing = false;
+  bool get building => _runtimePreparing || buildState?['running'] == true;
+
+  Future<bool> _prepareRuntime(Future<bool> Function()? prepare) async {
+    if (prepare == null) return true;
+    _runtimePreparing = true; notifyListeners();
+    try { return await prepare(); }
+    finally { _runtimePreparing = false; notifyListeners(); }
+  }
 
   Future<void> refreshDeckSync() async {
     deckSync = await api!.deckSyncStatus();
@@ -1478,7 +1486,7 @@ class AppState extends ChangeNotifier {
     } catch (e) { showNotice(e.toString()); }
   }
 
-  Future<void> startBuild({required bool install, bool publishToDeck = false}) => _withRoster(() async {
+  Future<void> startBuild({required bool install, bool publishToDeck = false, Future<bool> Function()? prepareRuntime}) => _withRoster(() async {
     try {
       if (building || deckWorking) { throw StateError('A build or publish is already running.'); }
       if (publishToDeck && (deckSync['enabled'] != true || deckSync['hasToken'] != true)) {
@@ -1488,6 +1496,7 @@ class AppState extends ChangeNotifier {
       final repaired = await _repairKnownFinaRewards(units);
       if (!identical(repaired, units)) { units = repaired; dirty = true; }
       await _savePending();
+      if (install && !await _prepareRuntime(prepareRuntime)) return;
       await api!.build(install: install);
     } catch (e) {
       showNotice(e.toString()); return;
@@ -1519,8 +1528,10 @@ class AppState extends ChangeNotifier {
     return r;
   }
 
-  Future<void> installLast() async {
+  Future<void> installLast({Future<bool> Function()? prepareRuntime}) async {
     try {
+      if (building || deckWorking) throw StateError('A build or publish is already running.');
+      if (!await _prepareRuntime(prepareRuntime)) return;
       final r = await api!.install();
       buildState = {'running': false, 'result': 'ok', 'log': buildState?['log'] ?? <String>[], 'stage': 'Done', 'message': r['message'], 'install': true};
       await refreshStatus();

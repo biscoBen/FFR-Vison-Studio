@@ -117,6 +117,9 @@ class Api {
   }
   Future<void> setup(String game) => post('/api/setup', {'game': game});
   Future<Map<String, dynamic>> setupLog() async => (await get('/api/setup/log')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> runtimeStatus({bool lastBuild = false}) async =>
+      (await get('/api/runtime/status?lastBuild=$lastBuild')) as Map<String, dynamic>;
+  Future<void> runtimeChoice(String game, String choice) => post('/api/runtime/choice', {'game': game, 'choice': choice});
   Future<void> build({required bool install}) => post('/api/build', {'install': install});
   Future<Map<String, dynamic>> buildLog() async => (await get('/api/build/log')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> install() async => (await post('/api/install')) as Map<String, dynamic>;

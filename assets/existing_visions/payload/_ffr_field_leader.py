@@ -304,8 +304,8 @@ def runtime_backup(root, game, name):
     return checked(state_path(root, game, STATE).parent, 'field-leader-backups/' + name + '.json')
 
 
-def loader_plan(root, game, previous, enabled):
-    """Copy only the loader allowlist from an existing managed installation."""
+def loader_plan(root, game, previous, enabled, allow_bundle=True):
+    """Preserve existing loaders; copy a managed core or the opted-in bundle."""
     import _ffr_deck_sync as sync
     owned = previous.get('loader', {})
     if (not isinstance(owned, dict) or any(not sync.allowed(k) or k in sync.PAKS + sync.LEADER_FILES
@@ -348,7 +348,10 @@ def loader_plan(root, game, previous, enabled):
                 changes[relative] = raw
                 copied[relative] = hashlib.sha256(raw).hexdigest()
         return before, changes, copied
-    raise RuntimeError('The Studio runtime requires the working UE4SS loader from the runtime-reference helper for field appearances/cycling and native Crystal Fina battle effects. Prepare it before installing.')
+    import _ffr_runtime_loader as runtime
+    if allow_bundle and runtime.choice(root, game) == 'install':
+        return runtime.bundled_plan(game, owned, before, changes)
+    return before, changes, None
 
 
 def install_plan(root, game, payload=None):
@@ -377,12 +380,16 @@ def install_plan(root, game, payload=None):
         before[relative] = current
         changes[relative] = payload['files'][relative].encode('utf-8') if relative in payload['files'] else None
     loader_before, loader_changes, loader_owned = loader_plan(root, game, previous, bool(payload['files']))
-    return {'root': root, 'game': game, 'before': before, 'changes': changes, 'state': state,
+    skipped = loader_owned is None
+    if skipped:
+        changes = {name: None for name in allowed}
+        loader_owned = previous.get('loader', {})
+    return {'root': root, 'game': game, 'before': before, 'changes': changes, 'state': state, 'runtimeSkipped': skipped,
             'loaderBefore': loader_before, 'loaderChanges': loader_changes, 'loaderOwned': loader_owned,
             'previous': state.read_bytes() if state.is_file() else None}
 
 
-def deploy(plan, backup=None):
+def deploy(plan, backup=None, log=print):
     changes = plan['changes']; before = plan['before']; game = plan['game']
     if backup:
         payload = {'schema': 1, 'game': str(game), 'files': {k: v.decode('utf-8') for k, v in before.items() if v is not None}}
@@ -414,7 +421,7 @@ def deploy(plan, backup=None):
             written.append(relative)
             if changes[relative] is None: path.unlink(missing_ok=True)
             else: atomic(path, changes[relative])
-        atomic(plan['state'], json.dumps({'schema': 1, 'game': str(game), 'loader': plan['loaderOwned'], 'files': {
+        atomic(plan['state'], json.dumps({'schema': 1, 'game': str(game), 'loader': plan['loaderOwned'], 'runtimeSkipped': plan.get('runtimeSkipped', False), 'files': {
             k: hashlib.sha256(v).hexdigest() for k, v in changes.items() if v is not None}}).encode())
     except BaseException:
         for relative in reversed(loader_written):
@@ -428,6 +435,11 @@ def deploy(plan, backup=None):
         if plan['previous'] is None: plan['state'].unlink(missing_ok=True)
         else: atomic(plan['state'], plan['previous'])
         raise
+    if plan.get('runtimeSkipped'):
+        import _ffr_runtime_loader
+        log(_ffr_runtime_loader.SKIPPED)
+    elif any(raw is not None for raw in plan['loaderChanges'].values()):
+        log('Installed the UE4SS core loader with the Studio runtime.')
 
 
 def restore_plan(root, game, backup=None):

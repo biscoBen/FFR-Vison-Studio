@@ -274,6 +274,8 @@ class BundledFeatures {
           'payload/native_voice_codec.ps1',
           'payload/party_voice_cues.json',
           'payload/_ffr_overworld.py',
+          'payload/_ffr_runtime_loader.py',
+          'payload/ue4ss_runtime.zip',
           'payload/_ffr_field_leader.py',
           'payload/field_leader.lua',
           'payload/vagrant_knight_rain_field.png',
@@ -317,7 +319,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 78) {
+        (manifest['files'] as Map).length != 80) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};
