@@ -373,13 +373,29 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
     return equivalent(desired, built)
 
 
+def install_icon_preview(env):
+    """Use the reviewed appearance while Studio's migrated spec is being saved.
+
+    The form-specific image URL can arrive before the deferred spec write. Never
+    cache the previous portrait under the replacement form's URL.
+    """
+    import _ffr_build_icons
+    _ffr_build_icons.install_preview(env)
+    original = env.get('unit_icon_image')
+    if original is None or getattr(original, '_sephira_appearance', False): return
+    def image(unit):
+        import _ffr_sephira
+        return original(_ffr_sephira.repair_appearance(unit) if unit else unit)
+    image._sephira_appearance = True
+    env['unit_icon_image'] = image
+
+
 def register(app, env):
     import _ffr_game_tables
     if env.get('ffr_catalog') is not None:
         _ffr_game_tables.install_catalog(env['ffr_catalog'], env['ROOT'])
     if env.get('build_icons') is not None:
-        import _ffr_build_icons
-        _ffr_build_icons.install_preview(env)
+        install_icon_preview(env)
     import _ffr_ffbe_library
     _ffr_ffbe_library.register(app, env)
     import _ffr_deck_sync

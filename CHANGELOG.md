@@ -11,6 +11,15 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Aerith portrait during migration — 2026-10-27
+
+- Apply the reviewed Aerith appearance when Studio renders a saved Elephim
+  portrait, including the brief interval before its deferred migration save
+  finishes. This prevents the old portrait being cached under Aerith's new
+  form URL. Face, timeline and ability previews use the same updated source.
+- Preserve deliberate later model edits and all kits, IDs, rewards and generated
+  game assets. The sprite converter and its cache inputs are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

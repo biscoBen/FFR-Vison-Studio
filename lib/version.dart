@@ -4,7 +4,7 @@ const appBuild = String.fromEnvironment('APP_BUILD', defaultValue: '15');
 const appTag = '$appVersion.$appBuild';
 
 /// Branch update shown to users and required from the installed extension.
-const sephiraUpdateVersion = '1.2.114';
+const sephiraUpdateVersion = '1.2.115';
 const appChannel = String.fromEnvironment(
   'APP_CHANNEL',
   defaultValue: 'stable',

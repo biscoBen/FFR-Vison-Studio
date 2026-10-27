@@ -1,5 +1,6 @@
 """Imported icon framing, clipping and real installed converter wiring."""
 import ast
+import copy
 import json
 from pathlib import Path
 import shutil
@@ -11,6 +12,7 @@ from PIL import Image, ImageDraw
 from test_existing_visions import ROOT, module, installer, fina_installer
 
 icons = module('native_icons', ROOT / 'assets/existing_visions/payload/_ffr_build_icons.py')
+native = module('native_icon_preview', ROOT / 'assets/existing_visions/payload/_ffr_existingvisions.py')
 
 
 class NativeIconTests(unittest.TestCase):
@@ -64,6 +66,36 @@ class NativeIconTests(unittest.TestCase):
             module=SimpleNamespace();icons.install_preview({'ROOT':root,'build_icons':module})
             art=Image.new('RGBA',(4,2),'blue');layout={'face':{'iconX':.2}}
             self.assertEqual(module.render('face',art,128,'border','NV',layout).tobytes(),icons.render('face',art,128,donors,layout).tobytes())
+
+    def test_pending_aerith_migration_renders_new_portrait_before_saved_spec_catches_up(self):
+        from types import SimpleNamespace
+        old = json.loads((ROOT/'scripts/fixtures/elephim_before_aerith.json').read_bytes())
+        old['sephiraVision'] = {'version':1,'preset':'elephim','enabled':True}
+        snapshot = copy.deepcopy(old)
+        preset = next(p for p in json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())['presets']
+                      if p['id']=='elephim')['profile']
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);donors=root/'build/icons/donors';donors.mkdir(parents=True);self.donors(donors)
+            for unit, color in [(old,'green'),(preset,'pink')]:
+                path=root/unit['ffbe']['dir']/f"unit_icon_{unit['ffbe']['id']}.png"
+                path.parent.mkdir(parents=True,exist_ok=True);Image.new('RGBA',(4,4),color).save(path)
+            def original(unit):
+                return Image.open(root/unit['ffbe']['dir']/f"unit_icon_{unit['ffbe']['id']}.png")
+            env={'ROOT':root,'build_icons':SimpleNamespace(),'unit_icon_image':original}
+            getattr(native,'install_icon_preview',icons.install_preview)(env)
+            with env['unit_icon_image'](old) as portrait:
+                self.assertEqual(portrait.getpixel((0,0)),(255,192,203,255))
+                for kind,size in [('face',128),('timeline',128),('ability',64)]:
+                    self.assertEqual(env['build_icons'].render(kind,portrait,size).tobytes(),
+                                     icons.render(kind,Image.new('RGBA',(4,4),'pink'),size,donors).tobytes())
+            self.assertEqual(old,snapshot)
+            # A later deliberate appearance edit remains authoritative.
+            edited=copy.deepcopy(preset);edited['sephiraVision']=old['sephiraVision'];edited['ffbe']=old['ffbe']
+            with env['unit_icon_image'](edited) as portrait:
+                self.assertEqual(portrait.getpixel((0,0)),(0,128,0,255))
+        tree=ast.parse((ROOT/'assets/existing_visions/payload/_ffr_existingvisions.py').read_text())
+        register=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='register')
+        self.assertIn('install_icon_preview(env)',ast.unparse(register))
 
 
 if __name__=='__main__':unittest.main()
