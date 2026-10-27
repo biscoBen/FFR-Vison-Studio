@@ -11,26 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Optional treasure radar and encounter testing — 2026-10-27
-
-- Add **Show treasure on the minimap**, bundling the user's supplied
-  `MinimapShowTreasure_FieldObjects 90` package unchanged. With the game closed,
-  the switch directly installs/removes its three small files; no vision build
-  or UE4SS loader is needed. Read the actual selected installation, recognize
-  exact manual copies, preserve different/edited files, and roll back failed writes.
-- Inspect its three UI assets and decode the 30-expression `SetDisplay` function:
-  collected chest and field-pickup markers use native `IsOpen` state. Existing
-  saves should be respected; respawning pickups follow the game. Every tablet
-  variant and live marker refresh still need in-game testing.
-- Add a separate **Disable random encounters** testing switch. Rebuild/install
-  and restart to apply or remove it. Clear only native `doMovementEncount` flags,
-  preserving encounter groups, boss/story events and Sephira challenges. Verify
-  native patch/readback across 13 full-game tables: 64 flags change, and all other
-  fields match the original rows. OFF produces no encounter edits.
-- Preserve all vision recipes, permanent IDs, rewards, audio and sprite/icon caches.
-  Include both new resources in the strict startup bundle count.
-  [Package inspection and behavior](docs/MINIMAP_TREASURE.md).
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -99,6 +79,64 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published treasure radar and encounter testing — 2026-10-27
+
+[Verified Windows ZIP / run 40597050472](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40597050472/Sephira-Studio-Test.zip), code `2fbbcfd`, update **1.2.117** (82.5 MB).
+SHA-256 `576d3aec4f5500dd17afb85767224c46cbc42dcdc4201f86baba84037e26221e`.
+
+- Add **Show treasure on the minimap**, bundling the user's supplied
+  `MinimapShowTreasure_FieldObjects 90` package unchanged. With the game closed,
+  the switch directly installs/removes its three small files; no vision build
+  or UE4SS loader is needed. Read the actual selected installation, recognize
+  exact manual copies, preserve different/edited files, and roll back failed writes.
+- Inspect its three UI assets and decode the 30-expression `SetDisplay` function:
+  collected chest and field-pickup markers use native `IsOpen` state. Existing
+  saves should be respected; respawning pickups follow the game. Every tablet
+  variant and live marker refresh still need in-game testing.
+- Add a separate **Disable random encounters** testing switch. Rebuild/install
+  and restart to apply or remove it. Clear only native `doMovementEncount` flags,
+  preserving encounter groups, boss/story events and Sephira challenges. Verify
+  native patch/readback across 13 full-game tables: 64 flags change, and all other
+  fields match the original rows. OFF produces no encounter edits.
+- Preserve all vision recipes, permanent IDs, rewards, audio and sprite/icon caches.
+  Include both new resources in the strict startup bundle count.
+  [Package inspection and behavior](docs/MINIMAP_TREASURE.md).
+
+**Show treasure on the minimap** is under **Your game files**. Close Resonance,
+switch it on/off, then launch the game; it installs/removes just the supplied
+24,658-byte package. **Disable random encounters** is a separate testing switch;
+rebuild/install and restart after changing it. Both default to OFF. Neither
+requires UE4SS or changes saves. Existing manual treasure-radar installs show
+their actual installed state. An explicit OFF can remove the exact supplied
+manual package; restoring the original game preserves copies Studio did not install.
+
+Validation: **781 Python tests** locally (45 skipped), **62 focused Python tests**,
+**331 Studio tests** locally (the Windows-only startup test is skipped),
+and clean full-Dart analysis. Full Windows Flutter/Python validation, fresh
+frozen-engine setup, launcher/updater checks and compilation pass for this commit.
+The downloaded archive passes checksum/workflow checks, all **82** extension and
+**16** standalone Fina hashes, and its compiled **1.2.117** label. Through the
+actual packaged helpers, HTTP install/remove uses the original radar bytes,
+blocks an open game, and restores Studio-owned files. The packaged encounter
+recipe matches the successful native 13-table/64-flag patch/readback and emits
+no encounter edits when OFF. All **30** vision kits, IDs, acquisition, rewards,
+audio, game sprite/icon conversion and caches match 1.2.116. Live minimap updates,
+tablet variants and encounter travel still need user testing.
+
+First complete code candidate: **15:26:48 PDT**.
+ZIP verified: **15:59:13 PDT**,
+**32m 25s** later. Delivery notes prepared:
+**15:59:29 PDT**
+(**32m 41s** from the same candidate).
+This includes local checks, the bundle-validation and startup-count corrections, waiting, both
+automatic Windows runs, download and verification; the timer was not restarted.
+Initial workflow wall time: **6m 21s**; final
+workflow wall time: **13m 16s**. Combined runner usage:
+**27m 26s**. The first candidate failed the strict startup count
+when two resources were added; its release was skipped. Publication uses the
+corrected, fully passing commit shown above. These are development/package timings,
+not game-install benchmarks. The checksum-pinned engine cache is unchanged.
 
 ## Published Aerith Studio portrait refresh — 2026-10-27
 

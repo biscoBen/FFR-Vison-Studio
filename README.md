@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Treasure radar and encounter testing — 2026-10-27
+
+[Verified Windows download / run 40597050472](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40597050472/Sephira-Studio-Test.zip)
+(code `2fbbcfd`, update **1.2.117**; **82.5 MB**).
+
+- **Show treasure on the minimap**: close the game and switch it on/off under
+  **Your game files**. Installs/removes the supplied small package immediately;
+  no vision rebuild or UE4SS is needed. Existing collected/open state is used.
+- **Disable random encounters**: separate testing switch. Rebuild/install and
+  restart after switching. Bosses, vision challenges and scripted fights retain
+  their original definitions; no save modification is involved.
+
+Native map patch/readback and packaged install/remove checks pass. Live marker
+refresh and travel tests remain. [Inspection and behavior](docs/MINIMAP_TREASURE.md),
+[checks and measured timings](CHANGELOG.md#published-treasure-radar-and-encounter-testing--2026-10-27).
+
 ### Aerith Studio portrait refresh — 2026-10-27
 
 [Verified Windows download / run 40577047492](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40577047492/Sephira-Studio-Test.zip)
