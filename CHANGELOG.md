@@ -11,6 +11,25 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Optional treasure radar and encounter testing — 2026-10-27
+
+- Add **Show treasure on the minimap**, bundling the user's supplied
+  `MinimapShowTreasure_FieldObjects 90` package unchanged. With the game closed,
+  the switch directly installs/removes its three small files; no vision build
+  or UE4SS loader is needed. Read the actual selected installation, recognize
+  exact manual copies, preserve different/edited files, and roll back failed writes.
+- Inspect its three UI assets and decode the 30-expression `SetDisplay` function:
+  collected chest and field-pickup markers use native `IsOpen` state. Existing
+  saves should be respected; respawning pickups follow the game. Every tablet
+  variant and live marker refresh still need in-game testing.
+- Add a separate **Disable random encounters** testing switch. Rebuild/install
+  and restart to apply or remove it. Clear only native `doMovementEncount` flags,
+  preserving encounter groups, boss/story events and Sephira challenges. Verify
+  native patch/readback across 13 full-game tables: 64 flags change, and all other
+  fields match the original rows. OFF produces no encounter edits.
+- Preserve all vision recipes, permanent IDs, rewards, audio and sprite/icon caches.
+  [Package inspection and behavior](docs/MINIMAP_TREASURE.md).
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

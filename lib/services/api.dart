@@ -45,6 +45,8 @@ class Api {
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
   Future<String> testingPracticeEncounter() async => (await get('/api/testing'))['practiceEncounter'] as String? ?? 'standard';
   Future<bool> surviveAtOne() async => (await get('/api/testing'))['surviveAtOne'] == true;
+  Future<bool> noEncounters() async => (await get('/api/testing'))['noEncounters'] == true;
+  Future<void> saveNoEncounters(bool value) => _saveTestingFlag('noEncounters', value);
   Future<void> saveSurviveAtOne(bool value) => _saveTestingFlag('surviveAtOne', value);
   Future<bool> ffbeNeedles() async => (await get('/api/testing'))['ffbeNeedles'] == true;
   Future<void> saveFfbeNeedles(bool value) => _saveTestingFlag('ffbeNeedles', value);
@@ -84,6 +86,7 @@ class Api {
       'practiceBattle': current['practiceBattle'] == true,
       'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
       'surviveAtOne': current['surviveAtOne'] == true,
+      'noEncounters': current['noEncounters'] == true,
       'ffbeNeedles': current['ffbeNeedles'] == true,
       'finaCinematic': current['finaCinematic'] == true,
       'crystalCave': current['crystalCave'] == true,
@@ -120,6 +123,9 @@ class Api {
   Future<Map<String, dynamic>> runtimeStatus({bool lastBuild = false}) async =>
       (await get('/api/runtime/status?lastBuild=$lastBuild')) as Map<String, dynamic>;
   Future<void> runtimeChoice(String game, String choice) => post('/api/runtime/choice', {'game': game, 'choice': choice});
+  Future<Map<String, dynamic>> minimapTreasure() async => (await get('/api/minimap-treasure')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> setMinimapTreasure(bool enabled, String game) async =>
+      (await put('/api/minimap-treasure', {'enabled': enabled, 'game': game})) as Map<String, dynamic>;
   Future<void> build({required bool install}) => post('/api/build', {'install': install});
   Future<Map<String, dynamic>> buildLog() async => (await get('/api/build/log')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> install() async => (await post('/api/install')) as Map<String, dynamic>;

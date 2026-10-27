@@ -131,6 +131,7 @@ def flags(root):
         if (challenges.plans(units) or any(challenges.route(u) == 'folka_shop' for u in units)):
             enabled.append('Sephira vision challenges and story shop')
     for key, label in (('ffbeNeedles', 'FFBE 1,000 Needles import'), ('practiceBattle', 'Shop practice battle'),
+                       ('noEncounters', 'Disable random encounters'),
                        ('maxMr', 'One-battle MR'), ('crystalCave', 'Legacy Crystal Fina cave'),
                        ('crystalCaveTest', 'Legacy Crystal Fina test cave'), ('fieldLeader', 'Walking-character cycling')):
         if t[key]: enabled.append(label)
@@ -257,7 +258,7 @@ def original_preset(root):
     files = input_bytes(root)
     options = testing.settings(root)
     options.update({key: False for key in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic',
-                                           'fieldLeader', 'crystalCave', 'crystalCaveTest')})
+                                           'fieldLeader', 'crystalCave', 'crystalCaveTest', 'noEncounters')})
     files['mods/EstherTsukiko/testing.json'] = json.dumps(options).encode()
     files['mods/EstherTsukiko/ability-modes.json'] = json.dumps(
         {'schema': 1, 'showUnverified': True, 'useChanges': False, 'useNativeRepairs': False}).encode()

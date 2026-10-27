@@ -276,6 +276,8 @@ class BundledFeatures {
           'payload/_ffr_overworld.py',
           'payload/_ffr_runtime_loader.py',
           'payload/ue4ss_runtime.zip',
+          'payload/_ffr_minimap.py',
+          'payload/minimap_treasure.zip',
           'payload/_ffr_field_leader.py',
           'payload/field_leader.lua',
           'payload/vagrant_knight_rain_field.png',

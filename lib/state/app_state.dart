@@ -58,10 +58,13 @@ class AppState extends ChangeNotifier {
   String? gameRoot;
   bool gameRunning = false;
   bool modInstalled = false;
+  JsonMap minimapTreasure = {};
+  bool minimapWorking = false;
   bool testingMaxMr = false;
   bool testingPracticeBattle = false;
   String testingPracticeEncounter = 'standard';
   bool surviveAtOne = false;
+  bool noEncounters = false;
   bool ffbeNeedles = false;
   bool crystalCave = false;
   bool crystalCaveTest = false;
@@ -266,6 +269,7 @@ class AppState extends ChangeNotifier {
       backups = (st['backups'] as num?)?.toInt() ?? 0;
       placed = (st['placed'] as num?)?.toInt() ?? 0;
       gameRoot = (st['gameRoot'] as String?) ?? gameRoot;
+      try { minimapTreasure = await api!.minimapTreasure(); } catch (_) {}
       engineVersion = st['engineVersion']?.toString();
       gameCompatibility = (st['gameCompatibility'] as Map?)?.cast<String, dynamic>();
       final remoteRevision = st['launchRevision']?.toString();
@@ -470,6 +474,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load shop battle opponents: $e'; }
     try { surviveAtOne = await api!.surviveAtOne(); }
     catch (e) { notice = 'Could not load survival testing settings: $e'; }
+    try { noEncounters = await api!.noEncounters(); }
+    catch (e) { notice = 'Could not load random encounter settings: $e'; }
     try { ffbeNeedles = await api!.ffbeNeedles(); }
     catch (e) { notice = 'Could not load the FFBE animation test setting: $e'; }
     try { crystalCave = await api!.crystalCave(); }
@@ -1246,6 +1252,24 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveFfbeNeedles(value);
     ffbeNeedles = value; notifyListeners();
+  });
+
+  Future<void> setNoEncounters(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveNoEncounters(value);
+    noEncounters = value; notifyListeners();
+  });
+
+  Future<void> setMinimapTreasure(bool enabled) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building || deckWorking || minimapWorking) { throw StateError('Wait for the current operation to finish.'); }
+    if (gameRunning) { throw StateError('Close Resonance before changing treasure radar.'); }
+    minimapWorking = true; notifyListeners();
+    try {
+      minimapTreasure = await api!.setMinimapTreasure(enabled, gameRoot ?? '');
+      showNotice('Treasure radar ${enabled ? 'installed' : 'removed'}. Launch Resonance to apply it.');
+    } finally { minimapWorking = false; notifyListeners(); }
   });
 
   /// Convert retired switches into an editable per-vision cave assignment.

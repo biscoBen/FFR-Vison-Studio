@@ -46,18 +46,19 @@ OPPONENTS = (
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False, 'noEncounters': False}
 
 
 def validate_settings(value):
     # Accept and discard the removed diagnostic switches in older configs.
     # Crystal Fina Test now always uses transparent glass with rotation.
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader', 'noEncounters'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
             or type(value.get('surviveAtOne', False)) is not bool
             or type(value.get('ffbeNeedles', False)) is not bool
+            or type(value.get('noEncounters', False)) is not bool
             or type(value.get('finaCinematic', False)) is not bool
             or value.get('practiceEncounter', 'standard') not in ('standard', 'cactuar')
             or type(value.get('crystalCave', False)) is not bool
@@ -70,7 +71,29 @@ def validate_settings(value):
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
             'practiceEncounter': value.get('practiceEncounter', 'standard'), 'surviveAtOne': value.get('surviveAtOne', False), 'ffbeNeedles': value.get('ffbeNeedles', False), 'finaCinematic': value.get('finaCinematic', False),
             'crystalCave': value.get('crystalCave', False), 'crystalCaveTest': value.get('crystalCaveTest', False),
-            'fieldLeader': value.get('fieldLeader', False)}
+            'fieldLeader': value.get('fieldLeader', False), 'noEncounters': value.get('noEncounters', False)}
+
+
+def encounter_tables(root):
+    """Use the selected game's map-table inventory, including production parents/composites."""
+    import _ffr_game_tables
+    root = Path(root)
+    listing = root / 'extracted/utoc_filelist.tsv'
+    pattern = r'Map/(?:MapData/DT_MapData_[A-Za-z0-9_]+|CDT_MapData_(?:Demo|Prod))'
+    if listing.is_file():
+        found = set(re.findall(_ffr_game_tables.PREFIX + '(' + pattern + r')\.uasset', listing.read_text(encoding='utf-8-sig')))
+    else:
+        found = set()
+        for folder, prefix, suffix in (('rows', '', '.json'), ('legacy', _ffr_game_tables.PREFIX, '.uasset')):
+            base = root / 'extracted' / folder / prefix
+            for path in (base / 'Map').rglob('*' + suffix):
+                rel = path.relative_to(base).as_posix().removesuffix(suffix)
+                if re.fullmatch(pattern, rel): found.add(rel)
+    # The native reader composes paired shared/production parents and normalize()
+    # places each edit in the correct physical table. Avoid emitting a pair twice.
+    result = sorted(rel for rel in found if not (rel.endswith('_Prod') and rel[:-5] in found))
+    if not result: raise ValueError('No native map tables were found for disabling random encounters. Refresh the selected game data.')
+    return result
 
 
 def reward(rows):
@@ -90,6 +113,13 @@ def reward(rows):
 def ensure_assets(root, extract, units=None):
     import _ffr_fina_cinematic
     _ffr_fina_cinematic.ensure_assets(root, extract, units)
+    if settings(root)['noEncounters']:
+        import _ffr_game_tables
+        for rel in encounter_tables(root):
+            for parent in _ffr_game_tables.reader(root).parents(rel):
+                path = Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (parent + '.uasset')
+                if not path.is_file(): extract('Datatable/' + parent)
+                if not path.is_file(): raise ValueError('The native encounter map table could not be extracted: ' + parent)
     if settings(root)['practiceBattle']:
         path = Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (CHOICES + '.uasset')
         if not path.is_file(): extract('Datatable/' + CHOICES)
@@ -147,6 +177,13 @@ def prepare(tables, units, root, rows):
             'eventDataList[0].playSetting.Condition': event['playSetting']['Condition'],
             'eventDataList[0].playSetting.EventList[0].EventId': NAME}})
     controls = settings(root)
+    if controls['noEncounters']:
+        for rel in encounter_tables(root):
+            for key, original in rows(rel).items():
+                if type(original.get('doMovementEncount')) is not bool:
+                    raise ValueError('The native movement-encounter flag is missing: ' + rel + '/' + key)
+                if original['doMovementEncount']:
+                    table(rel)['set'].append({'row': key, 'set': {'doMovementEncount': False}})
     value = reward(rows) if controls['maxMr'] else None
     if value is not None:
         for key, original in rows(GROUP).items():
@@ -697,7 +734,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'fieldLeader'):
+            for flag in ('practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)
@@ -705,7 +742,7 @@ def register(app, env):
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader')):
+            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters')):
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'
