@@ -86,7 +86,7 @@ class SephiraRewardSourceTests(unittest.TestCase):
         tables = {}; pack.prepare(tables,bound)
         labels = {int(k):v for u in units for k,v in u.get('sephiraPassiveText',{}).items()}
         bonus_rows = [r for r in tables[pack.PASSIVE]['add'] if 'Name' in r['set'] and 'effectBundleList' not in r['set']]
-        self.assertEqual(len(bonus_rows),16)
+        self.assertEqual(len(bonus_rows),17)  # Primm plus the retained old Barusa Earth imbue.
         for row in bonus_rows:
             source = native[pack.PASSIVE][row['cloneFrom']]
             result = testing.apply_fields(source,row['set'])

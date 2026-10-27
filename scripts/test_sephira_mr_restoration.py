@@ -20,8 +20,10 @@ class MrRestorationTests(unittest.TestCase):
         by={p['id']:p for p in catalog['presets']};original={r['id']:r for r in result['rewards']}
         origin_ids={v['name']:v['id'] for v in source['excludedVisions']}
         native={r['ID']:r for r in rows['Skill/DT_SkillData'].values()}
+        from sephira_mr_layout import MR_RANK_OVERRIDES
         for key,rank,identity in plan['placements']:
-            self.assertEqual(by[key]['profile']['synchro'][rank][0],['ActiveSkill',identity,-1])
+            requested=MR_RANK_OVERRIDES.get((key,identity),rank)
+            self.assertEqual(by[key]['profile']['synchro'][requested][0],['ActiveSkill',identity,-1])
             old=original[identity]['originalMr'][0]
             self.assertEqual(rank,old['rank'])
             self.assertEqual(by[key]['profile']['studioAcquisition']['location'],'sephira_'+str(origin_ids[old['vision']]))
@@ -46,7 +48,7 @@ class MrRestorationTests(unittest.TestCase):
             for f in ('awakening','synchro'):
                 self.assertEqual([sorted(map(tuple,t)) for t in unit[f]],
                                  [sorted(map(tuple,t)) for t in preset['profile'][f]],preset['id'])
-            for f in before.keys()-{'awakening','synchro'}:self.assertEqual(unit[f],before[f],(preset['id'],f))
+            for f in before.keys()-{'awakening','synchro','sephiraPassiveText'}:self.assertEqual(unit[f],before[f],(preset['id'],f))
             self.assertEqual(unit['master']['id'],before['master']['id'])
             again=copy.deepcopy(unit);pack.repair_equipable_mr(unit);self.assertEqual(unit,again)
         # A deliberate MR edit is reported before the build starts converting.

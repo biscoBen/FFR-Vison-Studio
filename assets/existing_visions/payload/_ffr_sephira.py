@@ -211,6 +211,7 @@ _PASSIVE_KEYS = [(preset, sid) for preset in _PASSIVE_PRESETS for sid in _PASSIV
 _PRIVATE_PASSIVES = {key: 1600 + index for index, key in enumerate(_PASSIVE_KEYS)}
 # Appended independently: never shift the established private passive IDs.
 _PRIVATE_PASSIVES[('mog',1498)] = 1944
+_PRIVATE_PASSIVES[('primm',1526)] = 1945
 _FALLBACK_FIRST = 1970
 
 
@@ -257,23 +258,47 @@ def repair_equipable_mr(unit):
     update=mr_restoration().get(value['preset']) if value else None
     if (not update or unit.get('sephiraMrRevision',0)>=update['version']
             or unit.get('sephiraRecipe',0)<7):return
-    # Validate every edited MR slot before making any in-memory changes.
+    # Each saved version advances through its own expected layout. Work on a
+    # copy so a later conflict leaves even the earlier steps untouched.
     def same(a,b):return a[:2]==b[:2] and (a[2] if len(a)>2 else -1)==(b[2] if len(b)>2 else -1)
-    for op in update['mr']:
-        grants=[g for g in unit['synchro'][op['rank']] if g[0] in ('ActiveSkill','PassiveSkill')]
-        if len(grants)!=1 or not (same(grants[0],op['from']) or same(grants[0],op['to'])):
-            raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Resolve it in Apply kit and MR updates before building.')
-    for op in update['mr']:
-        tier=unit['synchro'][op['rank']]
-        tier[:]=[list(op['to']) if same(g,op['from']) else g for g in tier]
-    for _,kind,identity in update['remove']:
-        for tier in unit['awakening']:tier[:]=[g for g in tier if g[:2]!=[kind,identity]]
-    for preferred,kind,identity in update['add']:
-        if any(g[:2]==[kind,identity] for f in ('awakening','synchro') for t in unit[f] for g in t):continue
-        rank=next((r for r in range(preferred,4) if len(unit['awakening'][r])<8),None)
-        if rank is None:raise ValueError(f'{unit["en"]} needs an awakening slot for its MR update. Resolve it in Studio before building.')
-        unit['awakening'][rank].append([kind,identity,-1])
-    unit['sephiraMrRevision']=update['version']
+    result=copy.deepcopy(unit)
+    for step in update.get('steps',[update]):
+        if result.get('sephiraMrRevision',0)>=step['version']:continue
+        for op in step['mr']:
+            grants=[g for g in result['synchro'][op['rank']] if g[0] in ('ActiveSkill','PassiveSkill')]
+            if len(grants)!=1 or not (same(grants[0],op['from']) or same(grants[0],op['to'])):
+                raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Resolve it in Apply kit and MR updates before building.')
+        for op in step['mr']:
+            tier=result['synchro'][op['rank']]
+            tier[:]=[list(op['to']) if same(g,op['from']) else g for g in tier]
+        for _,kind,identity in step['remove']:
+            for tier in result['awakening']:tier[:]=[g for g in tier if g[:2]!=[kind,identity]]
+        for source,previous,target in step.get('move',[]):
+            found=[(rank,g) for rank,tier in enumerate(result['awakening']) for g in tier
+                   if g[0]=='ActiveSkill' and result.get('skills',{}).get(str(g[1]),{}).get('from')==source]
+            if len(found)>1:raise ValueError(f'{unit["en"]} has multiple learned copies of its moved awakening skill.')
+            if not found:continue  # A deliberately removed active stays removed.
+            rank,grant=found[0]
+            if rank==target:continue
+            if rank!=previous:raise ValueError(f'{unit["en"]} has an edited awakening placement. Resolve it in Studio before building.')
+            if len(result['awakening'][target])>=8:
+                raise ValueError(f'{unit["en"]} tier {target+1} needs an awakening slot for its MR update.')
+            result['awakening'][rank].remove(grant);result['awakening'][target].append(grant)
+        for preferred,kind,identity in step['add']:
+            found=[r for r,tier in enumerate(result['awakening']) if any(g[:2]==[kind,identity] for g in tier)]
+            if step.get('exactAwakeningRanks'):
+                if found==[preferred]:continue
+                if found:raise ValueError(f'{unit["en"]} has an edited awakening bonus placement. Resolve it in Studio before building.')
+                rank=preferred if len(result['awakening'][preferred])<8 else None
+            else:
+                if any(g[:2]==[kind,identity] for f in ('awakening','synchro') for t in result[f] for g in t):continue
+                rank=next((r for r in range(preferred,4) if len(result['awakening'][r])<8),None)
+            if rank is None:raise ValueError(f'{unit["en"]} needs an awakening slot in tier {preferred+1} for its MR update. Resolve it in Studio before building.')
+            result['awakening'][rank].append([kind,identity,-1])
+        for sid,label in step.get('passiveText',{}).items():
+            result.setdefault('sephiraPassiveText',{}).setdefault(sid,copy.deepcopy(label))
+        result['sephiraMrRevision']=step['version']
+    unit.clear();unit.update(result)
 
 
 def player_units(units, rows):
@@ -575,6 +600,14 @@ def bind_units(units, rows):
                         'effect': {'row': f"Studio_Sephira_{u['id']}_Effect_{eid}", 'cloneFrom': ek,
                                    'set': {'ID': new_eid, 'ParamList': params}}}
                     g[1] = new_sid
+        # Older saves can already have learned Barusa's private Earth imbue.
+        # Keep its row resolvable after its MR slot moves to Strategic Acumen.
+        if value['preset']=='barusa' and 1526 not in private:
+            sid=1526;pk,passive=passives[sid]
+            label=labels.get(str(sid),{'name':'Imbue Earth','desc':'Add earth to non-elemental standard attacks and battle skills.'})
+            private[sid]={'passive':{'row':f"Studio_Sephira_{u['id']}_Passive_{sid}",
+                'cloneFrom':pk,'set':{'ID':private_passive_id('barusa',sid),
+                    'Name':label['name'],'Description':label['desc'],'equipCost':20}}}
         u['_sephiraBindings'] = list(private.values())
     return result
 

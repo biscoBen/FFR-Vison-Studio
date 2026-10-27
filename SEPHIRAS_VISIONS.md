@@ -10,9 +10,9 @@ An existing custom Crystal Fina is adopted with her current edits and acquisitio
 
 - Every preset copies a native level-one stat profile with five learned MR rewards at ranks 1, 3, 5, 7 and 9. MR 2/6/8 give three relevant permanent stats (normalized 5/10/15 points; HP ×6, MP ×2); MR 4 and 9 each give +8 AP. MR 9 also grants the Spirit mastery. MR 0 is the native empty starting rank; every rank from 1 to 9 has a reward. Native physical or magic growth curves are used.
 - Existing native grants retain their mechanics. Supplemental skills come from the wider native/enemy catalog on private player copies: zero-MP enemy attacks receive MP costs; excessive accuracy, multipliers and hit counts are reduced. Group spells/healing cost more than comparable single-target spells. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role.
-- All 160 distinct active skills and 131 passives from the 15 excluded original visions are allocated. Each excluded active has one canonical allocation. All 75 original equipable MR rewards remain MR rewards, including 25 active skills at their original ranks and acquisition gates. All 131 original passives remain covered across the complete kits; supplementary awakening choices may repeat across visions. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.
+- All 160 distinct active skills and 130 of 131 passives from the 15 excluded original visions are allocated; One for the Road was explicitly replaced with Pharmacology. Each excluded active has one canonical allocation. All 75 original equipable MR rewards remain MR rewards, including 25 original active skills (Minfilia’s Throw is explicitly moved to MR3). 130 of 131 original passives remain covered after the approved Rikku Pharmacology replacement across the complete kits; supplementary awakening choices may repeat across visions. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.
 - Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.
-- Each odd MR rank has one learned ability, active or passive. The 150 slots contain 25 active rewards and 125 passive rewards. Supplemental passives move into awakening to make room for the original MR actives. Each complete kit retains its native counterpart’s passive count and a combined passive AP cost within 20%. Permanent MR stats, the Spirit wrapper and LB are excluded from these skill counts. Crystal Fina and Aria keep their reviewed kits unchanged. See [the MR restoration](docs/SEPHIRA_MR_RESTORATION.md) and [awakening balance report](docs/SEPHIRA_AWAKENING_BALANCE.md). Clive’s Eikon attacks and limit-break bonus remain on Reberta. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s gate, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
+- Each odd MR rank has one learned ability, active or passive. The 150 slots contain 26 active rewards and 124 passive rewards, including Minfilia’s new Libra. Supplemental passives move into awakening to make room for the original MR actives. Minfilia and Barusa each have one fewer passive than their native budgets, while Primm and Trance Terra have one more each; all passive AP totals stay within 20%. Permanent MR stats, the Spirit wrapper and LB are excluded from these skill counts. Crystal Fina and Aria keep their reviewed kits unchanged. See [the MR restoration](docs/SEPHIRA_MR_RESTORATION.md) and [awakening balance report](docs/SEPHIRA_AWAKENING_BALANCE.md). Clive’s Eikon attacks and limit-break bonus remain on Reberta. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s gate, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
 - Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.
 - New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. Replacement bonuses retain native effects and equip costs, with a 20-AP floor for item bonuses that originally cost zero. Revision 5 replaces 52 reused rewards from kept visions with equipment/enemy bonuses and bounded enemy skills. Those protected MR rewards are absent from both awakening and MR; all excluded-vision grants remain allocated. The eight earlier low-tier alternatives remain available. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. Permanent MR rewards follow the same role-based three-stat budget for every preset. Alice’s three earth slams become ice slams with unchanged power/cost.
 - Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.
@@ -23,7 +23,7 @@ The excluded originals are Tronn, Wilhelm, Warrior of Light, Firion, Onion Knigh
 
 After obtaining the matched original, talk to its crystal again and select Challenge. The original replay remains available. Ownership or the original’s individual completion flag is checked before the menu, immediately before battle, and before rewards. Wilhelm uses his final quest step, not quest acceptance. Winning grants only missing team members; leaving, escaping or losing grants none. There are no farmable boss drops or XP. Each team shares one local-level boss budget, with staggered eight-action rotations and bounded healing. These are authored starting values; live balance still needs playtesting.
 
-Tronn → Christine; Wilhelm → Barusa/Ariana; Warrior of Light → Lenneth/Crystal Fina; Firion → Lila/Fran; Onion Knight → Minfilia/Primm; Cecil → Snow White/Lilith/Mystea; Bartz → Fryevia/Lunera; Cloud → Nalu/Jade; Squall → A2/Alice; Zidane → Rikku/Eiko; Tidus → Elza/Mog; Shantotto → Trance Terra/Relm; Vaan → Lunafreya/Elephim; Noctis → Freya; Clive → Reberta.
+Tronn → Christine; Wilhelm → Barusa/Ariana; Warrior of Light → Lenneth/Crystal Fina; Firion → Lila/Fran; Onion Knight → Minfilia/Primm; Cecil → Snow White/Lilith/Mystea; Bartz → Fryevia/Lunera; Cloud → Nalu/Jade; Squall → A2/Alice; Zidane → Rikku/Eiko; Tidus → Elza/Mog; Shantotto → Trance Terra/Relm; Vaan → Lunafreya/Aerith; Noctis → Freya; Clive → Reberta.
 
 Levels come from ordinary enemies in the encounter volume containing each shrine entrance (Earth Shrine’s inner floor for Tronn). See `assets/existing_visions/payload/sephira_challenges.json` for the native source tables, unlock evidence and local levels.
 
@@ -38,10 +38,10 @@ Untouched saved reward layouts migrate automatically once, with a roster backup.
 | A2 | 17 | 7 | 24 | 2 | 3 |
 | Christine | 15 | 6 | 21 | 1 | 4 |
 | Crystal Fina | 20 | 5 | 25 | 0 | 5 |
-| Barusa | 15 | 8 | 23 | 2 | 3 |
+| Barusa | 15 | 7 | 22 | 2 | 3 |
 | Blue Sky Belle Fran | 17 | 4 | 21 | 0 | 5 |
 | Oracle Maiden Lunafreya | 17 | 8 | 25 | 1 | 4 |
-| Minfilia | 15 | 7 | 22 | 1 | 4 |
+| Minfilia | 15 | 7 | 22 | 2 | 3 |
 | Folka | 19 | 5 | 24 | 0 | 5 |
 | Fryevia | 17 | 4 | 21 | 0 | 5 |
 | Lenneth | 18 | 7 | 25 | 1 | 4 |
@@ -50,16 +50,16 @@ Untouched saved reward layouts migrate automatically once, with a roster backup.
 | Reberta (JP) | 17 | 8 | 25 | 1 | 4 |
 | Snow White | 18 | 6 | 24 | 1 | 4 |
 | Aria | 20 | 5 | 25 | 0 | 5 |
-| Eiko | 17 | 5 | 22 | 0 | 5 |
+| Eiko | 18 | 5 | 23 | 0 | 5 |
 | Alice/Half Nightmare | 17 | 5 | 22 | 0 | 5 |
 | Moogle of Narshe Mog | 16 | 6 | 22 | 1 | 4 |
 | Lilith | 15 | 6 | 21 | 1 | 4 |
 | Dragon Knight Freya | 18 | 10 | 28 | 1 | 4 |
-| Trance Terra | 16 | 6 | 22 | 1 | 4 |
+| Trance Terra | 16 | 7 | 23 | 1 | 4 |
 | Charming Kitty Ariana | 18 | 5 | 23 | 0 | 5 |
-| Elephim | 17 | 6 | 23 | 1 | 4 |
+| Aerith | 17 | 6 | 23 | 1 | 4 |
 | Jade | 18 | 7 | 25 | 1 | 4 |
-| Spirited Heart Primm | 18 | 6 | 24 | 0 | 5 |
+| Spirited Heart Primm | 18 | 7 | 25 | 0 | 5 |
 | Relm | 19 | 5 | 24 | 0 | 5 |
 | Rikku (FFX-2) | 17 | 8 | 25 | 3 | 2 |
 | Nalu | 18 | 7 | 25 | 1 | 4 |
@@ -179,10 +179,10 @@ Earth physical bruiser and protection.
 Sprite `401003006` (GL); base-stat budget: Wilhelm. Growth: Cloud.
 
 - Awakening 1: Stone Surge [421400]; Stone Slam [421340]; Quicksand [485309]; Granite Claw [485312]; Granite Slam [485333]; Stone Horn [485336]; Physical Defense +20% [1313]; General’s Pride [1452].
-- Awakening 2: Stonera Surge [421410]; Stonera Slam [421350]; D Sword Breaker [414700]; Crust Driver [485303]; Granite Shell Strike [485330]; Nullify Sleep [1106]; Protect Opener [1290]; Strategic Acumen [1336].
+- Awakening 2: Stonera Surge [421410]; Stonera Slam [421350]; D Sword Breaker [414700]; Crust Driver [485303]; Granite Shell Strike [485330]; Nullify Sleep [1106]; Protect Opener [1290].
 - Awakening 3: Stonega Surge [421420]; Stonega Slam [421360]; Supreme Defense [414710]; Mantle Driver [485306]; Fill LB when Taking Damage [1331]; HP +30% [1379].
 - Awakening 4: Bastion [1454].
-- MR 1: Imbue Earth [1526].
+- MR 1: Strategic Acumen [1336].
 - MR 2: HP +30 (permanent).
 - MR 3: Chakra [400440].
 - MR 4: AP +8 (permanent).
@@ -276,13 +276,13 @@ Sprite `214000304` (GL); base-stat budget: Onion Knight. Growth: Lightning.
 - Awakening 2: Stonera [220220]; Protectga [230050]; Petrifying Gaze [485612]; Warrior’s Blessing [485636]; Nullify Slow [1116]; MP +20% [1381].
 - Awakening 3: Stonega [220230]; Blade Torrent [445200]; Calamity [485603]; Stonefall [485633]; Speed +10% [1277]; Job Change [1410].
 - Awakening 4: Dual Jobs [485690]; Late Bloomer [1411].
-- MR 1: Throw [400240].
+- MR 1: Libra [210220].
 - MR 2: Attack +5 (permanent).
-- MR 3: Observe and Attack [1343].
+- MR 3: Throw [400240].
 - MR 4: AP +8 (permanent).
 - MR 5: Observe and Recover HP [1465].
 - MR 6: MP +20 (permanent).
-- MR 7: Strategic Acumen [1336].
+- MR 7: Observe and Attack [1343].
 - MR 8: Magic +15 (permanent).
 - MR 9: Chuck [1412]; AP +8 (permanent); Spirit of Minfilia.
 
@@ -445,15 +445,15 @@ Sprite `100011005` (GL); base-stat budget: Cecil. Growth: Terra.
 - Awakening 2: Shellga [230070]; Manaward [220410]; Evasion Ward [486109]; Banishra Ray [486121]; Focused Dark Pulse [486139]; Grit [1042].
 - Awakening 3: Reflect [230120]; Mighty Guard [486103]; Dystopia [486115]; Barrier Burst [486133]; Recuperate LB [1338].
 - Awakening 4: Foul of the Seventh Dawn [220510]; Strategic Acumen [1336].
-- MR 1: Physical Defense +20% [1313].
-- MR 2: HP +30 (permanent).
+- MR 1: HP +30 (permanent).
+- MR 2: Physical Defense +20% [1313].
 - MR 3: Magic Defense +20% [1315].
 - MR 4: AP +8 (permanent).
-- MR 5: Shell at Half HP [1299].
+- MR 5: Magic Counter [1030].
 - MR 6: Defence +10 (permanent).
 - MR 7: Magic Evasion +20% [1530].
 - MR 8: Mind +15 (permanent).
-- MR 9: Magic Counter [1030]; AP +8 (permanent); Spirit of Mystea.
+- MR 9: Shell at Half HP [1299]; AP +8 (permanent); Spirit of Mystea.
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -574,23 +574,23 @@ Supplemental player copies (native source ID; final MP/power):
 
 ### Eiko — 7
 
-Summoner with wind magic and revival.
+Esper mastery, wind magic and healing.
 
 Sprite `209000707` (GL); base-stat budget: Ayaka. Growth: Terra.
 
-- Awakening 1: Aero of the Seventh Dawn [220450]; Light of the Eidolons [486530]; Healing Magic +30% [1375]; Nullify Sleep [1106].
-- Awakening 2: Aero II of the Seventh Dawn [220460]; Raise [210140]; MP +20% [1381].
-- Awakening 3: Ifrit [430990]; Shiva [431000]; Aero III of the Seventh Dawn [220470]; Banishga Ray [486509]; Aerora Gust [486512]; Healing Breeze [486515]; Focused Gale [486539]; Speed +10% [1277].
-- Awakening 4: Reraise [210160]; Firaga Burst [486503]; Blizzaga Burst [486506]; Eidolon Radiance [486533]; Guardian’s Earth [486536]; Guardian’s Lightning [486542]; Alabastrine Blessing [1455].
-- MR 1: Double EXP [1009].
+- Awakening 1: Aero of the Seventh Dawn [220450]; Light of the Eidolons [486530]; Healing Light [486545]; Raise [210140]; Healing Magic +30% [1375]; Nullify Sleep [1106].
+- Awakening 2: Aero II of the Seventh Dawn [220460]; Shellga [230070]; Eidolon’s Reprieve [486548]; MP +20% [1381].
+- Awakening 3: Aero III of the Seventh Dawn [220470]; Banishga Ray [486509]; Aerora Gust [486512]; Healing Breeze [486515]; Focused Gale [486539]; Half MP Cost [1045].
+- Awakening 4: Reraise [210160]; Firaga Burst [486503]; Blizzaga Burst [486506]; Eidolon Radiance [486533]; Guardian’s Earth [486536]; Guardian’s Lightning [486542]; Auto MP Restore (L) [1256].
+- MR 1: Nullify Silence [1107].
 - MR 2: Mind +5 (permanent).
-- MR 3: Nullify Silence [1107].
+- MR 3: Esper Power [1960].
 - MR 4: AP +8 (permanent).
-- MR 5: Recuperate LB [1338].
+- MR 5: Esper Communion [1961].
 - MR 6: MP +20 (permanent).
-- MR 7: Peaceful LB Engine [1498].
+- MR 7: Enduring Eidolons [1962].
 - MR 8: Magic +15 (permanent).
-- MR 9: LB Triple Charge [1031]; AP +8 (permanent); Spirit of Eiko.
+- MR 9: Eidolon Revelry [1963]; AP +8 (permanent); Spirit of Eiko.
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -654,13 +654,13 @@ Sprite `206003005` (GL); base-stat budget: Tidus. Growth: Terra.
 - Awakening 4: Slowga [230160]; Hastega [230140]; Fill LB on Defeating Foes [1320].
 - MR 1: Focus [400460].
 - MR 2: Magic +5 (permanent).
-- MR 3: Haste on Stagger [1287].
+- MR 3: First Strike [1049].
 - MR 4: AP +8 (permanent).
-- MR 5: Speed +10% [1277].
+- MR 5: Recuperate LB [1338].
 - MR 6: MP +20 (permanent).
-- MR 7: Opening Good Luck [1511].
+- MR 7: Peaceful LB Engine [1498].
 - MR 8: Agility +15 (permanent).
-- MR 9: First Strike [1049]; AP +8 (permanent); Spirit of Moogle of Narshe Mog.
+- MR 9: LB Triple Charge [1031]; AP +8 (permanent); Spirit of Moogle of Narshe Mog.
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -749,9 +749,9 @@ Sprite `206000125` (GL); base-stat budget: Shantotto. Growth: Terra.
 
 - Awakening 1: Poison [220250]; Fire [220010]; Nullify Silence [1107]; Magic Attack +30% [1275].
 - Awakening 2: Nightmare Scythe [447300]; Bio [220260]; Fira [220020]; Firaga [220030]; MP +20% [1381].
-- Awakening 3: Salvation Scythe [447310]; Death [220320]; Meltdown [220380]; Spill [487103]; Trance Judgment [487106]; Judgment Shadow [487109]; Hell Pillar [487112]; Trance Apocalypse [487130].
-- Awakening 4: Meteor [220350]; Ultima [220340]; MP Stroll [1307]; The Federation’s Fiend [1432]; Play Rough [1433].
-- MR 1: Fire Eater [1038].
+- Awakening 3: Salvation Scythe [447310]; Death [220320]; Meltdown [220380]; Spill [487103]; Trance Judgment [487106]; Judgment Shadow [487109]; Hell Pillar [487112]; Fire Eater [1038].
+- Awakening 4: Meteor [220350]; Ultima [220340]; MP Stroll [1307]; The Federation’s Fiend [1432]; Play Rough [1433]; Trance Apocalypse [487130].
+- MR 1: Resist Fire [1011].
 - MR 2: Agility +5 (permanent).
 - MR 3: Restore MP on Defeating Foes [1319].
 - MR 4: AP +8 (permanent).
@@ -804,11 +804,11 @@ Supplemental player copies (native source ID; final MP/power):
 - Flame Refrain ← 大魔法マグヌム・オプス(火) [503910, enemy]: MP 22, power 20. Deal Fire magic damage to all enemies 3 times.
 - Dazzling Refrain ← Alluring Pollen [503770, enemy]: MP 30, power 24. Deal magic damage to all enemies. May inflict Confusion, Charm, Silence and Blind.
 
-### Elephim — 7
+### Aerith — 5
 
-Buff/debuff bard with ranged attacks.
+Support and debuff magic with Great Gospel healing.
 
-Sprite `100017107` (GL); base-stat budget: Vaan. Growth: Terra.
+Sprite `207000405` (GL); base-stat budget: Vaan. Growth: Terra.
 
 - Awakening 1: Debrave [230190]; Blind [230020]; Faith [230110]; Berserk [230170]; Sleep [487303]; Defaith [487306]; Resonant Notes [487327]; Magic Attack +20% [1311].
 - Awakening 2: Rapid Fire [414200]; Debravega [487309]; Defaithga [487312]; Sleepga [487315]; Flame Chant [487330]; Nullify Silence [1107]; Resist Lightning [1250]; MP +20% [1381].
@@ -822,7 +822,7 @@ Sprite `100017107` (GL); base-stat budget: Vaan. Growth: Terra.
 - MR 6: MP +20 (permanent).
 - MR 7: Haste Opener [1292].
 - MR 8: Agility +15 (permanent).
-- MR 9: Gil Farmer on Stagger [1386]; AP +8 (permanent); Spirit of Elephim.
+- MR 9: Gil Farmer on Stagger [1386]; AP +8 (permanent); Spirit of Aerith.
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -880,8 +880,8 @@ Sprite `304000717` (GLW); base-stat budget: Onion Knight. Growth: Lightning.
 - Awakening 1: Slice & Dice - Wind [421280]; Stone Blade [420160]; Cure [487503]; Magic Attack +20% [1311]; Nullify Slow [1116].
 - Awakening 2: Slice & Dice - Wind II [421290]; Stonera Blade [420170]; Cura [487506]; Firestorm Saber [487512]; Atomic Saber [487515]; Flame Saber [487530]; Blazing Saber [487518]; MP +20% [1381].
 - Awakening 3: Slice & Dice - Wind III [421300]; Stonega Blade [420180]; Moonlightbringer [445300]; Gale Saber [487533]; Spiritlight Saber [487536]; Mana Burst [487539]; Speed +10% [1277]; Regen Opener [1293].
-- Awakening 4: Curaga [487509]; Fill Gauge [400770]; Restore HP on Stagger [1284].
-- MR 1: Resist Fire [1011].
+- Awakening 4: Curaga [487509]; Fill Gauge [400770]; Restore HP on Stagger [1284]; Boundless Flames [1460].
+- MR 1: Imbue Earth [1526].
 - MR 2: Attack +5 (permanent).
 - MR 3: HP +20% [1378].
 - MR 4: AP +8 (permanent).
@@ -889,7 +889,7 @@ Sprite `304000717` (GLW); base-stat budget: Onion Knight. Growth: Lightning.
 - MR 6: MP +20 (permanent).
 - MR 7: Physical Evasion +15% [1531].
 - MR 8: Magic +15 (permanent).
-- MR 9: Boundless Flames [1460]; AP +8 (permanent); Spirit of Spirited Heart Primm.
+- MR 9: Fire Eater [1038]; AP +8 (permanent); Spirit of Spirited Heart Primm.
 
 Supplemental player copies (native source ID; final MP/power):
 
@@ -957,7 +957,7 @@ Sprite `249000206` (GL); base-stat budget: Vaan. Growth: Cloud.
 - MR 4: AP +8 (permanent).
 - MR 5: Mug [400270].
 - MR 6: Attack +10 (permanent).
-- MR 7: One for the Road [1435].
+- MR 7: Pharmacology [1044].
 - MR 8: Agility +15 (permanent).
 - MR 9: Misfortune [400750]; AP +8 (permanent); Spirit of Rikku (FFX-2).
 

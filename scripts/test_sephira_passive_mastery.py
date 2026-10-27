@@ -26,7 +26,9 @@ class PassiveMasteryTests(unittest.TestCase):
                 expected[(rank-1)//2] = general
             if preset['id']=='aria':expected[-1]=1524
             if preset.get('mrRestoration'):
-                for op in preset['mrRestoration']['mr']:expected[(op['rank']-1)//2]=op['to'][1]
+                update=preset['mrRestoration']
+                for step in update.get('steps',[update]):
+                    for op in step['mr']:expected[(op['rank']-1)//2]=op['to'][1]
             for op in preset.get('kitUpdate',{}).get('mr',[]):
                 if op['rank'] in ranks:expected[ranks.index(op['rank'])]=op['to'][1]
             self.assertEqual([g[1] for g in choices], expected)
@@ -86,7 +88,10 @@ class PassiveMasteryTests(unittest.TestCase):
             ids = [g[1] for field in ('awakening','synchro') for tier in unit[field]
                    for g in tier if g[0]=='PassiveSkill']
             self.assertEqual(len(ids),len(set(ids)),unit['key'])
-            self.assertEqual(len(ids),len(original['passives']),unit['key'])
+            from sephira_mr_layout import PASSIVE_DELTAS
+            delta=PASSIVE_DELTAS.get(preset['id'],0)
+            self.assertEqual(len(ids),len(original['passives'])+delta,unit['key'])
+            self.assertEqual(preset['awakeningBalance'].get('requestedPassiveDelta',0),delta)
             self.assertEqual(preset['awakeningBalance']['nativePassives'],original['passives'])
             mastery = {g[1] for tier in unit['synchro'] for g in tier if g[0]=='PassiveSkill'}
             for group in stat_tiers:

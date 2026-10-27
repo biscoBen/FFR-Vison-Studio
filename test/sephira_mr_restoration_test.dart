@@ -21,7 +21,8 @@ void main() {
     final plan=json.decode(File('scripts/fixtures/sephira_mr_restoration_plan.json').readAsStringSync()) as Map;
     for(final row in plan['placements'] as List) {
       final u=presets.singleWhere((p)=>p['id']==row[0])['profile'];
-      expect(u['synchro'][row[1]][0],['ActiveSkill',row[2],-1]);
+      final rank=row[0]=='minfilia' && row[2]==400240?3:row[1];
+      expect(u['synchro'][rank][0],['ActiveSkill',row[2],-1]);
     }
   });
   test('remapped saved rosters migrate once while preserving stats, private recipes and acquisition',() async {
@@ -53,7 +54,7 @@ void main() {
       for(final f in ['awakening','synchro']) {
         expect(signature(next,f),signature(target,f),reason:'${preset['id']} $f');
       }
-      for(final f in before.keys.where((k)=>!['awakening','synchro'].contains(k))) {
+      for(final f in before.keys.where((k)=>!['awakening','synchro','sephiraPassiveText'].contains(k))) {
         expect(next[f],before[f],reason:'${preset['id']} $f');
       }
       expect(u,before);
@@ -93,5 +94,48 @@ void main() {
     expect(next['sephiraRecipe'],7);expect(next['sephiraMrRevision'],1);
     expect(next['synchro'][5][0],['ActiveSkill',400630,-1]);
     expect(next['synchro'][2][0][2],77);
+  });
+  test('Libra swaps migrate the shipped roster and retain remapped custom skill IDs',() async {
+    final presets=await SephiraVisions.bundled;
+    final fixture=json.decode(File('scripts/fixtures/sephira_mr_layout_before.json').readAsStringSync()) as Map;
+    for (final entry in fixture.entries) {
+      final p=presets.singleWhere((p)=>p['id']==entry.key);
+      final u=CharacterConfig.copy(Map<String,dynamic>.from(entry.value['profile'] as Map));
+      u[SephiraVisions.field]={'version':1,'preset':entry.key,'enabled':true};
+      u['stats']['Attack']=79;
+      u['studioAcquisition']={'version':1,'location':'mitra_shop','random':false,'hideSpoilers':false};
+      if (entry.key=='trance_terra') {
+        final source=(u['skills'] as Map).entries.singleWhere((s)=>s.value['from']==505540).key;
+        final remapped=CharacterConfig.skillBase(u['id'] as int)+99;
+        u['skills'][remapped.toString()]=(u['skills'] as Map).remove(source);
+        u['skills'][remapped.toString()]['set']['Cost']=19;
+        for (final g in u['awakening'][2] as List) {
+          if (g[0]=='ActiveSkill' && g[1].toString()==source) g[1]=remapped;
+        }
+      }
+      final before=CharacterConfig.copy(u);
+      final next=SephiraVisions.repairEquipableMr(u,presets,strict:true);
+      for (final f in before.keys.where((k)=>!['awakening','synchro','sephiraMrRevision','sephiraPassiveText'].contains(k))) {
+        expect(next[f],before[f],reason:'${entry.key} $f');
+      }
+      expect(signature(next,'synchro'),signature(p['profile'],'synchro'));
+      if (entry.key=='trance_terra') expect(next['awakening'][3],contains(equals(['ActiveSkill',CharacterConfig.skillBase(u['id'] as int)+99,-1])));
+      if (entry.key=='primm') expect(next['sephiraPassiveText']['1526']['name'],'Imbue Earth');
+      expect(u,before);
+      final again=SephiraVisions.repairEquipableMr(next,presets,strict:true);
+      expect(identical(again,next),isTrue);
+    }
+  });
+  test('a full Terra target tier cannot partially apply either MR migration step',() async {
+    final presets=await SephiraVisions.bundled;
+    final p=presets.singleWhere((p)=>p['id']=='trance_terra');
+    final u=oldUnit(p);
+    while ((u['awakening'][3] as List).length<8) {
+      (u['awakening'][3] as List).add(['ActiveSkill',210220,-1]);
+    }
+    final before=CharacterConfig.copy(u);
+    expect(identical(SephiraVisions.repairEquipableMr(u,presets),u),isTrue);
+    expect(()=>SephiraVisions.repairEquipableMr(u,presets,strict:true),throwsStateError);
+    expect(u,before);
   });
 }

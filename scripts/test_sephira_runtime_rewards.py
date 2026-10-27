@@ -72,8 +72,8 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         private = [b['passive'] for u in bound for b in u['_sephiraBindings']]
         identities = [r['set']['ID'] for r in private]
         native_ids = {r['ID'] for r in native[pack.PASSIVE].values()}
-        self.assertEqual(len(identities), 24)
-        self.assertEqual(len(set(identities)), 24)
+        self.assertEqual(len(identities), 25)  # Retain Barusa's old learned Earth imbue row too.
+        self.assertEqual(len(set(identities)), 25)
         self.assertTrue(all(1000 <= sid < 2000 for sid in identities))
         self.assertFalse(set(identities) & native_ids)
         for unit in bound:

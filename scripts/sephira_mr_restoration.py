@@ -13,7 +13,7 @@ PLAN=ROOT/'scripts/fixtures/sephira_mr_restoration_plan.json'
 
 def revise(catalog,coverage,rows):
     plan=json.loads(PLAN.read_bytes())
-    if all(p['profile'].get('sephiraMrRevision')==1 for p in catalog['presets'] if p['id'] in plan['awakening']):return catalog
+    if all(p['profile'].get('sephiraMrRevision',0)>=1 for p in catalog['presets'] if p['id'] in plan['awakening']):return catalog
     before={p['id']:copy.deepcopy(p) for p in catalog['presets']}
     by={p['id']:p for p in catalog['presets']}
     active={sid for _,_,sid in plan['placements']}
@@ -85,21 +85,21 @@ def write_reports(catalog,coverage,english):
     def label(g):return f"{names[g[0]][g[1]]} ({g[1]})"
     lines=['# Sephira mastery reward allocation','',
         'All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: '
-        '50 passives and 25 active skills. Each active returns at its original MR rank and original acquisition gate. '
+        '50 passives and 25 active skills. The original active rewards retain their acquisition families. '
         'The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain '
-        '125 passive grants and 25 active grants, one per rank. Permanent stats, AP and Spirit rewards are unchanged.','',
-        'All 131 distinct excluded-original passives remain available across the complete kits. Supplemental passives '
-        'displaced from MR move into awakening, while the original MR passives stay transferable. '
+        '124 passive grants and 26 active grants, one per rank, including Minfilia’s new Libra. ','',
+        '130 of 131 distinct excluded-original passives remain available across the complete kits; Rikku’s '
+        'Vaan-only One for the Road was explicitly replaced with Pharmacology. Original MR passives stay transferable. '
         'Command/LB-bound traits remain awakening bonuses for their owners. Christine’s True Stagger stays in '
-        'awakening; her transferable MR7 reward is Fill LB on Stagger.','',
+        'awakening; her transferable MR7 reward is Fill LB on Stagger. Permanent stats, AP and Spirit identities stay unchanged. ','',
         '| Vision | MR 1 | MR 3 | MR 5 | MR 7 | MR 9 |','|---|---|---|---|---|---|']
     for p in catalog['presets']:
-        lines.append('| '+p['name']+' | '+' | '.join(label(p['profile']['synchro'][r][0]) for r in (1,3,5,7,9))+' |')
+        lines.append('| '+p['name']+' | '+' | '.join(label(p['profile']['synchro'][r][0]) for r in ((2,3,5,7,9) if p['id']=='mystea' else (1,3,5,7,9)))+' |')
     lines += ['', 'The native Spirit wrapper follows its owner’s current MR rewards, including active rewards. '
         'Awakening bonuses and permanent MR stats are not copied into the Spirit. Crystal Fina and Aria retain '
         'their reviewed kits, rewards and Spirit identities unchanged. See [the healer kits](SEPHIRA_USER_KITS.md), '
         '[the MR coverage audit](SEPHIRA_MR_COVERAGE.md), and [the restoration details](SEPHIRA_MR_RESTORATION.md).','']
-    (ROOT/'docs/SEPHIRA_PASSIVE_MASTERY.md').write_text('\n'.join(lines),encoding='utf-8')
+    (ROOT/'docs/SEPHIRA_PASSIVE_MASTERY.md').write_text('\n'.join(line.rstrip() for line in lines),encoding='utf-8')
     plan=json.loads(PLAN.read_bytes());by={p['id']:p for p in catalog['presets']}
     originals={e['id']:e for e in coverage['entries'] if e['kind']=='ActiveSkill'}
     lines=['# Restore the original transferable MR rewards','',
@@ -108,29 +108,31 @@ def write_reports(catalog,coverage,english):
         'rewards without increasing the number of rewards at any rank. All 50 original passive MR rewards remain '
         'transferable. The [reproducible coverage report](SEPHIRA_MR_COVERAGE.md) now shows 75/75.','',
         'Each restored active has its stock native mechanics, equip cost, MP cost, general-command membership and '
-        'animation. Its MR rank and acquisition family match the original. Saved custom acquisition overrides '
-        'remain user choices. Rikku retains the Zidane acquisition gate.','',
+        'animation. Acquisition families match the originals. Minfilia’s Throw is now MR3 instead of the original MR1, '
+        'as explicitly requested alongside Libra at MR1. Saved acquisition overrides remain user choices. Rikku retains the Zidane gate.','',
         '| Original vision | Reward | MR | New MR teacher |','|---|---|---:|---|']
+    from sephira_mr_layout import MR_RANK_OVERRIDES
     for key,rank,sid in plan['placements']:
+        rank=MR_RANK_OVERRIDES.get((key,sid),rank)
         origins=', '.join(sorted({g['vision'] for g in originals[sid]['nativeGrants'] if g['track']=='synchro'}))
         lines.append(f"| {origins} | {names['ActiveSkill'][sid]} ({sid}) | {rank} | {by[key]['name']} |")
     lines += ['', '## Balance and migration','',
         'Twelve original MR passive placements move to another compatible slot, retaining their native MR rank and '
-        'acquisition family. Every original MR passive stays an MR reward. All 131 excluded-original passives remain '
-        'learned across the kits. Each vision keeps its native counterpart’s total passive count and stays within '
-        '20% of its passive AP budget. No second percentage tier of the same main stat is added to a kit. '
-        'The fixed allocation is recorded in `scripts/fixtures/sephira_mr_restoration_plan.json`; '
-        '[the awakening report](SEPHIRA_AWAKENING_BALANCE.md) lists the final counts and costs.','',
-        'An awakening active moves out only when that same vision now teaches it through MR. Other units retain '
-        'signature awakening versions: Relm still has Mimic, for example, while Lunera teaches its MR version at '
-        'Bartz’s gate. Canonical provenance identifies the MR teacher. Crystal Fina and Aria are unchanged. '
+        'acquisition family. Every original MR passive stays an MR reward. 130 of 131 excluded-original passives remain '
+        'learned across the kits after the approved Rikku replacement. The new swaps remove one passive each from '
+        'Minfilia and Barusa and add one each to Primm and Trance Terra, preserving the collection total. Each remains '
+        'within 20% of its native passive AP budget. The historical restoration plan and the later requested swaps are '
+        'recorded separately in `scripts/fixtures/sephira_mr_restoration_plan.json` and `scripts/sephira_mr_layout.py`. ','',
+        'Trance Terra’s Fire Eater moves to awakening tier 3 and Primm MR9. Primm’s Boundless Flames moves to awakening '
+        'tier4, and Terra’s Trance Apocalypse moves from tier 3 to tier 4 to keep every tier within eight slots. Original '
+        'MR rewards remain transferable. Crystal Fina and Aria are unchanged. '
         'Private recipes, artwork, stats, permanent rewards, allocated IDs and acquisition choices are preserved.','',
         'Studio backs up and migrates untouched saved reward layouts once on loading. The build also applies the '
-        'same declared migration to older configs. Deliberately edited affected MR slots or full awakening tiers '
+        'same staged migration to older configs. Previously learned Barusa Earth-imbue IDs remain defined. Edited affected MR slots or full awakening tiers '
         'are left intact and reported before building; use **Apply MR and acquisition update** after resolving '
         'the conflict. Later edits to migrated units remain user edits.','',
         'Native table writing/readback checks verify all 30 collection kits plus an independent Fina, Spirit owner '
         'bindings and all 25 stock active rows. Live-game equipment and balance still need playtesting.','']
-    (ROOT/'docs/SEPHIRA_MR_RESTORATION.md').write_text('\n'.join(lines),encoding='utf-8')
+    (ROOT/'docs/SEPHIRA_MR_RESTORATION.md').write_text('\n'.join(line.rstrip() for line in lines),encoding='utf-8')
     from sephira_awakening_bonuses import write_report
     write_report(catalog,names['PassiveSkill'])

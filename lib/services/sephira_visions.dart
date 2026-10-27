@@ -140,29 +140,62 @@ class SephiraVisions {
     try {
       final result=CharacterConfig.copy(unit);
       bool same(List a,List b)=>a[0]==b[0] && a[1]==b[1] && (a.length>2?a[2]:-1)==(b.length>2?b[2]:-1);
-      for (final op in update['mr'] as List) {
-        final choices=(result['synchro'][op['rank']] as List).where((g)=>['ActiveSkill','PassiveSkill'].contains(g[0])).toList();
-        if (choices.length!=1 || (!same(choices.single as List,op['from'] as List) && !same(choices.single as List,op['to'] as List))) {
-          throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve this reward before applying its MR update.');
+      for (final step in update['steps'] as List? ?? [update]) {
+        if ((result['sephiraMrRevision'] as int? ?? 0)>=step['version']) continue;
+        for (final op in step['mr'] as List) {
+          final choices=(result['synchro'][op['rank']] as List).where((g)=>['ActiveSkill','PassiveSkill'].contains(g[0])).toList();
+          if (choices.length!=1 || (!same(choices.single as List,op['from'] as List) && !same(choices.single as List,op['to'] as List))) {
+            throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve this reward before applying its MR update.');
+          }
         }
-      }
-      for (final op in update['mr'] as List) {
-        result['synchro'][op['rank']]=[for (final g in result['synchro'][op['rank']] as List)
-          if (same(g as List,op['from'] as List)) List<dynamic>.from(op['to'] as List) else g];
-      }
-      for (final op in update['remove'] as List) {
-        for (final tier in result['awakening'] as List) {
-          (tier as List).removeWhere((g)=>g[0]==op[1] && g[1]==op[2]);
+        for (final op in step['mr'] as List) {
+          result['synchro'][op['rank']]=[for (final g in result['synchro'][op['rank']] as List)
+            if (same(g as List,op['from'] as List)) List<dynamic>.from(op['to'] as List) else g];
         }
+        for (final op in step['remove'] as List) {
+          for (final tier in result['awakening'] as List) {
+            (tier as List).removeWhere((g)=>g[0]==op[1] && g[1]==op[2]);
+          }
+        }
+        for (final op in step['move'] as List? ?? []) {
+          final found=<({int rank, List grant})>[
+            for (var rank=0;rank<4;rank++) for (final g in result['awakening'][rank] as List)
+              if (g[0]=='ActiveSkill' && (result['skills'][g[1].toString()] as Map?)?['from']==op[0])
+                (rank:rank,grant:g as List),
+          ];
+          if (found.length>1) throw StateError('${unit['en']} has multiple learned copies of its moved awakening skill.');
+          if (found.isEmpty) continue;
+          final match=found.single;
+          final target=op[2] as int;
+          if (match.rank==target) continue;
+          if (match.rank!=op[1]) throw StateError('${unit['en']} has an edited awakening placement. Resolve it before applying the update.');
+          if ((result['awakening'][target] as List).length>=8) {
+            throw StateError('${unit['en']} tier ${target+1} needs an awakening slot for its MR update.');
+          }
+          (result['awakening'][match.rank] as List).remove(match.grant);
+          (result['awakening'][target] as List).add(match.grant);
+        }
+        for (final op in step['add'] as List) {
+          final preferred=op[0] as int;
+          int? rank;
+          if (step['exactAwakeningRanks']==true) {
+            final found=[for (var r=0;r<4;r++) if ((result['awakening'][r] as List).any((g)=>g[0]==op[1] && g[1]==op[2])) r];
+            if (found.length==1 && found.single==preferred) continue;
+            if (found.isNotEmpty) throw StateError('${unit['en']} has an edited awakening bonus placement. Resolve it before applying the update.');
+            rank=(result['awakening'][preferred] as List).length<8?preferred:null;
+          } else {
+            if (['awakening','synchro'].any((f)=>(result[f] as List).any((t)=>(t as List).any((g)=>g[0]==op[1] && g[1]==op[2])))) continue;
+            rank=[for (var r=preferred;r<4;r++) r].where((r)=>(result['awakening'][r] as List).length<8).firstOrNull;
+          }
+          if (rank==null) throw StateError('${unit['en']} needs an awakening slot in tier ${preferred+1} for its MR update. Move an extra ability first.');
+          (result['awakening'][rank] as List).add([op[1],op[2],-1]);
+        }
+        for (final entry in (step['passiveText'] as Map? ?? {}).entries) {
+          (result.putIfAbsent('sephiraPassiveText',()=> <String,dynamic>{}) as Map)
+              .putIfAbsent(entry.key,()=>Map<String,dynamic>.from(entry.value as Map));
+        }
+        result['sephiraMrRevision']=step['version'];
       }
-      for (final op in update['add'] as List) {
-        if (['awakening','synchro'].any((f)=>(result[f] as List).any((t)=>(t as List).any((g)=>g[0]==op[1] && g[1]==op[2])))) continue;
-        final preferred=op[0] as int;
-        final rank=[for (var r=preferred;r<4;r++) r].where((r)=>(result['awakening'][r] as List).length<8).firstOrNull;
-        if (rank==null) throw StateError('${unit['en']} needs an awakening slot for its MR update. Move an extra ability first.');
-        (result['awakening'][rank] as List).add([op[1],op[2],-1]);
-      }
-      result['sephiraMrRevision']=update['version'];
       CharacterConfig.validate(result);
       return result;
     } on StateError {

@@ -98,8 +98,8 @@ def revise(catalog, rows, english):
 def write_report(catalog, names):
     lines = ['# Sephira awakening bonus balance', '',
         'The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, '
-        'all 131 distinct excluded-original passives across the complete kits, permanent stats and acquisition settings. '
-        'Each complete kit has the same number of passives as its native stat/Resonance counterpart. '
+        '130 of 131 excluded-original passives after the approved Rikku Pharmacology replacement, permanent stats and acquisition settings. '
+        'The requested Libra swaps give Minfilia and Barusa one fewer passive each, and Primm and Trance Terra one more each. '
         'This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.', '',
         'Choices follow each unit’s role. Native effects and AP equip costs are unchanged, so these are learned '
         'options rather than free permanent bonuses. Combined passive equip-cost totals stay within 20% of the '

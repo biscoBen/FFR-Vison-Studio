@@ -1,0 +1,2407 @@
+{
+  "barusa": {
+    "profile": {
+      "key": "sephira_barusa",
+      "id": 13503,
+      "sort": 13573,
+      "jp": "Sephira_barusa",
+      "en": "Barusa",
+      "desc": "Earth physical bruiser and protection. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13110,
+      "attackType": "Physic",
+      "stats": {
+        "MaxHitPoint": 1000,
+        "MaxMagicPoint": 100,
+        "Attack": 40,
+        "Defence": 50,
+        "Intelligence": 30,
+        "Mind": 30,
+        "Agility": 20
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 323,
+        "en": "Barusa Skills",
+        "desc": "Earth physical bruiser and protection."
+      },
+      "master": {
+        "id": 1350300,
+        "en": "Spirit of Barusa",
+        "desc": "Barusa's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "485303": {
+          "from": 414800,
+          "visuals": 420170,
+          "jp": "Sephira_barusa_Kit_1",
+          "en": "Crust Driver",
+          "desc": "Deal Earth physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485306": {
+          "from": 414810,
+          "visuals": 420180,
+          "jp": "Sephira_barusa_Kit_2",
+          "en": "Mantle Driver",
+          "desc": "Deal Earth physical damage to an enemy 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 37,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485309": {
+          "from": 500330,
+          "visuals": 500330,
+          "jp": "Sephira_barusa_Kit_3",
+          "en": "Quicksand",
+          "desc": "Deal Earth physical damage to an enemy. Inflict Slow.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485312": {
+          "from": 500540,
+          "visuals": 500540,
+          "jp": "Sephira_barusa_Kit_4",
+          "en": "Granite Claw",
+          "desc": "Deal physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 8,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "485330": {
+          "from": 501340,
+          "visuals": 420170,
+          "jp": "Sephira_barusa_Kit_10",
+          "en": "Granite Shell Strike",
+          "desc": "Deal Earth physical damage to an enemy. reduce own physical damage taken by 30% for 3 turns.",
+          "descAuto": false,
+          "set": {
+            "Cost": 18,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "element": "Earth",
+            "effectBundleList": [
+              {
+                "effectId": 1042,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "SkillTarget",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "SkillTarget",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "SkillTarget",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              }
+            ],
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485333": {
+          "from": 500030,
+          "visuals": 500030,
+          "jp": "Sephira_barusa_Kit_11",
+          "en": "Granite Slam",
+          "desc": "Deal Earth physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 6,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "element": "Earth",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485336": {
+          "from": 500550,
+          "visuals": 500550,
+          "jp": "Sephira_barusa_Kit_12",
+          "en": "Stone Horn",
+          "desc": "Deal Earth physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 10,
+            "accuracy": 100,
+            "belongCommandList": [
+              323
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              323,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "element": "Earth",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            421400,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            421340,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485309,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485312,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485333,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485336,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1313,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1452,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            421410,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            421350,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            414700,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485303,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485330,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1106,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1290,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1336,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            421420,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            421360,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            414710,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485306,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1331,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1379,
+            -1
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1454,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "PassiveSkill",
+            1526,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            1,
+            30
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            400440,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            400640,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            6,
+            10
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1453,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            5,
+            15
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1333,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1350300,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "401003006",
+        "base": "307000303",
+        "source": "GL",
+        "dir": "units/ffbe/sephira_barusa/sprites/401003006"
+      },
+      "lb": 412620,
+      "lb_custom": {
+        "from": 412620,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "401003006",
+        "movement": {
+          "enabled": false
+        },
+        "set": {},
+        "jp": "Sephira_barusa_Resonance",
+        "en": "Barusa Resonance",
+        "desc": "Activate a barrier on all allies that reduces damage taken by 70% once.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13062",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13062",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {
+        "1526": {
+          "name": "Imbue Earth",
+          "desc": "Add earth to non-elemental standard attacks and battle skills."
+        },
+        "1454": {
+          "name": "Bastion",
+          "desc": "Increases the stagger power of Barusa\u2019s skills. The effect increases with the number of allies under Protect."
+        }
+      },
+      "sephiraMrRevision": 1
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13062,
+      "nativeName": "Wilhelm",
+      "nativePassiveCount": 11,
+      "totalPassiveCount": 11,
+      "nativeEquipCost": 325,
+      "equipCost": 305,
+      "grants": [
+        {
+          "rank": 1,
+          "id": 1106
+        },
+        {
+          "rank": 1,
+          "id": 1290
+        },
+        {
+          "rank": 0,
+          "id": 1313
+        },
+        {
+          "rank": 2,
+          "id": 1331
+        },
+        {
+          "rank": 1,
+          "id": 1336
+        },
+        {
+          "rank": 2,
+          "id": 1379
+        },
+        {
+          "rank": 0,
+          "id": 1452
+        },
+        {
+          "rank": 3,
+          "id": 1454
+        }
+      ],
+      "nativePassives": [
+        1313,
+        1452,
+        1290,
+        1321,
+        1106,
+        1379,
+        1453,
+        1454,
+        1336,
+        1333,
+        1339
+      ]
+    }
+  },
+  "minfilia": {
+    "profile": {
+      "key": "sephira_minfilia",
+      "id": 13506,
+      "sort": 13576,
+      "jp": "Sephira_minfilia",
+      "en": "Minfilia",
+      "desc": "Mixed earth/wind offense and party protection. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13125,
+      "attackType": "Physic",
+      "stats": {
+        "MaxHitPoint": 800,
+        "MaxMagicPoint": 100,
+        "Attack": 25,
+        "Defence": 30,
+        "Intelligence": 10,
+        "Mind": 20,
+        "Agility": 15
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 326,
+        "en": "Minfilia Skills",
+        "desc": "Mixed earth/wind offense and party protection."
+      },
+      "master": {
+        "id": 1350600,
+        "en": "Spirit of Minfilia",
+        "desc": "Minfilia's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "485690": {
+          "from": 445210,
+          "visuals": 445210,
+          "jp": "Sephira_minfilia_DualJobs",
+          "en": "Dual Jobs",
+          "desc": "Use Blade Torrent and another Minfilia skill in one turn.",
+          "set": {
+            "mimicableUnitId": 13506
+          }
+        },
+        "485603": {
+          "from": 220240,
+          "visuals": 220220,
+          "jp": "Sephira_minfilia_Kit_1",
+          "en": "Calamity",
+          "desc": "Deal Earth magic damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 35,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485606": {
+          "from": 225120,
+          "visuals": 225120,
+          "jp": "Sephira_minfilia_Kit_2",
+          "en": "Gale",
+          "desc": "Deal Wind magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "485609": {
+          "from": 500320,
+          "visuals": 500320,
+          "jp": "Sephira_minfilia_Kit_3",
+          "en": "Sandstorm",
+          "desc": "Deal Earth physical damage to all enemies 2 times. Inflict Blind with a 30% chance.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485612": {
+          "from": 500600,
+          "visuals": 400630,
+          "jp": "Sephira_minfilia_Kit_4",
+          "en": "Petrifying Gaze",
+          "desc": "Inflict Stoned with a 30% chance.",
+          "descAuto": false,
+          "set": {
+            "Cost": 18,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "485615": {
+          "from": 502610,
+          "visuals": 210010,
+          "jp": "Sephira_minfilia_Kit_5",
+          "en": "Quiet Recovery",
+          "desc": "Restore own HP.",
+          "descAuto": false,
+          "set": {
+            "Cost": 5,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "485630": {
+          "from": 225150,
+          "visuals": 225150,
+          "jp": "Sephira_minfilia_Kit_10",
+          "en": "Earthward",
+          "desc": "Deal Earth magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485633": {
+          "from": 255170,
+          "visuals": 220220,
+          "jp": "Sephira_minfilia_Kit_11",
+          "en": "Stonefall",
+          "desc": "Deal Earth magic damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 28,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "485636": {
+          "from": 502730,
+          "visuals": 400630,
+          "jp": "Sephira_minfilia_Kit_12",
+          "en": "Warrior\u2019s Blessing",
+          "desc": "Increase an ally\u2019s attack by 50% for 3 turns.",
+          "descAuto": false,
+          "set": {
+            "Cost": 14,
+            "accuracy": 100,
+            "belongCommandList": [
+              326
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              326,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "effectBundleList": [
+              {
+                "effectId": 16101,
+                "TargetType": "SkillTarget",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              },
+              {
+                "effectId": -1,
+                "TargetType": "Self",
+                "targetRelation": "Friendlies",
+                "activeSkillAddTiming": "AfterDamageCalculation",
+                "passiveSkillAddTiming": "None",
+                "conditionData": {
+                  "Condition": "None",
+                  "param1": -1,
+                  "param2": -1,
+                  "param3": -1
+                }
+              }
+            ]
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            220210,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            230040,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485606,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485609,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485615,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485630,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1311,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1313,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            220220,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            230050,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485612,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485636,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1116,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1381,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            220230,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            445200,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485603,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            485633,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1277,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1410,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            485690,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1411,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "ActiveSkill",
+            400240,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            5,
+            5
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1343,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1465,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            2,
+            20
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1336,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            7,
+            15
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1412,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1350600,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "214000304",
+        "base": "214000304",
+        "source": "GL",
+        "dir": "units/ffbe/sephira_minfilia/sprites/214000304"
+      },
+      "lb": 440030,
+      "lb_custom": {
+        "from": 440030,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "214000304",
+        "movement": {
+          "enabled": false
+        },
+        "set": {},
+        "jp": "Sephira_minfilia_Resonance",
+        "en": "Minfilia Resonance",
+        "desc": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13102",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13102",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {
+        "1410": {
+          "name": "Job Change",
+          "desc": "Minfilia\u2019s skills use the higher of physical or magic attack."
+        },
+        "1411": {
+          "name": "Late Bloomer",
+          "desc": "Increases damage dealt by Minfilia\u2019s skills by 30% while the LB gauge is at least 50%."
+        }
+      },
+      "sephiraMrRevision": 1
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13102,
+      "nativeName": "Onion Knight",
+      "nativePassiveCount": 11,
+      "totalPassiveCount": 11,
+      "nativeEquipCost": 310,
+      "equipCost": 315,
+      "grants": [
+        {
+          "rank": 1,
+          "id": 1116
+        },
+        {
+          "rank": 2,
+          "id": 1277
+        },
+        {
+          "rank": 0,
+          "id": 1311
+        },
+        {
+          "rank": 0,
+          "id": 1313
+        },
+        {
+          "rank": 1,
+          "id": 1381
+        },
+        {
+          "rank": 2,
+          "id": 1410
+        },
+        {
+          "rank": 3,
+          "id": 1411
+        }
+      ],
+      "nativePassives": [
+        1311,
+        1411,
+        1116,
+        1381,
+        1277,
+        1412,
+        1410,
+        1258,
+        1465,
+        1358,
+        1031
+      ]
+    }
+  },
+  "trance_terra": {
+    "profile": {
+      "key": "sephira_trance_terra",
+      "id": 13521,
+      "sort": 13591,
+      "jp": "Sephira_trance_terra",
+      "en": "Trance Terra",
+      "desc": "Dark/fire magic, poison and costly finishers. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13108,
+      "attackType": "Magic",
+      "stats": {
+        "MaxHitPoint": 800,
+        "MaxMagicPoint": 100,
+        "Attack": 25,
+        "Defence": 30,
+        "Intelligence": 10,
+        "Mind": 20,
+        "Agility": 15
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 341,
+        "en": "Trance Terra Skills",
+        "desc": "Dark/fire magic, poison and costly finishers."
+      },
+      "master": {
+        "id": 1352100,
+        "en": "Spirit of Trance Terra",
+        "desc": "Trance Terra's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "487103": {
+          "from": 414300,
+          "visuals": 408050,
+          "jp": "Sephira_trance_terra_Kit_1",
+          "en": "Spill",
+          "desc": "Deal Dark magic damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 46,
+            "accuracy": 100,
+            "belongCommandList": [
+              341
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              341,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
+          }
+        },
+        "487106": {
+          "from": 505450,
+          "visuals": 408050,
+          "jp": "Sephira_trance_terra_Kit_2",
+          "en": "Trance Judgment",
+          "desc": "Deal Dark magic damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 35,
+            "accuracy": 100,
+            "belongCommandList": [
+              341
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              341,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
+          }
+        },
+        "487109": {
+          "from": 503120,
+          "visuals": 400630,
+          "jp": "Sephira_trance_terra_Kit_3",
+          "en": "Judgment Shadow",
+          "desc": "Deal magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 30,
+            "accuracy": 100,
+            "belongCommandList": [
+              341
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              341,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487112": {
+          "from": 505470,
+          "visuals": 220020,
+          "jp": "Sephira_trance_terra_Kit_4",
+          "en": "Hell Pillar",
+          "desc": "Deal Fire magic damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 26,
+            "accuracy": 100,
+            "belongCommandList": [
+              341
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              341,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        },
+        "487130": {
+          "from": 505540,
+          "visuals": 400630,
+          "jp": "Sephira_trance_terra_Kit_10",
+          "en": "Trance Apocalypse",
+          "desc": "Deal magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 40,
+            "accuracy": 100,
+            "belongCommandList": [
+              341
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              341,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "magnification": 40
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            220250,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220010,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1107,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1275,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            447300,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220260,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220020,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220030,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1381,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            447310,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220320,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220380,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487103,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487106,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487109,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487112,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487130,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            220350,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220340,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1307,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1432,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1433,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "PassiveSkill",
+            1038,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            9,
+            5
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1319,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1315,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            2,
+            20
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1351,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            7,
+            15
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            400730,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1352100,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "206000125",
+        "base": "206000125",
+        "source": "GL",
+        "dir": "units/ffbe/sephira_trance_terra/sprites/206000125"
+      },
+      "lb": 440240,
+      "lb_custom": {
+        "from": 440240,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "206000125",
+        "movement": {
+          "enabled": false
+        },
+        "set": {},
+        "jp": "Sephira_trance_terra_Resonance",
+        "en": "Trance Terra Resonance",
+        "desc": "Deal Dark magic damage to an enemy and fill LB gauge by 20%.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13123",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13123",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {
+        "1432": {
+          "name": "The Federation\u2019s Fiend",
+          "desc": "Halves the MP cost of Trance Terra\u2019s skills while the LB gauge is at least 50%."
+        },
+        "1433": {
+          "name": "Play Rough",
+          "desc": "Increases damage dealt by Trance Judgment, Judgment Shadow, and Trance Terra\u2019s resonance by 40% against enemies that have attacked self."
+        }
+      },
+      "sephiraMrRevision": 1
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13123,
+      "nativeName": "Shantotto",
+      "nativePassiveCount": 10,
+      "totalPassiveCount": 10,
+      "nativeEquipCost": 310,
+      "equipCost": 340,
+      "grants": [
+        {
+          "rank": 0,
+          "id": 1107
+        },
+        {
+          "rank": 0,
+          "id": 1275
+        },
+        {
+          "rank": 3,
+          "id": 1307
+        },
+        {
+          "rank": 1,
+          "id": 1381
+        },
+        {
+          "rank": 3,
+          "id": 1432
+        },
+        {
+          "rank": 3,
+          "id": 1433
+        }
+      ],
+      "nativePassives": [
+        1275,
+        1432,
+        1315,
+        1107,
+        1381,
+        1433,
+        1319,
+        1431,
+        1307,
+        1351
+      ]
+    }
+  },
+  "primm": {
+    "profile": {
+      "key": "sephira_primm",
+      "id": 13525,
+      "sort": 13595,
+      "jp": "Sephira_primm",
+      "en": "Spirited Heart Primm",
+      "desc": "Mixed elemental sabers and support. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13125,
+      "attackType": "Physic",
+      "stats": {
+        "MaxHitPoint": 800,
+        "MaxMagicPoint": 100,
+        "Attack": 25,
+        "Defence": 30,
+        "Intelligence": 10,
+        "Mind": 20,
+        "Agility": 15
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 345,
+        "en": "Spirited Heart Primm Skills",
+        "desc": "Mixed elemental sabers and support."
+      },
+      "master": {
+        "id": 1352500,
+        "en": "Spirit of Spirited Heart Primm",
+        "desc": "Spirited Heart Primm's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "487503": {
+          "from": 240010,
+          "visuals": 240010,
+          "jp": "Sephira_primm_Kit_1",
+          "en": "Cure",
+          "desc": "Restore an ally\u2019s HP.",
+          "descAuto": false,
+          "set": {
+            "Cost": 6,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487506": {
+          "from": 240020,
+          "visuals": 210020,
+          "jp": "Sephira_primm_Kit_2",
+          "en": "Cura",
+          "desc": "Restore an ally\u2019s HP.",
+          "descAuto": false,
+          "set": {
+            "Cost": 18,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487509": {
+          "from": 240030,
+          "visuals": 210030,
+          "jp": "Sephira_primm_Kit_3",
+          "en": "Curaga",
+          "desc": "Restore an ally\u2019s HP.",
+          "descAuto": false,
+          "set": {
+            "Cost": 50,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487512": {
+          "from": 500360,
+          "visuals": 220010,
+          "jp": "Sephira_primm_Kit_4",
+          "en": "Firestorm Saber",
+          "desc": "Deal Fire physical damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        },
+        "487515": {
+          "from": 500380,
+          "visuals": 220020,
+          "jp": "Sephira_primm_Kit_5",
+          "en": "Atomic Saber",
+          "desc": "Deal Fire physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        },
+        "487530": {
+          "from": 255010,
+          "visuals": 220010,
+          "jp": "Sephira_primm_Kit_10",
+          "en": "Flame Saber",
+          "desc": "Deal Fire physical damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        },
+        "487533": {
+          "from": 255130,
+          "visuals": 220170,
+          "jp": "Sephira_primm_Kit_11",
+          "en": "Gale Saber",
+          "desc": "Deal Wind physical damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "487536": {
+          "from": 225300,
+          "visuals": 225300,
+          "jp": "Sephira_primm_Kit_12",
+          "en": "Spiritlight Saber",
+          "desc": "Deal Light physical damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 35,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+          }
+        },
+        "487539": {
+          "from": 503190,
+          "visuals": 400630,
+          "jp": "Sephira_primm_Kit_13",
+          "en": "Mana Burst",
+          "desc": "Deal magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 26,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487518": {
+          "from": 255000,
+          "visuals": 255000,
+          "jp": "Sephira_primm_Kit_6",
+          "en": "Blazing Saber",
+          "desc": "Deal Fire physical damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 14,
+            "accuracy": 100,
+            "belongCommandList": [
+              345
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              345,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "magnification": 18,
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            421280,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            420160,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487503,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1311,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1116,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            421290,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            420170,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487506,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487512,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487515,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487530,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487518,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1381,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            421300,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            420180,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            445300,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487533,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487536,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487539,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1277,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1293,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            487509,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            400770,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1284,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "PassiveSkill",
+            1011,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            5,
+            5
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1378,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1273,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            2,
+            20
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1531,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            7,
+            15
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1460,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1352500,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "304000717",
+        "base": "304000707",
+        "source": "GLW",
+        "dir": "units/ffbe/sephira_primm/sprites/304000717",
+        "baseForm": "304000707",
+        "baseDir": "units/ffbe/sephira_primm/sprites/304000707",
+        "shift": "slb"
+      },
+      "lb": 440030,
+      "lb_custom": {
+        "from": 440030,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "304000717",
+        "movement": {
+          "enabled": false
+        },
+        "set": {},
+        "jp": "Sephira_primm_Resonance",
+        "en": "Spirited Heart Primm Resonance",
+        "desc": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13102",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13102",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {
+        "1531": {
+          "name": "Physical Evasion +15%",
+          "desc": "Evade physical attacks with a 15% chance."
+        }
+      }
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13102,
+      "nativeName": "Onion Knight",
+      "nativePassiveCount": 11,
+      "totalPassiveCount": 11,
+      "nativeEquipCost": 310,
+      "equipCost": 330,
+      "grants": [
+        {
+          "rank": 0,
+          "id": 1311
+        },
+        {
+          "rank": 0,
+          "id": 1116
+        },
+        {
+          "rank": 1,
+          "id": 1381
+        },
+        {
+          "rank": 2,
+          "id": 1277
+        },
+        {
+          "rank": 2,
+          "id": 1293
+        },
+        {
+          "rank": 3,
+          "id": 1284
+        }
+      ],
+      "nativePassives": [
+        1311,
+        1411,
+        1116,
+        1381,
+        1277,
+        1412,
+        1410,
+        1258,
+        1465,
+        1358,
+        1031
+      ]
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "catalogSha256": "2d13a30e61eba209ff3b0d34521bf64c5850739809a3ba3407b2fcfd3af7f5ee",
-  "nativeAuditSha256": "f49a8900446318b04b727aaeefb8f771905386bfff6ed5578857fda675f8cb7c",
+  "catalogSha256": "182d382446d8b3ada5debbb355e62425740df2c8ce60d97d1001215285a0d339",
+  "nativeAuditSha256": "198215243353e8ee47ad9dbff15e6e34fc51293fe22300612c533e679a726b22",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
     "originalVisions": 15,
@@ -186,21 +186,14 @@
       ],
       "mr": [
         {
-          "preset": "minfilia",
-          "vision": "Minfilia",
-          "rank": 7,
+          "preset": "barusa",
+          "vision": "Barusa",
+          "rank": 1,
           "grantId": 1336,
           "privateCopy": false
         }
       ],
       "awakening": [
-        {
-          "preset": "barusa",
-          "vision": "Barusa",
-          "rank": 2,
-          "grantId": 1336,
-          "privateCopy": false
-        },
         {
           "preset": "lunafreya",
           "vision": "Oracle Maiden Lunafreya",
@@ -637,7 +630,7 @@
         {
           "preset": "minfilia",
           "vision": "Minfilia",
-          "rank": 1,
+          "rank": 3,
           "grantId": 400240,
           "privateCopy": false
         }
@@ -1706,7 +1699,7 @@
         {
           "preset": "minfilia",
           "vision": "Minfilia",
-          "rank": 3,
+          "rank": 7,
           "grantId": 1343,
           "privateCopy": false
         }
@@ -1993,14 +1986,22 @@
       ],
       "mr": [
         {
-          "preset": "trance_terra",
-          "vision": "Trance Terra",
-          "rank": 1,
+          "preset": "primm",
+          "vision": "Spirited Heart Primm",
+          "rank": 9,
           "grantId": 1038,
           "privateCopy": false
         }
       ],
-      "awakening": [],
+      "awakening": [
+        {
+          "preset": "trance_terra",
+          "vision": "Trance Terra",
+          "rank": 3,
+          "grantId": 1038,
+          "privateCopy": false
+        }
+      ],
       "status": "covered_mr"
     }
   ],

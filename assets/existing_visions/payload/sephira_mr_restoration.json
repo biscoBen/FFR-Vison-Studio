@@ -102,7 +102,7 @@
       ]
     },
     "barusa": {
-      "version": 1,
+      "version": 2,
       "mr": [
         {
           "rank": 3,
@@ -149,6 +149,86 @@
           "PassiveSkill",
           1336
         ]
+      ],
+      "steps": [
+        {
+          "version": 1,
+          "mr": [
+            {
+              "rank": 3,
+              "from": [
+                "PassiveSkill",
+                1336,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400440,
+                -1
+              ]
+            },
+            {
+              "rank": 5,
+              "from": [
+                "PassiveSkill",
+                1452,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400640,
+                -1
+              ]
+            }
+          ],
+          "remove": [
+            [
+              0,
+              "ActiveSkill",
+              400640
+            ]
+          ],
+          "add": [
+            [
+              0,
+              "PassiveSkill",
+              1452
+            ],
+            [
+              1,
+              "PassiveSkill",
+              1336
+            ]
+          ]
+        },
+        {
+          "version": 2,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "PassiveSkill",
+                1526,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1336,
+                -1
+              ]
+            }
+          ],
+          "remove": [
+            [
+              1,
+              "PassiveSkill",
+              1336
+            ]
+          ],
+          "add": [],
+          "move": [],
+          "exactAwakeningRanks": true
+        }
       ]
     },
     "lunafreya": {
@@ -178,7 +258,7 @@
       ]
     },
     "minfilia": {
-      "version": 1,
+      "version": 2,
       "mr": [
         {
           "rank": 1,
@@ -220,6 +300,101 @@
           "PassiveSkill",
           1313
         ]
+      ],
+      "steps": [
+        {
+          "version": 1,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "PassiveSkill",
+                1465,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400240,
+                -1
+              ]
+            },
+            {
+              "rank": 5,
+              "from": [
+                "PassiveSkill",
+                1313,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1465,
+                -1
+              ]
+            }
+          ],
+          "remove": [
+            [
+              0,
+              "ActiveSkill",
+              400240
+            ]
+          ],
+          "add": [
+            [
+              0,
+              "PassiveSkill",
+              1313
+            ]
+          ]
+        },
+        {
+          "version": 2,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "ActiveSkill",
+                400240,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                210220,
+                -1
+              ]
+            },
+            {
+              "rank": 3,
+              "from": [
+                "PassiveSkill",
+                1343,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400240,
+                -1
+              ]
+            },
+            {
+              "rank": 7,
+              "from": [
+                "PassiveSkill",
+                1336,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1343,
+                -1
+              ]
+            }
+          ],
+          "remove": [],
+          "add": [],
+          "move": [],
+          "exactAwakeningRanks": true
+        }
       ]
     },
     "lenneth": {
@@ -601,7 +776,7 @@
       ]
     },
     "trance_terra": {
-      "version": 1,
+      "version": 2,
       "mr": [
         {
           "rank": 9,
@@ -630,6 +805,74 @@
           "PassiveSkill",
           1307
         ]
+      ],
+      "steps": [
+        {
+          "version": 1,
+          "mr": [
+            {
+              "rank": 9,
+              "from": [
+                "PassiveSkill",
+                1307,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400730,
+                -1
+              ]
+            }
+          ],
+          "remove": [
+            [
+              3,
+              "ActiveSkill",
+              400730
+            ]
+          ],
+          "add": [
+            [
+              3,
+              "PassiveSkill",
+              1307
+            ]
+          ]
+        },
+        {
+          "version": 2,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "PassiveSkill",
+                1038,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1011,
+                -1
+              ]
+            }
+          ],
+          "remove": [],
+          "add": [
+            [
+              2,
+              "PassiveSkill",
+              1038
+            ]
+          ],
+          "move": [
+            [
+              505540,
+              2,
+              3
+            ]
+          ],
+          "exactAwakeningRanks": true
+        }
       ]
     },
     "elephim": {
@@ -683,6 +926,53 @@
           1385
         ]
       ]
+    },
+    "primm": {
+      "version": 1,
+      "mr": [
+        {
+          "rank": 1,
+          "from": [
+            "PassiveSkill",
+            1011,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1526,
+            -1
+          ]
+        },
+        {
+          "rank": 9,
+          "from": [
+            "PassiveSkill",
+            1460,
+            -1
+          ],
+          "to": [
+            "PassiveSkill",
+            1038,
+            -1
+          ]
+        }
+      ],
+      "remove": [],
+      "add": [
+        [
+          3,
+          "PassiveSkill",
+          1460
+        ]
+      ],
+      "move": [],
+      "exactAwakeningRanks": true,
+      "passiveText": {
+        "1526": {
+          "name": "Imbue Earth",
+          "desc": "Add earth to non-elemental standard attacks and battle skills."
+        }
+      }
     },
     "rikku": {
       "version": 1,

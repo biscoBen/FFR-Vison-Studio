@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Sephira Libra and mastery reward swaps
+
+- Minfilia learns Libra at MR1 and Throw at MR3; her MR5/7/9 stay Observe and Recover HP,
+  Observe and Attack, and Chuck. Barusa gets Strategic Acumen at MR1, Primm gets Imbue Earth
+  at MR1, and Trance Terra gets Resist Fire at MR1.
+- Fire Eater moves to Trance Terra awakening tier 3 and Primm MR9. Primm’s Boundless Flames
+  moves to awakening tier 4. Terra’s Trance Apocalypse moves to tier 4 to fit the eight-slot cap.
+  All 75 original equipable MR rewards stay covered. Minfilia/Barusa each lose one passive,
+  Primm/Terra each gain one; all four stay within 20% of their native passive AP budgets.
+- Migrate untouched saved reward layouts in stages, preserving IDs, Spirit ownership, private
+  recipes, stats, acquisition choices and permanent rewards. Keep the old Barusa Earth imbue
+  definition for existing learned saves, and give Primm a named 20-AP equipable copy.
+  Conflicting edited rewards or full tiers stay intact and are reported. Live-game testing remains.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

@@ -22,7 +22,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Tronn | 5 | Focus Magic (400630) | Christine MR5 | covered mr |
 | Tronn | 7 | Stagger Power +20% (1279) | Relm MR5; Nalu MR7 | covered mr |
 | Tronn | 9 | Half MP Cost (1045) | Christine MR9 | covered mr |
-| Wilhelm | 1 | Strategic Acumen (1336) | Minfilia MR7 | covered mr |
+| Wilhelm | 1 | Strategic Acumen (1336) | Barusa MR1 | covered mr |
 | Wilhelm | 3 | Chakra (400440) | Barusa MR3 | covered mr |
 | Wilhelm | 5 | Guard (400640) | Barusa MR5 | covered mr |
 | Wilhelm | 7 | Critical Counter (1333) | Barusa MR9; Lilith MR7 | covered mr |
@@ -37,7 +37,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Firion | 5 | Decimating Attacks (1337) | Blue Sky Belle Fran MR9 | covered mr |
 | Firion | 7 | Recuperate LB (1338) | Moogle of Narshe Mog MR5 | covered mr |
 | Firion | 9 | Arms Akimbo (400650) | Lila MR9 | covered mr |
-| Onion Knight | 1 | Throw (400240) | Minfilia MR1 | covered mr |
+| Onion Knight | 1 | Throw (400240) | Minfilia MR3 | covered mr |
 | Onion Knight | 3 | Spry Steps (1258) | Lunera MR3 | covered mr |
 | Onion Knight | 5 | Observe and Recover HP (1465) | Minfilia MR5 | covered mr |
 | Onion Knight | 7 | Vigorous Attacks (1358) | Snow White MR3 | covered mr |
@@ -80,7 +80,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Vaan | 1 | Gil Farmer (400400) | Aerith MR1 | covered mr |
 | Vaan | 3 | Gil Farmer on Stagger (1386) | Aerith MR9 | covered mr |
 | Vaan | 5 | Gil Toss (400250) | Oracle Maiden Lunafreya MR5 | covered mr |
-| Vaan | 7 | Observe and Attack (1343) | Minfilia MR3 | covered mr |
+| Vaan | 7 | Observe and Attack (1343) | Minfilia MR7 | covered mr |
 | Vaan | 9 | Double Gil (1050) | Charming Kitty Ariana MR9 | covered mr |
 | Noctis | 1 | Fill LB on Defeating Foes (1320) | Dragon Knight Freya MR1 | covered mr |
 | Noctis | 3 | Reflex (1257) | Dragon Knight Freya MR3 | covered mr |
@@ -91,11 +91,11 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Clive | 3 | Restore HP on Defeating Foes (1318) | Reberta (JP) MR3 | covered mr |
 | Clive | 5 | Power Stagger (1385) | Reberta (JP) MR5 | covered mr |
 | Clive | 7 | Mirage (400670) | Reberta (JP) MR7 | covered mr |
-| Clive | 9 | Fire Eater (1038) | Trance Terra MR1 | covered mr |
+| Clive | 9 | Fire Eater (1038) | Spirited Heart Primm MR9 | covered mr |
 
 ## Updating the comparison
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `2d13a30e61eba209ff3b0d34521bf64c5850739809a3ba3407b2fcfd3af7f5ee`.
-Native coverage fingerprint: `f49a8900446318b04b727aaeefb8f771905386bfff6ed5578857fda675f8cb7c`.
+Catalog fingerprint: `182d382446d8b3ada5debbb355e62425740df2c8ce60d97d1001215285a0d339`.
+Native coverage fingerprint: `198215243353e8ee47ad9dbff15e6e34fc51293fe22300612c533e679a726b22`.

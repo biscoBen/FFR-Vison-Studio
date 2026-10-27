@@ -60,7 +60,7 @@ class SephiraTests(unittest.TestCase):
                         key=f'{kind}:{id}'
                         # The user's healer layouts deliberately share these
                         # native spells; every audited original owner remains.
-                        shared={230040,230050,230070,210140,210160,210120,210130,210050,215000}
+                        shared={230040,230050,230070,210140,210160,210120,210130,210050,215000,210220}
                         shared.update(row[2] for row in json.loads((ROOT/'scripts/fixtures/sephira_mr_restoration_plan.json').read_bytes())['placements'])
                         if id not in shared:self.assertNotIn(key,seen,key)
                         seen.setdefault(key,set()).add(p['id'])

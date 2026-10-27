@@ -6916,11 +6916,6 @@
               "PassiveSkill",
               1290,
               -1
-            ],
-            [
-              "PassiveSkill",
-              1336,
-              -1
             ]
           ],
           [
@@ -6968,7 +6963,7 @@
           [
             [
               "PassiveSkill",
-              1526,
+              1336,
               -1
             ]
           ],
@@ -7094,19 +7089,19 @@
             "desc": "Increases the stagger power of Barusa\u2019s skills. The effect increases with the number of allies under Protect."
           }
         },
-        "sephiraMrRevision": 1
+        "sephiraMrRevision": 2
       },
       "balance": {
         "nativeBudget": 13062,
         "nativeName": "Wilhelm",
         "growthDonor": 13110,
         "activeCount": 15,
-        "passiveCount": 8,
-        "kitCount": 23,
+        "passiveCount": 7,
+        "kitCount": 22,
         "mrActiveCount": 2,
         "mrPassiveCount": 3,
         "mrSkillCount": 5,
-        "totalSkillCount": 28,
+        "totalSkillCount": 27,
         "previousCount": 15,
         "additionalPassives": [
           1526
@@ -8001,10 +7996,18 @@
         "nativeBudget": 13062,
         "nativeName": "Wilhelm",
         "nativePassiveCount": 11,
-        "totalPassiveCount": 11,
+        "totalPassiveCount": 10,
         "nativeEquipCost": 325,
-        "equipCost": 305,
+        "equipCost": 285,
         "grants": [
+          {
+            "rank": 0,
+            "id": 1313
+          },
+          {
+            "rank": 0,
+            "id": 1452
+          },
           {
             "rank": 1,
             "id": 1106
@@ -8014,24 +8017,12 @@
             "id": 1290
           },
           {
-            "rank": 0,
-            "id": 1313
-          },
-          {
             "rank": 2,
             "id": 1331
           },
           {
-            "rank": 1,
-            "id": 1336
-          },
-          {
             "rank": 2,
             "id": 1379
-          },
-          {
-            "rank": 0,
-            "id": 1452
           },
           {
             "rank": 3,
@@ -8050,7 +8041,8 @@
           1336,
           1333,
           1339
-        ]
+        ],
+        "requestedPassiveDelta": -1
       },
       "descriptionUpdate": {
         "schema": 1,
@@ -8314,7 +8306,7 @@
         }
       },
       "mrRestoration": {
-        "version": 1,
+        "version": 2,
         "before": {
           "awakening": [
             [
@@ -8607,6 +8599,86 @@
             "PassiveSkill",
             1336
           ]
+        ],
+        "steps": [
+          {
+            "version": 1,
+            "mr": [
+              {
+                "rank": 3,
+                "from": [
+                  "PassiveSkill",
+                  1336,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  400440,
+                  -1
+                ]
+              },
+              {
+                "rank": 5,
+                "from": [
+                  "PassiveSkill",
+                  1452,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  400640,
+                  -1
+                ]
+              }
+            ],
+            "remove": [
+              [
+                0,
+                "ActiveSkill",
+                400640
+              ]
+            ],
+            "add": [
+              [
+                0,
+                "PassiveSkill",
+                1452
+              ],
+              [
+                1,
+                "PassiveSkill",
+                1336
+              ]
+            ]
+          },
+          {
+            "version": 2,
+            "mr": [
+              {
+                "rank": 1,
+                "from": [
+                  "PassiveSkill",
+                  1526,
+                  -1
+                ],
+                "to": [
+                  "PassiveSkill",
+                  1336,
+                  -1
+                ]
+              }
+            ],
+            "remove": [
+              [
+                1,
+                "PassiveSkill",
+                1336
+              ]
+            ],
+            "add": [],
+            "move": [],
+            "exactAwakeningRanks": true
+          }
         ]
       }
     },
@@ -12468,7 +12540,7 @@
           [
             [
               "ActiveSkill",
-              400240,
+              210220,
               -1
             ]
           ],
@@ -12481,8 +12553,8 @@
           ],
           [
             [
-              "PassiveSkill",
-              1343,
+              "ActiveSkill",
+              400240,
               -1
             ]
           ],
@@ -12510,7 +12582,7 @@
           [
             [
               "PassiveSkill",
-              1336,
+              1343,
               -1
             ]
           ],
@@ -12594,7 +12666,7 @@
             "desc": "Increases damage dealt by Minfilia\u2019s skills by 30% while the LB gauge is at least 50%."
           }
         },
-        "sephiraMrRevision": 1
+        "sephiraMrRevision": 2
       },
       "balance": {
         "nativeBudget": 13102,
@@ -12603,8 +12675,8 @@
         "activeCount": 15,
         "passiveCount": 7,
         "kitCount": 22,
-        "mrActiveCount": 1,
-        "mrPassiveCount": 4,
+        "mrActiveCount": 2,
+        "mrPassiveCount": 3,
         "mrSkillCount": 5,
         "totalSkillCount": 27,
         "previousCount": 14,
@@ -13544,18 +13616,10 @@
         "nativeBudget": 13102,
         "nativeName": "Onion Knight",
         "nativePassiveCount": 11,
-        "totalPassiveCount": 11,
+        "totalPassiveCount": 10,
         "nativeEquipCost": 310,
-        "equipCost": 315,
+        "equipCost": 295,
         "grants": [
-          {
-            "rank": 1,
-            "id": 1116
-          },
-          {
-            "rank": 2,
-            "id": 1277
-          },
           {
             "rank": 0,
             "id": 1311
@@ -13566,7 +13630,15 @@
           },
           {
             "rank": 1,
+            "id": 1116
+          },
+          {
+            "rank": 1,
             "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1277
           },
           {
             "rank": 2,
@@ -13589,7 +13661,8 @@
           1465,
           1358,
           1031
-        ]
+        ],
+        "requestedPassiveDelta": -1
       },
       "descriptionUpdate": {
         "schema": 1,
@@ -13865,7 +13938,7 @@
         }
       },
       "mrRestoration": {
-        "version": 1,
+        "version": 2,
         "before": {
           "awakening": [
             [
@@ -14153,6 +14226,101 @@
             "PassiveSkill",
             1313
           ]
+        ],
+        "steps": [
+          {
+            "version": 1,
+            "mr": [
+              {
+                "rank": 1,
+                "from": [
+                  "PassiveSkill",
+                  1465,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  400240,
+                  -1
+                ]
+              },
+              {
+                "rank": 5,
+                "from": [
+                  "PassiveSkill",
+                  1313,
+                  -1
+                ],
+                "to": [
+                  "PassiveSkill",
+                  1465,
+                  -1
+                ]
+              }
+            ],
+            "remove": [
+              [
+                0,
+                "ActiveSkill",
+                400240
+              ]
+            ],
+            "add": [
+              [
+                0,
+                "PassiveSkill",
+                1313
+              ]
+            ]
+          },
+          {
+            "version": 2,
+            "mr": [
+              {
+                "rank": 1,
+                "from": [
+                  "ActiveSkill",
+                  400240,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  210220,
+                  -1
+                ]
+              },
+              {
+                "rank": 3,
+                "from": [
+                  "PassiveSkill",
+                  1343,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  400240,
+                  -1
+                ]
+              },
+              {
+                "rank": 7,
+                "from": [
+                  "PassiveSkill",
+                  1336,
+                  -1
+                ],
+                "to": [
+                  "PassiveSkill",
+                  1343,
+                  -1
+                ]
+              }
+            ],
+            "remove": [],
+            "add": [],
+            "move": [],
+            "exactAwakeningRanks": true
+          }
         ]
       }
     },
@@ -43577,8 +43745,8 @@
               -1
             ],
             [
-              "ActiveSkill",
-              487130,
+              "PassiveSkill",
+              1038,
               -1
             ]
           ],
@@ -43607,6 +43775,11 @@
               "PassiveSkill",
               1433,
               -1
+            ],
+            [
+              "ActiveSkill",
+              487130,
+              -1
             ]
           ]
         ],
@@ -43615,7 +43788,7 @@
           [
             [
               "PassiveSkill",
-              1038,
+              1011,
               -1
             ]
           ],
@@ -43741,19 +43914,19 @@
             "desc": "Increases damage dealt by Trance Judgment, Judgment Shadow, and Trance Terra\u2019s resonance by 40% against enemies that have attacked self."
           }
         },
-        "sephiraMrRevision": 1
+        "sephiraMrRevision": 2
       },
       "balance": {
         "nativeBudget": 13123,
         "nativeName": "Shantotto",
         "growthDonor": 13108,
         "activeCount": 16,
-        "passiveCount": 6,
-        "kitCount": 22,
+        "passiveCount": 7,
+        "kitCount": 23,
         "mrActiveCount": 1,
         "mrPassiveCount": 4,
         "mrSkillCount": 5,
-        "totalSkillCount": 27,
+        "totalSkillCount": 28,
         "previousCount": 15,
         "additionalPassives": [],
         "playerCopies": [
@@ -44046,7 +44219,7 @@
             "effects": [],
             "unlock": [
               "awakening",
-              2
+              3
             ]
           }
         ],
@@ -44339,9 +44512,9 @@
         "nativeBudget": 13123,
         "nativeName": "Shantotto",
         "nativePassiveCount": 10,
-        "totalPassiveCount": 10,
+        "totalPassiveCount": 11,
         "nativeEquipCost": 310,
-        "equipCost": 340,
+        "equipCost": 370,
         "grants": [
           {
             "rank": 0,
@@ -44352,12 +44525,16 @@
             "id": 1275
           },
           {
-            "rank": 3,
-            "id": 1307
-          },
-          {
             "rank": 1,
             "id": 1381
+          },
+          {
+            "rank": 2,
+            "id": 1038
+          },
+          {
+            "rank": 3,
+            "id": 1307
           },
           {
             "rank": 3,
@@ -44379,7 +44556,8 @@
           1431,
           1307,
           1351
-        ]
+        ],
+        "requestedPassiveDelta": 1
       },
       "descriptionUpdate": {
         "schema": 1,
@@ -44637,7 +44815,7 @@
         }
       },
       "mrRestoration": {
-        "version": 1,
+        "version": 2,
         "before": {
           "awakening": [
             [
@@ -44907,6 +45085,74 @@
             "PassiveSkill",
             1307
           ]
+        ],
+        "steps": [
+          {
+            "version": 1,
+            "mr": [
+              {
+                "rank": 9,
+                "from": [
+                  "PassiveSkill",
+                  1307,
+                  -1
+                ],
+                "to": [
+                  "ActiveSkill",
+                  400730,
+                  -1
+                ]
+              }
+            ],
+            "remove": [
+              [
+                3,
+                "ActiveSkill",
+                400730
+              ]
+            ],
+            "add": [
+              [
+                3,
+                "PassiveSkill",
+                1307
+              ]
+            ]
+          },
+          {
+            "version": 2,
+            "mr": [
+              {
+                "rank": 1,
+                "from": [
+                  "PassiveSkill",
+                  1038,
+                  -1
+                ],
+                "to": [
+                  "PassiveSkill",
+                  1011,
+                  -1
+                ]
+              }
+            ],
+            "remove": [],
+            "add": [
+              [
+                2,
+                "PassiveSkill",
+                1038
+              ]
+            ],
+            "move": [
+              [
+                505540,
+                2,
+                3
+              ]
+            ],
+            "exactAwakeningRanks": true
+          }
         ]
       }
     },
@@ -51091,6 +51337,11 @@
               "PassiveSkill",
               1284,
               -1
+            ],
+            [
+              "PassiveSkill",
+              1460,
+              -1
             ]
           ]
         ],
@@ -51099,7 +51350,7 @@
           [
             [
               "PassiveSkill",
-              1011,
+              1526,
               -1
             ]
           ],
@@ -51155,7 +51406,7 @@
           [
             [
               "PassiveSkill",
-              1460,
+              1038,
               -1
             ],
             [
@@ -51222,20 +51473,25 @@
           "1531": {
             "name": "Physical Evasion +15%",
             "desc": "Evade physical attacks with a 15% chance."
+          },
+          "1526": {
+            "name": "Imbue Earth",
+            "desc": "Add earth to non-elemental standard attacks and battle skills."
           }
-        }
+        },
+        "sephiraMrRevision": 1
       },
       "balance": {
         "nativeBudget": 13102,
         "nativeName": "Onion Knight",
         "growthDonor": 13125,
         "activeCount": 18,
-        "passiveCount": 6,
-        "kitCount": 24,
+        "passiveCount": 7,
+        "kitCount": 25,
         "mrActiveCount": 0,
         "mrPassiveCount": 5,
         "mrSkillCount": 5,
-        "totalSkillCount": 29,
+        "totalSkillCount": 30,
         "previousCount": 14,
         "additionalPassives": [
           1531
@@ -52184,9 +52440,9 @@
         "nativeBudget": 13102,
         "nativeName": "Onion Knight",
         "nativePassiveCount": 11,
-        "totalPassiveCount": 11,
+        "totalPassiveCount": 12,
         "nativeEquipCost": 310,
-        "equipCost": 330,
+        "equipCost": 370,
         "grants": [
           {
             "rank": 0,
@@ -52211,6 +52467,10 @@
           {
             "rank": 3,
             "id": 1284
+          },
+          {
+            "rank": 3,
+            "id": 1460
           }
         ],
         "nativePassives": [
@@ -52225,7 +52485,8 @@
           1465,
           1358,
           1031
-        ]
+        ],
+        "requestedPassiveDelta": 1
       },
       "descriptionUpdate": {
         "schema": 1,
@@ -52295,6 +52556,309 @@
           "from": 440030,
           "before": "Native Onion Knight resonance mechanics; Spirited Heart Primm's own sprite animation.",
           "after": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends."
+        }
+      },
+      "mrRestoration": {
+        "version": 1,
+        "mr": [
+          {
+            "rank": 1,
+            "from": [
+              "PassiveSkill",
+              1011,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1526,
+              -1
+            ]
+          },
+          {
+            "rank": 9,
+            "from": [
+              "PassiveSkill",
+              1460,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1038,
+              -1
+            ]
+          }
+        ],
+        "remove": [],
+        "add": [
+          [
+            3,
+            "PassiveSkill",
+            1460
+          ]
+        ],
+        "move": [],
+        "exactAwakeningRanks": true,
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                421280,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                420160,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487503,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1311,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1116,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                421290,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                420170,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487506,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487512,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487515,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487530,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487518,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1381,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                421300,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                420180,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                445300,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487533,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487536,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487539,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1277,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1293,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                487509,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400770,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1284,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1011,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                5,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1378,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1273,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                2,
+                20
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1531,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                7,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1460,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1352500,
+                -1
+              ]
+            ]
+          ]
+        },
+        "beforeAwakeningBalance": {
+          "revision": 7,
+          "nativeBudget": 13102,
+          "nativeName": "Onion Knight",
+          "nativePassiveCount": 11,
+          "totalPassiveCount": 11,
+          "nativeEquipCost": 310,
+          "equipCost": 330,
+          "grants": [
+            {
+              "rank": 0,
+              "id": 1311
+            },
+            {
+              "rank": 0,
+              "id": 1116
+            },
+            {
+              "rank": 1,
+              "id": 1381
+            },
+            {
+              "rank": 2,
+              "id": 1277
+            },
+            {
+              "rank": 2,
+              "id": 1293
+            },
+            {
+              "rank": 3,
+              "id": 1284
+            }
+          ],
+          "nativePassives": [
+            1311,
+            1411,
+            1116,
+            1381,
+            1277,
+            1412,
+            1410,
+            1258,
+            1465,
+            1358,
+            1031
+          ]
+        },
+        "passiveText": {
+          "1526": {
+            "name": "Imbue Earth",
+            "desc": "Add earth to non-elemental standard attacks and battle skills."
+          }
         }
       }
     },
@@ -70040,8 +70604,8 @@
     "originalCount": 131,
     "extraCount": 19,
     "totalCount": 150,
-    "distinctCount": 119,
-    "mrActiveCount": 25,
-    "mrPassiveCount": 125
+    "distinctCount": 118,
+    "mrActiveCount": 26,
+    "mrPassiveCount": 124
   }
 }
