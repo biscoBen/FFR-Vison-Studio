@@ -11,6 +11,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Treasure radar switch placement — 2026-10-27
+
+- Move **Show treasure on the minimap** beside the other main switches, directly
+  below **Disable random encounters**. Keep its immediate install/remove behavior
+  and closed-game requirement. No game assets, saved settings or vision rewards change.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

@@ -3,7 +3,8 @@
 Studio bundles the three exact files supplied in
 `MinimapShowTreasure_FieldObjects 90 1 2026-10-25T12-13Z owJxyjy1f.zip`.
 The minimap toggle installs/removes them directly, with Resonance closed; no
-vision rebuild, UE4SS loader or save modification is involved. Restart the game
+vision rebuild, UE4SS loader or save modification is involved. The switch is
+beside **Disable random encounters** with the other main toggles. Restart the game
 to load or unload the package. Studio reads the files actually present in the
 selected game, rather than relying on a saved checkbox from another PC.
 

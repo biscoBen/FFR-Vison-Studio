@@ -196,6 +196,17 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 SwitchListTile(
+                  key: const Key('minimap-treasure'), contentPadding: EdgeInsets.zero,
+                  title: Text('Show treasure on the minimap', style: Guide.text()),
+                  subtitle: Text('Marks chests, glowing items and tablet fragments on the current map. '
+                    '${app.minimapTreasure['message'] ?? 'Select your game folder first.'}', style: Guide.small()),
+                  value: app.minimapTreasure['enabled'] == true,
+                  onChanged: busy || app.engineDown || app.gameRunning || app.api == null ||
+                    app.minimapTreasure['available'] != true || app.minimapTreasure['conflict'] == true ? null : (value) async {
+                    try { await app.setMinimapTreasure(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
                   key: const Key('testing-ffbe-needles'), contentPadding: EdgeInsets.zero,
                   title: Text('Test FFBE 1,000 Needles visual', style: Guide.text()),
                   subtitle: Text('Imports the original FFBE needle groups and hit sounds for this skill on either side. Keeps native damage and MP. Independent of the other visual switches; rebuild/install after changing. Experimental: appearance and placement need in-game testing.', style: Guide.small()),
@@ -247,18 +258,6 @@ class HomeScreen extends StatelessWidget {
                 Band('Your game files', color: Guide.ink),
                 Box(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    SwitchListTile(
-                      key: const Key('minimap-treasure'), contentPadding: EdgeInsets.zero,
-                      title: Text('Show treasure on the minimap', style: Guide.text()),
-                      subtitle: Text('Marks chests, glowing items and tablet fragments on the current map. '
-                        '${app.minimapTreasure['message'] ?? 'Select your game folder first.'}', style: Guide.small()),
-                      value: app.minimapTreasure['enabled'] == true,
-                      onChanged: busy || app.engineDown || app.gameRunning || app.api == null ||
-                        app.minimapTreasure['available'] != true || app.minimapTreasure['conflict'] == true ? null : (value) async {
-                        try { await app.setMinimapTreasure(value); } catch (e) { app.showNotice('$e'); }
-                      },
-                    ),
-                    const SizedBox(height: 10),
                     Text('Vision builds use three files in FFRS/Content/Paks/~mods. Previous vision builds are backed up before installing; the game\'s own files are preserved. Treasure radar is managed separately by the switch above.', style: Guide.text()),
                     const SizedBox(height: 10),
                     Row(children: [
