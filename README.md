@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Original 5★ Aerith replaces Elephim — 2026-10-27
+
+[Verified Windows download / run 40561006061](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40561006061/Sephira-Studio-Test.zip)
+(code `f933c6b`, update **1.2.114**; **82.5 MB**).
+
+Original 5★ Aerith replaces Elephim's sprites, icons, labels and resonance. Great Gospel
+plays her original animation/audio and uses native party healing and cleansing. Her
+regular abilities, awakenings, MR rewards, stats and acquisition stay intact.
+
+The same permanent vision ID **13523** keeps existing unlock/mastery progress and works
+across PCs. Existing default Elephim presets migrate once with a backup; no reset is needed.
+Close the game, update Studio, rebuild/install and restart. Windows and actual package checks
+pass; live playback and healing still need a test.
+[Checks and measured timings](CHANGELOG.md#published-original-5-aerith-replacement--2026-10-27).
+
 ### Optional UE4SS installer — 2026-10-27
 
 [Verified Windows download / run 40549413156](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40549413156/Sephira-Studio-Test.zip)

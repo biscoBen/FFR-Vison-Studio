@@ -11,19 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Original 5★ Aerith replaces Elephim — 2026-10-27
-
-- Replace Elephim with original FFBE 5★ Aerith, including her sprites, icons,
-  battle labels, Spirit name and Great Gospel animation with its original audio.
-  Great Gospel uses the native party-heal-and-cleanse resonance and native power.
-- Keep Elephim's complete regular kit, awakening bonuses, MR rewards, stats and
-  acquisition. Retain permanent vision ID **13523**, command/Spirit IDs and the
-  internal preset key for Steam Cloud save compatibility across PCs.
-- Migrate the old default appearance once after preparing Aerith's artwork, with
-  a roster backup; existing kit/acquisition edits and later appearance edits stay
-  intact. A fresh setup and reset use Aerith at the same save slot. In-game playback
-  and healing still need a test after packaging.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -92,6 +79,52 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published original 5★ Aerith replacement — 2026-10-27
+
+[Verified Windows ZIP / run 40561006061](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40561006061/Sephira-Studio-Test.zip), code `f933c6b`, update **1.2.114** (82.5 MB).
+SHA-256 `8a244f34bf69d98c6d00608b05c6abc33c6c6be537618e0cae9b3a673bc0289a`.
+
+- Replace Elephim with original FFBE 5★ Aerith, including her sprites, icons,
+  battle labels, Spirit name and Great Gospel animation with its original audio.
+  Great Gospel uses the native party-heal-and-cleanse resonance and native power.
+- Keep Elephim's complete regular kit, awakening bonuses, MR rewards, stats and
+  acquisition. Retain permanent vision ID **13523**, command/Spirit IDs and the
+  internal preset key for Steam Cloud save compatibility across PCs.
+- Migrate the old default appearance once after preparing Aerith's artwork, with
+  a roster backup; existing kit/acquisition edits and later appearance edits stay
+  intact. A fresh setup and reset use Aerith at the same save slot. In-game playback
+  and healing still need a test after packaging.
+
+Validation: **766 Python tests** locally (45 skipped), **43 focused Studio tests**,
+and clean analysis of the changed Dart code. The full Windows suite, fresh frozen-engine
+setup, compilation and publication pass for this exact commit. The downloaded ZIP passes
+workflow provenance/checksum verification, all **80** extension and **16** standalone Fina
+hashes, and its compiled **1.2.114** label. The actual packaged migration keeps edited
+abilities, MR rewards, stats and acquisition; repeated migration and later edits stay intact.
+The other **29** presets and soundtracks are unchanged. All **75** original equipable MR
+rewards remain covered. The sprite cache and checksum-pinned engine cache are unchanged.
+
+The original hosted **207000405** pack is checked against SHA-256
+`33548cfcae22899581dfa57341d8074f5c67b989618fe69e3009e825573d2495` and its 5★ sprite inspected.
+Great Gospel uses the original clean Memorial cues **794** (frame 0) and **793** (frame 30),
+with supported HCA v2 recordings. Native patch/readback checks three tables: vision **13523**,
+resonance **444240** cloning native heal/cleanse **412510** at power **300**, and Spirit
+**1352300**. Original rows, all **28** boss stat budgets/rotations and the regular kit remain
+unchanged. In-game animation, sound and healing still need a live test.
+
+First complete candidate: **11:24:26 PDT**. Final ZIP verified:
+**11:50:21 PDT**, **25m 55s** later.
+Delivery notes prepared: **11:50:53 PDT**
+(**26m 27s** from the same candidate). This includes local
+checks, corrections, native readback, waiting for one matching automatic Windows run,
+download and verification; the timer was not restarted. Measured Windows CI wall time:
+**15m 48s**; runner usage: **20m 47s**. These are development/package timings,
+not game-install benchmarks.
+
+Close the game, update Studio, rebuild/install and restart Resonance. Existing default
+Elephim presets update with a roster backup; no preset reset is needed. The internal
+`elephim` key and save ID intentionally remain permanent for cross-PC Steam Cloud saves.
 
 ## Published optional UE4SS installer — 2026-10-27
 
