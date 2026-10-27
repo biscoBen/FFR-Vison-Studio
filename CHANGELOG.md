@@ -11,19 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Optional UE4SS installer — 2026-10-27
-
-- Offer **Install UE4SS**, **Continue without it** and **Cancel** before building
-  when selected runtime features need a missing loader. The last-build install
-  uses the same prompt. Continuing installs the compiled visions and logs the
-  unavailable overworld, Crystal Fina presentation/music and esper mastery features.
-- Bundle the checksum-pinned official UE4SS production archive and license; copy
-  only its core with the completed mod. Preserve existing complete loaders and
-  other mods, reject conflicting partial loaders and include newly owned files
-  in rollback/restore. No additional download or sprite rebuild is required.
-- Automated fresh-install, skip, prompt, ownership and rollback checks; new loader
-  revision still needs an in-game startup check on the friend's fresh PC.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -92,6 +79,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published optional UE4SS installer — 2026-10-27
+
+[Verified Windows ZIP / run 40549413156](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40549413156/Sephira-Studio-Test.zip), code `658c89a`, update **1.2.113** (82.4 MB).
+SHA-256 `a57e8b769508aefd6f72887d508d60e4a6e9d886a79a2215e61fa171f06fa170`.
+
+- Offer **Install UE4SS**, **Continue without it** and **Cancel** before building
+  when selected runtime features need a missing loader. The last-build install
+  uses the same prompt. Continuing installs the compiled visions and logs the
+  unavailable overworld, Crystal Fina presentation/music and esper mastery features.
+- Bundle the checksum-pinned official UE4SS production archive and license; copy
+  only its core with the completed mod. Preserve existing complete loaders and
+  other mods, reject conflicting partial loaders and include newly owned files
+  in rollback/restore. No additional download or sprite rebuild is required.
+- Automated fresh-install, skip, prompt, ownership and rollback checks; new loader
+  revision still needs an in-game startup check on the friend's fresh PC.
+
+Validation: **762 Python tests** locally (45 skipped), **10 focused Studio tests** (one
+Windows-only check skipped locally), and clean analysis of the changed Dart code.
+The full Windows suite, fresh frozen-engine setup, compilation and packaging pass for
+this exact commit. The downloaded ZIP passes workflow provenance/checksum verification,
+all **80** extension and **16** standalone Fina hashes, its compiled **1.2.113** label,
+and execution of the actual packaged skip, later bootstrap, repeat install and restore
+paths. The official archive's Windows x64 PE headers, license and default settings are
+checked. Existing vision kits, MR assignments, boss tuning and esper Lua are unchanged;
+the checksum-pinned engine cache remains unchanged. The newly bundled loader revision
+still needs a fresh-PC Resonance startup and feature check.
+
+First complete candidate: **10:15:12 PDT**. Final ZIP verified:
+**10:43:24 PDT**, **28m 12s** later.
+Delivery notes prepared: **10:43:38 PDT**
+(**28m 26s** from the same candidate). This includes local
+checks, the resource-validation correction, waiting for one matching automatic Windows
+run, download and verification; the timer was not restarted. Measured Windows CI wall
+time: **22m 51s**; runner usage: **29m 41s**. These are development/package
+timings, not game-install benchmarks.
+
+Close the game, update Studio and install. A fresh game installation with selected
+runtime features offers **Install UE4SS** or **Continue without it** before building.
+Existing complete loaders are reused. See [installation details](docs/UE4SS_INSTALLATION.md).
 
 ## Published Rikku MR7 Pharmacology — 2026-10-26
 

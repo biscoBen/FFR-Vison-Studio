@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Optional UE4SS installer — 2026-10-27
+
+[Verified Windows download / run 40549413156](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40549413156/Sephira-Studio-Test.zip)
+(code `658c89a`, update **1.2.113**; **82.4 MB**).
+
+When selected features need a missing UE4SS loader, Studio now offers **Install UE4SS**,
+**Continue without it** or **Cancel** before building. The loader is bundled, so no
+separate download/helper is needed. Existing complete loaders and other mods are preserved.
+Skipping installs the visions while disabling the Studio runtime features; installing the
+loader later can reuse the last build.
+
+Windows and packaged-install checks pass. A fresh-PC game startup still needs testing.
+[Installation details](docs/UE4SS_INSTALLATION.md) ·
+[Checks and measured timings](CHANGELOG.md#published-optional-ue4ss-installer--2026-10-27).
+
 ### Rikku MR7 Pharmacology — 2026-10-26
 
 [Verified Windows download / run 40449868455](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40449868455/Sephira-Studio-Test.zip)
