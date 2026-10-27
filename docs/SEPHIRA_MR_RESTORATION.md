@@ -32,6 +32,8 @@ Each restored active has its stock native mechanics, equip cost, MP cost, genera
 | Noctis | Barrage (400300) | 9 | Dragon Knight Freya |
 | Clive | Mirage (400670) | 7 | Reberta (JP) |
 
+Current replacement: Rikku MR7 grants native **Pharmacology (1044)** instead of the Vaan-only **One for the Road (1435)**, at the same 30 AP cost. This user-approved exception retains the other 130 original passives and all 75 original equipable MR rewards.
+
 ## Balance and migration
 
 Twelve original MR passive placements move to another compatible slot, retaining their native MR rank and acquisition family. Every original MR passive stays an MR reward. All 131 excluded-original passives remain learned across the kits. Each vision keeps its native counterpart’s total passive count and stays within 20% of its passive AP budget. No second percentage tier of the same main stat is added to a kit. The fixed allocation is recorded in `scripts/fixtures/sephira_mr_restoration_plan.json`; [the awakening report](SEPHIRA_AWAKENING_BALANCE.md) lists the final counts and costs.

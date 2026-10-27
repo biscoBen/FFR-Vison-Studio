@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "All 75 excluded-original MR equipables are MR rewards; all 160 original active skills and 131 passives remain learned across the complete kits.",
+  "status": "All 75 excluded-original MR equipables remain MR rewards. All 160 original active skills and 130 of 131 original passives remain learned; Rikku\u2019s One for the Road was explicitly replaced with Pharmacology.",
   "sourceTableSha256": {
     "Skill/DT_SkillData.json": "7f2e12526d1658dd08d25ef7b91a0b7ac1e1f5da5bb8c4f20173af3bc9bb1b4e",
     "Skill/DT_PassiveSkillData.json": "8de894e26c1511d0a8856e7a0e52f8ab63a5d7e3be2519ef7e9b899cb4eb508b",

@@ -11,6 +11,17 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Rikku MR7 Pharmacology — 2026-10-26
+
+- Replace Rikku's MR7 One for the Road with the native Pharmacology reward:
+  items are 50% more effective in battle, at the same 30 AP equip cost. Existing
+  default MR7 grants update once, without resetting awakening tiers or other edits.
+  Spirit of Rikku follows the revised MR list. Deliberately edited MR7 slots remain
+  openable and report a conflict when the update is explicitly applied.
+- This explicitly replaces the Vaan-only awakening passive in the collection;
+  the other 130 original passives and all 75 original equipable MR rewards remain.
+  Original game passives, save identities, battle tuning and esper runtime are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

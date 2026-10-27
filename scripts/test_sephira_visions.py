@@ -72,7 +72,8 @@ class SephiraTests(unittest.TestCase):
                     # explicitly drop two redundant Mog rewards. Coverage remains collective.
                     owners=[p['profile'] for p in catalog['presets']]
                 else:owners=[owner]
-                self.assertIn(e['id'],{g[1] for u in owners for f in ('awakening','synchro') for t in u[f]
+                expected = 1044 if (e['assignedTo'],e['id']) == ('rikku',1435) else e['id']
+                self.assertIn(expected,{g[1] for u in owners for f in ('awakening','synchro') for t in u[f]
                                       for g in t if g[0]=='PassiveSkill'})
             else:self.assertIn(e['assignedTo'],seen[f"{e['kind']}:{e['id']}"])
         self.assertEqual(len(audit['entries']),291)

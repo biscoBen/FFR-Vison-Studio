@@ -52,16 +52,19 @@ class SephiraRewardSourceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 pack.validate_settings({'schema':1,'useBorrowedSkillVisuals':True,'shopAcquisitionOverride':1})
 
-    def test_every_learned_grant_and_private_recipe_excludes_kept_vision_mr(self):
+    def test_kept_vision_mr_is_excluded_except_explicit_rikku_pharmacology(self):
         catalog, native, units = inputs()
         excluded = {v['id'] for v in json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())['excludedVisions']}
         protected = protected_rewards(native['Item/Vision/DT_VisionSynchroMasteryData'], excluded)
         self.assertEqual(len(protected), 55)
         for u in units:
             for field in ('awakening', 'synchro'):
-                for tier in u[field]:
+                for rank,tier in enumerate(u[field]):
                     for kind, identity, *_ in tier:
                         source = u['skills'].get(str(identity), {}).get('from', identity) if kind=='ActiveSkill' else identity
+                        # The user explicitly approved Leah's Pharmacology
+                        # as Rikku MR7. Keep every other protected reward out.
+                        if (u['key'],field,rank,kind,source)==('sephira_rikku','synchro',7,'PassiveSkill',1044):continue
                         self.assertNotIn((kind,source), protected, u['key'])
             for recipe in u['skills'].values():
                 self.assertNotIn(('ActiveSkill',recipe['from']),protected)

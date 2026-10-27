@@ -6,6 +6,34 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('Rikku Pharmacology replaces only default MR7 and respects later edits', () async {
+    final presets = await SephiraVisions.bundled;
+    final p = presets.singleWhere((p) => p['id'] == 'rikku');
+    final unit = CharacterConfig.copy(p['pharmacologyKitBefore'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'rikku', 'enabled': false};
+    unit['awakening'][0] = (unit['awakening'][0] as List).reversed.toList();
+    unit['sephiraPassiveText'] = {'1387': {'name': 'My label', 'desc': 'My text'}};
+    unit['en'] = 'My Rikku';
+    unit['stats']['Attack'] = 999;
+    final before = CharacterConfig.copy(unit);
+    final actual = SephiraVisions.repairKit(unit, presets, strict: true);
+    expect(actual['synchro'][7], [['PassiveSkill', 1044, -1]]);
+    for (final field in before.keys.where((k) => k != 'synchro' && k != 'sephiraKitRevision')) {
+      expect(actual[field], before[field], reason: field);
+    }
+    for (var rank = 0; rank < 10; rank++) {
+      if (rank != 7) expect(actual['synchro'][rank], before['synchro'][rank]);
+    }
+    expect(actual['master']['id'], 1352700);
+    expect(unit, before);
+    CharacterConfig.decode(CharacterConfig.encode(actual));
+    actual['synchro'][7] = [['PassiveSkill', 1280, -1]];
+    expect(identical(SephiraVisions.repairKit(actual, presets), actual), isTrue);
+    final conflict = CharacterConfig.copy(before);
+    conflict['synchro'][7] = [['PassiveSkill', 1280, -1]];
+    expect(identical(SephiraVisions.repairKit(conflict, presets), conflict), isTrue);
+    expect(() => SephiraVisions.repairKit(conflict, presets, strict: true), throwsStateError);
+  });
   test('Eiko support update moves Raise and adds Shellga to an existing kit', () async {
     final presets = await SephiraVisions.bundled;
     final p = presets.singleWhere((p) => p['id'] == 'eiko');

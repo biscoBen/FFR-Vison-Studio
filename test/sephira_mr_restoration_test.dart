@@ -34,6 +34,10 @@ void main() {
         preset['profile']=CharacterConfig.copy(preset['esperKitBefore'] as Map<String,dynamic>);
         preset.remove('kitUpdate');
       }
+      if (preset['pharmacologyKitBefore'] is Map<String,dynamic>) {
+        preset['profile']=CharacterConfig.copy(preset['pharmacologyKitBefore'] as Map<String,dynamic>);
+        preset.remove('kitUpdate');
+      }
       // Reproduce an allocation made by an older Studio. New imports must not
       // renumber tagged presets; loading an already-remapped legacy save must
       // still migrate its kit without changing that historical identity.

@@ -97,7 +97,15 @@ def repair(unit):
         choices=[g for g in unit['synchro'][op['rank']] if g[0] in kinds]
         if len(choices)!=1 or choices[0] not in (op['from'],op['to']):
             raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Apply its kit update in Studio first.')
-    result=copy.deepcopy(unit);owned=result['skills'];template=update['profile']
+    result=copy.deepcopy(unit)
+    if plan.get('mrOnly'):
+        for op in plan['mr']:
+            result['synchro'][op['rank']]=[list(op['to']) if g in (op['from'],op['to']) else g
+                                         for g in result['synchro'][op['rank']]]
+        result['sephiraKitRevision']=plan['version']
+        unit.clear();unit.update(result)
+        return
+    owned=result['skills'];template=update['profile']
     def key(g):
         recipe=owned.get(str(g[1])) if g[0]=='ActiveSkill' else None
         return 'custom:'+str(recipe['from']) if recipe else f'{g[0]}:{g[1]}'

@@ -97,5 +97,5 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `a1a5692580b5fd9e30c1b873959d8300e0a98ed0c2115687ee92dfda1f7dc2c7`.
-Native coverage fingerprint: `422f69d1ccbe01d689c61bac51ecbddf739de41a184fb82bc8fbc94850f58d4d`.
+Catalog fingerprint: `b86116fdaddf3b8c9eb33cbada8c044a36e834db6b92ab376ae54899c97ebeff`.
+Native coverage fingerprint: `f49a8900446318b04b727aaeefb8f771905386bfff6ed5578857fda675f8cb7c`.

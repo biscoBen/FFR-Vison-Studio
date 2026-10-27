@@ -160,8 +160,6 @@ class SephiraVisions {
     if (update is! Map || (unit['sephiraKitRevision'] as int? ?? 0) >= update['version']) return unit;
     try {
       final result = CharacterConfig.copy(unit);
-      final template = CharacterConfig.restore(preset!['profile'] as Map<String, dynamic>, [], replacing: unit);
-      final owned = result['skills'] as Map;
       // Explicit reward moves are reviewed together with the awakening kit.
       // Validate the whole batch before changing anything, keeping edited MRs open.
       final rewardMoves = update['mr'] as List? ?? [];
@@ -174,6 +172,18 @@ class SephiraVisions {
           throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve it before applying its kit update.');
         }
       }
+      if (update['mrOnly'] == true) {
+        for (final op in rewardMoves) {
+          result['synchro'][op['rank']] = [for (final grant in result['synchro'][op['rank']] as List)
+            if (json.encode(grant)==json.encode(op['from']) || json.encode(grant)==json.encode(op['to']))
+              List<dynamic>.from(op['to'] as List) else grant];
+        }
+        result['sephiraKitRevision'] = update['version'];
+        CharacterConfig.validate(result);
+        return result;
+      }
+      final template = CharacterConfig.restore(preset!['profile'] as Map<String, dynamic>, [], replacing: unit);
+      final owned = result['skills'] as Map;
       String grantKey(List g) {
         final recipe = g[0] == 'ActiveSkill' ? owned[g[1].toString()] as Map? : null;
         return recipe != null ? 'custom:${recipe['from']}' : '${g[0]}:${g[1]}';

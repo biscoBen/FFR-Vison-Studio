@@ -2,7 +2,7 @@
 
 All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: 50 passives and 25 active skills. Each active returns at its original MR rank and original acquisition gate. The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain 125 passive grants and 25 active grants, one per rank. Permanent stats, AP and Spirit rewards are unchanged.
 
-All 131 distinct excluded-original passives remain available across the complete kits. Supplemental passives displaced from MR move into awakening, while the original MR passives stay transferable. Command/LB-bound traits remain awakening bonuses for their owners. Christine’s True Stagger stays in awakening; her transferable MR7 reward is Fill LB on Stagger.
+The 130 retained excluded-original passives remain available across the complete kits. Rikku’s Vaan-only One for the Road is explicitly replaced by native Pharmacology at MR7 (30 AP; item effects +50% in battle). Supplemental passives displaced from MR move into awakening, while the original MR passives stay transferable. Command/LB-bound traits remain awakening bonuses for their owners. Christine’s True Stagger stays in awakening; her transferable MR7 reward is Fill LB on Stagger.
 
 | Vision | MR 1 | MR 3 | MR 5 | MR 7 | MR 9 |
 |---|---|---|---|---|---|
@@ -32,7 +32,7 @@ All 131 distinct excluded-original passives remain available across the complete
 | Jade | Restore MP on Critical Hit (1323) | Lightning Immunity (1366) | Fill Gauge (400770) | Vigorous Staggerer (1371) | Quick Hit (1359) |
 | Spirited Heart Primm | Resist Fire (1011) | HP +20% (1378) | Physical Attack +30% (1273) | Physical Evasion +15% (1531) | Boundless Flames (1460) |
 | Relm | HP Stroll (1066) | Add Confuse (1237) | Stagger Power +20% (1279) | Phase Echo (1360) | Fill LB on Stagger (1280) |
-| Rikku (FFX-2) | Steal (400260) | Treasure Hunter (1387) | Mug (400270) | One for the Road (1435) | Misfortune (400750) |
+| Rikku (FFX-2) | Steal (400260) | Treasure Hunter (1387) | Mug (400270) | Pharmacology (1044) | Misfortune (400750) |
 | Nalu | Restore MP on Attack (1124) | Deathblow (400530) | Scan and Strike (1399) | Stagger Power +20% (1279) | Critical Boost (1234) |
 | Elza | Resist Dark (1253) | Speed +20% (1317) | Reckless Abandonment (400700) | Skyward Dreams (1434) | Tip-Top Shape (1428) |
 | Lunera | Wait (400760) | Spry Steps (1258) | Speed +5% (1316) | Guiding Wind (1458) | Mimic (400330) |

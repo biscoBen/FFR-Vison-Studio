@@ -12,7 +12,7 @@ from sephira_passive_mastery import REWARDS
 
 
 class PassiveMasteryTests(unittest.TestCase):
-    def test_all_131_original_passives_survive_with_150_transferable_mr_slots(self):
+    def test_original_passives_and_approved_replacement_keep_150_transferable_mr_slots(self):
         catalog, _, units = inputs()
         audit = json.loads((ROOT/'assets/sephira_visions/native_coverage.json').read_bytes())
         required = {e['id'] for e in audit['entries'] if e['kind'] == 'PassiveSkill'}
@@ -40,7 +40,10 @@ class PassiveMasteryTests(unittest.TestCase):
                 self.assertEqual({g[1] for tier in unit['awakening'] for g in tier if g[0]=='ActiveSkill'}, previous)
         self.assertEqual(len(required), 131)
         self.assertEqual(len(actual), 150)
-        self.assertLessEqual(required, learned)
+        # The user explicitly replaced Vaan-only One for the Road with
+        # Pharmacology. Keep the collected original audit intact.
+        self.assertEqual(required - learned, {1435})
+        self.assertIn(1044, learned)
 
     def test_scope_repair_preserves_complete_kits_and_old_private_reward_ids(self):
         catalog, rows, units = inputs()

@@ -2054,6 +2054,610 @@
           "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
         ]
       }
+    },
+    "rikku": {
+      "profile": {
+        "key": "sephira_rikku",
+        "id": 13527,
+        "sort": 13597,
+        "jp": "Sephira_rikku",
+        "en": "Rikku (FFX-2)",
+        "desc": "Thief, item utility and fire physical breaks. A Sephira vision with native-budget Resonance skills.",
+        "donor": 13110,
+        "attackType": "Physic",
+        "stats": {
+          "MaxHitPoint": 800,
+          "MaxMagicPoint": 100,
+          "Attack": 25,
+          "Defence": 30,
+          "Intelligence": 10,
+          "Mind": 20,
+          "Agility": 15
+        },
+        "roles": [
+          "eUnitRole::Attacker"
+        ],
+        "elemRes": {},
+        "command": {
+          "id": 347,
+          "en": "Rikku (FFX-2) Skills",
+          "desc": "Thief, item utility and fire physical breaks."
+        },
+        "master": {
+          "id": 1352700,
+          "en": "Spirit of Rikku (FFX-2)",
+          "desc": "Rikku (FFX-2)'s learned mastery rewards flow into the wearer."
+        },
+        "price": 1000,
+        "skills": {
+          "487703": {
+            "from": 501020,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_1",
+            "en": "Flash Bomb",
+            "desc": "Deal physical damage to all enemies. Inflict Blind with a 30% chance.",
+            "descAuto": false,
+            "set": {
+              "Cost": 10,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487706": {
+            "from": 500300,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_2",
+            "en": "Sleep Needle",
+            "desc": "Deal physical damage to an enemy. Inflict Sleep.",
+            "descAuto": false,
+            "set": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487709": {
+            "from": 500280,
+            "visuals": 500280,
+            "jp": "Sephira_rikku_Kit_3",
+            "en": "Poison Needle",
+            "desc": "Deal physical damage to an enemy. Inflict Poison.",
+            "descAuto": false,
+            "set": {
+              "Cost": 8,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487730": {
+            "from": 571540,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_10",
+            "en": "Blinding Flash",
+            "desc": "Deal physical damage to all enemies. Inflict Blind.",
+            "descAuto": false,
+            "set": {
+              "Cost": 28,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487733": {
+            "from": 571550,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_11",
+            "en": "Mustard Bomb",
+            "desc": "Deal physical damage to all enemies. Inflict Paralysis with a 50% chance.",
+            "descAuto": false,
+            "set": {
+              "Cost": 40,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487736": {
+            "from": 501650,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_12",
+            "en": "Acid Grenade",
+            "desc": "Deal physical damage to all enemies. Inflict Poison with a 50% chance.",
+            "descAuto": false,
+            "set": {
+              "Cost": 24,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487739": {
+            "from": 571530,
+            "visuals": 220010,
+            "jp": "Sephira_rikku_Kit_13",
+            "en": "Incendiary Sphere",
+            "desc": "Deal Fire physical damage to all enemies. May lower attack and magic.",
+            "descAuto": false,
+            "set": {
+              "Cost": 22,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "element": "Fire",
+              "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+            }
+          },
+          "487742": {
+            "from": 505120,
+            "visuals": 400630,
+            "jp": "Sephira_rikku_Kit_14",
+            "en": "Wave Cannon",
+            "desc": "Deal magic damage to all enemies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 35,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487745": {
+            "from": 505940,
+            "visuals": 400530,
+            "jp": "Sephira_rikku_Kit_15",
+            "en": "Trickshot",
+            "desc": "Deal physical damage to random enemies 3 times.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 36
+            }
+          },
+          "487748": {
+            "from": 571520,
+            "visuals": 400630,
+            "jp": "Sephira_rikku_Kit_16",
+            "en": "Emergency Protocol",
+            "desc": "Remove own ailments/debuffs and gain 30% physical/magic protection for 3 turns.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None"
+            }
+          },
+          "487751": {
+            "from": 501290,
+            "visuals": 210010,
+            "jp": "Sephira_rikku_Kit_17",
+            "en": "Quick Repair",
+            "desc": "Restore 200 HP to all allies.",
+            "descAuto": false,
+            "set": {
+              "Cost": 30,
+              "accuracy": 100,
+              "belongCommandList": [
+                347
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                347,
+                -1
+              ],
+              "skillIdAfterModeChange": -1,
+              "isApplyAllMag": false,
+              "playSequencerId": -1,
+              "sequencerIdWhenTargetFriendlies": -1,
+              "voiceLabel": "None",
+              "selfSkillActivateVoiceLabel": "None",
+              "magnification": 200,
+              "TargetType": "Group"
+            }
+          }
+        },
+        "ffbeMap": {
+          "skills": {},
+          "passives": {}
+        },
+        "menuScale": 2.0,
+        "sephiraRecipe": 7,
+        "awakening": [
+          [
+            [
+              "ActiveSkill",
+              446840,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              446850,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487703,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487706,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487709,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1114,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1317,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1426,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              447400,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487736,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487739,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1056,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1378,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              447410,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487730,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487733,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487742,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487745,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487748,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              487751,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1287,
+              -1
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              400400,
+              -1
+            ],
+            [
+              "ActiveSkill",
+              400250,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1124,
+              -1
+            ],
+            [
+              "PassiveSkill",
+              1436,
+              -1
+            ]
+          ]
+        ],
+        "synchro": [
+          [],
+          [
+            [
+              "ActiveSkill",
+              400260,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              1,
+              30
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1387,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              11,
+              8
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              400270,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              5,
+              10
+            ]
+          ],
+          [
+            [
+              "PassiveSkill",
+              1044,
+              -1
+            ]
+          ],
+          [
+            [
+              "BaseParameter",
+              9,
+              15
+            ]
+          ],
+          [
+            [
+              "ActiveSkill",
+              400750,
+              -1
+            ],
+            [
+              "BaseParameter",
+              11,
+              8
+            ],
+            [
+              "MasterSkill",
+              1352700,
+              -1
+            ]
+          ]
+        ],
+        "ffbe": {
+          "id": "249000206",
+          "base": "249000205",
+          "source": "GL",
+          "dir": "units/ffbe/sephira_rikku/sprites/249000206"
+        },
+        "lb": 440250,
+        "lb_custom": {
+          "from": 440250,
+          "presentation": "ffbe",
+          "mechanics": "custom",
+          "audio": "native",
+          "visuals": 440110,
+          "clone_sequence": true,
+          "mute": [
+            "VO_"
+          ],
+          "field_color_mode": "element",
+          "ffbe_lb_id": "249000206",
+          "movement": {
+            "enabled": false
+          },
+          "set": {},
+          "jp": "Sephira_rikku_Resonance",
+          "en": "Rikku (FFX-2) Resonance",
+          "desc": "Deal Fire physical damage to all enemies. Guaranteed to steal from affected targets.",
+          "descAuto": false,
+          "nameAuto": false,
+          "audio_codec": "host",
+          "sephiraAudio": 1
+        },
+        "sephiraAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "studioAcquisition": {
+          "version": 3,
+          "location": "sephira_13118",
+          "random": false,
+          "hideSpoilers": true,
+          "cave": null
+        },
+        "sephiraPassiveText": {},
+        "sephiraMrRevision": 1,
+        "sephiraKitRevision": 1
+      },
+      "kitUpdate": {
+        "version": 1,
+        "mrOnly": true,
+        "managed": [],
+        "mr": [
+          {
+            "rank": 7,
+            "from": [
+              "PassiveSkill",
+              1435,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1044,
+              -1
+            ]
+          }
+        ],
+        "masterDescriptions": []
+      }
     }
   },
   "retiredPassives": [

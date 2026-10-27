@@ -1,6 +1,6 @@
 # Sephira awakening bonus balance
 
-The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, all 131 distinct excluded-original passives across the complete kits, permanent stats and acquisition settings. Each complete kit has the same number of passives as its native stat/Resonance counterpart. This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.
+The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, 130 of 131 distinct excluded-original passives across the complete kits (Rikku’s Vaan-only One for the Road is explicitly replaced with Pharmacology at MR7), permanent stats and acquisition settings. Each complete kit has the same number of passives as its native stat/Resonance counterpart. This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.
 
 Choices follow each unit’s role. Native effects and AP equip costs are unchanged, so these are learned options rather than free permanent bonuses. Combined passive equip-cost totals stay within 20% of the counterpart; this is a useful budget check, not a claim that AP costs measure combat strength exactly. No second percentage tier of the same main stat is added to a kit. The existing active skill, stat and Resonance budgets remain; playing the game is still needed to assess difficult combinations.
 

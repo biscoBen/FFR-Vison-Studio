@@ -13,6 +13,30 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class EsperMasteryTests(unittest.TestCase):
+    def test_rikku_pharmacology_updates_only_mr7_and_preserves_later_edits(self):
+        from sephira_rikku_pharmacology import revise as revise_rikku
+        catalog,_,_=inputs()
+        p=next(p for p in catalog['presets'] if p['id']=='rikku')
+        unit=copy.deepcopy(p['pharmacologyKitBefore'])
+        unit['sephiraVision']={'version':1,'preset':'rikku','enabled':False}
+        unit['awakening'][0].reverse()
+        unit['sephiraPassiveText']={'1387':{'name':'My label','desc':'My text'}}
+        unit['en']='My Rikku';unit['stats']['Attack']=999
+        before=copy.deepcopy(unit)
+        esper.repair(unit)
+        self.assertEqual(unit['synchro'][7],[['PassiveSkill',1044,-1]])
+        for key in before.keys()-{'synchro','sephiraKitRevision'}:
+            self.assertEqual(unit[key],before[key],key)
+        for rank in set(range(10))-{7}:self.assertEqual(unit['synchro'][rank],before['synchro'][rank])
+        self.assertEqual(unit['master']['id'],1352700)
+        unit['synchro'][7]=[['PassiveSkill',1280,-1]]
+        later=copy.deepcopy(unit);esper.repair(unit);self.assertEqual(unit,later)
+        conflict=copy.deepcopy(before);conflict['synchro'][7]=[['PassiveSkill',1280,-1]]
+        original=copy.deepcopy(conflict)
+        with self.assertRaisesRegex(ValueError,'MR7 was edited'):esper.repair(conflict)
+        self.assertEqual(conflict,original)
+        self.assertEqual(revise_rikku(copy.deepcopy(catalog)),catalog)
+
     def test_eiko_support_update_migrates_current_kit_without_touching_mastery(self):
         catalog,_,_=inputs()
         p=next(p for p in catalog['presets'] if p['id']=='eiko')

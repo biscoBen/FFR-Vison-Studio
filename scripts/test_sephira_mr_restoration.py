@@ -35,6 +35,8 @@ class MrRestorationTests(unittest.TestCase):
             preset=copy.deepcopy(current)
             if preset.get('esperKitBefore'):
                 preset['profile']=copy.deepcopy(preset['esperKitBefore'])
+            if preset.get('pharmacologyKitBefore'):
+                preset['profile']=copy.deepcopy(preset['pharmacologyKitBefore'])
             op=preset.get('mrRestoration')
             if not op:continue
             unit=copy.deepcopy(preset['profile']);unit.update(copy.deepcopy(op['before']));unit.pop('sephiraMrRevision',None)
