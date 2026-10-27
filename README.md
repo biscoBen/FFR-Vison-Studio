@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Aerith Studio portrait refresh — 2026-10-27
+
+[Verified Windows download / run 40577047492](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40577047492/Sephira-Studio-Test.zip)
+(code `04ecf56`, update **1.2.116**; **82.5 MB**).
+
+Fix Studio showing Elephim's old portrait during Aerith's automatic appearance swap.
+Previews now resolve the replacement before the deferred save finishes, and completed
+swap cache keys prevent stale pictures from surviving a refresh or later model change.
+
+Update and restart Studio; no preset reset or game-artwork rebuild is needed for this
+preview fix. Kits, MR rewards, IDs, acquisition, audio and game asset generation are unchanged.
+Windows and actual packaged preview checks pass; user confirmation is still needed.
+[Checks and measured timings](CHANGELOG.md#published-aerith-studio-portrait-refresh--2026-10-27).
+
 ### Original 5★ Aerith replaces Elephim — 2026-10-27
 
 [Verified Windows download / run 40561006061](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40561006061/Sephira-Studio-Test.zip)

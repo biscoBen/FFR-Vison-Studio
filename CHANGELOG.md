@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Aerith portrait during migration — 2026-10-27
-
-- Apply the reviewed Aerith appearance when Studio renders a saved Elephim
-  portrait, including the brief interval before its deferred migration save
-  finishes. This prevents the old portrait being cached under Aerith's new
-  form URL. Face, timeline and ability previews use the same updated source.
-- Include the completed appearance revision in Studio's portrait URL so a
-  previously cached image refreshes and later deliberate model changes do not
-  reuse a picture from before the swap.
-- Bind the preview resolver at server startup, after the base engine defines its
-  icon handler. Cover that actual registration order with a request-level test.
-- Preserve deliberate later model edits and all kits, IDs, rewards and generated
-  game assets. The sprite converter and its cache inputs are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -93,6 +79,58 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Aerith Studio portrait refresh — 2026-10-27
+
+[Verified Windows ZIP / run 40577047492](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40577047492/Sephira-Studio-Test.zip), code `04ecf56`, update **1.2.116** (82.5 MB).
+SHA-256 `83888fae665ae703debfebbcc22887db6aa8b929f090c7857f8bcc8dfe8fa903`.
+
+- Apply the reviewed Aerith appearance when Studio renders a saved Elephim
+  portrait, including the brief interval before its deferred migration save
+  finishes. This prevents the old portrait being cached under Aerith's new
+  form URL. Face, timeline and ability previews use the same updated source.
+- Include the completed appearance revision in Studio's portrait URL so a
+  previously cached image refreshes and later deliberate model changes do not
+  reuse a picture from before the swap.
+- Bind the preview resolver at server startup, after the base engine defines its
+  icon handler. Cover that actual registration order with a request-level test.
+- Preserve deliberate later model edits and all kits, IDs, rewards and generated
+  game assets. The sprite converter and its cache inputs are unchanged.
+
+Reproduce the stale Studio portrait with the pinned engine's actual `spec_icon`
+and `unit_icon_image` functions, the real Elephim/Aerith PNGs and native icon frames.
+The extension is registered before the base handlers, then binds the resolver at
+server startup. The pending saved row remains Elephim while face, timeline and ability previews all
+render Aerith correctly. The saved row stays untouched. A later deliberate model
+edit remains authoritative. The completed appearance revision also separates the
+old and new cache keys, including a later deliberate switch back to an earlier form.
+
+Validation: **768 Python tests** locally (45 skipped), **21 focused icon/migration/cache
+tests**, **43 focused Studio tests**, and clean changed-Dart analysis. Full Windows
+validation, fresh frozen-engine setup, compilation and publication pass for the final
+commit. The downloaded ZIP passes workflow provenance/checksum checks, all **80**
+extension and **16** standalone Fina hashes, its compiled **1.2.116** label and the
+same real-portrait proof through the actual packaged preview helper. All **30** kits,
+MR rewards, IDs, acquisitions and soundtracks match 1.2.114. Game sprite/icon converter
+and cache sources, and the checksum-pinned engine cache, are unchanged. This fixes
+Studio preview caching; no separate in-game icon defect is claimed. User confirmation
+of the refreshed Studio portrait is still needed.
+
+First complete candidate: **12:39:06 PDT**. Final ZIP verified:
+**13:37:27 PDT**, **58m 22s** later.
+Delivery notes prepared: **13:37:34 PDT**
+(**58m 28s** from the same candidate). This includes
+local checks, the cache-key correction, all three automatic Windows runs, waiting, download
+and verification; the timer was not restarted. Initial workflow wall time:
+**15m 32s**; cache-key candidate wall time:
+**19m 12s**; final startup-order candidate wall time:
+**16m 53s**. Combined runner usage:
+**65m 47s**. These are development/package timings,
+not game-install benchmarks. The initial candidate was superseded by the completed
+cache-key and startup-order corrections; publication uses the final commit shown above.
+
+Update Studio and restart it to refresh the portrait. No preset reset or game-artwork
+reconversion is needed for this Studio preview fix.
 
 ## Published original 5★ Aerith replacement — 2026-10-27
 
