@@ -11,12 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Treasure radar switch placement — 2026-10-27
-
-- Move **Show treasure on the minimap** beside the other main switches, directly
-  below **Disable random encounters**. Keep its immediate install/remove behavior
-  and closed-game requirement. No game assets, saved settings or vision rewards change.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -85,6 +79,36 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published treasure switch placement — 2026-10-27
+
+[Verified Windows ZIP / run 40600073876](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40600073876/Sephira-Studio-Test.zip), code `f366a90`, update **1.2.118** (82.5 MB).
+SHA-256 `defa3dc1dcc6d78e5eeddcec539f2a0056e25eedb58482a0d5986b368a3a88d3`.
+
+- Move **Show treasure on the minimap** beside the other main switches, directly
+  below **Disable random encounters**. Keep its immediate install/remove behavior
+  and closed-game requirement. No game assets, saved settings or vision rewards change.
+
+Validation: **31 focused Python installer tests**, the existing home-screen widget
+test and clean changed-Dart analysis pass locally. Full Windows analysis, Flutter
+and Python suites, fresh frozen-engine startup, launcher/updater checks and
+compilation pass for this commit. The downloaded ZIP passes workflow provenance,
+checksum, compiled **1.2.118** label and all **82** extension/**16** standalone Fina
+hash checks. It has the single treasure control directly below the random-encounter
+switch in the compiled source revision. All game-facing extension payloads,
+including radar, encounter, audio and sprite/cache helpers, are byte-for-byte
+identical to the verified 1.2.117 package; the complete 30-vision catalogue is unchanged.
+The widget check passes; user confirmation of the new placement remains.
+
+First complete candidate: **16:07:26 PDT**.
+ZIP verified: **16:22:49 PDT**,
+**15m 23s** later. Delivery notes prepared:
+**16:23:04 PDT**
+(**15m 38s** from the same candidate).
+This includes local checks, the automatic Windows run, waiting, download and
+verification. Measured workflow wall time: **13m 15s**;
+combined runner usage: **17m 51s**. These are development/package timings,
+not game-install benchmarks. The checksum-pinned engine cache is unchanged.
 
 ## Published treasure radar and encounter testing — 2026-10-27
 

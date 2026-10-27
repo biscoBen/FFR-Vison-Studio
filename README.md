@@ -4,6 +4,17 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Treasure switch beside the other toggles — 2026-10-27
+
+[Verified Windows download / run 40600073876](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40600073876/Sephira-Studio-Test.zip)
+(code `f366a90`, update **1.2.118**; **82.5 MB**).
+
+**Show treasure on the minimap** now sits directly below **Disable random encounters**
+with the other main switches. It keeps the same immediate install/remove behavior
+with the game closed. Home-screen widget and packaged-source checks pass; all game-facing
+payloads and vision recipes match 1.2.117.
+[Checks and measured timings](CHANGELOG.md#published-treasure-switch-placement--2026-10-27).
+
 ### Treasure radar and encounter testing — 2026-10-27
 
 [Verified Windows download / run 40597050472](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40597050472/Sephira-Studio-Test.zip)
