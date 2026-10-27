@@ -1,6 +1,7 @@
 """Imported icon framing, clipping and real installed converter wiring."""
 import ast
 import copy
+import contextlib
 import json
 from pathlib import Path
 import shutil
@@ -8,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from PIL import Image, ImageDraw
 from test_existing_visions import ROOT, module, installer, fina_installer
 
@@ -95,7 +97,35 @@ class NativeIconTests(unittest.TestCase):
                 self.assertEqual(portrait.getpixel((0,0)),(0,128,0,255))
         tree=ast.parse((ROOT/'assets/existing_visions/payload/_ffr_existingvisions.py').read_text())
         register=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='register')
-        self.assertIn('install_icon_preview(env)',ast.unparse(register))
+        self.assertIn('install_icon_preview(env',ast.unparse(register))
+
+    def test_engine_registers_preview_before_handler_exists_and_binds_it_at_startup(self):
+        import importlib
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from types import SimpleNamespace
+        old=json.loads((ROOT/'scripts/fixtures/elephim_before_aerith.json').read_bytes())
+        old['sephiraVision']={'version':1,'preset':'elephim','enabled':True}
+        with tempfile.TemporaryDirectory() as directory,contextlib.ExitStack() as stack:
+            root=Path(directory);app=FastAPI()
+            env={'ROOT':root,'build_icons':SimpleNamespace()}
+            for name in ('_ffr_ffbe_library','_ffr_deck_sync','_ffr_ability_modes','_ffr_sephira','_ffr_testing','_ffr_party'):
+                stack.enter_context(mock.patch.object(importlib.import_module(name),'register'))
+            # This is the pinned engine's real order: extension registration
+            # directly after FastAPI(), then the icon handler definitions.
+            native.register(app,env)
+            seen=[]
+            def original(unit):
+                seen.append(unit['ffbe']['id'])
+                return Image.new('RGBA',(4,4),'pink' if unit['ffbe']['id']=='207000405' else 'green')
+            env['unit_icon_image']=original
+            @app.get('/late-icon')
+            def late_icon():
+                with env['unit_icon_image'](old) as portrait:
+                    return {'pixel':list(portrait.getpixel((0,0)))}
+            with TestClient(app) as client:
+                self.assertEqual(client.get('/late-icon').json()['pixel'],[255,192,203,255])
+            self.assertEqual(seen,['207000405'])
 
 
 if __name__=='__main__':unittest.main()

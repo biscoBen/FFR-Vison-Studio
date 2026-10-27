@@ -373,7 +373,7 @@ def expected_row_change(rel, key, original, built, expected, equivalent):
     return equivalent(desired, built)
 
 
-def install_icon_preview(env):
+def install_icon_preview(env, app=None):
     """Use the reviewed appearance while Studio's migrated spec is being saved.
 
     The form-specific image URL can arrive before the deferred spec write. Never
@@ -381,6 +381,10 @@ def install_icon_preview(env):
     """
     import _ffr_build_icons
     _ffr_build_icons.install_preview(env)
+    # The extension registers immediately after FastAPI(), before the base
+    # engine defines unit_icon_image. Bind again after those definitions exist.
+    if app is not None:
+        app.router.add_event_handler('startup', lambda: install_icon_preview(env))
     original = env.get('unit_icon_image')
     if original is None or getattr(original, '_sephira_appearance', False): return
     def image(unit):
@@ -395,7 +399,7 @@ def register(app, env):
     if env.get('ffr_catalog') is not None:
         _ffr_game_tables.install_catalog(env['ffr_catalog'], env['ROOT'])
     if env.get('build_icons') is not None:
-        install_icon_preview(env)
+        install_icon_preview(env, app)
     import _ffr_ffbe_library
     _ffr_ffbe_library.register(app, env)
     import _ffr_deck_sync

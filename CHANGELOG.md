@@ -20,6 +20,8 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Include the completed appearance revision in Studio's portrait URL so a
   previously cached image refreshes and later deliberate model changes do not
   reuse a picture from before the swap.
+- Bind the preview resolver at server startup, after the base engine defines its
+  icon handler. Cover that actual registration order with a request-level test.
 - Preserve deliberate later model edits and all kits, IDs, rewards and generated
   game assets. The sprite converter and its cache inputs are unchanged.
 
