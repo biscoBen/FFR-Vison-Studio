@@ -4,32 +4,61 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-### Verified Fina candidate — 2026-10-28
+### Run-once diagnostic sessions — 2026-10-28
 
-Update **1.2.121**, code `6e3c3f9`:
-[Windows checks and artifact / run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40750056461).
-All required Windows checks pass. The task has a verified direct installable ZIP;
-the public release job is still waiting at checkout. The public download below
-remains 1.2.120 until that publication completes.
+**Startup crash isolated:** the user confirmed that disabling **In-game encounter
+toggle** stopped the crash just after the overworld appeared. The Battle Command
+collector was not the cause. Keep encounter control OFF in 1.2.120/1.2.121 while
+the replacement HUD is tested.
+
+[Download Game Diagnostic Session](scripts/reference/game-crash/Game-Diagnostic-Session.zip).
+Extract the whole ZIP and run **Run Diagnostic Session.cmd**, then launch Resonance
+normally. Keep the helper window open. Closing the game automatically exports a
+ZIP to **Downloads/FFR Mod**. The helper installs no game script and needs no
+Studio rebuild or cleanup step. It also supports an already-running game.
+
+For a crash that already happened, use **Collect Resonance Crash.cmd** for an
+immediate export before launching again. Existing F8 observers can remain enabled;
+the external helper neither installs nor enables them.
+
+The external watcher follows the selected installation's shipping process,
+handles process-ID reuse and temporary unreadable metadata, and records session
+times. It collects existing logs/crash reports; it does not create live battle
+command state. PowerShell lifecycle and read-only export fixtures pass; real-game
+process recognition remains a user test. [Details](scripts/reference/game-crash/Read%20me.txt).
+
+### Optional Fina cinematic — published 2026-10-28
+
+[Verified Windows download / run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40750056461/Sephira-Studio-Test.zip)
+(code `6e3c3f9`, update **1.2.121**; **82.5 MB**).
+The public ZIP now matches the checked Windows artifact and reviewed launchers.
 
 **Crystal Fina resonance cinematic** is back beside the main switches, default
 OFF. Rebuild/install and restart the game after changing it. OFF uses her sprite
 resonance and healing; ON adds the accepted movie and cave music.
 
 Auto-battle still needs native command/HUD verification; no F6 control ships yet.
-The separate [Battle Command Diagnostics ZIP](https://raw.githubusercontent.com/biscoBen/FFR-Vison-Studio/6e3c3f9a0aa5cd939172befd435fdb6a6a4a80ba/scripts/reference/battle-commands/Battle-Command-Diagnostics.zip) needs no Studio rebuild.
-With the game closed, extract it and run **Install Battle Commands.cmd**, restart,
-use skills manually and press **F8** at the next command menu. Enter another battle
-and press **F8** at its first command menu, then **Collect Battle Commands.cmd**.
-Close the game and **Disable Battle Commands.cmd** afterward. Keep the old movie
-trace disabled. [Checks and measured times](CHANGELOG.md#unreleased).
+The separate F8 observer works with encounter control off; its captured native
+signatures and battle widget hierarchy are now available for the auto-battle work.
+The earlier withdrawal was based on a mistaken attribution and has been removed.
+[Checks and measured times](CHANGELOG.md#unreleased).
+
+### Encounter HUD correction — in development
+
+Replace raw text-block construction and field-HUD-tree edits with a standalone,
+game-created key-guide UserWidget. Preserve F7, controller triggers, visible status
+and reversible encounter overrides. Trigger holds now use real time. Local runtime
+fixtures pass; the corrected startup path still needs live confirmation.
 
 ### In-game encounter control — 2026-10-28
 
 [Verified Windows download / run 40737734046](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40737734046/Sephira-Studio-Test.zip)
 (code `830fdab`, update **1.2.120**; **82.5 MB**).
 
-Enable **In-game encounter toggle**, rebuild/install once and restart. Install
+**Known issue in this older package:** enabling encounter control can crash just
+after the overworld appears. Leave it OFF until the HUD correction is tested.
+
+Original controls: enable **In-game encounter toggle**, rebuild/install once and restart. Install
 UE4SS if prompted. While freely walking, press **F7** or hold **LT+RT / L2+R2 for
 one second**. A bottom-left **Random encounters: ON/OFF** badge shows the state.
 Encounters start ON each launch; later toggles need no rebuild or equipment slot.

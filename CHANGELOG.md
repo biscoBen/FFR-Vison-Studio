@@ -11,65 +11,50 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Optional Fina cinematic and auto-battle investigation — 2026-10-28
+### External diagnostic sessions — 2026-10-28
 
-- Restore **Crystal Fina resonance cinematic** beside the main Studio switches,
-  off by default. Rebuild/install and restart after changing it. Off skips movie
-  template extraction, soundtrack preparation and the cinematic cache, excludes
-  the movie runtime configuration, and removes the owned companion movie on the
-  next install. Her ordinary sprite resonance, healing and cure sounds remain.
-- Investigate repeat-last-command auto-battle with keyboard/controller controls
-  and a prompt beside speed/unit information. The native game exposes auto-battle
-  input and per-character saved command bundles, but function parameters, reuse
-  semantics and the live HUD hierarchy still need a capture. No auto-battle
-  gameplay control or F6 binding is installed in this update.
-- Add a separate **Battle-Command-Diagnostics.zip**: F8-only snapshots of native
-  function signatures, saved party command IDs, current command selection and
-  the battle widget hierarchy. No polling, hooks, command submission, save or
-  option writes. All native callbacks are retained. The installer preserves
-  Studio and other mods and detects the full game on either PC, continuing past
-  absent candidate drives. A PowerShell regression check covers that case. Preserve
-  the diagnostic source line endings so the ZIP matches Windows checkouts exactly.
+- Add **Run Diagnostic Session.cmd**: run it, launch the selected full game
+  normally, and close the game to export automatically. The external PowerShell
+  watcher installs no game script, hooks, key bindings or input handler. There is
+  no collect/disable sequence for new sessions and no Studio rebuild is needed.
+- Follow only the selected installation's shipping process; attach to an existing
+  session, wait if multiple matching instances are running, distinguish reused
+  process IDs and tolerate a temporary inability to read process metadata. Export
+  after actual process disappearance with session start/attach/exit timestamps.
+  Cancellation and optional startup timeout leave the game untouched.
+- Reuse the offline crash/log collector, bounded reads, own-runtime hash inventory
+  and save/roster exclusions. Fix full-game G:/D: autodetection and skip stale demo
+  roots. Keep **Collect Resonance Crash.cmd** for an immediate export of an existing
+  crash. Share the watcher in `scripts/reference/common/DiagnosticSession.ps1` for
+  future collectors. Preserve exact bundle source bytes on Windows.
+- Correct the earlier mistaken attribution: the user's controlled test isolated
+  the startup crash to **In-game encounter toggle**, just after the overworld
+  appeared. The Battle Command observer works with encounter control off. Restore
+  its installer and allow existing observers during external collection.
+- Remove unnecessary confirmation when session mode already found a valid full-game
+  folder. Recognize shortened Windows process names, then verify the full shipping
+  executable path. Open the export folder and close the CMD on success; keep errors
+  visible. These address the reported session that neither closed nor exported.
+- Focused PowerShell/Lua/package checks cover export-after-exit, wrong-installation
+  isolation, ambiguous processes, reused PIDs, temporary read failures, cancellation,
+  existing-crash collection and preservation of existing observers/saves. Native
+  process recognition still requires the user's Windows test.
 
-Candidate verification — 2026-10-28: update **1.2.121**, code
-`6e3c3f9`, [Windows run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40750056461).
-All four required Windows jobs pass: analysis, the full Flutter suite, fresh frozen
-engine setup, **795 Python tests** (19 platform skips), launcher/updater checks and
-compilation. Local checks pass **795 Python tests** (48 environment/platform skips),
-**43 focused Flutter tests**, changed-Dart analysis and **six** observer checks,
-including PowerShell drive detection and install/collect/disable. An autocrlf-enabled
-checkout reproduces the exact six diagnostic source bytes in the ZIP.
+### Encounter-control startup correction — 2026-10-28
 
-The connector-downloaded Windows artifact passes provenance and SHA-256
-`52c99e239b69c5700fbce56219582ff6198dc050814d191d55a2f6f749982cf3`.
-Its actual packaged modules pass movie **OFF → ON → OFF** runtime generation,
-discard stale movie flags and skip movie-only extraction/tool work while off.
-All **83** extension/**16** standalone Fina checksums match; all 30 vision presets,
-IDs and acquisition choices, media and other runtime payloads match 1.2.120.
-The direct installable test ZIP delivered in the task uses the unchanged packaging
-helper and matches every app byte from that artifact plus the reviewed launchers.
-Its **82,541,827-byte** ZIP SHA-256 is
-`7f17b9fae28cc6f5e47343c4bc1168a1cf24bfa6f52bb2447a5f72d708a641b8`.
-
-First complete candidate: **11:24:15 PDT**.
-Direct ZIP verified: **12:34:59 PDT**,
-**70m 44s** later. This includes all local checks,
-corrections, three automatic code candidates, CI waits and package verification;
-the timer was not reset. The first Windows attempt exposed diagnostic line-ending
-conversion; the intermediate candidate fixed missing-drive handling before that
-result arrived. The final candidate fixes both. Final required Windows checks
-wall time: **19m 01s**; runner usage across
-all three Windows workflows through direct-ZIP verification: **105m 30s**,
-including elapsed time in the still-active publisher. These are development/CI
-measurements, not game-install benchmarks. The pinned engine cache is unchanged;
-each matching automatic run was joined through the unchanged build helper.
-
-At direct-ZIP delivery, public publication was still waiting in the test-release
-job's checkout step. Keep this entry **Unreleased** until the public package is
-available; the direct ZIP is already verified. The original compiled commit must
-remain `6e3c3f9` even if README/CHANGELOG advance. Live confirmation
-of the restored switch remains a user test. Auto-battle remains pending the native
-command/HUD capture; this candidate installs no F6 or auto-battle gameplay control.
+- Replace raw UMG TextBlock construction, live Slate font copying and native field
+  HUD canvas attachment with a separate UserWidget created by the game's widget
+  library. Use the game's cooked key-guide text style and an owned viewport entry.
+  No native HUD tree is traversed or modified. This removes the first-overworld
+  badge code implicated by the user's encounter-toggle isolation test; no native
+  crash stack is available to establish the exact failing call.
+- Retain F7, the controller trigger chord, visible ON/OFF status and reversible
+  walking-encounter overrides. Use real time for the full one-second controller
+  hold. Keep title/menu/event/vehicle/battle guards and release only the owned badge.
+- Native API/asset checks and runtime fixtures cover startup context guards,
+  keyboard/controller use, new player/world instances, GC, own-widget removal,
+  missing HUD refusal and restoration of native encounter overrides. Live startup
+  safety, HUD positioning and controller input remain user checks.
 
 ### Returned full-game reference audit — 2026-10-22
 
@@ -139,6 +124,78 @@ command/HUD capture; this candidate installs no F6 or auto-battle gameplay contr
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published optional Fina cinematic and auto-battle investigation — 2026-10-28
+
+**Attribution corrected:** the reported native startup crash persisted with the
+Battle Command observer disabled and stopped with in-game encounter control off.
+The user subsequently supplied successful F8 battle captures. The observer's
+installer is restored; the external session collector also accepts existing F8
+observers. Neither collector is installed automatically by Studio.
+
+- Restore **Crystal Fina resonance cinematic** beside the main Studio switches,
+  off by default. Rebuild/install and restart after changing it. Off skips movie
+  template extraction, soundtrack preparation and the cinematic cache, excludes
+  the movie runtime configuration, and removes the owned companion movie on the
+  next install. Her ordinary sprite resonance, healing and cure sounds remain.
+- Investigate repeat-last-command auto-battle with keyboard/controller controls
+  and a prompt beside speed/unit information. The native game exposes auto-battle
+  input and per-character saved command bundles, and the returned F8 capture now supplies function parameters and the live HUD
+  hierarchy. Native repeat-command semantics still need verification. No auto-battle
+  gameplay control or F6 binding is installed in this update.
+- Initially provide a separate **Battle-Command-Diagnostics.zip**: F8-only snapshots of native
+  function signatures, saved party command IDs, current command selection and
+  the battle widget hierarchy. No polling, hooks, command submission, save or
+  option writes. All native callbacks are retained. The installer preserves
+  Studio and other mods and detects the full game on either PC, continuing past
+  absent candidate drives. A PowerShell regression check covers that case. Preserve
+  the diagnostic source line endings so the ZIP matches Windows checkouts exactly.
+  The live capture confirms that it runs with encounter control disabled.
+
+Candidate verification — 2026-10-28: update **1.2.121**, code
+`6e3c3f9`, [Windows run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40750056461).
+All four required Windows jobs pass: analysis, the full Flutter suite, fresh frozen
+engine setup, **795 Python tests** (19 platform skips), launcher/updater checks and
+compilation. Local checks pass **795 Python tests** (48 environment/platform skips),
+**43 focused Flutter tests**, changed-Dart analysis and **six** observer checks,
+including PowerShell drive detection and install/collect/disable. An autocrlf-enabled
+checkout reproduces the exact six diagnostic source bytes in the ZIP.
+
+The connector-downloaded Windows artifact passes provenance and SHA-256
+`52c99e239b69c5700fbce56219582ff6198dc050814d191d55a2f6f749982cf3`.
+Its actual packaged modules pass movie **OFF → ON → OFF** runtime generation,
+discard stale movie flags and skip movie-only extraction/tool work while off.
+All **83** extension/**16** standalone Fina checksums match; all 30 vision presets,
+IDs and acquisition choices, media and other runtime payloads match 1.2.120.
+The direct installable test ZIP delivered in the task uses the unchanged packaging
+helper and matches every app byte from that artifact plus the reviewed launchers.
+Its **82,541,827-byte** ZIP SHA-256 is
+`7f17b9fae28cc6f5e47343c4bc1168a1cf24bfa6f52bb2447a5f72d708a641b8`.
+
+First complete candidate: **11:24:15 PDT**.
+Direct ZIP verified: **12:34:59 PDT**,
+**70m 44s** later. This includes all local checks,
+corrections, three automatic code candidates, CI waits and package verification;
+the timer was not reset. The first Windows attempt exposed diagnostic line-ending
+conversion; the intermediate candidate fixed missing-drive handling before that
+result arrived. The final candidate fixes both. Final required Windows checks
+wall time: **19m 01s**; runner usage across
+all three Windows workflows through direct-ZIP verification: **105m 30s**,
+including elapsed time in the still-active publisher. These are development/CI
+measurements, not game-install benchmarks. The pinned engine cache is unchanged;
+each matching automatic run was joined through the unchanged build helper.
+
+The public package subsequently published successfully and was verified at
+**13:37:34 PDT**, **133m 19s** after the original first candidate. Its
+82,541,827-byte ZIP SHA-256 is
+`bfaded1bf9ca71d8a1642bf4fa7f42806c9341428d48f3dde113dad6d61704f7`.
+Every published app file matches the provenance-verified Windows artifact and
+its launchers match the reviewed packaging sources. Total measured runner usage
+across all three Windows candidates, including completed publication: **120m 43s**.
+The compiled commit remains `6e3c3f9`; later documentation does not relabel it.
+The returned battle capture now supplies native command signatures and HUD layout.
+Auto-battle command semantics still need verification; this candidate installs no
+F6 or auto-battle gameplay control. Live Fina-toggle confirmation remains a user test.
 
 ## Published in-game encounter control — 2026-10-28
 
