@@ -56,9 +56,19 @@ test-update version; the commit and workflow run identify the exact package. Dat
   missing HUD refusal and restoration of native encounter overrides. Live startup
   safety, HUD positioning and controller input remain user checks.
 
+- Stage the HUD helper through both Python and Flutter installer allowlists and
+  the Windows fresh-setup resource check. The first Windows run caught Flutter's
+  separate completeness list/count before any package was delivered; correct
+  that bridge and run the full Flutter suite locally before the next candidate.
+- Limit the planning and final-gate jobs to workflow/scripts checkouts so they
+  avoid fetching the roughly 2 GiB tracked reference-asset tree. Compilation and
+  validation retain full checkouts, all required checks, the pinned engine archive
+  and fresh extraction. A real sparse checkout runs plan/gate and still rejects
+  failed validation; **12** workflow/provenance tests pass. The build helper is unchanged.
+
 Candidate **1.2.122** local validation: **804 Python tests** pass (18 platform
-skips), including **51** focused encounter/field/collector checks; **5 Flutter
-settings/HUD-switch tests** pass. Verify all nine native widget/time methods,
+skips), including **51** focused encounter/field/collector checks; **333 Flutter tests** pass (one Windows-only skip),
+including fresh engine setup; changed-Dart analysis passes. Verify all nine native widget/time methods,
 the cooked key-guide class path and its member fields against the supplied SDK
 and asset inventory. Vision presets, IDs, kits, acquisition and media are unchanged.
 The final installer checks caught and corrected the new helper's resource-list
