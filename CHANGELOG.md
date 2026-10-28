@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Native HUD text and esper polling correction — 2026-10-28
-
-- Map the updated-loader crash to `FText::ToFString` through UE4SS's text-property
-  setter. Convert HUD strings to native `FText` before `SetText`; the input fixture
-  now rejects raw strings in that position.
-- The subsequent toggle-OFF report has the encounter module absent and a distinct
-  Lua userdata/table-lookup crash. Prefer the native game-thread loop for esper
-  polling, avoiding background Lua entry alongside Fina's presentation loop.
-  Retain a rooted, bounded-retry bridge for older loaders. Keep all esper effects,
-  rewards, battle powers and player kits unchanged.
-- This addresses the proven text mismatch and removes the concurrent polling
-  path; the second crash's precise cause and native startup recovery still need
-  a live retest. Auto-battle remains held.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -93,6 +79,53 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native HUD text and esper polling correction — 2026-10-28
+
+Code [`4432366`](https://github.com/biscoBen/FFR-Vison-Studio/commit/443236604af181d6b0ebf77ae1d806f940952102),
+update **1.2.124**, [verified Windows test package / run 40789172083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40789172083/Sephira-Studio-Test.zip)
+(**82,543,085 bytes**; SHA-256 `e8c41a2035ab67b35f35d6c993cc1c56883c0891e5962bf11ef27d74aa4a95a5`).
+
+- Correct the encounter indicator's `SetText` argument to native `FText`. The
+  updated-loader crash maps exactly to `FText::ToFString` via the text-property
+  setter; passing a raw Lua string was unsafe. The fixture now rejects that input.
+- Prefer the native game-thread loop for Eiko's 200-ms esper scan. This removes
+  background Lua entry alongside Fina's game-thread presentation. Retain one
+  rooted, bounded-retry bridge for loaders without that scheduler. Preserve every
+  esper modifier, native finale, player kit, boss power, Fina presentation and media.
+
+**Evidence and limit:** the returned report verifies the newer cdbc0b66 loader
+and an installed script containing Eiko/Fina with encounter code absent. Its
+later crash is a distinct Lua userdata/table-lookup failure. The loader's actual
+source shows its background scheduler entering the shared Lua VM separately
+from game-thread callbacks. Removing that path addresses a concurrency risk; the
+precise cause of that later crash remains unconfirmed. The user subsequently
+reported one successful retry, so do not treat either the intermittent startup
+failure or recovery as settled. Auto-battle remains held and is excluded here.
+
+**Validation:** 40 focused checks pass against the exact clean commit, including
+all esper mechanics under the native scheduler, no asynchronous polling entry,
+rooted retry fallback and typed HUD input. Required Windows plan, validation,
+compilation, final gate and publication succeed for the same commit. **333 Flutter
+tests passed, 1 skipped**, a separate fresh frozen-engine setup test passed, and
+**810 Python tests with 19 skips** completed. Analysis, engine archive/cache,
+bundled-file, launcher and updater checks pass.
+
+The actual package verifies all **84** extension and **16** standalone Fina
+hashes, version 1.2.124 and emitted runtime with encounters both ON and OFF.
+Execute the packaged HUD/controller/restoration fixture and complete esper
+lifecycle/effect fixtures. Combined Eiko/Fina/encounter startup registers only
+native game-thread loops, and OFF removes encounter code. All 30 presets, boss
+power definitions, Fina presentation and other payload/media hashes match 1.2.123.
+The public ZIP's digest, provenance, every app file and reviewed launchers match
+the checked artifact. These checks do not replace an in-game startup retest.
+
+**Measured time:** first complete implementation `2026-10-28T23:40:30.438396+00:00`
+through verified public delivery `2026-10-28T23:54:03.434925+00:00`: **13m 33s**,
+including local checks, staging, CI waits and package/publication verification.
+Required CI wall: **9m 51s**; summed time of completed runner jobs,
+including publication: **15m 16s**. Reused the matching automatic run;
+no second workflow was dispatched.
 
 ## Published Minfilia/Primm tuning and loader-update installation — 2026-10-28
 

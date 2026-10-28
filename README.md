@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native HUD text and esper polling — 2026-10-28
+
+[Verified Windows download / run 40789172083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40789172083/Sephira-Studio-Test.zip)
+(code `4432366`, update **1.2.124**; **82.5 MB**).
+
+The encounter indicator now passes native text to Unreal. Eiko's esper scan uses
+the native game-thread loop alongside Fina's presentation, removing background
+Lua polling on supported loaders. All vision kits, boss powers, Fina presentation
+and media retain their values. Update Studio, rebuild/install and restart the game.
+
+The newest report confirms encounter code was absent during the later crash.
+That failure is intermittent: the user reported a successful retry. The earlier
+HUD text failure is identified; the later crash's precise cause is unconfirmed.
+Startup recovery still needs a live retest. Auto-battle remains held.
+[Checks and measured timings](CHANGELOG.md#published-native-hud-text-and-esper-polling-correction--2026-10-28).
+
 ### Minfilia/Primm tuning and loader-update installation — 2026-10-28
 
 [Verified Windows download / run 40785014947](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40785014947/Sephira-Studio-Test.zip)
