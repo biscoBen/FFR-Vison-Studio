@@ -1,6 +1,10 @@
 -- Read-only, game-thread observation. Never opens/closes/plays a movie, changes
 -- the cinematic manager, loads assets or changes battle/visibility state.
 local previous, emitted, pending = {}, 0, false
+-- The native callback registry can hold weak references. Root every long-lived
+-- and queued entry point so garbage collection cannot turn it into a nil call.
+local runtime = {}
+_G.FFRStudioMovieObserverCallbacks = runtime
 local function valid(o)
     return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid()
 end
@@ -58,23 +62,22 @@ local function sample(force)
     if not ok then log('sample-error', 'Observation unavailable: ' .. tostring(message), force) end
     return false
 end
+runtime.tick = function() return sample(false) end
+runtime.queued = function() pending=false; sample(false) end
+runtime.async = function()
+    if pending then return false end
+    pending=true
+    if not pcall(ExecuteInGameThread,runtime.queued) then pending=false end
+    return false
+end
+runtime.bookmark = function() log('bookmark','F8 bookmark',true);sample(true) end
+runtime.key = function() ExecuteInGameThread(runtime.bookmark) end
 local loop = false
 if type(LoopInGameThreadWithDelay) == 'function' then
-    local ok = pcall(LoopInGameThreadWithDelay, 250, function() return sample(false) end)
-    loop = ok
+    loop = pcall(LoopInGameThreadWithDelay,250,runtime.tick)
 end
-if not loop then
-    LoopAsync(250, function()
-        if pending then return false end
-        pending = true
-        local ok = pcall(ExecuteInGameThread, function() pending = false; sample(false) end)
-        if not ok then pending = false end
-        return false
-    end)
-end
+if not loop then LoopAsync(250,runtime.async) end
 if type(RegisterKeyBind) == 'function' and Key and Key.F8 then
-    pcall(RegisterKeyBind, Key.F8, function()
-        ExecuteInGameThread(function() log('bookmark', 'F8 bookmark', true); sample(true) end)
-    end)
+    pcall(RegisterKeyBind,Key.F8,runtime.key)
 end
 log('ready', 'Read-only movie observer ready; use Fina resonance once, then F8. No movie state is changed.', true)

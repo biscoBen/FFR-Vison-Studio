@@ -11,6 +11,28 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Controller and keyboard encounter control
+
+- Studio’s encounter switch now installs an in-game control. Press F7, or hold both
+  controller triggers (LT+RT / L2+R2) for one second while freely walking. A persistent
+  bottom-left ON/OFF badge shows the state. Encounters start ON each game launch.
+- Apply a session-only native walking-encounter override; restore the prior value when
+  switching back on or leaving field control. Preserve native zone changes, equipment,
+  save data, map flags, bosses and scripted battles. No accessory or ability slot is used.
+  Rebuild/install once to replace the earlier always-off map patch; subsequent toggles
+  need no rebuild. The optional UE4SS installer also covers encounter-only setups.
+- Use a real field-HUD text widget, restore native control during menus, battles,
+  transitions and events, and refuse an invisible toggle if the HUD is unavailable.
+  Automated Lua/API and installer checks do not establish live controller behavior or
+  HUD placement; these need testing in the running game.
+- The user reported an error while entering the vision menu with treasure markers enabled.
+  A later screenshot shows a Lua nil-callback panic with the old FFRStudioMovieTrace
+  diagnostic active. Root its timer, queued and F8 callbacks to prevent garbage collection
+  from invalidating them, with an executable weak-registry regression test. Update both
+  trace sources and the standalone movie-trace ZIP. Existing diagnostics need disabling
+  and a game restart; Studio does not silently modify them. The treasure package is
+  unchanged, and a crash-free live retest is still needed to establish the cause.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

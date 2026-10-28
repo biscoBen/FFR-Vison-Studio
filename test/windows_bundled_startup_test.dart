@@ -98,6 +98,7 @@ void main() {
         '_ffr_overworld.py',
         '_ffr_field_leader.py',
         'field_leader.lua',
+        'encounter_toggle.lua',
         'vagrant_knight_rain_field.png',
         'overworld_catalog.json',
         'overworld_assets.zip',

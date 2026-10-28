@@ -16,7 +16,7 @@ import _ffr_testing as testing
 
 
 class FieldLeaderTests(unittest.TestCase):
-    def combined_startup(self, esper=True, fina=True, walking=True):
+    def combined_startup(self, esper=True, fina=True, walking=True, encounters=False):
         from lupa.lua54 import LuaRuntime
         import _ffr_fina_battle as battle
         import _ffr_overworld as overworld
@@ -26,6 +26,9 @@ class FieldLeaderTests(unittest.TestCase):
         if walking: units.append({'id':1001,'party':True,'overworld':{'version':1,'model':'native_party_1006'}})
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
+            if encounters:
+                settings=root/testing.CONFIG;settings.parent.mkdir(parents=True)
+                settings.write_text(json.dumps({'schema':1,'maxMr':False,'noEncounters':True}))
             runtime=root/'build/crystal-fina-battle/runtime.json';runtime.parent.mkdir(parents=True)
             runtime.write_text(json.dumps({'schema':1,'id':13503,'attackPlayRate':.8}))
             with mock.patch.object(overworld,'runtime_config',return_value={'schema':1,'cycling':0,'actors':{},'defaults':{}}):
@@ -33,7 +36,8 @@ class FieldLeaderTests(unittest.TestCase):
             staged=json.loads((root/leader.STAGE).read_bytes())['files']
         lua=LuaRuntime()
         lua.execute('''
-            messages={}; loops={}; hooks={}
+            messages={}; loops={}; hooks={};Key={F7=118}
+            function RegisterKeyBind(key,callback) end
             function print(s) messages[#messages+1]=s end
             function LoopAsync(ms,fn) loops[ms]=fn end
             function RegisterHook(path,pre,post) hooks[path]={pre,post} end
@@ -58,6 +62,16 @@ class FieldLeaderTests(unittest.TestCase):
                 self.assertEqual(set(lua.globals().loops.keys()),
                                  ({200} if esper else set())|({33} if fina else set())|({150} if walking else set()))
                 if esper:self.assertEqual(len(lua.globals().FFRStudioEsperMastery.callbacks),6)
+
+    def test_generated_runtime_composes_encounters_with_esper_fina_and_walking(self):
+        for esper,fina,walking in ((True,True,True),(True,False,False),(False,False,False)):
+            lua,code=self.combined_startup(esper,fina,walking,encounters=True)
+            lua.execute(code,name='@FFRStudioFieldLeader/Scripts/main.lua')
+            messages=''.join(lua.globals().messages.values())
+            self.assertIn('Ready: F7 or hold both triggers',messages)
+            self.assertEqual('Esper mastery ready' in messages,esper)
+            self.assertEqual('Battle presentation ready' in messages,fina)
+            self.assertIn(100,set(lua.globals().loops.keys()))
 
     def test_old_adjoining_blocks_reproduce_users_exact_startup_failure(self):
         lua,code=self.combined_startup()

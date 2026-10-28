@@ -14,7 +14,7 @@ SOURCE = 'https://github.com/UE4SS-RE/RE-UE4SS/releases/download/experimental-la
 CORE = ('dwmapi.dll', 'ue4ss/UE4SS.dll', 'ue4ss/UE4SS-settings.ini', 'ue4ss/LICENSE')
 SKIPPED = ('UE4SS is not installed. Installed the game assets without Studio runtime features: '
            'overworld replacements/cycling, Crystal Fina runtime presentation/movie music, '
-           'and custom esper mastery bonuses. Install UE4SS and reinstall to enable them.')
+           'custom esper mastery bonuses, and the in-game encounter toggle. Install UE4SS and reinstall to enable them.')
 
 
 def choice_path(root, game):
@@ -69,7 +69,8 @@ def status(root, game, units, last_build=False):
         stage = Path(root) / leader.STAGE
         required = bool(json.loads(stage.read_bytes()).get('files')) if stage.is_file() else False
     else:
-        required = bool(leader.enabled(root) or any(u.get('party') and u.get('overworld') for u in units)
+        import _ffr_testing
+        required = bool(leader.enabled(root) or _ffr_testing.settings(root)['noEncounters'] or any(u.get('party') and u.get('overworld') for u in units)
                         or fina.selected(units, root) or espers.enabled(units))
     ready = False
     if required:

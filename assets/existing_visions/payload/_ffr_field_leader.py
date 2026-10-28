@@ -204,10 +204,15 @@ def build(units, env):
     walking = any(u.get('party') and u.get('overworld') for u in units)
     import _ffr_esper_mastery
     espers = _ffr_esper_mastery.enabled(units)
-    if field or walking or selected or espers:
+    import _ffr_testing
+    encounters = _ffr_testing.settings(root)['noEncounters']
+    if field or walking or selected or espers or encounters:
         import _ffr_overworld
         config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
+        if encounters:
+            config['encounterToggle'] = 1
+            code += '(function()\n' + Path(__file__).with_name('encounter_toggle.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if espers:
             config['esperMastery'] = 1
             # A newline does not terminate a Lua call. The next parenthesized

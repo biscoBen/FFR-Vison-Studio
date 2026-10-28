@@ -74,28 +74,6 @@ def validate_settings(value):
             'fieldLeader': value.get('fieldLeader', False), 'noEncounters': value.get('noEncounters', False)}
 
 
-def encounter_tables(root):
-    """Use the selected game's map-table inventory, including production parents/composites."""
-    import _ffr_game_tables
-    root = Path(root)
-    listing = root / 'extracted/utoc_filelist.tsv'
-    pattern = r'Map/(?:MapData/DT_MapData_[A-Za-z0-9_]+|CDT_MapData_(?:Demo|Prod))'
-    if listing.is_file():
-        found = set(re.findall(_ffr_game_tables.PREFIX + '(' + pattern + r')\.uasset', listing.read_text(encoding='utf-8-sig')))
-    else:
-        found = set()
-        for folder, prefix, suffix in (('rows', '', '.json'), ('legacy', _ffr_game_tables.PREFIX, '.uasset')):
-            base = root / 'extracted' / folder / prefix
-            for path in (base / 'Map').rglob('*' + suffix):
-                rel = path.relative_to(base).as_posix().removesuffix(suffix)
-                if re.fullmatch(pattern, rel): found.add(rel)
-    # The native reader composes paired shared/production parents and normalize()
-    # places each edit in the correct physical table. Avoid emitting a pair twice.
-    result = sorted(rel for rel in found if not (rel.endswith('_Prod') and rel[:-5] in found))
-    if not result: raise ValueError('No native map tables were found for disabling random encounters. Refresh the selected game data.')
-    return result
-
-
 def reward(rows):
     totals = {}
     for row in rows('Item/Vision/DT_VisionSynchroMasteryData').values():
@@ -113,13 +91,6 @@ def reward(rows):
 def ensure_assets(root, extract, units=None):
     import _ffr_fina_cinematic
     _ffr_fina_cinematic.ensure_assets(root, extract, units)
-    if settings(root)['noEncounters']:
-        import _ffr_game_tables
-        for rel in encounter_tables(root):
-            for parent in _ffr_game_tables.reader(root).parents(rel):
-                path = Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (parent + '.uasset')
-                if not path.is_file(): extract('Datatable/' + parent)
-                if not path.is_file(): raise ValueError('The native encounter map table could not be extracted: ' + parent)
     if settings(root)['practiceBattle']:
         path = Path(root) / 'extracted/legacy/FFRS/Content/Datatable' / (CHOICES + '.uasset')
         if not path.is_file(): extract('Datatable/' + CHOICES)
@@ -177,13 +148,8 @@ def prepare(tables, units, root, rows):
             'eventDataList[0].playSetting.Condition': event['playSetting']['Condition'],
             'eventDataList[0].playSetting.EventList[0].EventId': NAME}})
     controls = settings(root)
-    if controls['noEncounters']:
-        for rel in encounter_tables(root):
-            for key, original in rows(rel).items():
-                if type(original.get('doMovementEncount')) is not bool:
-                    raise ValueError('The native movement-encounter flag is missing: ' + rel + '/' + key)
-                if original['doMovementEncount']:
-                    table(rel)['set'].append({'row': key, 'set': {'doMovementEncount': False}})
+    # noEncounters now installs a reversible field control. Keep native map
+    # encounter flags intact so the player can turn encounters back on in-game.
     value = reward(rows) if controls['maxMr'] else None
     if value is not None:
         for key, original in rows(GROUP).items():

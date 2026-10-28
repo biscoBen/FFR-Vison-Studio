@@ -188,8 +188,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 SwitchListTile(
                   key: const Key('testing-no-encounters'), contentPadding: EdgeInsets.zero,
-                  title: Text('Disable random encounters', style: Guide.text()),
-                  subtitle: Text('For testing: stops battles triggered by walking. Bosses, vision challenges and scripted fights remain available. Rebuild/install and restart Resonance after switching.', style: Guide.small()),
+                  title: Text('In-game encounter toggle', style: Guide.text()),
+                  subtitle: Text('F7 or hold both controller triggers for 1 second while walking. Shows ON/OFF on screen; starts ON each game launch. Bosses and scripted fights remain available. Requires UE4SS; rebuild/install once after changing this switch.', style: Guide.small()),
                   value: app.noEncounters,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setNoEncounters(value); } catch (e) { app.showNotice('$e'); }

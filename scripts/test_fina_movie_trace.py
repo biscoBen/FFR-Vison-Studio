@@ -24,6 +24,35 @@ class TraceDownloadTests(unittest.TestCase):
             for name in NAMES:
                 self.assertEqual(z.read(name).decode().replace('\r\n', '\n'), (FOLDER/name).read_text())
 
+    def test_observer_callbacks_survive_weak_native_registry_and_garbage_collection(self):
+        from lupa.lua54 import LuaRuntime
+        for source in (FOLDER/'movie_trace.lua',ROOT/'scripts/reference/cave-music/movie_trace.lua'):
+            for native_loop in (True,False):
+                with self.subTest(source=source,native_loop=native_loop):
+                    lua=LuaRuntime()
+                    lua.execute("""
+                        registered=setmetatable({}, {__mode='v'})
+                        function print() end
+                        function FindAllOf() return {} end
+                        function LoopAsync(ms,fn) registered.tick=fn end
+                        function LoopInGameThreadWithDelay(ms,fn) registered.tick=fn end
+                        function RegisterKeyBind(key,fn) registered.key=fn end
+                        function ExecuteInGameThread(fn) registered.queued=fn end
+                        Key={F8=119}
+                    """)
+                    if not native_loop:lua.execute('LoopInGameThreadWithDelay=nil')
+                    lua.execute(source.read_text())
+                    lua.execute("""
+                        collectgarbage('collect')
+                        assert(type(registered.tick)=='function')
+                        registered.tick()
+                        collectgarbage('collect')
+                        if registered.queued then registered.queued() end
+                        assert(type(registered.key)=='function')
+                        registered.key();collectgarbage('collect')
+                        assert(type(registered.queued)=='function');registered.queued()
+                    """)
+
 
 @unittest.skipUnless(PWSH, 'PowerShell required')
 class TraceInstallerTests(unittest.TestCase):

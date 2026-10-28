@@ -11,7 +11,7 @@ Future<bool> confirmRuntimeInstall(BuildContext context, Api api, {bool lastBuil
     title: const Text('Install UE4SS?'),
     content: const SizedBox(width: 440, child: Text(
       'UE4SS enables overworld replacements and cycling, Crystal Fina’s runtime effects and movie music, '
-      'and Eiko’s custom esper bonuses.\n\n'
+      'Eiko’s custom esper bonuses, and the in-game encounter toggle.\n\n'
       'Install the bundled loader with your mod, or continue with those features disabled. '
       'Your visions and their normal skills will still install. Existing mods are preserved.',
     )),
