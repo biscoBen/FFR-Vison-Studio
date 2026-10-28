@@ -11,18 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Minfilia/Primm tuning and loader-update installation — 2026-10-28
-
-- Reduce the paired boss skills to the requested powers: Moonlightbringer 52 → 33,
-  Calamity 39 → 33 and Blade Torrent 62 → 45. Preserve every other boss skill,
-  playable kit, encounter level, HP/break, speed, rotation and rewards.
-- Recognize an already-owned loader updated to Studio's exact checksum-pinned
-  official binary pair. Runtime status and installation accept that known update;
-  save the new ownership hashes only after successful installation. Preserve
-  unowned loaders and reject partial updates, unknown binaries and other edits.
-  This repairs the reported install preflight error; the encounter-control native
-  crash still requires the user's loader retest. Auto-battle remains held.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -91,6 +79,45 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Minfilia/Primm tuning and loader-update installation — 2026-10-28
+
+Code [`1bd54ae`](https://github.com/biscoBen/FFR-Vison-Studio/commit/1bd54ae9c0134a3e2cd70cb99e262901a17efb28),
+update **1.2.123**, [verified Windows test package / run 40785014947](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40785014947/Sephira-Studio-Test.zip)
+(**82,542,634 bytes**; SHA-256 `6caaeea6cff263ea41c41542cfc4118796ecc93bd2608e09f3f7a7420c056a19`).
+
+- Set the paired boss skills to the requested powers: Moonlightbringer **52 → 33**,
+  Calamity **39 → 33** and Blade Torrent **62 → 45**. Other boss skills, playable
+  kits, levels, HP/break, speed, selected rotations and rewards stay unchanged.
+- Accept a previously owned loader updated to Studio's exact checksum-pinned
+  official binary pair. Status only checks files; a successful installation saves
+  the new ownership hashes. Unknown or partial updates and settings edits retain
+  their protections. Unowned loader files are not claimed.
+
+**Validation:** 65 focused checks pass against the exact clean commit. Required
+Windows plan, validation, compilation, final gate and publication succeed for that
+same commit. Windows reports **333 Flutter tests passed, 1 skipped**, an additional
+fresh frozen-engine setup test passed, and **808 Python tests with 19 skips**.
+Analysis, engine archive/cache, bundled-file, launcher and updater checks pass.
+
+The actual compiled package verifies all **84** extension and **16** standalone
+Fina hashes and version 1.2.123. Generated boss-row comparisons find exactly the
+three requested power changes. All 30 preset definitions, other boss stats and
+selected actions, native Lua and media match 1.2.122. The packaged loader status
+and install paths accept the reproduced stale-record upgrade without rewriting
+the loader. The published ZIP's digest, provenance, every app file and reviewed
+launchers match the checked Windows artifact. Auto-battle is excluded.
+
+**Live limit:** the install preflight repair does not prove the encounter-control
+native crash is resolved. The controlled newer-loader startup retest is still
+pending; 1.2.122's HUD rewrite did not fix the reported crash. The requested native
+spell-target capture has been received. Auto-battle remains held for that retest.
+
+**Measured time:** first complete implementation `2026-10-28T23:04:41.931908+00:00`
+through verified public delivery `2026-10-28T23:17:24.928184+00:00`: **12m 43s**,
+including local checks, staging, CI waits and package/publication verification.
+Required CI wall: **8m 49s**; summed time of completed runner jobs,
+including publication: **13m 43s**. No second workflow was dispatched.
 
 ## Published encounter-control startup correction and diagnostic sessions — 2026-10-28
 

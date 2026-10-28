@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Minfilia/Primm tuning and loader-update installation — 2026-10-28
+
+[Verified Windows download / run 40785014947](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40785014947/Sephira-Studio-Test.zip)
+(code `1bd54ae`, update **1.2.123**; **82.5 MB**).
+
+Moonlightbringer and Calamity now have power **33**; Blade Torrent has power **45**.
+The other fight settings and playable kits retain their values. Studio also
+recognizes the exact official UE4SS binary pair installed by the separate runtime
+updater, repairing the stale ownership-check error during installation. Update
+Studio, rebuild/install and restart Resonance.
+
+The encounter-control startup crash still needs the controlled newer-loader
+retest; 1.2.122 did not resolve it. Auto-battle remains held, and the requested
+spell-target command capture has been received.
+[Checks and measured timings](CHANGELOG.md#published-minfiliaprimm-tuning-and-loader-update-installation--2026-10-28).
+
 ### Encounter-control startup correction — 2026-10-28
 
 [Verified Windows download / run 40769368591](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40769368591/Sephira-Studio-Test.zip)
@@ -18,8 +34,8 @@ control; the Battle Command collector was not the cause.
 
 The corrected [run-once collector](scripts/reference/game-crash/Game-Diagnostic-Session.zip)
 exports when the selected game process closes, opens the output folder and closes
-its window on success. It accepts existing F8 observers. Auto-battle still needs
-one command snapshot at spell target selection, before confirming the target.
+its window on success. It accepts existing F8 observers. The requested command
+snapshot at spell target selection has since been received.
 [Checks and measured timings](CHANGELOG.md#published-encounter-control-startup-correction-and-diagnostic-sessions--2026-10-28).
 
 ### Run-once diagnostic sessions — 2026-10-28
