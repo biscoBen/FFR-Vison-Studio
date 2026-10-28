@@ -223,7 +223,8 @@ def build(units, env):
             if native.get('schema') != 1 or native.get('id') != selected['id']:
                 raise ValueError('Rebuild Crystal Fina battle assets before staging her runtime.')
             import _ffr_fina_cinematic
-            if any(_ffr_fina_cinematic.matches(u) and u['id']==selected['id'] for u in units):
+            native.pop('cinematicMovie', None)
+            if any(u['id']==selected['id'] for u in _ffr_fina_cinematic.selected(units, root)):
                 native['cinematicMovie'] = _ffr_fina_cinematic.PRIVATE.replace('FFRS/Content/', '/Game/')
             config['fina'] = native
             code += '(function()\n' + Path(__file__).with_name('fina_battle.lua').read_text(encoding='utf-8') + '\nend)();\n'

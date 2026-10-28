@@ -216,6 +216,15 @@ class HomeScreen extends StatelessWidget {
                   },
                 ),
                 SwitchListTile(
+                  key: const Key('fina-cinematic'), contentPadding: EdgeInsets.zero,
+                  title: Text('Crystal Fina resonance cinematic', style: Guide.text()),
+                  subtitle: Text('Adds her movie and cave music before the sprite resonance. Off by default; her healing and sprite animation still play. Rebuild/install and restart the game after changing.', style: Guide.small()),
+                  value: app.finaCinematic,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setFinaCinematic(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
                   key: const Key('testing-max-mr'), contentPadding: EdgeInsets.zero,
                   title: Text('One-battle MR for testing', style: Guide.text()),
                   subtitle: Text('Equipped visions earn the bounded native MR completion reward per reward-bearing victory. Does not change awakening ranks.', style: Guide.small()),

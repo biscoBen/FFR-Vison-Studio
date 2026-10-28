@@ -1,4 +1,4 @@
-"""Movie transport, audio synchronization and automatic Fina inclusion."""
+"""Movie transport, audio synchronization and optional Fina inclusion."""
 import copy
 import base64
 import hashlib
@@ -167,7 +167,7 @@ class CinematicTests(unittest.TestCase):
                 changed.writestr(name, b'changed' if name == 'movie.usm' else source.read(name))
         with self.assertRaisesRegex(ValueError, 'checksum'): film.validate(stream.getvalue())
 
-    def test_no_fina_needs_no_movie_templates_and_old_flags_do_not_control_inclusion(self):
+    def test_movie_requires_switch_and_included_fina_before_extracting_templates(self):
         with tempfile.TemporaryDirectory() as root:
             self.assertFalse(film.enabled(root))
             film.ensure_assets(root, lambda _: self.fail('No Fina should not extract movie assets'))
@@ -178,6 +178,12 @@ class CinematicTests(unittest.TestCase):
             roster.write_text(json.dumps([fina]))
             settings=Path(root)/testing.CONFIG;settings.parent.mkdir(parents=True,exist_ok=True)
             settings.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':False}))
+            self.assertFalse(film.enabled(root))
+            film.ensure_assets(root,lambda _:self.fail('Off must skip template extraction'),[fina])
+            film.build([fina],{'ROOT':root,'LEGACY':root,'OUT':root,'FFRDT':[],'USMAP':'',
+                              'run':lambda _:self.fail('Off must skip movie generation'),'ffrenv':SimpleNamespace()})
+            self.assertEqual(film.selected([fina],root),[])
+            settings.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':True}))
             self.assertTrue(film.enabled(root))
             calls=[]
             def extract(path):

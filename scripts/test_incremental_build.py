@@ -70,7 +70,7 @@ class IncrementalTests(unittest.TestCase):
                 path.with_suffix('.uexp').write_bytes(b'export')
             timeline=self.root/'build/fina-cinematic/timeline.json'
             timeline.parent.mkdir(parents=True,exist_ok=True);timeline.write_text('{}')
-        with mock.patch.object(film,'enabled',return_value=True),mock.patch.object(film,'matches',return_value=True),mock.patch.object(
+        with mock.patch.object(film,'selected',return_value=[{'id':13500}]),mock.patch.object(
                 music,'movie_audio',return_value=score),mock.patch.object(inc,'_ensure_native'),mock.patch.object(film,'prepare_pak') as pak,mock.patch.object(
                 reuse,'_active',Cache(self.root,{})),mock.patch.dict(sys.modules,{'ffbe_resonance':SimpleNamespace(SHELL='shell',__file__=str(self.source))}):
             wrapped=inc._cinematic(generate)
@@ -83,6 +83,20 @@ class IncrementalTests(unittest.TestCase):
             master.write_bytes(b'original');master.with_suffix('.uexp').write_bytes(b'original export')
             wrapped([{'id':13500}],env)
             self.assertEqual(len(calls),2)
+
+    def test_disabled_fina_movie_bypasses_warm_cache_and_audio_preparation(self):
+        import _ffr_incremental as inc
+        import _ffr_fina_cinematic as film
+        import _ffr_fina_cave_music as music
+        config=self.root/'mods/EstherTsukiko/testing.json';config.parent.mkdir(parents=True)
+        config.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':False}))
+        original=mock.Mock()
+        units=[{'id':13503,'ffbe':{'id':film.SPRITE}}]
+        env={'ROOT':self.root}
+        with mock.patch.object(reuse,'_active',Cache(self.root,{})),mock.patch.object(music,'movie_audio') as audio:
+            inc._cinematic(original)(units,env)
+        original.assert_called_once_with(units,env)
+        audio.assert_not_called()
 
     def test_corruption_and_incomplete_manifest_trigger_regeneration(self):
         self.run_stage();folder=next((self.root/'build/reuse').glob('*/*'))

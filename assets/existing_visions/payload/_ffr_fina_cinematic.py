@@ -101,10 +101,10 @@ def payload():
 
 
 def enabled(root):
-    """Legacy callers: the cinematic now follows an included Fina, not a flag."""
+    """The optional intro requires both the switch and an included Fina."""
     import _ffr_sephira
     roster=Path(root)/'mods/EstherTsukiko/units.json'
-    return roster.is_file() and any(matches(u) for u in _ffr_sephira.active_units(json.loads(roster.read_bytes())))
+    return roster.is_file() and bool(selected(_ffr_sephira.active_units(json.loads(roster.read_bytes())), root))
 
 
 def matches(unit):
@@ -113,10 +113,15 @@ def matches(unit):
             and (unit.get('lb_custom') or {}).get('presentation', 'ffbe') == 'ffbe')
 
 
+def selected(units, root):
+    import _ffr_testing
+    return [u for u in units if matches(u)] if _ffr_testing.settings(root)['finaCinematic'] else []
+
+
 def ensure_assets(root, extract, units=None):
     if units is None:
         if not enabled(root):return
-    elif not any(matches(u) for u in units):return
+    elif not selected(units, root):return
     for rel in (MASTER, MOVIE, MOVIE + '_vp9'):
         path = Path(root) / 'extracted/legacy' / (rel + '.uasset')
         if not path.is_file(): extract(rel.removeprefix('FFRS/Content/'))
@@ -207,12 +212,12 @@ def prepare_pak(root, ffrenv, run, video=None):
 def build(units, env):
     root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
     run, tool, usmap = env['run'], env['FFRDT'], env['USMAP']
-    selected = [u for u in units if matches(u)]
-    if not selected:
+    chosen = selected(units, root)
+    if not chosen:
         prepare_pak(root, env['ffrenv'], run)
         return
-    if len(selected) != 1: raise ValueError('Select one Crystal Fina for her cinematic.')
-    unit = selected[0]
+    if len(chosen) != 1: raise ValueError('Select one Crystal Fina for her cinematic.')
+    unit = chosen[0]
     # Same private LB ID allocation as the engine, never a native donor ID.
     sid = env['lb_id'](unit['id'])
     job, = [j for j in env['authored_sequences'] if f'/Skill/{sid}/{sid + 1}/' in j['asset']]
@@ -323,7 +328,7 @@ def register(app, env=None):
         <style>body{background:#11212b;color:#f8f7ef;font:18px system-ui;max-width:1100px;margin:32px auto;padding:0 20px}video{width:100%;background:black}a{color:#c6e8ff}</style>
         <h1>Crystal Fina resonance cinematic</h1><video id="movie" controls preload="metadata" poster="/api/testing/fina-cinematic/poster"><source src="/api/testing/fina-cinematic/preview" type="video/mp4"></video>
         <p>A 6.4-second illustrated intro: a wide shot moves closer while the intact crystal turns, ending with Fina opening her red eyes. The secret cave’s music plays from its beginning. In game it leads into Fina’s existing LB animation and cure sound.</p>
-        <p>The cinematic is included automatically with Crystal Fina. Include her, rebuild/install and restart the game, then use her resonance.</p>
+        <p>Turn on <b>Crystal Fina resonance cinematic</b> in Studio, include her, rebuild/install and restart the game, then use her resonance. Turn it off and rebuild/install to use only her sprite resonance.</p>
         <p><button id="play-sound" type="button">Play with sound</button> <span id="audio-status" role="status"></span></p>
         <p>The preview reads the cave music from your selected game on first playback. You can also listen to it separately:</p>
         <audio id="music" controls preload="none" src="/api/testing/fina-cinematic/audio"></audio>

@@ -1,0 +1,32 @@
+Battle command / memory survey
+
+This is an F8-only read-only diagnostic, not an auto-battle implementation.
+It records the native command interfaces and battle HUD so auto-battle can
+repeat learned skills using the game's checks and show its control alongside
+the existing speed/unit-info guides. No commands are submitted and no saves,
+options, equipment, skills, assets or other installed mods are changed.
+
+1. Extract this entire ZIP. Close Resonance. Leave the old movie/skill/esper
+   diagnostic observers disabled. Keep the Studio runtime enabled.
+2. Run Install Battle Commands.cmd. It finds the full game at D: or G: first
+   and lets you enter a different path. It needs the existing UE4SS loader.
+   No Studio rebuild/install is needed.
+3. Start the game, enter an ordinary battle and use different skills manually
+   on your party. At the next command-selection menu, press F8 once.
+4. Finish that battle. Enter another battle and press F8 at its first command
+   menu, before choosing any new skills. These two captures show whether the
+   last commands survived the battle transition and where the HUD guides sit.
+5. Run Collect Battle Commands.cmd before restarting the game. Send the
+   Battle-Command-Diagnostics ZIP in Downloads\FFR Mod.
+6. Close the game and run Disable Battle Commands.cmd.
+
+The observer has no polling timer or hooks. All snapshots run on the game
+thread only when F8 is pressed, with retained callbacks, an eight-capture
+limit, and a 2,500-line bound. Missing reflected fields are logged explicitly.
+The snapshot includes party unit/skill/target IDs already in memory, not your
+save files. Collection reads up to the last 16 MB of the log and saves only
+this observer's lines plus Lua panic/startup errors and loader/script hashes.
+
+Optional command-line path (works on either PC):
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "Battle Command Diagnostics.ps1" -Action Install -GamePath "D:\steam\steamapps\common\FINAL FANTASY RESONANCE" -NoPrompt
+Use -Action Collect or -Action Disable as needed.

@@ -65,6 +65,7 @@ class AppState extends ChangeNotifier {
   String testingPracticeEncounter = 'standard';
   bool surviveAtOne = false;
   bool noEncounters = false;
+  bool finaCinematic = false;
   bool ffbeNeedles = false;
   bool crystalCave = false;
   bool crystalCaveTest = false;
@@ -476,6 +477,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load survival testing settings: $e'; }
     try { noEncounters = await api!.noEncounters(); }
     catch (e) { notice = 'Could not load random encounter settings: $e'; }
+    try { finaCinematic = await api!.finaCinematic(); }
+    catch (e) { notice = 'Could not load Crystal Fina cinematic settings: $e'; }
     try { ffbeNeedles = await api!.ffbeNeedles(); }
     catch (e) { notice = 'Could not load the FFBE animation test setting: $e'; }
     try { crystalCave = await api!.crystalCave(); }
@@ -1259,6 +1262,13 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveNoEncounters(value);
     noEncounters = value; notifyListeners();
+  });
+
+  Future<void> setFinaCinematic(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveFinaCinematic(value);
+    finaCinematic = value; notifyListeners();
   });
 
   Future<void> setMinimapTreasure(bool enabled) => _withRoster(() async {

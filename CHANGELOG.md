@@ -11,6 +11,27 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Optional Fina cinematic and auto-battle investigation — 2026-10-28
+
+- Restore **Crystal Fina resonance cinematic** beside the main Studio switches,
+  off by default. Rebuild/install and restart after changing it. Off skips movie
+  template extraction, soundtrack preparation and the cinematic cache, excludes
+  the movie runtime configuration, and removes the owned companion movie on the
+  next install. Her ordinary sprite resonance, healing and cure sounds remain.
+- Investigate repeat-last-command auto-battle with keyboard/controller controls
+  and a prompt beside speed/unit information. The native game exposes auto-battle
+  input and per-character saved command bundles, but function parameters, reuse
+  semantics and the live HUD hierarchy still need a capture. No auto-battle
+  gameplay control or F6 binding is installed in this update.
+- Add a separate **Battle-Command-Diagnostics.zip**: F8-only snapshots of native
+  function signatures, saved party command IDs, current command selection and
+  the battle widget hierarchy. No polling, hooks, command submission, save or
+  option writes. All native callbacks are retained. The installer preserves
+  Studio and other mods and detects the full game on either PC.
+- Focused Python and Lua checks pass; Windows packaging and Flutter verification
+  are pending. Actual native auto-battle behavior is not established by the
+  read-only observer or test doubles.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

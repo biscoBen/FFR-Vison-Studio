@@ -1,5 +1,18 @@
 # Crystal Fina cinematic test
 
+## Optional intro restored — 2026-10-28
+
+Studio again has a **Crystal Fina resonance cinematic** switch under the main
+game options. It defaults off. Include Fina and turn it on to add the approved
+movie and its working cave soundtrack; rebuild/install and restart the game.
+Switching it off removes the movie wrapper and its music control while keeping
+her original sprite resonance, healing and cure sounds. It also skips movie-only
+template/audio/cache work. No vision ID, kit, mastery or acquisition reset is needed.
+
+The implementation and soundtrack evolved through the historical diagnostics
+below. The user has confirmed the current HCA-v3-decoded cave music works in game;
+restoring the switch does not change those media bytes or the accepted video.
+
 The current test keeps the approved **Crystal-Fina-Rotating-Lighter.mp4** video and
 its 6.4-second duration. The user confirms the movie now plays once and hands off
 to the sprite LB. Its embedded mono HCA score was audible but garbled in game,

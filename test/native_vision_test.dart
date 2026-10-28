@@ -856,7 +856,7 @@ void main() {
   });
 
   testWidgets(
-    'Fina cinematic preview remains available without a test toggle',
+    'Fina cinematic switch is optional and preview remains available',
     (tester) async {
       await show(tester);
       expect(find.byKey(const Key('testing-fina-cinematic')), findsNothing);
@@ -864,6 +864,24 @@ void main() {
       await tester.ensureVisible(preview);
       expect(tester.widget<GuideButton>(preview).onPressed, isNotNull);
       expect(api.cinematicValue, isFalse);
+      final control = find.byKey(const Key('fina-cinematic'));
+      await tester.ensureVisible(control);
+      await tester.tap(control);
+      await wait(tester, () => app.finaCinematic);
+      expect(api.cinematicValue, isTrue);
+      api.failCinematic = true;
+      await tester.tap(control);
+      await wait(tester, () => app.notice?.contains('Cinematic setting write failed') == true);
+      expect(app.finaCinematic, isTrue);
+      await tester.pump(const Duration(seconds: 6));
+      api.failCinematic = false;
+      await app.setFinaCinematic(false);
+      expect(api.cinematicValue, isFalse);
+      app.buildState = {'running': true};
+      app.notifyListeners();
+      await tester.pump();
+      expect(tester.widget<SwitchListTile>(control).onChanged, isNull);
+      await expectLater(app.setFinaCinematic(true), throwsStateError);
     },
   );
 

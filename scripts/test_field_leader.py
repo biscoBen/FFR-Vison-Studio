@@ -80,20 +80,23 @@ class FieldLeaderTests(unittest.TestCase):
             lua.execute(broken,name='@FFRStudioFieldLeader/Scripts/main.lua')
         self.assertNotIn('Battle presentation ready',''.join(lua.globals().messages.values()))
 
-    def test_fina_movie_runtime_is_automatic_with_an_old_off_setting(self):
+    def test_fina_movie_switch_only_controls_movie_runtime_and_is_reversible(self):
         import _ffr_fina_battle as fina
         import _ffr_fina_cinematic as movie
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             setting=root/testing.CONFIG;setting.parent.mkdir(parents=True)
-            setting.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':False}))
             unit={'id':13503,'ffbe':{'id':fina.SPRITE,'source':'CUSTOM'}}
             runtime=root/'build/crystal-fina-battle/runtime.json';runtime.parent.mkdir(parents=True)
             runtime.write_text(json.dumps({'schema':1,'id':13503}))
-            leader.build([unit],{'ROOT':root,'rows':lambda _:self.fail('No field cycling requires no map reads')})
-            payload=json.loads((root/leader.STAGE).read_bytes())
-            self.assertIn(movie.PRIVATE.replace('FFRS/Content/','/Game/'),payload['files']['Scripts/config.lua'])
-            self.assertIn('cinematicMovie',payload['files']['Scripts/config.lua'])
+            for value in (False,True,False):
+                setting.write_text(json.dumps({'schema':1,'maxMr':False,'finaCinematic':value}))
+                leader.build([unit],{'ROOT':root,'rows':lambda _:self.fail('No field cycling requires no map reads')})
+                payload=json.loads((root/leader.STAGE).read_bytes())
+                config=payload['files']['Scripts/config.lua']
+                self.assertEqual('cinematicMovie' in config,value)
+                self.assertEqual(movie.PRIVATE.replace('FFRS/Content/','/Game/') in config,value)
+                self.assertIn('Battle presentation ready',payload['files']['Scripts/main.lua'])
 
     def field_fixture(self, mid=60):
         # Explicit synthetic FSsValue floats/cell hashes, including the native

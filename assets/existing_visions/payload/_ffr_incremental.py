@@ -268,7 +268,7 @@ def _cinematic(original):
         import _ffr_fina_cave_music as music
         import _ffr_crystal_cave as cave
         cache = reuse._active
-        selected = [u for u in units if movie.matches(u)]
+        selected = movie.selected(units, env['ROOT'])
         if cache is None or len(selected) != 1: return original(units, env)
         import ffbe_resonance
         root, legacy, out = (Path(env[n]) for n in ('ROOT', 'LEGACY', 'OUT'))
