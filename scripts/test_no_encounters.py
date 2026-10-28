@@ -63,7 +63,9 @@ class NoEncountersTests(unittest.TestCase):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime()
         lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
-        lua.execute((ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text())
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
         lua.globals().tests()
 
     def test_encounter_only_install_requests_the_optional_runtime(self):

@@ -21,7 +21,7 @@
     "_ffr_ffbe_renderer.py": "8f0f531d5527ba0c8184a38e193daff086a08bc60e9ca9f7c2ae2e4ddfe27a44",
     "_ffr_ffbe_texture.py": "c7df04b45f4864c9d12d75f9d1b7e7b86843a73c27902a0119605f355e5f753b",
     "_ffr_ffbe_uv.py": "51cf8d34412b8d3664f7d5a4b01dcfa2a91a7d02dc5714e803bfc9b479f7f33e",
-    "_ffr_field_leader.py": "ed0650c0c1c80e5f8abc55f7c6fd33849317685d47f7b4d83b4b63ff0cbd577e",
+    "_ffr_field_leader.py": "90cc534dcad11adc8ea4affd4c2ec6675358b68d67770a67bee3924a19283412",
     "_ffr_fina_battle.py": "ec1e15edb1393e98df97db0933f6a3dc0935e1906aa6ff70191baeabfe6d162a",
     "_ffr_fina_boss.py": "cf6020cd95553dab4f8fb9e872a560d2b675fc46d56b542104842dc705021179",
     "_ffr_fina_cave_music.py": "bb2c812b6ff17db13e5298b88750d06d405b89853de2c4157699cdcb37d8537d",
@@ -52,7 +52,7 @@
     "cave_music_preview.zip": "5b5ff0601afcb44ed437efcacf179293c6d375f4db10017c0cf5156a9c2ed79e",
     "cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
     "crystal_fina_boss.json": "27cd733bbe2f6912f48af12efd0f3cf95c2eeaa6a8b46a35eb1f90c019287a94",
-    "encounter_toggle.lua": "33252a34be32310331fdc2eee8c5c9a238a26f34ead8169feb885859396ceedd",
+    "encounter_toggle.lua": "a6c571f1c366536591e785fb4a2a6375422b6fe6430e46417da64be16a17c307",
     "esper_mastery.json": "e89c70aab1883ad1ff2399600cc2f92b7998863d4656b95e3b1394f6fe0d8806",
     "esper_mastery.lua": "d65be6da201d87b5adea9fab95f1d250289c94465f6da1fb2f17d4e2e54a619f",
     "ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
@@ -80,6 +80,7 @@
     "sephira_mr_restoration.json": "4ae13e6a449e1b3efcda7a80cf0f4491f3b55fb7a102457ab6e17bc14d3711d7",
     "sephira_native_presentations.json": "e2fe3da639332ab00fc35ec6a05ed7b0f45e567258074f60000a30234375cdbc",
     "sephira_visuals.json": "d52f5154af02a2dc5ee438e1c106a78f74d58fcef9933a94de7b00f9636a0558",
+    "status_hud.lua": "b5320cf1ae4f4d5c59cdc7d543d4819542e328f9659ed37c7dfb984f9de74cd8",
     "ue4ss_runtime.zip": "e4a47e23e2eeb8379c4fc388d1b1686f01c6c5930d84a2ee4a6a9574b274e681",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
   }

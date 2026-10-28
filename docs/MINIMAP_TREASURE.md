@@ -49,6 +49,12 @@ the timing of live marker refreshes; these still need an in-game check.
 
 ## In-game encounter toggle
 
+Versions 1.2.120/1.2.121 can crash just after the overworld appears with this
+feature enabled. The user isolated this to encounter control, not the F8 collector.
+The 1.2.122 candidate replaces raw text creation and field HUD-tree edits with an
+independent game-created key-guide UserWidget. Startup and placement need a live
+test of the candidate; leave the switch off in the earlier packages.
+
 Enable **In-game encounter toggle** in Studio, rebuild/install once, and restart
 Resonance. Install the bundled UE4SS loader if Studio offers it. This replaces the
 previous always-off map-table patch; native map flags now remain intact.

@@ -56,6 +56,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
   missing HUD refusal and restoration of native encounter overrides. Live startup
   safety, HUD positioning and controller input remain user checks.
 
+Candidate **1.2.122** local validation: **804 Python tests** pass (18 platform
+skips), including **51** focused encounter/field/collector checks; **5 Flutter
+settings/HUD-switch tests** pass. Verify all nine native widget/time methods,
+the cooked key-guide class path and its member fields against the supplied SDK
+and asset inventory. Vision presets, IDs, kits, acquisition and media are unchanged.
+The final installer checks caught and corrected the new helper's resource-list
+entry before packaging. Windows package verification is pending.
+
+The external-session candidate was first complete at **12:55:22 PDT**; its
+subsequent process/prompt/attribution corrections are included in that timer.
+The encounter HUD candidate was first complete at **13:34:05 PDT**, before the
+resource-list correction and final repeated checks. Delivery/CI measurements will
+be recorded after package verification; neither timer has been restarted.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

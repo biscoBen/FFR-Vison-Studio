@@ -25,20 +25,8 @@ controller=obj({left=0,right=0})
 function controller:GetInputAnalogKeyState(key)
     assert(type(key.KeyName)=='string');return key.KeyName=='Gamepad_LeftTriggerAxis' and self.left or self.right
 end
-function new_hud()
-    local p=obj({name='canvas',class=classes['UMG.CanvasPanel'],panel=true,children={obj({name='nativeQuestWidget'})}})
-    function p:AddChildToCanvas(widget)
-        self.children[#self.children+1]=widget;widget.parent=self
-        local s=obj({})
-        function s:SetAnchors(a) self.anchors=a end
-        function s:SetAlignment(a) self.alignment=a end
-        function s:SetPosition(a) self.position=a end
-        function s:SetAutoSize(a) self.auto=a end
-        return s
-    end
-    return obj({WidgetTree=obj({RootWidget=p}),IsVisible=function() return true end,
-        GetOwningPlayer=function() return controller end}),p
-end
+viewport={};canCreate=true;created=0
+function new_hud() return obj(),{children={obj({name='nativeQuestWidget'})}} end
 hud,panel=new_hud()
 local manager=obj({});local input=obj({})
 function input:IsEnableInput() return true end
@@ -56,7 +44,7 @@ function FindAllOf(class)
 end
 local gameplay=obj({})
 function gameplay:GetPlayerController(a,i) assert(a==actor and i==0);return controller end
-function gameplay:GetTimeSeconds(a) assert(a==actor);return clock end
+function gameplay:GetRealTimeSeconds(a) assert(a==actor);return clock end
 local map=obj({})
 function map:GetPlayerMapUnit() return actor end
 function map:IsDuringEncount() return inBattle end
@@ -64,21 +52,40 @@ local talk=obj({})
 function talk:IsPlayingEvent() return event end
 local libs={['mucha.Default__CPP_BFL_Map']=map,['mucha.Default__CPP_BFL_TalkEvent']=talk,
     ['Engine.Default__SubsystemBlueprintLibrary']=systems,['Engine.Default__GameplayStatics']=gameplay}
-function StaticFindObject(p) local n=p:gsub('^/Script/','');return libs[n] or classes[n] or obj() end
-function StaticConstructObject(c,outer)
-    assert(c==classes['UMG.TextBlock'] and outer==hud.WidgetTree)
-    local t=obj({Font={Size=24},class=c})
-    function t:SetText(s) self.label=s end
-    function t:SetColorAndOpacity(c) self.color=c end
-    function t:SetFont(f) self.Font=f end
-    function t:SetShadowOffset(o) self.shadow=o end
-    function t:SetShadowColorAndOpacity(c) self.shadowColor=c end
+function StaticFindObject(p)
+    if p:find('/Script/',1,true)~=1 then return nil end
+    local n=p:gsub('^/Script/','');return libs[n] or classes[n] or obj()
+end
+local factory=obj()
+local guideClass=obj({name='WBP_KeyGuide_C'})
+libs['UMG.Default__WidgetBlueprintLibrary']=factory
+function LoadAsset(path)
+    assert(path=='/Game/UI/MainMenu/Common/Key/KeyGuide/WBP_KeyGuide.WBP_KeyGuide_C')
+    return guideClass
+end
+function StaticConstructObject() error('Raw UWidget construction is forbidden') end
+function factory:Create(context,c,player)
+    assert(context==actor and c==guideClass and player==controller)
+    if not canCreate then return nil end
+    created=created+1
+    local label=obj()
+    function label:SetText(s) self.label=s end
+    local t=obj({Text_Name=label,WBP_DirectionGridPanel=obj()})
+    function t.WBP_DirectionGridPanel:SetVisibility(v) assert(v==1) end
     function t:SetVisibility(v) assert(v==3) end
+    function t:AddToViewport(z) assert(z==50);viewport[#viewport+1]=self end
+    function t:SetAnchorsInViewport(a) self.anchors=a end
+    function t:SetAlignmentInViewport(a) self.alignment=a end
+    function t:SetPositionInViewport(p,dpi)
+        assert(not failPosition,'Fixture HUD positioning error')
+        self.position=p;assert(dpi==false)
+    end
+    function t:SetDesiredSizeInViewport(size) assert(size.X==520 and size.Y==40) end
     function t:RemoveFromParent()
-        for i,v in ipairs(self.parent.children) do if v==self then table.remove(self.parent.children,i);break end end
+        for i,v in ipairs(viewport) do if v==self then table.remove(viewport,i);break end end
         self.removed=true
     end
-    lastText=t;return t
+    lastText=label;lastWidget=t;return t
 end
 function FName(n) return n end
 Key={F7=118}
@@ -91,8 +98,9 @@ package.preload.config=function() return {schema=1,encounterToggle=1} end
 function tick(dt) clock=clock+(dt or .1);FFRStudioEncounterToggle.tick() end
 function press() keys[Key.F7]() end
 function tests()
-    tick();assert(actor.m_OverwriteEncountRatio==-1 and #panel.children==2)
-    assert(lastText.label:find('ON') and lastText.Font.Size==18)
+    event=true;tick();assert(created==0 and #viewport==0)
+    event=false;tick();assert(actor.m_OverwriteEncountRatio==-1 and #panel.children==1 and #viewport==1)
+    assert(lastText.label:find('ON') and lastWidget.position.Y==-24)
     press();assert(actor.m_OverwriteEncountRatio==0 and lastText.label:find('OFF'))
     collectgarbage('collect');tick();assert(actor.m_OverwriteEncountRatio==0)
     press();assert(actor.m_OverwriteEncountRatio==-1 and lastText.label:find('ON'))
@@ -105,11 +113,11 @@ function tests()
     assert(not FFRStudioEncounterToggle.disabled)
     controller.left,controller.right=0,0;tick()
     -- Context guards refuse toggles and return only our value to native control.
-    press();local oldText=lastText
+    press();local oldText=lastWidget
     for _,flag in ipairs({'event','menuOpen','inBattle'}) do
         _G[flag]=true;press();assert(actor.m_OverwriteEncountRatio==-1 and oldText.removed)
         assert(FFRStudioEncounterToggle.disabled)
-        _G[flag]=false;tick();assert(actor.m_OverwriteEncountRatio==0);oldText=lastText
+        _G[flag]=false;tick();assert(actor.m_OverwriteEncountRatio==0);oldText=lastWidget
     end
     -- Native zone updates are preserved when normal encounters resume.
     actor.m_OverwriteEncountRatio=.5;tick();press();assert(actor.m_OverwriteEncountRatio==.5)
@@ -120,12 +128,16 @@ function tests()
     -- Each new actor/map and HUD owns separate state, with no dangling old widget.
     local old=actor;actor=new_actor('Rain_B',.75);hud,panel=new_hud();tick()
     assert(old.m_OverwriteEncountRatio==.25 and actor.m_OverwriteEncountRatio==0)
-    assert(#panel.children==2 and lastText.label:find('OFF'))
+    assert(#panel.children==1 and #viewport==1 and lastText.label:find('OFF'))
     press();assert(actor.m_OverwriteEncountRatio==.75)
     -- Missing HUD refuses invisible toggles and leaves native encounters alone.
-    local good=hud;hud=nil;press();assert(actor.m_OverwriteEncountRatio==.75)
-    assert(not FFRStudioEncounterToggle.disabled);hud=good;tick()
-    assert(#panel.children==2 and lastText.label:find('ON'))
+    local good=controller;controller=nil;press();assert(actor.m_OverwriteEncountRatio==.75)
+    assert(not FFRStudioEncounterToggle.disabled);controller=good;tick()
+    assert(#panel.children==1 and #viewport==1 and lastText.label:find('ON'))
+    -- A failed native-widget setup removes its own viewport entry before retry.
+    event=true;tick();event=false;failPosition=true;tick()
+    assert(#viewport==0 and actor.m_OverwriteEncountRatio==.75)
+    failPosition=false;tick();assert(#viewport==1 and lastText.label:find('ON'))
     -- A later native/other-mod change is never replaced by a stale snapshot.
     press();actor.m_OverwriteEncountRatio=.33;inBattle=true;tick()
     assert(actor.m_OverwriteEncountRatio==.33)

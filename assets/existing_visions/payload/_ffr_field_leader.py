@@ -211,6 +211,8 @@ def build(units, env):
         config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
         if encounters:
+            code += 'local create_status_hud = (function()\n' + Path(__file__).with_name('status_hud.lua').read_text(encoding='utf-8') + '\nend)();\n'
+        if encounters:
             config['encounterToggle'] = 1
             code += '(function()\n' + Path(__file__).with_name('encounter_toggle.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if espers:

@@ -1,3 +1,8 @@
+The reported startup crash was isolated to the in-game encounter toggle, not
+this observer. Keep that encounter switch OFF pending its fix. The separate
+Game-Diagnostic-Session.zip can export existing logs when the game closes;
+this legacy F8 observer is only needed for native command snapshots.
+
 Battle command / memory survey
 
 This is an F8-only read-only diagnostic, not an auto-battle implementation.

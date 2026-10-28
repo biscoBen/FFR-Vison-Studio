@@ -11,3 +11,5 @@ scripts/fixtures/engine_motion/*.py -text whitespace=cr-at-eol
 scripts/reference/crystal-fina-battle/* -text whitespace=cr-at-eol
 # The F8 command observer ZIP is verified against these exact source bytes.
 scripts/reference/battle-commands/* -text whitespace=cr-at-eol
+scripts/reference/game-crash/* -text whitespace=cr-at-eol
+scripts/reference/common/DiagnosticSession.ps1 -text whitespace=cr-at-eol

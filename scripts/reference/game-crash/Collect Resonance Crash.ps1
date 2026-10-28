@@ -1,6 +1,7 @@
 # Windows PowerShell 5.1. Read-only crash collection: no installation or game launch.
 [CmdletBinding()]
-param([string]$GamePath, [string]$EnginePath, [string]$OutputRoot, [switch]$NoPrompt)
+param([string]$GamePath, [string]$EnginePath, [string]$OutputRoot, [switch]$NoPrompt,
+      [switch]$WatchGame, [switch]$OpenOutput, [ValidateRange(0,86400)][int]$StartTimeoutSeconds=0)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
@@ -9,12 +10,14 @@ function Find-Game([string]$Candidate) {
     $Candidate = $Candidate.Trim().Trim('"')
     foreach ($suffix in @('', '..\..\..')) {
         $path = $Candidate
-        if ($suffix) { $path = Join-Path $Candidate $suffix }
-        if (Test-Path -LiteralPath (Join-Path $path 'FFRS\Binaries\Win64') -PathType Container) {
+        if ($suffix) { $path = [IO.Path]::Combine($Candidate,$suffix) }
+        if (Test-Path -LiteralPath ([IO.Path]::Combine($path,'FFRS\Binaries\Win64')) -PathType Container -ErrorAction SilentlyContinue) {
             # Normalize existing game roots with the same .NET routine used
             # for output paths. On Windows a TEMP ancestor can use its 8.3
             # alias while GetFullPath expands it to the long spelling.
-            return [System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $path).Path)
+            $resolved=[System.IO.Path]::GetFullPath((Resolve-Path -LiteralPath $path).Path)
+            if (($resolved.TrimEnd('\','/') -split '[\\/]')[-1] -match '(?i)\bDEMO\b') { continue }
+            return $resolved
         }
     }
     return $null
@@ -64,8 +67,8 @@ function Copy-Shared([string]$Source, [string]$Destination, [long]$Limit=4194304
 
 try {
     Add-Type -AssemblyName System.IO.Compression.FileSystem
-    Write-Host 'Resonance crash report collector (read-only)' -ForegroundColor Cyan
-    Write-Host 'Run after the crash, before launching Resonance again so its latest logs are preserved.'
+    Write-Host 'Resonance logs and crash collector (no game script installed)' -ForegroundColor Cyan
+    if (-not $WatchGame) { Write-Host 'Run before launching Resonance again so its latest logs are preserved.' }
     $engine = Find-Engine $EnginePath
     if ($EnginePath -and -not $engine) { throw 'The supplied Studio engine folder was not found.' }
     if (-not $engine) {
@@ -81,17 +84,23 @@ try {
         $property = $saved.PSObject.Properties['gameRoot']
         if ($null -ne $property) { $game = Find-Game ([string]$property.Value) }
     }
-    if (-not $game) { $game = Find-Game 'D:\Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO' }
-    if (-not $game -and ${env:ProgramFiles(x86)}) {
-        $game = Find-Game (Join-Path ${env:ProgramFiles(x86)} 'Steam\steamapps\common\FINAL FANTASY RESONANCE DEMO')
+    if (-not $game) {
+        foreach ($drive in @('G','D','C','E','F')) {
+            $game = Find-Game ($drive + ':\Steam\steamapps\common\FINAL FANTASY RESONANCE')
+            if ($game) { break }
+        }
     }
-    if (-not $NoPrompt) {
+    if (-not $game -and ${env:ProgramFiles(x86)}) {
+        $game = Find-Game ([IO.Path]::Combine(${env:ProgramFiles(x86)},'Steam\steamapps\common\FINAL FANTASY RESONANCE'))
+    }
+    if (-not $NoPrompt -and (-not $WatchGame -or -not $game)) {
         $prompt = 'Resonance game folder'
         if ($game) { $prompt += ' (Enter for ' + $game + ')' }
         $entered = Read-Host $prompt
         if ($entered) { $game = Find-Game $entered }
     }
     if (-not $game) { throw 'Could not find Resonance. Supply its game folder, containing FFRS.' }
+    Write-Host ('Selected game: ' + $game)
     if (-not $OutputRoot) { $OutputRoot = Join-Path $env:USERPROFILE 'Downloads\FFR Mod' }
     $OutputRoot = [System.IO.Path]::GetFullPath($OutputRoot)
     $prefix = $game.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
@@ -99,7 +108,19 @@ try {
         throw 'Choose an output folder outside the game. Default: Downloads\FFR Mod.'
     }
     Assert-PlainPath $OutputRoot
-    $tag = 'Resonance-Crash-Reference-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,6)
+    $session=$null
+    if ($WatchGame) {
+        $watcher=Join-Path $PSScriptRoot 'DiagnosticSession.ps1'
+        if (-not (Test-Path -LiteralPath $watcher -PathType Leaf)) {
+            $watcher=[IO.Path]::GetFullPath([IO.Path]::Combine($PSScriptRoot,'../common/DiagnosticSession.ps1'))
+        }
+        if (-not (Test-Path -LiteralPath $watcher -PathType Leaf)) { throw 'Extract the whole diagnostic ZIP; DiagnosticSession.ps1 is missing.' }
+        . $watcher
+        $session=Wait-FFRStudioGameSession -GamePath $game -StartTimeoutSeconds $StartTimeoutSeconds
+        Start-Sleep -Milliseconds 1500
+    }
+    $prefixTag=if ($WatchGame) { 'Resonance-Diagnostic-Session-' } else { 'Resonance-Crash-Reference-' }
+    $tag = $prefixTag + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,6)
     $root = Join-Path $OutputRoot $tag
     [void][System.IO.Directory]::CreateDirectory($root)
     $script:records = @(); $script:errors = @()
@@ -127,6 +148,10 @@ try {
             'ue4ss\Mods\FFRStudioFieldLeader\Scripts\main.lua',
             'ue4ss\Mods\FFRStudioFieldLeader\Scripts\config.lua',
             'ue4ss\Mods\FFRStudioFieldLeader\Scripts\fina_battle.lua',
+            'ue4ss\Mods\FFRStudioBattleCommandTrace\enabled.txt',
+            'ue4ss\Mods\FFRStudioBattleCommandTrace\Scripts\main.lua',
+            'ue4ss\Mods\FFRStudioBattleCommandTrace\observer.json',
+            'ue4ss\Mods\FFRStudioMovieTrace\enabled.txt',
             'ue4ss\Mods\FFRStudioSkillTrace\enabled.txt',
             'ue4ss\Mods\FFRStudioSkillTrace\Scripts\main.lua')) {
         $path = Join-Path $binary $relative
@@ -198,7 +223,7 @@ try {
     }
     [pscustomobject]@{schema=1; collectedUtc=[DateTime]::UtcNow.ToString('o'); game=$game; engine=$engine;
         files=$script:records; errors=$script:errors; runtime=$runtime; mods=$modInventory; pakInventory=$pakInventory;
-        searched=$searched; crashFolders=$crashCount; maxBytesPerFile=4194304;
+        searched=$searched; crashFolders=$crashCount; maxBytesPerFile=4194304;session=$session;
         excludes=@('saves', 'credentials', 'game assets', 'DLL contents', 'memory dumps', 'custom rosters')} |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $root 'report.json') -Encoding UTF8
     $zip = $root + '.zip'
@@ -207,6 +232,10 @@ try {
     if (-not $crashCount) { Write-Host 'No Unreal crash folder was found; send the ZIP anyway for the loader/game logs.' -ForegroundColor Yellow }
     if ($script:errors.Count) { Write-Host 'Some files could not be read; details are in report.json.' -ForegroundColor Yellow }
     Write-Output $zip
+    if ($OpenOutput -and $env:OS -eq 'Windows_NT') {
+        try { Invoke-Item -LiteralPath $OutputRoot }
+        catch { Write-Host ('Export is ready in ' + $OutputRoot) -ForegroundColor Yellow }
+    }
 } catch {
     Write-Host ('ERROR: ' + $_.Exception.Message) -ForegroundColor Red
     exit 1

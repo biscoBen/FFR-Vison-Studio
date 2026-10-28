@@ -1,12 +1,27 @@
-Extract these three files together, then run Collect Resonance Crash.cmd.
-Run it after the crash, before launching Resonance again. No tracer is needed.
-Accept the detected game folder, or paste the folder containing FFRS.
-Attach the Resonance-Crash-Reference-*.zip created in Downloads\FFR Mod.
-Also say whether you had just returned from a battle, cancelled the picker,
-or were walking before opening it at all, and which opponent you last chose.
+Extract the entire ZIP, then run Run Diagnostic Session.cmd.
+Keep its window open, launch Resonance normally through Steam, and play.
+When you close the game (or close its fatal-error dialog after a crash), the
+helper automatically exports a Resonance-Diagnostic-Session ZIP in Downloads/FFR Mod.
+On success that folder opens and the session window closes; errors stay visible.
+No game script, observer, hotkey, hook, installer or cleanup step is needed.
+It watches only the shipping game process from the selected installation.
+You can also start it with the game already running. Ctrl+C cancels the watcher.
 
-The collector is read-only. It does not install/remove anything, launch the
-game, enable hooks, change settings or require a Studio rebuild.
+For a crash that has already happened, run Collect Resonance Crash.cmd instead.
+Do this before launching the game again to preserve its latest logs.
+Session mode uses an autodetected full-game folder without a confirmation prompt.
+If none is found, paste the folder containing FFRS. Immediate mode also lets you
+confirm or change the selected folder.
+It detects the full game on G:, D: and other common Steam drives.
+Attach the resulting ZIP. Say what you were doing when the problem appeared.
+
+The startup crash was isolated to Studio's in-game encounter control, not the
+Battle Command observer. Keep that encounter switch OFF pending its fix.
+An existing F8 observer can remain installed; this session helper exports its
+existing logs too, but does not install or enable any observer itself.
+
+The collector is read-only. It does not install/remove anything, launch or stop
+the game, enable hooks, change settings or require a Studio rebuild.
 It reads up to three recent Unreal crash folders in each of the game's and
 LocalAppData\FFRS Saved locations, two recent game logs per location,
 UE4SS logs/settings/mod lists, Studio testing settings and repair/version
@@ -14,4 +29,10 @@ reports. It hashes known runtime files and lists installed mod names/files.
 Logs are limited to their last 4 MiB. Paths and actor/asset names can appear
 in reports. Saves, game assets, DLLs, custom rosters, credentials and memory
 dumps are excluded. Missing files are reported; a ZIP with no crash folder
-can still contain useful UE4SS/game logs.
+can still contain useful UE4SS/game logs. This collects existing logs and crash
+records; live battle-command state is not created by an external file watcher.
+
+Optional command-line paths:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "Collect Resonance Crash.ps1" -WatchGame -GamePath "G:\Steam\steamapps\common\FINAL FANTASY RESONANCE" -NoPrompt
+Omit -WatchGame for an immediate export of the last crash. -StartTimeoutSeconds
+can bound the wait for game startup; the default waits until you start the game.
