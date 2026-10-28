@@ -319,15 +319,20 @@ def loader_plan(root, game, previous, enabled, allow_bundle=True):
     if (not isinstance(owned, dict) or any(not sync.allowed(k) or k in sync.PAKS + sync.LEADER_FILES
             or not isinstance(v, str) or not re.fullmatch('[0-9a-f]{64}', v) for k, v in owned.items())):
         raise RuntimeError('Unknown Studio loader ownership record.')
-    before = {}; changes = {}
+    before = {}; changes = {}; updated_owned = None
     for relative, digest in owned.items():
         path = checked(game, relative)
         raw = path.read_bytes() if path.is_file() else None
         if raw is not None and hashlib.sha256(raw).hexdigest() != digest:
-            raise RuntimeError('Preserving an edited Studio loader file: ' + str(path))
+            if updated_owned is None:
+                import _ffr_runtime_loader as runtime
+                updated_owned = runtime.updated_bundle_ownership(game, owned)
+            if updated_owned is None or hashlib.sha256(raw).hexdigest() != updated_owned.get(relative):
+                raise RuntimeError('Preserving an edited Studio loader file: ' + str(path))
         before[relative] = raw
         if not enabled: changes[relative] = None
     if not enabled: return before, changes, {}
+    if updated_owned is not None: owned = updated_owned
     required = sync.LOADER_FILES[:2]
     if all(checked(game, name).is_file() for name in required): return before, changes, owned
     candidates = [checked(root, STATE), *sorted(checked(root, 'game-installs').glob('*/' + STATE))]

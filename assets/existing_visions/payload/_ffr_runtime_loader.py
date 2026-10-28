@@ -61,6 +61,31 @@ def bundled_plan(game, owned, before, changes):
     return before, changes, copied
 
 
+def updated_bundle_ownership(game, owned):
+    """Recognize an exact official core update without changing game files.
+
+    A controlled loader update can leave an older installation ledger behind.
+    Only already-owned binary entries can be reconciled, and both installed
+    binaries must match the complete checksum-pinned bundle. Settings and other
+    files retain their existing ownership checks.
+    """
+    import _ffr_field_leader as leader
+    names = tuple('FFRS/Binaries/Win64/' + name for name in CORE[:2])
+    if not any(name in owned for name in names): return None
+    paths = [leader.checked(game, name) for name in names]
+    if not all(path.is_file() for path in paths): return None
+    archive = Path(__file__).with_name('ue4ss_runtime.zip')
+    if hashlib.sha256(archive.read_bytes()).hexdigest() != ARCHIVE_SHA256:
+        raise ValueError('The bundled UE4SS checksum does not match. Reinstall Studio.')
+    with zipfile.ZipFile(archive) as bundle:
+        expected = [bundle.read(name) for name in CORE[:2]]
+    if any(path.read_bytes() != raw for path, raw in zip(paths, expected)): return None
+    result = dict(owned)
+    for name, raw in zip(names, expected):
+        if name in result: result[name] = hashlib.sha256(raw).hexdigest()
+    return result
+
+
 def status(root, game, units, last_build=False):
     import _ffr_field_leader as leader
     import _ffr_fina_battle as fina

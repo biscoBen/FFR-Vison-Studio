@@ -11,6 +11,18 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Minfilia/Primm tuning and loader-update installation — 2026-10-28
+
+- Reduce the paired boss skills to the requested powers: Moonlightbringer 52 → 33,
+  Calamity 39 → 33 and Blade Torrent 62 → 45. Preserve every other boss skill,
+  playable kit, encounter level, HP/break, speed, rotation and rewards.
+- Recognize an already-owned loader updated to Studio's exact checksum-pinned
+  official binary pair. Runtime status and installation accept that known update;
+  save the new ownership hashes only after successful installation. Preserve
+  unowned loaders and reject partial updates, unknown binaries and other edits.
+  This repairs the reported install preflight error; the encounter-control native
+  crash still requires the user's loader retest. Auto-battle remains held.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

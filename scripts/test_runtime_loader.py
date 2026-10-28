@@ -62,6 +62,76 @@ class RuntimeLoaderTests(unittest.TestCase):
         leader.deploy(plan); leader.deploy(leader.restore_plan(self.root, self.game))
         self.assertEqual(files(self.game), original)
 
+    def old_owned_bundle(self):
+        runtime.save_choice(self.root, self.game, 'install')
+        leader.deploy(leader.install_plan(self.root, self.game, PAYLOAD))
+        state = leader.state_path(self.root, self.game, leader.STATE)
+        previous = json.loads(state.read_bytes())
+        for name in runtime.CORE[:2]:
+            relative = sync.BINARY + name
+            raw = ('previous managed loader: ' + name).encode()
+            (self.game / relative).write_bytes(raw)
+            previous['loader'][relative] = hashlib.sha256(raw).hexdigest()
+        state.write_text(json.dumps(previous))
+        return state
+
+    def update_core_only(self):
+        with zipfile.ZipFile(ROOT / 'assets/existing_visions/payload/ue4ss_runtime.zip') as bundle:
+            for name in runtime.CORE[:2]:
+                (self.game / (sync.BINARY + name)).write_bytes(bundle.read(name))
+
+    def test_exact_bundled_upgrade_reconciles_owned_hashes_only_on_successful_install(self):
+        state = self.old_owned_bundle()
+        old_state = state.read_bytes()
+        self.update_core_only()
+        current = files(self.game)
+        stage = self.root / leader.STAGE
+        stage.parent.mkdir(parents=True, exist_ok=True); stage.write_text(json.dumps(PAYLOAD))
+        self.assertTrue(runtime.status(self.root, self.game, [], last_build=True)['ready'])
+        self.assertEqual(state.read_bytes(), old_state)
+        plan = leader.install_plan(self.root, self.game, PAYLOAD)
+        self.assertFalse(plan['loaderChanges'])
+        leader.deploy(plan)
+        self.assertEqual(files(self.game), current)
+        for name, digest in json.loads(state.read_bytes())['loader'].items():
+            self.assertEqual(digest, hashlib.sha256((self.game / name).read_bytes()).hexdigest())
+        leader.deploy(leader.restore_plan(self.root, self.game))
+        self.assertFalse(files(self.game))
+
+    def test_bundle_recognition_preserves_partial_updates_unknown_dlls_and_settings_edits(self):
+        state = self.old_owned_bundle()
+        old_state = state.read_bytes()
+        with zipfile.ZipFile(ROOT / 'assets/existing_visions/payload/ue4ss_runtime.zip') as bundle:
+            (self.game / sync.LOADER_FILES[0]).write_bytes(bundle.read(runtime.CORE[0]))
+        for scenario in ('partial', 'unknown dll', 'edited settings'):
+            with self.subTest(scenario=scenario):
+                if scenario == 'unknown dll':
+                    self.update_core_only()
+                    (self.game / sync.LOADER_FILES[1]).write_bytes(b'other loader')
+                elif scenario == 'edited settings':
+                    self.update_core_only()
+                    (self.game / (sync.BINARY + runtime.CORE[2])).write_bytes(b'custom settings')
+                before = files(self.game)
+                with self.assertRaisesRegex(RuntimeError, 'Preserving an edited Studio loader file'):
+                    leader.install_plan(self.root, self.game, PAYLOAD)
+                self.assertEqual(files(self.game), before)
+                self.assertEqual(state.read_bytes(), old_state)
+
+    def test_recognized_upgrade_keeps_original_ledger_when_install_rolls_back(self):
+        state = self.old_owned_bundle()
+        old_state = state.read_bytes()
+        self.update_core_only()
+        before = files(self.game)
+        plan = leader.install_plan(self.root, self.game, PAYLOAD)
+        atomic = leader.atomic
+        def fail(path, raw):
+            if path == state and raw != old_state: raise OSError('disk full')
+            atomic(path, raw)
+        with mock.patch.object(leader, 'atomic', side_effect=fail):
+            with self.assertRaisesRegex(OSError, 'disk full'): leader.deploy(plan)
+        self.assertEqual(files(self.game), before)
+        self.assertEqual(state.read_bytes(), old_state)
+
     def test_choice_is_scoped_to_game_and_skip_can_later_enable_unchanged_build(self):
         other = self.game.with_name('another-game')
         runtime.save_choice(self.root, self.game, 'install')

@@ -302,6 +302,36 @@ class SephiraChallengeTests(unittest.TestCase):
         old_power=round(native_skills[220060]['magnification']*1.5)
         self.assertEqual(testing.apply_fields(native_skills[220060],blizzara['fields'])['magnification'],round(old_power*1.5))
 
+    def test_minfilia_primm_retest_changes_only_three_boss_powers(self):
+        current = challenge.data()
+        previous = copy.deepcopy(current)
+        for preset in ('minfilia', 'primm'):
+            previous['kits'][preset].pop('potencyMultipliers')
+        native = {v['ID']: v for v in self.native[challenge.SKILL].values()}
+        def skills(config):
+            result = {}
+            with mock.patch.object(challenge, 'data', return_value=config):
+                for _, units in challenge.plans(self.units):
+                    for unit in units:
+                        for recipe in challenge.kit(unit, lambda rel: self.native[rel], len(units)):
+                            key = (unit['sephiraVision']['preset'], recipe['learned'])
+                            result[key] = (recipe['source'], testing.apply_fields(native[recipe['source']], recipe['fields']))
+            return result
+        before, after = skills(previous), skills(current)
+        self.assertEqual(set(before), set(after))
+        changes = []
+        for key, (source, actual) in after.items():
+            old_source, old = before[key]
+            self.assertEqual(source, old_source)
+            if actual != old:
+                self.assertEqual({k for k in actual if actual[k] != old[k]}, {'magnification'})
+                changes.append((key[0], source, old['magnification'], actual['magnification']))
+        self.assertCountEqual(changes, [
+            ('minfilia', 445200, 62, 45),
+            ('minfilia', 220240, 39, 33),
+            ('primm', 445300, 52, 33),
+        ])
+
     def test_casual_ai_uses_reviewed_moves_without_unguarded_heals(self):
         for spec, units in challenge.plans(self.units):
             for index, unit in enumerate(units):
