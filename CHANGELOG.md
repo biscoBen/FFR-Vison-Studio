@@ -11,75 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### External diagnostic sessions — 2026-10-28
-
-- Add **Run Diagnostic Session.cmd**: run it, launch the selected full game
-  normally, and close the game to export automatically. The external PowerShell
-  watcher installs no game script, hooks, key bindings or input handler. There is
-  no collect/disable sequence for new sessions and no Studio rebuild is needed.
-- Follow only the selected installation's shipping process; attach to an existing
-  session, wait if multiple matching instances are running, distinguish reused
-  process IDs and tolerate a temporary inability to read process metadata. Export
-  after actual process disappearance with session start/attach/exit timestamps.
-  Cancellation and optional startup timeout leave the game untouched.
-- Reuse the offline crash/log collector, bounded reads, own-runtime hash inventory
-  and save/roster exclusions. Fix full-game G:/D: autodetection and skip stale demo
-  roots. Keep **Collect Resonance Crash.cmd** for an immediate export of an existing
-  crash. Share the watcher in `scripts/reference/common/DiagnosticSession.ps1` for
-  future collectors. Preserve exact bundle source bytes on Windows.
-- Correct the earlier mistaken attribution: the user's controlled test isolated
-  the startup crash to **In-game encounter toggle**, just after the overworld
-  appeared. The Battle Command observer works with encounter control off. Restore
-  its installer and allow existing observers during external collection.
-- Remove unnecessary confirmation when session mode already found a valid full-game
-  folder. Recognize shortened Windows process names, then verify the full shipping
-  executable path. Open the export folder and close the CMD on success; keep errors
-  visible. These address the reported session that neither closed nor exported.
-- Focused PowerShell/Lua/package checks cover export-after-exit, wrong-installation
-  isolation, ambiguous processes, reused PIDs, temporary read failures, cancellation,
-  existing-crash collection and preservation of existing observers/saves. Native
-  process recognition still requires the user's Windows test.
-
-### Encounter-control startup correction — 2026-10-28
-
-- Replace raw UMG TextBlock construction, live Slate font copying and native field
-  HUD canvas attachment with a separate UserWidget created by the game's widget
-  library. Use the game's cooked key-guide text style and an owned viewport entry.
-  No native HUD tree is traversed or modified. This removes the first-overworld
-  badge code implicated by the user's encounter-toggle isolation test; no native
-  crash stack is available to establish the exact failing call.
-- Retain F7, the controller trigger chord, visible ON/OFF status and reversible
-  walking-encounter overrides. Use real time for the full one-second controller
-  hold. Keep title/menu/event/vehicle/battle guards and release only the owned badge.
-- Native API/asset checks and runtime fixtures cover startup context guards,
-  keyboard/controller use, new player/world instances, GC, own-widget removal,
-  missing HUD refusal and restoration of native encounter overrides. Live startup
-  safety, HUD positioning and controller input remain user checks.
-
-- Stage the HUD helper through both Python and Flutter installer allowlists and
-  the Windows fresh-setup resource check. The first Windows run caught Flutter's
-  separate completeness list/count before any package was delivered; correct
-  that bridge and run the full Flutter suite locally before the next candidate.
-- Limit the planning and final-gate jobs to workflow/scripts checkouts so they
-  avoid fetching the roughly 2 GiB tracked reference-asset tree. Compilation and
-  validation retain full checkouts, all required checks, the pinned engine archive
-  and fresh extraction. A real sparse checkout runs plan/gate and still rejects
-  failed validation; **12** workflow/provenance tests pass. The build helper is unchanged.
-
-Candidate **1.2.122** local validation: **804 Python tests** pass (18 platform
-skips), including **51** focused encounter/field/collector checks; **333 Flutter tests** pass (one Windows-only skip),
-including fresh engine setup; changed-Dart analysis passes. Verify all nine native widget/time methods,
-the cooked key-guide class path and its member fields against the supplied SDK
-and asset inventory. Vision presets, IDs, kits, acquisition and media are unchanged.
-The final installer checks caught and corrected the new helper's resource-list
-entry before packaging. Windows package verification is pending.
-
-The external-session candidate was first complete at **12:55:22 PDT**; its
-subsequent process/prompt/attribution corrections are included in that timer.
-The encounter HUD candidate was first complete at **13:34:05 PDT**, before the
-resource-list correction and final repeated checks. Delivery/CI measurements will
-be recorded after package verification; neither timer has been restarted.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -148,6 +79,100 @@ be recorded after package verification; neither timer has been restarted.
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published encounter-control startup correction and diagnostic sessions — 2026-10-28
+
+### External diagnostic sessions — 2026-10-28
+
+- Add **Run Diagnostic Session.cmd**: run it, launch the selected full game
+  normally, and close the game to export automatically. The external PowerShell
+  watcher installs no game script, hooks, key bindings or input handler. There is
+  no collect/disable sequence for new sessions and no Studio rebuild is needed.
+- Follow only the selected installation's shipping process; attach to an existing
+  session, wait if multiple matching instances are running, distinguish reused
+  process IDs and tolerate a temporary inability to read process metadata. Export
+  after actual process disappearance with session start/attach/exit timestamps.
+  Cancellation and optional startup timeout leave the game untouched.
+- Reuse the offline crash/log collector, bounded reads, own-runtime hash inventory
+  and save/roster exclusions. Fix full-game G:/D: autodetection and skip stale demo
+  roots. Keep **Collect Resonance Crash.cmd** for an immediate export of an existing
+  crash. Share the watcher in `scripts/reference/common/DiagnosticSession.ps1` for
+  future collectors. Preserve exact bundle source bytes on Windows.
+- Correct the earlier mistaken attribution: the user's controlled test isolated
+  the startup crash to **In-game encounter toggle**, just after the overworld
+  appeared. The Battle Command observer works with encounter control off. Restore
+  its installer and allow existing observers during external collection.
+- Remove unnecessary confirmation when session mode already found a valid full-game
+  folder. Recognize shortened Windows process names, then verify the full shipping
+  executable path. Open the export folder and close the CMD on success; keep errors
+  visible. These address the reported session that neither closed nor exported.
+- Focused PowerShell/Lua/package checks cover export-after-exit, wrong-installation
+  isolation, ambiguous processes, reused PIDs, temporary read failures, cancellation,
+  existing-crash collection and preservation of existing observers/saves. Native
+  process recognition still requires the user's Windows test.
+
+### Encounter-control startup correction — 2026-10-28
+
+- Replace raw UMG TextBlock construction, live Slate font copying and native field
+  HUD canvas attachment with a separate UserWidget created by the game's widget
+  library. Use the game's cooked key-guide text style and an owned viewport entry.
+  No native HUD tree is traversed or modified. This removes the first-overworld
+  badge code implicated by the user's encounter-toggle isolation test; no native
+  crash stack is available to establish the exact failing call.
+- Retain F7, the controller trigger chord, visible ON/OFF status and reversible
+  walking-encounter overrides. Use real time for the full one-second controller
+  hold. Keep title/menu/event/vehicle/battle guards and release only the owned badge.
+- Native API/asset checks and runtime fixtures cover startup context guards,
+  keyboard/controller use, new player/world instances, GC, own-widget removal,
+  missing HUD refusal and restoration of native encounter overrides. Live startup
+  safety, HUD positioning and controller input remain user checks.
+
+- Stage the HUD helper through both Python and Flutter installer allowlists and
+  the Windows fresh-setup resource check. The first Windows run caught Flutter's
+  separate completeness list/count before any package was delivered; correct
+  that bridge and run the full Flutter suite locally before the next candidate.
+- Limit the planning and final-gate jobs to workflow/scripts checkouts so they
+  avoid fetching the roughly 2 GiB tracked reference-asset tree. Compilation and
+  validation retain full checkouts, all required checks, the pinned engine archive
+  and fresh extraction. A real sparse checkout runs plan/gate and still rejects
+  failed validation; **12** workflow/provenance tests pass. The build helper is unchanged.
+
+Candidate **1.2.122** local validation: **804 Python tests** pass (18 platform
+skips), including **51** focused encounter/field/collector checks; **333 Flutter tests** pass (one Windows-only skip),
+including fresh engine setup; changed-Dart analysis passes. Verify all nine native widget/time methods,
+the cooked key-guide class path and its member fields against the supplied SDK
+and asset inventory. Vision presets, IDs, kits, acquisition and media are unchanged.
+The final installer checks caught and corrected the new helper's resource-list
+entry before packaging. Windows package verification passes; native startup/HUD behavior still requires the user's retest.
+
+Published **2026-10-28**, code `ba739b5`, update **1.2.122**,
+[Windows run 40769368591](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40769368591),
+[verified download](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40769368591/Sephira-Studio-Test.zip).
+All required jobs pass: analysis, **333 Flutter tests** (one skip), real fresh
+frozen-engine setup, **804 Python tests** (19 Windows/platform skips), extension
+checksums and launcher/updater checks. Verify the artifact through the unchanged
+build helper's matching-push, workflow/request provenance and SHA-256 checks.
+
+The public **82,542,186-byte** ZIP SHA-256 is
+`8b6f44997f81f8681188e73c8112e9a5b619b79f0d80767355d219dc7cc204bf`.
+Every public app file matches the validated compiled artifact; launchers match
+the reviewed packaging sources. Verify all **84** extension/**16** standalone
+Fina checksums, the compiled 1.2.122 label and the actual emitted encounter Lua's
+keyboard/controller, GC, context restoration and owned-widget cleanup cases.
+All 30 vision presets, IDs, kits, acquisition and media remain unchanged.
+
+Encounter HUD first complete candidate: **13:34:05 PDT**; public ZIP verified
+**14:21:24 PDT**, **47m 20s** later. This includes local corrections,
+the failed first Windows setup check, scratch-space cleanup, repeated checks,
+both automatic candidates, waiting and final artifact/public-package comparison.
+The external-session candidate began **12:55:22 PDT**, **86m 03s** before the same
+verified package; its earlier prompt/process/attribution fixes are included.
+Neither timer was restarted. Final required Windows wall time: **10m 31s**;
+total runner usage across both attempts, including publication: **46m 28s**.
+These measure development and CI, not the game's mod-install time.
+The measured plan job falls from **15m 00s** in the failed first attempt to **6s**
+with the sparse script checkout. Validation/compilation retain full inputs;
+archive-cache checks confirm the pinned engine/fresh-extraction policy is intact.
 
 ## Published optional Fina cinematic and auto-battle investigation — 2026-10-28
 

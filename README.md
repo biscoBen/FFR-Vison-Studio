@@ -4,6 +4,24 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Encounter-control startup correction — 2026-10-28
+
+[Verified Windows download / run 40769368591](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40769368591/Sephira-Studio-Test.zip)
+(code `ba739b5`, update **1.2.122**; **82.5 MB**).
+
+Encounter control now uses its own game-created status widget. Keep **F7** or
+hold **LT+RT / L2+R2 for one second** while walking. Update Studio, rebuild/install
+with **In-game encounter toggle** enabled, then restart the game for a startup
+retest. All required Windows and actual-package checks pass; live startup and
+HUD placement still need confirmation. The crash was isolated to encounter
+control; the Battle Command collector was not the cause.
+
+The corrected [run-once collector](scripts/reference/game-crash/Game-Diagnostic-Session.zip)
+exports when the selected game process closes, opens the output folder and closes
+its window on success. It accepts existing F8 observers. Auto-battle still needs
+one command snapshot at spell target selection, before confirming the target.
+[Checks and measured timings](CHANGELOG.md#published-encounter-control-startup-correction-and-diagnostic-sessions--2026-10-28).
+
 ### Run-once diagnostic sessions — 2026-10-28
 
 **Startup crash isolated:** the user confirmed that disabling **In-game encounter
@@ -42,13 +60,6 @@ The separate F8 observer works with encounter control off; its captured native
 signatures and battle widget hierarchy are now available for the auto-battle work.
 The earlier withdrawal was based on a mistaken attribution and has been removed.
 [Checks and measured times](CHANGELOG.md#unreleased).
-
-### Encounter HUD correction — in development
-
-Replace raw text-block construction and field-HUD-tree edits with a standalone,
-game-created key-guide UserWidget. Preserve F7, controller triggers, visible status
-and reversible encounter overrides. Trigger holds now use real time. Local runtime
-fixtures pass; the corrected startup path still needs live confirmation.
 
 ### In-game encounter control — 2026-10-28
 
