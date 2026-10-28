@@ -30,9 +30,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
   Studio and other mods and detects the full game on either PC, continuing past
   absent candidate drives. A PowerShell regression check covers that case. Preserve
   the diagnostic source line endings so the ZIP matches Windows checkouts exactly.
-- Focused Python and Lua checks pass; Windows packaging and Flutter verification
-  are pending. Actual native auto-battle behavior is not established by the
-  read-only observer or test doubles.
+
+Candidate verification — 2026-10-28: update **1.2.121**, code
+`6e3c3f9`, [Windows run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40750056461).
+All four required Windows jobs pass: analysis, the full Flutter suite, fresh frozen
+engine setup, **795 Python tests** (19 platform skips), launcher/updater checks and
+compilation. Local checks pass **795 Python tests** (48 environment/platform skips),
+**43 focused Flutter tests**, changed-Dart analysis and **six** observer checks,
+including PowerShell drive detection and install/collect/disable. An autocrlf-enabled
+checkout reproduces the exact six diagnostic source bytes in the ZIP.
+
+The connector-downloaded Windows artifact passes provenance and SHA-256
+`52c99e239b69c5700fbce56219582ff6198dc050814d191d55a2f6f749982cf3`.
+Its actual packaged modules pass movie **OFF → ON → OFF** runtime generation,
+discard stale movie flags and skip movie-only extraction/tool work while off.
+All **83** extension/**16** standalone Fina checksums match; all 30 vision presets,
+IDs and acquisition choices, media and other runtime payloads match 1.2.120.
+The direct installable test ZIP delivered in the task uses the unchanged packaging
+helper and matches every app byte from that artifact plus the reviewed launchers.
+Its **82,541,827-byte** ZIP SHA-256 is
+`7f17b9fae28cc6f5e47343c4bc1168a1cf24bfa6f52bb2447a5f72d708a641b8`.
+
+First complete candidate: **11:24:15 PDT**.
+Direct ZIP verified: **12:34:59 PDT**,
+**70m 44s** later. This includes all local checks,
+corrections, three automatic code candidates, CI waits and package verification;
+the timer was not reset. The first Windows attempt exposed diagnostic line-ending
+conversion; the intermediate candidate fixed missing-drive handling before that
+result arrived. The final candidate fixes both. Final required Windows checks
+wall time: **19m 01s**; runner usage across
+all three Windows workflows through direct-ZIP verification: **105m 30s**,
+including elapsed time in the still-active publisher. These are development/CI
+measurements, not game-install benchmarks. The pinned engine cache is unchanged;
+each matching automatic run was joined through the unchanged build helper.
+
+At direct-ZIP delivery, public publication was still waiting in the test-release
+job's checkout step. Keep this entry **Unreleased** until the public package is
+available; the direct ZIP is already verified. The original compiled commit must
+remain `6e3c3f9` even if README/CHANGELOG advance. Live confirmation
+of the restored switch remains a user test. Auto-battle remains pending the native
+command/HUD capture; this candidate installs no F6 or auto-battle gameplay control.
 
 ### Returned full-game reference audit — 2026-10-22
 

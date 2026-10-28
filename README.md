@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Verified Fina candidate — 2026-10-28
+
+Update **1.2.121**, code `6e3c3f9`:
+[Windows checks and artifact / run 40750056461](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40750056461).
+All required Windows checks pass. The task has a verified direct installable ZIP;
+the public release job is still waiting at checkout. The public download below
+remains 1.2.120 until that publication completes.
+
+**Crystal Fina resonance cinematic** is back beside the main switches, default
+OFF. Rebuild/install and restart the game after changing it. OFF uses her sprite
+resonance and healing; ON adds the accepted movie and cave music.
+
+Auto-battle still needs native command/HUD verification; no F6 control ships yet.
+The separate [Battle Command Diagnostics ZIP](https://raw.githubusercontent.com/biscoBen/FFR-Vison-Studio/6e3c3f9a0aa5cd939172befd435fdb6a6a4a80ba/scripts/reference/battle-commands/Battle-Command-Diagnostics.zip) needs no Studio rebuild.
+With the game closed, extract it and run **Install Battle Commands.cmd**, restart,
+use skills manually and press **F8** at the next command menu. Enter another battle
+and press **F8** at its first command menu, then **Collect Battle Commands.cmd**.
+Close the game and **Disable Battle Commands.cmd** afterward. Keep the old movie
+trace disabled. [Checks and measured times](CHANGELOG.md#unreleased).
+
 ### In-game encounter control — 2026-10-28
 
 [Verified Windows download / run 40737734046](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40737734046/Sephira-Studio-Test.zip)
