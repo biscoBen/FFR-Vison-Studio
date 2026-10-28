@@ -11,28 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Controller and keyboard encounter control
-
-- Studio’s encounter switch now installs an in-game control. Press F7, or hold both
-  controller triggers (LT+RT / L2+R2) for one second while freely walking. A persistent
-  bottom-left ON/OFF badge shows the state. Encounters start ON each game launch.
-- Apply a session-only native walking-encounter override; restore the prior value when
-  switching back on or leaving field control. Preserve native zone changes, equipment,
-  save data, map flags, bosses and scripted battles. No accessory or ability slot is used.
-  Rebuild/install once to replace the earlier always-off map patch; subsequent toggles
-  need no rebuild. The optional UE4SS installer also covers encounter-only setups.
-- Use a real field-HUD text widget, restore native control during menus, battles,
-  transitions and events, and refuse an invisible toggle if the HUD is unavailable.
-  Automated Lua/API and installer checks do not establish live controller behavior or
-  HUD placement; these need testing in the running game.
-- The user reported an error while entering the vision menu with treasure markers enabled.
-  A later screenshot shows a Lua nil-callback panic with the old FFRStudioMovieTrace
-  diagnostic active. Root its timer, queued and F8 callbacks to prevent garbage collection
-  from invalidating them, with an executable weak-registry regression test. Update both
-  trace sources and the standalone movie-trace ZIP. Existing diagnostics need disabling
-  and a game restart; Studio does not silently modify them. The treasure package is
-  unchanged, and a crash-free live retest is still needed to establish the cause.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -101,6 +79,60 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published in-game encounter control — 2026-10-28
+
+[Verified Windows ZIP / run 40737734046](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40737734046/Sephira-Studio-Test.zip), code `830fdab`, update **1.2.120** (82.5 MB).
+SHA-256 `ff6af3fbc1ed7ff226d396f55ac12458fc4663d1f376c8713ffdd33703dea000`.
+
+- Studio’s encounter switch now installs an in-game control. Press F7, or hold both
+  controller triggers (LT+RT / L2+R2) for one second while freely walking. A persistent
+  bottom-left ON/OFF badge shows the state. Encounters start ON each game launch.
+- Apply a session-only native walking-encounter override; restore the prior value when
+  switching back on or leaving field control. Preserve native zone changes, equipment,
+  save data, map flags, bosses and scripted battles. No accessory or ability slot is used.
+  Rebuild/install once to replace the earlier always-off map patch; subsequent toggles
+  need no rebuild. The optional UE4SS installer also covers encounter-only setups.
+- Use a real field-HUD text widget, restore native control during menus, battles,
+  transitions and events, and refuse an invisible toggle if the HUD is unavailable.
+  Automated Lua/API and installer checks do not establish live controller behavior or
+  HUD placement; these need testing in the running game.
+- The user reported an error while entering the vision menu with treasure markers enabled.
+  A later screenshot shows a Lua nil-callback panic with the old FFRStudioMovieTrace
+  diagnostic active. Root its timer, queued and F8 callbacks to prevent garbage collection
+  from invalidating them, with an executable weak-registry regression test. Update both
+  trace sources and the standalone movie-trace ZIP. Existing diagnostics need disabling
+  and a game restart; Studio does not silently modify them. The treasure package is
+  unchanged, and a crash-free live retest is still needed to establish the cause.
+
+Validation: **788 Python tests** (45 platform/environment skips), **10 focused
+Flutter tests**, changed-Dart analysis and executable Lua input/HUD/GC fixtures
+pass locally. Full Windows analysis, Flutter/Python suites, fresh frozen-engine
+startup, launcher/updater checks and compilation pass for this commit. The Steam
+Deck launcher workflow also passes. Native schema/method evidence verifies the
+field float override, FKey and UMG bindings; FieldWidgetManager is resolved as an
+Object rather than queried as a WorldSubsystem. This evidence does not replace
+a live playtest of suppression, controller recognition and HUD placement.
+
+The downloaded ZIP passes provenance, checksum, compiled **1.2.120** labels and
+**83** extension/**16** standalone Fina hash checks. Its exact encounter Lua passes
+the controller/keyboard/HUD/restoration fixture. All 30 vision presets, IDs and acquisition match 1.2.119. Native skill/audio and
+treasure package bytes are unchanged.
+The old trace is not silently changed by an app update: disable its enabled.txt
+and restart the game. Updated standalone trace helpers retain their callbacks;
+treasure-related crash causation remains unconfirmed pending the user's retest.
+
+First complete candidate: **10:18:14 PDT**.
+ZIP verified: **11:09:43 PDT**,
+**51m 29s** later. Delivery notes prepared:
+**11:09:43 PDT**
+(**51m 29s** from the same candidate).
+This includes local checks and corrections, the additional trace investigation,
+runner checkout/setup delays, the automatic Windows run, download and verification.
+Measured Windows workflow wall time: **29m 19s**;
+combined Windows-workflow runner usage: **37m 41s**. These are development/
+package timings, not game-install benchmarks. The checksum-pinned engine cache
+is unchanged; no second matching build was dispatched while this run was active.
 
 ## Published Sephira Libra and mastery swaps — 2026-10-27
 

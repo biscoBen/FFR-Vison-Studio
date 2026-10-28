@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### In-game encounter control — 2026-10-28
+
+[Verified Windows download / run 40737734046](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40737734046/Sephira-Studio-Test.zip)
+(code `830fdab`, update **1.2.120**; **82.5 MB**).
+
+Enable **In-game encounter toggle**, rebuild/install once and restart. Install
+UE4SS if prompted. While freely walking, press **F7** or hold **LT+RT / L2+R2 for
+one second**. A bottom-left **Random encounters: ON/OFF** badge shows the state.
+Encounters start ON each launch; later toggles need no rebuild or equipment slot.
+Controller recognition and HUD placement are ready for live testing.
+
+For the reported Lua panic, close the game and rename
+`FFRS/Binaries/Win64/ue4ss/Mods/FFRStudioMovieTrace/enabled.txt` to `disabled.txt`,
+then restart. Leave FFRStudioFieldLeader enabled. The old observer’s callbacks
+were unretained; updated diagnostic sources fix that lifetime issue. The supplied
+treasure package is unchanged, and its involvement in the crash is unconfirmed.
+[Behavior and controls](docs/MINIMAP_TREASURE.md#in-game-encounter-toggle),
+[checks and measured timings](CHANGELOG.md#published-in-game-encounter-control--2026-10-28).
+
 ### Sephira Libra and mastery swaps — 2026-10-27
 
 [Verified Windows download / run 40604529846](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40604529846/Sephira-Studio-Test.zip)
