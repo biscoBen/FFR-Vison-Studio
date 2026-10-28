@@ -27,7 +27,8 @@ test-update version; the commit and workflow run identify the exact package. Dat
   function signatures, saved party command IDs, current command selection and
   the battle widget hierarchy. No polling, hooks, command submission, save or
   option writes. All native callbacks are retained. The installer preserves
-  Studio and other mods and detects the full game on either PC.
+  Studio and other mods and detects the full game on either PC, continuing past
+  absent candidate drives. A PowerShell regression check covers that case.
 - Focused Python and Lua checks pass; Windows packaging and Flutter verification
   are pending. Actual native auto-battle behavior is not established by the
   read-only observer or test doubles.

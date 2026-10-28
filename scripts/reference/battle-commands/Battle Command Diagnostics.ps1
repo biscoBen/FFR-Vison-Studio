@@ -21,7 +21,9 @@ function Find-Game([string]$Path) {
     if (-not $Path) { return $null }
     $Path = $Path.Trim().Trim('"')
     if ((Split-Path -Leaf $Path) -match '(?i)\bDEMO\b') { return $null }
-    if (Test-Path -LiteralPath (Join-Path $Path 'FFRS/Binaries/Win64') -PathType Container) {
+    # Join-Path resolves its provider drive even without -Resolve. A PC without
+    # D: must be allowed to continue to G: (and vice versa).
+    if (Test-Path -LiteralPath ([IO.Path]::Combine($Path,'FFRS/Binaries/Win64')) -PathType Container -ErrorAction SilentlyContinue) {
         return [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Path).Path)
     }
     return $null

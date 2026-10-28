@@ -138,5 +138,16 @@ class InstallerTests(unittest.TestCase):
         self.run_action('Install',False);self.run_action('Disable',False)
         self.assertEqual((self.folder/'Scripts/main.lua').read_bytes(),b'user edit')
 
+    def test_missing_candidate_drive_falls_through_without_an_error(self):
+        # Load just the reviewed helper functions, without its install action.
+        script=(FOLDER/'Battle Command Diagnostics.ps1').read_text().split("\ntry {\n    $game = Find-Game",1)[0]
+        script+='\nif (Find-Game "Z:\\nonexistent-studio-candidate-71e299") { throw "Unexpected game" }\n'
+        script+='Write-Output "MISSING_DRIVE_OK"\n'
+        path=self.root/'missing-drive.ps1';path.write_text(script)
+        r=subprocess.run([PWSH,'-NoProfile','-File',str(path),'-NoPrompt'],env=self.env,
+                         capture_output=True,text=True,timeout=20)
+        self.assertEqual(r.returncode,0,r.stdout+r.stderr)
+        self.assertIn('MISSING_DRIVE_OK',r.stdout)
+
 
 if __name__=='__main__':unittest.main()
