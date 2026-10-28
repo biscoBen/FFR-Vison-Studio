@@ -9,3 +9,5 @@ scripts/ffbe_model_placement.py -text
 scripts/fixtures/engine_motion/*.py -text whitespace=cr-at-eol
 # Read-only Windows collectors retain their tested CRLF and PowerShell BOM.
 scripts/reference/crystal-fina-battle/* -text whitespace=cr-at-eol
+# The F8 command observer ZIP is verified against these exact source bytes.
+scripts/reference/battle-commands/* -text whitespace=cr-at-eol
