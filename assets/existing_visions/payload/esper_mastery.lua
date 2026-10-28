@@ -2,7 +2,7 @@
 -- summoned by party Fina are eligible. No save/loadout mutation or summon grant.
 local config = require('config')
 if config.esperMastery ~= 1 then return end
-local runtime = {states={}, callbacks={}, guarded=false, queued=false, errors={}}
+local runtime = {states={}, callbacks={}, guarded=false, errors={}}
 _G.FFRStudioEsperMastery = runtime -- UE4SS callbacks must retain a strong root.
 local function log(message) print('[FFR Esper] ' .. message .. '\n') end
 local function valid(o)
@@ -234,13 +234,30 @@ runtime.tick=function()
         end
         for key in pairs(runtime.states) do if not seen[key] then runtime.states[key]=nil end end
     end)
-end
-runtime.loop=function()
-    if not runtime.queued then
-        runtime.queued=true
-        ExecuteInGameThread(function() runtime.queued=false;runtime.tick() end)
-    end
     return false
 end
-LoopAsync(200,runtime.loop)
+-- Keep this scan on the same native game-thread scheduler as presentation and
+-- field controls. LoopAsync shares Lua userdata/registry state with those
+-- callbacks; it must not keep entering that VM from a background thread when
+-- the loader provides a game-thread loop.
+runtime.queued=function() runtime.pending=nil;runtime.tick() end
+runtime.loop=function()
+    if runtime.pending then
+        runtime.pending=runtime.pending+1
+        if runtime.pending<20 then return false end
+    end
+    runtime.pending=0
+    -- Older loaders use a single rooted bridge callback, including retries.
+    if not pcall(ExecuteInGameThread,runtime.queued) then runtime.pending=nil end
+    return false
+end
+local nativeLoop=false
+if type(LoopInGameThreadWithDelay)=='function' then
+    local ok,handle=pcall(LoopInGameThreadWithDelay,200,runtime.tick)
+    if ok then
+        nativeLoop=true;runtime.loopHandle=handle
+        log('Using persistent game-thread esper loop')
+    else log('Game-thread loop unavailable; using rooted callback bridge: '..tostring(handle)) end
+end
+if not nativeLoop then LoopAsync(200,runtime.loop) end
 log('Esper mastery ready; native active rewards on Fina/equipped vision; ordinary procs preserve the final special')

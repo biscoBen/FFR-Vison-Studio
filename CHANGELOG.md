@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native HUD text and esper polling correction — 2026-10-28
+
+- Map the updated-loader crash to `FText::ToFString` through UE4SS's text-property
+  setter. Convert HUD strings to native `FText` before `SetText`; the input fixture
+  now rejects raw strings in that position.
+- The subsequent toggle-OFF report has the encounter module absent and a distinct
+  Lua userdata/table-lookup crash. Prefer the native game-thread loop for esper
+  polling, avoiding background Lua entry alongside Fina's presentation loop.
+  Retain a rooted, bounded-retry bridge for older loaders. Keep all esper effects,
+  rewards, battle powers and player kits unchanged.
+- This addresses the proven text mismatch and removes the concurrent polling
+  path; the second crash's precise cause and native startup recovery still need
+  a live retest. Auto-battle remains held.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

@@ -34,7 +34,9 @@ return function(context,position)
     if not ok then widget:RemoveFromParent();error(label) end
     local result={widget=widget,label=label,controller=controller,context=context}
     function result:valid() return valid(self.widget) and valid(self.label) end
-    function result:set(value) self.label:SetText(value) end
+    -- UE4SS's FText parameter setter requires FText userdata. A raw Lua string
+    -- can reach FText::ToFString with an invalid address instead of a Lua error.
+    function result:set(value) self.label:SetText(FText(value)) end
     function result:remove()
         if valid(self.widget) then self.widget:RemoveFromParent() end
         self.widget,self.label=nil,nil

@@ -137,6 +137,48 @@ class EsperMasteryTests(unittest.TestCase):
         self.assertEqual(len(cat['passives']),4)
         with self.assertRaisesRegex(ValueError,'overlaps'):esper.catalog(cat)
 
+    def test_native_game_thread_loop_preserves_all_mastery_contracts_without_async_entry(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute('''
+            nativeCallback=setmetatable({}, {__mode='v'})
+            function LoopInGameThreadWithDelay(ms,fn)
+                assert(ms==200);nativeCallback[1]=fn;tick=fn;return 71
+            end
+            function LoopAsync() error('No background Lua entry with the native scheduler') end
+            function ExecuteInGameThread() error('No per-tick queue with the native scheduler') end
+        ''')
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            collectgarbage('collect')
+            assert(type(nativeCallback[1])=='function' and nativeCallback[1]()==false)
+            assert(FFRStudioEsperMastery.loopHandle==71)
+        ''')
+        lua.globals().run_tests()
+        lua.globals().run_reader_failure_tests()
+
+    def test_failed_native_registration_uses_a_rooted_bounded_retry_bridge(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute('''
+            function LoopInGameThreadWithDelay() error('unavailable native loop') end
+            waiting=setmetatable({}, {__mode='v'});queued=0
+            function ExecuteInGameThread(fn) queued=queued+1;waiting[1]=fn end
+        ''')
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            tick();local first=waiting[1]
+            for _=1,19 do tick() end
+            assert(queued==1)
+            tick();assert(queued==2 and waiting[1]==first)
+            first=nil;collectgarbage('collect')
+            assert(type(waiting[1])=='function')
+            waiting[1]();assert(FFRStudioEsperMastery.pending==nil)
+            tick();assert(queued==3)
+        ''')
+
     def test_runtime_lifecycle_ownership_and_finale_contracts(self):
         try:from lupa import LuaRuntime
         except ImportError:self.skipTest('lupa is needed for executable Lua checks')

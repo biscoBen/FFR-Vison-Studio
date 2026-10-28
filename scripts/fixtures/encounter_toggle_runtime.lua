@@ -69,7 +69,10 @@ function factory:Create(context,c,player)
     if not canCreate then return nil end
     created=created+1
     local label=obj()
-    function label:SetText(s) self.label=s end
+    function label:SetText(s)
+        assert(type(s)=='table' and s.nativeType=='FText','Native FText input required')
+        self.label=s.value
+    end
     local t=obj({Text_Name=label,WBP_DirectionGridPanel=obj()})
     function t.WBP_DirectionGridPanel:SetVisibility(v) assert(v==1) end
     function t:SetVisibility(v) assert(v==3) end
@@ -88,6 +91,7 @@ function factory:Create(context,c,player)
     lastText=label;lastWidget=t;return t
 end
 function FName(n) return n end
+function FText(value) assert(type(value)=='string');return {nativeType='FText',value=value} end
 Key={F7=118}
 function RegisterKeyBind(k,cb) keys[k]=cb end
 function RegisterHook(p,pre,post) hooks[p]={pre,post} end
