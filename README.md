@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Sephira Libra and mastery swaps — 2026-10-27
+
+[Verified Windows download / run 40604529846](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40604529846/Sephira-Studio-Test.zip)
+(code `ffdbecd`, update **1.2.119**; **82.5 MB**).
+
+Minfilia gets Libra at MR1 and Throw at MR3; Strategic Acumen moves to Barusa MR1,
+Imbue Earth to Primm MR1, and Resist Fire to Trance Terra MR1. Fire Eater moves to
+Terra awakening tier 3 and Primm MR9. Boundless Flames moves to Primm tier 4;
+Terra’s Trance Apocalypse moves to tier 4 to keep every tier within eight slots.
+
+Untouched saved layouts migrate once with a roster backup; vision IDs, permanent
+stats, Spirit ownership and acquisition choices stay intact. All 75 original MR
+rewards remain covered. Update/restart Studio, rebuild/install and restart the
+game. [Full allocation](docs/SEPHIRA_PASSIVE_MASTERY.md) and
+[checks/timings](CHANGELOG.md#published-sephira-libra-and-mastery-swaps--2026-10-27).
+
 ### Treasure switch beside the other toggles — 2026-10-27
 
 [Verified Windows download / run 40600073876](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40600073876/Sephira-Studio-Test.zip)

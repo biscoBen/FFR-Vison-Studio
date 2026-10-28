@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Sephira Libra and mastery reward swaps
-
-- Minfilia learns Libra at MR1 and Throw at MR3; her MR5/7/9 stay Observe and Recover HP,
-  Observe and Attack, and Chuck. Barusa gets Strategic Acumen at MR1, Primm gets Imbue Earth
-  at MR1, and Trance Terra gets Resist Fire at MR1.
-- Fire Eater moves to Trance Terra awakening tier 3 and Primm MR9. Primm’s Boundless Flames
-  moves to awakening tier 4. Terra’s Trance Apocalypse moves to tier 4 to fit the eight-slot cap.
-  All 75 original equipable MR rewards stay covered. Minfilia/Barusa each lose one passive,
-  Primm/Terra each gain one; all four stay within 20% of their native passive AP budgets.
-- Migrate untouched saved reward layouts in stages, preserving IDs, Spirit ownership, private
-  recipes, stats, acquisition choices and permanent rewards. Keep the old Barusa Earth imbue
-  definition for existing learned saves, and give Primm a named 20-AP equipable copy.
-  Conflicting edited rewards or full tiers stay intact and are reported. Live-game testing remains.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -93,6 +79,48 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Sephira Libra and mastery swaps — 2026-10-27
+
+[Verified Windows ZIP / run 40604529846](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40604529846/Sephira-Studio-Test.zip), code `ffdbecd`, update **1.2.119** (82.5 MB).
+SHA-256 `e3b7ac0f69dda4259b45d6bf8564681202f6831540b829def89a704454b1e042`.
+
+- Minfilia learns Libra at MR1 and Throw at MR3; her MR5/7/9 stay Observe and Recover HP,
+  Observe and Attack, and Chuck. Barusa gets Strategic Acumen at MR1, Primm gets Imbue Earth
+  at MR1, and Trance Terra gets Resist Fire at MR1.
+- Fire Eater moves to Trance Terra awakening tier 3 and Primm MR9. Primm’s Boundless Flames
+  moves to awakening tier 4. Terra’s Trance Apocalypse moves to tier 4 to fit the eight-slot cap.
+  All 75 original equipable MR rewards stay covered. Minfilia/Barusa each lose one passive,
+  Primm/Terra each gain one; all four stay within 20% of their native passive AP budgets.
+- Migrate untouched saved reward layouts in stages, preserving IDs, Spirit ownership, private
+  recipes, stats, acquisition choices and permanent rewards. Keep the old Barusa Earth imbue
+  definition for existing learned saves, and give Primm a named 20-AP equipable copy.
+  Conflicting edited rewards or full tiers stay intact and are reported. Live-game testing remains.
+
+Validation: **785 Python tests** (45 platform/environment skips), **46 focused Flutter
+tests** and clean changed-Dart analysis pass locally after correcting test fixtures.
+Full Windows analysis, Flutter and Python suites, fresh frozen-engine startup,
+launcher/updater checks and compilation pass for this commit. Real native writing
+and readback verify **13 tables**, **31 vision/Spirit owners**, all **26 stock MR
+active rows** including Libra, named 20-AP Primm Earth imbue and retained Barusa
+reward 1938. All original skill/passive rows are unchanged. All 75 original MR
+rewards stay MR rewards; other 26 presets and all 28 bosses’ combat behavior remain
+unchanged. The actual downloaded ZIP passes provenance, checksum, compiled
+**1.2.119** label and **82** extension/**16** standalone Fina hash checks. Its
+catalogue and migration policy match the checked source. All other game-facing
+payloads, including audio, acquisition, sprites/cache and treasure/encounter helpers,
+match 1.2.118. Live-game equipment and progression confirmation remains.
+
+First complete candidate: **16:43:20 PDT**.
+ZIP verified: **17:00:46 PDT**,
+**17m 26s** later. Delivery notes prepared:
+**17:00:46 PDT**
+(**17m 26s** from the same candidate).
+This includes local checks, corrections, the automatic Windows run, waiting,
+download and verification. Measured workflow wall time:
+**12m 16s**; combined runner usage: **16m 34s**.
+These are development/package timings, not game-install benchmarks.
+The checksum-pinned engine cache is unchanged.
 
 ## Published treasure switch placement — 2026-10-27
 
