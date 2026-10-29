@@ -11,26 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Primm resonance follow-up bonus — 2026-10-29
-
-- Both Minfilia and Primm inherited Onion Knight's resonance description and its
-  20% Blade Torrent bonus. Minfilia learns Blade Torrent at tier 3; Primm does not.
-  Primm now applies the same bonus to her tier-3 Moonlightbringer instead, and her
-  description names that skill. Retain the original damage, level scaling, bonus
-  amount and battle-long duration. Minfilia and Onion Knight retain their original
-  bonus and descriptions.
-- Clone only Primm's bonus effect and follow an allocated private Moonlightbringer
-  copy when present. Migrate both previously shipped descriptions without resetting
-  the kit. Preserve edited descriptions, donors and effect lists; do not redirect
-  the bonus when an edited kit removes or duplicates its signature. No new runtime
-  hooks or save writes. Native battle verification remains pending.
-
-
-
-
-
-
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -99,6 +79,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Primm resonance bonus correction — 2026-10-29
+
+Code [`3084353`](https://github.com/biscoBen/FFR-Vison-Studio/commit/30843530fc3b7dba132f7a3a815d079eafe7fce6) ·
+[Studio test 1.2.127](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40926189024/Sephira-Studio-Test.zip)
+
+- Primm's resonance now increases Moonlightbringer's power by 20% until battle ends.
+  Both she and Minfilia inherited Onion Knight's Blade Torrent bonus, but only
+  Minfilia learns that skill. Primm learns Moonlightbringer at the same awakening
+  tier (3). Correct both the private effect target and its description, preserving
+  the resonance's damage, native level scaling, bonus amount and duration.
+- Migrate both previously shipped descriptions without resetting saved presets.
+  Follow one learned private Moonlightbringer copy; preserve custom descriptions,
+  donors and effect lists, and skip a removed or ambiguous signature. Clone only
+  Primm's effect. Minfilia, Onion Knight, other kits, rewards, acquisition, boss
+  powers and media remain unchanged. No new runtime hooks or save writes.
+- Local: 102 Sephira Python checks, 32 focused Flutter tests, targeted analysis and
+  bundle manifests pass. Exact automatic Windows run
+  [40926189024](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/40926189024)
+  passes the full Flutter suite, fresh frozen-engine setup, 832 Python checks (19
+  skips), payload/library verification and launcher/updater checks. Replay Primm's
+  cloned-effect behavior from the actual packaged Python payload. Verify all 85
+  extension and 16 Fina resource hashes and compare every published app/launcher
+  file to the provenance-verified artifact and reviewed sources. Native battle
+  verification remains pending; the treasure counter is not included.
+- Public ZIP: 82,550,742 bytes, SHA-256
+  `88b68f783f3bc2d6479d1f43c5b5bcdb765c4f734deac396a5560f433c268ff2`.
+  First complete candidate 2026-10-29 10:54:48 PDT to verified public package
+  11:22:42 PDT: **27m 54s**, including local checks, fixture/fingerprint corrections,
+  temporary-checkout recovery, GitHub's checkout delay, waiting and verification.
+  Required CI wall time: **22m 39s**. Summed successful code-run job usage,
+  including publication: **32m 14s**. One automatic build; no duplicate dispatch.
 
 ## Published encounter and remembered-command corrections — 2026-10-29
 
