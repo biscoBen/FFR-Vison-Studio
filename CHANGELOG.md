@@ -11,6 +11,24 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Read native Dragon Seal parameters correctly — 2026-10-29
+
+- The user's exact 1.2.135 capture reaches OFF, then rejects the native effect
+  before applying it or painting the indicator. The pinned UE4SS struct-return
+  converter represents ParamList as a Lua table of RemoteUnrealParam wrappers.
+  Comparing its first wrapper directly with numeric zero incorrectly rejects
+  the expected row; integer setters also need actual numeric values.
+- Snapshot and unwrap all returned parameter values before validating the native
+  row and sending it to the effect factory. Apply the same read to existing
+  effects and diagnostic snapshots; retain native ID/type/zero validation and
+  include their actual values in a mismatch error. Deduplicate identical native
+  movement errors rather than logging every frame.
+- Model the real pinned loader's returned arrays in the regression fixture,
+  including all 15 factory parameters, matching existing effects, all three
+  ground modes and rejection of changed data. The old code fails this fixture.
+  Auto-battle and the accepted right-side text placement are unchanged. The user
+  confirms auto-battle now works; native encounter suppression needs a live retest.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

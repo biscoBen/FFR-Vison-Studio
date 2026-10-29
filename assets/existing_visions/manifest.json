@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "e7db773b25b2740db7f143585410270f897514bae992176b606b66814b84f405",
+    "install_existing_visions.py": "27e15f7a234566210ef7c198cf685bbe216ec0577cac6eaa8ea45edd70725f9a",
     "payload/CaveHcaV3.cs": "d2e381c4deb8c6986a30aee4c4f74fe2c6094075b115c9bab51e718e44566b4c",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -54,7 +54,7 @@
     "payload/cave_music_preview.zip": "5b5ff0601afcb44ed437efcacf179293c6d375f4db10017c0cf5156a9c2ed79e",
     "payload/cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
     "payload/crystal_fina_boss.json": "27cd733bbe2f6912f48af12efd0f3cf95c2eeaa6a8b46a35eb1f90c019287a94",
-    "payload/encounter_toggle.lua": "6e9fbfc29b4feb548cc95bdf7bb141fc8d68bca17a8e6db2083a5f5079eea2dc",
+    "payload/encounter_toggle.lua": "70f12df6993b9e243ed531f3790c4ee408ea6d2aa5a73f1f35e72aeea4cc977d",
     "payload/esper_mastery.json": "e89c70aab1883ad1ff2399600cc2f92b7998863d4656b95e3b1394f6fe0d8806",
     "payload/esper_mastery.lua": "1658495a801757e88c6e6c9ac68e772bd2bfae2238b40a546ba55288e1786c50",
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
@@ -70,7 +70,7 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "18d6ef68c9c96f17ded88ca61375e0325d36548a2b0803702ef56a7e3889a690",
+    "payload/manifest.json": "4f918bb574c17c3d2522e4f20ab799709e219e6e7568db8e26e8e8cb293f943a",
     "payload/minimap_counter.zip": "2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb",
     "payload/minimap_treasure.zip": "f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",

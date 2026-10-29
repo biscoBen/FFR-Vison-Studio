@@ -26,9 +26,19 @@ function array(values)
         __newindex=function(_,i,v) assert(type(i)=='number' and i>=1 and i<=#values+1);values[i]=v end,
     })
 end
+-- Pinned cdbc0b66 push_arrayproperty(GetNonTrivialLocal) returns a Lua table
+-- whose scalar entries are RemoteUnrealParam wrappers (GetParam), not numbers.
+-- Struct return values use that path even though direct TArray indexing does not.
+function returned_params(values)
+    local result={}
+    for i,value in ipairs(values) do
+        result[i]={get=function() return value end}
+    end
+    return result
+end
 function effect(id,parameter)
     local e=obj({name='Effect_'..tostring({}),class=classes['mucha.CPP_ContFxEncountRatio']})
-    function e:GetEffectData() return {ID=id,EffectType=192,ParamList=array({id==71000 and 0 or 50})} end
+    function e:GetEffectData() return {ID=id,EffectType=192,ParamList=returned_params({id==71000 and 0 or 50})} end
     function e:GetTargetUnitParameter() return parameter end
     return e
 end
@@ -93,10 +103,14 @@ local skills=obj({})
 function skills:GetSkillEffectDataById(id)
     assert(id==nativeSource.effect.ID)
     return {ID=id,EffectType=badNativeEffect and 0 or nativeSource.enums['eSkillEffectType.EncountRatio'],
-        ParamList=array({nativeSource.effect.ParamList[1]})}
+        ParamList=returned_params(nativeSource.effect.ParamList)}
 end
 function skills:CreateContEffect(source,target,data,skillId,passive,schedule)
     assert(source==target and data.ID==71000 and data.EffectType==192 and data.ParamList[1]==0)
+    -- Integer setters require actual numbers. Copy every returned array entry,
+    -- not only the first value used by the zero-ratio guard.
+    assert(type(data.ParamList)=='table' and #data.ParamList==#nativeSource.effect.ParamList)
+    for i,value in ipairs(nativeSource.effect.ParamList) do assert(data.ParamList[i]==value) end
     assert(skillId==nativeSource.passive.ID and passive==true and schedule==false)
     effectCreations=(effectCreations or 0)+1
     local e=effect(71000,target)

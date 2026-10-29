@@ -15,13 +15,21 @@ local function native(name)
 end
 local function log(s) print('[FFR encounters] '..s..'\n') end
 local function same(a,b) return valid(a) and valid(b) and a:GetFullName()==b:GetFullName() end
+local function unwrap(value)
+    if (type(value)=='userdata' or type(value)=='table') and type(value.get)=='function' then
+        return value:get()
+    end
+    return value
+end
 local function list(array)
     local values={}
-    array:ForEach(function(_,value)
-        if type(value.get)=='function' then value=value:get() end
-        values[#values+1]=value
+    local function append(value)
+        values[#values+1]=unwrap(value)
         assert(#values<=256,'Unexpected map effect array size')
-    end)
+    end
+    if type(array)=='table' and type(array.ForEach)~='function' then
+        for _,value in ipairs(array) do append(value) end
+    else array:ForEach(function(_,value) append(value) end) end
     return values
 end
 local checked={}
@@ -114,8 +122,15 @@ local function apply(actor)
     local map=native('mucha.Default__CPP_BFL_Map')
     local skill=native('mucha.Default__CPP_BFL_Skill')
     local data=skill:GetSkillEffectDataById(71000)
+    -- This loader converts returned structs to Lua tables, but their array
+    -- entries remain RemoteUnrealParam objects. Snapshot all scalars before
+    -- validation and before passing the row back to CreateContEffect.
+    assert(type(data)=='table','Unsupported native effect row representation: '..type(data))
+    data.ParamList=list(data.ParamList)
     assert(data.ID==71000 and data.EffectType==192 and data.ParamList[1]==0,
-        'The native Dragon Seal effect changed; encounter control was not applied')
+        'The native Dragon Seal effect changed; encounter control was not applied'..
+        ' (ID='..tostring(data.ID)..'; type='..tostring(data.EffectType)..
+        '; ratio='..tostring(data.ParamList[1])..')')
     local seen,count={},0
     for id=1001,1008 do
         local parameter=map:GetMapUnitParameter(id)
@@ -129,7 +144,7 @@ local function apply(actor)
                 assert(valid(effect),'Invalid native map effect')
                 if owned and same(effect,owned.effect) then found=true end
                 local entry=effect:GetEffectData()
-                if entry.EffectType==192 and entry.ParamList[1]==0 then zero=true end
+                if entry.EffectType==192 and list(entry.ParamList)[1]==0 then zero=true end
             end
             if owned and not found then runtime.effects[key]=nil end
             if not zero then
@@ -179,7 +194,7 @@ runtime.snapshot=function(reason)
                     if valid(effect) then
                         local data=effect:GetEffectData()
                         if data.EffectType==192 then
-                            seals[#seals+1]=tostring(data.ID)..':'..tostring(data.ParamList[1])
+                            seals[#seals+1]=tostring(data.ID)..':'..tostring(list(data.ParamList)[1])
                         end
                     end
                 end
@@ -249,7 +264,11 @@ runtime.move=function(owner)
         actor=context()
         if actor then apply(actor) else restore() end
     end)
-    if not ok then pcall(restore);log('Movement guard: '..tostring(message)) end
+    if not ok then
+        pcall(restore);message=tostring(message)
+        if lastError~=message then log('Movement guard: '..message) end
+        lastError=message
+    end
 end
 runtime.move_post=function() end
 RegisterHook('/Script/mucha.CPP_MapUnit_Playable:InputMove',runtime.move,runtime.move_post)

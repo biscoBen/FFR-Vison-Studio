@@ -75,6 +75,9 @@ class NoEncountersTests(unittest.TestCase):
             assert(nativeSource.effect.EffectType=='EncountRatio' and nativeSource.effect.ParamList[1]==0)
             assert(nativeSource.effect.effectEndActionNum==-1)
             assert(nativeSource.passive.ID==1052 and nativeSource.passive.effectBundleList[1].effectId==nativeSource.effect.ID)
+            local result=returned_params(nativeSource.effect.ParamList)
+            assert(result[1]~=0 and result[1]:get()==0,
+                'Returned struct arrays must exercise the actual RemoteUnrealParam representation')
         ''')
         helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
         code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
@@ -84,6 +87,22 @@ class NoEncountersTests(unittest.TestCase):
         self.assertTrue(any('Owned target=' in line for line in messages))
         self.assertTrue(any('source=playable' in line for line in messages))
         self.assertTrue(any('Native battle entry while OFF' in line for line in messages))
+        # The same failed read used to log on every native InputMove frame.
+        lua.execute('''
+            ExecuteInGameThread=function(fn) fn() end
+            local function errors()
+                local n=0
+                for _,line in ipairs(messages) do
+                    if line:find('ratio=0',1,true) and line:find('type=0',1,true) then n=n+1 end
+                end
+                return n
+            end
+            local before=errors()
+            badNativeEffect=true;press()
+            for i=1,120 do hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]({get=function() return actor end}) end
+            assert(errors()==before+1,'Deduplicate identical native movement failures')
+            assert(not has_effect(parameters[1001],71000),'Unsupported native data must remain rejected')
+        ''')
 
     def test_native_movement_owner_works_without_map_player_and_clears_on_transitions(self):
         from lupa.lua54 import LuaRuntime

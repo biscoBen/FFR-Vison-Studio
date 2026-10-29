@@ -122,5 +122,13 @@
       "BoolProperty",
       "ObjectProperty"
     ]
+  },
+  "returnedStructArrayContract": {
+    "repository": "UE4SS-RE/RE-UE4SS",
+    "ref": "cdbc0b66",
+    "path": "UE4SS/src/LuaType/LuaUObject.cpp",
+    "blob": "786550f0f83f56926282e13bf2a2bb22471d3d5e",
+    "url": "https://github.com/UE4SS-RE/RE-UE4SS/blob/cdbc0b66/UE4SS/src/LuaType/LuaUObject.cpp",
+    "contract": "push_structproperty GetNonTrivialLocal recursively calls push_arrayproperty; array scalar values use Operation::GetParam and require :get() before comparing or passing to integer setters."
   }
 }
