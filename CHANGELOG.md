@@ -11,23 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Use native effect rows to avoid the F7 crash — 2026-10-29
-
-- The returned capture matches the exact 1.2.136 runtime and shows two new native
-  crashes after F7. Both stacks enter UE4SS's Lua-table-to-struct converter;
-  the read at 0x427 matches the next passive ID 1052 being treated as a table.
-  The wrapper fix exposed this second loader bug before the game's effect factory.
-- Fetch the resident skill effect table through the SDK's InputManager getter and
-  use FindRow's native UScriptStruct reference. Validate the schema, native row
-  type, ID/type/zero ratio, then let Unreal copy the original native struct.
-  Never round-trip the nested effect row through Lua tables or write its fields.
-  Missing tables/rows, wrong schemas and unsupported getter signatures fail closed.
-- Preserve keyboard/controller behavior, all three ground modes, existing effect
-  ownership/restoration and read-only effect snapshots. Log entry and successful
-  completion of the first native factory/attachment to locate any later failure.
-  Auto-battle and its accepted text placement remain unchanged. Native crash
-  recovery and encounter suppression still require an in-game retest.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -96,6 +79,53 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native-row bypass for the F7 crash — 2026-10-29
+
+Code [`b73f538`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b73f538bc3f485f0407569aeac1c3597b5d7ebc4) ·
+[Studio test 1.2.137](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40974725661/Sephira-Studio-Test.zip)
+
+- The user's capture matches 1.2.136 and shows two new F7 access violations.
+  The pinned loader's binary/source maps the stack to Lua-table-to-struct
+  conversion, with the next passive ID being interpreted as a table. The earlier
+  scalar-wrapper fix exposed this second bug before the game's effect factory.
+- Use the resident native skill-effect table and FindRow's UScriptStruct
+  reference. Validate the table, schema, row type, ID/type/zero ratio, then let
+  Unreal copy the original native struct through CopyCompleteValue. Never turn
+  the effect row into a Lua table or write the source row. Missing data and
+  unsupported getter signatures fail before reaching the factory. Preserve
+  foreign effects, native restoration, all ground modes and session-only state.
+- Record entry and successful completion of the first native factory/attachment.
+  Auto-battle and its accepted right-side status placement are unchanged, as are
+  all kits, balance, acquisition, audio/media and treasure assets. Native crash
+  recovery and actual encounter suppression still need an in-game retest.
+- All 108 focused checks pass. The actual Windows payload passes 34 auto-battle,
+  eight encounter-control and 10 counter checks. Factory fixtures require the
+  original opaque native-row reference, reject Lua-table round-tripping and
+  writes, preserve all 15 parameters and exercise missing-table/row/schema
+  recovery and unsupported signatures. Native effect ownership, esper and
+  combined game-thread fixtures pass. Full Windows Flutter, 878 Python tests
+  (33 skips), fresh frozen-engine and launcher/updater checks pass. All 87
+  extension and 16 Fina hashes match. Every public app file and launcher matches
+  the verified artifact/source; every other payload file is unchanged.
+  An earlier automatic attempt stopped on four Windows test-harness UTF-8
+  decoding errors. Corrected the explicit file encoding; runtime bytes remained
+  unchanged, and only the final successful attempt was published.
+- If encounter control was disabled for recovery, re-enable it in Studio before
+  rebuilding/installing and restarting to test F7 or the held-trigger control.
+  The existing external session collector remains compatible.
+- Public ZIP: 82,577,374 bytes; SHA-256
+  `2082a1d1431a5540a219f33b2697c552733a68cc082aeeee969d7537a97808b4`.
+
+First complete candidate **16:26:59 PDT** to verified
+delivery **16:52:05 PDT**: **25m 05s**,
+including focused checks, the held first attempt, its encoding correction,
+waiting, both automatic Windows builds and actual
+artifact/public-package verification. Combined CI run wall times: **19m 43s**;
+summed runner job time including the failed attempt and publication: **27m 26s**.
+Joined exact automatic runs 40973373962 (held) and 40974725661 (published);
+no duplicate/manual dispatch. Publication notes use
+only README/CHANGELOG and do not request another binary.
 
 ## Published native Dragon Seal parameter reading — 2026-10-29
 

@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native-row bypass for the F7 crash — 2026-10-29
+
+[Verified Windows download / run 40974725661](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40974725661/Sephira-Studio-Test.zip)
+(code `b73f538`, update **1.2.137**; **82.6 MB**).
+
+The 1.2.136 crash enters UE4SS's Lua-table-to-struct converter. Pass the original
+native Dragon Seal row by reference so Unreal copies it without that conversion.
+The source row stays read-only, with strict schema/data checks. Auto-battle and
+its accepted status placement retain their exact bytes and behavior.
+
+Re-enable In-game encounter control if it was disabled for recovery, rebuild/
+install and restart. Test F7 or the held-trigger control on foot, chocobo or
+magitek. Native crash recovery and encounter suppression need a live retest;
+the existing external session collector still works. Kits, balance, acquisition,
+media and treasure assets are unchanged.
+[Checks and measured timings](CHANGELOG.md#published-native-row-bypass-for-the-f7-crash--2026-10-29).
+
 ### Native Dragon Seal parameter reading — 2026-10-29
 
 [Verified Windows download / run 40968992216](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40968992216/Sephira-Studio-Test.zip)
