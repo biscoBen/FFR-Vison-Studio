@@ -37,7 +37,12 @@ local function signature(name,expected)
     if checked[name] then return end
     local fields={}
     native('mucha.'..name):ForEachProperty(function(p) fields[#fields+1]=p:GetFullName():match('^(%w+)') end)
-    assert(table.concat(fields,',')==expected,'Unsupported native encounter signature: '..name)
+    local kinds=table.concat(fields,',')
+    local matches=kinds==expected
+    if type(expected)=='table' then
+        for _,allowed in ipairs(expected) do if kinds==allowed then matches=true end end
+    end
+    assert(matches,'Unsupported native encounter signature: '..name..' ('..kinds..')')
     checked[name]=true
 end
 local function remove_badge()
@@ -115,22 +120,37 @@ local function toggle()
     runtime.disabled=not runtime.disabled
     log('Random encounters: '..(runtime.disabled and 'OFF' or 'ON (normal game rules)'))
 end
+local function native_effect_row(actor)
+    -- This reflected enum has an unsigned byte underlying type. Both native
+    -- reflection representations carry that same SDK-declared parameter.
+    signature('CPP_InputManager:GetDataTable',{'EnumProperty,ObjectProperty','ByteProperty,ObjectProperty'})
+    local systems=native('Engine.Default__SubsystemBlueprintLibrary')
+    local input=systems:GetWorldSubsystem(actor,native('mucha.CPP_InputManager'))
+    assert(valid(input),'Input manager unavailable for native effect lookup')
+    local source=input:GetDataTable(29) -- eDataTableType.SkillEffectData
+    assert(valid(source) and source:IsA(native('Engine.DataTable')),'Native skill effect table unavailable')
+    local schema=source:GetRowStruct()
+    assert(valid(schema) and schema:GetFullName()=='ScriptStruct /Script/mucha.SKILL_EFFECT_DATA',
+        'Unsupported native skill effect row schema')
+    -- Captured full-game row name, independent of UI language. FindRow returns
+    -- UScriptStruct userdata referencing engine-owned memory. Never turn it
+    -- into a Lua table: this loader corrupts the stack marshalling nested arrays.
+    local row=source:FindRow('エンカウント率なし')
+    assert(valid(row) and type(row.type)=='function' and row:type()=='UScriptStruct',
+        'Native Dragon Seal row unavailable')
+    return row,source
+end
 local function apply(actor)
     signature('CPP_BFL_Map:GetMapUnitParameter','IntProperty,ObjectProperty')
-    signature('CPP_BFL_Skill:GetSkillEffectDataById','IntProperty,StructProperty')
     signature('CPP_BFL_Skill:CreateContEffect','ObjectProperty,ObjectProperty,StructProperty,IntProperty,BoolProperty,BoolProperty,ObjectProperty')
     local map=native('mucha.Default__CPP_BFL_Map')
     local skill=native('mucha.Default__CPP_BFL_Skill')
-    local data=skill:GetSkillEffectDataById(71000)
-    -- This loader converts returned structs to Lua tables, but their array
-    -- entries remain RemoteUnrealParam objects. Snapshot all scalars before
-    -- validation and before passing the row back to CreateContEffect.
-    assert(type(data)=='table','Unsupported native effect row representation: '..type(data))
-    data.ParamList=list(data.ParamList)
-    assert(data.ID==71000 and data.EffectType==192 and data.ParamList[1]==0,
+    local data,source=native_effect_row(actor)
+    local parameters=list(data.ParamList) -- Read-only validation, never write the native row.
+    assert(data.ID==71000 and data.EffectType==192 and parameters[1]==0,
         'The native Dragon Seal effect changed; encounter control was not applied'..
         ' (ID='..tostring(data.ID)..'; type='..tostring(data.EffectType)..
-        '; ratio='..tostring(data.ParamList[1])..')')
+        '; ratio='..tostring(parameters[1])..')')
     local seen,count={},0
     for id=1001,1008 do
         local parameter=map:GetMapUnitParameter(id)
@@ -150,6 +170,10 @@ local function apply(actor)
             if not zero then
                 -- Use the game's effect factory and the actual native passive
                 -- source (1052). This never equips or learns the passive.
+                if not runtime.nativeFactoryEntered then
+                    log('Creating Dragon Seal from native row; table='..source:GetFullName()..'; target='..key)
+                    runtime.nativeFactoryEntered=true
+                end
                 local effect=skill:CreateContEffect(parameter,parameter,data,1052,true,false)
                 assert(valid(effect),'Native Dragon Seal effect could not be created')
                 runtime.effects[key]={parameter=parameter,effect=effect}
@@ -158,6 +182,10 @@ local function apply(actor)
                 local attached=false
                 for _,present in ipairs(list(array)) do if same(present,effect) then attached=true;break end end
                 if not attached then array[array:GetArrayNum()+1]=effect end
+                if not runtime.nativeFactoryVerified then
+                    log('Native Dragon Seal created and attached to '..key)
+                    runtime.nativeFactoryVerified=true
+                end
             end
         end
     end

@@ -13,7 +13,7 @@ end
 classes={}
 for _,n in ipairs({'mucha.CPP_MapUnit_Player','mucha.CPP_MapUnit_Playable','mucha.CPP_InputManager','mucha.CPP_MainMenuSubsystem',
     'mucha.CPP_FieldWidgetManager','mucha.CPP_UnitParameter','mucha.CPP_BtlUnitParameter',
-    'mucha.CPP_ContFxEncountRatio','UMG.CanvasPanel','UMG.PanelWidget','UMG.TextBlock','UMG.UserWidget'}) do classes[n]=obj({name=n}) end
+    'mucha.CPP_ContFxEncountRatio','Engine.DataTable','UMG.CanvasPanel','UMG.PanelWidget','UMG.TextBlock','UMG.UserWidget'}) do classes[n]=obj({name=n}) end
 -- Actual pinned UE4SS TArray protocol: 1-based indexed writes extend, plus
 -- GetArrayNum/ForEach/Empty. No invented AddEffect/equipment/save API.
 function array(values)
@@ -78,6 +78,31 @@ function new_hud() return obj(),{children={obj({name='nativeQuestWidget'})}} end
 hud,panel=new_hud()
 local manager=obj({});local input=obj({})
 function input:IsEnableInput() return true end
+-- Native FindRow supplies an opaque UScriptStruct reference. Its identity and
+-- read-only fields must survive all the way to the factory's native copy path.
+nativeEffectRow=obj({name='NativeDragonSealRow'})
+function nativeEffectRow:type() return 'UScriptStruct' end
+setmetatable(nativeEffectRow,{
+    __index=function(_,name)
+        if name=='ID' then return 71000 end
+        if name=='EffectType' then return badNativeEffect and 0 or 192 end
+        if name=='ParamList' then return array(nativeSource.effect.ParamList) end
+    end,
+    __newindex=function() error('Native effect source row is read-only') end,
+})
+local effectTable=obj({name='ResidentSkillEffectTable',class=classes['Engine.DataTable']})
+function effectTable:GetRowStruct()
+    return obj({name=badNativeSchema and 'ScriptStruct /Script/mucha.WRONG_DATA' or 'ScriptStruct /Script/mucha.SKILL_EFFECT_DATA'})
+end
+function effectTable:FindRow(name)
+    assert(name==nativeSource.rowName)
+    nativeRowReads=(nativeRowReads or 0)+1
+    if not nativeRowMissing then return nativeEffectRow end
+end
+function input:GetDataTable(kind)
+    assert(kind==nativeSource.enums['eDataTableType.SkillEffectData'])
+    if not nativeTableMissing then return effectTable end
+end
 local menu=obj({bIsTransitioning=false})
 function menu:IsOpenMenu() return menuOpen end
 local systems=obj({})
@@ -101,15 +126,12 @@ local units=obj({})
 function units:GetPlayableUnitParameterObj(id) return parameters[id] end
 local skills=obj({})
 function skills:GetSkillEffectDataById(id)
-    assert(id==nativeSource.effect.ID)
-    return {ID=id,EffectType=badNativeEffect and 0 or nativeSource.enums['eSkillEffectType.EncountRatio'],
-        ParamList=returned_params(nativeSource.effect.ParamList)}
+    error('Never round-trip the effect row through Lua struct/table conversion')
 end
 function skills:CreateContEffect(source,target,data,skillId,passive,schedule)
+    assert(data==nativeEffectRow and data:type()=='UScriptStruct','The native struct reference is required')
     assert(source==target and data.ID==71000 and data.EffectType==192 and data.ParamList[1]==0)
-    -- Integer setters require actual numbers. Copy every returned array entry,
-    -- not only the first value used by the zero-ratio guard.
-    assert(type(data.ParamList)=='table' and #data.ParamList==#nativeSource.effect.ParamList)
+    assert(data.ParamList:GetArrayNum()==#nativeSource.effect.ParamList)
     for i,value in ipairs(nativeSource.effect.ParamList) do assert(data.ParamList[i]==value) end
     assert(skillId==nativeSource.passive.ID and passive==true and schedule==false)
     effectCreations=(effectCreations or 0)+1
@@ -132,7 +154,9 @@ function StaticFindObject(p)
     if p:find('/Script/',1,true)~=1 then return nil end
     local n=p:gsub('^/Script/','')
     return libs[n] or classes[n] or obj({ForEachProperty=function(_,fn)
-        for _,kind in ipairs(signatures[n] or {}) do fn({GetFullName=function() return kind..' '..n end}) end
+        local fields=signatures[n] or {}
+        if n=='mucha.CPP_InputManager:GetDataTable' then fields={dataTableParameterKind or 'EnumProperty','ObjectProperty'} end
+        for _,kind in ipairs(fields) do fn({GetFullName=function() return kind..' '..n end}) end
     end})
 end
 local factory=obj()

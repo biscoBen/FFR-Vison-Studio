@@ -140,6 +140,43 @@ class NoEncountersTests(unittest.TestCase):
         self.assertTrue(runtime.status(self.root,game,[])['required'])
         self.assertFalse(runtime.status(self.root,game,[])['ready'])
 
+    def test_native_row_reference_bypasses_table_marshalling_and_rejects_missing_data(self):
+        from lupa.lua54 import LuaRuntime
+        source=json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes())
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        for kind in ('ByteProperty','IntProperty'):
+            with self.subTest(kind=kind):
+                lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+                def value(v):
+                    if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
+                    if isinstance(v,list):return lua.table_from([value(x) for x in v])
+                    return v
+                lua.globals().nativeSource=value(source);lua.globals().dataTableParameterKind=kind
+                lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
+                if kind=='IntProperty':
+                    lua.execute('''
+                        press();assert((effectCreations or 0)==0)
+                        assert(not has_effect(parameters[1001],71000))
+                        assert(messages[#messages]:find('Unsupported native encounter signature',1,true))
+                    ''')
+                    continue
+                lua.execute('''
+                    for _,flag in ipairs({'nativeTableMissing','badNativeSchema','nativeRowMissing'}) do
+                        local count=effectCreations or 0
+                        _G[flag]=true;press()
+                        assert((effectCreations or 0)==count and not has_effect(parameters[1001],71000))
+                        _G[flag]=false;tick()
+                        assert(has_effect(parameters[1001],71000))
+                        assert(nativeEffectRow.ID==71000 and nativeEffectRow.ParamList:GetArrayNum()==15)
+                        press();assert(not has_effect(parameters[1001],71000))
+                    end
+                    local writable=pcall(function() nativeEffectRow.ParamList={} end)
+                    assert(not writable,'Keep the engine-owned source row read-only')
+                    press();assert(has_effect(parameters[1001],71000))
+                    assert(FFRStudioEncounterToggle.nativeFactoryVerified)
+                ''')
+
     def test_all_requested_ground_modes_toggle_and_preserve_native_vehicle_rules(self):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())

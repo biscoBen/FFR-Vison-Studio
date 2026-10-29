@@ -11,6 +11,23 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Use native effect rows to avoid the F7 crash — 2026-10-29
+
+- The returned capture matches the exact 1.2.136 runtime and shows two new native
+  crashes after F7. Both stacks enter UE4SS's Lua-table-to-struct converter;
+  the read at 0x427 matches the next passive ID 1052 being treated as a table.
+  The wrapper fix exposed this second loader bug before the game's effect factory.
+- Fetch the resident skill effect table through the SDK's InputManager getter and
+  use FindRow's native UScriptStruct reference. Validate the schema, native row
+  type, ID/type/zero ratio, then let Unreal copy the original native struct.
+  Never round-trip the nested effect row through Lua tables or write its fields.
+  Missing tables/rows, wrong schemas and unsupported getter signatures fail closed.
+- Preserve keyboard/controller behavior, all three ground modes, existing effect
+  ownership/restoration and read-only effect snapshots. Log entry and successful
+  completion of the first native factory/attachment to locate any later failure.
+  Auto-battle and its accepted text placement remain unchanged. Native crash
+  recovery and encounter suppression still require an in-game retest.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

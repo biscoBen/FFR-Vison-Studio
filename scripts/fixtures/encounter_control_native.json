@@ -102,7 +102,8 @@
     "eSkillEffectType.EncountRatio": 192,
     "eMapMovementMethod.Walking": 1,
     "eMapMovementMethod.Chocobo": 3,
-    "eMapMovementMethod.MagickArmor": 5
+    "eMapMovementMethod.MagickArmor": 5,
+    "eDataTableType.SkillEffectData": 29
   },
   "signatures": {
     "CPP_BFL_Map:GetMapUnitParameter": [
@@ -130,5 +131,12 @@
     "blob": "786550f0f83f56926282e13bf2a2bb22471d3d5e",
     "url": "https://github.com/UE4SS-RE/RE-UE4SS/blob/cdbc0b66/UE4SS/src/LuaType/LuaUObject.cpp",
     "contract": "push_structproperty GetNonTrivialLocal recursively calls push_arrayproperty; array scalar values use Operation::GetParam and require :get() before comparing or passing to integer setters."
+  },
+  "rowName": "エンカウント率なし",
+  "nativeRowReferenceContract": {
+    "source": "UE4SS-RE/RE-UE4SS cdbc0b66 LuaUDataTable.cpp FindRow + LuaUObject.cpp push_structproperty userdata branch",
+    "rowStruct": "/Script/mucha.SKILL_EFFECT_DATA",
+    "copyPath": "UScriptStruct -> FStructProperty::CopyCompleteValue; no Lua table marshalling",
+    "lookup": "SDK CPP_InputManager.GetDataTable(eDataTableType.SkillEffectData) -> UDataTable; captured full-game row name and ID"
   }
 }
