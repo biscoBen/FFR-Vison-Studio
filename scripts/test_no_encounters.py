@@ -62,7 +62,7 @@ class NoEncountersTests(unittest.TestCase):
     def test_keyboard_controller_hud_and_native_state_restoration(self):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime()
-        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text(encoding='utf-8'))
         # Drive the factory with the captured native row/UF metadata, including
         # the real equipment passive, instead of inventing an encounter API.
         source=json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes())
@@ -79,8 +79,8 @@ class NoEncountersTests(unittest.TestCase):
             assert(result[1]~=0 and result[1]:get()==0,
                 'Returned struct arrays must exercise the actual RemoteUnrealParam representation')
         ''')
-        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
-        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text(encoding='utf-8')
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text(encoding='utf-8')
         lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
         lua.globals().tests()
         messages=list(lua.globals().messages.values())
@@ -107,14 +107,14 @@ class NoEncountersTests(unittest.TestCase):
     def test_native_movement_owner_works_without_map_player_and_clears_on_transitions(self):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime()
-        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text(encoding='utf-8'))
         def value(v):
             if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
             if isinstance(v,list):return lua.table_from([value(x) for x in v])
             return v
         lua.globals().nativeSource=value(json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes()))
-        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
-        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text(encoding='utf-8')
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text(encoding='utf-8')
         lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
         lua.execute('''
             mapPlayerMissing=true;press();assert(not FFRStudioEncounterToggle.disabled)
@@ -143,11 +143,11 @@ class NoEncountersTests(unittest.TestCase):
     def test_native_row_reference_bypasses_table_marshalling_and_rejects_missing_data(self):
         from lupa.lua54 import LuaRuntime
         source=json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes())
-        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
-        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text(encoding='utf-8')
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text(encoding='utf-8')
         for kind in ('ByteProperty','IntProperty'):
             with self.subTest(kind=kind):
-                lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+                lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text(encoding='utf-8'))
                 def value(v):
                     if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
                     if isinstance(v,list):return lua.table_from([value(x) for x in v])
@@ -179,14 +179,14 @@ class NoEncountersTests(unittest.TestCase):
 
     def test_all_requested_ground_modes_toggle_and_preserve_native_vehicle_rules(self):
         from lupa.lua54 import LuaRuntime
-        lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text(encoding='utf-8'))
         def value(v):
             if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
             if isinstance(v,list):return lua.table_from([value(x) for x in v])
             return v
         lua.globals().nativeSource=value(json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes()))
-        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
-        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text(encoding='utf-8')
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text(encoding='utf-8')
         lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
         lua.execute('''
             for _,method in ipairs({nativeSource.enums['eMapMovementMethod.Walking'],
