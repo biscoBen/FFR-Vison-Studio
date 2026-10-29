@@ -122,9 +122,19 @@ end
 local factory=obj()
 local guideClass=obj({name='WBP_StudioStatus_C'})
 libs['UMG.Default__WidgetBlueprintLibrary']=factory
-function LoadAsset(path)
+local kismet=obj()
+libs['Engine.Default__KismetSystemLibrary']=kismet
+function kismet:MakeSoftObjectPath(path)
     assert(path=='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
+    return {path=path}
+end
+function kismet:Conv_SoftObjPathToSoftObjRef(path) return {soft=path} end
+function kismet:LoadAsset_Blocking(reference)
+    assert(reference.soft.path=='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
     return guideClass
+end
+function LoadAsset(path)
+    error('Private mounted packages are absent from AssetRegistry')
 end
 function StaticConstructObject() error('Raw UWidget construction is forbidden') end
 function factory:Create(context,c,player)

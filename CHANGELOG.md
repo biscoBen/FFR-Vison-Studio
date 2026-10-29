@@ -11,6 +11,26 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Private runtime indicator loading correction — 2026-10-29
+
+- The returned session verifies the exact installed 1.2.132 runtime and logs 619
+  repeated `Battle guide unavailable` pauses. The private passive widget was
+  loaded through UE4SS's AssetRegistry-only helper; mod-only assets are absent
+  there. This prevented the HUD-dependent auto-battle control from proceeding.
+- Resolve the mounted widget using Unreal's native soft-object loader, the same
+  route already used for Fina's private assets. Preserve the passive widget,
+  typed text, game-thread polling, latest-command memory, Attack fallback and
+  confirmed controller OFF/multicast safeguards. Report a specific load failure
+  and log an unchanged pause reason once rather than every poll.
+- The capture's encounter key was rejected outside free-walking context; it has
+  no OFF/application or native battle-entry snapshot. Log the exact rejecting
+  gate on keypress without changing those gates or suppression mechanics. Live
+  suppression remains unresolved; reuse the existing external session collector.
+- Focused regression checks simulate a mounted private widget absent from the
+  registry, successful battle replay and field controls, and pause recovery.
+  Native rendering, controller operation and encounter suppression need a retest.
+  Kits, boss powers, acquisition, media and treasure packages are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

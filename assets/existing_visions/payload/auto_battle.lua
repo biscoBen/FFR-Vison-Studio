@@ -73,9 +73,10 @@ local function suspend()
     clear_display()
 end
 local function pause(reason)
+    local changed=runtime.enabled or runtime.reason~=tostring(reason):gsub('[\r\n]',' '):sub(1,64)
     runtime.enabled=false;replay=nil
     runtime.reason=tostring(reason):gsub('[\r\n]',' '):sub(1,64)
-    print('[FFR auto battle] Paused: '..reason..'\n')
+    if changed then print('[FFR auto battle] Paused: '..reason..'\n') end
 end
 local function command_phase(phase)
     -- Native eBtlPhaseType / eBtlCmdType: Normal=0, Additional=1, Finish=2.

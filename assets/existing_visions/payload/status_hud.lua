@@ -13,8 +13,15 @@ return function(context,position)
     local controller=native('Engine.Default__GameplayStatics'):GetPlayerController(context,0)
     if not valid(controller) then return end
     local class=StaticFindObject(asset)
-    if not valid(class) then class=LoadAsset(asset) end
-    if not valid(class) then return end
+    if not valid(class) then
+        -- UE4SS LoadAsset only queries AssetRegistry. Private mod packages are
+        -- mounted in IoStore but absent from that registry. Use the same native
+        -- soft-object loader as Fina's private presentation assets.
+        local kismet=native('Engine.Default__KismetSystemLibrary')
+        local path=kismet:MakeSoftObjectPath(asset)
+        class=kismet:LoadAsset_Blocking(kismet:Conv_SoftObjPathToSoftObjRef(path))
+    end
+    assert(valid(class),'Could not load the private Studio status widget: '..asset)
     local widget=native('UMG.Default__WidgetBlueprintLibrary'):Create(context,class,controller)
     assert(valid(widget),'Could not create the status UserWidget')
     local ok,label=pcall(function()

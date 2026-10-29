@@ -266,11 +266,20 @@ class RuntimeTests(unittest.TestCase):
             assert(type(weak.callback)=='function');weak.callback()
         ''')
 
-    def test_native_loop_uses_the_real_hud_with_typed_text_and_no_async_polling(self):
+    def test_native_loop_loads_private_hud_outside_asset_registry_with_typed_text(self):
         lua=LuaRuntime()
         lua.execute((ROOT/'scripts/fixtures/auto_battle_runtime.lua').read_text())
         lua.execute('''
             local originalFind=StaticFindObject
+            local asset='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C'
+            local class={IsValid=function() return true end}
+            local kismet={IsValid=function() return true end}
+            function kismet:MakeSoftObjectPath(path) assert(path==asset);return {path=path} end
+            function kismet:Conv_SoftObjPathToSoftObjRef(path) return {soft=path} end
+            function kismet:LoadAsset_Blocking(ref)
+                assert(ref.soft.path==asset);privateLoads=(privateLoads or 0)+1;return class
+            end
+            function LoadAsset() error('Private widget is absent from AssetRegistry') end
             local gameplay=originalFind('/Script/Engine.Default__GameplayStatics')
             function gameplay:GetPlayerController(context,index) assert(context==ui and index==0);return controller end
             local factory={IsValid=function() return true end}
@@ -296,6 +305,8 @@ class RuntimeTests(unittest.TestCase):
                 return widget
             end
             function StaticFindObject(path)
+                if path==asset then return nil end -- Mounted, not already loaded.
+                if path=='/Script/Engine.Default__KismetSystemLibrary' then return kismet end
                 if path=='/Script/UMG.Default__WidgetBlueprintLibrary' then return factory end
                 return originalFind(path)
             end
@@ -309,7 +320,17 @@ class RuntimeTests(unittest.TestCase):
             assert(FFRStudioAutoBattle.async==nil);nativeTick();assert(badge==nil)
             active=true;nativeTick();assert(badge:find('OFF',1,true))
             press();collectgarbage('collect');nativeTick();nativeTick()
-            assert(#submissions==1 and badge:find('ON',1,true))
+            assert(#submissions==1 and badge:find('ON',1,true) and privateLoads==1)
+        ''')
+
+    def test_unavailable_status_reason_is_logged_once_until_it_changes(self):
+        self.run_lua('''
+            active=true;guideAvailable=false
+            for i=1,20 do tick() end
+            local count=0
+            for _,line in ipairs(logs) do if line:find('Paused: Battle guide unavailable',1,true) then count=count+1 end end
+            assert(count==1 and not FFRStudioAutoBattle.enabled and #submissions==0)
+            guideAvailable=true;press();tick();tick();assert(#submissions==1)
         ''')
 
     def test_combined_runtime_keeps_all_native_loops_and_removes_auto_when_disabled(self):

@@ -64,15 +64,20 @@ end
 local function context()
     local map=native('mucha.Default__CPP_BFL_Map')
     local actor=map:GetPlayerMapUnit()
-    if not valid(actor) or not actor:IsA(native('mucha.CPP_MapUnit_Player')) then return end
-    if map:IsDuringEncount() or native('mucha.Default__CPP_BFL_TalkEvent'):IsPlayingEvent()
-        or not actor:IsEnableUnitInput() or actor:IsPaused() or not actor.m_IsEnableMovement
-        or actor:GetMapMovementMethod()~=1 or actor:IsRidingRaft() then return end
+    if not valid(actor) or not actor:IsA(native('mucha.CPP_MapUnit_Player')) then return nil,'Walking player not ready' end
+    if map:IsDuringEncount() then return nil,'Encounter transition active' end
+    if native('mucha.Default__CPP_BFL_TalkEvent'):IsPlayingEvent() then return nil,'Story event active' end
+    if not actor:IsEnableUnitInput() then return nil,'Player input disabled' end
+    if actor:IsPaused() then return nil,'Player paused' end
+    if not actor.m_IsEnableMovement then return nil,'Player movement disabled' end
+    if actor:GetMapMovementMethod()~=1 then return nil,'Movement method is not walking' end
+    if actor:IsRidingRaft() then return nil,'Player riding raft' end
     local systems=native('Engine.Default__SubsystemBlueprintLibrary')
     local input=systems:GetWorldSubsystem(actor,native('mucha.CPP_InputManager'))
     local menu=systems:GetWorldSubsystem(actor,native('mucha.CPP_MainMenuSubsystem'))
-    if not valid(input) or not input:IsEnableInput() or not valid(menu)
-        or menu:IsOpenMenu() or menu.bIsTransitioning then return end
+    if not valid(input) or not input:IsEnableInput() then return nil,'World input disabled or unavailable' end
+    if not valid(menu) then return nil,'Menu subsystem unavailable' end
+    if menu:IsOpenMenu() or menu.bIsTransitioning then return nil,'Menu open or transitioning' end
     return actor,systems
 end
 local function badge(actor)
@@ -182,7 +187,7 @@ end
 local function update(keypress)
     local actor,systems=context()
     if not actor then
-        if keypress then log('Toggle ignored outside free-walking context') end
+        if keypress then log('Toggle ignored outside free-walking context: '..tostring(systems)) end
         release('walking context unavailable');return
     end
     -- Refuse a hidden toggle if the status display is not ready yet.
