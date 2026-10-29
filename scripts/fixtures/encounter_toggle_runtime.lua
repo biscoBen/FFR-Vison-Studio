@@ -13,11 +13,19 @@ for _,n in ipairs({'mucha.CPP_MapUnit_Player','mucha.CPP_InputManager','mucha.CP
     'mucha.CPP_FieldWidgetManager','UMG.CanvasPanel','UMG.PanelWidget','UMG.TextBlock','UMG.UserWidget'}) do classes[n]=obj({name=n}) end
 function new_actor(name,ratio)
     local a=obj({name=name,class=classes['mucha.CPP_MapUnit_Player'],m_OverwriteEncountRatio=ratio,
-        m_IsEnableMovement=true,input=true,vehicle=false,paused=false})
+        m_EncountThresholdDistance=1200,m_IsEnableMovement=true,input=true,vehicle=false,paused=false})
     function a:IsEnableUnitInput() return self.input end
     function a:IsPaused() return self.paused end
     function a:GetMapMovementMethod() return self.vehicle and 2 or 1 end
     function a:IsRidingRaft() return false end
+    local distance=a.m_EncountThresholdDistance;a.m_EncountThresholdDistance=nil
+    setmetatable(a,{
+        __index=function(_,key) if key=='m_EncountThresholdDistance' then return distance end end,
+        __newindex=function(self,key,value)
+            if key=='m_EncountThresholdDistance' then distance=string.unpack('f',string.pack('f',value))
+            else rawset(self,key,value) end
+        end,
+    })
     return a
 end
 actor=new_actor('Rain_A',-1)
@@ -68,14 +76,19 @@ function factory:Create(context,c,player)
     assert(context==actor and c==guideClass and player==controller)
     if not canCreate then return nil end
     created=created+1
-    local label=obj()
+    local function part()
+        local p=obj({visibility=1,opacity=0})
+        function p:SetVisibility(value) self.visibility=value end
+        function p:SetRenderOpacity(value) self.opacity=value end
+        return p
+    end
+    local label=part()
     function label:SetText(s)
         assert(type(s)=='table' and s.nativeType=='FText','Native FText input required')
         self.label=s.value
     end
-    local t=obj({Text_Name=label,WBP_DirectionGridPanel=obj()})
+    local t=part();t.Text_Name=label;t.WBP_DirectionGridPanel=obj();t.Horizontal_Content=part()
     function t.WBP_DirectionGridPanel:SetVisibility(v) assert(v==1) end
-    function t:SetVisibility(v) assert(v==3) end
     function t:AddToViewport(z) assert(z==50);viewport[#viewport+1]=self end
     function t:SetAnchorsInViewport(a) self.anchors=a end
     function t:SetAlignmentInViewport(a) self.alignment=a end
@@ -105,9 +118,27 @@ function tests()
     event=true;tick();assert(created==0 and #viewport==0)
     event=false;tick();assert(actor.m_OverwriteEncountRatio==-1 and #panel.children==1 and #viewport==1)
     assert(lastText.label:find('ON') and lastWidget.position.Y==-24)
+    for _,part in ipairs({lastWidget,lastWidget.Horizontal_Content,lastText}) do
+        assert(part.visibility==3 and part.opacity==1,'Reveal native hidden guide content')
+    end
     press();assert(actor.m_OverwriteEncountRatio==0 and lastText.label:find('OFF'))
+    assert(actor.m_EncountThresholdDistance>1e20)
     collectgarbage('collect');tick();assert(actor.m_OverwriteEncountRatio==0)
     press();assert(actor.m_OverwriteEncountRatio==-1 and lastText.label:find('ON'))
+    assert(actor.m_EncountThresholdDistance==1200)
+    -- A native zone update can reset both fields between polling ticks.
+    press();actor.m_OverwriteEncountRatio=.6;actor.m_EncountThresholdDistance=850
+    hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]()
+    assert(actor.m_OverwriteEncountRatio==0 and actor.m_EncountThresholdDistance>1e20)
+    press();assert(actor.m_OverwriteEncountRatio==.6 and actor.m_EncountThresholdDistance==850)
+    -- Preserve a later native/other-mod change rather than restoring stale data.
+    press();actor.m_EncountThresholdDistance=740;event=true;tick()
+    assert(actor.m_EncountThresholdDistance==740)
+    event=false;tick();press();assert(actor.m_EncountThresholdDistance==740)
+    press();actor.m_EncountThresholdDistance=2e30;local changed=actor.m_EncountThresholdDistance
+    event=true;tick();assert(actor.m_EncountThresholdDistance==changed)
+    event=false;actor.m_EncountThresholdDistance=740;tick();press()
+    actor.m_OverwriteEncountRatio=-1
     -- Hold both analog triggers for a full second, then toggle only once until release.
     controller.left,controller.right=1,1;tick(.1);tick(.9)
     assert(not FFRStudioEncounterToggle.disabled)

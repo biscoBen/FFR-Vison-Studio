@@ -27,7 +27,6 @@ local function each(a,fn)
 end
 local function list(a) local r={};each(a,function(v) r[#r+1]=v end);return r end
 local function key(k) return {Category=k.Category,ID=k.ID} end
-local function equal(a,b) return a.Category==b.Category and a.ID==b.ID end
 local function instance(class,predicate)
     local result
     for _,o in ipairs(FindAllOf(class) or {}) do
@@ -37,7 +36,7 @@ local function instance(class,predicate)
     end
     return result
 end
--- These four read-only helpers were not in the initial survey. Verify their
+-- These read-only helpers were not in the initial survey. Verify their
 -- reflected argument/return kinds before calling; no guessed offsets/defaults.
 local checked={}
 local function signature(name,kinds)
@@ -58,16 +57,6 @@ local function relation(id)
     local p=native('mucha.Default__CPP_BFL_Battle'):GetBattleUnitParameter(id)
     assert(valid(p),'Target parameter unavailable')
     return p:GetRelation()
-end
-local function commands(vm)
-    signature('CPP_VM_BtlCmd:GetCommands','ArrayProperty')
-    local result={}
-    each(vm:GetCommands(),function(e) result[#result+1]=key(e.Value.ActionKey) end)
-    return result
-end
-local function has_key(vm,wanted)
-    for _,k in ipairs(commands(vm)) do if equal(k,wanted) then return true end end
-    return false
 end
 local function clear_display()
     if display then display:remove() end
@@ -99,7 +88,8 @@ local function position_guide(c)
     -- anything in the game's HUD. Fallback is used until its first layout pass.
     local ok=pcall(function()
         local speed=instance('WBP_BtlKeyGuide_Speed_C',function(o)
-            return o:IsVisible() and o:GetOwningPlayer():GetFullName()==display.controller:GetFullName()
+            local player=native('Engine.Default__GameplayStatics'):GetPlayerController(o,0)
+            return o:IsVisible() and valid(player) and player:GetFullName()==display.controller:GetFullName()
         end)
         if not speed then return end
         local slate=native('UMG.Default__SlateBlueprintLibrary')
@@ -119,7 +109,7 @@ end
 local function guide(c)
     if display and (not display:valid() or display.context:GetFullName()~=c.ui:GetFullName()) then clear_display() end
     if not display then
-        display=create_status_hud(c.ui,{anchorX=1,anchorY=0,x=-24,y=100,width=430})
+        display=create_status_hud(c.ui,{anchorX=1,anchorY=1,x=-24,y=-64,width=430})
         if not display then return false end
     end
     local label='▶ Auto: '..(runtime.enabled and 'ON' or 'OFF')..'   F9 / Hold LT+RT (L2+R2)'
@@ -149,12 +139,12 @@ local function saved(stable,vm)
         if #actions==0 then return end
         local path={}
         if bundle.CommandId>0 and bundle.CommandId~=actions[1].id then path[#path+1]={Category=1,ID=bundle.CommandId} end
-        if #path==0 and not has_key(vm,{Category=actions[1].item and 2 or 1,ID=actions[1].id}) then
+        if #path==0 and not actions[1].item then
             signature('CPP_BFL_Skill:GetSkillDataById','IntProperty,StructProperty')
             local data=native('mucha.Default__CPP_BFL_Skill'):GetSkillDataById(actions[1].id)
             each(data.belongCommandList,function(parent)
                 local k={Category=1,ID=parent}
-                if #path==0 and has_key(vm,k) then path[#path+1]=k end
+                if #path==0 and vm:CanActivateAction(k) then path[#path+1]=k end
             end)
         end
         for _,a in ipairs(actions) do path[#path+1]={Category=a.item and 2 or 1,ID=a.id} end
@@ -162,9 +152,16 @@ local function saved(stable,vm)
     end)
     return memory
 end
-local function remember(_,wrapped)
+local function remember(owner,wrapped)
     local ok,message=pcall(function()
-        local c=context();if not c then return end
+        -- DecideCommand can run after native input/the command widget closes.
+        -- Capture the native decision independently of the interactive UI guard.
+        local manager=owner:get()
+        local ui=instance('CPP_UI_BattleSubsystem',function(o) return o.bDuringBattle end)
+        if not ui or ui.BtlPhaseType~=0 or not valid(manager) or manager.CmdType~=0
+            or not valid(ui.BtlCmdManager) or manager:GetFullName()~=ui.BtlCmdManager:GetFullName() then return end
+        local view=instance('CPP_VM_Battle',function(o) return o.bIsDisplayBattleWidget end)
+        if view and view.bIsEvent then return end
         local data=wrapped:get();local actions={};local stable
         each(data.DecideDataList,function(a)
             local owner=unit_id(a.actionUnitUniqueId)
@@ -182,7 +179,10 @@ local function remember(_,wrapped)
             replay.committed=true;return -- Keep the original target preferences.
         end
         local path={};each(data.SelectedActionPathList,function(k) path[#path+1]=key(k) end)
-        if #path==0 and c.vm then each(c.vm.CommandStack,function(s) path[#path+1]=key(s.ActionKey) end) end
+        if #path==0 then
+            local vm=instance('CPP_VM_BtlCmd',function() return true end)
+            if vm then each(vm.CommandStack,function(s) path[#path+1]=key(s.ActionKey) end) end
+        end
         if #path>0 then
             runtime.memory[stable]={path=path,actions=actions}
             print('[FFR auto battle] Remembered unit='..stable..'; actions='..#actions..'\n')
@@ -218,7 +218,12 @@ local function advance(c,now)
             inject(function() c.vm:EndCommand() end)
             lastTurn=r.manager..':'..id;replay=nil;return
         end
-        if not has_key(c.vm,k) or not c.vm:CanActivateAction(k) then pause('Remembered action unavailable');return end
+        -- GetCommands() returns FBtlCmdStackData (already selected commands),
+        -- not menu entries. Native CanActivateAction is the availability check.
+        if not c.vm:CanActivateAction(k) then
+            print('[FFR auto battle] Unavailable unit='..stable..'; step='..r.index..'; action='..k.Category..':'..k.ID..'\n')
+            pause('Remembered action unavailable');return
+        end
         r.index=r.index+1;r.at=now
         inject(function() c.vm:DecideActionKey(k) end)
     elseif c.manager.CmdState==1 then

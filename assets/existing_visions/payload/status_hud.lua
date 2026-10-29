@@ -22,7 +22,15 @@ return function(context,position)
         assert(valid(label),'Status UserWidget has no text label')
         local icons=widget.WBP_DirectionGridPanel
         if valid(icons) then icons:SetVisibility(1) end -- Text includes both input guides.
-        widget:SetVisibility(3) -- HitTestInvisible; cannot intercept game input.
+        -- A key-guide's content can start hidden without native GuideData.
+        -- Showing only its outer UserWidget does not show these descendants.
+        local content=widget.Horizontal_Content
+        assert(valid(content),'Status UserWidget has no content container')
+        for _,part in ipairs({widget,content,label}) do
+            part:SetVisibility(3)
+            part:SetRenderOpacity(1)
+        end
+        -- HitTestInvisible; this indicator cannot intercept game input.
         widget:AddToViewport(50)
         widget:SetAnchorsInViewport({Minimum={X=position.anchorX,Y=position.anchorY},
             Maximum={X=position.anchorX,Y=position.anchorY}})
@@ -36,7 +44,11 @@ return function(context,position)
     function result:valid() return valid(self.widget) and valid(self.label) end
     -- UE4SS's FText parameter setter requires FText userdata. A raw Lua string
     -- can reach FText::ToFString with an invalid address instead of a Lua error.
-    function result:set(value) self.label:SetText(FText(value)) end
+    function result:set(value)
+        self.label:SetVisibility(3)
+        self.label:SetRenderOpacity(1)
+        self.label:SetText(FText(value))
+    end
     function result:remove()
         if valid(self.widget) then self.widget:RemoveFromParent() end
         self.widget,self.label=nil,nil

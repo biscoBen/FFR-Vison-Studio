@@ -66,11 +66,19 @@ game rules, including any native equipment effects. Encounters start ON at every
 game launch. The choice is session-only and uses no equipment/ability slot.
 
 The runtime sets the field player’s native `m_OverwriteEncountRatio` to zero while
-OFF and remembers its prior value. It restores that value during menus, vehicles,
+OFF and suspends the cached `m_EncountThresholdDistance` with a large finite value.
+A native movement-input hook refreshes both before movement when a zone changes
+them between polling ticks. Both prior values are retained and restored only while
+the runtime still owns the applied values. This is intended to prevent already
+calculated movement thresholds from firing; native overworld behavior needs a live
+retest. The returned 1.2.125 log proves the ratio was written, but the user still
+received ordinary overworld encounters, so that write alone is not proof of
+suppression. It restores that value during menus, vehicles,
 events, battles and transitions, then reapplies OFF when free walking resumes.
 New native zone overrides are retained. Scripted encounters, boss/challenge
 rewards, equipment, learned abilities and save data are not edited. The UI badge
-is a non-interactive UMG TextBlock attached to the existing field HUD; shipping
+is a separate game-created key-guide UserWidget, with its content container and
+text explicitly visible and opaque; shipping
 builds can suppress PrintString, so debug screen messages are not used.
 
 An unavailable HUD leaves native encounters unchanged and logs the reason with

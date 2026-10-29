@@ -19,6 +19,7 @@ function controller:GetInputAnalogKeyState(k) return k.KeyName=='Gamepad_LeftTri
 local gameplay=object('Gameplay')
 function gameplay:GetRealTimeSeconds() return clock end
 function gameplay:IsGamePaused() return paused end
+function gameplay:GetPlayerController() return controller end
 local input=object('Input',{IsEnableInput=function() return inputEnabled end})
 local systems=object('Systems',{GetWorldSubsystem=function() return input end})
 local battle=object('Battle')
@@ -69,9 +70,14 @@ vm=object('CommandView',{bDisplayCmd=true,CommandStack=array({}),UnitSelectVM=se
 stack={};pendingActions={};selectedPath={};reserved=0
 local function present(list,id) for _,v in ipairs(list) do if v==id then return true end end end
 function vm:GetCommands()
-    return array({{Value={ActionKey=akey(#stack==0 and parentId or actionId)}}})
+    return array(stack) -- Native return: selected FBtlCmdStackData, not menu entries.
 end
-function vm:CanActivateAction(k) return k.ID==parentId or (actionCategory==2 and itemQty-reserved>=1) or (actionCategory~=2 and availableMP-reserved>=1) end
+function vm:CanActivateAction(k)
+    if menuChanged then return false end
+    return (k.ID==parentId and #stack==0) or
+        (k.ID==actionId and #stack>0 and ((actionCategory==2 and itemQty-reserved>=1) or
+        (actionCategory~=2 and availableMP-reserved>=1)))
+end
 function vm:DecideActionKey(k)
     hooks['/Script/mucha.CPP_VM_BtlCmd:DecideActionKey'][1](wrapped(self),wrapped(k))
     assert(self.bDisplayCmd and self:CanActivateAction(k),'Illegal/costly command')
@@ -125,6 +131,7 @@ function create_status_hud(context,position)
     function d.widget:SetAnchorsInViewport(a) end
     function d.widget:SetAlignmentInViewport(a) end
     function d.widget:SetPositionInViewport(p,dpi) guidePosition=p end
+    guidePosition={X=position.x,Y=position.y,anchorY=position.anchorY}
     function d:valid() return not self.removed end
     function d:set(s) badge=s end
     function d:remove() self.removed=true;guidesRemoved=(guidesRemoved or 0)+1 end

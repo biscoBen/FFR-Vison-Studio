@@ -3,7 +3,8 @@
 Enable **In-game auto-battle** in Studio, rebuild/install and restart Resonance.
 Install UE4SS when offered if it is missing. In battle, press **F9** or hold both
 controller triggers **LT+RT / L2+R2 for one second**. Release before another hold.
-The play indicator beside the battle-speed guide shows ON/OFF. It starts OFF
+The play indicator beside the battle-speed guide shows ON/OFF. Until that guide
+finishes layout, its fallback position is at the bottom-right of the screen. It starts OFF
 when you launch the game; switching during play uses no equipment slot or rebuild.
 
 Use a command manually to update that character's remembered selection. Auto
@@ -24,3 +25,7 @@ saves, supply free MP/items, or submit fabricated battle jobs. The runtime logs
 state changes and unsupported bindings with `[FFR auto battle]` in UE4SS.log.
 Offline fixtures exercise the protocol; actual replay timing, compound commands,
 controller use and placement still require game testing.
+
+The 1.2.126 correction uses native `CanActivateAction` for availability.
+`GetCommands` returns already-selected stack data, not the current menu. Manual
+decision capture remains active when the game closes command input during commit.

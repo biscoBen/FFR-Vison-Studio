@@ -69,7 +69,7 @@ class RuntimeTests(unittest.TestCase):
     def test_native_menu_or_mp_changes_pause_without_replacing_remembered_command(self):
         self.run_lua('''
             active=true;manual();local memory=FFRStudioAutoBattle.memory[1001]
-            function vm:GetCommands() return array({{Value={ActionKey={Category=1,ID=999}}}}) end
+            menuChanged=true
             press();tick();assert(not FFRStudioAutoBattle.enabled and #submissions==0)
             assert(FFRStudioAutoBattle.memory[1001]==memory)
         ''')
@@ -99,6 +99,20 @@ class RuntimeTests(unittest.TestCase):
             assert(badge:find('F9',1,true) and badge:find('OFF',1,true))
         """)
 
+    def test_manual_memory_is_captured_when_native_input_and_command_ui_have_closed(self):
+        self.run_lua('''
+            active=true;inputEnabled=false;vm.bDisplayCmd=false;manual()
+            assert(FFRStudioAutoBattle.memory[1001]~=nil)
+            inputEnabled=true;new_turn();press();tick();tick();assert(#submissions==1)
+        ''')
+
+    def test_indicator_fallback_is_at_the_bottom_and_empty_selected_stack_is_not_an_empty_menu(self):
+        self.run_lua('''
+            active=true;tick()
+            assert(guidePosition.anchorY==1 and guidePosition.Y<0)
+            assert(#stack==0);press();tick();tick();assert(#submissions==1)
+        ''')
+
     def test_manual_input_takes_over_and_callbacks_survive_gc(self):
         self.run_lua('''
             active=true;manual();press() -- auto selects the parent
@@ -120,14 +134,15 @@ class RuntimeTests(unittest.TestCase):
             local factory={IsValid=function() return true end}
             function factory:Create(context,class,player)
                 assert(context==ui and player==controller)
-                local label={IsValid=function() return true end}
+                local label={IsValid=function() return true end,SetVisibility=function() end,SetRenderOpacity=function() end}
                 function label:SetText(value)
                     assert(value.nativeType=='FText','Native HUD requires typed FText')
                     badge=value.value
                 end
                 local widget={Text_Name=label,IsValid=function() return true end,
+                    Horizontal_Content={IsValid=function() return true end,SetVisibility=function() end,SetRenderOpacity=function() end},
                     WBP_DirectionGridPanel={IsValid=function() return true end,SetVisibility=function() end}}
-                for _,name in ipairs({'SetVisibility','AddToViewport','SetAnchorsInViewport',
+                for _,name in ipairs({'SetVisibility','SetRenderOpacity','AddToViewport','SetAnchorsInViewport',
                     'SetAlignmentInViewport','SetDesiredSizeInViewport','SetPositionInViewport','RemoveFromParent'}) do
                     widget[name]=function() end
                 end

@@ -4,7 +4,10 @@ local config = require('config')
 if config.encounterToggle ~= 1 then return end
 local runtime = {disabled=false, hooks={}}
 _G.FFRStudioEncounterToggle = runtime
-local current, original, display, lastError, holdStart, held, painted = nil,nil,nil,nil,nil,false,nil
+local current, original, originalDistance, ownedDistance, display, lastError, holdStart, held, painted
+-- Keep the cached native movement trigger out of reach, using a finite float.
+-- Changing only the ratio does not invalidate a previously calculated distance.
+local suspendedDistance=1e30
 local function valid(o)
     return o ~= nil and (type(o)=='userdata' or type(o)=='table') and o:IsValid()
 end
@@ -23,7 +26,10 @@ local function restore()
     if valid(current) and original~=nil and current.m_OverwriteEncountRatio==0 then
         current.m_OverwriteEncountRatio=original
     end
-    current,original=nil,nil
+    if valid(current) and originalDistance~=nil and current.m_EncountThresholdDistance==ownedDistance then
+        current.m_EncountThresholdDistance=originalDistance
+    end
+    current,original,originalDistance,ownedDistance=nil,nil,nil,nil
 end
 local function release()
     restore();remove_badge();holdStart,held=nil,false
@@ -59,6 +65,24 @@ local function toggle()
     runtime.disabled=not runtime.disabled
     log('Random encounters: '..(runtime.disabled and 'OFF' or 'ON (normal game rules)'))
 end
+local function apply(actor)
+    if not same(current,actor) then restore();current=actor end
+    local value=actor.m_OverwriteEncountRatio
+    local distance=actor.m_EncountThresholdDistance
+    assert(type(value)=='number' and value==value and math.abs(value)<1e12,'Invalid native walking encounter ratio')
+    assert(type(distance)=='number' and distance==distance and distance>=0 and distance<math.huge,
+        'Invalid native walking encounter distance')
+    if original==nil or value~=0 then original=value end
+    if originalDistance==nil or distance~=ownedDistance then originalDistance=distance end
+    actor.m_OverwriteEncountRatio=0
+    actor.m_EncountThresholdDistance=suspendedDistance
+    ownedDistance=actor.m_EncountThresholdDistance -- Retain the native float32 readback.
+    if not runtime.applied then
+        log('Walking control applied: ratio='..tostring(actor.m_OverwriteEncountRatio)
+            ..'; cached movement threshold='..tostring(actor.m_EncountThresholdDistance))
+        runtime.applied=true
+    end
+end
 local function update(keypress)
     local actor,systems=context()
     if not actor then release();return end
@@ -78,16 +102,7 @@ local function update(keypress)
         else holdStart,held=nil,false end
     else holdStart,held=nil,false end
     if keypress then toggle() end
-    if runtime.disabled then
-        if not same(current,actor) then restore();current=actor end
-        local value=actor.m_OverwriteEncountRatio
-        assert(type(value)=='number' and value==value and math.abs(value)<1e12,'Invalid native walking encounter ratio')
-        if original==nil or value~=0 then
-            original=value
-            log('Native walking encounter override: '..tostring(value)..' -> 0')
-        end
-        actor.m_OverwriteEncountRatio=0
-    else restore() end
+    if runtime.disabled then apply(actor) else restore();runtime.applied=nil end
     paint()
 end
 local function guarded(keypress)
@@ -105,6 +120,18 @@ runtime.key_action=function() guarded(true) end
 runtime.key=function() ExecuteInGameThread(runtime.key_action) end
 -- Root every callback: this loader can collect otherwise anonymous closures.
 RegisterKeyBind(Key.F7,runtime.key)
+-- Refresh the cached threshold before ordinary movement, rather than waiting
+-- for the next 100 ms scan after a native zone update. Never cancel Encount.
+runtime.move=function()
+    if not runtime.disabled then return end
+    local ok,message=pcall(function()
+        local actor=context()
+        if actor then apply(actor) else restore() end
+    end)
+    if not ok then pcall(restore);log('Movement guard: '..tostring(message)) end
+end
+runtime.move_post=function() end
+RegisterHook('/Script/mucha.CPP_MapUnit_Playable:InputMove',runtime.move,runtime.move_post)
 for _,path in ipairs({'/Script/mucha.CPP_MapUnit_Playable:InputInteract',
     '/Script/mucha.CPP_BFL_TalkEvent:PlayEvent','/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition',
     '/Script/mucha.CPP_MapManager:Encount'}) do
