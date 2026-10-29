@@ -85,6 +85,36 @@ class NoEncountersTests(unittest.TestCase):
         self.assertTrue(any('source=playable' in line for line in messages))
         self.assertTrue(any('Native battle entry while OFF' in line for line in messages))
 
+    def test_native_movement_owner_works_without_map_player_and_clears_on_transitions(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        def value(v):
+            if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
+            if isinstance(v,list):return lua.table_from([value(x) for x in v])
+            return v
+        lua.globals().nativeSource=value(json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes()))
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
+        lua.execute('''
+            mapPlayerMissing=true;press();assert(not FFRStudioEncounterToggle.disabled)
+            local move=hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]
+            move({get=function() return actor end});tick()
+            assert(lastText.label:find('ON'))
+            press();assert(FFRStudioEncounterToggle.disabled and has_effect(parameters[1001],71000))
+            assert(actor.m_OverwriteEncountRatio==-1 and actor.m_EncountThresholdDistance==1200)
+            menuOpen=true;tick();assert(FFRStudioEncounterToggle.inputActor==nil)
+            assert(not has_effect(parameters[1001],71000))
+            menuOpen=false;tick();assert(not has_effect(parameters[1001],71000))
+            actor.vehicle=true;move({get=function() return actor end});tick()
+            assert(FFRStudioEncounterToggle.inputActor==nil and not has_effect(parameters[1001],71000))
+            actor.vehicle=false;move({get=function() return actor end});tick()
+            assert(has_effect(parameters[1001],71000))
+            local boundary=hooks['/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition'][1]
+            boundary();assert(FFRStudioEncounterToggle.inputActor==nil and not has_effect(parameters[1001],71000))
+        ''')
+
     def test_encounter_only_install_requests_the_optional_runtime(self):
         import _ffr_runtime_loader as runtime
         game=self.root/'game';game.mkdir()

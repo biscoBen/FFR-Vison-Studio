@@ -112,6 +112,8 @@ class CounterTests(unittest.TestCase):
 
     def test_status_widget_has_plain_text_explicit_font_and_no_input_code(self):
         asset = ui.status_widget(self.native)
+        self.assertEqual(asset['FolderName'],'/Game/UI/Studio/WBP_StudioStatus')
+        self.assertNotEqual(asset['FolderName'],self.native['keyGuide']['FolderName'])
         self.assertEqual(len(asset['Exports']),4)
         cls = asset['Exports'][2]
         self.assertEqual(cls['FuncMap'],[]);self.assertEqual(cls['Children'],[])

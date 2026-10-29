@@ -19,7 +19,7 @@ STATE = 'field-leader-state.json'
 DFINA = '/Game/Chara/StudioFieldLeader/pc0060'
 DIRECTIONS = (1, 2, 3, 4, 6, 7, 8, 9)
 HUD_ASSETS = {
-    'FFRS/Content/UI/Studio/WBP_StudioStatus.uasset': '274851118977c64ccf3fc46816c44c0a14981cf38265ffb82739689eaa389ad5',
+    'FFRS/Content/UI/Studio/WBP_StudioStatus.uasset': 'dfaeeabe2d56fad8e34f08d822c0df3bd3edf2677a59ac9d1ec2bede09ab7857',
     'FFRS/Content/UI/Studio/WBP_StudioStatus.uexp': '83f88baa601b8f5a05bd46b45c4aa830edbfb4ec7098f9e737b9ed35a583b9ba',
 }
 

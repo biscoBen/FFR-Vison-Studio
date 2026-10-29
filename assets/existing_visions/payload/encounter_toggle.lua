@@ -60,11 +60,19 @@ local function release(reason)
         log('Releasing owned effects; reason='..tostring(reason or 'context/error'))
     end
     restore();remove_badge();holdStart,held=nil,false
+    runtime.inputActor=nil
+end
+local function walking_actor(map)
+    -- InputMove supplies the actual controlled actor, including contexts where
+    -- the map-library getter has not published a player. Transitions clear it.
+    if valid(runtime.inputActor) then return runtime.inputActor,'native input owner' end
+    return map:GetPlayerMapUnit(),'map library'
 end
 local function context()
     local map=native('mucha.Default__CPP_BFL_Map')
-    local actor=map:GetPlayerMapUnit()
-    if not valid(actor) or not actor:IsA(native('mucha.CPP_MapUnit_Player')) then return nil,'Walking player not ready' end
+    local actor=walking_actor(map)
+    if not valid(actor) then return nil,'Walking player not ready (map getter/input owner unavailable)' end
+    if not actor:IsA(native('mucha.CPP_MapUnit_Playable')) then return nil,'Native player is not playable: '..actor:GetFullName() end
     if map:IsDuringEncount() then return nil,'Encounter transition active' end
     if native('mucha.Default__CPP_BFL_TalkEvent'):IsPlayingEvent() then return nil,'Story event active' end
     if not actor:IsEnableUnitInput() then return nil,'Player input disabled' end
@@ -150,9 +158,9 @@ runtime.snapshot=function(reason)
     for target,owned in pairs(runtime.effects) do
         log('Owned target='..target..'; effect='..(valid(owned.effect) and owned.effect:GetFullName() or 'invalid'))
     end
-    local map=native('mucha.Default__CPP_BFL_Map');local actor=map:GetPlayerMapUnit()
+    local map=native('mucha.Default__CPP_BFL_Map');local actor,source=walking_actor(map)
     if valid(actor) then
-        log('Actor='..actor:GetFullName()..'; walking method='..tostring(actor:GetMapMovementMethod())..
+        log('Actor='..actor:GetFullName()..'; source='..source..'; walking method='..tostring(actor:GetMapMovementMethod())..
             '; override='..tostring(actor.m_OverwriteEncountRatio)..'; threshold='..tostring(actor.m_EncountThresholdDistance))
     end
     signature('CPP_BFL_Unit:GetPlayableUnitParameterObj','IntProperty,ObjectProperty')
@@ -228,10 +236,15 @@ runtime.key=function() ExecuteInGameThread(runtime.key_action) end
 RegisterKeyBind(Key.F7,runtime.key)
 -- Refresh map-parameter effects before walking after a party/cache change.
 -- Never cancel Encount or change a movement threshold.
-runtime.move=function()
-    if not runtime.disabled then return end
+runtime.move=function(owner)
     local ok,message=pcall(function()
-        local actor=context()
+        local actor=owner and owner:get()
+        if valid(actor) and actor:IsA(native('mucha.CPP_MapUnit_Playable')) then
+            if not same(runtime.inputActor,actor) then log('Native movement input owner: '..actor:GetFullName()) end
+            runtime.inputActor=actor
+        end
+        if not runtime.disabled then return end
+        actor=context()
         if actor then apply(actor) else restore() end
     end)
     if not ok then pcall(restore);log('Movement guard: '..tostring(message)) end

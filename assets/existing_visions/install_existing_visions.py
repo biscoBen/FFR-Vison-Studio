@@ -14,7 +14,7 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.133'
+VERSION = '1.2.134'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
@@ -576,7 +576,7 @@ def run(root, action):
             if sha(raw) != 'f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b':
                 raise ValueError('Invalid bundled treasure radar checksum.')
         elif name == 'status_widget.zip':
-            if sha(raw) != 'bb7dd2051fdb96e300652ea14802e318b3be045571a135b2aeaf3ed4e123d9fc':
+            if sha(raw) != '46beb141b7f1fa222da12bad7ffdf837e59a7e0217b3bda6f3965f323611c229':
                 raise ValueError('Invalid bundled Studio UI checksum.')
         elif name == 'minimap_counter.zip':
             if sha(raw) != '2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb':

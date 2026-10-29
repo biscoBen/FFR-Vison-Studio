@@ -164,6 +164,9 @@ def status_widget(native):
     # Keep the source's serialization version, replace only its own package name.
     old = '/Game/UI/MainMenu/Common/Key/KeyGuide/WBP_KeyGuide'
     new = STATUS.replace('FFRS/Content/', '/Game/')
+    # Cooked UE5 package identity comes from the legacy summary, not its output
+    # filename. Retoc otherwise registers this private asset as WBP_KeyGuide.
+    asset['FolderName'] = new
     asset['NameMap'] = [new if n == old else n for n in asset['NameMap']]
     names(asset)
     return asset

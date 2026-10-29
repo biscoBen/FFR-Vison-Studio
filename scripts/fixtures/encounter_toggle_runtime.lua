@@ -5,11 +5,13 @@ local function obj(o)
     o=o or {};o.valid=true
     function o:IsValid() return self.valid end
     function o:GetFullName() return self.name or tostring(self) end
-    function o:IsA(class) return self.class==class or (self.panel and class==classes['UMG.PanelWidget']) end
+    function o:IsA(class) return self.class==class or
+        (self.class==classes['mucha.CPP_MapUnit_Player'] and class==classes['mucha.CPP_MapUnit_Playable']) or
+        (self.panel and class==classes['UMG.PanelWidget']) end
     return o
 end
 classes={}
-for _,n in ipairs({'mucha.CPP_MapUnit_Player','mucha.CPP_InputManager','mucha.CPP_MainMenuSubsystem',
+for _,n in ipairs({'mucha.CPP_MapUnit_Player','mucha.CPP_MapUnit_Playable','mucha.CPP_InputManager','mucha.CPP_MainMenuSubsystem',
     'mucha.CPP_FieldWidgetManager','mucha.CPP_UnitParameter','mucha.CPP_BtlUnitParameter',
     'mucha.CPP_ContFxEncountRatio','UMG.CanvasPanel','UMG.PanelWidget','UMG.TextBlock','UMG.UserWidget'}) do classes[n]=obj({name=n}) end
 -- Actual pinned UE4SS TArray protocol: 1-based indexed writes extend, plus
@@ -82,7 +84,7 @@ local gameplay=obj({})
 function gameplay:GetPlayerController(a,i) assert(a==actor and i==0);return controller end
 function gameplay:GetRealTimeSeconds(a) assert(a==actor);return clock end
 local map=obj({})
-function map:GetPlayerMapUnit() return actor end
+function map:GetPlayerMapUnit() if not mapPlayerMissing then return actor end end
 function map:IsDuringEncount() return inBattle end
 function map:GetMapUnitParameter(id) assert(id>=1001 and id<=1008);return parameters[id] end
 local units=obj({})

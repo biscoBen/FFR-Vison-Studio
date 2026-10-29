@@ -11,6 +11,27 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Correct private HUD package identity and walking-owner fallback — 2026-10-29
+
+- The returned exact 1.2.133 runtime still cannot load the status class. Native
+  IoStore inspection identifies the exported file as the original WBP_KeyGuide
+  package: the author changed the filename/name map but retained the cooked
+  summary's FolderName. Correct the summary to the private Studio package, so
+  loading addresses the right package and the original game key guide stays intact.
+- Rebuild the small precompiled widget and verify the actual packed manifest's
+  package name/ID and filename, plus native legacy/IoStore round trips. Retain the
+  passive widget, native soft-object loading, FText and current UI safeguards.
+- The encounter key reports no ready map player. Cache the actual playable actor
+  supplied by native InputMove, falling back to the map getter before input exists.
+  Clear it at context/transition boundaries; retain every walking/input/menu/event/
+  battle/vehicle guard. Trace the chosen actor source. No encounter groups, actor
+  ratios, thresholds, equipment or save state change. Suppression needs a retest.
+- Regression checks cover private package identity, a missing map getter with a
+  real movement owner, effect cleanup through menus/transitions and exclusion of
+  vehicles. All command memory, Attack fallback and multicast/OFF safeguards stay
+  intact. All 103 focused checks pass. Kits, boss powers, acquisition, media and
+  treasure assets are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
