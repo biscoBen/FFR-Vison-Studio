@@ -11,30 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Confirmed command capture, visible anchors and ground travel — 2026-10-29
-
-- The returned 1.2.134 session replays only native saved commands and contains no
-  captured-command messages. Observe the native manager's confirmed ExecuteDataList
-  so memory does not depend on reflected hooks receiving direct C++ calls. Capture
-  while input is hidden, group decisions per character, use each queue's latest
-  entry and deduplicate unchanged entries. Observe auto-generated queues without
-  overwriting original target preferences when OFF follows. Unsubmitted/cancelled
-  menu selections do not become memory. Retain the existing hook as a backstop.
-- The loaded passive text was positioned off-screen: Unreal size/position setters
-  reset viewport anchors. Apply the bottom anchor/alignment after those setters;
-  retain the cached footer positioning, typed FText and passive native asset.
-- At the user's request, encounter control supports native Walking, Chocobo and
-  MagickArmor modes (1/3/5). The captured actor is magitek armour, rejected by the
-  earlier walking-only guard. Keep menus/events/input/pause/battle guards and
-  native temporary effects. Deduplicate movement-owner logs across suspensions.
-  Update Studio help to name all three supported ground modes.
-- Regression checks simulate confirmed native queues without reflection callbacks
-  for Rain/Lasswell/Fina/Lid, hidden input, stale queue entries, unconfirmed choices
-  and preservation of auto target preferences. Model Unreal's anchor reset and
-  exercise all three ground modes. Native suppression and visual placement still
-  need a retest. All 107 focused checks pass. Kits, balance, acquisition, media and
-  treasure assets are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -103,6 +79,53 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published confirmed commands, bottom anchors and ground travel — 2026-10-29
+
+Code [`6d55bb7`](https://github.com/biscoBen/FFR-Vison-Studio/commit/6d55bb7c75563f507a004eff13a6b2bf9a09a390) ·
+[Studio test 1.2.135](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40965164461/Sephira-Studio-Test.zip)
+
+- The user's 1.2.134 report confirms partial replay and no visible indicators.
+  Its exact runtime logs no captured-command messages and replays only native
+  saved commands: Rain/Lasswell still use their attacks. Observe the native
+  command manager's confirmed ExecuteDataList before the interactive input guard,
+  so capture no longer depends on reflected hooks receiving direct native calls.
+- Group decisions per character, retain the queue's latest record, deduplicate
+  unchanged records and capture through hidden-input transitions. Unsubmitted
+  menu choices never become memory. While auto-battle is ON, observe queue changes
+  without overwriting remembered target preferences, including the frame before
+  F9 switches OFF. Retain the native hook, Attack fallback, costs, legal targets,
+  multicast, bonus-round and OFF/reentrancy/controller-latch safeguards.
+- Correct the off-screen indicator placement: Unreal's size and position setters
+  reset viewport anchors. Apply the intended bottom anchor/alignment afterward.
+  Keep the corrected passive native widget, FText, cached layout and game-thread
+  polling. The asset bytes and private package identity from 1.2.134 are unchanged.
+- The encounter trace identifies a magitek-armour actor rejected by the old
+  walking-only guard. At the user's explicit request, support native Walking,
+  Chocobo and MagickArmor modes (1/3/5). Keep all input/menu/event/pause/battle
+  guards and temporary native effects. Deduplicate movement-owner logs and update
+  Studio help. The effect's live suppression result still needs confirmation.
+- Local: 107 focused checks pass. Actual Windows payload tests pass 34 auto-battle,
+  seven encounter-control and 10 counter cases, including native confirmations
+  without reflected callbacks for all four tested characters, stale/unsubmitted
+  records, retained auto preferences, real anchor-reset semantics and all three
+  requested ground modes. Native effect ownership, esper and combined game-thread
+  loop checks pass. All 87 extension and 16 Fina hashes match; every public app
+  file and launcher matches the verified artifact and reviewed source. Full
+  Windows Flutter, 877 Python tests (33 skips), fresh frozen-engine and launcher
+  checks pass.
+  Native memory capture, visible placement and encounter suppression need a live
+  retest. Kits, balance, acquisition, audio/media and treasure assets are unchanged.
+- Public ZIP: 82,576,600 bytes; SHA-256
+  `60cfa835a12f8aa45fcc707baade500c8f7b79aa782060665fbca382ecef234e`.
+
+First complete candidate **15:18:50 PDT** to verified
+delivery **15:30:37 PDT**: **11m 46s**,
+including focused checks, the single automatic Windows build, waiting and actual
+artifact/public-package verification. CI wall: **8m 31s**;
+summed runner job time including publication: **12m 19s**.
+Reused exact run 40965164461; no duplicate/manual dispatch. Publication notes use
+only README/CHANGELOG and do not request another binary.
 
 ## Published private package identity and walking-owner fallback — 2026-10-29
 

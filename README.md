@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Confirmed commands, bottom anchors and ground travel — 2026-10-29
+
+[Verified Windows download / run 40965164461](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40965164461/Sephira-Studio-Test.zip)
+(code `6d55bb7`, update **1.2.135**; **82.6 MB**).
+
+Auto-battle also reads the native confirmed-command queue, retaining each
+character's latest choice when reflected confirmation hooks are bypassed. Fix
+off-screen indicators by applying bottom anchors after Unreal's position/size
+setters. Encounter control supports foot, chocobo and magitek-armour travel.
+
+Rebuild/install and restart Resonance. Test fresh manual choices with auto-battle
+OFF before enabling F9/the held-trigger control. Use F7/the triggers during any
+of the three ground modes. Native capture, indicator rendering and encounter
+suppression still need a live retest; the same external session collector works.
+Kits, balance, acquisition, audio/media and treasure assets retain their values.
+[Checks and measured timings](CHANGELOG.md#published-confirmed-commands-bottom-anchors-and-ground-travel--2026-10-29).
+
 ### Private package identity and walking-owner fallback — 2026-10-29
 
 [Verified Windows download / run 40959972538](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40959972538/Sephira-Studio-Test.zip)
