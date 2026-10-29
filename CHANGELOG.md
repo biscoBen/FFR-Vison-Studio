@@ -11,39 +11,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Repeat remembered battle commands — 2026-10-28
 
-The user confirmed that 1.2.124 loads with encounter control enabled without
-crashing. Use that release’s typed FText HUD handling and game-thread polling.
-The supplied spell-target F8 capture provides the native command path; command
-replay remains subject to live game testing.
-
-- Add the optional **In-game auto-battle** switch. Rebuild/install once, then use
-  **F9** or hold **LT+RT / L2+R2 for one real-time second** in ordinary battles.
-  The mode starts OFF each game launch; an on-screen play indicator and ON/OFF
-  guide follow the native battle-speed guide in viewport space. The guide has a
-  temporary upper-right position until the speed widget has completed layout.
-- Replay remembered command/skill paths through the native command view model and
-  its availability, cost and target-selection rules. Retain actor-specific manual
-  choices, multicasts and all-target mode across battles. Seed initial memory from
-  native saved commands; resolve vision menus from the current native skill data.
-  Choose fresh enemy targets each battle and resolve remembered party targets by
-  stable party IDs. Filter all-target selections to the intended relation.
-- Pause for unavailable commands, insufficient resources, no legal targets or
-  unexpected command state. Manual selection takes over. Keep event, pause,
-  cinematic, guest and extra-phase turns under native control. Do not mutate
-  equipment, save data, action costs or native auto-battle options. Existing
-  remembered-item commands use native inventory availability and consumption.
-- Retain native callbacks through GC and stage/remove the runtime with the Studio
-  switch; support an auto-only install and the optional UE4SS installer. Preserve
-  other switches, vision presets, IDs, kits and media. Include the Lua helper in
-  Python and Flutter setup allowlists and the fresh Windows startup resource check.
-- Use the supplied target-selection capture (344 → 420070, target 8) as native
-  protocol evidence. Offline replay/lifecycle fixtures pass. Native UI timing,
-  all command types, controller conflicts and HUD positioning require live tests;
-  the fixture is not proof that native command submission works in game. Verify
-  the real shared HUD helper with typed text, primary native scheduling and the
-  emitted combined encounter/esper runtime in addition to replay fixtures.
 
 
 ### Returned full-game reference audit — 2026-10-22
@@ -114,6 +82,60 @@ replay remains subject to live game testing.
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published: Studio test 1.2.125 — 2026-10-28
+
+Code [`3126974`](https://github.com/biscoBen/FFR-Vison-Studio/commit/31269749bf7fc1d8ab38b7be5118c1cd032b781f) ·
+[Windows test package](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40792328266/Sephira-Studio-Test.zip)
+
+### Repeat remembered battle commands
+
+The user confirmed that 1.2.124 loads with encounter control enabled without
+crashing. Use that release’s typed FText HUD handling and game-thread polling.
+The supplied spell-target F8 capture provides the native command path; command
+replay remains subject to live game testing.
+
+- Add the optional **In-game auto-battle** switch. Rebuild/install once, then use
+  **F9** or hold **LT+RT / L2+R2 for one real-time second** in ordinary battles.
+  The mode starts OFF each game launch; an on-screen play indicator and ON/OFF
+  guide follow the native battle-speed guide in viewport space. The guide has a
+  temporary upper-right position until the speed widget has completed layout.
+- Replay remembered command/skill paths through the native command view model and
+  its availability, cost and target-selection rules. Retain actor-specific manual
+  choices, multicasts and all-target mode across battles. Seed initial memory from
+  native saved commands; resolve vision menus from the current native skill data.
+  Choose fresh enemy targets each battle and resolve remembered party targets by
+  stable party IDs. Filter all-target selections to the intended relation.
+- Pause for unavailable commands, insufficient resources, no legal targets or
+  unexpected command state. Manual selection takes over. Keep event, pause,
+  cinematic, guest and extra-phase turns under native control. Do not mutate
+  equipment, save data, action costs or native auto-battle options. Existing
+  remembered-item commands use native inventory availability and consumption.
+- Retain native callbacks through GC and stage/remove the runtime with the Studio
+  switch; support an auto-only install and the optional UE4SS installer. Preserve
+  other switches, vision presets, IDs, kits and media. Include the Lua helper in
+  Python and Flutter setup allowlists and the fresh Windows startup resource check.
+- Use the supplied target-selection capture (344 → 420070, target 8) as native
+  protocol evidence. Offline replay/lifecycle fixtures pass. Native UI timing,
+  all command types, controller conflicts and HUD positioning require live tests;
+  the fixture is not proof that native command submission works in game. Verify
+  the real shared HUD helper with typed text, primary native scheduling and the
+  emitted combined encounter/esper runtime in addition to replay fixtures.
+
+- Validation: 65 focused Python checks and targeted Flutter checks pass. Windows CI
+  reports 333 Flutter passes / one skip, a separate fresh frozen-engine setup pass,
+  and 825 Python checks / 19 skips; analysis, payload/library and launcher/updater
+  checks pass. Verify the exact compiled and published ZIPs through the unchanged
+  build helper’s workflow/input provenance and checksum checks. All 85 extension
+  and 16 Fina file hashes match; actual packaged auto replay fixtures pass (15),
+  combined native loops pass, and existing presets, boss powers and media match
+  1.2.124. Native auto replay/controller timing still needs live confirmation.
+- The original complete candidate was recorded at 2026-10-28 14:44:49 PDT; verified
+  public delivery is 2026-10-28 17:21:21 PDT. Total 2h 36m 32s includes
+  local checks, the startup-crash investigation and intervening fixes, release hold,
+  user retest, CI and download verification. Required CI wall time: 9m 16s; summed
+  completed runner job time including publication: 15m 11s. Reused the exact
+  automatic push run; no duplicate build dispatched.
 
 ## Published native HUD text and esper polling correction — 2026-10-28
 
