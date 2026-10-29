@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking || app.minimapWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles || app.surviveAtOne || app.noEncounters;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles || app.surviveAtOne || app.noEncounters || app.autoBattle;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -184,6 +184,15 @@ class HomeScreen extends StatelessWidget {
                   value: app.surviveAtOne,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setSurviveAtOne(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('auto-battle'), contentPadding: EdgeInsets.zero,
+                  title: Text('In-game auto-battle', style: Guide.text()),
+                  subtitle: Text('F9 or hold both controller triggers for 1 second in battle. Repeats remembered commands across battles; pauses when an action is unavailable. Starts OFF each game launch. Requires UE4SS; rebuild/install after changing.', style: Guide.small()),
+                  value: app.autoBattle,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setAutoBattle(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

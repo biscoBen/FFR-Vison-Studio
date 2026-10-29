@@ -95,7 +95,7 @@ def status(root, game, units, last_build=False):
         required = bool(json.loads(stage.read_bytes()).get('files')) if stage.is_file() else False
     else:
         import _ffr_testing
-        required = bool(leader.enabled(root) or _ffr_testing.settings(root)['noEncounters'] or any(u.get('party') and u.get('overworld') for u in units)
+        required = bool(leader.enabled(root) or _ffr_testing.settings(root)['noEncounters'] or _ffr_testing.settings(root)['autoBattle'] or any(u.get('party') and u.get('overworld') for u in units)
                         or fina.selected(units, root) or espers.enabled(units))
     ready = False
     if required:

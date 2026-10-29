@@ -65,6 +65,7 @@ class AppState extends ChangeNotifier {
   String testingPracticeEncounter = 'standard';
   bool surviveAtOne = false;
   bool noEncounters = false;
+  bool autoBattle = false;
   bool finaCinematic = false;
   bool ffbeNeedles = false;
   bool crystalCave = false;
@@ -475,6 +476,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load shop battle opponents: $e'; }
     try { surviveAtOne = await api!.surviveAtOne(); }
     catch (e) { notice = 'Could not load survival testing settings: $e'; }
+    try { autoBattle = await api!.autoBattle(); }
+    catch (e) { notice = 'Could not load auto-battle settings: $e'; }
     try { noEncounters = await api!.noEncounters(); }
     catch (e) { notice = 'Could not load random encounter settings: $e'; }
     try { finaCinematic = await api!.finaCinematic(); }
@@ -1262,6 +1265,13 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveNoEncounters(value);
     noEncounters = value; notifyListeners();
+  });
+
+  Future<void> setAutoBattle(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveAutoBattle(value);
+    autoBattle = value; notifyListeners();
   });
 
   Future<void> setFinaCinematic(bool value) => _withRoster(() async {

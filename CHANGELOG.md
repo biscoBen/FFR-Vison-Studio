@@ -11,6 +11,41 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Repeat remembered battle commands — 2026-10-28
+
+The user confirmed that 1.2.124 loads with encounter control enabled without
+crashing. Use that release’s typed FText HUD handling and game-thread polling.
+The supplied spell-target F8 capture provides the native command path; command
+replay remains subject to live game testing.
+
+- Add the optional **In-game auto-battle** switch. Rebuild/install once, then use
+  **F9** or hold **LT+RT / L2+R2 for one real-time second** in ordinary battles.
+  The mode starts OFF each game launch; an on-screen play indicator and ON/OFF
+  guide follow the native battle-speed guide in viewport space. The guide has a
+  temporary upper-right position until the speed widget has completed layout.
+- Replay remembered command/skill paths through the native command view model and
+  its availability, cost and target-selection rules. Retain actor-specific manual
+  choices, multicasts and all-target mode across battles. Seed initial memory from
+  native saved commands; resolve vision menus from the current native skill data.
+  Choose fresh enemy targets each battle and resolve remembered party targets by
+  stable party IDs. Filter all-target selections to the intended relation.
+- Pause for unavailable commands, insufficient resources, no legal targets or
+  unexpected command state. Manual selection takes over. Keep event, pause,
+  cinematic, guest and extra-phase turns under native control. Do not mutate
+  equipment, save data, action costs or native auto-battle options. Existing
+  remembered-item commands use native inventory availability and consumption.
+- Retain native callbacks through GC and stage/remove the runtime with the Studio
+  switch; support an auto-only install and the optional UE4SS installer. Preserve
+  other switches, vision presets, IDs, kits and media. Include the Lua helper in
+  Python and Flutter setup allowlists and the fresh Windows startup resource check.
+- Use the supplied target-selection capture (344 → 420070, target 8) as native
+  protocol evidence. Offline replay/lifecycle fixtures pass. Native UI timing,
+  all command types, controller conflicts and HUD positioning require live tests;
+  the fixture is not proof that native command submission works in game. Verify
+  the real shared HUD helper with typed text, primary native scheduling and the
+  emitted combined encounter/esper runtime in addition to replay fixtures.
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

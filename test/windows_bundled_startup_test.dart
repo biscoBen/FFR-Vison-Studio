@@ -100,6 +100,7 @@ void main() {
         'field_leader.lua',
         'encounter_toggle.lua',
         'status_hud.lua',
+        'auto_battle.lua',
         'vagrant_knight_rain_field.png',
         'overworld_catalog.json',
         'overworld_assets.zip',

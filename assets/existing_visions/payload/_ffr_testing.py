@@ -46,19 +46,20 @@ OPPONENTS = (
 def settings(root):
     path = Path(root) / CONFIG
     return validate_settings(json.loads(path.read_bytes())) if path.is_file() else {
-        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False, 'noEncounters': False}
+        'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False, 'noEncounters': False, 'autoBattle': False}
 
 
 def validate_settings(value):
     # Accept and discard the removed diagnostic switches in older configs.
     # Crystal Fina Test now always uses transparent glass with rotation.
     if (not isinstance(value, dict) or not {'schema', 'maxMr'} <= set(value)
-            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader', 'noEncounters'}
+            or set(value) - {'schema', 'maxMr', 'practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'crystalCaveTestSolid', 'crystalCaveTestRotate', 'fieldLeader', 'noEncounters', 'autoBattle'}
             or type(value['schema']) is not int or value['schema'] != 1 or type(value['maxMr']) is not bool
             or type(value.get('practiceBattle', False)) is not bool
             or type(value.get('surviveAtOne', False)) is not bool
             or type(value.get('ffbeNeedles', False)) is not bool
             or type(value.get('noEncounters', False)) is not bool
+            or type(value.get('autoBattle', False)) is not bool
             or type(value.get('finaCinematic', False)) is not bool
             or value.get('practiceEncounter', 'standard') not in ('standard', 'cactuar')
             or type(value.get('crystalCave', False)) is not bool
@@ -71,7 +72,7 @@ def validate_settings(value):
     return {'schema': 1, 'maxMr': value['maxMr'], 'practiceBattle': value.get('practiceBattle', False),
             'practiceEncounter': value.get('practiceEncounter', 'standard'), 'surviveAtOne': value.get('surviveAtOne', False), 'ffbeNeedles': value.get('ffbeNeedles', False), 'finaCinematic': value.get('finaCinematic', False),
             'crystalCave': value.get('crystalCave', False), 'crystalCaveTest': value.get('crystalCaveTest', False),
-            'fieldLeader': value.get('fieldLeader', False), 'noEncounters': value.get('noEncounters', False)}
+            'fieldLeader': value.get('fieldLeader', False), 'noEncounters': value.get('noEncounters', False), 'autoBattle': value.get('autoBattle', False)}
 
 
 def reward(rows):
@@ -700,7 +701,7 @@ def register(app, env):
     @app.put('/api/testing')
     def put_settings(value: dict):
         try:
-            for flag in ('practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters'):
+            for flag in ('practiceBattle', 'practiceEncounter', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters', 'autoBattle'):
                 if flag not in value:
                     value = dict(value, **{flag: settings(env['ROOT'])[flag]})
             value = validate_settings(value)
@@ -708,7 +709,7 @@ def register(app, env):
             if env.get('state', {}).get('running'):
                 raise ValueError('Wait for the current build to finish.')
             path = Path(env['ROOT']) / CONFIG; path.parent.mkdir(parents=True, exist_ok=True)
-            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters')):
+            if any(value[flag] for flag in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'crystalCave', 'crystalCaveTest', 'fieldLeader', 'noEncounters', 'autoBattle')):
                 # An explicit empty roster prevents the engine's legacy five-unit
                 # fallback when MR testing is the only requested mod. Never overwrite.
                 spec = path.parent / 'units.json'

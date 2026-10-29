@@ -45,6 +45,8 @@ class Api {
   Future<bool> testingPracticeBattle() async => (await get('/api/testing'))['practiceBattle'] == true;
   Future<String> testingPracticeEncounter() async => (await get('/api/testing'))['practiceEncounter'] as String? ?? 'standard';
   Future<bool> surviveAtOne() async => (await get('/api/testing'))['surviveAtOne'] == true;
+  Future<bool> autoBattle() async => (await get('/api/testing'))['autoBattle'] == true;
+  Future<void> saveAutoBattle(bool value) => _saveTestingFlag('autoBattle', value);
   Future<bool> noEncounters() async => (await get('/api/testing'))['noEncounters'] == true;
   Future<void> saveNoEncounters(bool value) => _saveTestingFlag('noEncounters', value);
   Future<void> saveSurviveAtOne(bool value) => _saveTestingFlag('surviveAtOne', value);
@@ -87,6 +89,7 @@ class Api {
       'practiceEncounter': current['practiceEncounter'] as String? ?? 'standard',
       'surviveAtOne': current['surviveAtOne'] == true,
       'noEncounters': current['noEncounters'] == true,
+      'autoBattle': current['autoBattle'] == true,
       'ffbeNeedles': current['ffbeNeedles'] == true,
       'finaCinematic': current['finaCinematic'] == true,
       'crystalCave': current['crystalCave'] == true,
