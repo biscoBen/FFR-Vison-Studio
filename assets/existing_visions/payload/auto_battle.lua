@@ -63,7 +63,9 @@ local function clear_display()
     display,painted=nil,nil
 end
 local function suspend()
-    replay,lastTurn,holdStart,held=nil,nil,nil,false
+    replay,lastTurn,holdStart=nil,nil,nil
+    -- A held chord stays latched through transient input/command transitions.
+    -- It must be released before it may enable auto-battle again.
     clear_display()
 end
 local function pause(reason)
@@ -107,9 +109,13 @@ local function position_guide(c)
         -- the bottom indicator to a stale title/menu widget's top geometry.
         if p.Y<extent.Y*.5 or p.Y+size.Y>extent.Y then return end
         local x=p.X>454 and p.X-442 or p.X+size.X+12
+        x=math.max(16,math.min(x,extent.X-446))
+        local previous=display.footerPosition
+        if previous and math.abs(previous.X-x)<.5 and math.abs(previous.Y-p.Y)<.5 then return end
         display.widget:SetAnchorsInViewport({Minimum={X=0,Y=0},Maximum={X=0,Y=0}})
         display.widget:SetAlignmentInViewport({X=0,Y=0})
-        display.widget:SetPositionInViewport({X=math.max(16,math.min(x,extent.X-446)),Y=p.Y},false)
+        display.widget:SetPositionInViewport({X=x,Y=p.Y},false)
+        display.footerPosition={X=x,Y=p.Y}
     end)
     return ok
 end
@@ -203,7 +209,10 @@ local function remember(owner,wrapped)
     end)
     if not ok then print('[FFR auto battle] Memory unavailable: '..tostring(message)..'\n') end
 end
-local function inject(fn)
+local function inject(command,fn)
+    -- A native query can dispatch input callbacks before it returns. Recheck
+    -- immediately before each write, rather than trusting advance's old state.
+    if not runtime.enabled or replay~=command then return false end
     runtime.injecting=true;local ok,error=pcall(fn);runtime.injecting=false
     if not ok then error= tostring(error);pause(error) end
     return ok
@@ -228,7 +237,7 @@ local function advance(c,now)
         if not k then
             if r.target<=#r.memory.actions then pause('Command path incomplete');return end
             r.submitting=true
-            inject(function() c.vm:EndCommand() end)
+            inject(r,function() c.vm:EndCommand() end)
             lastTurn=r.manager..':'..id;replay=nil;return
         end
         -- GetCommands() returns FBtlCmdStackData (already selected commands),
@@ -238,7 +247,7 @@ local function advance(c,now)
             pause('Remembered action unavailable');return
         end
         r.index=r.index+1;r.at=now
-        inject(function() c.vm:DecideActionKey(k) end)
+        inject(r,function() c.vm:DecideActionKey(k) end)
     elseif c.manager.CmdState==1 then
         local selector=c.vm.UnitSelectVM
         if not valid(selector) then return end
@@ -271,7 +280,7 @@ local function advance(c,now)
             end
         end
         r.target=r.target+1;r.at=now;r.submitting=r.target>#r.memory.actions and r.index>#r.memory.path
-        inject(function() c.vm:DecideTarget(targets,all) end)
+        inject(r,function() c.vm:DecideTarget(targets,all) end)
         if r.committed then lastTurn=r.manager..':'..id;replay=nil end
     end
 end
@@ -280,6 +289,10 @@ local function toggle()
     print('[FFR auto battle] '..(runtime.enabled and 'ON' or 'OFF')..'\n')
 end
 local function update(press)
+    -- OFF is a Lua-only cancellation and must work even while the command UI
+    -- temporarily disables input. Never leave replay armed behind that guard.
+    local switchedOff=press and runtime.enabled
+    if switchedOff then toggle();press=false;held=true end
     local c=context()
     if not c then suspend();return end
     local newBattle=c.ui:GetFullName()..':'..c.ui.BtlPhaseType

@@ -131,7 +131,9 @@ function factory:Create(context,c,player)
     local function part()
         local p=obj({visibility=1,opacity=0})
         function p:SetVisibility(value) self.visibility=value end
+        function p:GetVisibility() return self.visibility end
         function p:SetRenderOpacity(value) self.opacity=value end
+        function p:GetRenderOpacity() return self.opacity end
         return p
     end
     local label=part()
@@ -139,8 +141,10 @@ function factory:Create(context,c,player)
         assert(type(s)=='table' and s.nativeType=='FText','Native FText input required')
         self.label=s.value
     end
+    function label:GetText() return FText(self.label or '') end
     local t=part();t.Text_Name=label;t.WBP_DirectionGridPanel=obj();t.Horizontal_Content=part()
     function t.WBP_DirectionGridPanel:SetVisibility(v) assert(v==1) end
+    function t.WBP_DirectionGridPanel:GetVisibility() return 1 end
     function t:AddToViewport(z)
         assert(z==50);viewport[#viewport+1]=self
         -- Native Construct happens here, after Create returns.
@@ -161,7 +165,7 @@ function factory:Create(context,c,player)
     lastText=label;lastWidget=t;return t
 end
 function FName(n) return n end
-function FText(value) assert(type(value)=='string');return {nativeType='FText',value=value} end
+function FText(value) assert(type(value)=='string');return {nativeType='FText',value=value,ToString=function(self) return self.value end} end
 Key={F7=118}
 function RegisterKeyBind(k,cb) keys[k]=cb end
 function RegisterHook(p,pre,post) hooks[p]={pre,post} end

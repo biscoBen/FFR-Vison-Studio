@@ -133,6 +133,59 @@ class RuntimeTests(unittest.TestCase):
             assert(guidePosition.anchorY==1 and guidePosition.Y<0)
         ''')
 
+    def test_off_cancels_replay_even_when_multicast_ui_temporarily_blocks_input(self):
+        self.run_lua('''
+            active=true;manual();press()
+            assert(FFRStudioAutoBattle.enabled and #stack==1)
+            inputEnabled=false;press();assert(not FFRStudioAutoBattle.enabled)
+            inputEnabled=true
+            for i=1,20 do tick() end
+            assert(#stack==1 and #submissions==0,'OFF must never advance the manual multicast selection')
+            vm:DecideActionKey({Category=1,ID=actionId});vm:DecideTarget({enemy},false)
+            assert(#submissions==1 and not FFRStudioAutoBattle.enabled)
+        ''')
+
+    def test_off_indicator_does_not_reposition_the_viewport_widget_each_poll(self):
+        self.run_lua('''
+            active=true;showSpeed=true;tick();assert(guidePositionWrites==1)
+            for i=1,30 do tick() end
+            assert(not FFRStudioAutoBattle.enabled and #submissions==0 and guidePositionWrites==1)
+        ''')
+
+    def test_off_during_a_native_query_prevents_the_pending_command_write(self):
+        self.run_lua('''
+            active=true;manual();press();assert(#stack==1)
+            local original=vm.CanActivateAction
+            function vm:CanActivateAction(k)
+                FFRStudioAutoBattle.key_action()
+                return original(self,k)
+            end
+            tick()
+            assert(not FFRStudioAutoBattle.enabled and #stack==1 and #submissions==0)
+        ''')
+
+    def test_off_during_a_target_query_prevents_the_pending_target_write(self):
+        self.run_lua('''
+            active=true;manual();press();tick();assert(manager.CmdState==1)
+            local original=selector.GetCmdValue
+            function selector:GetCmdValue()
+                FFRStudioAutoBattle.key_action()
+                return original(self)
+            end
+            tick()
+            assert(not FFRStudioAutoBattle.enabled and #submissions==0 and manager.CmdState==1)
+        ''')
+
+    def test_controller_chord_stays_latched_through_command_ui_transitions(self):
+        self.run_lua('''
+            active=true;vm.bDisplayCmd=false;controller.left=1;controller.right=1
+            tick();tick(1.1);assert(FFRStudioAutoBattle.enabled)
+            inputEnabled=false;tick();inputEnabled=true;tick();tick(2)
+            assert(FFRStudioAutoBattle.enabled,'Do not retoggle a chord held across a UI transition')
+            press();inputEnabled=false;tick();inputEnabled=true;tick();tick(2)
+            assert(not FFRStudioAutoBattle.enabled)
+        ''')
+
     def test_manual_memory_is_captured_when_native_input_and_command_ui_have_closed(self):
         self.run_lua('''
             active=true;inputEnabled=false;vm.bDisplayCmd=false;manual()
@@ -169,13 +222,18 @@ class RuntimeTests(unittest.TestCase):
             function factory:Create(context,class,player)
                 assert(context==ui and player==controller)
                 local label={IsValid=function() return true end,SetVisibility=function() end,SetRenderOpacity=function() end}
+                function label:GetVisibility() return 3 end
+                function label:GetRenderOpacity() return 1 end
                 function label:SetText(value)
                     assert(value.nativeType=='FText','Native HUD requires typed FText')
                     badge=value.value
                 end
+                function label:GetText() return FText(badge or '') end
                 local widget={Text_Name=label,IsValid=function() return true end,
-                    Horizontal_Content={IsValid=function() return true end,SetVisibility=function() end,SetRenderOpacity=function() end},
-                    WBP_DirectionGridPanel={IsValid=function() return true end,SetVisibility=function() end}}
+                    Horizontal_Content={IsValid=function() return true end,SetVisibility=function() end,SetRenderOpacity=function() end,
+                        GetVisibility=function() return 3 end,GetRenderOpacity=function() return 1 end},
+                    WBP_DirectionGridPanel={IsValid=function() return true end,SetVisibility=function() end,GetVisibility=function() return 1 end},
+                    GetVisibility=function() return 3 end,GetRenderOpacity=function() return 1 end}
                 for _,name in ipairs({'SetVisibility','SetRenderOpacity','AddToViewport','SetAnchorsInViewport',
                     'SetAlignmentInViewport','SetDesiredSizeInViewport','SetPositionInViewport','RemoveFromParent'}) do
                     widget[name]=function() end
@@ -186,7 +244,7 @@ class RuntimeTests(unittest.TestCase):
                 if path=='/Script/UMG.Default__WidgetBlueprintLibrary' then return factory end
                 return originalFind(path)
             end
-            function FText(value) return {nativeType='FText',value=value} end
+            function FText(value) return {nativeType='FText',value=value,ToString=function(self) return self.value end} end
             function LoopInGameThreadWithDelay(ms,fn) assert(ms==100);nativeTick=fn;return 77 end
             function LoopAsync() error('Native scheduler must not start async polling') end
         ''')

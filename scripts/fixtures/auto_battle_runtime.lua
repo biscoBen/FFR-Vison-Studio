@@ -133,7 +133,7 @@ function create_status_hud(context,position)
     local d={context=ui,controller=controller,widget=object('OwnedGuide')}
     function d.widget:SetAnchorsInViewport(a) end
     function d.widget:SetAlignmentInViewport(a) end
-    function d.widget:SetPositionInViewport(p,dpi) guidePosition=p end
+    function d.widget:SetPositionInViewport(p,dpi) guidePosition=p;guidePositionWrites=(guidePositionWrites or 0)+1 end
     guidePosition={X=position.x,Y=position.y,anchorY=position.anchorY}
     function d:valid() return not self.removed end
     function d:set(s) badge=s end

@@ -48,7 +48,7 @@
     "_ffr_testing.py": "2e79ebb5619298473fe060a3d8ffa655d409cced6ac2292af1f3f5471d7f04d9",
     "ability_hiding_review.json": "25e57593b3a9d592cffbe5ea01ff64a19df45d81060aa97a0e3802e8424018ba",
     "ability_live_tests.json": "5146769c870c13923175c8179cba390ae8beef096b54cc972d7a85140e9cc5cc",
-    "auto_battle.lua": "867105ea082f0419f8d0ce10d4f5606f008e9b9be24e588d76692665414f2326",
+    "auto_battle.lua": "1fda893c05388efc33d9c86a4861b490572e5c451060642df473291d1d30e164",
     "cave_hca_v3.ps1": "563e2b42388c2f1f5997ece080b515c3097128b780ba1dfc04831c425d2340e2",
     "cave_music_preview.zip": "5b5ff0601afcb44ed437efcacf179293c6d375f4db10017c0cf5156a9c2ed79e",
     "cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
@@ -81,7 +81,7 @@
     "sephira_mr_restoration.json": "4ae13e6a449e1b3efcda7a80cf0f4491f3b55fb7a102457ab6e17bc14d3711d7",
     "sephira_native_presentations.json": "e2fe3da639332ab00fc35ec6a05ed7b0f45e567258074f60000a30234375cdbc",
     "sephira_visuals.json": "d52f5154af02a2dc5ee438e1c106a78f74d58fcef9933a94de7b00f9636a0558",
-    "status_hud.lua": "4bdb29fa504a3dbec90bb5cfdab7b0e0a3748d3c39bc9084cd309ad25a926c0c",
+    "status_hud.lua": "19fd24b38c7dc7f2ccb3ef0eba4398b46b9c43802294799011d1d2be6428e8a6",
     "ue4ss_runtime.zip": "e4a47e23e2eeb8379c4fc388d1b1686f01c6c5930d84a2ee4a6a9574b274e681",
     "vagrant_knight_rain_field.png": "c138277635d7539920af898cc89a59f0baade2d956a5ea5aa2c474ec76c7e6ba"
   }

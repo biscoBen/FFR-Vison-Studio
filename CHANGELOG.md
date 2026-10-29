@@ -25,6 +25,13 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Reveal the owned status widget after AddToViewport constructs it, refresh its
   content visibility and typed FText, and reject stale top-screen speed-guide
   geometry when positioning the footer. Preserve the FText/game-thread fixes.
+- Follow up on the reported manual multicast flicker: OFF cancels replay even
+  while a command transition blocks input. Retain the controller chord's latch
+  through those transitions and avoid rewriting unchanged viewport positions,
+  visibility, opacity and label text. Recheck enabled state and replay identity
+  immediately before each native command write, including after reentrant input
+  callbacks. The user confirms controller single/all targeting flickers after OFF;
+  these cancellation safeguards still need that in-game retest.
 - Replace ineffective actor ratio/threshold writes with temporary native Dragon
   Seal effects (effect 71000, passive source 1052) on native map parameters. Use the
   game's effect factory and reflected object arrays, preserve equipped Dragon Seal

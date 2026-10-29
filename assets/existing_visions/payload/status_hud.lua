@@ -39,25 +39,25 @@ return function(context,position)
     end)
     if not ok then widget:RemoveFromParent();error(label) end
     local result={widget=widget,label=label,content=content,controller=controller,context=context}
-    function result:valid() return valid(self.widget) and valid(self.label) end
+    function result:valid() return valid(self.widget) and valid(self.label) and valid(self.controller) end
     function result:show()
         local icons=self.widget.WBP_DirectionGridPanel
-        if valid(icons) then icons:SetVisibility(1) end
+        if valid(icons) and icons:GetVisibility()~=1 then icons:SetVisibility(1) end
         for _,part in ipairs({self.widget,self.content,self.label}) do
-            part:SetVisibility(3)
-            part:SetRenderOpacity(1)
+            if part:GetVisibility()~=3 then part:SetVisibility(3) end
+            if part:GetRenderOpacity()~=1 then part:SetRenderOpacity(1) end
         end
-        if self.text then self.label:SetText(self.text) end
+        if self.text and self.label:GetText():ToString()~=self.value then self.label:SetText(self.text) end
     end
     -- UE4SS's FText parameter setter requires FText userdata. A raw Lua string
     -- can reach FText::ToFString with an invalid address instead of a Lua error.
     function result:set(value)
-        self.text=FText(value)
+        self.text=FText(value);self.value=value
         self:show()
     end
     function result:remove()
         if valid(self.widget) then self.widget:RemoveFromParent() end
-        self.widget,self.label,self.content,self.text=nil,nil,nil,nil
+        self.widget,self.label,self.content,self.text,self.value=nil,nil,nil,nil,nil
     end
     result:show()
     return result
