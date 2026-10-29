@@ -30,11 +30,13 @@ return function(context,position)
         -- This private passive UserWidget has one plain TextBlock. It has no
         -- key-guide icons, input subscriptions, bindings, animation or tick.
         widget:AddToViewport(50)
+        widget:SetDesiredSizeInViewport({X=position.width or 520,Y=40})
+        widget:SetPositionInViewport({X=position.x,Y=position.y},false)
+        -- Unreal's size/position setters reset viewport anchors to (0,0).
+        -- Apply the intended bottom anchor last, or negative offsets hide text.
         widget:SetAnchorsInViewport({Minimum={X=position.anchorX,Y=position.anchorY},
             Maximum={X=position.anchorX,Y=position.anchorY}})
         widget:SetAlignmentInViewport({X=position.anchorX,Y=position.anchorY})
-        widget:SetDesiredSizeInViewport({X=position.width or 520,Y=40})
-        widget:SetPositionInViewport({X=position.x,Y=position.y},false)
         return label
     end)
     if not ok then widget:RemoveFromParent();error(label) end

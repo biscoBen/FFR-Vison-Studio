@@ -121,5 +121,32 @@ class NoEncountersTests(unittest.TestCase):
         self.assertTrue(runtime.status(self.root,game,[])['required'])
         self.assertFalse(runtime.status(self.root,game,[])['ready'])
 
+    def test_all_requested_ground_modes_toggle_and_preserve_native_vehicle_rules(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        def value(v):
+            if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
+            if isinstance(v,list):return lua.table_from([value(x) for x in v])
+            return v
+        lua.globals().nativeSource=value(json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes()))
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
+        lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
+        lua.execute('''
+            for _,method in ipairs({nativeSource.enums['eMapMovementMethod.Walking'],
+                nativeSource.enums['eMapMovementMethod.Chocobo'],nativeSource.enums['eMapMovementMethod.MagickArmor']}) do
+                actor.movementMethod=method;tick();press()
+                assert(FFRStudioEncounterToggle.disabled and has_effect(parameters[1001],71000))
+                assert(lastText.label:find('OFF') and lastWidget.anchors.Minimum.Y==1)
+                press();assert(not FFRStudioEncounterToggle.disabled and not has_effect(parameters[1001],71000))
+            end
+            for _,method in ipairs({2,4}) do
+                actor.movementMethod=method;tick();press()
+                assert(not FFRStudioEncounterToggle.disabled and not has_effect(parameters[1001],71000))
+            end
+            actor.movementMethod=1;actor.raft=true;tick();press()
+            assert(not FFRStudioEncounterToggle.disabled and not has_effect(parameters[1001],71000))
+        ''')
+
 
 if __name__=='__main__':unittest.main()

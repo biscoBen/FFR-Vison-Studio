@@ -192,51 +192,92 @@ local function resolved_path(memory,vm)
     for _,a in ipairs(memory.actions) do path[#path+1]={Category=a.item and 2 or 1,ID=a.id} end
     return path
 end
-local function remember(owner,wrapped)
-    local ok,message=pcall(function()
-        -- DecideCommand can run after native input/the command widget closes.
-        -- Capture the native decision independently of the interactive UI guard.
-        local manager=owner:get()
-        if not valid(manager) then return end
-        -- The native submission can close the UI or advance its phase before
-        -- this hook. Those transient flags must never discard a newer command.
-        local ui=instance('CPP_UI_BattleSubsystem',function(o)
-            return valid(o.BtlCmdManager) and o.BtlCmdManager:GetFullName()==manager:GetFullName()
+local function parse_decision(data)
+    local grouped={}
+    each(data.DecideDataList,function(a)
+        local stable=unit_id(a.actionUnitUniqueId)
+        if stable<1001 or stable>1008 then return end
+        local actions=grouped[stable] or {};grouped[stable]=actions
+        local friends={}
+        each(a.targetUnitUniqueIdList,function(id)
+            local target=unit_id(id)
+            if target>=1001 and target<=1008 then friends[#friends+1]=target end
         end)
-        if not ui then return end
-        local data=wrapped:get();local actions={};local stable
-        each(data.DecideDataList,function(a)
-            local owner=unit_id(a.actionUnitUniqueId)
-            if owner<1001 or owner>1008 then return end
-            assert(not stable or stable==owner,'Mixed command actors')
-            stable=owner;local friends={}
-            each(a.targetUnitUniqueIdList,function(id)
-                local target=unit_id(id)
-                if target>=1001 and target<=1008 then friends[#friends+1]=target end
-            end)
-            actions[#actions+1]={id=a.actionId,item=a.isUseItem,all=a.IsAll,friendly=friends,params=list(a.ParameterList)}
-        end)
-        if not stable or #actions==0 then return end
-        if replay and replay.stable==stable and replay.submitting then
-            replay.committed=true;return -- Keep the original target preferences.
-        end
+        actions[#actions+1]={id=a.actionId,item=a.isUseItem,all=a.IsAll,friendly=friends,params=list(a.ParameterList)}
+    end)
+    local result={}
+    for stable,actions in pairs(grouped) do
         local path={}
         pcall(function() each(data.SelectedActionPathList,function(k) path[#path+1]=key(k) end) end)
-        -- A completed/cleared native stack may be absent or contain old history.
-        -- Keep the new actions anyway and rebuild their hierarchy when needed.
         local matches=#path>=#actions
         for i,a in ipairs(actions) do
             local k=path[#path-#actions+i]
             if not k or k.ID~=a.id or k.Category~=(a.item and 2 or 1) then matches=false end
         end
         if not matches then path={} end
-        runtime.sequence=(runtime.sequence or 0)+1
-        runtime.memory[stable]={path=path,actions=actions,command=data.CommandId,sequence=runtime.sequence}
-        local ids={};for _,a in ipairs(actions) do ids[#ids+1]=tostring(a.id) end
-        print('[FFR auto battle] Remembered unit='..stable..'; actions='..table.concat(ids,',')..
-            '; sequence='..runtime.sequence..'; path='..#path..'; phase='..tostring(ui.BtlPhaseType)..'\n')
+        result[stable]={path=path,actions=actions,command=data.CommandId}
+    end
+    return result
+end
+local function store_decision(stable,memory,source,phase)
+    runtime.sequence=(runtime.sequence or 0)+1;memory.sequence=runtime.sequence
+    runtime.memory[stable]=memory
+    local ids={};for _,a in ipairs(memory.actions) do ids[#ids+1]=tostring(a.id) end
+    print('[FFR auto battle] Remembered unit='..stable..'; actions='..table.concat(ids,',')..
+        '; sequence='..runtime.sequence..'; path='..#memory.path..'; phase='..tostring(phase)..'; source='..source..'\n')
+end
+local function remember(owner,wrapped)
+    local ok,message=pcall(function()
+        local manager=owner:get()
+        if not valid(manager) then return end
+        local ui=instance('CPP_UI_BattleSubsystem',function(o)
+            return valid(o.BtlCmdManager) and o.BtlCmdManager:GetFullName()==manager:GetFullName()
+        end)
+        if not ui then return end
+        for stable,memory in pairs(parse_decision(wrapped:get())) do
+            if replay and replay.stable==stable and replay.submitting then
+                replay.committed=true -- Keep original target preferences for our own replay.
+            else store_decision(stable,memory,'native hook',ui.BtlPhaseType) end
+        end
     end)
     if not ok then print('[FFR auto battle] Memory unavailable: '..tostring(message)..'\n') end
+end
+local function decision_fingerprint(memory)
+    local parts={tostring(memory.command)}
+    for _,k in ipairs(memory.path) do parts[#parts+1]='p:'..k.Category..':'..k.ID end
+    for _,a in ipairs(memory.actions) do
+        parts[#parts+1]=table.concat({tostring(a.id),tostring(a.item),tostring(a.all),
+            table.concat(a.friendly,','),table.concat(a.params,',')},':')
+    end
+    return table.concat(parts,'|')
+end
+local function observe_confirmed_commands()
+    -- Native C++ callers need not pass through reflected DecideCommand hooks.
+    -- Read the manager's confirmed queue even while command input is hidden.
+    -- Never infer a confirmation from an unsubmitted/cancelled menu selection.
+    local ok,message=pcall(function()
+        local ui=instance('CPP_UI_BattleSubsystem',function(o) return o.bDuringBattle and valid(o.BtlCmdManager) end)
+        if not ui then runtime.queueSeen={};return end
+        local latest={}
+        each(ui.BtlCmdManager.ExecuteDataList,function(data)
+            for stable,memory in pairs(parse_decision(data)) do latest[stable]=memory end
+        end)
+        runtime.queueSeen=runtime.queueSeen or {}
+        for stable,memory in pairs(latest) do
+            local id=ui.BtlCmdManager:GetFullName()..':'..stable
+            local fingerprint=decision_fingerprint(memory)
+            if runtime.queueSeen[id]~=fingerprint then
+                runtime.queueSeen[id]=fingerprint
+                -- Observe our own queues without overwriting remembered target
+                -- preferences, including the frame where F9 switches OFF.
+                if not runtime.enabled then store_decision(stable,memory,'confirmed queue',ui.BtlPhaseType) end
+            end
+        end
+    end)
+    if not ok then
+        if runtime.queueError~=tostring(message) then print('[FFR auto battle] Confirmed memory unavailable: '..tostring(message)..'\n') end
+        runtime.queueError=tostring(message)
+    else runtime.queueError=nil end
 end
 local function inject(command,fn)
     -- A native query can dispatch input callbacks before it returns. Recheck
@@ -330,6 +371,7 @@ local function toggle()
     print('[FFR auto battle] '..(runtime.enabled and 'ON' or 'OFF')..'\n')
 end
 local function update(press)
+    observe_confirmed_commands()
     -- OFF is a Lua-only cancellation and must work even while the command UI
     -- temporarily disables input. Never leave replay armed behind that guard.
     local switchedOff=press and runtime.enabled

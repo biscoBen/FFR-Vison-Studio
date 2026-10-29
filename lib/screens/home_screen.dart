@@ -198,7 +198,7 @@ class HomeScreen extends StatelessWidget {
                 SwitchListTile(
                   key: const Key('testing-no-encounters'), contentPadding: EdgeInsets.zero,
                   title: Text('In-game encounter toggle', style: Guide.text()),
-                  subtitle: Text('F7 or hold both controller triggers for 1 second while walking. Shows ON/OFF on screen; starts ON each game launch. Bosses and scripted fights remain available. Requires UE4SS; rebuild/install once after changing this switch.', style: Guide.small()),
+                  subtitle: Text('F7 or hold both controller triggers for 1 second on foot, on a chocobo or in magitek armor. Shows ON/OFF on screen; starts ON each game launch. Bosses and scripted fights remain available. Requires UE4SS; rebuild/install once after changing this switch.', style: Guide.small()),
                   value: app.noEncounters,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setNoEncounters(value); } catch (e) { app.showNotice('$e'); }

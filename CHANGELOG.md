@@ -11,6 +11,30 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Confirmed command capture, visible anchors and ground travel — 2026-10-29
+
+- The returned 1.2.134 session replays only native saved commands and contains no
+  captured-command messages. Observe the native manager's confirmed ExecuteDataList
+  so memory does not depend on reflected hooks receiving direct C++ calls. Capture
+  while input is hidden, group decisions per character, use each queue's latest
+  entry and deduplicate unchanged entries. Observe auto-generated queues without
+  overwriting original target preferences when OFF follows. Unsubmitted/cancelled
+  menu selections do not become memory. Retain the existing hook as a backstop.
+- The loaded passive text was positioned off-screen: Unreal size/position setters
+  reset viewport anchors. Apply the bottom anchor/alignment after those setters;
+  retain the cached footer positioning, typed FText and passive native asset.
+- At the user's request, encounter control supports native Walking, Chocobo and
+  MagickArmor modes (1/3/5). The captured actor is magitek armour, rejected by the
+  earlier walking-only guard. Keep menus/events/input/pause/battle guards and
+  native temporary effects. Deduplicate movement-owner logs across suspensions.
+  Update Studio help to name all three supported ground modes.
+- Regression checks simulate confirmed native queues without reflection callbacks
+  for Rain/Lasswell/Fina/Lid, hidden input, stale queue entries, unconfirmed choices
+  and preservation of auto target preferences. Model Unreal's anchor reset and
+  exercise all three ground modes. Native suppression and visual placement still
+  need a retest. All 107 focused checks pass. Kits, balance, acquisition, media and
+  treasure assets are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

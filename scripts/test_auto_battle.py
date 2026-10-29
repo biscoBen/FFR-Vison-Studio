@@ -302,6 +302,12 @@ class RuntimeTests(unittest.TestCase):
                     'SetAlignmentInViewport','SetDesiredSizeInViewport','SetPositionInViewport','RemoveFromParent'}) do
                     widget[name]=function() end
                 end
+                function widget:SetAnchorsInViewport(a) self.anchors=a end
+                function widget:SetDesiredSizeInViewport()
+                    self.anchors={Minimum={X=0,Y=0},Maximum={X=0,Y=0}}
+                end
+                widget.SetPositionInViewport=widget.SetDesiredSizeInViewport
+                lastNativeWidget=widget
                 return widget
             end
             function StaticFindObject(path)
@@ -319,6 +325,7 @@ class RuntimeTests(unittest.TestCase):
         lua.execute('''
             assert(FFRStudioAutoBattle.async==nil);nativeTick();assert(badge==nil)
             active=true;nativeTick();assert(badge:find('OFF',1,true))
+            assert(lastNativeWidget.anchors.Minimum.X==1 and lastNativeWidget.anchors.Minimum.Y==1)
             press();collectgarbage('collect');nativeTick();nativeTick()
             assert(#submissions==1 and badge:find('ON',1,true) and privateLoads==1)
         ''')
@@ -331,6 +338,56 @@ class RuntimeTests(unittest.TestCase):
             for _,line in ipairs(logs) do if line:find('Paused: Battle guide unavailable',1,true) then count=count+1 end end
             assert(count==1 and not FFRStudioAutoBattle.enabled and #submissions==0)
             guideAvailable=true;press();tick();tick();assert(#submissions==1)
+        ''')
+
+    def test_confirmed_native_queue_captures_all_four_units_without_reflected_hooks(self):
+        self.run_lua('''
+            active=true;inputEnabled=false;stableActors={[1]=1001,[2]=1002,[3]=1003,[4]=1004}
+            local function decision(unit,skill)
+                return {CommandId=344,SelectedActionPathList=array({{Category=1,ID=344},{Category=1,ID=skill}}),
+                    DecideDataList=array({{actionUnitUniqueId=unit,actionId=skill,isUseItem=false,IsAll=false,
+                        ParameterList=array({}),targetUnitUniqueIdList=array({enemy})}})}
+            end
+            local rain,lasswell=decision(1,420070),decision(2,402050)
+            manager.ExecuteDataList=array({rain,lasswell});tick()
+            assert(FFRStudioAutoBattle.memory[1001].actions[1].id==420070)
+            assert(FFRStudioAutoBattle.memory[1002].actions[1].id==402050)
+            phase=2;manager.ExecuteDataList=array({rain,lasswell,decision(3,403050),decision(4,400270)})
+            local queue=manager.ExecuteDataList;tick()
+            assert(manager.ExecuteDataList==queue and FFRStudioAutoBattle.sequence==4)
+            assert(FFRStudioAutoBattle.memory[1003].actions[1].id==403050)
+            assert(FFRStudioAutoBattle.memory[1004].actions[1].id==400270)
+            inputEnabled=true;phase=0;press();tick();tick()
+            assert(#submissions==1 and FFRStudioAutoBattle.sequence==4)
+        ''')
+
+    def test_queue_uses_latest_confirmed_record_without_churn_or_unsubmitted_choices(self):
+        self.run_lua('''
+            active=true;vm:DecideActionKey({Category=1,ID=344});tick()
+            assert(FFRStudioAutoBattle.memory[1001]==nil)
+            local function decision(skill)
+                return {CommandId=344,SelectedActionPathList=array({}),DecideDataList=array({
+                    {actionUnitUniqueId=actor,actionId=skill,isUseItem=false,IsAll=false,
+                        ParameterList=array({}),targetUnitUniqueIdList=array({enemy})}})}
+            end
+            manager.ExecuteDataList=array({decision(401010),decision(420070)})
+            for i=1,20 do tick() end
+            assert(FFRStudioAutoBattle.sequence==1 and FFRStudioAutoBattle.memory[1001].actions[1].id==420070)
+            manager.ExecuteDataList=array({decision(401010)})
+            tick();assert(FFRStudioAutoBattle.sequence==2 and FFRStudioAutoBattle.memory[1001].actions[1].id==401010)
+        ''')
+
+    def test_observed_auto_queue_does_not_overwrite_preferences_after_switching_off(self):
+        self.run_lua('''
+            active=true;manual({344,420070},true,friend)
+            press();tick();tick();assert(#submissions==1)
+            manager.ExecuteDataList=array({{CommandId=344,SelectedActionPathList=array({}),DecideDataList=array({
+                {actionUnitUniqueId=actor,actionId=420070,isUseItem=false,IsAll=false,
+                    ParameterList=array({}),targetUnitUniqueIdList=array({enemy})}})}})
+            tick();press();tick()
+            assert(not FFRStudioAutoBattle.enabled and FFRStudioAutoBattle.sequence==1)
+            assert(FFRStudioAutoBattle.memory[1001].actions[1].all)
+            assert(FFRStudioAutoBattle.memory[1001].actions[1].friendly[1]==1002)
         ''')
 
     def test_combined_runtime_keeps_all_native_loops_and_removes_auto_when_disabled(self):

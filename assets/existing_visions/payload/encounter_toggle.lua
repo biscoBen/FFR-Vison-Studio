@@ -78,7 +78,8 @@ local function context()
     if not actor:IsEnableUnitInput() then return nil,'Player input disabled' end
     if actor:IsPaused() then return nil,'Player paused' end
     if not actor.m_IsEnableMovement then return nil,'Player movement disabled' end
-    if actor:GetMapMovementMethod()~=1 then return nil,'Movement method is not walking' end
+    local movement=actor:GetMapMovementMethod()
+    if movement~=1 and movement~=3 and movement~=5 then return nil,'Movement method is not ground travel' end
     if actor:IsRidingRaft() then return nil,'Player riding raft' end
     local systems=native('Engine.Default__SubsystemBlueprintLibrary')
     local input=systems:GetWorldSubsystem(actor,native('mucha.CPP_InputManager'))
@@ -240,7 +241,8 @@ runtime.move=function(owner)
     local ok,message=pcall(function()
         local actor=owner and owner:get()
         if valid(actor) and actor:IsA(native('mucha.CPP_MapUnit_Playable')) then
-            if not same(runtime.inputActor,actor) then log('Native movement input owner: '..actor:GetFullName()) end
+            local name=actor:GetFullName()
+            if runtime.lastInputName~=name then log('Native movement input owner: '..name);runtime.lastInputName=name end
             runtime.inputActor=actor
         end
         if not runtime.disabled then return end
@@ -287,4 +289,4 @@ if not nativeLoop then
     end
     LoopAsync(100,runtime.async)
 end
-log('Ready: F7 or hold both triggers for 1 second while walking. Encounters start ON each launch.')
+log('Ready: F7 or hold both triggers for 1 second on foot, chocobo or magitek armor. Encounters start ON each launch.')

@@ -46,8 +46,8 @@ function new_actor(name,ratio)
         m_EncountThresholdDistance=1200,m_IsEnableMovement=true,input=true,vehicle=false,paused=false})
     function a:IsEnableUnitInput() return self.input end
     function a:IsPaused() return self.paused end
-    function a:GetMapMovementMethod() return self.vehicle and 2 or 1 end
-    function a:IsRidingRaft() return false end
+    function a:GetMapMovementMethod() return self.movementMethod or (self.vehicle and 2 or 1) end
+    function a:IsRidingRaft() return self.raft or false end
     local distance=a.m_EncountThresholdDistance;a.m_EncountThresholdDistance=nil
     setmetatable(a,{
         __index=function(_,key) if key=='m_EncountThresholdDistance' then return distance end end,
@@ -170,9 +170,13 @@ function factory:Create(context,c,player)
     function t:SetAlignmentInViewport(a) self.alignment=a end
     function t:SetPositionInViewport(p,dpi)
         assert(not failPosition,'Fixture HUD positioning error')
+        self.anchors={Minimum={X=0,Y=0},Maximum={X=0,Y=0}}
         self.position=p;assert(dpi==false)
     end
-    function t:SetDesiredSizeInViewport(size) assert(size.X==520 and size.Y==40) end
+    function t:SetDesiredSizeInViewport(size)
+        self.anchors={Minimum={X=0,Y=0},Maximum={X=0,Y=0}}
+        assert(size.X==520 and size.Y==40)
+    end
     function t:RemoveFromParent()
         for i,v in ipairs(viewport) do if v==self then table.remove(viewport,i);break end end
         self.removed=true
@@ -196,6 +200,7 @@ function tests()
     event=true;tick();assert(created==0 and #viewport==0)
     event=false;tick();assert(actor.m_OverwriteEncountRatio==-1 and #panel.children==1 and #viewport==1)
     assert(lastText.label:find('ON') and lastWidget.position.Y==-24)
+    assert(lastWidget.anchors.Minimum.Y==1,'Size/position setters must not erase the bottom anchor')
     for _,part in ipairs({lastWidget,lastText}) do
         assert(part.visibility==3 and part.opacity==1,'Reveal guide content after native Construct')
     end

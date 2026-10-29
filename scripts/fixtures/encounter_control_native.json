@@ -99,7 +99,10 @@
     ]
   },
   "enums": {
-    "eSkillEffectType.EncountRatio": 192
+    "eSkillEffectType.EncountRatio": 192,
+    "eMapMovementMethod.Walking": 1,
+    "eMapMovementMethod.Chocobo": 3,
+    "eMapMovementMethod.MagickArmor": 5
   },
   "signatures": {
     "CPP_BFL_Map:GetMapUnitParameter": [
