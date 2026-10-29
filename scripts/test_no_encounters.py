@@ -63,6 +63,19 @@ class NoEncountersTests(unittest.TestCase):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime()
         lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text())
+        # Drive the factory with the captured native row/UF metadata, including
+        # the real equipment passive, instead of inventing an encounter API.
+        source=json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes())
+        def value(v):
+            if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
+            if isinstance(v,list):return lua.table_from([value(x) for x in v])
+            return v
+        lua.globals().nativeSource=value(source)
+        lua.execute('''
+            assert(nativeSource.effect.EffectType=='EncountRatio' and nativeSource.effect.ParamList[1]==0)
+            assert(nativeSource.effect.effectEndActionNum==-1)
+            assert(nativeSource.passive.ID==1052 and nativeSource.passive.effectBundleList[1].effectId==nativeSource.effect.ID)
+        ''')
         helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text()
         code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
         lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)

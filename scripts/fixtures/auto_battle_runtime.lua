@@ -24,6 +24,7 @@ local input=object('Input',{IsEnableInput=function() return inputEnabled end})
 local systems=object('Systems',{GetWorldSubsystem=function() return input end})
 local battle=object('Battle')
 function battle:GetUnitIdByUniqueId(id)
+    if stableActors and stableActors[id] then return stableActors[id] end
     if id==actor then return 1001 elseif id==friend then return 1002 else return 40040 end
 end
 function battle:GetBattleUnitParameter(id)
@@ -35,6 +36,7 @@ local signatures={
  ['CPP_BFL_Battle:GetBattleUnitParameter']={'IntProperty','ObjectProperty'},
  ['CPP_VM_BtlCmd:GetCommands']={'ArrayProperty'},
  ['CPP_BFL_Skill:GetSkillDataById']={'IntProperty','StructProperty'},
+ ['CPP_UI_BtlCmdManager:GetCurrentActionUnitUniqueId']={'IntProperty'},
 }
 function StaticFindObject(path)
     local n=path:gsub('^/Script/','')
@@ -64,6 +66,7 @@ save=object('Save',{unitParameterList=array({{UnitId=1001,btlCmdData={CommandId=
     cmdDataList=array({{actionId=420070,isUseItem=false,ParameterList=array({})}})}}})})
 view=object('View',{bIsDisplayBattleWidget=true,bIsEvent=false,bIsSequenceUIVisible=true})
 manager=object('Manager',{CmdType=0,CmdState=0,ActionUnitUniqueIdList=array({actor})})
+function manager:GetCurrentActionUnitUniqueId() return commandActor or actor end
 ui=object('BattleWorld',{bDuringBattle=true,BtlPhaseType=0,BtlCmdManager=manager})
 selector=object('Selector',{bCanBeAoE=true,FocusBaseUniqueId=enemy})
 vm=object('CommandView',{bDisplayCmd=true,CommandStack=array({}),UnitSelectVM=selector})
@@ -96,7 +99,7 @@ function vm:DecideTarget(ids,all)
     hooks['/Script/mucha.CPP_VM_BtlCmd:DecideTarget'][1](wrapped(self),wrapped(ids),wrapped(all))
     assert(manager.CmdState==1 and #ids>0)
     for _,id in ipairs(ids) do assert(present({enemy,enemy+1,friend},id),'Stale/illegal target') end
-    pendingActions[#pendingActions+1]={actionId=actionId,actionUnitUniqueId=actor,isUseItem=actionCategory==2,
+    pendingActions[#pendingActions+1]={actionId=actionId,actionUnitUniqueId=manager:GetCurrentActionUnitUniqueId(),isUseItem=actionCategory==2,
         IsAll=all,targetUnitUniqueIdList=array(ids),ParameterList=array({})}
     reserved=reserved+1;manager.CmdState=0
     if #pendingActions>=requiredActions then self:EndCommand() end
@@ -119,7 +122,7 @@ function FindAllOf(class)
     if class=='WBP_BtlKeyGuide_Speed_C' and showSpeed then
         return {object('SpeedGuide',{IsVisible=function() return true end,
             GetOwningPlayer=function() return controller end,
-            GetCachedGeometry=function() return {position={X=1000,Y=30},size={X=100,Y=40}} end})}
+            GetCachedGeometry=function() return {position={X=1000,Y=speedY or 1000},size={X=100,Y=40}} end})}
     end
     return {}
 end
@@ -134,6 +137,7 @@ function create_status_hud(context,position)
     guidePosition={X=position.x,Y=position.y,anchorY=position.anchorY}
     function d:valid() return not self.removed end
     function d:set(s) badge=s end
+    function d:show() end
     function d:remove() self.removed=true;guidesRemoved=(guidesRemoved or 0)+1 end
     return d
 end

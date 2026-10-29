@@ -71,9 +71,13 @@ local function pause(reason)
     runtime.reason=tostring(reason):gsub('[\r\n]',' '):sub(1,64)
     print('[FFR auto battle] Paused: '..reason..'\n')
 end
+local function command_phase(phase)
+    -- Native eBtlPhaseType / eBtlCmdType: Normal=0, Additional=1, Finish=2.
+    return phase==0 or phase==1
+end
 local function context()
     local ui=instance('CPP_UI_BattleSubsystem',function(o) return o.bDuringBattle end)
-    if not ui or ui.BtlPhaseType~=0 then return end
+    if not ui or not command_phase(ui.BtlPhaseType) then return end
     if native('Engine.Default__GameplayStatics'):IsGamePaused(ui) then return end
     local input=native('Engine.Default__SubsystemBlueprintLibrary'):GetWorldSubsystem(ui,native('mucha.CPP_InputManager'))
     if not valid(input) or not input:IsEnableInput() then return end
@@ -99,6 +103,9 @@ local function position_guide(c)
         local extent=slate:GetLocalSize(viewport)
         local absolute=slate:LocalToAbsolute(geometry,{X=0,Y=0})
         local p=slate:AbsoluteToLocal(viewport,absolute)
+        -- A visible child can belong to an inactive/hidden guide. Never move
+        -- the bottom indicator to a stale title/menu widget's top geometry.
+        if p.Y<extent.Y*.5 or p.Y+size.Y>extent.Y then return end
         local x=p.X>454 and p.X-442 or p.X+size.X+12
         display.widget:SetAnchorsInViewport({Minimum={X=0,Y=0},Maximum={X=0,Y=0}})
         display.widget:SetAlignmentInViewport({X=0,Y=0})
@@ -115,14 +122,20 @@ local function guide(c)
     local label='▶ Auto: '..(runtime.enabled and 'ON' or 'OFF')..'   F9 / Hold LT+RT (L2+R2)'
     if runtime.reason then label=label..' — '..runtime.reason end
     if painted~=label then display:set(label);painted=label end
+    display:show()
     position_guide(c)
     return true
 end
 local function current_unit(c)
-    if not valid(c.manager) or c.manager.CmdType~=0 or not c.vm then return end
+    if not valid(c.manager) or not command_phase(c.manager.CmdType) or not c.vm then return end
     local ids=list(c.manager.ActionUnitUniqueIdList)
-    if #ids~=1 then return end -- Native extra/multi-actor phases stay manual.
-    local id=ids[1];local stable=unit_id(id)
+    if #ids==0 then return end
+    signature('CPP_UI_BtlCmdManager:GetCurrentActionUnitUniqueId','IntProperty')
+    local id=c.manager:GetCurrentActionUnitUniqueId()
+    local found=false
+    for _,candidate in ipairs(ids) do if candidate==id then found=true;break end end
+    if not found then return end
+    local stable=unit_id(id)
     if stable<1001 or stable>1008 then return end
     return id,stable
 end
@@ -158,7 +171,7 @@ local function remember(owner,wrapped)
         -- Capture the native decision independently of the interactive UI guard.
         local manager=owner:get()
         local ui=instance('CPP_UI_BattleSubsystem',function(o) return o.bDuringBattle end)
-        if not ui or ui.BtlPhaseType~=0 or not valid(manager) or manager.CmdType~=0
+        if not ui or not command_phase(ui.BtlPhaseType) or not valid(manager) or not command_phase(manager.CmdType)
             or not valid(ui.BtlCmdManager) or manager:GetFullName()~=ui.BtlCmdManager:GetFullName() then return end
         local view=instance('CPP_VM_Battle',function(o) return o.bIsDisplayBattleWidget end)
         if view and view.bIsEvent then return end
@@ -269,7 +282,7 @@ end
 local function update(press)
     local c=context()
     if not c then suspend();return end
-    local newBattle=c.ui:GetFullName()
+    local newBattle=c.ui:GetFullName()..':'..c.ui.BtlPhaseType
     if battleKey~=newBattle then replay,lastTurn=nil,nil;battleKey=newBattle end
     if not guide(c) then pause('Battle guide unavailable');return end
     local gameplay=native('Engine.Default__GameplayStatics')

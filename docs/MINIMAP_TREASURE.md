@@ -65,21 +65,20 @@ The bottom-left field HUD shows **Random encounters: ON/OFF**. ON restores norma
 game rules, including any native equipment effects. Encounters start ON at every
 game launch. The choice is session-only and uses no equipment/ability slot.
 
-The runtime sets the field player’s native `m_OverwriteEncountRatio` to zero while
-OFF and suspends the cached `m_EncountThresholdDistance` with a large finite value.
-A native movement-input hook refreshes both before movement when a zone changes
-them between polling ticks. Both prior values are retained and restored only while
-the runtime still owns the applied values. This is intended to prevent already
-calculated movement thresholds from firing; native overworld behavior needs a live
-retest. The returned 1.2.125 log proves the ratio was written, but the user still
-received ordinary overworld encounters, so that write alone is not proof of
-suppression. It restores that value during menus, vehicles,
-events, battles and transitions, then reapplies OFF when free walking resumes.
-New native zone overrides are retained. Scripted encounters, boss/challenge
-rewards, equipment, learned abilities and save data are not edited. The UI badge
-is a separate game-created key-guide UserWidget, with its content container and
-text explicitly visible and opaque; shipping
-builds can suppress PrintString, so debug screen messages are not used.
+The runtime temporarily applies the game's native Dragon Seal encounter effect
+(effect 71000, passive source 1052) to live map parameters while OFF. It uses no
+equipment or learned-ability slot and does not change save data. Only effect
+instances created by Studio are removed when normal control resumes; equipped
+Dragon Seal and other buffs remain. Menus, vehicles, events, battles and map
+transitions release Studio's effect, with OFF reapplied on return to free walking.
+Scripted/boss battles and rewards remain intact.
+
+The returned 1.2.126/1.2.127 log confirms both a zero actor override and a 1e30
+movement threshold were written, but the user still received ordinary encounters.
+Those ineffective writes have been removed from this candidate. Native suppression
+with Dragon Seal's effect still requires a playtest. The separate key-guide
+UserWidget is revealed after construction and refreshed with typed native text;
+footer rendering also needs a live check. Debug screen messages are not used.
 
 An unavailable HUD leaves native encounters unchanged and logs the reason with
 `[FFR encounters]`. Local executable Lua fixtures cover state restoration,

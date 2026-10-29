@@ -11,6 +11,27 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Bonus turns, status indicators and native encounter effects — 2026-10-29
+
+- The user confirms remembered auto-battle actions work between battles, but bonus
+  turns stop replay, the footer indicator is absent, and random encounters still
+  occur. Their current log confirms ratio 0 and a 1e30 movement threshold reach the
+  actor; these writes do not establish encounter suppression.
+- Allow native Additional command phases as well as Normal phases. Use the command
+  manager's reflected current actor rather than rejecting a multi-character bonus
+  queue, validate membership in its actual selection, and clear the replay at phase
+  changes. Leave Finish phases under manual control and retain native availability,
+  MP, item and target checks.
+- Reveal the owned status widget after AddToViewport constructs it, refresh its
+  content visibility and typed FText, and reject stale top-screen speed-guide
+  geometry when positioning the footer. Preserve the FText/game-thread fixes.
+- Replace ineffective actor ratio/threshold writes with temporary native Dragon
+  Seal effects (effect 71000, passive source 1052) on native map parameters. Use the
+  game's effect factory and reflected object arrays, preserve equipped Dragon Seal
+  and all foreign effects, and remove only Studio-owned instances on release.
+  Equipment, learned abilities, save data, encounter groups and forced-battle entry
+  remain unchanged. Native suppression and footer rendering require a playtest.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

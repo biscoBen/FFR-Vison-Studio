@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "source": "Captured native full-game rows and eiko-esper/functions.rs SDK; pinned UE4SS cdbc0b66 LuaTArray.cpp",
+  "effect": {
+    "ID": 71000,
+    "EffectType": "EncountRatio",
+    "applyTiming": "None",
+    "proceedTiming": "None",
+    "effectEndActionNum": -1,
+    "isUnremovable": false,
+    "addProbability": 100,
+    "activationProbability": 100,
+    "activationCondition": {
+      "Condition": "None",
+      "param1": -1,
+      "param2": -1,
+      "param3": -1
+    },
+    "statusCondition": "None",
+    "ParamList": [
+      0,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1,
+      -1
+    ],
+    "isExecutingReaction": false
+  },
+  "passive": {
+    "effectBundleList": [
+      {
+        "effectId": 71000,
+        "TargetType": "Self",
+        "targetRelation": "Friendlies",
+        "activeSkillAddTiming": "AfterDamageCalculation",
+        "passiveSkillAddTiming": "SpawnUnit",
+        "conditionData": {
+          "Condition": "None",
+          "param1": -1,
+          "param2": -1,
+          "param3": -1
+        }
+      },
+      {
+        "effectId": -1,
+        "TargetType": "Self",
+        "targetRelation": "Friendlies",
+        "activeSkillAddTiming": "AfterDamageCalculation",
+        "passiveSkillAddTiming": "SpawnUnit",
+        "conditionData": {
+          "Condition": "None",
+          "param1": -1,
+          "param2": -1,
+          "param3": -1
+        }
+      },
+      {
+        "effectId": -1,
+        "TargetType": "Self",
+        "targetRelation": "Friendlies",
+        "activeSkillAddTiming": "AfterDamageCalculation",
+        "passiveSkillAddTiming": "SpawnUnit",
+        "conditionData": {
+          "Condition": "None",
+          "param1": -1,
+          "param2": -1,
+          "param3": -1
+        }
+      }
+    ],
+    "bBattleOnly": false,
+    "ID": 1052,
+    "SortId": 1052,
+    "Name": {
+      "table": "/Game/Datatable/Strings/ST_Skill/ST_PassiveSkillName.ST_PassiveSkillName",
+      "key": "PassiveSkillName1052"
+    },
+    "Description": {
+      "table": "/Game/Datatable/Strings/ST_Skill/ST_PassiveSkillDescription.ST_PassiveSkillDescription",
+      "key": "PassiveSkillDescription1052"
+    },
+    "SkillIcon": {
+      "TagName": "UI.Skill.Command.Icon.Passive"
+    },
+    "isRemovable": true,
+    "equipCost": 50,
+    "filters": [
+      1
+    ]
+  },
+  "enums": {
+    "eSkillEffectType.EncountRatio": 192
+  },
+  "signatures": {
+    "CPP_BFL_Map:GetMapUnitParameter": [
+      "IntProperty",
+      "ObjectProperty"
+    ],
+    "CPP_BFL_Skill:GetSkillEffectDataById": [
+      "IntProperty",
+      "StructProperty"
+    ],
+    "CPP_BFL_Skill:CreateContEffect": [
+      "ObjectProperty",
+      "ObjectProperty",
+      "StructProperty",
+      "IntProperty",
+      "BoolProperty",
+      "BoolProperty",
+      "ObjectProperty"
+    ]
+  }
+}

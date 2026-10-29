@@ -74,12 +74,40 @@ class RuntimeTests(unittest.TestCase):
             assert(FFRStudioAutoBattle.memory[1001]==memory)
         ''')
 
-    def test_pause_event_extra_phases_and_no_hud_do_not_submit_commands(self):
+    def test_pause_event_finish_phase_and_no_hud_do_not_submit_commands(self):
         self.run_lua('''
             active=true;manual();press();paused=true;tick();assert(#submissions==0)
             paused=false;event=true;tick();assert(#submissions==0)
-            event=false;phase=1;tick();assert(#submissions==0)
+            event=false;phase=2;tick();assert(#submissions==0)
             phase=0;guideAvailable=false;tick();assert(#submissions==0 and not FFRStudioAutoBattle.enabled)
+        ''')
+
+    def test_bonus_phase_repeats_each_native_current_actor_and_resumes_normal_turns(self):
+        self.run_lua('''
+            active=true;stableActors={[actor]=1001,[friend]=1002};manual()
+            FFRStudioAutoBattle.memory[1002]=FFRStudioAutoBattle.memory[1001]
+            press();tick();tick();assert(#submissions==1)
+            phase=1;manager.CmdType=1;new_turn()
+            manager.ActionUnitUniqueIdList=array({actor,friend})
+            for i=1,4 do tick() end
+            assert(#submissions==2 and FFRStudioAutoBattle.enabled)
+            commandActor=friend;new_turn()
+            manager.ActionUnitUniqueIdList=array({actor,friend})
+            for i=1,4 do tick() end
+            assert(#submissions==3 and FFRStudioAutoBattle.enabled)
+            local selected;submissions[3].DecideDataList:ForEach(function(_,v) selected=v:get().actionUnitUniqueId end)
+            assert(selected==friend)
+            commandActor=nil;phase=0;manager.CmdType=0;new_turn()
+            for i=1,4 do tick() end
+            assert(#submissions==4 and FFRStudioAutoBattle.enabled)
+        ''')
+
+    def test_bonus_phase_ignores_an_actor_outside_native_selection_or_finish_commands(self):
+        self.run_lua('''
+            active=true;manual();phase=1;manager.CmdType=1;commandActor=enemy
+            press();for i=1,4 do tick() end;assert(#submissions==0)
+            commandActor=actor;manager.CmdType=2
+            for i=1,4 do tick() end;assert(#submissions==0)
         ''')
 
     def test_controller_hold_uses_real_time_and_latches_until_release(self):
@@ -95,9 +123,15 @@ class RuntimeTests(unittest.TestCase):
     def test_guide_tracks_the_actual_speed_guide_without_changing_native_widgets(self):
         self.run_lua("""
             active=true;showSpeed=true;tick()
-            assert(guidePosition.X==558 and guidePosition.Y==30)
+            assert(guidePosition.X==558 and guidePosition.Y==1000)
             assert(badge:find('F9',1,true) and badge:find('OFF',1,true))
         """)
+
+    def test_stale_top_speed_guide_cannot_move_the_indicator_out_of_the_footer(self):
+        self.run_lua('''
+            active=true;showSpeed=true;speedY=30;tick()
+            assert(guidePosition.anchorY==1 and guidePosition.Y<0)
+        ''')
 
     def test_manual_memory_is_captured_when_native_input_and_command_ui_have_closed(self):
         self.run_lua('''
