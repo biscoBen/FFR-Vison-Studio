@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Private status-widget loading correction — 2026-10-29
+
+[Verified Windows download / run 40955684066](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40955684066/Sephira-Studio-Test.zip)
+(code `8e3c28c`, update **1.2.133**; **82.6 MB**).
+
+Correct the private widget's loading path, which blocked auto-battle in 1.2.132
+with “Battle guide unavailable.” Use the same native loader as Fina's presentation;
+keep the passive indicator, latest manual commands, Attack fallback and controller
+targeting safeguards. Rebuild/install from this update and restart Resonance.
+Native indicator rendering and control behavior need the live retest.
+
+Encounter keypresses now report the exact reason when walking context is rejected.
+Suppression itself remains unresolved. Reuse the existing external control-session
+helper; no new observer or F8 installation is needed. Kits, boss powers, media,
+acquisition and the dungeon counter assets retain their values.
+[Checks and measured timings](CHANGELOG.md#published-private-status-widget-loading-correction--2026-10-29).
+
 ### Dungeon counter and latest auto-battle memory — 2026-10-29
 
 [Verified Windows download / run 40951100236](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40951100236/Sephira-Studio-Test.zip)

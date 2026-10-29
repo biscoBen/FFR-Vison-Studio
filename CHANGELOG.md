@@ -11,26 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Private runtime indicator loading correction — 2026-10-29
-
-- The returned session verifies the exact installed 1.2.132 runtime and logs 619
-  repeated `Battle guide unavailable` pauses. The private passive widget was
-  loaded through UE4SS's AssetRegistry-only helper; mod-only assets are absent
-  there. This prevented the HUD-dependent auto-battle control from proceeding.
-- Resolve the mounted widget using Unreal's native soft-object loader, the same
-  route already used for Fina's private assets. Preserve the passive widget,
-  typed text, game-thread polling, latest-command memory, Attack fallback and
-  confirmed controller OFF/multicast safeguards. Report a specific load failure
-  and log an unchanged pause reason once rather than every poll.
-- The capture's encounter key was rejected outside free-walking context; it has
-  no OFF/application or native battle-entry snapshot. Log the exact rejecting
-  gate on keypress without changing those gates or suppression mechanics. Live
-  suppression remains unresolved; reuse the existing external session collector.
-- Focused regression checks simulate a mounted private widget absent from the
-  registry, successful battle replay and field controls, and pause recovery.
-  Native rendering, controller operation and encounter suppression need a retest.
-  Kits, boss powers, acquisition, media and treasure packages are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -99,6 +79,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published private status-widget loading correction — 2026-10-29
+
+Code [`8e3c28c`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8e3c28c9d6fe60018ac4d5e80af670ae3cb25f3a) ·
+[Studio test 1.2.133](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40955684066/Sephira-Studio-Test.zip)
+
+- The returned session verifies 1.2.132's installed runtime and 619 repeated
+  `Battle guide unavailable` pauses. Our private status widget used UE4SS's
+  registry-only asset loader, which cannot discover mounted mod-only assets.
+  The HUD-dependent auto-battle control therefore stopped before replay.
+- Load the private class through Unreal's native soft-object path, using the same
+  working route as Fina's private presentation assets. Retain the passive widget,
+  native FText, game-thread polling and all latest-command, Attack fallback,
+  OFF/reentrancy, controller-latch, multicast and bonus-round safeguards.
+  Show a specific class-load error and log repeated pause reasons only once.
+- The capture's encounter request was rejected outside free walking; no OFF,
+  effect-application or native battle-entry snapshot was recorded. Identify the
+  exact rejecting gate on keypress without changing guards or suppression.
+  Encounter suppression remains unresolved; the same no-install session collector
+  works for the retest. No new F8 observer or collector is required.
+- Local: 92 focused checks pass. The actual Windows payload passes 31 auto-battle
+  fixtures, including a private class absent from both the loaded-object table and
+  asset registry, native soft-object loading, FText, command replay and pause
+  recovery. Field controls also exercise that loader. Packaged encounter ownership,
+  esper and combined game-thread-loop checks and 10 counter checks pass.
+  All 87 extension and 16 Fina hashes match; every public app file and launcher
+  matches the provenance-verified Windows artifact and reviewed source.
+  Windows CI passes full Flutter analysis/tests, 872 Python checks (33 skips),
+  fresh frozen-engine setup and launcher/updater checks.
+  Native rendering, controller operation and encounter suppression need retesting.
+  Kits, boss powers, acquisition, media and treasure asset packages are unchanged.
+- Public ZIP: 82,575,959 bytes; SHA-256
+  `44ef3113191680f2d528c5dae91c892c99df08da168302bd00c2c0ffa44769a4`.
+
+First complete candidate **14:11:45 PDT** to verified
+delivery **14:22:25 PDT**: **10m 40s**,
+including local verification, the single automatic Windows run, waiting and
+artifact/public-package verification. CI wall: **9m 47s**;
+summed runner job time, including publication: **14m 13s**.
+Reused exact run 40955684066; no duplicate/manual dispatch. These publication notes
+use only README/CHANGELOG and do not request another binary.
 
 ## Published dungeon counter and latest auto-battle memory — 2026-10-29
 
