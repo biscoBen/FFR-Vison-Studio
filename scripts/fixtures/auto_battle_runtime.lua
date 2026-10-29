@@ -79,7 +79,7 @@ function vm:CanActivateAction(k)
     if menuChanged then return false end
     return (k.ID==parentId and #stack==0) or
         (k.ID==actionId and #stack>0 and ((actionCategory==2 and itemQty-reserved>=1) or
-        (actionCategory~=2 and availableMP-reserved>=1)))
+        (actionCategory~=2 and availableMP-reserved*(actionId==0 and 0 or 1)>=(actionId==0 and 0 or 1))))
 end
 function vm:DecideActionKey(k)
     hooks['/Script/mucha.CPP_VM_BtlCmd:DecideActionKey'][1](wrapped(self),wrapped(k))
@@ -106,11 +106,11 @@ function vm:DecideTarget(ids,all)
 end
 function vm:EndCommand()
     assert(#pendingActions==requiredActions,'Do not submit a partial multicast')
-    assert((actionCategory==2 and itemQty or availableMP)>=reserved,'Do not bypass MP checks')
+    assert((actionCategory==2 and itemQty or availableMP)>=reserved*(actionId==0 and 0 or 1),'Do not bypass MP checks')
     local data={DecideDataList=array(pendingActions),SelectedActionPathList=array(selectedPath)}
     hooks['/Script/mucha.CPP_UI_BtlCmdManager:DecideCommand'][1](wrapped(manager),wrapped(data))
     submissions[#submissions+1]=data
-    if actionCategory==2 then itemQty=itemQty-reserved else availableMP=availableMP-reserved end
+    if actionCategory==2 then itemQty=itemQty-reserved else availableMP=availableMP-reserved*(actionId==0 and 0 or 1) end
     self.bDisplayCmd=false;manager.ActionUnitUniqueIdList=array({})
 end
 function FindAllOf(class)
@@ -156,5 +156,5 @@ function manual(path,all,friendlyTarget)
         IsAll=all or false,ParameterList=array({}),targetUnitUniqueIdList=array({friendlyTarget or enemy})} end
     local keys={};for _,id in ipairs(path or {344,420070}) do keys[#keys+1]=akey(id) end
     hooks['/Script/mucha.CPP_UI_BtlCmdManager:DecideCommand'][1](wrapped(manager),wrapped({
-        DecideDataList=array(actions),SelectedActionPathList=array(keys)}))
+        CommandId=parentId,DecideDataList=array(actions),SelectedActionPathList=array(keys)}))
 end

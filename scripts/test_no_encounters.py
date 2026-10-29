@@ -80,6 +80,10 @@ class NoEncountersTests(unittest.TestCase):
         code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text()
         lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
         lua.globals().tests()
+        messages=list(lua.globals().messages.values())
+        self.assertTrue(any('Owned target=' in line for line in messages))
+        self.assertTrue(any('source=playable' in line for line in messages))
+        self.assertTrue(any('Native battle entry while OFF' in line for line in messages))
 
     def test_encounter_only_install_requests_the_optional_runtime(self):
         import _ffr_runtime_loader as runtime

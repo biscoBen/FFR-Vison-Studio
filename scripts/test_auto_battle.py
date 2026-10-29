@@ -193,6 +193,46 @@ class RuntimeTests(unittest.TestCase):
             inputEnabled=true;new_turn();press();tick();tick();assert(#submissions==1)
         ''')
 
+    def test_new_manual_skill_replaces_old_memory_after_phase_change_with_no_path(self):
+        self.run_lua('''
+            active=true;manual();assert(FFRStudioAutoBattle.memory[1001].actions[1].id==420070)
+            actionId=420071;phase=2;manager.CmdType=2;inputEnabled=false;vm.bDisplayCmd=false
+            manual({});assert(FFRStudioAutoBattle.memory[1001].actions[1].id==420071)
+            phase=0;manager.CmdType=0;inputEnabled=true;new_turn()
+            press();tick();tick();assert(#submissions==1)
+            local id;submissions[1].DecideDataList:ForEach(function(_,v) id=v:get().actionId end)
+            assert(id==420071 and FFRStudioAutoBattle.memory[1001].sequence==2)
+        ''')
+
+    def test_stale_selected_history_never_replaces_the_new_confirmed_action(self):
+        self.run_lua('''
+            active=true;manual();actionId=420071
+            manual({344,420070})
+            local memory=FFRStudioAutoBattle.memory[1001]
+            assert(memory.actions[1].id==420071 and #memory.path==0)
+            press();tick();tick();assert(#submissions==1)
+            local id;submissions[1].DecideDataList:ForEach(function(_,v) id=v:get().actionId end)
+            assert(id==420071)
+        ''')
+
+    def test_latest_actions_are_retained_independently_for_each_character(self):
+        self.run_lua('''
+            active=true;stableActors={[1]=1001,[4]=1002};manual()
+            actor=4;actionId=420071;manual({})
+            assert(FFRStudioAutoBattle.memory[1001].actions[1].id==420070)
+            assert(FFRStudioAutoBattle.memory[1002].actions[1].id==420071)
+        ''')
+
+    def test_missing_session_and_native_memory_defaults_to_native_attack_without_mp(self):
+        self.run_lua('''
+            active=true;save.unitParameterList=array({});parentId=0;actionId=0;availableMP=0
+            press();tick();tick()
+            assert(#submissions==1 and availableMP==0 and FFRStudioAutoBattle.enabled)
+            assert(FFRStudioAutoBattle.memory[1001].fallback)
+            local id;submissions[1].DecideDataList:ForEach(function(_,v) id=v:get().actionId end)
+            assert(id==0)
+        ''')
+
     def test_indicator_fallback_is_at_the_bottom_and_empty_selected_stack_is_not_an_empty_menu(self):
         self.run_lua('''
             active=true;tick()

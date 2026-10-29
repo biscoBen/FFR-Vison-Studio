@@ -35,13 +35,26 @@ test-update version; the commit and workflow run identify the exact package. Dat
   reflected text property required by native UMG binding. Extend private mapping
   generation for the captured array/map/enum/double Blueprint declarations.
   The game's installed mappings, maps, saves, encounters and kit data are unchanged.
-- Development: 110 focused Python checks and 15 read-only exporter/ZIP checks
+- In the user's 1.2.129 retest, multicast targeting no longer flickers. Preserve
+  its OFF/latch safeguards. Fix newer manual actions being discarded after native
+  phase/UI changes or an empty/stale selected-path array; retain each character's
+  latest command and reconstruct its current hierarchy. With no session/native
+  command memory, use native Attack (ID 0), subject to native availability/costs.
+- Add command sequence/action traces and read-only encounter snapshots after a
+  toggle and before native battle entry releases owned effects. Compare map and
+  playable parameter objects; record owned targets and actual encounter effects.
+  The native suppression failure remains unconfirmed. Provide a no-install session
+  ZIP using the existing tested watcher: start it, play, close the game, and upload
+  its export. No F8, installed observer or cleanup step is required.
+- The 1.2.130 Windows compilation succeeded but Flutter startup checks rejected the
+  new resources because the app allow-list still expected 85 files. Add both UI
+  archives and update the required count to 87; all 31 focused startup/UI tests
+  pass locally. That failed candidate was not released. The timer is retained.
+- Development: 114 focused Python checks and 15 read-only exporter/ZIP checks
   pass. Both widgets survive the real native writer/reader and IoStore conversion;
   execute the actual packed getter for every group, including prior collection
   and saved-map aliases. Native display, controller behavior and live collection
   updates remain pending the user test.
-
-
 
 ### Returned full-game reference audit — 2026-10-22
 

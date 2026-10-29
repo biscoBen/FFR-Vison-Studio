@@ -85,6 +85,8 @@ local map=obj({})
 function map:GetPlayerMapUnit() return actor end
 function map:IsDuringEncount() return inBattle end
 function map:GetMapUnitParameter(id) assert(id>=1001 and id<=1008);return parameters[id] end
+local units=obj({})
+function units:GetPlayableUnitParameterObj(id) return parameters[id] end
 local skills=obj({})
 function skills:GetSkillEffectDataById(id)
     assert(id==nativeSource.effect.ID)
@@ -101,6 +103,7 @@ function skills:CreateContEffect(source,target,data,skillId,passive,schedule)
 end
 local signatures={
  ['mucha.CPP_BFL_Map:GetMapUnitParameter']={'IntProperty','ObjectProperty'},
+ ['mucha.CPP_BFL_Unit:GetPlayableUnitParameterObj']={'IntProperty','ObjectProperty'},
  ['mucha.CPP_BFL_Skill:GetSkillEffectDataById']={'IntProperty','StructProperty'},
  ['mucha.CPP_BFL_Skill:CreateContEffect']={'ObjectProperty','ObjectProperty','StructProperty','IntProperty','BoolProperty','BoolProperty','ObjectProperty'},
 }
@@ -108,7 +111,7 @@ local talk=obj({})
 function talk:IsPlayingEvent() return event end
 local libs={['mucha.Default__CPP_BFL_Map']=map,['mucha.Default__CPP_BFL_TalkEvent']=talk,
     ['Engine.Default__SubsystemBlueprintLibrary']=systems,['Engine.Default__GameplayStatics']=gameplay,
-    ['mucha.Default__CPP_BFL_Skill']=skills}
+    ['mucha.Default__CPP_BFL_Skill']=skills,['mucha.Default__CPP_BFL_Unit']=units}
 function StaticFindObject(p)
     if p:find('/Script/',1,true)~=1 then return nil end
     local n=p:gsub('^/Script/','')

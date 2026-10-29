@@ -137,13 +137,56 @@ local function apply(actor)
     if next(stale) then runtime.effects=stale;restore();runtime.effects=active end
     if runtime.applied~=count then log('Native Dragon Seal active on '..count..' map characters');runtime.applied=count end
 end
+runtime.snapshot=function(reason)
+    log('Diagnostic '..tostring(reason)..'; requested OFF='..tostring(runtime.disabled)..'; last error='..tostring(lastError))
+    for target,owned in pairs(runtime.effects) do
+        log('Owned target='..target..'; effect='..(valid(owned.effect) and owned.effect:GetFullName() or 'invalid'))
+    end
+    local map=native('mucha.Default__CPP_BFL_Map');local actor=map:GetPlayerMapUnit()
+    if valid(actor) then
+        log('Actor='..actor:GetFullName()..'; walking method='..tostring(actor:GetMapMovementMethod())..
+            '; override='..tostring(actor.m_OverwriteEncountRatio)..'; threshold='..tostring(actor.m_EncountThresholdDistance))
+    end
+    signature('CPP_BFL_Unit:GetPlayableUnitParameterObj','IntProperty,ObjectProperty')
+    local units=native('mucha.Default__CPP_BFL_Unit')
+    for id=1001,1008 do
+        -- Compare the map cache with the ordinary playable-parameter getter.
+        -- Read only; never attach an effect to a diagnostic/temporary object.
+        local cached=map:GetMapUnitParameter(id)
+        for _,source in ipairs(valid(cached) and {'map','playable'} or {}) do
+            local parameter
+            if source=='map' then parameter=cached else parameter=units:GetPlayableUnitParameterObj(id) end
+            if valid(parameter) then
+                local effects=list(parameter.m_ContEffectList);local seals={}
+                for _,effect in ipairs(effects) do
+                    if valid(effect) then
+                        local data=effect:GetEffectData()
+                        if data.EffectType==192 then
+                            seals[#seals+1]=tostring(data.ID)..':'..tostring(data.ParamList[1])
+                        end
+                    end
+                end
+                log('Unit='..id..'; source='..source..'; object='..parameter:GetFullName()..
+                    '; effects='..#effects..'; encounter effects='..table.concat(seals,','))
+            end
+        end
+    end
+end
+local function diagnostic(reason)
+    local ok,message=pcall(runtime.snapshot,reason)
+    if not ok then log('Diagnostic unavailable: '..tostring(message)) end
+end
 local function update(keypress)
     local actor,systems=context()
-    if not actor then release();return end
+    if not actor then
+        if keypress then log('Toggle ignored outside free-walking context') end
+        release();return
+    end
     -- Refuse a hidden toggle if the status display is not ready yet.
     if not badge(actor) then
         restore();assert(false,'Waiting for field HUD canvas; encounter control remains unchanged')
     end
+    local previous=runtime.disabled
     local gameplay=native('Engine.Default__GameplayStatics')
     local controller=gameplay:GetPlayerController(actor,0)
     if valid(controller) then
@@ -158,6 +201,7 @@ local function update(keypress)
     if keypress then toggle() end
     if runtime.disabled then apply(actor) else restore();runtime.applied=nil end
     paint()
+    if previous~=runtime.disabled then diagnostic('after toggle') end
 end
 local function guarded(keypress)
     local ok,message=pcall(update,keypress)
@@ -190,7 +234,14 @@ for _,path in ipairs({'/Script/mucha.CPP_MapUnit_Playable:InputInteract',
     '/Script/mucha.CPP_BFL_TalkEvent:PlayEvent','/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition',
     '/Script/mucha.CPP_MapManager:Encount'}) do
     if valid(StaticFindObject(path)) then
-        local callback=function() pcall(release) end
+        local callback=function(_,_,eventBattle)
+            if path=='/Script/mucha.CPP_MapManager:Encount' and runtime.disabled then
+                local ok,value=pcall(function() return eventBattle:get() end)
+                log('Native battle entry while OFF; event battle='..(ok and tostring(value) or 'unavailable'))
+                diagnostic('before native battle entry releases owned effects')
+            end
+            pcall(release)
+        end
         local post=function() end
         runtime.hooks[#runtime.hooks+1]={callback,post}
         RegisterHook(path,callback,post)

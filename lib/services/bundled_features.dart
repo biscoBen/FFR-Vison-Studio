@@ -278,10 +278,12 @@ class BundledFeatures {
           'payload/ue4ss_runtime.zip',
           'payload/_ffr_minimap.py',
           'payload/minimap_treasure.zip',
+          'payload/minimap_counter.zip',
           'payload/_ffr_field_leader.py',
           'payload/field_leader.lua',
           'payload/encounter_toggle.lua',
           'payload/status_hud.lua',
+          'payload/status_widget.zip',
           'payload/auto_battle.lua',
           'payload/vagrant_knight_rain_field.png',
           'payload/overworld_catalog.json',
@@ -324,7 +326,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 85) {
+        (manifest['files'] as Map).length != 87) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

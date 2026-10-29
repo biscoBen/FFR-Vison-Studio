@@ -171,16 +171,34 @@ local function saved(stable,vm)
     end)
     return memory
 end
+local function resolved_path(memory,vm)
+    if #memory.path>0 then return memory.path end
+    local first=memory.actions[1];local path={}
+    if memory.command and memory.command>0 and memory.command~=first.id then
+        path[1]={Category=1,ID=memory.command}
+    elseif not first.item and first.id~=0 then
+        signature('CPP_BFL_Skill:GetSkillDataById','IntProperty,StructProperty')
+        local data=native('mucha.Default__CPP_BFL_Skill'):GetSkillDataById(first.id)
+        each(data.belongCommandList,function(parent)
+            local k={Category=1,ID=parent}
+            if #path==0 and vm:CanActivateAction(k) then path[1]=k end
+        end)
+    end
+    for _,a in ipairs(memory.actions) do path[#path+1]={Category=a.item and 2 or 1,ID=a.id} end
+    return path
+end
 local function remember(owner,wrapped)
     local ok,message=pcall(function()
         -- DecideCommand can run after native input/the command widget closes.
         -- Capture the native decision independently of the interactive UI guard.
         local manager=owner:get()
-        local ui=instance('CPP_UI_BattleSubsystem',function(o) return o.bDuringBattle end)
-        if not ui or not command_phase(ui.BtlPhaseType) or not valid(manager) or not command_phase(manager.CmdType)
-            or not valid(ui.BtlCmdManager) or manager:GetFullName()~=ui.BtlCmdManager:GetFullName() then return end
-        local view=instance('CPP_VM_Battle',function(o) return o.bIsDisplayBattleWidget end)
-        if view and view.bIsEvent then return end
+        if not valid(manager) then return end
+        -- The native submission can close the UI or advance its phase before
+        -- this hook. Those transient flags must never discard a newer command.
+        local ui=instance('CPP_UI_BattleSubsystem',function(o)
+            return valid(o.BtlCmdManager) and o.BtlCmdManager:GetFullName()==manager:GetFullName()
+        end)
+        if not ui then return end
         local data=wrapped:get();local actions={};local stable
         each(data.DecideDataList,function(a)
             local owner=unit_id(a.actionUnitUniqueId)
@@ -197,15 +215,21 @@ local function remember(owner,wrapped)
         if replay and replay.stable==stable and replay.submitting then
             replay.committed=true;return -- Keep the original target preferences.
         end
-        local path={};each(data.SelectedActionPathList,function(k) path[#path+1]=key(k) end)
-        if #path==0 then
-            local vm=instance('CPP_VM_BtlCmd',function() return true end)
-            if vm then each(vm.CommandStack,function(s) path[#path+1]=key(s.ActionKey) end) end
+        local path={}
+        pcall(function() each(data.SelectedActionPathList,function(k) path[#path+1]=key(k) end) end)
+        -- A completed/cleared native stack may be absent or contain old history.
+        -- Keep the new actions anyway and rebuild their hierarchy when needed.
+        local matches=#path>=#actions
+        for i,a in ipairs(actions) do
+            local k=path[#path-#actions+i]
+            if not k or k.ID~=a.id or k.Category~=(a.item and 2 or 1) then matches=false end
         end
-        if #path>0 then
-            runtime.memory[stable]={path=path,actions=actions}
-            print('[FFR auto battle] Remembered unit='..stable..'; actions='..#actions..'\n')
-        end
+        if not matches then path={} end
+        runtime.sequence=(runtime.sequence or 0)+1
+        runtime.memory[stable]={path=path,actions=actions,command=data.CommandId,sequence=runtime.sequence}
+        local ids={};for _,a in ipairs(actions) do ids[#ids+1]=tostring(a.id) end
+        print('[FFR auto battle] Remembered unit='..stable..'; actions='..table.concat(ids,',')..
+            '; sequence='..runtime.sequence..'; path='..#path..'; phase='..tostring(ui.BtlPhaseType)..'\n')
     end)
     if not ok then print('[FFR auto battle] Memory unavailable: '..tostring(message)..'\n') end
 end
@@ -224,7 +248,18 @@ local function advance(c,now)
         -- Turning on midway through manual input leaves that command to the player.
         if c.manager.CmdState~=0 or #list(c.vm.CommandStack)~=0 or lastTurn==c.manager:GetFullName()..':'..id then return end
         local memory=runtime.memory[stable] or saved(stable,c.vm)
-        if not memory or #memory.path==0 then pause('Choose an action once');return end
+        if not memory then
+            memory={path={{Category=1,ID=0}},actions={{id=0,item=false,all=false,friendly={},params={}}},fallback=true}
+            runtime.memory[stable]=memory
+            print('[FFR auto battle] No command memory; using native Attack for unit='..stable..'\n')
+        end
+        -- Resolve on the current actor's live menu. Never reuse a stale command
+        -- merely because the newer submission lacked its selected-path array.
+        memory.path=resolved_path(memory,c.vm)
+        if not runtime.enabled then replay=nil;return end
+        local ids={};for _,a in ipairs(memory.actions) do ids[#ids+1]=tostring(a.id) end
+        print('[FFR auto battle] Replaying unit='..stable..'; actions='..table.concat(ids,',')..
+            '; memory='..tostring(memory.sequence or (memory.fallback and 'Attack fallback' or 'native saved'))..'\n')
         replay={stable=stable,id=id,manager=c.manager:GetFullName(),memory=memory,index=1,target=1,at=now}
     end
     local r=replay
