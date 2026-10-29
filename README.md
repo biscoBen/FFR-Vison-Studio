@@ -4,6 +4,27 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Dungeon counter and latest auto-battle memory — 2026-10-29
+
+[Verified Windows download / run 40951100236](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40951100236/Sephira-Studio-Test.zip)
+(code `e5e5544`, update **1.2.132**; **82.6 MB**).
+
+Treasure radar gains a dungeon-wide remaining-item count, including other floors
+and prior collections. Close the game and switch Show treasure OFF/ON once to add
+the counter; no vision rebuild is needed for that feature.
+
+Auto-battle refreshes each character's latest manual command and falls back to
+their native Attack without memory. Status indicators use a private passive text
+widget. Update Studio, rebuild/install with the desired controls enabled, and
+restart Resonance. Indicator rendering and live command refresh need testing.
+The confirmed 1.2.129 targeting-flicker correction is preserved.
+
+Encounter suppression remains unresolved. The control-session helper collects
+the updated runtime's event traces without installing an observer or requiring
+F8: run it, play, close the game, and upload its automatic export. All kits, boss
+powers, acquisition and media retain their values.
+[Checks and measured timings](CHANGELOG.md#published-dungeon-counter-and-latest-auto-battle-memory--2026-10-29).
+
 ### Bonus turns and controller cancellation — 2026-10-29
 
 [Verified Windows download / run 40938409829](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40938409829/Sephira-Studio-Test.zip)

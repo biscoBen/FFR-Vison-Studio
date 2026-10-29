@@ -11,52 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Dungeon remaining-item counter and passive status UI — 2026-10-29
-
-- Add `Items left: N` at the minimap's bottom-left when treasure radar is on.
-  Count unopened chests, glowing pickups and tablet fragments across grouped
-  dungeon/shrine floors using native saved-open flags. Include collections made
-  before installing the mod; deduplicate saved identities, use unique IDs rather
-  than chest table IDs, and exclude decorative chests that start open. Unknown
-  maps hide the label. The captured scope covers 108 maps and 201 locations.
-- Keep the original reviewed radar package unchanged and install a separate small
-  native counter companion under the same switch. Existing radar installs need
-  one OFF/ON cycle with the game closed. No vision rebuild, observer or UE4SS is
-  needed for the counter. Preserve manual originals and edited files; ownership,
-  removal and failed-write rollback cover both packages.
-- Replace runtime status key guides with a private passive UserWidget containing
-  a plain text block and explicit font. It has no functions, input subscriptions,
-  icon children, animation or script tick. Retain typed FText and game-thread
-  polling. Copy its precompiled asset during control builds without conversion.
-  Controller targeting after OFF and indicator rendering still require playtests.
-- Verify both user source archives, including the six formerly omitted event
-  maps and native input widgets. Keep native minimap functions and layout intact
-  apart from the unrotated counter slot and saved-state text binding. Add the
-  reflected text property required by native UMG binding. Extend private mapping
-  generation for the captured array/map/enum/double Blueprint declarations.
-  The game's installed mappings, maps, saves, encounters and kit data are unchanged.
-- In the user's 1.2.129 retest, multicast targeting no longer flickers. Preserve
-  its OFF/latch safeguards. Fix newer manual actions being discarded after native
-  phase/UI changes or an empty/stale selected-path array; retain each character's
-  latest command and reconstruct its current hierarchy. With no session/native
-  command memory, use each party character's native Attack, subject to native
-  availability/costs. Verify all eight IDs against the captured full-game rows.
-- Add command sequence/action traces and read-only encounter snapshots after a
-  toggle and before native battle entry releases owned effects. Compare map and
-  playable parameter objects; record owned targets and actual encounter effects.
-  The native suppression failure remains unconfirmed. Provide a no-install session
-  ZIP using the existing tested watcher: start it, play, close the game, and upload
-  its export. No F8, installed observer or cleanup step is required.
-- The 1.2.130 Windows compilation succeeded but Flutter startup checks rejected the
-  new resources because the app allow-list still expected 85 files. Add both UI
-  archives and update the required count to 87; all 31 focused startup/UI tests
-  pass locally. That failed candidate was not released. The timer is retained.
-- Development: 115 focused Python checks and 15 read-only exporter/ZIP checks
-  pass. Both widgets survive the real native writer/reader and IoStore conversion;
-  execute the actual packed getter for every group, including prior collection
-  and saved-map aliases. Native display, controller behavior and live collection
-  updates remain pending the user test.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -125,6 +79,57 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published dungeon counter and latest auto-battle memory — 2026-10-29
+
+Code [`e5e5544`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e5e5544faa28b2dcab1c68e6e9294f534f8d870e) ·
+[Studio test 1.2.132](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40951100236/Sephira-Studio-Test.zip)
+
+- Add **Items left: N** at the minimap's bottom-left with treasure radar enabled.
+  Count unopened chests, glowing pickups and tablet fragments throughout grouped
+  dungeon/shrine floors, including previously collected items. Native saved IDs
+  deduplicate shared maps; decorative open chests are excluded. Scope: 108 maps,
+  75 groups and 201 collectible locations. Unknown maps hide the label.
+- Install a separate native counter companion; retain the original radar bytes.
+  Existing users close Resonance and cycle Show treasure OFF/ON once. No vision
+  rebuild or UE4SS is required for this counter. Ownership/rollback preserve
+  edited or manual originals. Native minimap functions and layout are retained
+  apart from the unrotated label, its reflected property and saved-state binding.
+- Replace status key guides with a private passive text widget and explicit font,
+  without input subscriptions, icons or script ticking. Runtime indicators still
+  require a normal control rebuild/install and a live rendering check.
+- Remember fresh manual commands independently for each party character, including
+  submissions after native phase/UI changes or with empty/stale path history.
+  Reconstruct the native command hierarchy and use each character's actual native
+  Attack if no command memory exists. Keep native costs/availability and all OFF,
+  controller latch, reentrancy and bonus-round guards. The user confirms 1.2.129
+  fixed the single/all-target flicker; preserve those safeguards.
+- Encounter suppression still fails in the user's test. Add event-driven read-only
+  snapshots of map/playable parameters, owned encounter effects and their release
+  reasons. The external control-session bundle installs no observer: run it,
+  launch/test/close the game, then upload the automatic export. No F8 or cleanup.
+- Local: 115 focused Python checks, 31 startup/UI Flutter checks and 15 source
+  exporter checks pass. Both UI assets pass native legacy/IoStore round trips;
+  execute the actual packed counter getter across every captured group and saved
+  alias. The actual Windows payload passes 30 auto-battle fixtures, 10 counter
+  checks, encounter ownership, esper and combined game-thread-loop checks.
+  Windows CI also passes full Flutter analysis/tests, 871 Python checks (33 skips),
+  fresh frozen-engine setup and launcher/updater checks.
+  All 87 extension and 16 Fina hashes match. Every public app file and launcher
+  matches the provenance-verified artifact and reviewed sources. Kits, boss powers,
+  acquisition and media are unchanged. Native rendering, collection updates and
+  live command refresh remain user tests; encounter suppression is unresolved.
+- Public ZIP: 82,575,604 bytes; SHA-256
+  `3e71802478f6fb2ed6eaed69c7bdc519820548964482776e769c875b178556de`.
+
+First complete candidate **12:59:55 PDT** to verified
+delivery **13:52:53 PDT**: **52m 57s**.
+This includes local checks, the failed 1.2.130 resource allow-list correction,
+the superseded 1.2.131 Attack-ID correction, all three automatic builds, waits and
+artifact/public-package verification. CI wall time: 1.2.130 **4m 40s**,
+1.2.131 **10m 49s**, 1.2.132 **10m 09s**.
+Summed runner job time across all three, including publication: **38m 11s**.
+No duplicate or manual dispatch; publication notes use the README/CHANGELOG-only path.
 
 ## Published bonus turns and controller cancellation safeguards — 2026-10-29
 
