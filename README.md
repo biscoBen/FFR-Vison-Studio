@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native Dragon Seal parameter reading — 2026-10-29
+
+[Verified Windows download / run 40968992216](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40968992216/Sephira-Studio-Test.zip)
+(code `e5462d1`, update **1.2.136**; **82.6 MB**).
+
+Correct the loader's wrapped effect-parameter reads that caused the encounter
+toggle to fail before showing OFF. Preserve native Dragon Seal behavior and
+foot/chocobo/magitek support. Rebuild/install and restart Resonance, then test
+F7 or the held-trigger control. Native suppression still needs confirmation;
+the existing external collector remains compatible without installed observers.
+
+The user confirms auto-battle works in 1.2.135 and accepts its right-side text.
+Its code and status layout are unchanged, along with kits, balance, acquisition,
+media and treasure assets.
+[Checks and measured timings](CHANGELOG.md#published-native-dragon-seal-parameter-reading--2026-10-29).
+
 ### Confirmed commands, bottom anchors and ground travel — 2026-10-29
 
 [Verified Windows download / run 40965164461](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40965164461/Sephira-Studio-Test.zip)

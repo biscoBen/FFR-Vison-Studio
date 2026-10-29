@@ -11,24 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Read native Dragon Seal parameters correctly — 2026-10-29
-
-- The user's exact 1.2.135 capture reaches OFF, then rejects the native effect
-  before applying it or painting the indicator. The pinned UE4SS struct-return
-  converter represents ParamList as a Lua table of RemoteUnrealParam wrappers.
-  Comparing its first wrapper directly with numeric zero incorrectly rejects
-  the expected row; integer setters also need actual numeric values.
-- Snapshot and unwrap all returned parameter values before validating the native
-  row and sending it to the effect factory. Apply the same read to existing
-  effects and diagnostic snapshots; retain native ID/type/zero validation and
-  include their actual values in a mismatch error. Deduplicate identical native
-  movement errors rather than logging every frame.
-- Model the real pinned loader's returned arrays in the regression fixture,
-  including all 15 factory parameters, matching existing effects, all three
-  ground modes and rejection of changed data. The old code fails this fixture.
-  Auto-battle and the accepted right-side text placement are unchanged. The user
-  confirms auto-battle now works; native encounter suppression needs a live retest.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -97,6 +79,45 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native Dragon Seal parameter reading — 2026-10-29
+
+Code [`e5462d1`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e5462d1d09a7fd5be2e333cc5e0bb9255240f403) ·
+[Studio test 1.2.136](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40968992216/Sephira-Studio-Test.zip)
+
+- The user's capture matches the exact installed 1.2.135 runtime. It receives
+  OFF, then fails native-effect validation before reaching the factory or
+  displaying OFF. The same failure repeats 452 times in movement callbacks.
+  The user confirms auto-battle works and accepts its right-side text placement.
+- Pinned UE4SS cdbc0b66 converts returned struct arrays into Lua tables of
+  RemoteUnrealParam entries. Comparing the first wrapper directly with zero
+  rejects the expected Dragon Seal data. Snapshot and unwrap all 15 parameter
+  values before validation and before passing numbers to native integer setters.
+  Read existing effects and diagnostic snapshots the same way. Preserve the
+  native ID/type/zero checks and report their actual values on mismatch.
+- Deduplicate identical movement errors. Keep the native Dragon Seal mechanism,
+  effect ownership/restoration, keyboard/controller controls, ground modes
+  (foot/chocobo/magitek), context guards and session-only state. Auto-battle,
+  status-widget code/assets, all kits, balance, acquisition, media and treasure
+  assets are unchanged. Native encounter suppression still needs a live retest.
+- The corrected regression fixture models the actual pinned loader's wrappers;
+  the old runtime fails it. All 107 focused checks pass. The actual Windows
+  payload passes 34 auto-battle, seven encounter-control and 10 counter tests,
+  including full numeric factory parameters, existing native effects, cleanup,
+  all three ground modes and bounded logging for 120 repeated failure callbacks.
+  Full Windows Flutter, 877 Python tests (33 skips), fresh frozen-engine,
+  launcher and updater checks pass. All 87 extension and 16 Fina hashes match;
+  every public app file and launcher matches the verified artifact/source.
+- Public ZIP: 82,576,876 bytes; SHA-256
+  `150360319d80de7a2b96d03b2c5075bcdb890bc15b0f9c3fc8354942e5c5f1ec`.
+
+First complete candidate **15:50:35 PDT** to verified
+delivery **16:04:33 PDT**: **13m 57s**,
+including focused checks, waiting, the single automatic build and actual
+artifact/public-package verification. CI wall: **12m 35s**;
+summed runner job time including publication: **16m 44s**.
+Reused exact run 40968992216; no duplicate/manual dispatch. Publication notes use
+only README/CHANGELOG and do not request another binary.
 
 ## Published confirmed commands, bottom anchors and ground travel — 2026-10-29
 
