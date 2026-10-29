@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "source": "full-game Skill/DT_SkillData; party mapping confirmed in returned saved commands",
+  "sourceSha256": "e98b04a941e1bee3db57320ca69d8803bdb9351cf10deb179dc2fa6e3ce97d3a",
+  "attacks": [
+    {
+      "unit": 1001,
+      "nativeRow": "レイン_通常攻撃",
+      "skill": {
+        "ID": 401010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1002,
+      "nativeRow": "ラスウェル_通常攻撃",
+      "skill": {
+        "ID": 402010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1003,
+      "nativeRow": "フィーナ_通常攻撃",
+      "skill": {
+        "ID": 403010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1004,
+      "nativeRow": "リド_通常攻撃",
+      "skill": {
+        "ID": 404010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1005,
+      "nativeRow": "ニコル_通常攻撃",
+      "skill": {
+        "ID": 405010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1006,
+      "nativeRow": "魔人フィーナ_通常攻撃",
+      "skill": {
+        "ID": 408010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1007,
+      "nativeRow": "ジェイク_通常攻撃",
+      "skill": {
+        "ID": 406010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    },
+    {
+      "unit": 1008,
+      "nativeRow": "サクラ_通常攻撃",
+      "skill": {
+        "ID": 407010,
+        "Cost": 0,
+        "TargetType": "Single",
+        "defaultTargetRelation": "Enemies",
+        "belongCommandList": [
+          -1
+        ],
+        "magnification": 12,
+        "DamageType": "Physic"
+      }
+    }
+  ]
+}

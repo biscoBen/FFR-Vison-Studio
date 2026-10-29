@@ -16,7 +16,7 @@ def build(destination):
             'powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0Collect Resonance Crash.ps1" -WatchGame -OpenOutput %*\r\n'
             'if errorlevel 1 (\r\n  echo.\r\n  pause\r\n)\r\n').encode(),
         'Read me.txt':(
-            'Use Studio 1.2.131 or later. Rebuild/install with the desired in-game controls ON, then close the game.\n'
+            'Use Studio 1.2.132 or later. Rebuild/install with the desired in-game controls ON, then close the game.\n'
             'Extract this entire ZIP and run Run Control Diagnostic Session.cmd.\n'
             'Leave its window open and launch Resonance normally.\n\n'
             'Turn encounters OFF, walk until a random battle starts (if one does), and test auto-battle.\n'

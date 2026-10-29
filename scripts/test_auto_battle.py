@@ -225,13 +225,28 @@ class RuntimeTests(unittest.TestCase):
 
     def test_missing_session_and_native_memory_defaults_to_native_attack_without_mp(self):
         self.run_lua('''
-            active=true;save.unitParameterList=array({});parentId=0;actionId=0;availableMP=0
+            active=true;save.unitParameterList=array({});parentId=401010;actionId=401010;availableMP=0;actionCost=0
             press();tick();tick()
             assert(#submissions==1 and availableMP==0 and FFRStudioAutoBattle.enabled)
             assert(FFRStudioAutoBattle.memory[1001].fallback)
             local id;submissions[1].DecideDataList:ForEach(function(_,v) id=v:get().actionId end)
-            assert(id==0)
+            assert(id==401010)
         ''')
+
+    def test_attack_fallback_matches_all_eight_captured_native_player_attacks(self):
+        data=json.loads((ROOT/'scripts/fixtures/auto_battle_attacks_native.json').read_bytes())
+        for entry in data['attacks']:
+            with self.subTest(unit=entry['unit']):
+                lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/auto_battle_runtime.lua').read_text())
+                lua.execute((ROOT/'assets/existing_visions/payload/auto_battle.lua').read_text())
+                self.assertEqual(entry['skill']['Cost'],0)
+                lua.execute('''
+                    active=true;save.unitParameterList=array({});availableMP=0;actionCost=0
+                    parentId=%d;actionId=%d;stableActors={[actor]=%d}
+                    press();tick();tick();assert(#submissions==1 and availableMP==0)
+                    local id;submissions[1].DecideDataList:ForEach(function(_,v) id=v:get().actionId end)
+                    assert(id==%d)
+                '''%(entry['skill']['ID'],entry['skill']['ID'],entry['unit'],entry['skill']['ID']))
 
     def test_indicator_fallback_is_at_the_bottom_and_empty_selected_stack_is_not_an_empty_menu(self):
         self.run_lua('''

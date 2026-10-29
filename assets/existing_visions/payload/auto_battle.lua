@@ -3,6 +3,10 @@
 local config=require('config')
 if config.autoBattle~=1 then return end
 local runtime={enabled=false,memory={},hooks={},injecting=false}
+-- Captured native player attacks. Dark Fina's party ID precedes Jake/Sakura,
+-- so this is not an arithmetic conversion from UnitId.
+local attacks={[1001]=401010,[1002]=402010,[1003]=403010,[1004]=404010,
+    [1005]=405010,[1006]=408010,[1007]=406010,[1008]=407010}
 _G.FFRStudioAutoBattle=runtime -- Native callback registries can hold weak references.
 local display,painted,replay,lastTurn,holdStart,held,lastError,battleKey
 local function valid(o)
@@ -249,7 +253,8 @@ local function advance(c,now)
         if c.manager.CmdState~=0 or #list(c.vm.CommandStack)~=0 or lastTurn==c.manager:GetFullName()..':'..id then return end
         local memory=runtime.memory[stable] or saved(stable,c.vm)
         if not memory then
-            memory={path={{Category=1,ID=0}},actions={{id=0,item=false,all=false,friendly={},params={}}},fallback=true}
+            local attack=attacks[stable]
+            memory={path={{Category=1,ID=attack}},actions={{id=attack,item=false,all=false,friendly={},params={}}},fallback=true}
             runtime.memory[stable]=memory
             print('[FFR auto battle] No command memory; using native Attack for unit='..stable..'\n')
         end

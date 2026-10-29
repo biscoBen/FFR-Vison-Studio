@@ -55,7 +55,10 @@ local function restore()
     end
     runtime.applied=nil
 end
-local function release()
+local function release(reason)
+    if runtime.disabled and next(runtime.effects) then
+        log('Releasing owned effects; reason='..tostring(reason or 'context/error'))
+    end
     restore();remove_badge();holdStart,held=nil,false
 end
 local function context()
@@ -180,7 +183,7 @@ local function update(keypress)
     local actor,systems=context()
     if not actor then
         if keypress then log('Toggle ignored outside free-walking context') end
-        release();return
+        release('walking context unavailable');return
     end
     -- Refuse a hidden toggle if the status display is not ready yet.
     if not badge(actor) then
@@ -240,7 +243,7 @@ for _,path in ipairs({'/Script/mucha.CPP_MapUnit_Playable:InputInteract',
                 log('Native battle entry while OFF; event battle='..(ok and tostring(value) or 'unavailable'))
                 diagnostic('before native battle entry releases owned effects')
             end
-            pcall(release)
+            pcall(release,path)
         end
         local post=function() end
         runtime.hooks[#runtime.hooks+1]={callback,post}

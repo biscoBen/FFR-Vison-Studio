@@ -39,7 +39,8 @@ test-update version; the commit and workflow run identify the exact package. Dat
   its OFF/latch safeguards. Fix newer manual actions being discarded after native
   phase/UI changes or an empty/stale selected-path array; retain each character's
   latest command and reconstruct its current hierarchy. With no session/native
-  command memory, use native Attack (ID 0), subject to native availability/costs.
+  command memory, use each party character's native Attack, subject to native
+  availability/costs. Verify all eight IDs against the captured full-game rows.
 - Add command sequence/action traces and read-only encounter snapshots after a
   toggle and before native battle entry releases owned effects. Compare map and
   playable parameter objects; record owned targets and actual encounter effects.
@@ -50,7 +51,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
   new resources because the app allow-list still expected 85 files. Add both UI
   archives and update the required count to 87; all 31 focused startup/UI tests
   pass locally. That failed candidate was not released. The timer is retained.
-- Development: 114 focused Python checks and 15 read-only exporter/ZIP checks
+- Development: 115 focused Python checks and 15 read-only exporter/ZIP checks
   pass. Both widgets survive the real native writer/reader and IoStore conversion;
   execute the actual packed getter for every group, including prior collection
   and saved-map aliases. Native display, controller behavior and live collection
