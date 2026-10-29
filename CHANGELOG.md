@@ -11,27 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Correct private HUD package identity and walking-owner fallback — 2026-10-29
-
-- The returned exact 1.2.133 runtime still cannot load the status class. Native
-  IoStore inspection identifies the exported file as the original WBP_KeyGuide
-  package: the author changed the filename/name map but retained the cooked
-  summary's FolderName. Correct the summary to the private Studio package, so
-  loading addresses the right package and the original game key guide stays intact.
-- Rebuild the small precompiled widget and verify the actual packed manifest's
-  package name/ID and filename, plus native legacy/IoStore round trips. Retain the
-  passive widget, native soft-object loading, FText and current UI safeguards.
-- The encounter key reports no ready map player. Cache the actual playable actor
-  supplied by native InputMove, falling back to the map getter before input exists.
-  Clear it at context/transition boundaries; retain every walking/input/menu/event/
-  battle/vehicle guard. Trace the chosen actor source. No encounter groups, actor
-  ratios, thresholds, equipment or save state change. Suppression needs a retest.
-- Regression checks cover private package identity, a missing map getter with a
-  real movement owner, effect cleanup through menus/transitions and exclusion of
-  vehicles. All command memory, Attack fallback and multicast/OFF safeguards stay
-  intact. All 103 focused checks pass. Kits, boss powers, acquisition, media and
-  treasure assets are unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -100,6 +79,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published private package identity and walking-owner fallback — 2026-10-29
+
+Code [`4e6ab7d`](https://github.com/biscoBen/FFR-Vison-Studio/commit/4e6ab7d400ee3e2f82bd33283646822000def4c4) ·
+[Studio test 1.2.134](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40959972538/Sephira-Studio-Test.zip)
+
+- The returned exact 1.2.133 runtime still cannot load the private status class.
+  The actual IoStore manifest identifies its file as the original WBP_KeyGuide
+  package: the author renamed the file/name map but retained the cooked summary's
+  FolderName. The native loader correction alone did not resolve that mistake.
+- Correct the summary to `/Game/UI/Studio/WBP_StudioStatus`, rebuild the small
+  precompiled widget and refresh both pinned archive/file checksums. The actual
+  packed manifest now has the correct private name, ID and matching filename;
+  the original game's key-guide package is no longer overridden. Native legacy
+  and IoStore round trips preserve the four exports, passive text and explicit
+  font. Keep native loading/FText and all existing command/controller safeguards.
+- The encounter key reports no ready map player. Cache the actual playable actor
+  supplied by native InputMove, with the map getter as fallback before movement.
+  Guard the whole callback, trace the chosen source and clear it at context and
+  transition boundaries. Keep all walking/input/menu/event/pause/battle/vehicle
+  guards. Encounter groups, actor ratios, movement thresholds, equipment and saves
+  are unchanged. Live suppression remains unconfirmed; reuse the same collector.
+- Local: 103 focused checks pass. The actual Windows payload passes 31 auto-battle,
+  six encounter-control and 10 counter tests, including a missing map getter,
+  native movement owner, transition cleanup and vehicle exclusion. Packaged native
+  effect ownership, esper and combined game-thread-loop checks pass. All 87
+  extension and 16 Fina hashes match. Every public app file and launcher matches
+  the provenance-verified artifact and reviewed source. Full Windows Flutter,
+  873 Python checks (33 skips), fresh frozen-engine and launcher checks pass. Rendering and both live
+  controls need a retest. Kits, boss powers, acquisition, media, treasure radar
+  and counter packages retain their values.
+- Public ZIP: 82,576,118 bytes; SHA-256
+  `88f807ac897645c2db1e6b196844587ff9cfa96b4300e5f7a1a4bcb88c79ca40`.
+
+First complete candidate **14:39:30 PDT** to verified
+delivery **14:53:42 PDT**: **14m 12s**,
+including the local pinned-checksum correction, temporary build-cache cleanup,
+focused checks, the single automatic Windows run, waiting and package verification.
+CI wall: **11m 04s**; summed runner job time including
+publication: **15m 53s**. Reused exact run 40959972538;
+no duplicate/manual dispatch. Publication notes use only README/CHANGELOG.
 
 ## Published private status-widget loading correction — 2026-10-29
 

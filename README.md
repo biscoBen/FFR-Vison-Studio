@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Private package identity and walking-owner fallback — 2026-10-29
+
+[Verified Windows download / run 40959972538](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40959972538/Sephira-Studio-Test.zip)
+(code `4e6ab7d`, update **1.2.134**; **82.6 MB**).
+
+Correct the status widget's cooked package identity, which still prevented loading
+in 1.2.133. The packed package now matches its private path and preserves the
+original game key guide. Encounter control can use the actor receiving native
+movement input when the map getter has no player, retaining all context guards.
+
+Rebuild/install and restart Resonance. Move a few steps before testing F7 while
+walking; use F9 or the existing held-trigger control in battle. Indicator rendering
+and both controls still need the live retest, particularly encounter suppression.
+The same external session collector works without an observer or F8 installation.
+Kits, boss powers, media, acquisition and treasure packages are unchanged.
+[Checks and measured timings](CHANGELOG.md#published-private-package-identity-and-walking-owner-fallback--2026-10-29).
+
 ### Private status-widget loading correction — 2026-10-29
 
 [Verified Windows download / run 40955684066](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40955684066/Sephira-Studio-Test.zip)
