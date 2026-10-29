@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.129'
+VERSION = '1.2.130'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('_ffr_minimap.py', 'minimap_treasure.zip', '_ffr_runtime_loader.py', 'ue4ss_runtime.zip', '_ffr_esper_mastery.py', 'esper_mastery.json', 'esper_mastery.lua', 'sephira_mr_restoration.json', '_ffr_native_voices.py', 'native_voice_codec.ps1', '_ffr_movie_audio.py', '_ffr_incremental.py', '_ffr_build_progress.py', '_ffr_build_cache.py', '_ffr_cave_music_preview.py', 'cave_music_preview.zip', 'CaveHcaV3.cs', 'cave_hca_v3.ps1', '_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'encounter_toggle.lua', 'status_hud.lua', 'auto_battle.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('status_widget.zip', 'minimap_counter.zip', '_ffr_minimap.py', 'minimap_treasure.zip', '_ffr_runtime_loader.py', 'ue4ss_runtime.zip', '_ffr_esper_mastery.py', 'esper_mastery.json', 'esper_mastery.lua', 'sephira_mr_restoration.json', '_ffr_native_voices.py', 'native_voice_codec.ps1', '_ffr_movie_audio.py', '_ffr_incremental.py', '_ffr_build_progress.py', '_ffr_build_cache.py', '_ffr_cave_music_preview.py', 'cave_music_preview.zip', 'CaveHcaV3.cs', 'cave_hca_v3.ps1', '_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'encounter_toggle.lua', 'status_hud.lua', 'auto_battle.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -575,6 +575,12 @@ def run(root, action):
         elif name == 'minimap_treasure.zip':
             if sha(raw) != 'f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b':
                 raise ValueError('Invalid bundled treasure radar checksum.')
+        elif name == 'status_widget.zip':
+            if sha(raw) != 'bb7dd2051fdb96e300652ea14802e318b3be045571a135b2aeaf3ed4e123d9fc':
+                raise ValueError('Invalid bundled Studio UI checksum.')
+        elif name == 'minimap_counter.zip':
+            if sha(raw) != '2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb':
+                raise ValueError('Invalid bundled Studio UI checksum.')
         elif name == 'ue4ss_runtime.zip':
             namespace = {}
             exec(compile(resource_data['_ffr_runtime_loader.py'], '_ffr_runtime_loader.py', 'exec'), namespace)

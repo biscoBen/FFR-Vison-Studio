@@ -11,6 +11,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Dungeon remaining-item counter and passive status UI — 2026-10-29
+
+- Add `Items left: N` at the minimap's bottom-left when treasure radar is on.
+  Count unopened chests, glowing pickups and tablet fragments across grouped
+  dungeon/shrine floors using native saved-open flags. Include collections made
+  before installing the mod; deduplicate saved identities, use unique IDs rather
+  than chest table IDs, and exclude decorative chests that start open. Unknown
+  maps hide the label. The captured scope covers 108 maps and 201 locations.
+- Keep the original reviewed radar package unchanged and install a separate small
+  native counter companion under the same switch. Existing radar installs need
+  one OFF/ON cycle with the game closed. No vision rebuild, observer or UE4SS is
+  needed for the counter. Preserve manual originals and edited files; ownership,
+  removal and failed-write rollback cover both packages.
+- Replace runtime status key guides with a private passive UserWidget containing
+  a plain text block and explicit font. It has no functions, input subscriptions,
+  icon children, animation or script tick. Retain typed FText and game-thread
+  polling. Copy its precompiled asset during control builds without conversion.
+  Controller targeting after OFF and indicator rendering still require playtests.
+- Verify both user source archives, including the six formerly omitted event
+  maps and native input widgets. Keep native minimap functions and layout intact
+  apart from the unrotated counter slot and saved-state text binding. Add the
+  reflected text property required by native UMG binding. Extend private mapping
+  generation for the captured array/map/enum/double Blueprint declarations.
+  The game's installed mappings, maps, saves, encounters and kit data are unchanged.
+- Development: 110 focused Python checks and 15 read-only exporter/ZIP checks
+  pass. Both widgets survive the real native writer/reader and IoStore conversion;
+  execute the actual packed getter for every group, including prior collection
+  and saved-map aliases. Native display, controller behavior and live collection
+  updates remain pending the user test.
+
+
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

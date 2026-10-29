@@ -117,10 +117,10 @@ function StaticFindObject(p)
     end})
 end
 local factory=obj()
-local guideClass=obj({name='WBP_KeyGuide_C'})
+local guideClass=obj({name='WBP_StudioStatus_C'})
 libs['UMG.Default__WidgetBlueprintLibrary']=factory
 function LoadAsset(path)
-    assert(path=='/Game/UI/MainMenu/Common/Key/KeyGuide/WBP_KeyGuide.WBP_KeyGuide_C')
+    assert(path=='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
     return guideClass
 end
 function StaticConstructObject() error('Raw UWidget construction is forbidden') end
@@ -181,7 +181,7 @@ function tests()
     event=true;tick();assert(created==0 and #viewport==0)
     event=false;tick();assert(actor.m_OverwriteEncountRatio==-1 and #panel.children==1 and #viewport==1)
     assert(lastText.label:find('ON') and lastWidget.position.Y==-24)
-    for _,part in ipairs({lastWidget,lastWidget.Horizontal_Content,lastText}) do
+    for _,part in ipairs({lastWidget,lastText}) do
         assert(part.visibility==3 and part.opacity==1,'Reveal guide content after native Construct')
     end
     press();assert(has_effect(rain,71000) and has_effect(lasswell,71000) and lastText.label:find('OFF'))
@@ -189,8 +189,8 @@ function tests()
     local creations=effectCreations
     collectgarbage('collect');tick();assert(effectCreations==creations,'Do not duplicate owned effects')
     -- Native input/guide updates may hide the content again; re-show our own widgets.
-    lastWidget.Horizontal_Content.visibility=1;lastText.label='native reset';tick()
-    assert(lastWidget.Horizontal_Content.visibility==3 and lastText.label:find('OFF'))
+    lastText.visibility=1;lastText.label='native reset';tick()
+    assert(lastText.visibility==3 and lastText.label:find('OFF'))
     press();assert(not has_effect(rain,71000) and not has_effect(lasswell,71000))
     assert(rain.m_ContEffectList:GetArrayNum()==1 and rain.m_ContEffectList[1]==foreign)
     -- Do not remove an equipped/natively present Dragon Seal effect.

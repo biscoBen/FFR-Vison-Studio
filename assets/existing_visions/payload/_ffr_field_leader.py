@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import struct
 import tempfile
+import zipfile
 
 TABLE = 'Asset/Map/DT_MapUnitAsset'
 MOD = 'FFRStudioFieldLeader'
@@ -17,6 +18,22 @@ STAGE = 'build/field-leader/payload.json'
 STATE = 'field-leader-state.json'
 DFINA = '/Game/Chara/StudioFieldLeader/pc0060'
 DIRECTIONS = (1, 2, 3, 4, 6, 7, 8, 9)
+HUD_ASSETS = {
+    'FFRS/Content/UI/Studio/WBP_StudioStatus.uasset': '274851118977c64ccf3fc46816c44c0a14981cf38265ffb82739689eaa389ad5',
+    'FFRS/Content/UI/Studio/WBP_StudioStatus.uexp': '83f88baa601b8f5a05bd46b45c4aa830edbfb4ec7098f9e737b9ed35a583b9ba',
+}
+
+
+def copy_hud_assets(out):
+    """Copy precompiled passive UI; no extraction, conversion or new loader."""
+    with zipfile.ZipFile(Path(__file__).with_name('status_widget.zip')) as archive:
+        if set(archive.namelist()) != set(HUD_ASSETS): raise ValueError('Incomplete Studio status widget.')
+        files = {name: archive.read(name) for name in HUD_ASSETS}
+    if any(hashlib.sha256(raw).hexdigest() != HUD_ASSETS[name] for name, raw in files.items()):
+        raise ValueError('Studio status widget checksum mismatch.')
+    for name, raw in files.items():
+        path = checked(out, name)
+        if not path.is_file() or path.read_bytes() != raw: atomic(path, raw)
 
 
 def package(mid): return f'/Game/Chara/StudioFieldLeader/pc{mid:04d}'
@@ -212,6 +229,7 @@ def build(units, env):
         config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
         if encounters or auto:
+            if env.get('OUT'): copy_hud_assets(env['OUT'])
             code += 'local create_status_hud = (function()\n' + Path(__file__).with_name('status_hud.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if encounters:
             config['encounterToggle'] = 1

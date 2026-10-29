@@ -35,14 +35,15 @@ class TreasureRadarTests(unittest.TestCase):
         with mock.patch.dict(radar.HASHES, {radar.NAME + '.pak': '0'*64}):
             with self.assertRaisesRegex(ValueError, 'checksum'): radar.bundle()
 
-    def test_switch_adds_three_original_files_then_removes_them_and_preserves_other_mods(self):
+    def test_switch_adds_radar_and_counter_then_removes_them_and_preserves_other_mods(self):
         other = self.game / (radar.PAKS + '~mods/another-mod.pak'); other.parent.mkdir(); other.write_bytes(b'keep')
         before = self.snapshot()
         value = radar.plan(self.root, self.game, True)
         self.assertEqual(self.snapshot(), before)
         radar.deploy(value)
         self.assertTrue(radar.status(self.game)['enabled'])
-        self.assertEqual(len(radar.owned(self.root, self.game)['files']), 3)
+        self.assertEqual(len(radar.owned(self.root, self.game)['files']), 6)
+        self.assertTrue(radar.status(self.game)['counterEnabled'])
         for name, raw in radar.bundle().items(): self.assertEqual((self.game / (radar.PAKS + '~mods/' + name)).read_bytes(), raw)
         radar.deploy(radar.plan(self.root, self.game, False))
         self.assertFalse(radar.status(self.game)['enabled']); self.assertEqual(self.snapshot(), before)
@@ -50,8 +51,11 @@ class TreasureRadarTests(unittest.TestCase):
     def test_root_manual_install_is_detected_not_duplicated_and_not_claimed_on_restore(self):
         for name, raw in radar.bundle().items(): (self.game / radar.PAKS / name).write_bytes(raw)
         before = self.snapshot(); self.assertTrue(radar.status(self.game)['enabled'])
+        self.assertFalse(radar.status(self.game)['counterEnabled'])
         radar.deploy(radar.plan(self.root, self.game, True))
-        self.assertEqual(self.snapshot(), before)
+        self.assertTrue(radar.status(self.game)['counterEnabled'])
+        self.assertEqual(set(radar.owned(self.root, self.game)['files']),
+                         {radar.PAKS + n for n in radar.COUNTER_HASHES})
         radar.deploy(radar.plan(self.root, self.game))
         self.assertEqual(self.snapshot(), before)
         # Explicitly switching OFF removes this exact known manually installed package too.
@@ -63,7 +67,7 @@ class TreasureRadarTests(unittest.TestCase):
         before = self.snapshot(); self.assertTrue(radar.status(self.game)['partial'])
         radar.deploy(radar.plan(self.root, self.game, True))
         self.assertTrue(radar.status(self.game)['enabled'])
-        self.assertEqual(len(radar.owned(self.root, self.game)['files']), 2)
+        self.assertEqual(len(radar.owned(self.root, self.game)['files']), 5)
         radar.deploy(radar.plan(self.root, self.game))
         self.assertEqual(self.snapshot(), before)
 
@@ -89,6 +93,20 @@ class TreasureRadarTests(unittest.TestCase):
         with mock.patch.object(sync, 'atomic', side_effect=fail):
             with self.assertRaisesRegex(OSError, 'disk failure'): radar.deploy(value)
         self.assertEqual(self.snapshot(), before); self.assertFalse(value['state'].exists())
+
+    def test_counter_hashes_and_edited_counter_are_preserved(self):
+        counter = radar.counter_bundle()
+        self.assertEqual(set(counter), set(radar.COUNTER_HASHES))
+        for name, raw in counter.items():
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), radar.COUNTER_HASHES[name])
+        radar.deploy(radar.plan(self.root, self.game, True))
+        path = self.game / (radar.PAKS + '~mods/' + radar.COUNTER_NAME + '.ucas')
+        path.write_bytes(b'other counter mod')
+        before = self.snapshot()
+        self.assertTrue(radar.status(self.game)['conflict'])
+        for enabled in (None, False, True):
+            with self.assertRaisesRegex(ValueError, 'Preserving'): radar.plan(self.root, self.game, enabled)
+        self.assertEqual(self.snapshot(), before)
 
     def test_other_pc_folder_and_files_changed_after_preflight_remain_untouched(self):
         radar.deploy(radar.plan(self.root, self.game, True)); before = self.snapshot()

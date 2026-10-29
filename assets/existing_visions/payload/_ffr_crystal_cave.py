@@ -1595,14 +1595,20 @@ def map_mappings(original, blueprints):
         if value not in index: index[value] = len(strings); strings.append(value)
         return index[value]
     def property_bytes(view, p):
-        types = {'BoolProperty': 1, 'IntProperty': 2, 'FloatProperty': 3, 'ObjectProperty': 4,
-                 'NameProperty': 5, 'DelegateProperty': 6, 'StrProperty': 10,
+        types = {'ByteProperty': 0, 'BoolProperty': 1, 'IntProperty': 2, 'FloatProperty': 3, 'ObjectProperty': 4,
+                 'NameProperty': 5, 'DelegateProperty': 6, 'DoubleProperty': 7, 'StrProperty': 10,
                  'TextProperty': 11, 'MulticastDelegateProperty': 13,
                  'MulticastInlineDelegateProperty': 13, 'MulticastSparseDelegateProperty': 13}
         kind = p['SerializedType']
         if kind == 'StructProperty':
             imp = view['Imports'][-p['Struct']-1]
             return bytes([9]) + struct.pack('<i', name(imp['ObjectName']))
+        if kind == 'ArrayProperty': return bytes([8]) + property_bytes(view, p['Inner'])
+        if kind == 'MapProperty':
+            return bytes([24]) + property_bytes(view, p['KeyProp']) + property_bytes(view, p['ValueProp'])
+        if kind == 'EnumProperty':
+            enum = view['Imports'][-p['Enum']-1]['ObjectName']
+            return bytes([26]) + property_bytes(view, p['UnderlyingProp']) + struct.pack('<i', name(enum))
         if kind not in types:
             raise ValueError('Unsupported cave Blueprint declaration: ' + kind)
         return bytes([types[kind]])

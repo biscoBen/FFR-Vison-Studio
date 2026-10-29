@@ -13,6 +13,12 @@ HASHES = {
     NAME + '.ucas': '5776c39b5b2790b6f7533d6cd8345df55596d75cd8495268bbd848f279fd1642',
     NAME + '.utoc': '6bba1df558c8ea077195734037d988d3b544dfd43c5dd9e6e574606f2c289588',
 }
+COUNTER_NAME = 'FFRStudioTreasureCounter_P'
+COUNTER_HASHES = {
+    COUNTER_NAME + '.pak': '75e7144577253917f6da7312ef5e585b12fb728226a22b0938323751a6b555cd',
+    COUNTER_NAME + '.ucas': '740057a167ac1b3b5a50b8e067be01b4195a517c81a1b5cbb9c42e2c0b83505d',
+    COUNTER_NAME + '.utoc': 'a301431d7bedeb167227e0689ada3fece0f5a9abe9228701df5e48afd52366fb',
+}
 
 
 def bundle():
@@ -25,6 +31,16 @@ def bundle():
     return files
 
 
+def counter_bundle():
+    with zipfile.ZipFile(Path(__file__).with_name('minimap_counter.zip')) as archive:
+        if set(archive.namelist()) != set(COUNTER_HASHES):
+            raise ValueError('The bundled remaining-item counter is incomplete. Reinstall Studio.')
+        files = {name: archive.read(name) for name in COUNTER_HASHES}
+    if any(hashlib.sha256(raw).hexdigest() != COUNTER_HASHES[name] for name, raw in files.items()):
+        raise ValueError('The remaining-item counter checksum does not match. Reinstall Studio.')
+    return files
+
+
 def ledger(root, game):
     import _ffr_field_leader as leader
     return sync.checked(root, 'minimap-treasure/' + hashlib.sha256(leader.game_key(game).encode()).hexdigest() + '.json')
@@ -33,7 +49,7 @@ def ledger(root, game):
 def known_files(game):
     files, conflicts = {}, []
     for folder in (PAKS, PAKS + '~mods/'):
-        for name, digest in HASHES.items():
+        for name, digest in (HASHES | COUNTER_HASHES).items():
             relative = folder + name
             path = sync.checked(game, relative)
             if path.exists():
@@ -47,20 +63,24 @@ def status(game):
     files, conflicts = known_files(game)
     available = sync.checked(game, sync.MARKER).is_file()
     complete = any(all(folder + name in files for name in HASHES) for folder in (PAKS, PAKS + '~mods/'))
+    counter = any(all(folder + name in files for name in COUNTER_HASHES) for folder in (PAKS, PAKS + '~mods/'))
     message = ('A different or edited treasure radar package is present. Its files have been preserved.' if conflicts else
-               'Close Resonance before switching. Changes apply on the next launch; no vision rebuild needed.' if available else
+               'Switch treasure radar off and on once to add its remaining-item counter. No vision rebuild needed.' if complete and not counter else
+               'Close Resonance before switching. Radar and remaining-item counter apply on the next launch; no vision rebuild needed.' if available else
                'Select a complete Resonance installation first.')
     return {'available': available, 'enabled': complete and not conflicts, 'conflict': bool(conflicts),
-            'partial': bool(files) and not complete, 'message': message, 'game': str(game)}
+            'partial': bool(files) and not complete, 'counterEnabled': complete and counter and not conflicts,
+            'message': message, 'game': str(game)}
 
 
 def owned(root, game):
     import _ffr_field_leader as leader
     value = sync.read_json(ledger(root, game), {'schema': 1, 'game': str(game), 'files': {}})
-    allowed = {folder + name for folder in (PAKS, PAKS + '~mods/') for name in HASHES}
+    hashes = HASHES | COUNTER_HASHES
+    allowed = {folder + name for folder in (PAKS, PAKS + '~mods/') for name in hashes}
     if (not isinstance(value, dict) or value.get('schema') != 1 or leader.game_key(value.get('game', '')) != leader.game_key(game)
             or not isinstance(value.get('files'), dict) or set(value['files']) - allowed
-            or any(digest != HASHES[Path(name).name] for name, digest in value['files'].items())):
+            or any(digest != hashes[Path(name).name] for name, digest in value['files'].items())):
         raise ValueError('The treasure radar ownership record is invalid; no files changed.')
     return value
 
@@ -82,16 +102,16 @@ def plan(root, game, enabled=None):
     changes = {}
     next_owned = dict(record['files'])
     if enabled:
-        files = bundle()
-        complete = any(all(folder + name in current for name in HASHES) for folder in (PAKS, PAKS + '~mods/'))
-        if not complete:
-            # Complete an existing recognized partial package in its own folder.
-            folder = PAKS if any(name.startswith(PAKS + NAME) for name in current) else PAKS + '~mods/'
+        # Preserve recognized manual packages; add only each missing companion.
+        folder = PAKS if any(name.startswith(PAKS + NAME) for name in current) else PAKS + '~mods/'
+        for files, hashes in ((bundle(), HASHES), (counter_bundle(), COUNTER_HASHES)):
+            complete = any(all(candidate + name in current for name in hashes) for candidate in (PAKS, PAKS + '~mods/'))
+            if complete: continue
             for name, raw in files.items():
                 relative = folder + name
                 if relative not in current:
                     changes[relative] = raw
-                    next_owned[relative] = HASHES[name]
+                    next_owned[relative] = hashes[name]
     else:
         changes = {name: None for name in targets if name in current}
         next_owned = {name: digest for name, digest in next_owned.items() if name not in targets}

@@ -1,0 +1,28 @@
+Extract the entire ZIP and run Collect Treasure Counter Reference.cmd.
+The game can remain closed. Nothing is installed; no F8, observer or cleanup step is needed.
+
+The helper finds Studio's engine and configured game, including installations on
+G: or D:. If it cannot find them, it asks for the Studio/engine and game folders.
+An old demo path in Studio's settings is skipped instead of stopping the export.
+To select the full-game folder yourself, run Choose Game Folder.cmd. Paste the
+folder containing FFRS when prompted; the helper prints the folder it will use.
+Studio's saved game selection is not changed.
+It exports official dungeon gameplay levels, native pickup/chest/fragment logic,
+map grouping definitions and minimap metadata needed to build an accurate count.
+It does not export saves, private mod settings, DLLs, installed mods, music,
+textures, background geometry or the game containers themselves.
+
+Attach all Treasure-Counter-Reference-...-001.zip (and any later numbered ZIPs)
+created in Downloads\FFR Mod. Files are split to fit the upload limit.
+The output stays there; the helper removes its temporary official-container links.
+No game preparation, vision rebuild or installation is needed.
+
+This gathers definitions for development; it does not add the item counter yet.
+The target counter includes unopened chests, glowing pickups and tablet fragments
+throughout the dungeon, including other floors, using the game's collected state.
+
+If the first reference has already been uploaded, run Collect Small Followup.cmd.
+This exports only six special event-dungeon definitions omitted from the original
+scope, plus the game's input/status widgets for investigating controller targeting
+and hidden indicators. It does not repeat the large ordinary dungeon export.
+Attach the new Treasure-Controls-Followup-...-001.zip output. The game stays closed.

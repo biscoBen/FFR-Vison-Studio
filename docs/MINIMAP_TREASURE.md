@@ -76,8 +76,8 @@ Scripted/boss battles and rewards remain intact.
 The returned 1.2.126/1.2.127 log confirms both a zero actor override and a 1e30
 movement threshold were written, but the user still received ordinary encounters.
 Those ineffective writes have been removed from this candidate. Native suppression
-with Dragon Seal's effect still requires a playtest. The separate key-guide
-UserWidget is revealed after construction and refreshed with typed native text;
+with Dragon Seal's effect still requires a playtest. The separate passive status
+UserWidget uses a plain TextBlock and is refreshed with typed native text;
 footer rendering also needs a live check. Debug screen messages are not used.
 
 An unavailable HUD leaves native encounters unchanged and logs the reason with
@@ -85,3 +85,33 @@ An unavailable HUD leaves native encounters unchanged and logs the reason with
 controller hold/release, keyboard toggles, HUD lifecycle and unavailable contexts.
 Native schema/method evidence supports the bindings, but live encounter suppression,
 controller recognition and visual placement still need testing in the game.
+
+## Dungeon remaining-item counter
+
+With treasure radar enabled, **Items left: N** appears at the minimap's bottom-left.
+It includes unopened chests, glowing pickups and tablet fragments throughout the
+current dungeon or shrine group, including other floors. It counts locations,
+not item quantities. Collections from before installing the mod are recognized.
+The counter reads the game's saved collection state and never writes saves.
+
+After updating from an older radar install, close Resonance, switch **Show treasure
+on the minimap** OFF and ON once in Studio, then restart the game. This installs
+both the original radar and its small counter companion. No vision rebuild,
+observer or UE4SS is required for the counter. Studio preserves recognized manual
+radar files and adds only missing companions; restoring removes only owned files.
+Explicitly switching OFF removes the exact reviewed radar/counter packages.
+
+The original radar's three files retain their reviewed hashes. The companion
+`FFRStudioTreasureCounter_P` adds one native minimap text binding, preserves the
+native map functions and places its slot outside rotating panels. Its getter uses
+`IsOpenTreasureBox(savedMapId, uniqueId)` for chests, pickups and fragments, rather
+than relying on currently loaded actors or chest-only totals. Decorative chests
+that start open are excluded. The captured native scope covers 108 dungeon/shrine
+maps and 201 collectible locations; unknown world/town maps hide the label.
+
+Native serialization and packed-getter checks pass. In-game placement and count
+updates still need a playtest. The independent runtime status indicators use a
+private passive UserWidget with one plain TextBlock and an explicit font, rather
+than the game's input-aware key-guide contents. Those indicators still require
+UE4SS and a control rebuild/install; controller targeting and rendering remain
+subject to the live test.

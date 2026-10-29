@@ -1,0 +1,8 @@
+Extract the entire ZIP, then run Run Small Followup.cmd.
+
+The game can stay closed. No observer or mod is installed. No F8, rebuild or cleanup is required.
+This exports the six omitted special dungeon definitions and native input/status widgets only.
+If asked for folders, use the current Studio engine and the full game folder containing FFRS.
+
+Upload all Treasure-Controls-Followup-...-001.zip files created in Downloads\FFR Mod.
+The output filename begins Treasure-Controls-Followup, rather than Treasure-Counter-Reference.
