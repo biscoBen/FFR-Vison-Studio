@@ -11,34 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Bonus turns, status indicators and native encounter effects — 2026-10-29
-
-- The user confirms remembered auto-battle actions work between battles, but bonus
-  turns stop replay, the footer indicator is absent, and random encounters still
-  occur. Their current log confirms ratio 0 and a 1e30 movement threshold reach the
-  actor; these writes do not establish encounter suppression.
-- Allow native Additional command phases as well as Normal phases. Use the command
-  manager's reflected current actor rather than rejecting a multi-character bonus
-  queue, validate membership in its actual selection, and clear the replay at phase
-  changes. Leave Finish phases under manual control and retain native availability,
-  MP, item and target checks.
-- Reveal the owned status widget after AddToViewport constructs it, refresh its
-  content visibility and typed FText, and reject stale top-screen speed-guide
-  geometry when positioning the footer. Preserve the FText/game-thread fixes.
-- Follow up on the reported manual multicast flicker: OFF cancels replay even
-  while a command transition blocks input. Retain the controller chord's latch
-  through those transitions and avoid rewriting unchanged viewport positions,
-  visibility, opacity and label text. Recheck enabled state and replay identity
-  immediately before each native command write, including after reentrant input
-  callbacks. The user confirms controller single/all targeting flickers after OFF;
-  these cancellation safeguards still need that in-game retest.
-- Replace ineffective actor ratio/threshold writes with temporary native Dragon
-  Seal effects (effect 71000, passive source 1052) on native map parameters. Use the
-  game's effect factory and reflected object arrays, preserve equipped Dragon Seal
-  and all foreign effects, and remove only Studio-owned instances on release.
-  Equipment, learned abilities, save data, encounter groups and forced-battle entry
-  remain unchanged. Native suppression and footer rendering require a playtest.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -107,6 +79,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published bonus turns and controller cancellation safeguards — 2026-10-29
+
+Code [`f7ddf9a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/f7ddf9a3ce50d8e92338d1e86446971663856d5c) ·
+[Studio test 1.2.129](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40938409829/Sephira-Studio-Test.zip)
+
+- Continue remembered auto-battle actions through native Additional/bonus phases.
+  Resolve the native current actor in a multi-character selection, retain native
+  availability, costs and targeting checks, and leave Finish phases manual.
+- Cancel replay immediately on F9 OFF even while a command transition blocks
+  input. Retain the held-trigger latch across transitions and recheck enabled
+  state/replay identity before every native command write. These checks also
+  cover OFF dispatched reentrantly during an availability or target query.
+- Reveal the owned status-widget content after viewport construction and preserve
+  native FText. Stop rewriting unchanged positions, text, opacity and visibility;
+  reject stale top-screen speed-guide geometry when positioning the footer.
+- Replace the actor ratio/threshold writes confirmed ineffective by the user's log
+  with transient native Dragon Seal effects on map parameters. Use the captured
+  effect 71000/passive 1052 and reflected factory/arrays. Preserve equipped seals
+  and foreign effects, and remove only Studio-owned instances. No equipment slots,
+  learned skills, saves, encounter groups or forced-battle entry are changed.
+- Local: 61 focused checks pass. Exact automatic Windows run 40938409829 passes
+  full Flutter analysis/tests, 840 Python checks (19 skips), fresh frozen-engine
+  verification and launcher/updater checks. The real packaged payload passes
+  all 25 auto-battle fixtures, native effect ownership/lifecycle and combined-loop
+  checks; 85 extension and 16 Fina hashes match. Every public app file and launcher
+  matches the provenance-verified artifact and reviewed sources. Public ZIP:
+  82,552,274 bytes; SHA-256
+  `d2d6eae7629aab7e3fdf373d44d2fe8f9d3d4ab34e94ef833fa0d746b657ca61`.
+- The user confirms controller single/all targeting flickers after switching OFF.
+  Live targeting, bonus-round timing, footer visibility and encounter suppression
+  still need a playtest; fixture passes do not establish those native outcomes.
+  All vision kits, boss powers, acquisition and media retain their values.
+
+First complete candidate **18:49:03.612 UTC** to verified delivery
+**19:26:00.081 UTC**: **36m 56s**, including the controller follow-up correction,
+local checks, both exact automatic builds, waiting and artifact/public verification.
+The first run's CI wall time was **9m 55s**; final run **8m 40s** (combined active
+CI wall **18m 35s**). Summed runner usage across both: **29m 48s**. Neither run was
+manually dispatched. Publication notes use the README/CHANGELOG-only path.
 
 ## Published Primm resonance bonus correction — 2026-10-29
 

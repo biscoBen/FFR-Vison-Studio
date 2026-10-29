@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Bonus turns and controller cancellation — 2026-10-29
+
+[Verified Windows download / run 40938409829](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40938409829/Sephira-Studio-Test.zip)
+(code `f7ddf9a`, update **1.2.129**; **82.6 MB**).
+
+Auto-battle now supports native bonus-round queues. OFF cancels pending replay
+through command transitions and held-controller changes; unchanged status widgets
+no longer rewrite their layout every poll. Encounter control now uses temporary
+native Dragon Seal effects instead of the ineffective actor ratio writes.
+
+Update Studio, rebuild/install with the desired in-game switches enabled, and
+restart Resonance. Controller single/all targeting after OFF, bonus rounds, footer
+visibility and encounter suppression need the live retest. Kits, boss powers and
+media keep their values. [Checks and measured timings](CHANGELOG.md#published-bonus-turns-and-controller-cancellation-safeguards--2026-10-29).
+
 ### Native HUD text and esper polling — 2026-10-28
 
 [Verified Windows download / run 40789172083](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40789172083/Sephira-Studio-Test.zip)
