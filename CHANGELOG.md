@@ -11,28 +11,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Restore encounter control and reveal status content — 2026-10-29
 
-- The returned 1.2.125 log records ratio writes to zero, but the user still receives
-  ordinary overworld encounters. Treat this as an unresolved regression from their
-  working 1.2.124 test, not proof of successful suppression. Suspend the native
-  cached movement threshold as well as the ratio, refresh before native movement,
-  and restore both only while their values are still owned. Retain later native
-  zone changes and leave forced encounter transitions under native control.
-- Explicitly reveal the stock key-guide content container and label and set their
-  render opacity. Showing its outer UserWidget alone did not establish that its
-  content was visible. Retain typed FText and game-thread scheduling.
-- Auto-battle was not installed in the returned log; the user confirmed its Studio
-  switch was OFF. Its first setup requires enabling the Studio switch, rebuilding/
-  installing and restarting before F9 or the controller hold is available. A later
-  log confirms successful initialization followed by false action-unavailable
-  pauses. Fix the incorrect use of GetCommands (selected stack data) as a menu
-  inventory; use the native CanActivateAction check. Capture manual decisions even
-  after native input or command UI closes, and place the fallback guide at the
-  bottom. Resolve nested speed guides through their world controller.
-- Offline fixtures cover cached thresholds, zone changes between polling ticks,
-  exact native-value restoration and hidden widget descendants. Native encounter
-  suppression and indicator rendering require another live overworld test.
 
 
 
@@ -106,6 +85,49 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published encounter and remembered-command corrections — 2026-10-29
+
+Code [`8b23d6a`](https://github.com/biscoBen/FFR-Vison-Studio/commit/8b23d6af9d1c3e0b6726eea9bf315b24b2db5a91) ·
+[Studio test 1.2.126](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40914045441/Sephira-Studio-Test.zip)
+
+### Restore encounter control and reveal status content — 2026-10-29
+
+- The returned 1.2.125 log records ratio writes to zero, but the user still receives
+  ordinary overworld encounters. Treat this as an unresolved regression from their
+  working 1.2.124 test, not proof of successful suppression. Suspend the native
+  cached movement threshold as well as the ratio, refresh before native movement,
+  and restore both only while their values are still owned. Retain later native
+  zone changes and leave forced encounter transitions under native control.
+- Explicitly reveal the stock key-guide content container and label and set their
+  render opacity. Showing its outer UserWidget alone did not establish that its
+  content was visible. Retain typed FText and game-thread scheduling.
+- Auto-battle was not installed in the returned log; the user confirmed its Studio
+  switch was OFF. Its first setup requires enabling the Studio switch, rebuilding/
+  installing and restarting before F9 or the controller hold is available. A later
+  log confirms successful initialization followed by false action-unavailable
+  pauses. Fix the incorrect use of GetCommands (selected stack data) as a menu
+  inventory; use the native CanActivateAction check. Capture manual decisions even
+  after native input or command UI closes, and place the fallback guide at the
+  bottom. Resolve nested speed guides through their world controller.
+- Offline fixtures cover cached thresholds, zone changes between polling ticks,
+  exact native-value restoration and hidden widget descendants. Native encounter
+  suppression and indicator rendering require another live overworld test.
+- Verification: 57 focused checks pass. Windows CI reports 333 Flutter passes /
+  one skip, a separate fresh frozen-engine setup pass and 827 Python checks / 19
+  skips; analysis, payload/library and launcher/updater checks pass. Through the
+  unchanged build helper, verify exact workflow/input provenance and ZIP checksums.
+  All 85 extension and 16 Fina resource hashes match; the actual packaged encounter
+  fixture verifies hidden descendants, float32 ownership and movement refresh, and
+  all 17 auto fixtures pass. A separate packaged replay clears native saved history
+  and the command stack between battles while retaining session multicast/all-mode
+  memory. Existing presets, boss powers and media match 1.2.125. Native overworld
+  suppression, replay and bottom HUD placement still require the user’s live test.
+- First complete candidate: 2026-10-29 09:34:34 PDT; verified public delivery:
+  2026-10-29 09:53:17 PDT. Total 18m 43s includes local checks, additional
+  user evidence, corrections, CI, waiting and download verification. Required CI
+  wall time: 10m 0s; summed completed runner job time including publication:
+  14m 48s. Reused the exact automatic push run; no duplicate dispatch.
 
 ## Published: Studio test 1.2.125 — 2026-10-28
 
