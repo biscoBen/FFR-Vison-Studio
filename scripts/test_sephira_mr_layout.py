@@ -29,7 +29,10 @@ class MrLayoutTests(unittest.TestCase):
                 self.assertEqual([g for g in new['synchro'][rank] if g[0] not in ('ActiveSkill','PassiveSkill')],
                                  [g for g in old['synchro'][rank] if g[0] not in ('ActiveSkill','PassiveSkill')])
             for f in old.keys()-{'awakening','synchro','sephiraMrRevision','sephiraPassiveText'}:
-                self.assertEqual(old[f],new[f],(key,f))
+                expected=copy.deepcopy(old[f])
+                if key=='primm' and f=='lb_custom':
+                    expected['desc']=expected['desc'].replace('power of Blade Torrent','power of Moonlightbringer')
+                self.assertEqual(expected,new[f],(key,f))
         primm=self.by['primm']['profile'];terra=self.by['trance_terra']['profile']
         self.assertIn(['PassiveSkill',1038,-1],terra['awakening'][2])
         self.assertIn(['PassiveSkill',1460,-1],primm['awakening'][3])

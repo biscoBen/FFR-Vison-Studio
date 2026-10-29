@@ -114,6 +114,59 @@ void main() {
     expect(SephiraVisions.repairDescriptions(native,presets),same(native));
   });
 
+  test('Primm repairs both shipped resonance descriptions without resetting her kit', () async {
+    final presets = await SephiraVisions.bundled;
+    final preset = presets.singleWhere((p) => p['id']=='primm');
+    final text = preset['descriptionUpdate']['resonance'] as Map;
+    for (final before in [text['before'], ...(text['previous'] as List)]) {
+      final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      unit[SephiraVisions.field] = {'version':1,'preset':'primm','enabled':true};
+      unit['lb_custom']['desc'] = before;
+      unit['lb_custom']['set']['magnification'] = 37;
+      unit['stats']['Attack'] = 77;
+      unit['price'] = 1234;
+      // Imported profiles can replace the native signature with a private copy.
+      unit['skills']['487599'] = {'from':445300,'jp':'PrivateMoonlight',
+        'en':'My signature','desc':'Edited skill','set':{'Cost':17}};
+      for (final tier in unit['awakening'] as List) {
+        for (final grant in tier as List) {
+          if (grant[0]=='ActiveSkill' && grant[1]==445300) grant[1]=487599;
+        }
+      }
+      final expected = CharacterConfig.copy(unit);
+      expected['lb_custom']['desc'] = text['after'];
+      expected['lb_custom']['descAuto'] = false;
+      final actual = SephiraVisions.repairDescriptions(unit,presets);
+      expect(actual,expected);
+      expect(unit['lb_custom']['desc'],before);
+      expect(SephiraVisions.repairDescriptions(actual,presets),same(actual));
+    }
+  });
+
+  test('Primm description repair respects edited resonance effects and missing signatures', () async {
+    final presets = await SephiraVisions.bundled;
+    final preset = presets.singleWhere((p) => p['id']=='primm');
+    final text = preset['descriptionUpdate']['resonance'] as Map;
+    for (final edit in ['description','source','effects','removed','ambiguous']) {
+      final unit = CharacterConfig.copy(preset['profile'] as Map<String,dynamic>);
+      unit[SephiraVisions.field] = {'version':1,'preset':'primm','enabled':true};
+      unit['lb_custom']['desc'] = (text['previous'] as List).single;
+      switch (edit) {
+        case 'description': unit['lb_custom']['desc']='My resonance.';
+        case 'source': unit['lb_custom']['from']=440110;
+        case 'effects': unit['lb_custom']['set']['effectBundleList']=[];
+        case 'removed':
+          for (final tier in unit['awakening'] as List) {
+            (tier as List).removeWhere((g)=>g[0]=='ActiveSkill' && g[1]==445300);
+          }
+        case 'ambiguous':
+          unit['skills']['487599']={'from':445300};
+          (unit['awakening'][3] as List).add(['ActiveSkill',487599,-1]);
+      }
+      expect(SephiraVisions.repairDescriptions(unit,presets),same(unit),reason:edit);
+    }
+  });
+
   late Directory dir;
   late ConfigApi api;
   late AppState app;

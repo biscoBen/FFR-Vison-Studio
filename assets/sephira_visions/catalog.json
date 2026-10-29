@@ -51449,7 +51449,7 @@
           "set": {},
           "jp": "Sephira_primm_Resonance",
           "en": "Spirited Heart Primm Resonance",
-          "desc": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends.",
+          "desc": "Deal non-elemental magic damage to all enemies. Increase power of Moonlightbringer by 20% until battle ends.",
           "descAuto": false,
           "nameAuto": false,
           "audio_codec": "host",
@@ -52555,7 +52555,11 @@
         "resonance": {
           "from": 440030,
           "before": "Native Onion Knight resonance mechanics; Spirited Heart Primm's own sprite animation.",
-          "after": "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends."
+          "after": "Deal non-elemental magic damage to all enemies. Increase power of Moonlightbringer by 20% until battle ends.",
+          "previous": [
+            "Deal non-elemental magic damage to all enemies. Increase power of Blade Torrent by 20% until battle ends."
+          ],
+          "requiresActive": 445300
         }
       },
       "mrRestoration": {

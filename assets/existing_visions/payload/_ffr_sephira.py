@@ -515,6 +515,45 @@ def verify_runtime_rows(root, tool, usmap, units, rows):
     print(f'OK: all awakening/MR rewards, skill names and learned-command availability checked for {len(selected)} Sephira visions')
 
 
+def bind_resonance(unit, skills, effects):
+    """Primm's native-equivalent follow-up bonus targets her learned signature.
+
+    Clone the typed effect, retaining its amount, lifetime and timing. Never
+    change Onion Knight/Minfilia's shared original or an authored effect list.
+    """
+    if unit.get('native') is not None or unit.get('party') is not None: return
+    value = runtime_membership(unit)
+    lb = unit.get('lb_custom') or {}
+    if (value is None or value['preset'] != 'primm' or lb.get('from') != 440030
+            or 'effectBundleList' in (lb.get('set') or {})):
+        return
+    learned = {g[1] for field in ('awakening', 'synchro') for tier in unit[field]
+               for g in tier if g[0] == 'ActiveSkill'}
+    targets = [sid for sid in learned if sid == 445300 or
+               (unit.get('skills') or {}).get(str(sid), {}).get('from') == 445300]
+    if len(targets) != 1: return  # Respect a removed or deliberately ambiguous signature.
+    key, effect = effects[12946]
+    if (effect['EffectType'] != 'DmgMulSpecificSkill' or
+            effect['ParamList'][:2] != [20, 445200]):
+        raise ValueError('Native resonance bonus changed; re-audit Primm for this game version.')
+    native = skills.get(440030)
+    if native is None:
+        raise ValueError('Native resonance is unavailable; re-audit Primm for this game version.')
+    bundles = copy.deepcopy(native['effectBundleList'])
+    matched = [b for b in bundles if b['effectId'] == 12946]
+    if len(matched) != 1:
+        raise ValueError('Native resonance effect list changed; re-audit Primm for this game version.')
+    identity = unit['id'] * 10000 + 12946
+    if identity in effects:
+        raise ValueError('Primm resonance effect ID overlaps the game catalog.')
+    matched[0]['effectId'] = identity
+    params = list(effect['ParamList']); params[1] = targets[0]
+    unit['_sephiraResonanceEffects'] = [{
+        'row': f"Studio_Sephira_{unit['id']}_Resonance_12946", 'cloneFrom': key,
+        'set': {'ID': identity, 'ParamList': params}}]
+    lb.setdefault('set', {})['effectBundleList'] = bundles
+
+
 def bind_units(units, rows):
     """Private equivalents follow allocated IDs, including imported/reset kits.
 
@@ -525,7 +564,8 @@ def bind_units(units, rows):
     if not any(runtime_membership(u) is not None for u in result): return result
     passives = {v['ID']: (k, v) for k, v in rows(PASSIVE).items()}
     effects = {v['ID']: (k, v) for k, v in rows(EFFECT).items()}
-    native_skills = {v['ID'] for v in rows('Skill/DT_SkillData').values()}
+    native_skill_rows = {v['ID']: v for v in rows('Skill/DT_SkillData').values()}
+    native_skills = set(native_skill_rows)
     allocated = {}
     for u in result:
         value = runtime_membership(u)
@@ -535,6 +575,7 @@ def bind_units(units, rows):
         repair_mastery_scope(u)
         repair_kit_rewards(u)
         repair_equipable_mr(u)
+        bind_resonance(u, native_skill_rows, effects)
         owned = {int(sid) for sid in u.get('skills', {})}
         if u.get('lb_custom'): owned.add(440000 + (u['id'] - 13099) * 10)
         if native_skills & owned:
@@ -614,6 +655,9 @@ def bind_units(units, rows):
 
 def prepare(tables, units):
     for u in units:
+        if u.get('_sephiraResonanceEffects'):
+            tables.setdefault(EFFECT, {'asset': 'FFRS/Content/Datatable/' + EFFECT,
+                                      'add': [], 'set': []})['add'].extend(u['_sephiraResonanceEffects'])
         for binding in u.get('_sephiraBindings', []):
             for rel, key in [(EFFECT, 'effect'), (PASSIVE, 'passive')]:
                 if key not in binding: continue

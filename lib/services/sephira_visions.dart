@@ -377,8 +377,18 @@ class SephiraVisions {
     }
     final lb = result['lb_custom'];
     final text = update['resonance'];
+    final required = text is Map ? text['requiresActive'] : null;
+    final matchingSkills = required == null ? null : <int>{
+      for (final field in ['awakening', 'synchro'])
+        for (final tier in result[field] as List)
+          for (final grant in tier as List)
+            if (grant[0] == 'ActiveSkill' && (grant[1] == required ||
+                (skills as Map?)?[grant[1].toString()]?['from'] == required)) grant[1] as int,
+    };
+    final hasRequired = matchingSkills == null || matchingSkills.length == 1;
     if (lb is Map && text is Map && lb['from'] == text['from'] &&
-        lb['desc'] == text['before']) {
+        hasRequired && !(required != null && (lb['set'] as Map?)?.containsKey('effectBundleList') == true) &&
+        (lb['desc'] == text['before'] || (text['previous'] as List? ?? []).contains(lb['desc']))) {
       lb['desc'] = text['after'];
       lb['descAuto'] = false;
       changed = true;

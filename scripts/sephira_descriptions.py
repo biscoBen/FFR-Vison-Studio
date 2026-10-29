@@ -62,7 +62,7 @@ def short_skill(recipe, source):
     return text
 
 
-def resonance(recipe, source, english):
+def resonance(recipe, source, english, preset=None):
     text = english[recipe['from']]['desc']
     text = re.sub(r'^\[[^]]+\] ', '', text)
     row = {**source, **recipe.get('set',{})}
@@ -73,6 +73,8 @@ def resonance(recipe, source, english):
         element = '' if row['element']=='None' and row['DamageType']=='Physic' else element + ' '
         return 'Deal ' + element + ('physical' if row['DamageType']=='Physic' else 'magic') + ' damage'
     text = re.sub(r'Deal (?:(?:non-elemental|Lightning|Thunder|Fire|Ice|Water|Wind|Earth|Light|Dark) )?(?:physical|magic) damage', damage,text)
+    if preset == 'primm' and recipe['from'] == 440030:
+        text = text.replace('power of Blade Torrent', 'power of Moonlightbringer')
     return text
 
 
@@ -89,10 +91,17 @@ def revise(catalog, rows, english):
                 audit['skills'].append({'from':recipe['from'], 'name':recipe['en'],
                                         'before':before, 'after':after})
                 recipe.update(desc=after,descAuto=False)
-        lb=profile['lb_custom']; after=resonance(lb,skills[lb['from']],localized)
+        lb=profile['lb_custom']; after=resonance(lb,skills[lb['from']],localized,preset['id'])
+        previous=resonance(lb,skills[lb['from']],localized)
         if lb['desc'] != after:
-            audit['resonance']={'from':lb['from'], 'before':lb['desc'], 'after':after}
+            # Keep the original technical-text migration as well as the
+            # previously shipped player-facing wording. Both saved versions
+            # must reach the corrected text without resetting an edited kit.
+            before=audit.get('resonance',{}).get('before',lb['desc'])
+            audit['resonance']={'from':lb['from'], 'before':before, 'after':after}
             lb.update(desc=after,descAuto=False)
+        if previous != after:
+            audit['resonance'].update(previous=[previous],requiresActive=445300)
     return catalog
 
 

@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Primm resonance follow-up bonus — 2026-10-29
+
+- Both Minfilia and Primm inherited Onion Knight's resonance description and its
+  20% Blade Torrent bonus. Minfilia learns Blade Torrent at tier 3; Primm does not.
+  Primm now applies the same bonus to her tier-3 Moonlightbringer instead, and her
+  description names that skill. Retain the original damage, level scaling, bonus
+  amount and battle-long duration. Minfilia and Onion Knight retain their original
+  bonus and descriptions.
+- Clone only Primm's bonus effect and follow an allocated private Moonlightbringer
+  copy when present. Migrate both previously shipped descriptions without resetting
+  the kit. Preserve edited descriptions, donors and effect lists; do not redirect
+  the bonus when an edited kit removes or duplicates its signature. No new runtime
+  hooks or save writes. Native battle verification remains pending.
+
 
 
 

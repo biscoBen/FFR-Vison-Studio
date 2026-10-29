@@ -18,6 +18,8 @@ from sephira_reward_sources import protected_rewards
 def inputs():
     catalog = json.loads((ROOT/'assets/sephira_visions/catalog.json').read_bytes())
     native = json.loads(gzip.decompress((ROOT/'scripts/fixtures/sephira_challenges/rows.json.gz').read_bytes()))
+    resonance = json.loads((ROOT/'scripts/fixtures/sephira_runtime_sources.json').read_bytes())
+    native['Skill/DT_SkillData'].update({k:r for k,r in resonance['skills'].items() if r['ID']==440030})
     units = [dict(copy.deepcopy(p['profile']), sephiraVision={'version':1, 'preset':p['id'], 'enabled':True})
              for p in catalog['presets']]
     return catalog, native, units
