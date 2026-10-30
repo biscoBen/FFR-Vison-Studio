@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Encounter-controller lifetime guards — 2026-10-30
+
+[Verified Windows download / run 41133576048](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41133576048/Sephira-Studio-Test.zip)
+(code `92c6b1e`, update **1.2.139**; **82.6 MB**).
+
+The encounter controller now resolves its player afresh, checks battle/event
+boundaries before field access, and avoids actor/HUD objects being destroyed.
+Its status widget no longer retains the old field actor. Native Dragon Seal
+suppression, all three ground modes and controller/keyboard inputs are preserved.
+
+Re-enable In-game encounter toggle, rebuild/install and restart to test. Auto-
+battle can stay enabled. Long-session fatal-error resolution still needs an
+in-game check. The existing crash collector remains compatible. Treasure counter
+is user-confirmed working after its OFF/ON upgrade and remains unchanged.
+[Checks and measured timings](CHANGELOG.md#published-encounter-controller-lifetime-guards--2026-10-30).
+
 ### Battle scanner lifecycle guards — 2026-10-30
 
 [Verified Windows download / run 41110446509](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41110446509/Sephira-Studio-Test.zip)

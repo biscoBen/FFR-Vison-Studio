@@ -11,29 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Encounter-controller actor and HUD lifetime handling — 2026-10-30
-
-- The user reports stable play with encounter control disabled, including
-  auto-battle enabled. Auto-battle removal alone had not stopped the native
-  object-lookup crashes. Target the encounter controller's always-running
-  player/HUD handling; its native Dragon Seal conversion fix is preserved.
-- Keep only an input-owner object path between updates, resolve a live actor
-  afresh and borrow the current InputMove owner only within that callback.
-  Check battle/event boundaries before resolving field actors. Reject objects
-  that have begun destruction before actor, HUD or effect-property reads.
-  Compare native object addresses without reading an old actor's name and drop
-  the field actor from the status widget's retained context. Release cached
-  paths and owned state at boundaries; retain keyboard/controller support on
-  foot, chocobo and magitek armor and preserve foreign effects and forced fights.
-- Auto-battle, shared HUD layout, all kits, boss tuning, media and acquisition
-  are unchanged. The guards fix a concrete unsafe-lifetime pattern; the exact
-  native faulting Lua member and long-session resolution remain unconfirmed.
-- Add executable regressions for stale input owners after map changes, boundary
-  checks before actor lookup, BeginDestroy/FinishDestroy actors and retiring
-  widgets/classes. Existing native effect ownership and input fixtures remain covered.
-- Treasure counter is confirmed working after upgrading the older radar with
-  an OFF/ON cycle. Its packages and UI remain unchanged.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -102,6 +79,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published encounter-controller lifetime guards — 2026-10-30
+
+Code [`92c6b1e`](https://github.com/biscoBen/FFR-Vison-Studio/commit/92c6b1e07194e261c7109249fbe4106000497897) ·
+[Studio test 1.2.139](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41133576048/Sephira-Studio-Test.zip)
+
+- The user reports stable play with encounter control removed, including
+  auto-battle enabled. Removing auto-battle alone did not stop the native
+  object-lookup crashes. The failing captures never activated suppression, so
+  this update targets the controller's always-running actor/HUD handling.
+- Retain only the input actor's object path between updates, resolve it afresh
+  and borrow the current InputMove owner only for that callback. The pinned
+  loader's StaticFindObject string API supports the captured native object
+  paths. Check encounter/event boundaries before field lookup, reject retiring
+  UObjects and HUD classes, compare native addresses without reading the old
+  actor's name, and release retained paths/context at boundaries. Never invoke
+  engine methods on a widget that has begun destruction.
+- Preserve the native Dragon Seal row-copy path, zero ratio, ownership/removal,
+  keyboard/controller latching, all three ground modes and forced battles.
+  Auto-battle, shared HUD layout, field appearances, kits, boss tuning, media,
+  acquisition and treasure packages remain unchanged. The counter is now
+  user-confirmed working after the radar OFF/ON upgrade.
+- All 162 focused checks pass. Five new lifecycle regressions reject the old
+  controller. The actual Windows payload passes 13 encounter, 34 auto-battle,
+  49 Fina/esper and 10 counter checks, including native row identity and effect
+  preservation. Full Windows Flutter/analyze, 888 Python tests (33 skips),
+  fresh frozen-engine and launcher/updater checks pass. All 87 extension and
+  16 Fina hashes match. Every public app file and launcher matches the verified
+  artifact/source. The exact native faulting Lua member remains unidentified;
+  a long in-game session is still needed to establish fatal-error resolution.
+- Public ZIP: 82,578,227 bytes; SHA-256
+  `9af69a69030144282771853a3abba1e4be9ee786c32ae6fe8e0000c3ab960d1f`.
+
+First complete candidate **14:44:03 PDT** to verified
+delivery **14:59:06 PDT**: **15m 02s**,
+including focused checks, corrections, waiting and actual package verification.
+CI wall time: **10m 49s**; summed runner job time:
+**15m 00s**. Joined exact automatic run 41133576048 without
+a duplicate/manual dispatch. Publication notes change only README/CHANGELOG
+and do not request another binary.
 
 ## Published battle scanner lifecycle guards — 2026-10-30
 
