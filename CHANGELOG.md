@@ -11,6 +11,27 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Battle scanner lifecycle hardening — 2026-10-30
+
+- The new capture verifies that auto-battle is completely absent from the
+  installed 1.2.137 script, yet a native object-lookup crash recurs after
+  25m 52s. The earlier two crashes lasted about 43 and 46 minutes. Diagnostic
+  observers are disabled; this is distinct from the corrected F7 struct
+  conversion failure. The exact Lua caller is not identified by the reports.
+- Restrict Crystal Fina presentation discovery and the esper spawn scan to an
+  active native battle subsystem. Reject BeginDestroy/FinishDestroy objects
+  even while UE4SS IsValid still returns true. Check sprite ownership before
+  reading projects; never inspect map/menu renderers as possible battle Fina
+  sprites. Clear stale presentation/esper references when battle ends and
+  resume discovery on the next battle. Log Fina scan scope changes once.
+- Preserve encounter control, auto-battle, HUD layout, kits, balance, media and
+  acquisition. This is a focused hardening candidate for unsafe transition
+  reads, not proof that the reports' underlying native failure is resolved.
+  Long-session in-game validation remains required.
+- Add executable lifecycle checks for out-of-battle scans, unrelated renderers,
+  BeginDestroy/FinishDestroy objects, stale action-clock cleanup and recovery
+  on a subsequent battle. Existing Fina and esper mechanic checks still pass.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

@@ -5,9 +5,10 @@ messages, meshes, glows, materials, time = {}, {}, {}, {}, 0
 local nextAddress = 0
 function runtime_object(t)
     nextAddress = nextAddress + 1
-    t=t or {}; t.address=nextAddress
+    t=t or {}; t.address=nextAddress;t.flags=t.flags or 0;t.invalid=t.invalid or false
     t.GetAddress=function(s) return s.address end
     t.IsValid=function(s) return not s.invalid end
+    t.HasAnyFlags=function(s,flags) return ((s.flags or 0) & flags)~=0 end
     return t
 end
 local obj = runtime_object
@@ -86,8 +87,11 @@ function sprite:Play(pack,clip,frame,rate,loops,roundtrip)
 end
 local decoy=obj({SsProject=obj({GetFullName=function() return 'OtherVision' end})})
 function decoy:GetFullName() return 'OtherComponent' end
+function decoy:GetOwner() return actor end
+ui=obj({bDuringBattle=true})
 jobs = {}
 function FindAllOf(class)
+    if class=='CPP_UI_BattleSubsystem' then return {ui} end
     if class=='CPP_BtlJobSkill' then return jobs end
     return {sprite,decoy}
 end

@@ -188,6 +188,31 @@ class EsperMasteryTests(unittest.TestCase):
         lua.globals().run_tests()
         lua.globals().run_reader_failure_tests()
 
+    def test_spawn_scan_skips_worlds_and_destroying_actors_without_dereferencing_them(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            local original=FindAllOf;local reads=0
+            local old=actor(10451)
+            old.flags=0x8000
+            old.GetFullName=function() reads=reads+1;error('destroying actor name') end
+            old.GetUnitAI=function() reads=reads+1;error('destroying actor AI') end
+            actors={old}
+            tick();assert(reads==0)
+            battleUI.bDuringBattle=false
+            FindAllOf=function(class)
+                assert(class=='CPP_UI_BattleSubsystem','No spawn scan outside battle')
+                return original(class)
+            end
+            for _=1,120 do tick();collectgarbage('collect') end
+            assert(next(FFRStudioEsperMastery.states)==nil)
+            FindAllOf=original;battleUI.bDuringBattle=true
+            actors={actor(10451)};tick()
+            assert(FFRStudioEsperMastery.states.Actor10451~=nil)
+        ''')
+
     def test_returned_capture_contract_rejects_old_unwrapped_and_no_argument_reads(self):
         try:from lupa.lua54 import LuaRuntime
         except ImportError:self.skipTest('lupa is needed for executable Lua checks')

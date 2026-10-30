@@ -5,6 +5,7 @@
 local function object(t)
     t=t or {};t.address=t.address or {}
     t.IsValid=function(self) return not self.invalid end
+    t.HasAnyFlags=function(self,flags) return ((self.flags or 0) & flags)~=0 end
     t.GetAddress=function(self) return self.address end
     return t
 end
@@ -87,7 +88,11 @@ end
 fina=actor(1003)
 local bfl=object({GetBattleUnitByUnitId=function(_,id,alive) assert(id==1003 and not alive);return fina end})
 function StaticFindObject(path) assert(path=='/Script/mucha.Default__CPP_BFL_Battle');return bfl end
-function FindAllOf(name) assert(name=='CPP_BtlUnit');return actors end
+battleUI=object({bDuringBattle=true})
+function FindAllOf(name)
+    if name=='CPP_UI_BattleSubsystem' then return {battleUI} end
+    assert(name=='CPP_BtlUnit');return actors
+end
 function ExecuteInGameThread(fn) fn() end
 function LoopAsync(interval,callback) assert(interval==200);tick=callback end
 package.preload.config=function() return {esperMastery=1} end

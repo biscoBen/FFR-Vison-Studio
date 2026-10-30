@@ -72,6 +72,82 @@ class FinaBattleTests(unittest.TestCase):
         lua = self.runtime()
         lua.execute('run_fina_tests()')
 
+    def test_outside_battle_never_scans_sprites_and_next_battle_resumes(self):
+        lua = self.runtime()
+        lua.execute("""
+            local original=FindAllOf
+            local forbiddenReads=0
+            ui.bDuringBattle=false
+            FindAllOf=function(class)
+                if class~='CPP_UI_BattleSubsystem' then forbiddenReads=forbiddenReads+1 end
+                assert(class=='CPP_UI_BattleSubsystem', 'No sprite/movie/job reads on maps or menus')
+                return original(class)
+            end
+            for _=1,120 do tick();collectgarbage('collect') end
+            assert(#meshes==0 and forbiddenReads==0)
+            FindAllOf=original;ui.bDuringBattle=true;tick()
+            assert(#meshes==1 and meshes[1].visible)
+            ui.bDuringBattle=false;tick();assert(meshes[1].invalid)
+            ui.bDuringBattle=true;tick();assert(#meshes==2 and meshes[2].visible)
+        """)
+
+    def test_menu_renderer_is_rejected_before_reading_project_or_name(self):
+        lua = self.runtime()
+        lua.execute("""
+            local reads=0
+            local menu=runtime_object({IsA=function() return false end})
+            local renderer=runtime_object({GetOwner=function() return menu end})
+            setmetatable(renderer,{__index=function(_,key)
+                reads=reads+1;error('A non-battle renderer must not be dereferenced: '..key)
+            end})
+            local original=FindAllOf
+            FindAllOf=function(class)
+                if class=='SsPlayerComponent' then return {renderer,sprite} end
+                return original(class)
+            end
+            for _=1,60 do tick();collectgarbage('collect') end
+            assert(reads==0 and #meshes==1 and meshes[1].visible)
+        """)
+
+    def test_destroying_objects_are_rejected_while_isvalid_still_returns_true(self):
+        for target in ('ui', 'sprite', 'actor'):
+            for flag in (0x8000, 0x10000):
+                with self.subTest(target=target, flag=flag):
+                    lua = self.runtime()
+                    lua.execute(f"victim={target};victim.flags={flag}")
+                    lua.execute("""
+                        assert(victim:IsValid())
+                        local reads=0
+                        local methods={IsValid=victim.IsValid,HasAnyFlags=victim.HasAnyFlags}
+                        local old={};for key,value in pairs(victim) do old[key]=value;victim[key]=nil end
+                        for key,value in pairs(methods) do victim[key]=value end
+                        setmetatable(victim,{__index=function() reads=reads+1;error('teardown object read') end})
+                        -- Flag reads are the only allowed operation after IsValid.
+                        victim.flags=old.flags
+                        victim.invalid=false
+                        for _=1,30 do tick() end
+                        assert(reads==0 and #meshes==0)
+                        setmetatable(victim,nil)
+                        for key,value in pairs(old) do victim[key]=value end
+                        victim.flags=0
+                        for _=1,15 do tick() end
+                        assert(#meshes==1 and meshes[1].visible)
+                    """)
+
+    def test_teardown_clocks_are_not_read_during_battle_cleanup(self):
+        lua = self.runtime()
+        lua.execute("""
+            local hit=clock('OldHit');jobs={job(actor,{hit})}
+            sprite.playing='magic_idle';tick();assert(hit.rate==.64)
+            hit.flags=0x8000
+            local reads=0
+            hit.GetPlayRate=function() reads=reads+1;error('native clock has begun destruction') end
+            ui.bDuringBattle=false;tick()
+            assert(reads==0 and meshes[1].invalid and sprite.rate==1)
+            jobs={};sprite.playing='Idle';ui.bDuringBattle=true;tick()
+            assert(#meshes==2 and meshes[2].visible)
+        """)
+
     def test_movie_pauses_only_the_current_bgm_handle_and_resumes_on_end_or_interruption(self):
         lua = self.runtime("""
             require('config').fina.cinematicMovie='/Game/Movies/Studio/CrystalFina_Test'
@@ -202,6 +278,7 @@ class FinaBattleTests(unittest.TestCase):
             local original=FindAllOf
             local stale=runtime_object({GetFullName=function() error('unrelated actor is unloading') end})
             FindAllOf=function(class)
+                if class=='CPP_UI_BattleSubsystem' then return original(class) end
                 if class=='CPP_BtlJobSkill' then return {} end
                 return {stale, sprite}
             end
@@ -237,6 +314,7 @@ class FinaBattleTests(unittest.TestCase):
             old.GetFullName=function() error('first battle has unloaded') end
             local original=FindAllOf
             FindAllOf=function(class)
+                if class=='CPP_UI_BattleSubsystem' then return original(class) end
                 if class=='CPP_BtlJobSkill' then return {} end
                 return {old,sprite}
             end

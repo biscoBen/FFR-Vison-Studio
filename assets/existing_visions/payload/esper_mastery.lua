@@ -8,6 +8,7 @@ local function log(message) print('[FFR Esper] ' .. message .. '\n') end
 local function valid(o)
     return o and (type(o)=='table' or type(o)=='userdata')
         and type(o.IsValid)=='function' and o:IsValid()
+        and not o:HasAnyFlags(0x18000) -- RF_BeginDestroyed | RF_FinishDestroyed
 end
 local function each(list, fn)
     if not list then return end
@@ -225,6 +226,11 @@ safe('native hooks',function()
 end)
 runtime.tick=function()
     safe('esper spawn scan',function()
+        local active=false
+        for _,ui in ipairs(FindAllOf('CPP_UI_BattleSubsystem') or {}) do
+            if valid(ui) and ui.bDuringBattle then active=true;break end
+        end
+        if not active then runtime.states={};return end
         local seen={}
         for _,actor in ipairs(FindAllOf('CPP_BtlUnit') or {}) do
             if valid(actor) and not actor:GetFullName():find('Default__',1,true) then

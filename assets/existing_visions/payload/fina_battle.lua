@@ -5,7 +5,12 @@
 local config = require('config').fina
 if not config then return end
 local states, assets, pending, scans, errors = {}, nil, nil, 0, {}
-local function valid(o) return o ~= nil and (type(o) == 'userdata' or type(o) == 'table') and o:IsValid() end
+local function valid(o)
+    -- UObject IsValid can remain true after BeginDestroy, before the delete
+    -- listener removes the pointer. Do not resolve properties on those objects.
+    return o ~= nil and (type(o) == 'userdata' or type(o) == 'table')
+        and o:IsValid() and not o:HasAnyFlags(0x18000) -- RF_BeginDestroyed | RF_FinishDestroyed
+end
 local function name(o) return type(o) == 'string' and o or o:ToString() end
 local function log(s) print('[FFR Fina] ' .. s .. '\n') end
 local function native(path)
@@ -371,19 +376,18 @@ local function recover(key, error)
 end
 local function discover(sprite)
     if not valid(sprite) then return end
+    local actor = sprite:GetOwner()
+    -- Reject map/menu renderers before touching their project or sprite data.
+    -- Their transient native fields can be torn down between battle scenes.
+    if not valid(actor) then return end
+    local unit = actor:IsA(native('mucha.CPP_BtlUnit'))
+    if not unit and not actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then return end
     -- A later battle can reuse a component name for a different UObject.
     local key = sprite:GetFullName() .. '@' .. tostring(sprite:GetAddress())
     if states[key] or not valid(sprite.SsProject)
         or not sprite.SsProject:GetFullName():find(config.project, 1, true) then return end
-    local actor = sprite:GetOwner()
-    -- UI renderers, map sprites and cinematics are excluded.
-    if valid(actor) then
-        local unit = actor:IsA(native('mucha.CPP_BtlUnit'))
-        if unit or actor:IsA(native('mucha.CPP_BtlSequencerSsPlayerActor')) then
-            local ok, error = pcall(create, sprite, actor, unit, key)
-            if not ok then recover(key, error) end
-        end
-    end
+    local ok, error = pcall(create, sprite, actor, unit, key)
+    if not ok then recover(key, error) end
 end
 local function refresh(key, s)
     if not valid(s.sprite) or not valid(s.actor) or not valid(s.mesh) or not valid(s.material)
@@ -449,7 +453,26 @@ local function movie_music()
     end
     if not errors.movieHandle then log('Movie identified; no active battle music handle found'); errors.movieHandle = true end
 end
+local function in_battle()
+    for _, ui in ipairs(FindAllOf('CPP_UI_BattleSubsystem') or {}) do
+        if valid(ui) and ui.bDuringBattle then return true end
+    end
+    return false
+end
+local battleScope
 local function tick()
+    local active = in_battle()
+    if battleScope ~= active then
+        battleScope = active
+        log(active and 'Battle presentation scan active' or 'Battle presentation scan suspended outside battle')
+    end
+    if not active then
+        if movieMusic then resume_movie_music() end
+        -- Drop old battle references before looking for any new components.
+        for key, s in pairs(states) do states[key] = nil; clear(s) end
+        scans = 0
+        return
+    end
     local musicOk, musicError = pcall(movie_music)
     if not musicOk then
         -- A missing native audio API must not stop body/casing updates. Retry
