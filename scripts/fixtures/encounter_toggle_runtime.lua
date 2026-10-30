@@ -1,6 +1,8 @@
 -- Native API doubles: exercise the emitted runtime without inventing a save,
 -- passive, equipment or encounter-start API. Real in-game behavior is a playtest.
 clock=0; messages={};keys={};hooks={};loops={};event=false;menuOpen=false;inBattle=false
+inputContexts={{parentMappingContext=1,childMappingContextList={14,18}}}
+buttonReads=0
 local function obj(o)
     o=o or {};o.valid=true
     o.flags=o.flags or 0;o.address=o.address or {}
@@ -74,13 +76,19 @@ end
 actor=new_actor('Rain_A',-1)
 controller=obj({left=0,right=0})
 function controller:GetInputAnalogKeyState(key)
-    assert(type(key.KeyName)=='string');return key.KeyName=='Gamepad_LeftTriggerAxis' and self.left or self.right
+    error('Controller shortcuts must not poll analog axes')
+end
+function controller:IsInputKeyDown(key)
+    assert(key.KeyName=='Gamepad_LeftTrigger' or key.KeyName=='Gamepad_RightTrigger')
+    buttonReads=buttonReads+1
+    return (key.KeyName=='Gamepad_LeftTrigger' and self.left or self.right)>=.8
 end
 viewport={};canCreate=true;created=0
 function new_hud() return obj(),{children={obj({name='nativeQuestWidget'})}} end
 hud,panel=new_hud()
 local manager=obj({});local input=obj({})
 function input:IsEnableInput() return true end
+function input:GetAllIMCStackList() return array(inputContexts) end
 -- Native FindRow supplies an opaque UScriptStruct reference. Its identity and
 -- read-only fields must survive all the way to the factory's native copy path.
 nativeEffectRow=obj({name='NativeDragonSealRow'})
@@ -143,6 +151,8 @@ function skills:CreateContEffect(source,target,data,skillId,passive,schedule)
     return e
 end
 local signatures={
+ ['Engine.PlayerController:IsInputKeyDown']={'StructProperty','BoolProperty'},
+ ['mucha.CPP_InputManager:GetAllIMCStackList']={'ArrayProperty'},
  ['mucha.CPP_BFL_Map:GetMapUnitParameter']={'IntProperty','ObjectProperty'},
  ['mucha.CPP_BFL_Unit:GetPlayableUnitParameterObj']={'IntProperty','ObjectProperty'},
  ['mucha.CPP_BFL_Skill:GetSkillEffectDataById']={'IntProperty','StructProperty'},
@@ -277,6 +287,9 @@ function tests()
     tick(.11);assert(FFRStudioEncounterToggle.disabled and has_effect(rain,71000))
     tick(3);assert(FFRStudioEncounterToggle.disabled)
     controller.left=0;tick();controller.left=1;tick();tick(1.1)
+    assert(FFRStudioEncounterToggle.disabled,'Releasing only one trigger must not rearm a held chord')
+    controller.left,controller.right=0,0;tick()
+    controller.left,controller.right=1,1;tick();tick(1.1)
     assert(not FFRStudioEncounterToggle.disabled and not has_effect(rain,71000))
     controller.left,controller.right=0,0;tick()
     -- Menus, events, transitions and fights release only owned effects.

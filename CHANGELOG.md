@@ -11,6 +11,25 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Controller shortcuts respect map input — 2026-10-30
+
+- The user reports no crash yet on 1.2.139, but the world map repeatedly switches
+  between its map and destination list; holding LT stops it until release.
+  This is not a confirmed recurrence of the earlier battle-targeting issue.
+- Suspend encounter control outside native walking input contexts. World-map,
+  destination-list and other menu contexts can remain active while MainMenu
+  reports closed and the field actor still accepts input. Read the native input
+  context stack before any trigger polling, HUD creation or effect attachment.
+- Both controller shortcuts now read digital trigger button-down states rather
+  than analog axes. Require both triggers released before another hold, including
+  holds carried out of menus or into battle. Preserve F7/F9, one-second holds,
+  status placement, command memory and immediate auto-battle OFF cancellation.
+- Preserve 1.2.139 actor/HUD lifetime guards and the native Dragon Seal row path.
+  No kits, boss balance, media, acquisitions, treasure packages or HUD assets
+  change. Executable fixtures cover map/list modes with MainMenu closed, partial
+  trigger release and holds across field/menu/battle transitions. Actual map
+  navigation, multicast targeting and long-session stability need in-game tests.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

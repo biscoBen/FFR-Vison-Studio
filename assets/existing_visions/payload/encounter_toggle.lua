@@ -41,7 +41,7 @@ local checked={}
 local function signature(name,expected)
     if checked[name] then return end
     local fields={}
-    native('mucha.'..name):ForEachProperty(function(p) fields[#fields+1]=p:GetFullName():match('^(%w+)') end)
+    native((name:match('^Engine%.') and '' or 'mucha.')..name):ForEachProperty(function(p) fields[#fields+1]=p:GetFullName():match('^(%w+)') end)
     local kinds=table.concat(fields,',')
     local matches=kinds==expected
     if type(expected)=='table' then
@@ -77,7 +77,7 @@ local function release(reason)
     if runtime.disabled and next(runtime.effects) then
         log('Releasing owned effects; reason='..tostring(reason or 'context/error'))
     end
-    restore();remove_badge();holdStart,held=nil,false
+    restore();remove_badge();holdStart,held=nil,true
     runtime.inputPath=nil
 end
 local function walking_actor(map)
@@ -112,6 +112,20 @@ local function context(borrowed)
     if not live(input) or not input:IsEnableInput() then return nil,'World input disabled or unavailable' end
     if not live(menu) then return nil,'Menu subsystem unavailable' end
     if menu:IsOpenMenu() or menu.bIsTransitioning then return nil,'Menu open or transitioning' end
+    -- World-map/destination-list screens do not necessarily open MainMenu or
+    -- pause the field actor. Only read our shortcut in native walking modes.
+    -- Read parent contexts only: ordinary field contexts can have map-related
+    -- children for the minimap, which must keep working normally.
+    signature('CPP_InputManager:GetAllIMCStackList','ArrayProperty')
+    local mappings=list(input:GetAllIMCStackList())
+    if #mappings==0 then return nil,'No active walking input context' end
+    for _,mapping in ipairs(mappings) do
+        local mode=unwrap(mapping.parentMappingContext)
+        -- eMuchaInputMappingType: MapUnit, MapUnitDash, UI_Common, UI_Field, UI_Key.
+        if mode~=1 and mode~=2 and mode~=12 and mode~=14 and mode~=32 then
+            return nil,'Non-walking input context: '..tostring(mode)
+        end
+    end
     return actor,systems
 end
 local function badge(actor)
@@ -271,14 +285,20 @@ local function update(keypress)
     local gameplay=native('Engine.Default__GameplayStatics')
     local controller=gameplay:GetPlayerController(actor,0)
     if live(controller) then
-        local left=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_LeftTriggerAxis')})
-        local right=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_RightTriggerAxis')})
+        signature('Engine.PlayerController:IsInputKeyDown','StructProperty,BoolProperty')
+        -- Observe digital trigger buttons; never query axes or send/consume
+        -- native input. Map navigation and single/all targeting own those axes.
+        local left=controller:IsInputKeyDown({KeyName=FName('Gamepad_LeftTrigger')})
+        local right=controller:IsInputKeyDown({KeyName=FName('Gamepad_RightTrigger')})
         local now=gameplay:GetRealTimeSeconds(actor)
-        if left>=.8 and right>=.8 then
+        if left and right then
             if not holdStart or now<holdStart then holdStart=now end
             if not held and now-holdStart>=1 then held=true;toggle() end
-        else holdStart,held=nil,false end
-    else holdStart,held=nil,false end
+        else
+            holdStart=nil
+            if not left and not right then held=false end
+        end
+    else holdStart,held=nil,true end
     if keypress then toggle() end
     if runtime.disabled then apply(actor) else restore();runtime.applied=nil end
     paint()

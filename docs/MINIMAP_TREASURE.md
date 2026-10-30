@@ -64,7 +64,10 @@ Resonance. Install the bundled UE4SS loader if Studio offers it. This replaces t
 previous always-off map-table patch; native map flags now remain intact.
 
 Press **F7**, or hold **both controller triggers (LT+RT / L2+R2) for one second**
-while freely walking. Release the triggers before holding them to toggle again.
+while freely walking. Release both triggers before holding them to toggle again.
+The shortcut reads digital button-down states only in native walking input
+contexts. It suspends while the world map, destination list or another menu has
+input; a hold carried back from those screens must be released before toggling.
 The bottom-left field HUD shows **Random encounters: ON/OFF**. ON restores normal
 game rules, including any native equipment effects. Encounters start ON at every
 game launch. The choice is session-only and uses no equipment/ability slot.

@@ -2,7 +2,10 @@
 
 Enable **In-game auto-battle** in Studio, rebuild/install and restart Resonance.
 Install UE4SS when offered if it is missing. In battle, press **F9** or hold both
-controller triggers **LT+RT / L2+R2 for one second**. Release before another hold.
+controller triggers **LT+RT / L2+R2 for one second**. Release both before another hold.
+The shortcut reads digital button-down states, without polling trigger axes or
+sending native input. A hold begun outside battle must be released in battle
+before it can toggle auto-battle.
 The play indicator beside the battle-speed guide shows ON/OFF. Until that guide
 finishes layout, its fallback position is at the bottom-right of the screen. It starts OFF
 when you launch the game; switching during play uses no equipment slot or rebuild.

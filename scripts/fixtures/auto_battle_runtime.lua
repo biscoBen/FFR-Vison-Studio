@@ -15,7 +15,11 @@ actionId=420070;actionCategory=1;parentId=344;itemQty=2
 local function akey(id) return {Category=id==actionId and actionCategory or 1,ID=id} end
 actor=1;enemy=8;friend=4
 controller=object('Controller',{left=0,right=0})
-function controller:GetInputAnalogKeyState(k) return k.KeyName=='Gamepad_LeftTriggerAxis' and self.left or self.right end
+function controller:GetInputAnalogKeyState(k) error('Controller shortcuts must not poll analog axes') end
+function controller:IsInputKeyDown(k)
+    assert(k.KeyName=='Gamepad_LeftTrigger' or k.KeyName=='Gamepad_RightTrigger')
+    return (k.KeyName=='Gamepad_LeftTrigger' and self.left or self.right)>=.8
+end
 local gameplay=object('Gameplay')
 function gameplay:GetRealTimeSeconds() return clock end
 function gameplay:IsGamePaused() return paused end
@@ -32,6 +36,7 @@ function battle:GetBattleUnitParameter(id)
 end
 local skills=object('Skills',{GetSkillDataById=function(_,id) assert(id==420070);return {belongCommandList=array({344})} end})
 local signatures={
+ ['Engine.PlayerController:IsInputKeyDown']={'StructProperty','BoolProperty'},
  ['CPP_BFL_Battle:GetUnitIdByUniqueId']={'IntProperty','IntProperty'},
  ['CPP_BFL_Battle:GetBattleUnitParameter']={'IntProperty','ObjectProperty'},
  ['CPP_VM_BtlCmd:GetCommands']={'ArrayProperty'},

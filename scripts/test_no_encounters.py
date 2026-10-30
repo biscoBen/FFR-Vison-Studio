@@ -237,6 +237,52 @@ class NoEncountersTests(unittest.TestCase):
             assert(viewport[#viewport]==lastWidget)
         ''')
 
+    def test_world_map_and_destination_modes_are_excluded_even_when_main_menu_is_closed(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();press();assert(FFRStudioEncounterToggle.disabled)
+            for _,mode in ipairs({18,24,15,17,23,6}) do
+                inputContexts={{parentMappingContext=mode,childMappingContextList={}}}
+                local before=buttonReads;local widget=lastWidget
+                controller.left,controller.right=1,1
+                for i=1,20 do tick();press() end
+                hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]({get=function() return actor end})
+                assert(buttonReads==before,'Never poll triggers behind the world map/destination list')
+                assert(widget.removed and not has_effect(parameters[1001],71000))
+                assert(FFRStudioEncounterToggle.disabled,'Map input must not toggle encounter state')
+                controller.left,controller.right=0,0
+                inputContexts={{parentMappingContext=1,childMappingContextList={14,18}},
+                    {parentMappingContext=14,childMappingContextList={18}},
+                    {parentMappingContext=12,childMappingContextList={}}}
+                tick();assert(has_effect(parameters[1001],71000) and lastText.label:find('OFF'))
+            end
+        ''')
+
+    def test_map_hold_requires_neutral_triggers_after_returning_to_the_field(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();controller.left,controller.right=1,1;tick(.1);tick(.5)
+            inputContexts={{parentMappingContext=24}};tick(2)
+            inputContexts={{parentMappingContext=1}};tick(2);tick(2)
+            assert(not FFRStudioEncounterToggle.disabled)
+            controller.left=0;tick();controller.left=1;tick();tick(2)
+            assert(not FFRStudioEncounterToggle.disabled)
+            controller.left,controller.right=0,0;tick()
+            controller.left,controller.right=1,1;tick();tick(1.1)
+            assert(FFRStudioEncounterToggle.disabled and has_effect(parameters[1001],71000))
+        ''')
+
+    def test_unavailable_or_unknown_input_mapping_cannot_arm_the_shortcut(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            controller.left,controller.right=1,1
+            for _,contexts in ipairs({{},{{parentMappingContext=999}},{{parentMappingContext=0}}}) do
+                inputContexts=contexts
+                for i=1,30 do tick();press() end
+                assert(buttonReads==0 and created==0 and not FFRStudioEncounterToggle.disabled)
+            end
+        ''')
+
     def test_battle_and_event_guards_run_before_resolving_any_field_actor(self):
         lua=self.lifecycle_runtime()
         lua.execute('''

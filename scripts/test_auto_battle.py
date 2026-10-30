@@ -117,6 +117,9 @@ class RuntimeTests(unittest.TestCase):
             tick(.11);assert(FFRStudioAutoBattle.enabled)
             tick(4);assert(FFRStudioAutoBattle.enabled)
             controller.left=0;tick();controller.left=1;tick();tick(1.1)
+            assert(FFRStudioAutoBattle.enabled,'Require both triggers released before another hold')
+            controller.left,controller.right=0,0;tick()
+            controller.left,controller.right=1,1;tick();tick(1.1)
             assert(not FFRStudioAutoBattle.enabled)
         ''')
 
@@ -184,6 +187,19 @@ class RuntimeTests(unittest.TestCase):
             assert(FFRStudioAutoBattle.enabled,'Do not retoggle a chord held across a UI transition')
             press();inputEnabled=false;tick();inputEnabled=true;tick();tick(2)
             assert(not FFRStudioAutoBattle.enabled)
+        ''')
+
+    def test_trigger_hold_started_outside_battle_cannot_activate_auto_on_entry(self):
+        self.run_lua('''
+            controller.left,controller.right=1,1;tick()
+            active=true;vm.bDisplayCmd=false
+            for i=1,30 do tick() end
+            assert(not FFRStudioAutoBattle.enabled and #submissions==0)
+            controller.right=0;tick();controller.right=1;tick();tick(2)
+            assert(not FFRStudioAutoBattle.enabled)
+            controller.left,controller.right=0,0;tick()
+            controller.left,controller.right=1,1;tick();tick(1.1)
+            assert(FFRStudioAutoBattle.enabled)
         ''')
 
     def test_manual_memory_is_captured_when_native_input_and_command_ui_have_closed(self):

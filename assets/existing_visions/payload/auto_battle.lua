@@ -46,7 +46,7 @@ local checked={}
 local function signature(name,kinds)
     if checked[name] then return end
     local fields={}
-    native('mucha.'..name):ForEachProperty(function(p)
+    native((name:match('^Engine%.') and '' or 'mucha.')..name):ForEachProperty(function(p)
         fields[#fields+1]=p:GetFullName():match('^(%w+)')
     end)
     assert(table.concat(fields,',')==kinds,'Unsupported native signature: '..name)
@@ -67,7 +67,7 @@ local function clear_display()
     display,painted=nil,nil
 end
 local function suspend()
-    replay,lastTurn,holdStart=nil,nil,nil
+    replay,lastTurn,holdStart,held=nil,nil,nil,true
     -- A held chord stays latched through transient input/command transitions.
     -- It must be released before it may enable auto-battle again.
     clear_display()
@@ -384,12 +384,16 @@ local function update(press)
     local gameplay=native('Engine.Default__GameplayStatics')
     local now=gameplay:GetRealTimeSeconds(c.ui)
     local controller=display.controller
-    local left=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_LeftTriggerAxis')})
-    local right=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_RightTriggerAxis')})
-    if left>=.8 and right>=.8 then
+    signature('Engine.PlayerController:IsInputKeyDown','StructProperty,BoolProperty')
+    local left=controller:IsInputKeyDown({KeyName=FName('Gamepad_LeftTrigger')})
+    local right=controller:IsInputKeyDown({KeyName=FName('Gamepad_RightTrigger')})
+    if left and right then
         if not holdStart or now<holdStart then holdStart=now end
         if not held and now-holdStart>=1 then held=true;toggle() end
-    else holdStart,held=nil,false end
+    else
+        holdStart=nil
+        if not left and not right then held=false end
+    end
     if press then toggle() end
     if runtime.enabled then advance(c,now) end
     guide(c)
