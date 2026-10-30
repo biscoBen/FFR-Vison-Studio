@@ -123,15 +123,16 @@ class NoEncountersTests(unittest.TestCase):
             assert(lastText.label:find('ON'))
             press();assert(FFRStudioEncounterToggle.disabled and has_effect(parameters[1001],71000))
             assert(actor.m_OverwriteEncountRatio==-1 and actor.m_EncountThresholdDistance==1200)
-            menuOpen=true;tick();assert(FFRStudioEncounterToggle.inputActor==nil)
+            assert(type(FFRStudioEncounterToggle.inputPath)=='string' and FFRStudioEncounterToggle.inputActor==nil)
+            menuOpen=true;tick();assert(FFRStudioEncounterToggle.inputPath==nil)
             assert(not has_effect(parameters[1001],71000))
             menuOpen=false;tick();assert(not has_effect(parameters[1001],71000))
             actor.vehicle=true;move({get=function() return actor end});tick()
-            assert(FFRStudioEncounterToggle.inputActor==nil and not has_effect(parameters[1001],71000))
+            assert(FFRStudioEncounterToggle.inputPath==nil and not has_effect(parameters[1001],71000))
             actor.vehicle=false;move({get=function() return actor end});tick()
             assert(has_effect(parameters[1001],71000))
             local boundary=hooks['/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition'][1]
-            boundary();assert(FFRStudioEncounterToggle.inputActor==nil and not has_effect(parameters[1001],71000))
+            boundary();assert(FFRStudioEncounterToggle.inputPath==nil and not has_effect(parameters[1001],71000))
         ''')
 
     def test_encounter_only_install_requests_the_optional_runtime(self):
@@ -202,6 +203,89 @@ class NoEncountersTests(unittest.TestCase):
             end
             actor.movementMethod=1;actor.raft=true;tick();press()
             assert(not FFRStudioEncounterToggle.disabled and not has_effect(parameters[1001],71000))
+        ''')
+
+    def lifecycle_runtime(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/encounter_toggle_runtime.lua').read_text(encoding='utf-8'))
+        def value(v):
+            if isinstance(v,dict):return lua.table_from({k:value(x) for k,x in v.items()})
+            if isinstance(v,list):return lua.table_from([value(x) for x in v])
+            return v
+        lua.globals().nativeSource=value(json.loads((ROOT/'scripts/fixtures/encounter_control_native.json').read_bytes()))
+        helper=(ROOT/'assets/existing_visions/payload/status_hud.lua').read_text(encoding='utf-8')
+        code=(ROOT/'assets/existing_visions/payload/encounter_toggle.lua').read_text(encoding='utf-8')
+        lua.execute('local create_status_hud=(function()\n'+helper+'\nend)();\n'+code)
+        return lua
+
+    def test_input_owner_is_resolved_again_without_a_retained_actor_pointer(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            local move=hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]
+            move({get=function() return actor end});tick()
+            assert(type(FFRStudioEncounterToggle.inputPath)=='string')
+            assert(FFRStudioEncounterToggle.inputActor==nil)
+            local old=actor;local reads=0
+            old.GetMapMovementMethod=function() reads=reads+1;error('old world actor read') end
+            old.GetFullName=function() reads=reads+1;error('old world actor name') end
+            actor=new_actor('BP_Player_C /Game/Map/New.New:PersistentLevel.Player',-1)
+            tick();assert(reads==0 and lastText.label:find('ON'))
+            move({get=function() return actor end});tick()
+            assert(FFRStudioEncounterToggle.inputPath=='/Game/Map/New.New:PersistentLevel.Player')
+            assert(FFRStudioEncounterToggle.inputActor==nil)
+            assert(viewport[#viewport]==lastWidget)
+        ''')
+
+    def test_battle_and_event_guards_run_before_resolving_any_field_actor(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            local map=StaticFindObject('/Script/mucha.Default__CPP_BFL_Map')
+            local original=map.GetPlayerMapUnit;local reads=0
+            map.GetPlayerMapUnit=function() reads=reads+1;error('field lookup during transition') end
+            inBattle=true;for _=1,30 do tick() end
+            inBattle=false;event=true;for _=1,30 do tick() end
+            assert(reads==0 and created==0)
+            map.GetPlayerMapUnit=original;event=false;tick()
+            assert(created==1 and lastText.label:find('ON'))
+        ''')
+
+    def test_destroying_actor_is_not_dereferenced_even_when_isvalid_is_true(self):
+        for flag in (0x8000,0x10000):
+            with self.subTest(flag=flag):
+                lua=self.lifecycle_runtime();lua.globals().destroyFlag=flag
+                lua.execute('''
+                    actor.flags=destroyFlag;assert(actor:IsValid())
+                    local reads=0;local original=actor.IsA
+                    actor.IsA=function() reads=reads+1;error('retiring actor class') end
+                    for _=1,120 do tick();collectgarbage('collect') end
+                    assert(reads==0 and created==0)
+                    actor.IsA=original;actor.flags=0;tick()
+                    assert(created==1 and lastText.label:find('ON'))
+                ''')
+
+    def test_retiring_field_widget_is_replaced_without_calling_its_engine_methods(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();local old=lastWidget;old.flags=0x8000
+            local reads=0
+            old.GetVisibility=function() reads=reads+1;error('dying widget visibility') end
+            old.RemoveFromParent=function() reads=reads+1;error('dying widget removal') end
+            tick();assert(reads==0 and created==2 and old~=lastWidget)
+            assert(viewport[#viewport]==lastWidget and lastText.label:find('ON'))
+            press();assert(FFRStudioEncounterToggle.disabled and lastText.label:find('OFF'))
+        ''')
+
+    def test_retiring_private_hud_class_is_not_passed_to_native_widget_creation(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();event=true;tick();event=false
+            guideClass.flags=0x10000;assert(guideClass:IsValid())
+            local before=created
+            tick();assert(created==before and #viewport==0)
+            assert(not FFRStudioEncounterToggle.disabled)
+            guideClass.flags=0;tick()
+            assert(created==before+1 and lastText.label:find('ON'))
         ''')
 
 

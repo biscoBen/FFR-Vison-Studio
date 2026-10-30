@@ -49,11 +49,15 @@ the timing of live marker refreshes; these still need an in-game check.
 
 ## In-game encounter toggle
 
-Versions 1.2.120/1.2.121 can crash just after the overworld appears with this
-feature enabled. The user isolated this to encounter control, not the F8 collector.
-The 1.2.122 candidate replaces raw text creation and field HUD-tree edits with an
-independent game-created key-guide UserWidget. Startup and placement need a live
-test of the candidate; leave the switch off in the earlier packages.
+The user isolated intermittent native crashes in 1.2.137 to the encounter
+controller: removing auto-battle did not resolve them, while encounter control
+OFF stayed stable with auto-battle ON. The 1.2.139 candidate stops retaining a
+field-player UObject across frames, resolves its object path afresh, checks
+battle/event boundaries before field access, and rejects actor/HUD objects that
+have begun destruction even when the loader still reports IsValid. The current
+status compares object addresses without dereferencing a previous field actor.
+These changes cover unsafe lifetime handling; long-session in-game validation
+of the corrected encounter controller is still required.
 
 Enable **In-game encounter toggle** in Studio, rebuild/install once, and restart
 Resonance. Install the bundled UE4SS loader if Studio offers it. This replaces the
@@ -69,22 +73,19 @@ The runtime temporarily applies the game's native Dragon Seal encounter effect
 (effect 71000, passive source 1052) to live map parameters while OFF. It uses no
 equipment or learned-ability slot and does not change save data. Only effect
 instances created by Studio are removed when normal control resumes; equipped
-Dragon Seal and other buffs remain. Menus, vehicles, events, battles and map
+Dragon Seal and other buffs remain. Menus, non-ground vehicles, events, battles and map
 transitions release Studio's effect, with OFF reapplied on return to free walking.
 Scripted/boss battles and rewards remain intact.
 
-The returned 1.2.126/1.2.127 log confirms both a zero actor override and a 1e30
-movement threshold were written, but the user still received ordinary encounters.
-Those ineffective writes have been removed from this candidate. Native suppression
-with Dragon Seal's effect still requires a playtest. The separate passive status
-UserWidget uses a plain TextBlock and is refreshed with typed native text;
-footer rendering also needs a live check. Debug screen messages are not used.
+The working suppression path uses the resident native skill-effect row, copied
+by Unreal rather than converted through a Lua table. It does not write actor
+encounter ratios, walking thresholds, equipment or saves. Foot, chocobo and
+magitek-armour travel remain supported.
 
 An unavailable HUD leaves native encounters unchanged and logs the reason with
-`[FFR encounters]`. Local executable Lua fixtures cover state restoration,
-controller hold/release, keyboard toggles, HUD lifecycle and unavailable contexts.
-Native schema/method evidence supports the bindings, but live encounter suppression,
-controller recognition and visual placement still need testing in the game.
+`[FFR encounters]`. Executable fixtures cover restoration, native row identity,
+keyboard/controller toggles, map/event guards, retiring actors and HUD widgets,
+and recovery on the next map. Keep auto-battle's existing controls and placement.
 
 ## Dungeon remaining-item counter
 
@@ -109,8 +110,10 @@ than relying on currently loaded actors or chest-only totals. Decorative chests
 that start open are excluded. The captured native scope covers 108 dungeon/shrine
 maps and 201 collectible locations; unknown world/town maps hide the label.
 
-Native serialization and packed-getter checks pass. In-game placement and count
-updates still need a playtest. The independent runtime status indicators use a
+Native serialization and packed-getter checks pass. The user reports that the
+counter is working after the OFF/ON upgrade. Detailed in-game coverage of every
+dungeon and collection type remains
+separate from the executable saved-state checks. The independent runtime status indicators use a
 private passive UserWidget with one plain TextBlock and an explicit font, rather
 than the game's input-aware key-guide contents. Those indicators still require
 UE4SS and a control rebuild/install; controller targeting and rendering remain

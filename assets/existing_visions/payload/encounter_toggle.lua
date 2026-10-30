@@ -8,13 +8,18 @@ local display, lastError, holdStart, held, painted
 local function valid(o)
     return o ~= nil and (type(o)=='userdata' or type(o)=='table') and o:IsValid()
 end
+local function live(o)
+    -- The loader still accepts a UObject between BeginDestroy and deletion.
+    -- No actor/HUD property or function lookup is safe in that interval.
+    return valid(o) and not o:HasAnyFlags(0x18000)
+end
 local function native(name)
     local object=StaticFindObject('/Script/'..name)
     assert(valid(object),'Native object unavailable: '..name)
     return object
 end
 local function log(s) print('[FFR encounters] '..s..'\n') end
-local function same(a,b) return valid(a) and valid(b) and a:GetFullName()==b:GetFullName() end
+local function same(a,b) return live(a) and live(b) and a:GetAddress()==b:GetAddress() end
 local function unwrap(value)
     if (type(value)=='userdata' or type(value)=='table') and type(value.get)=='function' then
         return value:get()
@@ -46,12 +51,12 @@ local function signature(name,expected)
     checked[name]=true
 end
 local function remove_badge()
-    if display then display:remove() end
+    if display and live(display.widget) then display:remove() end
     display,painted=nil,nil
 end
 local function restore()
     for key,owned in pairs(runtime.effects) do
-        if valid(owned.parameter) and valid(owned.effect) then
+        if live(owned.parameter) and live(owned.effect) then
             local array=owned.parameter.m_ContEffectList
             local keep,found={},false
             for _,effect in ipairs(list(array)) do
@@ -73,21 +78,28 @@ local function release(reason)
         log('Releasing owned effects; reason='..tostring(reason or 'context/error'))
     end
     restore();remove_badge();holdStart,held=nil,false
-    runtime.inputActor=nil
+    runtime.inputPath=nil
 end
 local function walking_actor(map)
     -- InputMove supplies the actual controlled actor, including contexts where
     -- the map-library getter has not published a player. Transitions clear it.
-    if valid(runtime.inputActor) then return runtime.inputActor,'native input owner' end
+    -- A Lua userdata reference does not keep an Unreal actor alive. Resolve a
+    -- path anew instead of retaining an actor pointer across map/battle loads.
+    if runtime.inputPath then
+        local actor=StaticFindObject(runtime.inputPath)
+        if live(actor) then return actor,'resolved native input owner' end
+        runtime.inputPath=nil
+    end
     return map:GetPlayerMapUnit(),'map library'
 end
-local function context()
+local function context(borrowed)
     local map=native('mucha.Default__CPP_BFL_Map')
-    local actor=walking_actor(map)
-    if not valid(actor) then return nil,'Walking player not ready (map getter/input owner unavailable)' end
-    if not actor:IsA(native('mucha.CPP_MapUnit_Playable')) then return nil,'Native player is not playable: '..actor:GetFullName() end
+    -- Boundary checks must precede touching any cached/resolved field actor.
     if map:IsDuringEncount() then return nil,'Encounter transition active' end
     if native('mucha.Default__CPP_BFL_TalkEvent'):IsPlayingEvent() then return nil,'Story event active' end
+    local actor=live(borrowed) and borrowed or walking_actor(map)
+    if not live(actor) then return nil,'Walking player not ready (map getter/input owner unavailable)' end
+    if not actor:IsA(native('mucha.CPP_MapUnit_Playable')) then return nil,'Native player is not playable: '..actor:GetFullName() end
     if not actor:IsEnableUnitInput() then return nil,'Player input disabled' end
     if actor:IsPaused() then return nil,'Player paused' end
     if not actor.m_IsEnableMovement then return nil,'Player movement disabled' end
@@ -97,18 +109,27 @@ local function context()
     local systems=native('Engine.Default__SubsystemBlueprintLibrary')
     local input=systems:GetWorldSubsystem(actor,native('mucha.CPP_InputManager'))
     local menu=systems:GetWorldSubsystem(actor,native('mucha.CPP_MainMenuSubsystem'))
-    if not valid(input) or not input:IsEnableInput() then return nil,'World input disabled or unavailable' end
-    if not valid(menu) then return nil,'Menu subsystem unavailable' end
+    if not live(input) or not input:IsEnableInput() then return nil,'World input disabled or unavailable' end
+    if not live(menu) then return nil,'Menu subsystem unavailable' end
     if menu:IsOpenMenu() or menu.bIsTransitioning then return nil,'Menu open or transitioning' end
     return actor,systems
 end
 local function badge(actor)
     local controller=native('Engine.Default__GameplayStatics'):GetPlayerController(actor,0)
-    if display and (not display:valid() or not same(display.controller,controller) or not same(display.context,actor)) then remove_badge() end
+    if not live(controller) then remove_badge();return false end
+    local actorAddress=actor:GetAddress()
+    if display and (not live(display.widget) or not live(display.label) or not live(display.controller)
+        or not same(display.controller,controller) or display.actorAddress~=actorAddress) then remove_badge() end
     if not display then
+        local class=StaticFindObject('/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
+        if valid(class) and not live(class) then return false end
         display=create_status_hud(actor,{anchorX=0,anchorY=1,x=24,y=-24})
+        if display then
+            display.actorAddress=actorAddress
+            display.context=nil -- No borrowed field actor pointer survives this update.
+        end
     end
-    return display~=nil and display:valid()
+    return display~=nil and live(display.widget) and live(display.label) and live(display.controller)
 end
 local function paint()
     display:show()
@@ -126,9 +147,9 @@ local function native_effect_row(actor)
     signature('CPP_InputManager:GetDataTable',{'EnumProperty,ObjectProperty','ByteProperty,ObjectProperty'})
     local systems=native('Engine.Default__SubsystemBlueprintLibrary')
     local input=systems:GetWorldSubsystem(actor,native('mucha.CPP_InputManager'))
-    assert(valid(input),'Input manager unavailable for native effect lookup')
+    assert(live(input),'Input manager unavailable for native effect lookup')
     local source=input:GetDataTable(29) -- eDataTableType.SkillEffectData
-    assert(valid(source) and source:IsA(native('Engine.DataTable')),'Native skill effect table unavailable')
+    assert(live(source) and source:IsA(native('Engine.DataTable')),'Native skill effect table unavailable')
     local schema=source:GetRowStruct()
     assert(valid(schema) and schema:GetFullName()=='ScriptStruct /Script/mucha.SKILL_EFFECT_DATA',
         'Unsupported native skill effect row schema')
@@ -154,14 +175,14 @@ local function apply(actor)
     local seen,count={},0
     for id=1001,1008 do
         local parameter=map:GetMapUnitParameter(id)
-        if valid(parameter) then
+        if live(parameter) then
             assert(parameter:IsA(native('mucha.CPP_UnitParameter')) and
                 not parameter:IsA(native('mucha.CPP_BtlUnitParameter')),'Expected a native map parameter')
             local key=parameter:GetFullName();seen[key]=true;count=count+1
             local array=parameter.m_ContEffectList
             local current=list(array);local owned=runtime.effects[key];local found,zero=false,false
             for _,effect in ipairs(current) do
-                assert(valid(effect),'Invalid native map effect')
+                assert(live(effect),'Invalid or retiring native map effect')
                 if owned and same(effect,owned.effect) then found=true end
                 local entry=effect:GetEffectData()
                 if entry.EffectType==192 and list(entry.ParamList)[1]==0 then zero=true end
@@ -175,7 +196,7 @@ local function apply(actor)
                     runtime.nativeFactoryEntered=true
                 end
                 local effect=skill:CreateContEffect(parameter,parameter,data,1052,true,false)
-                assert(valid(effect),'Native Dragon Seal effect could not be created')
+                assert(live(effect),'Native Dragon Seal effect could not be created')
                 runtime.effects[key]={parameter=parameter,effect=effect}
                 assert(effect:IsA(native('mucha.CPP_ContFxEncountRatio')) and
                     same(effect:GetTargetUnitParameter(),parameter),'Native Dragon Seal target did not bind')
@@ -200,10 +221,10 @@ end
 runtime.snapshot=function(reason)
     log('Diagnostic '..tostring(reason)..'; requested OFF='..tostring(runtime.disabled)..'; last error='..tostring(lastError))
     for target,owned in pairs(runtime.effects) do
-        log('Owned target='..target..'; effect='..(valid(owned.effect) and owned.effect:GetFullName() or 'invalid'))
+        log('Owned target='..target..'; effect='..(live(owned.effect) and owned.effect:GetFullName() or 'invalid'))
     end
     local map=native('mucha.Default__CPP_BFL_Map');local actor,source=walking_actor(map)
-    if valid(actor) then
+    if live(actor) then
         log('Actor='..actor:GetFullName()..'; source='..source..'; walking method='..tostring(actor:GetMapMovementMethod())..
             '; override='..tostring(actor.m_OverwriteEncountRatio)..'; threshold='..tostring(actor.m_EncountThresholdDistance))
     end
@@ -213,13 +234,13 @@ runtime.snapshot=function(reason)
         -- Compare the map cache with the ordinary playable-parameter getter.
         -- Read only; never attach an effect to a diagnostic/temporary object.
         local cached=map:GetMapUnitParameter(id)
-        for _,source in ipairs(valid(cached) and {'map','playable'} or {}) do
+        for _,source in ipairs(live(cached) and {'map','playable'} or {}) do
             local parameter
             if source=='map' then parameter=cached else parameter=units:GetPlayableUnitParameterObj(id) end
-            if valid(parameter) then
+            if live(parameter) then
                 local effects=list(parameter.m_ContEffectList);local seals={}
                 for _,effect in ipairs(effects) do
-                    if valid(effect) then
+                    if live(effect) then
                         local data=effect:GetEffectData()
                         if data.EffectType==192 then
                             seals[#seals+1]=tostring(data.ID)..':'..tostring(list(data.ParamList)[1])
@@ -249,7 +270,7 @@ local function update(keypress)
     local previous=runtime.disabled
     local gameplay=native('Engine.Default__GameplayStatics')
     local controller=gameplay:GetPlayerController(actor,0)
-    if valid(controller) then
+    if live(controller) then
         local left=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_LeftTriggerAxis')})
         local right=controller:GetInputAnalogKeyState({KeyName=FName('Gamepad_RightTriggerAxis')})
         local now=gameplay:GetRealTimeSeconds(actor)
@@ -283,13 +304,13 @@ RegisterKeyBind(Key.F7,runtime.key)
 runtime.move=function(owner)
     local ok,message=pcall(function()
         local actor=owner and owner:get()
-        if valid(actor) and actor:IsA(native('mucha.CPP_MapUnit_Playable')) then
+        if live(actor) and actor:IsA(native('mucha.CPP_MapUnit_Playable')) then
             local name=actor:GetFullName()
             if runtime.lastInputName~=name then log('Native movement input owner: '..name);runtime.lastInputName=name end
-            runtime.inputActor=actor
+            runtime.inputPath=name:match('^[^ ]+ (.+)$') or name
         end
         if not runtime.disabled then return end
-        actor=context()
+        actor=context(actor)
         if actor then apply(actor) else restore() end
     end)
     if not ok then

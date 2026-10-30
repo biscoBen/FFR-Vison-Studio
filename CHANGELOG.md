@@ -11,6 +11,29 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Encounter-controller actor and HUD lifetime handling — 2026-10-30
+
+- The user reports stable play with encounter control disabled, including
+  auto-battle enabled. Auto-battle removal alone had not stopped the native
+  object-lookup crashes. Target the encounter controller's always-running
+  player/HUD handling; its native Dragon Seal conversion fix is preserved.
+- Keep only an input-owner object path between updates, resolve a live actor
+  afresh and borrow the current InputMove owner only within that callback.
+  Check battle/event boundaries before resolving field actors. Reject objects
+  that have begun destruction before actor, HUD or effect-property reads.
+  Compare native object addresses without reading an old actor's name and drop
+  the field actor from the status widget's retained context. Release cached
+  paths and owned state at boundaries; retain keyboard/controller support on
+  foot, chocobo and magitek armor and preserve foreign effects and forced fights.
+- Auto-battle, shared HUD layout, all kits, boss tuning, media and acquisition
+  are unchanged. The guards fix a concrete unsafe-lifetime pattern; the exact
+  native faulting Lua member and long-session resolution remain unconfirmed.
+- Add executable regressions for stale input owners after map changes, boundary
+  checks before actor lookup, BeginDestroy/FinishDestroy actors and retiring
+  widgets/classes. Existing native effect ownership and input fixtures remain covered.
+- Treasure counter is confirmed working after upgrading the older radar with
+  an OFF/ON cycle. Its packages and UI remain unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and

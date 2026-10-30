@@ -3,7 +3,10 @@
 clock=0; messages={};keys={};hooks={};loops={};event=false;menuOpen=false;inBattle=false
 local function obj(o)
     o=o or {};o.valid=true
+    o.flags=o.flags or 0;o.address=o.address or {}
     function o:IsValid() return self.valid end
+    function o:HasAnyFlags(flags) return (self.flags & flags)~=0 end
+    function o:GetAddress() return self.address end
     function o:GetFullName() return self.name or tostring(self) end
     function o:IsA(class) return self.class==class or
         (self.class==classes['mucha.CPP_MapUnit_Player'] and class==classes['mucha.CPP_MapUnit_Playable']) or
@@ -151,7 +154,15 @@ local libs={['mucha.Default__CPP_BFL_Map']=map,['mucha.Default__CPP_BFL_TalkEven
     ['Engine.Default__SubsystemBlueprintLibrary']=systems,['Engine.Default__GameplayStatics']=gameplay,
     ['mucha.Default__CPP_BFL_Skill']=skills,['mucha.Default__CPP_BFL_Unit']=units}
 function StaticFindObject(p)
-    if p:find('/Script/',1,true)~=1 then return nil end
+    if p:find('/Script/',1,true)~=1 then
+        if p=='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C' then
+            if loadedGuideClass then return guideClass end
+            return nil
+        end
+        local name=actor and rawget(actor,'name')
+        if name and p==(name:match('^[^ ]+ (.+)$') or name) and not actor.unregistered then return actor end
+        return nil
+    end
     local n=p:gsub('^/Script/','')
     return libs[n] or classes[n] or obj({ForEachProperty=function(_,fn)
         local fields=signatures[n] or {}
@@ -160,7 +171,7 @@ function StaticFindObject(p)
     end})
 end
 local factory=obj()
-local guideClass=obj({name='WBP_StudioStatus_C'})
+guideClass=obj({name='WBP_StudioStatus_C'})
 libs['UMG.Default__WidgetBlueprintLibrary']=factory
 local kismet=obj()
 libs['Engine.Default__KismetSystemLibrary']=kismet
@@ -171,6 +182,7 @@ end
 function kismet:Conv_SoftObjPathToSoftObjRef(path) return {soft=path} end
 function kismet:LoadAsset_Blocking(reference)
     assert(reference.soft.path=='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
+    loadedGuideClass=true
     return guideClass
 end
 function LoadAsset(path)
