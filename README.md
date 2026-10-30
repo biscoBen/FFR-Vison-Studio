@@ -4,6 +4,24 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Battle scanner lifecycle guards — 2026-10-30
+
+[Verified Windows download / run 41110446509](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41110446509/Sephira-Studio-Test.zip)
+(code `f9b8f40`, update **1.2.138**; **82.6 MB**).
+
+Fina's presentation scanner now ignores map/menu renderers and runs only during
+battle. Both Fina and esper scanners reject objects being destroyed and release
+old battle references before the next encounter. Auto-battle, encounter control,
+HUD placement, kits, balance, acquisition and media are unchanged.
+
+The new capture confirms that the intermittent fatal error can occur with
+auto-battle completely removed. These guards address unsafe transition reads;
+long-session stability still needs an in-game test. The current toggle-isolation
+comparison should stay on 1.2.137 with both Studio controls OFF before trying
+this scanner candidate. The existing crash collector
+works without an observer or another installation.
+[Checks and measured timings](CHANGELOG.md#published-battle-scanner-lifecycle-guards--2026-10-30).
+
 ### Native-row bypass for the F7 crash — 2026-10-29
 
 [Verified Windows download / run 40974725661](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-40974725661/Sephira-Studio-Test.zip)

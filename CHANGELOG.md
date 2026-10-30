@@ -11,27 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Battle scanner lifecycle hardening — 2026-10-30
-
-- The new capture verifies that auto-battle is completely absent from the
-  installed 1.2.137 script, yet a native object-lookup crash recurs after
-  25m 52s. The earlier two crashes lasted about 43 and 46 minutes. Diagnostic
-  observers are disabled; this is distinct from the corrected F7 struct
-  conversion failure. The exact Lua caller is not identified by the reports.
-- Restrict Crystal Fina presentation discovery and the esper spawn scan to an
-  active native battle subsystem. Reject BeginDestroy/FinishDestroy objects
-  even while UE4SS IsValid still returns true. Check sprite ownership before
-  reading projects; never inspect map/menu renderers as possible battle Fina
-  sprites. Clear stale presentation/esper references when battle ends and
-  resume discovery on the next battle. Log Fina scan scope changes once.
-- Preserve encounter control, auto-battle, HUD layout, kits, balance, media and
-  acquisition. This is a focused hardening candidate for unsafe transition
-  reads, not proof that the reports' underlying native failure is resolved.
-  Long-session in-game validation remains required.
-- Add executable lifecycle checks for out-of-battle scans, unrelated renderers,
-  BeginDestroy/FinishDestroy objects, stale action-clock cleanup and recovery
-  on a subsequent battle. Existing Fina and esper mechanic checks still pass.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -100,6 +79,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published battle scanner lifecycle guards — 2026-10-30
+
+Code [`f9b8f40`](https://github.com/biscoBen/FFR-Vison-Studio/commit/f9b8f405f6540ba6ba2ed937a47ebb1262053a4a) ·
+[Studio test 1.2.138](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41110446509/Sephira-Studio-Test.zip)
+
+- The returned capture matches 1.2.137 with auto-battle completely omitted,
+  yet another object-lookup access violation occurs after 25m 52s. This rules
+  out auto-battle as the sole cause; the crash reports still do not identify
+  the exact Lua caller. The old diagnostic observers are disabled.
+- Restrict Crystal Fina discovery and Eiko's esper spawn scan to an active
+  native battle. Reject BeginDestroy/FinishDestroy objects before property,
+  name or AI reads, even while the loader still reports IsValid. Filter sprite
+  owners before project reads, clear old references outside battle, and resume
+  on a later battle. Log Fina scan scope changes without per-frame log spam.
+- Auto-battle, encounter control, HUD layout and field appearances retain their
+  exact payload bytes. All kits, boss tuning, acquisition, media and native
+  UI assets remain unchanged. These guards address a concrete unsafe scan
+  pattern; a long in-game session is still needed to establish whether they
+  resolve the reported native fatal errors. No native root-cause claim is made.
+- All 157 focused checks pass, including five new lifecycle regressions that
+  reject the old runtime. The actual Windows payload passes 49 Fina/esper
+  lifecycle and mechanics checks, 34 auto-battle checks, eight encounter
+  checks and 10 counter checks. Existing crystal animation, action timing,
+  movie BGM restoration and esper reward/finale behavior remain covered.
+  Full Windows Flutter/analyze, 883 Python tests (33 skips), fresh frozen-engine
+  and launcher/updater checks pass. All 87 extension and 16 Fina hashes match;
+  every public app file and launcher matches the verified artifact/source.
+- The user is separately testing 1.2.137 with both Studio runtime controls OFF.
+  Keep that comparison on 1.2.137 before evaluating this scanner candidate.
+- Public ZIP: 82,577,813 bytes; SHA-256
+  `eb0223fcc9c37e4057f7111b4914bacc141181b7df11dc69c78759aaa06a011d`.
+
+First complete candidate **11:50:11 PDT** to verified
+delivery **12:06:36 PDT**: **16m 24s**,
+including focused checks, verification, waiting and the exact automatic Windows
+build. CI wall time: **11m 40s**; summed runner job time:
+**16m 10s**. Joined run 41110446509 without a duplicate
+or manual dispatch. Publication notes change only README/CHANGELOG and do not
+request another binary.
 
 ## Published native-row bypass for the F7 crash — 2026-10-29
 
