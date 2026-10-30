@@ -97,8 +97,10 @@ Code [`b73f538`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b73f538bc3f
   foreign effects, native restoration, all ground modes and session-only state.
 - Record entry and successful completion of the first native factory/attachment.
   Auto-battle and its accepted right-side status placement are unchanged, as are
-  all kits, balance, acquisition, audio/media and treasure assets. Native crash
-  recovery and actual encounter suppression still need an in-game retest.
+  all kits, balance, acquisition, audio/media and treasure assets. Subsequent
+  live result on 2026-10-29: the user reports that 1.2.137 now seems to be working.
+  Record this as a successful latest test; individual travel modes and extended
+  session coverage were not specified.
 - All 108 focused checks pass. The actual Windows payload passes 34 auto-battle,
   eight encounter-control and 10 counter checks. Factory fixtures require the
   original opaque native-row reference, reject Lua-table round-tripping and

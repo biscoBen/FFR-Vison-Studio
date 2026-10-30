@@ -16,9 +16,10 @@ its accepted status placement retain their exact bytes and behavior.
 
 Re-enable In-game encounter control if it was disabled for recovery, rebuild/
 install and restart. Test F7 or the held-trigger control on foot, chocobo or
-magitek. Native crash recovery and encounter suppression need a live retest;
-the existing external session collector still works. Kits, balance, acquisition,
-media and treasure assets are unchanged.
+magitek. The user now reports 1.2.137 is working in the latest in-game test;
+individual travel-mode coverage was not specified. The existing external session
+collector still works. Kits, balance, acquisition, media and treasure assets are
+unchanged.
 [Checks and measured timings](CHANGELOG.md#published-native-row-bypass-for-the-f7-crash--2026-10-29).
 
 ### Native Dragon Seal parameter reading — 2026-10-29
