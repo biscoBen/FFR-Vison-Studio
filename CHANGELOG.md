@@ -11,6 +11,30 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### External crash monitoring after trace stutter — 2026-10-30
+
+- The user reports severe gameplay stuttering with the temporary per-line
+  encounter tracer. Stop using that tracer for normal-play reproduction. Its
+  native-protocol fixture generates 24,600 log entries over 100 updates (ten
+  simulated seconds), before accounting for real console/file output costs.
+- Provide a standalone external monitor instead. Sample the selected game's
+  memory, CPU time, handles, threads and log size every two seconds; install no
+  Lua instrumentation or observer and perform no game-process control. Keep
+  sampling state bounded and unavailable metrics null, and separate PID/start
+  identities. Ordinary crash logs and resource trends do not identify the exact
+  faulting Lua operation; memory growth alone does not establish a leak.
+- Restore a leftover heavy trace from its verified backup before launch. Preserve
+  corrupt backups or externally changed scripts. After restoration, the monitor
+  leaves game files unchanged. Normal exit automatically exports samples and
+  crash reports; partial samples survive an export failure. No Studio update,
+  mod rebuild or F8 is required. Normal play anywhere is the requested test.
+- Ten PowerShell fixtures pass, covering rate limiting, missing metrics, bounded
+  errors, process identity, actual session-watcher integration, recovery, refusal
+  of edited scripts and automatic export. All archive files match reviewed
+  sources. Native frame-rate retesting and the original crash remain pending.
+  Standalone `Encounter-Light-Diagnostics.zip`: 15,487 bytes, SHA-256
+  `e1625cc545c0df710a96ff1c044e83edf3997370a34ba91fc341f589340f2369`. App/runtime code and the verified 1.2.140 binary are unchanged.
+
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -117,7 +141,8 @@ Code [`42ef463`](https://github.com/biscoBen/FFR-Vison-Studio/commit/42ef46339b4
   restores the runtime byte for byte, and automatically exports after game exit.
   Eight PowerShell/Lua mutation, recovery, export and line-identification checks
   pass; all 16 encounter fixtures also pass with tracing. The pinned loader opens
-  Lua's debug library. This diagnostic still needs its first actual game session.
+  Lua's debug library. The user's subsequent test reports severe stuttering;
+  discontinue this per-line tracer and use the external monitoring follow-up above.
   Trace ZIP: 18,329 bytes; SHA-256 `60844f48127feb554a6b23ef1fcae8525c83f5cd9dd5c82f67f7a4ef7e9ddb2f`.
 - Public ZIP: 82,578,750 bytes; SHA-256
   `04e23bee5eeb3dfd192ef19df1364d1a6ce210d7d9dfa37073c312ccefc63dcb`.

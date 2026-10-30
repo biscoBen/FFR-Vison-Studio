@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Light crash diagnostics — 2026-10-30
+
+The temporary per-line encounter tracer caused severe stuttering in the user's
+in-game test. Stop using that tracer. The replacement standalone helper provided
+in chat monitors process resources externally every two seconds, without Lua
+hooks or game-loop logging. It restores any interrupted old trace from its
+verified backup before launch and exports ordinary crash logs plus resource
+samples when the game closes. No Studio update, mod rebuild or F8 is needed.
+
+Play normally anywhere. Resource trends can test the buildup hypothesis; they do
+not establish a leak or locate every Lua call. Ten PowerShell fixtures pass;
+native performance and the original crash still need the user's retest.
+[Details](CHANGELOG.md#external-crash-monitoring-after-trace-stutter--2026-10-30).
+
 ### Controller map-input guards — 2026-10-30
 
 [Verified Windows download / run 41139098146](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41139098146/Sephira-Studio-Test.zip)
@@ -19,8 +33,8 @@ then ordinary single/all targeting while auto-battle is OFF. Those native
 behaviors need a game retest. Another 1.2.139 fatal occurred after closing a menu;
 this input update is not a confirmed crash fix. For normal play, leave Studio
 encounter control disabled until the targeted trace identifies the native call.
-The trace-session ZIP provided in chat works with either 1.2.139 or 1.2.140 and
-restores its temporary script changes after exporting. The treasure counter and
+The earlier per-line trace-session ZIP caused stutter; use the light external
+monitoring helper described above for further normal-play diagnostics. The treasure counter and
 its packages remain unchanged and working.
 [Checks and measured timings](CHANGELOG.md#published-controller-map-input-guards--2026-10-30).
 
