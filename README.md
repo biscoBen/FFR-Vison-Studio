@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Controller map-input guards — 2026-10-30
+
+[Verified Windows download / run 41139098146](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41139098146/Sephira-Studio-Test.zip)
+(code `42ef463`, update **1.2.140**; **82.6 MB**).
+
+Encounter control now suspends during world-map/destination-list input modes,
+which are separate from the main menu. Both shortcuts read digital trigger
+button-down states instead of analog axes and require both triggers released
+before another hold. Command memory and auto-battle OFF cancellation remain.
+
+Rebuild/install and restart to check map/list navigation with no triggers held,
+then ordinary single/all targeting while auto-battle is OFF. Those native
+behaviors need a game retest. Another 1.2.139 fatal occurred after closing a menu;
+this input update is not a confirmed crash fix. For normal play, leave Studio
+encounter control disabled until the targeted trace identifies the native call.
+The trace-session ZIP provided in chat works with either 1.2.139 or 1.2.140 and
+restores its temporary script changes after exporting. The treasure counter and
+its packages remain unchanged and working.
+[Checks and measured timings](CHANGELOG.md#published-controller-map-input-guards--2026-10-30).
+
 ### Encounter-controller lifetime guards — 2026-10-30
 
 [Verified Windows download / run 41133576048](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41133576048/Sephira-Studio-Test.zip)

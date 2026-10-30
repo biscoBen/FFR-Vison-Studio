@@ -11,25 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Controller shortcuts respect map input — 2026-10-30
-
-- The user reports no crash yet on 1.2.139, but the world map repeatedly switches
-  between its map and destination list; holding LT stops it until release.
-  This is not a confirmed recurrence of the earlier battle-targeting issue.
-- Suspend encounter control outside native walking input contexts. World-map,
-  destination-list and other menu contexts can remain active while MainMenu
-  reports closed and the field actor still accepts input. Read the native input
-  context stack before any trigger polling, HUD creation or effect attachment.
-- Both controller shortcuts now read digital trigger button-down states rather
-  than analog axes. Require both triggers released before another hold, including
-  holds carried out of menus or into battle. Preserve F7/F9, one-second holds,
-  status placement, command memory and immediate auto-battle OFF cancellation.
-- Preserve 1.2.139 actor/HUD lifetime guards and the native Dragon Seal row path.
-  No kits, boss balance, media, acquisitions, treasure packages or HUD assets
-  change. Executable fixtures cover map/list modes with MainMenu closed, partial
-  trigger release and holds across field/menu/battle transitions. Actual map
-  navigation, multicast targeting and long-session stability need in-game tests.
-
 ### Returned full-game reference audit — 2026-10-22
 
 - Confirm successful collection after the private-mappings fix: 106 scoped tables, 58,035 inventory assets and
@@ -98,6 +79,56 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published controller map-input guards — 2026-10-30
+
+Code [`42ef463`](https://github.com/biscoBen/FFR-Vison-Studio/commit/42ef46339b4a38dc9325dfcfb3de6555fd3b9ee0) ·
+[Studio test 1.2.140](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41139098146/Sephira-Studio-Test.zip)
+
+- The world map repeatedly switches between its destination list and regular
+  map on 1.2.139, stopping while LT is held. A new battle-targeting recurrence
+  has not been reported. A later capture confirms another native property-lookup
+  fatal after 16m 05s, with the exact verified 1.2.139 runtime, while standing in
+  the Water Shrine after closing the menu. The lifetime guards did not resolve
+  the crash; this input candidate is not presented as a proven fatal-error fix.
+- Suspend encounter control when the native input stack belongs to world-map,
+  destination-list or other menu contexts, even with MainMenu closed and field
+  input still enabled. Read the captured parent mappings before trigger polls,
+  HUD creation or effect attachment; preserve field minimap child mappings.
+- Read digital trigger button-down states for both shortcuts instead of analog
+  axes. Require both triggers released before another hold, including holds
+  carried from a menu or into battle. Preserve F7/F9, one-second holds, accepted
+  indicator placement, command memory and immediate auto-battle cancellation.
+- Preserve 1.2.139 actor/HUD lifetime guards, the native Dragon Seal row-copy path,
+  native effect ownership, all three travel modes and forced battles. Kits,
+  boss powers, acquisition, media, counter/radar and native HUD assets retain
+  their bytes. The treasure counter remains user-confirmed working.
+- All 166 focused checks pass; four new protocol regressions reject the old
+  controller. The actual Windows payload passes 16 encounter, 35 auto-battle,
+  49 Fina/esper and 10 counter checks. Full Windows Flutter/analyze, 892 Python
+  tests (33 skips), fresh frozen-engine and launcher/updater checks pass.
+  All 87 extension and 16 Fina hashes match; every public app file and launcher
+  matches the verified artifact/source. Actual map navigation, multicast
+  targeting and long-session stability still need an in-game test; the exact
+  native cause of the reported map flicker has not been established.
+- A separate temporary trace-session ZIP supports the installed 1.2.139/140
+  controller without another rebuild. It instruments only the existing encounter
+  call tree with Lua line markers, adds no native hook/observer, backs up and
+  restores the runtime byte for byte, and automatically exports after game exit.
+  Eight PowerShell/Lua mutation, recovery, export and line-identification checks
+  pass; all 16 encounter fixtures also pass with tracing. The pinned loader opens
+  Lua's debug library. This diagnostic still needs its first actual game session.
+  Trace ZIP: 18,329 bytes; SHA-256 `60844f48127feb554a6b23ef1fcae8525c83f5cd9dd5c82f67f7a4ef7e9ddb2f`.
+- Public ZIP: 82,578,750 bytes; SHA-256
+  `04e23bee5eeb3dfd192ef19df1364d1a6ce210d7d9dfa37073c312ccefc63dcb`.
+
+First complete candidate **15:34:08 PDT** to verified
+package **15:51:12 PDT**: **17m 03s**,
+including local checks, corrections, waiting and actual package verification.
+CI wall time: **10m 06s**; summed runner job time:
+**14m 18s**. Joined exact automatic run 41139098146 without
+a duplicate/manual dispatch. Publication notes change only README/CHANGELOG
+and do not request another binary.
 
 ## Published encounter-controller lifetime guards — 2026-10-30
 
