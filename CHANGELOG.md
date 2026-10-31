@@ -13,6 +13,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ### Eiko Eidolon Revelry chance — 2026-10-30
 
+- Refresh the generated MR coverage catalog fingerprints; all 75 original MR rewards remain covered.
 - Lower Eidolon Revelry from 50% to 30% for each ordinary esper action. Keep
   one roll per logical action and retain the guaranteed native final special.
   The reward works through equipped Eiko, the individual passive or Spirit of
