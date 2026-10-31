@@ -11,23 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Party voice tracks with repeated section names — 2026-10-31
-
-- Fix the returned 1.2.142 install failure during game-table preparation. Six
-  captured party tracks use duplicate section names under different track
-  outers; the former guard rejected them. Patch their native voice imports
-  without selecting the first object by its short name or serializing a new
-  timeline shell. Preserve every section, effect, speaker and timing value.
-- Track edits by export index so multiple voice sections with the same name are
-  retained. Verify the exact cue import actually used by each section. Refuse
-  conflicting shared-import requests or an unselected section sharing the cue.
-- Ten focused voice regressions cover all 64 pairs, both Lasswell routes, six
-  original duplicate-name tracks and first-object/effect isolation. Native SDK
-  build/readback verifies 113 original tracks and 230 voice sections across the
-  captured party routes, including all six duplicate-name cases. No live audio
-  or successful installation is claimed yet. Keep existing selections and
-  rebuild/install with the fixed update; no preset reset is needed.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -120,6 +103,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published party voice duplicate-section fix — 2026-10-31
+
+Code [`df3f376`](https://github.com/biscoBen/FFR-Vison-Studio/commit/df3f376aa9903e92a7bd4e0b33dc4e46f23bacf3) ·
+[Studio test 1.2.143](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41233384884/Sephira-Studio-Test.zip)
+
+- Fix the returned 1.2.142 failure, “The party voice section has an ambiguous
+  native export name,” during game-table preparation. Six captured party tracks
+  reuse section names under different track outers. Redirect only their native
+  voice cue imports with the binary package cloner, preserving the original
+  timeline shell and every effect, other speaker and timing value.
+- Retain all same-name voice sections by tracking package/export index rather
+  than short name. Verify the package of the cue import each section actually
+  uses. Reject conflicting shared-import requests and unselected cue users.
+  No SDK, audio bank, codec or game runtime replacement is needed.
+- All 38 focused voice/party checks pass, including 64 voice pairs, 121 captured
+  character-owned skill routes, Dawn Frost/counters, six original duplicate-name
+  tracks and first-object/effect isolation. The former 1.2.142 implementation
+  reproduces the exact reported failure on the new regression.
+- Native SDK build/readback verifies 113 captured tracks and 230 voice sections,
+  including all six ambiguous tracks. Ten checks rerun with the actual Windows
+  payload, followed by another native build/readback of its six affected tracks.
+  Windows analysis, 336 Flutter tests (one skipped), the separate fresh-engine
+  startup test, 898 Python tests (33 skipped) and launcher/updater gates pass.
+  All 87 extension and 16 Fina manifest files match. Every public app file and
+  launcher matches the verified artifact/source and exact workflow provenance.
+- Keep saved voice choices and rebuild/install, then restart. No preset reset or
+  new collector is needed. The user's full setup/install and native listening
+  still need retesting. Other kits, rewards, bosses, cinematics and runtime
+  controls match 1.2.142; the only changed payload module is the party voice
+  patcher. This is not a native encounter-crash fix.
+- Public ZIP: 82,579,989 bytes; SHA-256
+  `4ec618ac9bffba50517facbf98cf48b1e946aa3db6f64868bcc3b0adf47c38e7`.
+
+First complete candidate **12:14:59 PDT** to verified
+package **12:24:53 PDT**: **9m 53s**,
+including focused checks, waiting and actual package verification. CI wall time:
+**7m 31s**; summed runner job time:
+**11m 18s**. Joined exact automatic run 41233384884 without
+a duplicate/manual dispatch. Publication notes change only README/CHANGELOG and
+do not request another binary.
 
 ## Published complete party battle voice swaps — 2026-10-31
 

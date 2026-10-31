@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Party voice installation fix — 2026-10-31
+
+[Verified Windows download / run 41233384884](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41233384884/Sephira-Studio-Test.zip)
+(code `df3f376`, update **1.2.143**; **82.6 MB**).
+
+Fix the 1.2.142 build failure about an “ambiguous native export name.” Stock party
+sound tracks can reuse section names; the patcher now redirects their voice
+references while preserving effects and timing. It keeps every voice section.
+
+Keep your saved voice selections, rebuild/install and restart. Native package
+readback and all Windows checks pass; installation/listening needs a user retest.
+[Checks and measured timings](CHANGELOG.md#published-party-voice-duplicate-section-fix--2026-10-31).
+
 ### Complete party battle voice swaps — 2026-10-31
 
 [Verified Windows download / run 41231222207](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41231222207/Sephira-Studio-Test.zip)
