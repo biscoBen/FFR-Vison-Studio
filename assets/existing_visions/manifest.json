@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "6e5a4f06c4262189e9d64c6b0dc5106f1385ff4267b481aca67b9e668108f9f6",
+    "install_existing_visions.py": "d3d6ca18da6d93c1ff9a374bd39165d415304d77dc6199d945becd87fb2eca50",
     "payload/CaveHcaV3.cs": "d2e381c4deb8c6986a30aee4c4f74fe2c6094075b115c9bab51e718e44566b4c",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -39,7 +39,7 @@
     "payload/_ffr_native_voices.py": "c507a345e5fc4c646a4b28ee08333147723877ddcf7dd9bee943a643d74db2cb",
     "payload/_ffr_overworld.py": "c6516ef346cf4cc50a279daae8593a864a2e3eb57ba6b5647d613c7ca8cfbf3a",
     "payload/_ffr_party.py": "5e1af6eb741460b67ff3f33a57df1c7f8ffc04102290217834d338e53d393ec4",
-    "payload/_ffr_party_voices.py": "b5b435850a1141da4d091a685e1981e753483134102e2f532361b1ac0c4e5c73",
+    "payload/_ffr_party_voices.py": "894d75ef7d82e27003c64d81a15d1f7167b5b41eb4adb02cbf5172c876e9620f",
     "payload/_ffr_runtime_loader.py": "2cbe2f8883a63b106510d9a51b1c91f436f7da0a2181cd70e1353a6a1531343e",
     "payload/_ffr_sephira.py": "4906612b1d16395f56c208ba8e0e0f926288bef18d9d0da17b853666f9abf315",
     "payload/_ffr_sephira_ffbe.py": "11e159b088c21a846b500ee097453eaa50ccaac4e41c89e66fad940622a2c2b0",
@@ -70,7 +70,7 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "18bf56fd876dc22e350a2cf1871259f5e73293667723a56f5584e77a14bc32c3",
+    "payload/manifest.json": "9754cca251455c78d6d4fb447c162e7b69fb3f19f607b58415f1fdb768fc99ff",
     "payload/minimap_counter.zip": "2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb",
     "payload/minimap_treasure.zip": "f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",

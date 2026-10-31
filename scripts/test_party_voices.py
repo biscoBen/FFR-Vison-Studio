@@ -176,6 +176,68 @@ class PartyVoiceTests(unittest.TestCase):
         built['Exports'][1]['Data'][0]['Value'] = -5
         with self.assertRaisesRegex(ValueError, 'unrelated'): voices.check_track(original, built, edits)
 
+    def test_captured_duplicate_names_redirect_voice_imports_and_preserve_other_exports(self):
+        captured = json.loads(gzip.decompress((ROOT / 'scripts/fixtures/party_voice_routes.json.gz').read_bytes()))
+        self.assertEqual(len(captured['ambiguousTracks']), 6)
+        for asset, sample in captured['ambiguousTracks'].items():
+            original = sample['data']; label = party.voice_label(sample['target'])
+            new = '/Game/Sound/StudioPartyVoice/CHR0020/StudioPartyVoice_CHR0020_ability_Cue'
+            changes = [{'export': name, 'export_index': index, 'old': cue, 'new': new, 'target': sample['target']}
+                       for name, cue, _, index in voices.sounds(original) if cue.startswith('VO_BTL_') and label in cue]
+            clone, post = voices.track_edits(asset, original, changes)
+            self.assertEqual(post, [])
+            self.assertEqual(clone['from'], asset); self.assertEqual(clone['to'], asset)
+            self.assertTrue(clone['rename'])
+            built = copy.deepcopy(original)
+            # The native SDK clone rewrites name references, without resolving
+            # an export by its ambiguous short name. Real package readback is
+            # also performed before release against these six cooked tracks.
+            for entry in built['Imports']:
+                for old, replacement in clone['rename']:
+                    entry['ObjectName'] = entry['ObjectName'].replace(old, replacement)
+            voices.check_track(original, built, changes)
+            self.assertEqual(len(list(voices.sounds(built))), len(list(voices.sounds(original))))
+
+    def test_prepare_retains_both_voice_exports_sharing_a_name_after_an_effect(self):
+        u = unit(1004); u.pop('ffbe'); u['battleVoice'] = 1008
+        data = fixture(u); data['Asset/Skill/DT_SkillAsset'] = {
+            k:v for k,v in data['Asset/Skill/DT_SkillAsset'].items() if v['ID'] == 666041}
+        original = track([('SE_SWORD_Cue', 100), ('VO_BTL_ABL_01_CHR0040_Cue', 200),
+                          ('VO_BTL_CHR0040_041_Cue', 300)])
+        for index, export in enumerate(original['Exports']):
+            export.update(ObjectName='RepeatedSection', OuterIndex=index+10)
+        for index in (2,3):
+            entry=original['Imports'][index]
+            original['Imports'].append({'ObjectName':
+                '/Game/Sound/Cri/Voice/VO_BTL/VO_BTL_CHR0040/'+entry['ObjectName']})
+            entry['OuterIndex']=-len(original['Imports'])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); folder = root/'extracted/legacy/FFRS/Content/Sequencer/Battle/Skill/666040'
+            folder.mkdir(parents=True); (folder/'SEQ_Battle_666041_Master.uasset').touch()
+            path = folder/'SEQ_Battle_666041_Sound.uasset'; path.touch(); views={str(path):original}
+            def extract(rel):
+                p=root/'extracted/legacy/FFRS/Content'/(rel+'.uasset');p.parent.mkdir(parents=True,exist_ok=True);p.touch()
+                views[str(p)]=template(u,Path(rel).name)
+            clones=[];post=[]
+            with contextlib.redirect_stdout(io.StringIO()):
+                voices.prepare([],clones,post,[u],root,lambda rel:data[rel],extract,lambda p:(views[p],{}))
+            plan=json.loads((root/voices.PLAN).read_bytes())
+            self.assertEqual([c['export_index'] for c in plan['changes']],[1,2])
+            self.assertFalse(any('Sound' in edit['set'] for edit in post))
+            sound_clone=next(c for c in clones if c['from']==c['to'])
+            self.assertEqual(len(sound_clone['rename']),4)
+            self.assertTrue(all(c['new'].endswith('StudioPartyVoice_CHR0080_ability_Cue') for c in plan['changes']))
+
+    def test_import_redirect_refuses_conflicting_or_unselected_uses(self):
+        original = track([('SE_SWORD_Cue',100),('VO_BTL_ABL_01_CHR0020_Cue',200),
+                          ('VO_BTL_ABL_01_CHR0020_Cue',300)])
+        for e in original['Exports']:e['ObjectName']='RepeatedSection'
+        edits=[{'export':'RepeatedSection','export_index':i,'old':'VO_BTL_ABL_01_CHR0020_Cue',
+                'new':'/Game/StudioVoice','target':1002} for i in (1,2)]
+        with self.assertRaisesRegex(ValueError,'unselected'):voices.track_edits('NativeSoundTrack',original,edits[:1])
+        edits[1]['new']='/Game/DifferentVoice'
+        with self.assertRaisesRegex(ValueError,'different recordings'):voices.track_edits('NativeSoundTrack',original,edits)
+
     def test_opt_in_and_missing_native_command_are_guarded(self):
         u = unit(); forbidden = mock.Mock(side_effect=AssertionError('Unneeded game data access'))
         for choice in (None, u['id']):

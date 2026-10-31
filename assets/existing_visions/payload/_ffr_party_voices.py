@@ -57,12 +57,47 @@ def sounds(data):
         yield export['ObjectName'], cue, start, index
 
 
+def track_edits(asset, original, changes):
+    """Use native import renames when a section name cannot identify an export.
+
+    The SDK's object editor selects the first export with a given name. Cooked
+    tracks legitimately reuse section names under different track outers. A
+    native package clone can instead redirect just the voice cue imports, keeping
+    the binary-read timeline shell and its private serialized state intact.
+    """
+    ambiguous = any(next(i for i, e in enumerate(original['Exports'])
+                         if e['ObjectName'] == c['export']) != c['export_index'] for c in changes)
+    clone = {'from': asset, 'to': asset, 'rename': []}
+    if not ambiguous:
+        return clone, [{'asset': asset, 'export': c['export'], 'set': {'Sound': c['new']}} for c in changes]
+    replacements = {}
+    for c in changes:
+        old, new = c['old'], c['new']
+        if old in replacements and replacements[old] != new:
+            raise ValueError(f'{asset}: a shared voice import requires different recordings.')
+        replacements[old] = new
+    planned = {c['export_index'] for c in changes}
+    for _, cue, _, index in sounds(original):
+        if cue in replacements and index not in planned:
+            raise ValueError(f'{asset}: a voice import is also used by an unselected section.')
+    for old, new in replacements.items():
+        label = party.voice_label(next(c['target'] for c in changes if c['old'] == old))
+        package = f'/Game/Sound/Cri/Voice/VO_BTL/VO_BTL_{label}/{old}'
+        for entry in original['Imports']:
+            if entry['ObjectName'] == old and import_name(original, entry.get('OuterIndex')) != package:
+                raise ValueError(f'{asset}: the original battle voice import points to an unexpected package.')
+        # Replace the complete package before the short object name. No speaker
+        # bank or general character token is renamed in the sound track.
+        clone['rename'].extend([[package, new], [old, new.rsplit('/', 1)[1]]])
+    return clone, []
+
+
 def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
     chosen = selected(units)
     if not chosen: return
     root = Path(root); legacy = root / 'extracted/legacy'; content = legacy / 'FFRS/Content'
     assets = {v['ID']: v for rel in ('Asset/Skill/DT_SkillAsset', 'Asset/Skill/CDT_SkillAsset_Demo') for v in rows(rel).values()}
-    changes = []; generated = {}; seen = set(); copied_tracks = set()
+    changes = []; generated = {}; seen = set(); tracks = {}
     for u in chosen:
         speaker = profile(u['battleVoice']); old_label = party.voice_label(u['id'])
         for sid, kind in voice_skills(u, rows):
@@ -83,14 +118,9 @@ def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
                         # Match the actual speaker token, never music, impacts or story voice banks.
                         if not re.fullmatch(r'VO_BTL_[A-Za-z0-9_]*' + old_label + r'(?:_[A-Za-z0-9]+)*_Cue', cue): continue
                         if kind == 'attack' and not cue.startswith('VO_BTL_ATK_'): continue
-                        # SDK object edits address the first matching name. Native
-                        # templates can repeat that name under another Outer.
-                        # Reject a later voice export instead of changing a
-                        # different section that happens to share its name.
-                        first = next(i for i, e in enumerate(data['Exports']) if e['ObjectName'] == export)
-                        if index != first: raise ValueError('The party voice section has an ambiguous native export name.')
                         asset = 'FFRS/Content/' + path.relative_to(content).with_suffix('').as_posix()
-                        if (asset, export) not in seen: events.append((start, asset, export, cue, index))
+                        tracks[asset] = data
+                        if (asset, index) not in seen: events.append((start, asset, export, cue, index))
                 events.sort(key=lambda e: (e[0], e[1], e[2]))
                 variants = {duel: [e for e in events if e[3].endswith('_DUEL_Cue') == duel] for duel in (False, True)}
                 for event in events:
@@ -121,16 +151,12 @@ def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
                         post_objects.append({'asset': target, 'export': name, 'set': edits})
                         generated[target] = {'asset': target, 'export': name, 'bank': bank, 'set': edits}
                     new_path = target.replace('FFRS/Content/', '/Game/')
-                    # The initial patch reads each object from LEGACY. Clone the
-                    # track once, then edit OUT in place so later sections cannot
-                    # overwrite earlier replacements in the same package.
-                    if asset not in copied_tracks:
-                        clones.append({'from': asset, 'to': asset, 'rename': []})
-                        copied_tracks.add(asset)
-                    post_objects.append({'asset': asset, 'export': export, 'set': {'Sound': new_path}})
                     changes.append({'asset': asset, 'export': export, 'export_index': index, 'old': old_cue, 'new': new_path, 'target': u['id'], 'source': u['battleVoice']})
-                    seen.add((asset, export))
+                    seen.add((asset, index))
         print(f'  {u["en"]}: authored attack, personal-skill, counter and LB voices follow {party.identity(u["battleVoice"])[2]}; effects and timing retained.')
+    for asset, original in tracks.items():
+        clone, edits = track_edits(asset, original, [c for c in changes if c['asset'] == asset])
+        clones.append(clone); post_objects.extend(edits)
     path = root / PLAN; path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({'version': 1, 'selection': [[u['id'], u['battleVoice']] for u in chosen],
                                 'changes': changes, 'cues': list(generated.values())}, indent=2), encoding='utf-8')
@@ -155,7 +181,8 @@ def check_track(original, built, changes):
         raise ValueError('A party voice section failed verification, or unrelated audio/timing changed.')
     for export, cue, _, index in sounds(built):
         if index not in expected: continue
-        imp = next(i for i in built['Imports'] if i['ObjectName'] == cue)
+        value = next(p['Value'] for p in built['Exports'][index]['Data'] if p['Name'] == 'Sound')
+        imp = built['Imports'][-value - 1]
         if import_name(built, imp['OuterIndex']) != expected[index]['new']:
             raise ValueError('A party voice section points to the wrong cue package.')
 

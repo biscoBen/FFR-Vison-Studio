@@ -11,6 +11,23 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Party voice tracks with repeated section names — 2026-10-31
+
+- Fix the returned 1.2.142 install failure during game-table preparation. Six
+  captured party tracks use duplicate section names under different track
+  outers; the former guard rejected them. Patch their native voice imports
+  without selecting the first object by its short name or serializing a new
+  timeline shell. Preserve every section, effect, speaker and timing value.
+- Track edits by export index so multiple voice sections with the same name are
+  retained. Verify the exact cue import actually used by each section. Refuse
+  conflicting shared-import requests or an unselected section sharing the cue.
+- Ten focused voice regressions cover all 64 pairs, both Lasswell routes, six
+  original duplicate-name tracks and first-object/effect isolation. Native SDK
+  build/readback verifies 113 original tracks and 230 voice sections across the
+  captured party routes, including all six duplicate-name cases. No live audio
+  or successful installation is claimed yet. Keep existing selections and
+  rebuild/install with the fixed update; no preset reset is needed.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
