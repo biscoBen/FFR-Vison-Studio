@@ -6,6 +6,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('Revelry updates its previous description without changing saved kits or custom text', () async {
+    final presets = await SephiraVisions.bundled;
+    final preset = presets.singleWhere((p) => p['id'] == 'eiko');
+    final unit = CharacterConfig.copy(preset['profile'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'eiko', 'enabled': true};
+    unit['sephiraPassiveText']['1963']['name'] = 'My label';
+    unit['sephiraPassiveText']['1963']['desc'] = 'Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed.';
+    unit['stats']['Mind'] = 999;
+    final before = CharacterConfig.copy(unit);
+    final expected = CharacterConfig.copy(unit);
+    expected['sephiraPassiveText']['1963']['desc'] = 'Each ordinary esper action has a 30% chance to become its special. The final special is guaranteed.';
+    final actual = SephiraVisions.repairDescriptions(unit, presets);
+    expect(actual, expected);
+    expect(unit, before);
+    expect(identical(SephiraVisions.repairDescriptions(actual, presets), actual), isTrue);
+    unit['sephiraPassiveText']['1963']['desc'] = 'My custom description';
+    expect(identical(SephiraVisions.repairDescriptions(unit, presets), unit), isTrue);
+  });
   test('Rikku Pharmacology replaces only default MR7 and respects later edits', () async {
     final presets = await SephiraVisions.bundled;
     final p = presets.singleWhere((p) => p['id'] == 'rikku');

@@ -132,15 +132,15 @@ function run_tests()
     a.parameter.count=3;assert(a.ai:GetRemainingActionNumSummonedUnit()==0)
     -- The opening native phase is repeated, rather than adding after dismissal.
     for n,expected in ipairs({1,1,2,3}) do a.parameter.think=n;assert(a.parameter:GetThinkNum()==expected) end
-    -- 50% is rolled once per action; target selection follows the new skill.
+    -- 30% is rolled once per action; target selection follows the new skill.
     local random=math.random;local calls=0
-    math.random=function(low,high) assert(low==1 and high==100);calls=calls+1;return 50 end
+    math.random=function(low,high) assert(low==1 and high==100);calls=calls+1;return 30 end
     a.ai.remaining=2;a.ai:GetRemainingActionNumSummonedUnit()
     a.parameter.count=4;a.ai:SetSkill(414010);assert(a.ai.skill==300020)
     a.ai:SetSkill(500020);assert(a.ai.skill==300020 and calls==1)
     a.ai:SetTargetList({});assert(a.ai.targetsFor==300020)
     assert(a.ai:SetSkillRandom(0)==300020 and a.ai.m_SkillId==300020 and calls==1)
-    a.parameter.count=5;math.random=function() calls=calls+1;return 51 end
+    a.parameter.count=5;math.random=function() calls=calls+1;return 31 end
     a.ai:SetSkill(414010);assert(a.ai.skill==414010 and calls==2)
     -- Native final stack bypasses ordinary SetSkill: always special + dismiss,
     -- regardless of earlier rolls, and never cleared/replaced by our runtime.

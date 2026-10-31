@@ -21,7 +21,7 @@
     },
     "1963": {
       "name": "Eidolon Revelry",
-      "desc": "Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed.",
+      "desc": "Each ordinary esper action has a 30% chance to become its special. The final special is guaranteed.",
       "cost": 50,
       "marker": 196300
     }
@@ -1358,7 +1358,7 @@
           },
           "1963": {
             "name": "Eidolon Revelry",
-            "desc": "Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed."
+            "desc": "Each ordinary esper action has a 30% chance to become its special. The final special is guaranteed."
           }
         },
         "sephiraKitRevision": 2

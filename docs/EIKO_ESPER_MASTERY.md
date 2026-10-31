@@ -13,7 +13,7 @@ Summoning remains Fina's native command; Eiko no longer grants Ifrit or Shiva.
 | MR3 | Esper Power: esper damage +20% | 30 |
 | MR5 | Esper Communion: recover 5% of the summoner's maximum MP per esper action | 20 |
 | MR7 | Enduring Eidolons: one extra ordinary action before the finisher, esper max HP +20% | 40 |
-| MR9 | Eidolon Revelry: 50% chance for each ordinary action to become a special; the final special stays guaranteed | 50 |
+| MR9 | Eidolon Revelry: 30% chance for each ordinary action to become a special; the final special stays guaranteed | 50 |
 
 The native summon effects specify two ordinary actions before the final special.
 Eight offensive espers check their remaining-action counter, then schedule their

@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "3259d2d62907c20bf4795796cf798dc132cf17f9d5631613a5be832d9b1cbcfa",
+    "install_existing_visions.py": "eacb40bf86280691416df72e5fc6695aec9cd00e44ed39d48020be2933676952",
     "payload/CaveHcaV3.cs": "d2e381c4deb8c6986a30aee4c4f74fe2c6094075b115c9bab51e718e44566b4c",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -55,8 +55,8 @@
     "payload/cave_terrain.json": "53b0da60bb9a49cc47dc83293fc1aec8a220a7f36489c9260b37795c7c9b52ce",
     "payload/crystal_fina_boss.json": "27cd733bbe2f6912f48af12efd0f3cf95c2eeaa6a8b46a35eb1f90c019287a94",
     "payload/encounter_toggle.lua": "8b2e4d6c25f362c0ab4341e09e6acb0f8a6bcdfee6bfdfc7796cd5c3d4ad4cf1",
-    "payload/esper_mastery.json": "e89c70aab1883ad1ff2399600cc2f92b7998863d4656b95e3b1394f6fe0d8806",
-    "payload/esper_mastery.lua": "fd4e4ed5b1d726d876c2b7f1fd398cb357cc52c9fce8f21e72c909b08eb5c2cd",
+    "payload/esper_mastery.json": "92393f6ae517c15d9815cd930c06ac2225226ba96358cfbc813fc45be1a4eaef",
+    "payload/esper_mastery.lua": "0d2ab06d8c673cf274b72dcbcd68b402985570f4f4e926f7c9d8f57d319bb554",
     "payload/ffbe_animation_index.json": "1962bac4aa987d8528e15546ccb03f515bec0e7d486b0b876491abb196264531",
     "payload/ffbe_barrage_index.json": "40bead2fe5dbab4d20ec1f10377289d79ed67757b65d66ce6a05fb78a9ce6013",
     "payload/ffbe_library.html": "b17efdfdbac0d924effedfca15a79641862b8c5d025bc48b2db167d86b405717",
@@ -70,7 +70,7 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "82b92d6a6d4e6686b567a4595f96c18f8b159382f68b22198f9f07c740b6bcbf",
+    "payload/manifest.json": "0b661c2e29c893473a1de15ab9f1ec65aab81cd7f36fbf0c40bccff38dda4fda",
     "payload/minimap_counter.zip": "2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb",
     "payload/minimap_treasure.zip": "f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",

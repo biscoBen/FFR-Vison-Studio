@@ -361,6 +361,16 @@ class SephiraVisions {
     if (update is! Map || update['schema'] != 1) return unit;
     var changed = false;
     final result = CharacterConfig.copy(unit);
+    final labels = result['sephiraPassiveText'];
+    final revelry = labels is Map ? labels['1963'] : null;
+    final templateLabels = (preset?['profile'] as Map?)?['sephiraPassiveText'];
+    final currentRevelry = templateLabels is Map ? templateLabels['1963'] : null;
+    if (id == 'eiko' && revelry is Map && currentRevelry is Map &&
+        revelry['desc'] == 'Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed.' &&
+        revelry['desc'] != currentRevelry['desc']) {
+      revelry['desc'] = currentRevelry['desc'];
+      changed = true;
+    }
     final skills = result['skills'];
     if (skills is Map) {
       for (final recipe in skills.values.whereType<Map>()) {

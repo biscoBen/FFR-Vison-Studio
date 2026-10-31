@@ -6,7 +6,7 @@ PASSIVES = {
     1960: {'name': 'Esper Power', 'desc': 'Increase damage dealt by summoned espers by 20%.', 'cost': 30},
     1961: {'name': 'Esper Communion', 'desc': 'Restore 5% of the summoner’s max MP whenever their esper acts.', 'cost': 20},
     1962: {'name': 'Enduring Eidolons', 'desc': 'Summoned espers gain 20% max HP and one extra action before their final special.', 'cost': 40},
-    1963: {'name': 'Eidolon Revelry', 'desc': 'Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed.', 'cost': 50},
+    1963: {'name': 'Eidolon Revelry', 'desc': 'Each ordinary esper action has a 30% chance to become its special. The final special is guaranteed.', 'cost': 50},
 }
 REWARDS = {'eiko': [('PassiveSkill',1107),('PassiveSkill',1960),('PassiveSkill',1961),('PassiveSkill',1962),('PassiveSkill',1963)],
            'mog': [('ActiveSkill',400460),('PassiveSkill',1049),('PassiveSkill',1338),('PassiveSkill',1498),('PassiveSkill',1031)]}

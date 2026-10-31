@@ -11,6 +11,21 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Eiko Eidolon Revelry chance — 2026-10-30
+
+- Lower Eidolon Revelry from 50% to 30% for each ordinary esper action. Keep
+  one roll per logical action and retain the guaranteed native final special.
+  The reward works through equipped Eiko, the individual passive or Spirit of
+  Eiko, with the same IDs, MR9 placement and equip cost.
+- Update the shipped preset, native passive text, runtime data and authoring
+  source. Refresh only the exact old default description in saved Eiko setups;
+  preserve custom text, kit edits, acquisition and learned reward identities.
+- Executable checks exercise all 100 rolls, the 30/31 cutoff, repeated native
+  selection callbacks and the native finale. Studio checks cover default-text
+  refresh without resetting a saved kit. The previous crash remains unresolved;
+  the user will test the light external diagnostics later after switching PCs.
+  Encounter/auto-battle controls, diagnostic helpers and other kits are unchanged.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

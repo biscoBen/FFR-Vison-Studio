@@ -13,6 +13,32 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class EsperMasteryTests(unittest.TestCase):
+    def test_revelry_proc_is_thirty_of_a_hundred_rolls_with_one_roll_per_action_and_native_finale(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            fina.parameter.passives={1963}
+            local summon=actor(10452,'Ifrit');actors={fina,summon};tick()
+            summon.ai.remaining=2;summon.ai:GetRemainingActionNumSummonedUnit()
+            local random=math.random;local calls,specials=0,0
+            for roll=1,100 do
+                summon.parameter.count=roll
+                math.random=function(low,high) assert(low==1 and high==100);calls=calls+1;return roll end
+                summon.ai:SetSkill(414010)
+                assert((summon.ai.skill==300020)==(roll<=30),'Only rolls 1 through 30 proc')
+                if summon.ai.skill==300020 then specials=specials+1 end
+                summon.ai:SetSkill(500020);summon.ai:SetSkillRandom(0)
+                assert(calls==roll,'Repeated native selection callbacks must not reroll this action')
+            end
+            assert(specials==30 and calls==100)
+            summon.ai.remaining=0;summon.ai:GetRemainingActionNumSummonedUnit()
+            summon.parameter.count=101;math.random=function() error('Never roll the native final special') end
+            summon.ai:SetSkill(300020);assert(summon.ai.skill==300020)
+            assert(calls==100);math.random=random
+        ''')
+
     def test_rikku_pharmacology_updates_only_mr7_and_preserves_later_edits(self):
         from sephira_rikku_pharmacology import revise as revise_rikku
         catalog,_,_=inputs()

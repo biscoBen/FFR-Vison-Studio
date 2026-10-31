@@ -155,7 +155,7 @@ local function set_skill(context, skill)
         local count=s.parameter:GetActionCountInBattle()
         if s.rollAt~=count then
             s.rollAt=count;s.earlySpecial=nil
-            s.proc=math.random(1,100)<=50
+            s.proc=math.random(1,100)<=30
         end
         local id=skill:get()
         if id<=0 or id==431080 or id==431100 or not s.proc then return end
