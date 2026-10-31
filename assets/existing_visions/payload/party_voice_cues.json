@@ -18,6 +18,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0010_SERIOUS",
         "duration": 3.587083333333333
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0010",
+        "duration": 1.5
       }
     },
     "CHR0020": {
@@ -36,6 +40,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0020_SERIOUS",
         "duration": 4.633333333333334
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0020",
+        "duration": 1.45
       }
     },
     "CHR0030": {
@@ -54,6 +62,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0030_SERIOUS",
         "duration": 4.837020833333334
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0030",
+        "duration": 2.0
       }
     },
     "CHR0040": {
@@ -72,6 +84,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0040_SERIOUS",
         "duration": 4.171291666666667
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0040",
+        "duration": 1.6
       }
     },
     "CHR0050": {
@@ -90,6 +106,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0050_SERIOUS",
         "duration": 3.2903541666666665
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0050",
+        "duration": 1.45
       }
     },
     "CHR0060": {
@@ -108,6 +128,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0060_SERIOUS",
         "duration": 3.6666666666666665
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0060",
+        "duration": 1.95
       }
     },
     "CHR0070": {
@@ -126,6 +150,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0070_SERIOUS",
         "duration": 3.5187916666666665
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0070",
+        "duration": 1.9
       }
     },
     "CHR0080": {
@@ -144,6 +172,10 @@
       "finish": {
         "name": "VO_BTL_VLB_FNS_01_CHR0080_SERIOUS",
         "duration": 5.036604166666667
+      },
+      "ability": {
+        "name": "VO_BTL_ABL_01_CHR0080",
+        "duration": 2.15
       }
     }
   }

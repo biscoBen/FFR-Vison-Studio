@@ -121,8 +121,8 @@ def prepare_voices(tables, units, rows):
     """Use the native battle-only label; never alias audio banks/story assets.
 
     Generic DT_BtlVoiceData and DT_SkillData cues append this character label.
-    Fixed cinematic cues and authored victory conversations are separate routes
-    and deliberately retain their original recordings in this first pass.
+    Authored attack, personal-skill, counter and LB cues are patched separately
+    by _ffr_party_voices. Story and team victory dialogue retain their voices.
     """
     for u in units:
         validate(u)

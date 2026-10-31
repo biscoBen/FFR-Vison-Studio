@@ -1,4 +1,4 @@
-"""Replace authored party attack/LB voice cues without changing their timelines."""
+"""Replace authored party battle voice cues without changing their timelines."""
 import copy
 import json
 import math
@@ -30,8 +30,14 @@ def voice_skills(u, rows):
     if command.get('ID') != u['id'] or len(attacks) != 1 or attacks[0].get('hasUnit') in (None, 'None'):
         raise ValueError('The original party attack command changed; its authored voices cannot be patched safely.')
     owner = attacks[0]['hasUnit']
-    return [(attacks[0]['ID'], 'attack')] + [(s['ID'], 'lb') for s in skills.values()
-            if s.get('skillAttrType') == 'LimitBurst' and s.get('hasUnit') == owner]
+    # Counters use the character's ChaseAttack sequence, while personal
+    # abilities have their own fixed voice tracks. The battle voice label alone
+    # cannot redirect either route. Include every sequence owned by this actor;
+    # generic/shared skills already follow BattleVoiceLabel at runtime.
+    attack_id = attacks[0]['ID']
+    return [(attack_id, 'attack')] + [
+        (s['ID'], 'lb' if s.get('skillAttrType') == 'LimitBurst' else 'ability')
+        for s in skills.values() if s.get('hasUnit') == owner and s['ID'] != attack_id]
 
 
 def import_name(data, index):
@@ -64,15 +70,15 @@ def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
                 master = assets.get(seq, {}).get('LevelSequence', 'None')
                 if master == 'None': continue
                 if not re.fullmatch(r'/Game/Sequencer/Battle/Skill/[0-9/]+/SEQ_Battle_\d+_Master', master):
-                    raise ValueError('The party attack/LB sequence path changed; its voices cannot be patched safely.')
+                    raise ValueError('The party battle sequence path changed; its voices cannot be patched safely.')
                 relative = Path(master.removeprefix('/Game/')).parent; folder = content / relative
                 if not (folder / (master.rsplit('/', 1)[1] + '.uasset')).is_file(): extract(relative.as_posix() + '/')
                 if not (folder / (master.rsplit('/', 1)[1] + '.uasset')).is_file():
-                    raise ValueError('The original party attack/LB sequence is unavailable. Prepare the game files again.')
+                    raise ValueError('The original party battle sequence is unavailable. Prepare the game files again.')
                 events = []
                 for path in sorted(folder.rglob('*_Sound*.uasset')):
                     data, _ = dumps(str(path))
-                    if not data: raise ValueError('The original party attack/LB sound track could not be decoded.')
+                    if not data: raise ValueError('The original party battle sound track could not be decoded.')
                     for export, cue, start, index in sounds(data):
                         # Match the actual speaker token, never music, impacts or story voice banks.
                         if not re.fullmatch(r'VO_BTL_[A-Za-z0-9_]*' + old_label + r'(?:_[A-Za-z0-9]+)*_Cue', cue): continue
@@ -90,7 +96,11 @@ def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
                 for event in events:
                     _, asset, export, old_cue, index = event
                     group = variants[old_cue.endswith('_DUEL_Cue')]
-                    phase = 'attack' if kind == 'attack' else 'opening' if event == group[0] else 'finish' if event == group[-1] else 'release' if re.search(r'_\d{6}_\d+(?:_DUEL)?_Cue$', old_cue) else 'attack'
+                    if kind != 'lb':
+                        phase = 'attack' if old_cue.startswith('VO_BTL_ATK_') else 'ability'
+                    else:
+                        phase = ('opening' if event == group[0] else 'finish' if event == group[-1]
+                                 else 'release' if re.search(r'_\d{6}_\d+(?:_DUEL)?_Cue$', old_cue) else 'attack')
                     cue = speaker[phase]; label = party.voice_label(u['battleVoice'])
                     name = f'StudioPartyVoice_{label}_{phase}_Cue'
                     target = f'FFRS/Content/Sound/StudioPartyVoice/{label}/{name}'
@@ -120,7 +130,7 @@ def prepare(objects, clones, post_objects, units, root, rows, extract, dumps):
                     post_objects.append({'asset': asset, 'export': export, 'set': {'Sound': new_path}})
                     changes.append({'asset': asset, 'export': export, 'export_index': index, 'old': old_cue, 'new': new_path, 'target': u['id'], 'source': u['battleVoice']})
                     seen.add((asset, export))
-        print(f'  {u["en"]}: authored attack/LB voices follow {party.identity(u["battleVoice"])[2]}; effects and timing retained.')
+        print(f'  {u["en"]}: authored attack, personal-skill, counter and LB voices follow {party.identity(u["battleVoice"])[2]}; effects and timing retained.')
     path = root / PLAN; path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({'version': 1, 'selection': [[u['id'], u['battleVoice']] for u in chosen],
                                 'changes': changes, 'cues': list(generated.values())}, indent=2), encoding='utf-8')
@@ -171,4 +181,4 @@ def verify(root, tool, usmap, units):
         if import_name(data, bank_import['OuterIndex']) != f'/Game/Sound/Cri/Voice/VO_BTL/{cue["bank"]}/{cue["bank"]}':
             raise ValueError('A party voice cue points outside the selected native bank.')
         if any(not math.isclose(props.get(k, -1), v, abs_tol=1e-5) if isinstance(v, float) else props.get(k) != v for k, v in cue['set'].items()): raise ValueError('A party voice cue has the wrong recording or duration.')
-    print(f'OK: {len(plan["changes"])} authored attack/LB voice sections and {len(plan["cues"])} native-bank cue references verified')
+    print(f'OK: {len(plan["changes"])} authored battle voice sections and {len(plan["cues"])} native-bank cue references verified')

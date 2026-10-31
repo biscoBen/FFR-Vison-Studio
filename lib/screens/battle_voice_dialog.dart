@@ -127,7 +127,7 @@ Future<void> showBattleVoice(
               ),
               const SizedBox(height: 16),
               Text(
-                'Changes standard battle voices and authored normal-attack/LB voice sections. Story dialogue and team victory conversations keep their original voices.',
+                'Changes standard battle voices and authored attack, personal-skill, counter and LB voice sections. Story dialogue and team victory conversations keep their original voices.',
                 style: Guide.text(),
               ),
               const SizedBox(height: 12),

@@ -1,6 +1,7 @@
 """General authored voice substitution and isolation from mechanics/effect audio."""
 import copy
 import contextlib
+import gzip
 import io
 import json
 from pathlib import Path
@@ -18,9 +19,11 @@ def fixture(u):
     values = {voices.COMMANDS: {u['jp']: {'ID': u['id'], 'detailData': [{'SkillId': 987650}]}},
               voices.SKILLS: {'attack': {'ID': 987650, 'skillAttrType': 'Fight', 'hasUnit': owner},
                               'lb': {'ID': 666010, 'skillAttrType': 'LimitBurst', 'hasUnit': owner},
+                              'personal': {'ID': 666030, 'skillAttrType': 'Ability', 'hasUnit': owner},
+                              'counter': {'ID': 666040, 'skillAttrType': 'ChaseAttack', 'hasUnit': owner},
                               'other': {'ID': 666020, 'skillAttrType': 'LimitBurst', 'hasUnit': 'Other'}},
               'Asset/Skill/DT_SkillAsset': {}, 'Asset/Skill/CDT_SkillAsset_Demo': {}}
-    for sid in (987650, 666010):
+    for sid in (987650, 666010, 666030, 666040):
         values['Asset/Skill/DT_SkillAsset'][str(sid + 1)] = {'ID': sid + 1,
             'LevelSequence': f'/Game/Sequencer/Battle/Skill/{sid}/SEQ_Battle_{sid+1}_Master'}
     return values
@@ -52,7 +55,10 @@ class PartyVoiceTests(unittest.TestCase):
                     for sid, cues in [(987650, [(f'VO_BTL_ATK_01_{old}_Cue', 200), ('SE_SWORD_Cue', 100), ('VO_BTL_ATK_01_CHR0150_Cue', 300)]),
                                       (666010, [(f'VO_BTL_{old}_666010_02_Cue', 400), ('SE_MAGIC_Cue', 300),
                                                (f'VO_BTL_{old}_081_Cue', 200), (f'VO_BTL_{old}_666010_01_Cue', 100),
-                                               (f'VO_BTL_{old}_082_Cue', 700), ('VO_C01_DIALOGUE_Cue', 50)])]:
+                                               (f'VO_BTL_{old}_082_Cue', 700), ('VO_C01_DIALOGUE_Cue', 50)]),
+                                      (666030, [(f'VO_BTL_{old}_041_Cue', 100), ('SE_ICE_Cue', 200),
+                                               (f'VO_BTL_ATK_01_{old}_Cue', 300)]),
+                                      (666040, [(f'VO_BTL_ABL_01_{old}_Cue', 0), ('SE_SWORD_Cue', 100)])]:
                         folder = root / f'extracted/legacy/FFRS/Content/Sequencer/Battle/Skill/{sid}'
                         (folder / 'Track').mkdir(parents=True)
                         (folder / f'SEQ_Battle_{sid+1}_Master.uasset').touch()
@@ -72,7 +78,7 @@ class PartyVoiceTests(unittest.TestCase):
                     self.assertEqual(objects, [])
                     sound_edits = [x for x in post if 'Sound' in x['set']]
                     cue_edits = [x for x in post if 'CueName' in x['set']]
-                    self.assertEqual(len(sound_edits), 5)
+                    self.assertEqual(len(sound_edits), 8)
                     self.assertTrue(all(x['set']['Sound'] and party.voice_label(source) in x['set']['Sound'] for x in sound_edits))
                     plan = json.loads((root / voices.PLAN).read_bytes())
                     self.assertEqual({c['export'] for c in plan['changes'] if '666010' in c['asset']}, {'Section0','Section2','Section3','Section4'})
@@ -80,8 +86,69 @@ class PartyVoiceTests(unittest.TestCase):
                         if '666010' not in c['asset']: continue
                         phase = {'Section3':'opening','Section0':'release','Section2':'attack','Section4':'finish'}[c['export']]
                         self.assertTrue(c['new'].endswith('_' + phase + '_Cue'))
-                    self.assertEqual(len(clones), 6); self.assertEqual(len(cue_edits), 4)
+                    self.assertEqual(len(clones), 9); self.assertEqual(len(cue_edits), 5)
                     self.assertEqual({c['set']['CueName'] for c in cue_edits}, {c['name'] for c in voices.profile(source).values()})
+                    for c in plan['changes']:
+                        if '666030' in c['asset'] or '666040' in c['asset']:
+                            phase = 'attack' if c['old'].startswith('VO_BTL_ATK_') else 'ability'
+                            self.assertTrue(c['new'].endswith('_' + phase + '_Cue'))
+
+    def test_captured_full_game_routes_include_every_owned_personal_and_counter_skill(self):
+        captured = json.loads(gzip.decompress((ROOT / 'scripts/fixtures/party_voice_routes.json.gz').read_bytes()))
+        for uid, _, _, _ in party.CHARACTERS:
+            u = unit(uid); u.pop('ffbe')
+            routes = dict(voices.voice_skills(u, lambda rel: captured['rows'][rel]))
+            attack = routes.pop(captured['attacks'][str(uid)])
+            self.assertEqual(attack, 'attack')
+            owner = next(s['hasUnit'] for s in captured['rows'][voices.SKILLS].values()
+                         if s['ID'] == captured['attacks'][str(uid)])
+            owned = [s for s in captured['rows'][voices.SKILLS].values() if s['hasUnit'] == owner]
+            self.assertEqual(set(routes), {s['ID'] for s in owned} - {captured['attacks'][str(uid)]})
+            self.assertTrue(any(s['skillAttrType'] == 'ChaseAttack' and routes[s['ID']] == 'ability' for s in owned))
+        lasswell = dict(voices.voice_skills(unit(1002), lambda rel: captured['rows'][rel]))
+        self.assertEqual(lasswell[402130], 'ability')  # Dawn Frost
+        self.assertEqual(lasswell[402020], 'ability')  # Native counter sequence
+        self.assertEqual(lasswell[402500], 'ability')  # Simplified attack
+
+    def test_captured_dawn_frost_and_counter_replace_only_lasswell_voice_exports(self):
+        captured = json.loads(gzip.decompress((ROOT / 'scripts/fixtures/party_voice_routes.json.gz').read_bytes()))
+        u = unit(1002); u.pop('ffbe'); u['battleVoice'] = 1008
+        values = copy.deepcopy(captured['rows'])
+        # Keep the real voice ownership and command guard, selecting only the
+        # two captured sequence packages for this focused timeline regression.
+        values['Asset/Skill/DT_SkillAsset'] = captured['assets']
+        values['Asset/Skill/CDT_SkillAsset_Demo'] = {}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); views = {}
+            for rel, view in captured['tracks'].items():
+                path = root / 'extracted/legacy' / (rel + '.uasset')
+                path.parent.mkdir(parents=True); path.touch(); views[str(path)] = view
+                master = path.parent.parent / ('SEQ_Battle_' + ('402131' if '402130' in rel else '402021') + '_Master.uasset')
+                master.touch()
+            def extract(rel):
+                name = Path(rel).name
+                path = root / 'extracted/legacy/FFRS/Content' / (rel + '.uasset')
+                path.parent.mkdir(parents=True, exist_ok=True); path.touch()
+                views[str(path)] = template(u, name)
+            post = []
+            with contextlib.redirect_stdout(io.StringIO()):
+                voices.prepare([], [], post, [u], root, lambda rel: values[rel], extract,
+                               lambda path: (copy.deepcopy(views[path]), {}))
+            plan = json.loads((root / voices.PLAN).read_bytes())
+            self.assertEqual({c['old'] for c in plan['changes']},
+                             {'VO_BTL_CHR0020_041_Cue', 'VO_BTL_ABL_01_CHR0020_Cue'})
+            self.assertEqual(len(plan['changes']), 2)
+            for rel, original in captured['tracks'].items():
+                changes = [c for c in plan['changes'] if c['asset'] == rel]
+                built = copy.deepcopy(original)
+                for c in changes:
+                    built['Imports'].append({'ObjectName': c['new']})
+                    outer = -len(built['Imports'])
+                    built['Imports'].append({'ObjectName': c['new'].rsplit('/', 1)[1], 'OuterIndex': outer})
+                    sound = next(p for p in built['Exports'][c['export_index']]['Data'] if p['Name'] == 'Sound')
+                    sound['Value'] = -len(built['Imports'])
+                voices.check_track(original, built, changes)
+            self.assertEqual(plan['cues'][0]['set']['CueName'], 'VO_BTL_ABL_01_CHR0080')
 
     def test_readback_rejects_other_sound_timing_and_wrong_package_changes(self):
         original = track([('VO_BTL_ATK_01_CHR0020_Cue', 100), ('SE_SWORD_Cue', 200)])
@@ -119,9 +186,13 @@ class PartyVoiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'command'): voices.voice_skills(u, lambda rel:data[rel])
 
     def test_verified_inventory_contains_every_selected_speaker_phase(self):
+        captured = json.loads(gzip.decompress((ROOT / 'scripts/fixtures/party_voice_routes.json.gz').read_bytes()))
         for id, _, _, _ in party.CHARACTERS:
             p = voices.profile(id); label = party.voice_label(id)
             self.assertEqual(p['attack']['name'], f'VO_BTL_ATK_01_{label}')
+            self.assertEqual(p['ability']['name'], f'VO_BTL_ABL_01_{label}')
+            self.assertGreater(p['ability']['duration'], 0)
+            self.assertEqual(p['ability'], captured['abilityCues'][label])
             for phase in ('opening','release','finish'):
                 self.assertIn(label, p[phase]['name']); self.assertGreater(p[phase]['duration'], 0)
 

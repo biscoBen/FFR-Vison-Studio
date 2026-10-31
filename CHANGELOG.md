@@ -11,6 +11,21 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Complete party battle voice swaps — 2026-10-31
+
+- Extend party voice selection to character-owned personal skills, simplified
+  attacks and chase/counter sequences. Lasswell’s Dawn Frost and Physical Counter
+  now use the selected character’s native ability voice instead of his fixed
+  authored recording. Apply this to all eight party members and all voice pairs.
+- Use verified native ability cues and their durations from each selected voice
+  bank. Keep native audio decoding, sound effects, animation timing and other
+  speakers intact. Update the voice selector’s coverage description.
+- Seven focused voice checks cover 64 pairs, all 121 captured character-owned
+  skills, native Dawn Frost/counter track views and unchanged unrelated exports.
+  A real native package build/readback verifies both Lasswell → Sakura tracks,
+  the selected cue bank and duration. In-game listening remains to be retested.
+  Rebuild/install and restart with the existing voice selection; no reset needed.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
