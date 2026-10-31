@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Eiko Eidolon Revelry: 30% — 2026-10-30
+
+[Verified Windows download / run 41173192251](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41173192251/Sephira-Studio-Test.zip)
+(code `98a8e05`, update **1.2.141**; **82.6 MB**).
+
+Each ordinary esper action now has a 30% chance to become its special. The final
+special stays guaranteed. Existing Eiko setups receive the updated default
+wording while retaining custom descriptions and saved kits. No preset reset or
+relearning is needed: rebuild/install and restart to apply the runtime change.
+
+The existing light diagnostic helper remains compatible; the native crash is
+still unresolved and the user will test diagnostics later after switching PCs.
+[Checks and measured timings](CHANGELOG.md#published-eiko-eidolon-revelry-chance--2026-10-30).
+
 ### Light crash diagnostics — 2026-10-30
 
 The temporary per-line encounter tracer caused severe stuttering in the user's

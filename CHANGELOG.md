@@ -11,22 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Eiko Eidolon Revelry chance — 2026-10-30
-
-- Refresh the generated MR coverage catalog fingerprints; all 75 original MR rewards remain covered.
-- Lower Eidolon Revelry from 50% to 30% for each ordinary esper action. Keep
-  one roll per logical action and retain the guaranteed native final special.
-  The reward works through equipped Eiko, the individual passive or Spirit of
-  Eiko, with the same IDs, MR9 placement and equip cost.
-- Update the shipped preset, native passive text, runtime data and authoring
-  source. Refresh only the exact old default description in saved Eiko setups;
-  preserve custom text, kit edits, acquisition and learned reward identities.
-- Executable checks exercise all 100 rolls, the 30/31 cutoff, repeated native
-  selection callbacks and the native finale. Studio checks cover default-text
-  refresh without resetting a saved kit. The previous crash remains unresolved;
-  the user will test the light external diagnostics later after switching PCs.
-  Encounter/auto-battle controls, diagnostic helpers and other kits are unchanged.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -119,6 +103,46 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Eiko Eidolon Revelry chance — 2026-10-30
+
+Code [`98a8e05`](https://github.com/biscoBen/FFR-Vison-Studio/commit/98a8e05b9e78dcf16962f245abc71c777566b443) ·
+[Studio test 1.2.141](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41173192251/Sephira-Studio-Test.zip)
+
+- Lower Eidolon Revelry from 50% to 30% for each ordinary esper action. Retain
+  one roll per logical action, including repeated native selection callbacks,
+  and the guaranteed native final special. Equipped Eiko, the individual MR9
+  reward and Spirit of Eiko use the same updated chance without changing IDs,
+  MR placement, equip cost or the other esper bonuses.
+- Update the preset, native passive description, runtime data and authoring
+  definition. Refresh only the exact former default text in existing Eiko setups;
+  preserve custom descriptions, label names and all saved kit/combat/acquisition
+  fields. No preset reset or relearning is required; rebuild/install and restart.
+- All 169 focused Python checks plus two MR coverage checks pass, including all 100 deterministic rolls,
+  30/31 boundaries, one roll per action and guaranteed finale. The new probability
+  regression rejects the former 50% runtime. Full Windows Flutter/analyze includes
+  the saved-description/custom-edit migration test; 893 Python tests (33 skips),
+  fresh frozen-engine and launcher/updater checks pass. Actual packaged Lua/data
+  pass 50 Fina/esper, 16 encounter, 35 auto-battle and 10 counter checks. All 87
+  extension and 16 Fina manifests match; every public app file and launcher
+  matches the verified artifact/source. The only catalog change is Eiko's
+  Revelry description; other kits, boss powers, media and acquisition are retained.
+- No encounter/auto-battle or diagnostic code changes. The existing native crash
+  remains unresolved. The user switched computers and will test the light
+  external diagnostics later; no new diagnostic run is required for this balance
+  change, and no live 30% gameplay pass is claimed. The first CI run was blocked
+  by stale generated MR coverage fingerprints. Refreshing those fingerprints
+  preserves all 75 original MR rewards and all runtime/kit bytes.
+- Public ZIP: 82,579,265 bytes; SHA-256
+  `6939b04ee93235af606d379457666559238f4f1995ab2ad5f25040054a666404`.
+
+First complete candidate **22:25:23 PDT** to verified
+package **22:45:02 PDT**: **19m 38s**,
+including focused checks, corrections, waiting and actual package verification.
+CI wall time across the failed and final runs: **16m 03s**; summed runner job time:
+**21m 32s**. Joined exact automatic run 41173192251 without
+a duplicate/manual dispatch. Publication notes change only README/CHANGELOG
+and do not request another binary.
 
 ## Published controller map-input guards — 2026-10-30
 
