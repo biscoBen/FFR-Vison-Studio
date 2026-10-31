@@ -11,21 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Complete party battle voice swaps — 2026-10-31
-
-- Extend party voice selection to character-owned personal skills, simplified
-  attacks and chase/counter sequences. Lasswell’s Dawn Frost and Physical Counter
-  now use the selected character’s native ability voice instead of his fixed
-  authored recording. Apply this to all eight party members and all voice pairs.
-- Use verified native ability cues and their durations from each selected voice
-  bank. Keep native audio decoding, sound effects, animation timing and other
-  speakers intact. Update the voice selector’s coverage description.
-- Seven focused voice checks cover 64 pairs, all 121 captured character-owned
-  skills, native Dawn Frost/counter track views and unchanged unrelated exports.
-  A real native package build/readback verifies both Lasswell → Sakura tracks,
-  the selected cue bank and duration. In-game listening remains to be retested.
-  Rebuild/install and restart with the existing voice selection; no reset needed.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -118,6 +103,43 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published complete party battle voice swaps — 2026-10-31
+
+Code [`eae87b2`](https://github.com/biscoBen/FFR-Vison-Studio/commit/eae87b26c4d30a2c1bc334c06bf133a5c13caa5f) ·
+[Studio test 1.2.142](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41231222207/Sephira-Studio-Test.zip)
+
+- Party voice overrides now cover personal skills, simplified attacks and
+  chase/counter sequences as well as ordinary attacks and limit bursts.
+  Lasswell’s Dawn Frost and Physical Counter use the chosen character’s native
+  ability voice. This applies to all eight party members and all 64 voice pairs.
+- Add verified native ability cues/durations for every selectable speaker. Use
+  native audio banks without reencoding; preserve other speakers, impacts,
+  animation timing, story dialogue and team victory conversations. Describe the
+  expanded coverage in the voice selector.
+- All 35 focused voice/party checks pass. Windows analysis and 336 Flutter tests
+  (one skipped), the separate fresh-engine startup test, 895 Python tests
+  (33 skipped) and launcher/updater gates pass. Seven regressions rerun
+  with the actual packaged implementation cover 64 pairs, all 121 captured
+  character-owned skills, native Dawn Frost/counter tracks and unrelated-export
+  isolation. Build and decode both real native tracks again with the packaged
+  code; verify Sakura’s cue, bank path and duration. Both extension manifests and
+  every public app file and launcher match verified sources/artifact provenance.
+- Existing voice selections are retained. Rebuild/install and restart, then
+  listen to a personal skill and a Physical Counter with Lasswell → Sakura.
+  Live playback remains to be retested. Other presets, kits, rewards, boss powers,
+  cinematics and runtime controls are byte-identical to 1.2.141; no new encounter
+  or crash-fix claim is made.
+- Public ZIP: 82,579,581 bytes; SHA-256
+  `f3a7206f8b00b8cd40ee1160c3fb71fc17dff9b0bb4a035bad0b67e57c5f7963`.
+
+First complete candidate **11:47:54 PDT** to verified
+package **11:59:17 PDT**: **11m 23s**,
+including focused checks, waiting and actual package verification. CI wall time:
+**9m 33s**; summed runner job time:
+**15m 16s**. Joined exact automatic run 41231222207 with no
+manual/duplicate build. Publication notes change only README/CHANGELOG and do
+not request another binary.
 
 ## Published Eiko Eidolon Revelry chance — 2026-10-30
 

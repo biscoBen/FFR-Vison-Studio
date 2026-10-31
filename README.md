@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Complete party battle voice swaps — 2026-10-31
+
+[Verified Windows download / run 41231222207](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41231222207/Sephira-Studio-Test.zip)
+(code `eae87b2`, update **1.2.142**; **82.6 MB**).
+
+Party voice selection now also covers personal skills and counters, including
+Lasswell’s Dawn Frost and Physical Counter. All eight characters can use any
+party voice. Native banks, attack sounds and timing are preserved.
+
+Keep your existing voice selection, rebuild/install and restart. Native package
+build/readback and all Windows checks pass; in-game listening needs a retest.
+[Checks and measured timings](CHANGELOG.md#published-complete-party-battle-voice-swaps--2026-10-31).
+
 ### Eiko Eidolon Revelry: 30% — 2026-10-30
 
 [Verified Windows download / run 41173192251](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41173192251/Sephira-Studio-Test.zip)
