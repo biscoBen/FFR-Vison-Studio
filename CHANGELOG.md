@@ -11,16 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Snow White boss single-target power: +25% — 2026-11-01
-
-- Increase only Snow White’s enemy single-target damage skills by 25% after
-  existing boss scaling, rounded to whole-number power. Her current rotation
-  becomes Attack 9→11, Dark Blade 12→15, Predation 14→18 and Crimson Bite 15→19.
-  Apply the same rule to all 15 generated single-target damage copies.
-- Preserve her player skills, AoE reduction, support/healing, secondary effects,
-  hit counts, AI, stats and all other fights. Native table readback and Windows
-  package checks are pending; in-game difficulty needs a retest after install.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -113,6 +103,36 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Snow White boss single-target power: +25% — 2026-11-01
+
+Code [`36e02b0`](https://github.com/biscoBen/FFR-Vison-Studio/commit/36e02b0deeb9df659307d5d5c39c570824331d9f) ·
+[Studio test 1.2.149](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41344895049/Sephira-Studio-Test.zip)
+
+- Increase only Snow White’s enemy single-target damage skills by 25% after
+  existing boss scaling, rounded to whole-number power. Her current rotation
+  becomes Attack 9→11, Dark Blade 12→15, Predation 14→18 and Crimson Bite 15→19.
+  Apply the same rule to all 15 generated single-target damage copies.
+- Preserve her player kit, the trio’s 40% AoE power, support/healing, effects,
+  hit counts, AI, stats, MR rewards, Provoke and every other fight. No preset
+  reset is needed; rebuild/install and restart. Native gameplay needs a retest.
+- All 37 focused checks pass. Native SDK serialization/readback verifies all
+  531 private enemy skills and 1,167 original skills. Only the 15 Snow White
+  single-target magnifications change; all other fields and generated tables
+  remain identical. Repeat native checks with the actual packaged module and
+  five packaged regressions covering this boost, AoE reduction, role basics,
+  earlier boss changes and Casual actions.
+- Windows analysis, full Flutter/Python checks, fresh frozen-engine startup and
+  launcher/updater gates pass for this exact commit/run. Verify all 87 extension
+  and 16 Fina manifest files, unchanged player catalog/Fina profile/native audit,
+  version 1.2.149, provider/workflow provenance and every published App/launcher
+  file against the compiled artifact. Lua, audio, animation and resonance files
+  retain their 1.2.148 hashes. The Zoldaad cave follow-up still awaits terrain data.
+- First complete candidate through verified publication: 11m 29s,
+  including local/native checks, build waiting and package verification.
+  CI wall time: 10m 36s; summed runner time:
+  15m 05s. These are measured for this update, separate
+  from user-reported installation time.
 
 ## Published trio AoE balance and Mystea’s Provoke — 2026-11-01
 

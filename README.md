@@ -4,6 +4,19 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Snow White boss single-target power: +25% — 2026-11-01
+
+[Verified Windows download / run 41344895049](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41344895049/Sephira-Studio-Test.zip)
+(code `36e02b0`, update **1.2.149**; **82.6 MB**).
+
+Snow White’s boss single-target attacks now have 25% more power. Her current
+rotation uses Attack 11, Dark Blade 15, Predation 18 and Crimson Bite 19.
+Her playable kit, the trio’s AoE reduction and Mystea’s Provoke remain unchanged.
+
+Rebuild/install and restart; no reset is needed. Native table and Windows
+package checks pass; the fight needs an in-game balance retest.
+[Checks and measured timings](CHANGELOG.md#published-snow-white-boss-single-target-power-25--2026-11-01).
+
 ### Trio boss AoE balance and Mystea’s Provoke — 2026-11-01
 
 [Verified Windows download / run 41338843365](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41338843365/Sephira-Studio-Test.zip)
