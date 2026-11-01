@@ -176,6 +176,8 @@ def kit(unit, rows, team_size):
                 # Apply the reviewed team-fight reduction to the final power,
                 # after existing boss scaling and its integer rounding.
                 row['magnification'] = max(1, round(row['magnification'] * settings.get('aoePowerScale', 1)))
+            elif row['TargetType'] == 'Single':
+                row['magnification'] = max(1, round(row['magnification'] * settings.get('singleTargetPowerScale', 1)))
         import _ffr_testing as testing
         result.append({'id': enemy_id, 'learned': identity, 'source': source, 'clone': key,
                        'name': PREFIX + str(unit['id']) + '_Skill_' + str(index),

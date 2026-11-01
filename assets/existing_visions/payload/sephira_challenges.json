@@ -639,6 +639,7 @@
     },
     "snow_white": {
       "aoePowerScale": 0.4,
+      "singleTargetPowerScale": 1.25,
       "attacks": [
         420300,
         570710,

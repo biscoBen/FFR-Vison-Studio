@@ -11,6 +11,16 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Snow White boss single-target power: +25% — 2026-11-01
+
+- Increase only Snow White’s enemy single-target damage skills by 25% after
+  existing boss scaling, rounded to whole-number power. Her current rotation
+  becomes Attack 9→11, Dark Blade 12→15, Predation 14→18 and Crimson Bite 15→19.
+  Apply the same rule to all 15 generated single-target damage copies.
+- Preserve her player skills, AoE reduction, support/healing, secondary effects,
+  hit counts, AI, stats and all other fights. Native table readback and Windows
+  package checks are pending; in-game difficulty needs a retest after install.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
