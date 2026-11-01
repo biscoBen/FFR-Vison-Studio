@@ -61,7 +61,13 @@ class FieldLeaderTests(unittest.TestCase):
                 self.assertEqual('Saved field appearance includes idle' in messages,walking)
                 self.assertEqual(set(lua.globals().loops.keys()),
                                  ({200} if esper else set())|({33} if fina else set())|({150} if walking else set()))
-                if esper:self.assertEqual(len(lua.globals().FFRStudioEsperMastery.callbacks),6)
+                owner_hook=lua.globals().hooks['/Script/mucha.CPP_BtlUnitAI:Execute']
+                if esper:
+                    self.assertEqual(len(lua.globals().FFRStudioEsperMastery.callbacks),7)
+                    self.assertIsNotNone(owner_hook)
+                    self.assertTrue(callable(owner_hook[2]))
+                else:
+                    self.assertIsNone(owner_hook)
 
     def test_generated_runtime_composes_encounters_with_esper_fina_and_walking(self):
         for esper,fina,walking in ((True,True,True),(True,False,False),(False,False,False)):
