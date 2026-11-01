@@ -217,6 +217,27 @@ class SephiraVisions {
     if (update is! Map || (unit['sephiraKitRevision'] as int? ?? 0) >= update['version']) return unit;
     try {
       final result = CharacterConfig.copy(unit);
+      final incremental = update['incremental'];
+      if (incremental is Map && (unit['sephiraKitRevision'] as int? ?? 0) >= incremental['fromVersion']) {
+        for (final swap in incremental['awakeningPassiveSwaps'] as List) {
+          var present = (result['awakening'] as List).any((tier) => (tier as List)
+              .any((g) => g[0] == 'PassiveSkill' && g[1] == swap[1]));
+          for (final tier in result['awakening'] as List) {
+            for (final grant in List<dynamic>.from(tier as List)) {
+              if (grant[0] != 'PassiveSkill' || grant[1] != swap[0]) continue;
+              if (present) {
+                tier.remove(grant);
+              } else {
+                grant[1] = swap[1];
+                present = true;
+              }
+            }
+          }
+        }
+        result['sephiraKitRevision'] = update['version'];
+        CharacterConfig.validate(result);
+        return result;
+      }
       // Explicit reward moves are reviewed together with the awakening kit.
       // Validate the whole batch before changing anything, keeping edited MRs open.
       final rewardMoves = update['mr'] as List? ?? [];

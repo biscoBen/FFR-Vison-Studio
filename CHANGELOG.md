@@ -11,6 +11,18 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Resonance element icons and Mog’s wind resistance — 2026-11-01
+
+- Audit all 30 Sephira resonances and fix 12 inherited icon mismatches, including
+  Mog (Wind), Elza (Dark) and A2 (neutral). Derive icons from each private attack’s
+  effective element; preserve explicit icon edits and healing/support icons.
+  Keep damage, audio, animations, descriptions, stable IDs and native donors.
+- Replace Mog’s tier-one Resist Water with native Resist Wind at the same equip
+  cost. Upgrade saved kits once without resetting custom MRs, stats, acquisition,
+  recipes or Spirit. Keep all 75 original MR rewards covered.
+- Focused Python checks pass; native serialization/readback and Windows package
+  validation are pending. In-game presentation needs a retest after install.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

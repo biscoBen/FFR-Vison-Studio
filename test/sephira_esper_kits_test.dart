@@ -70,6 +70,36 @@ void main() {
     expect(identical(SephiraVisions.repairKit(conflict, presets), conflict), isTrue);
     expect(() => SephiraVisions.repairKit(conflict, presets, strict: true), throwsStateError);
   });
+  test('Mog swaps saved water resistance once without resetting edited rewards', () async {
+    final presets = await SephiraVisions.bundled;
+    final p = presets.singleWhere((p) => p['id'] == 'mog');
+    final unit = CharacterConfig.copy(p['profile'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'mog', 'enabled': true};
+    unit['sephiraKitRevision'] = 1;
+    for (final tier in unit['awakening'] as List) {
+      for (final g in tier as List) { if (g[0] == 'PassiveSkill' && g[1] == 1248) g[1] = 1251; }
+    }
+    unit['synchro'][3] = [['PassiveSkill', 1280, -1]];
+    unit['stats']['Magic'] = 999;
+    unit['master']['desc'] = 'My Spirit';
+    final before = CharacterConfig.copy(unit);
+    final expected = CharacterConfig.copy(unit);
+    expected['sephiraKitRevision'] = 2;
+    for (final tier in expected['awakening'] as List) {
+      for (final g in tier as List) { if (g[0] == 'PassiveSkill' && g[1] == 1251) g[1] = 1248; }
+    }
+    final actual = SephiraVisions.repairKit(unit, presets, strict: true);
+    expect(actual, expected);
+    expect(unit, before);
+    expect(identical(SephiraVisions.repairKit(actual, presets), actual), isTrue);
+    CharacterConfig.decode(CharacterConfig.encode(actual));
+    final duplicate = CharacterConfig.copy(unit);
+    duplicate['awakening'][3].add(['PassiveSkill', 1248, -1]);
+    final deduped = SephiraVisions.repairKit(duplicate, presets, strict: true);
+    expect([for (final t in deduped['awakening'] as List) for (final g in t as List)
+      if (g[0] == 'PassiveSkill' && g[1] == 1248) g].length, 1);
+    expect(deduped['awakening'][3], contains(equals(['PassiveSkill', 1248, -1])));
+  });
   test('Eiko support update moves Raise and adds Shellga to an existing kit', () async {
     final presets = await SephiraVisions.bundled;
     final p = presets.singleWhere((p) => p['id'] == 'eiko');

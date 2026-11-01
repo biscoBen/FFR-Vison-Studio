@@ -92,6 +92,19 @@ def repair(unit):
     update=data()['kits'].get(preset)
     if not update or unit.get('sephiraKitRevision',0)>=update['kitUpdate']['version']:return
     plan=update['kitUpdate']
+    incremental=plan.get('incremental')
+    if incremental and unit.get('sephiraKitRevision',0)>=incremental['fromVersion']:
+        result=copy.deepcopy(unit)
+        for previous,replacement in incremental['awakeningPassiveSwaps']:
+            present=any(g[:2]==['PassiveSkill',replacement] for tier in result['awakening'] for g in tier)
+            for tier in result['awakening']:
+                for grant in list(tier):
+                    if grant[:2]!=['PassiveSkill',previous]:continue
+                    if present:tier.remove(grant)
+                    else:grant[1]=replacement;present=True
+        result['sephiraKitRevision']=plan['version']
+        unit.clear();unit.update(result)
+        return
     for op in plan['mr']:
         kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]}
         choices=[g for g in unit['synchro'][op['rank']] if g[0] in kinds]

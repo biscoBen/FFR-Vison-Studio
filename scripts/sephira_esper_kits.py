@@ -80,6 +80,17 @@ def revise(catalog):
         balance['activeCount'] += 1
         balance['kitCount'] += 1
         balance['totalSkillCount'] += 1
+    mog = next(p for p in catalog['presets'] if p['id'] == 'mog')
+    if mog['profile'].get('sephiraKitRevision', 0) < 2:
+        for tier in mog['profile']['awakening']:
+            for grant in tier:
+                if grant[:2] == ['PassiveSkill',1251]: grant[1] = 1248
+        for grant in mog['awakeningBalance']['grants']:
+            if grant['id'] == 1251: grant['id'] = 1248
+        mog['profile']['sephiraKitRevision'] = 2
+        mog['kitUpdate']['version'] = 2
+        mog['kitUpdate']['managed'] = sorted({*mog['kitUpdate']['managed'], 'PassiveSkill:1248'})
+        mog['kitUpdate']['incremental'] = {'fromVersion':1,'awakeningPassiveSwaps':[[1251,1248]]}
     return catalog
 
 

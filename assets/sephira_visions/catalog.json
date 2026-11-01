@@ -37079,7 +37079,7 @@
             ],
             [
               "PassiveSkill",
-              1251,
+              1248,
               -1
             ],
             [
@@ -37297,7 +37297,7 @@
           }
         },
         "sephiraMrRevision": 1,
-        "sephiraKitRevision": 1
+        "sephiraKitRevision": 2
       },
       "balance": {
         "nativeBudget": 13120,
@@ -38087,7 +38087,7 @@
         "grants": [
           {
             "rank": 0,
-            "id": 1251
+            "id": 1248
           },
           {
             "rank": 2,
@@ -38946,7 +38946,7 @@
         "sephiraMrRevision": 1
       },
       "kitUpdate": {
-        "version": 1,
+        "version": 2,
         "managed": [
           "ActiveSkill:220170",
           "ActiveSkill:220180",
@@ -38956,6 +38956,7 @@
           "ActiveSkill:230150",
           "ActiveSkill:230160",
           "ActiveSkill:400760",
+          "PassiveSkill:1248",
           "PassiveSkill:1251",
           "PassiveSkill:1286",
           "PassiveSkill:1292",
@@ -39027,7 +39028,16 @@
         ],
         "masterDescriptions": [
           "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
-        ]
+        ],
+        "incremental": {
+          "fromVersion": 1,
+          "awakeningPassiveSwaps": [
+            [
+              1251,
+              1248
+            ]
+          ]
+        }
       }
     },
     {

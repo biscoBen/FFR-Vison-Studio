@@ -9,7 +9,7 @@
     },
     "1961": {
       "name": "Esper Communion",
-      "desc": "Restore 3% of the summoner’s max MP whenever their esper acts.",
+      "desc": "Restore 3% of the summoner\u2019s max MP whenever their esper acts.",
       "cost": 20,
       "marker": 196100
     },
@@ -896,7 +896,7 @@
             "visuals": 210020,
             "jp": "Sephira_eiko_Kit_5",
             "en": "Healing Breeze",
-            "desc": "Restore all allies’ HP.",
+            "desc": "Restore all allies\u2019 HP.",
             "descAuto": false,
             "set": {
               "Cost": 35,
@@ -972,7 +972,7 @@
             "from": 225170,
             "visuals": 225170,
             "jp": "Sephira_eiko_Kit_12",
-            "en": "Guardian’s Earth",
+            "en": "Guardian\u2019s Earth",
             "desc": "Deal Earth magic damage to all enemies 3 times.",
             "descAuto": false,
             "set": {
@@ -1024,7 +1024,7 @@
             "from": 225080,
             "visuals": 225080,
             "jp": "Sephira_eiko_Kit_14",
-            "en": "Guardian’s Lightning",
+            "en": "Guardian\u2019s Lightning",
             "desc": "Deal Lightning magic damage to all enemies 3 times.",
             "descAuto": false,
             "set": {
@@ -1071,7 +1071,7 @@
             "from": 210050,
             "visuals": 210050,
             "jp": "Sephira_eiko_EsperKit_486548",
-            "en": "Eidolon’s Reprieve",
+            "en": "Eidolon\u2019s Reprieve",
             "desc": "Grant Regen to all allies.",
             "descAuto": false,
             "set": {
@@ -1350,7 +1350,7 @@
           },
           "1961": {
             "name": "Esper Communion",
-            "desc": "Restore 3% of the summoner’s max MP whenever their esper acts."
+            "desc": "Restore 3% of the summoner\u2019s max MP whenever their esper acts."
           },
           "1962": {
             "name": "Enduring Eidolons",
@@ -1750,7 +1750,7 @@
             ],
             [
               "PassiveSkill",
-              1251,
+              1248,
               -1
             ],
             [
@@ -1968,10 +1968,10 @@
           }
         },
         "sephiraMrRevision": 1,
-        "sephiraKitRevision": 1
+        "sephiraKitRevision": 2
       },
       "kitUpdate": {
-        "version": 1,
+        "version": 2,
         "managed": [
           "ActiveSkill:220170",
           "ActiveSkill:220180",
@@ -1981,6 +1981,7 @@
           "ActiveSkill:230150",
           "ActiveSkill:230160",
           "ActiveSkill:400760",
+          "PassiveSkill:1248",
           "PassiveSkill:1251",
           "PassiveSkill:1286",
           "PassiveSkill:1292",
@@ -2052,7 +2053,16 @@
         ],
         "masterDescriptions": [
           "Moogle of Narshe Mog's learned mastery rewards flow into the wearer."
-        ]
+        ],
+        "incremental": {
+          "fromVersion": 1,
+          "awakeningPassiveSwaps": [
+            [
+              1251,
+              1248
+            ]
+          ]
+        }
       }
     },
     "rikku": {

@@ -301,6 +301,23 @@ def repair_equipable_mr(unit):
     unit.clear();unit.update(result)
 
 
+def damage_icon(recipe, source, *, resonance=False):
+    """Derive a private damage icon; authored icons and non-damage icons win."""
+    fields = recipe.setdefault('set', {})
+    if 'SkillIcon.TagName' in fields or 'SkillIcon' in fields: return
+    effective = dict(source, **fields)
+    if (effective.get('skillEffectType') != 'DamageAndRecovery'
+            or effective.get('parameterVariationType') != 'Decrease'
+            or effective.get('parameterType') != 'HitPoint'): return
+    elements = ('Fire', 'Ice', 'Thunder', 'Water', 'Wind', 'Earth', 'Light', 'Dark')
+    element = effective.get('element')
+    if element in elements:
+        fields['SkillIcon.TagName'] = 'UI.Skill.Action.Icon.' + element
+    elif resonance and element == 'None' and source.get('SkillIcon', {}).get('TagName') in {
+            'UI.Skill.Action.Icon.' + e for e in elements}:
+        fields['SkillIcon.TagName'] = 'UI.Skill.Action.Icon.Attack'
+
+
 def player_units(units, rows):
     """Normalize private learned commands and pure healing outside battle.
 
@@ -308,10 +325,14 @@ def player_units(units, rows):
     Explicit edits to these presentation/availability fields retain precedence.
     """
     result = copy.deepcopy(units)
-    selected = [u for u in result if runtime_membership(u) is not None and u.get('skills')]
+    selected = [u for u in result if runtime_membership(u) is not None]
     if not selected: return result
     native = {r['ID']: r for r in rows('Skill/DT_SkillData').values()}
     for unit in selected:
+        lb = unit.get('lb_custom')
+        if lb and lb.get('from') in native:
+            damage_icon(lb, native[lb['from']], resonance=True)
+        if not unit.get('skills'): continue
         import _ffr_esper_mastery
         _ffr_esper_mastery.repair(unit)
         repair_mastery_scope(unit)
@@ -325,16 +346,9 @@ def player_units(units, rows):
             import _ffr_sephira_ffbe
             if _ffr_sephira_ffbe.selected(unit, recipe): recipe['visuals'] = recipe['from']
             fields = recipe.setdefault('set', {})
-            # Enemy attack donors commonly keep the generic weapon icon even
-            # after the private player copy gains an element. Damage and its
-            # menu icon are independent native fields. Explicit icon edits win.
+            # Damage and menu icons are independent native fields.
+            damage_icon(recipe, source)
             effective = dict(source, **fields)
-            if ('SkillIcon.TagName' not in fields and 'SkillIcon' not in fields
-                    and effective.get('skillEffectType') == 'DamageAndRecovery'
-                    and effective.get('parameterVariationType') == 'Decrease'
-                    and effective.get('parameterType') == 'HitPoint'
-                    and effective.get('element') in ('Fire', 'Ice', 'Thunder', 'Water', 'Wind', 'Earth', 'Light', 'Dark')):
-                fields['SkillIcon.TagName'] = 'UI.Skill.Action.Icon.' + effective['element']
             if int(identity) in learned and fields.get('belongCommandList') == [command]:
                 fields['belongCommandList'] = [1]
                 if fields.get('commandIdBelongDebuggingAllSkills') == [command, -1]:
@@ -468,6 +482,13 @@ def verify_runtime_rows(root, tool, usmap, units, rows):
     lookups = {kind: {r['ID']: r for r in built[rel].values()} for kind, rel in (
         ('ActiveSkill', rels[0]), ('PassiveSkill', PASSIVE), ('MasterSkill', rels[2]))}
     for unit in selected:
+        lb = unit.get('lb_custom') or {}
+        icon = lb.get('set', {}).get('SkillIcon.TagName')
+        if icon:
+            identity = 440000 + (unit['id'] - 13099) * 10
+            actual = lookups['ActiveSkill'].get(identity, {})
+            if actual.get('SkillIcon', {}).get('TagName') != icon:
+                raise ValueError(f'{unit["en"]}: its resonance icon did not survive serialization.')
         master=lookups['MasterSkill'].get(unit['master']['id'])
         if not master or master.get('VisionId')!=unit['id']:
             raise ValueError(f'{unit["en"]}: its Spirit points to another vision\'s mastery rewards.')
