@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Trio boss AoE balance and Mystea’s Provoke — 2026-11-01
+
+[Verified Windows download / run 41338843365](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41338843365/Sephira-Studio-Test.zip)
+(code `019efc7`, update **1.2.148**; **82.6 MB**).
+
+Mystea, Snow White and Lilith’s boss AoE skills now use 40% of their previous
+power. Their player damage skills retain their previous power. Mystea learns
+Provoke at MR1 and HP +30 at MR2. Provoke uses the native caster-relative taunt
+with Rain-only restrictions removed; any character can learn/equip it through MR.
+
+Rebuild/install and restart; no preset reset is needed. All 75 original MR
+rewards remain covered. Native table and Windows package checks pass; caster
+targeting and fight balance need an in-game retest.
+[Checks and measured timings](CHANGELOG.md#published-trio-aoe-balance-and-mysteas-provoke--2026-11-01).
+
 ### Resonance icons and Mog’s wind resistance — 2026-11-01
 
 [Verified Windows download / run 41333171461](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41333171461/Sephira-Studio-Test.zip)

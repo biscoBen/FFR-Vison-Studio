@@ -11,26 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Trio boss AoE balance and Mystea’s Provoke MR reward — 2026-11-01
-
-- Reduce all enemy AoE damage skills for Mystea, Snow White and Lilith to 40%
-  of their previous final power. Current rotation: Dark Pulse 9→4, Barrier Burst
-  32→13, Shadowbringer 30→12, Nihilistic Solitude 21→8. Keep player damage,
-  single-target attacks, support and other fights unchanged.
-- Give Mystea Provoke at MR1 and HP +30 at MR2. Clone Rain’s native Provoke as
-  a transferable, 10-MP/10-AP ability; remove Rain-only usage/mimic restrictions
-  and keep the native caster-relative taunt effect. Preserve the original Rain
-  skill and Mystea’s Spirit/save IDs. Migrate old layouts once, reusing edited
-  private copies or allocating around occupied IDs, with atomic conflict checks.
-- Keep all 75 original MR rewards covered. The replaced Physical Defense +20%
-  bonus remains on other awakening kits. Preserve Mystea’s other MR/awakening,
-  stat, acquisition and recipe edits. The requested utility swap removes one
-  passive from her former passive-only AP budget.
-- All 78 focused Python checks, 42 Flutter tests and focused Dart analysis pass.
-  Windows package
-  checks and native readback of the combined MR/taunt changes are pending.
-  Native gameplay targeting and difficulty still need a retest after install.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -123,6 +103,57 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published trio AoE balance and Mystea’s Provoke — 2026-11-01
+
+Code [`019efc7`](https://github.com/biscoBen/FFR-Vison-Studio/commit/019efc78b786909db41724dfd2b2f70d088f018e) ·
+[Studio test 1.2.148](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41338843365/Sephira-Studio-Test.zip)
+
+- Reduce AoE damage skills on the enemy versions of Mystea, Snow White and
+  Lilith to 40% of their previous final boss power, rounded to native whole
+  numbers. Current rotation: Dark Pulse 9→4, Barrier Burst 32→13,
+  Shadowbringer 30→12, Nihilistic Solitude 21→8. Also cover their six other
+  generated AoE damage skills. Apply the scale after existing boss calculations.
+  Keep player damage, single-target attacks, support and other fights unchanged.
+- Give Mystea Provoke at MR1 and HP +30 at MR2. Clone native Rain skill 401090
+  into private skill 486142, preserving its 10-MP/10-AP costs and native taunt
+  effect 19000. Set hasUnit to All, clear mimicableUnitId 1001 and use the general
+  Skills command. The native effect also powers universal skill 445010; it has
+  no fixed Rain target. Provoke draws attention toward the character casting it,
+  and remains learnable/equipable through MR with another vision equipped.
+- Migrate both earlier Mystea layouts once, preserving Spirit ID 1351100, other
+  MR/awakening grants, saved identity, stats, acquisition and recipes. Reuse an
+  edited Provoke copy without losing combat edits; restore its general access.
+  Allocate around occupied private IDs and leave conflicts untouched/openable.
+  The explicit utility trade replaces one defense passive with Provoke; all 75
+  original MR rewards remain covered. Other awakenings still teach the removed
+  Physical Defense +20% bonus. Rebuild/install and restart; no reset is needed.
+- All 85 focused Python checks, 42 Flutter tests and focused Dart analysis pass.
+  Native SDK readback checks all 531 private enemy skills, 1,167 original skills,
+  the private Provoke/access/cost/effect fields, both MR rows and Spirit. Exactly
+  ten boss AoE powers change; the original Rain skill and other damage fields
+  remain intact. Repeat native checks with packaged modules and eight packaged
+  migration/boss regressions. Compare every other player profile with 1.2.146.
+- Windows analysis, full Flutter/Python checks, fresh frozen-engine startup and
+  launcher/updater gates pass for this commit/run. Verify all 87 extension and
+  16 Fina manifest files, version 1.2.148, provider/workflow provenance and every
+  published App/launcher file against the compiled artifact. Runtime Lua, voices,
+  audio and resonance data retain their previous hashes. In-game caster targeting
+  and combat balance need a retest; the Zoldaad cave follow-up awaits terrain data.
+- Initial complete AoE candidate through verified combined publication:
+  49m 24s; complete combined candidate through verification:
+  28m 46s. The first clock includes the
+  added MR request, migration work, local/native checks, earlier build waiting, a corrected portability-test assumption and final
+  package verification. Final CI wall time:
+  9m 42s; summed final runner time:
+  13m 00s. Earlier AoE-only CI:
+  8m 15s wall,
+  12m 01s summed runner time.
+  The failed combined-candidate CI used 5m 18s
+  wall and 9m 28s summed runner time.
+  The superseded fixture-check run used 3m 32s
+  wall and 6m 45s summed runner time.
+  These are measured build/development times, separate from game installation.
 
 ## Published resonance icons and Mog’s wind resistance — 2026-11-01
 
