@@ -289,6 +289,8 @@ class SephiraChallengeTests(unittest.TestCase):
                     factor=1.75 if recipe['source']==config['attacks'][-1] else 1.5
                     expected=max(1,round(min(original['magnification'],cap)*factor/len(units)))
                     expected=max(1,round(expected*config.get('potencyMultipliers',{}).get(str(recipe['source']),challenge.data().get('potencyScale',1))))
+                    if original['TargetType'] in ('Group','All','SingleAndGroup'):
+                        expected=max(1,round(expected*config.get('aoePowerScale',1)))
                     actual=testing.apply_fields(native_skills[recipe['source']],recipe['fields'])
                     self.assertEqual(actual['magnification'],expected)
                     self.assertEqual(actual['DamageType'],original['DamageType'])
@@ -331,6 +333,37 @@ class SephiraChallengeTests(unittest.TestCase):
             ('minfilia', 220240, 39, 33),
             ('primm', 445300, 52, 33),
         ])
+
+    def test_cecil_trio_changes_only_enemy_aoe_power_to_forty_percent(self):
+        current=challenge.data();previous=copy.deepcopy(current)
+        trio={'snow_white','lilith','mystea'}
+        for preset in trio:previous['kits'][preset].pop('aoePowerScale')
+        native={v['ID']:v for v in self.native[challenge.SKILL].values()}
+        def skills(config):
+            result={}
+            with mock.patch.object(challenge,'data',return_value=config):
+                for _,units in challenge.plans(self.units):
+                    for unit in units:
+                        for recipe in challenge.kit(unit,self.native.__getitem__,len(units)):
+                            key=(unit['sephiraVision']['preset'],recipe['source'],recipe['learned'])
+                            result[key]=(recipe,testing.apply_fields(native[recipe['source']],recipe['fields']))
+            return result
+        before,after=skills(previous),skills(current);self.assertEqual(before.keys(),after.keys())
+        changes=[]
+        for key,(recipe,actual) in after.items():
+            old_recipe,old=before[key]
+            if key[0] in trio and recipe['damaging'] and old['TargetType'] in ('Group','All','SingleAndGroup'):
+                self.assertEqual(actual['magnification'],max(1,round(old['magnification']*.4)))
+                self.assertEqual({k for k in old if actual[k]!=old[k]},{'magnification'})
+                changes.append((key[0],key[1],old['magnification'],actual['magnification']))
+            else:self.assertEqual(actual,old,key)
+            self.assertEqual({k:v for k,v in recipe.items() if k!='fields'},
+                             {k:v for k,v in old_recipe.items() if k!='fields'})
+        self.assertCountEqual(changes,[
+            ('mystea',255260,9,4),('mystea',505860,20,8),('mystea',503980,32,13),
+            ('snow_white',500910,9,4),('snow_white',255280,14,6),
+            ('snow_white',505970,22,9),('snow_white',400490,15,6),
+            ('lilith',445310,30,12),('lilith',505580,22,9),('lilith',506040,21,8)])
 
     def test_casual_ai_uses_reviewed_moves_without_unguarded_heals(self):
         for spec, units in challenge.plans(self.units):

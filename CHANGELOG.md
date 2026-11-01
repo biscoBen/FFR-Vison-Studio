@@ -11,6 +11,18 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Cecil-sanctum trio AoE power: 40% — 2026-11-01
+
+- Reduce all enemy-targeted AoE damage skills for Mystea, Snow White and Lilith
+  to 40% of their previous final boss power, rounded to native whole numbers.
+  Current rotation: Dark Pulse 9→4, Barrier Burst 32→13, Shadowbringer 30→12,
+  Nihilistic Solitude 21→8. Cover six other generated AoE skills too.
+- Preserve single-target attacks, support/healing, effects, targeting, timing,
+  AI rotations, player-vision skills and every other challenge. Apply the scale
+  after existing boss power calculations. All 34 focused checks pass; native
+  serialization/readback and Windows package checks are pending. In-game
+  difficulty needs a retest after rebuild/install and restart.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

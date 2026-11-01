@@ -172,6 +172,10 @@ def kit(unit, rows, team_size):
             multiplier = 1.75 if source == settings['attacks'][-1] else 1.5
             row['magnification'] = max(1, round(min(row['magnification'], cap) * multiplier / team_size))
             row['magnification'] = max(1, round(row['magnification'] * settings.get('potencyMultipliers', {}).get(str(source), data().get('potencyScale', 1))))
+            if row['TargetType'] in ('Group', 'All', 'SingleAndGroup'):
+                # Apply the reviewed team-fight reduction to the final power,
+                # after existing boss scaling and its integer rounding.
+                row['magnification'] = max(1, round(row['magnification'] * settings.get('aoePowerScale', 1)))
         import _ffr_testing as testing
         result.append({'id': enemy_id, 'learned': identity, 'source': source, 'clone': key,
                        'name': PREFIX + str(unit['id']) + '_Skill_' + str(index),

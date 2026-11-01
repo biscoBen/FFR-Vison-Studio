@@ -619,6 +619,7 @@
       "utility": 502230
     },
     "mystea": {
+      "aoePowerScale": 0.4,
       "attacks": [
         255260,
         500310,
@@ -637,6 +638,7 @@
       "utility": 0
     },
     "snow_white": {
+      "aoePowerScale": 0.4,
       "attacks": [
         420300,
         570710,
@@ -690,6 +692,7 @@
       }
     },
     "lilith": {
+      "aoePowerScale": 0.4,
       "attacks": [
         220390,
         445310,
