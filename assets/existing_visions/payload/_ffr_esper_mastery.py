@@ -76,7 +76,7 @@ def prepare(tables, rows, units):
     effect(196001,12003,'DamageMultiplier',damage,effectEndActionNum=-1,isUnremovable=True)
     # ParameterVariation: amount, HP/MP, percentage arithmetic. Apply now once;
     # neither resource recovery becomes a recurring self-turn regeneration.
-    for identity,source,amount in ((196101,1019,5),(196202,21304,20)):
+    for identity,source,amount in ((196101,1019,3),(196202,21304,20)):
         original=fx[source][1]
         expected=[5,2,2] if source==1019 else [10,1,2]
         if (original['ParamList'][:3]!=expected or original['applyTiming']!='AddEffect'

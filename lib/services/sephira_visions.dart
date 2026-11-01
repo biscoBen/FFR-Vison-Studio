@@ -364,6 +364,14 @@ class SephiraVisions {
     final labels = result['sephiraPassiveText'];
     final revelry = labels is Map ? labels['1963'] : null;
     final templateLabels = (preset?['profile'] as Map?)?['sephiraPassiveText'];
+    final communion = labels is Map ? labels['1961'] : null;
+    final currentCommunion = templateLabels is Map ? templateLabels['1961'] : null;
+    if (id == 'eiko' && communion is Map && currentCommunion is Map &&
+        communion['desc'] == 'Restore 5% of the summoner’s max MP whenever their esper acts.' &&
+        communion['desc'] != currentCommunion['desc']) {
+      communion['desc'] = currentCommunion['desc'];
+      changed = true;
+    }
     final currentRevelry = templateLabels is Map ? templateLabels['1963'] : null;
     if (id == 'eiko' && revelry is Map && currentRevelry is Map &&
         revelry['desc'] == 'Each ordinary esper action has a 50% chance to become its special. The final special is guaranteed.' &&

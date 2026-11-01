@@ -71,7 +71,7 @@ class EsperMasteryTests(unittest.TestCase):
             local job={IsValid=function() return true end,HasAnyFlags=function() return false end,
                        m_pActionUnit=first,m_pSkill=first}
             hooks['/Script/mucha.CPP_BtlJobSkill:OnFinishedSkillSequence'][2]({get=function() return job end})
-            assert(archmage.parameter.mp==15 and fina.parameter.mp==10,'Recover MP only for the actual summoner')
+            assert(archmage.parameter.mp==13 and fina.parameter.mp==10,'Recover MP only for the actual summoner')
             local random=math.random;math.random=function() return 30 end
             first.ai.remaining=1;first.ai:GetRemainingActionNumSummonedUnit();first.ai:SetSkill(414010)
             assert(first.ai.skill==300020,'Archmage retains the 30% special proc')
@@ -264,7 +264,7 @@ class EsperMasteryTests(unittest.TestCase):
                 self.assertEqual(p['set']['effectBundleList'][0]['passiveSkillAddTiming'],'SpawnUnit')
         self.assertEqual(fx[196001]['ParamList'][0],20)
         self.assertEqual(fx[196201]['ParamList'][0],20)
-        self.assertEqual(fx[196101]['ParamList'][:3],[5,2,2])
+        self.assertEqual(fx[196101]['ParamList'][:3],[3,2,2])
         self.assertEqual(fx[196101]['applyTiming'],'AddEffect')
         self.assertEqual(fx[196101]['proceedTiming'],'AddEffect')
         self.assertEqual(fx[196101]['effectEndActionNum'],1)

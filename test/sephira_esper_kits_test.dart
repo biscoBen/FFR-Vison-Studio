@@ -6,6 +6,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('Communion updates only its previous default text and preserves saved kits', () async {
+    final presets = await SephiraVisions.bundled;
+    final preset = presets.singleWhere((p) => p['id'] == 'eiko');
+    final unit = CharacterConfig.copy(preset['profile'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'eiko', 'enabled': false};
+    unit['sephiraPassiveText']['1961']['name'] = 'My label';
+    unit['sephiraPassiveText']['1961']['desc'] = 'Restore 5% of the summoner’s max MP whenever their esper acts.';
+    unit['stats']['Mind'] = 999;
+    final before = CharacterConfig.copy(unit);
+    final expected = CharacterConfig.copy(unit);
+    expected['sephiraPassiveText']['1961']['desc'] = 'Restore 3% of the summoner’s max MP whenever their esper acts.';
+    final actual = SephiraVisions.repairDescriptions(unit, presets);
+    expect(actual, expected);
+    expect(unit, before);
+    expect(identical(SephiraVisions.repairDescriptions(actual, presets), actual), isTrue);
+    unit['sephiraPassiveText']['1961']['desc'] = 'My custom description';
+    expect(identical(SephiraVisions.repairDescriptions(unit, presets), unit), isTrue);
+  });
   test('Revelry updates its previous description without changing saved kits or custom text', () async {
     final presets = await SephiraVisions.bundled;
     final preset = presets.singleWhere((p) => p['id'] == 'eiko');

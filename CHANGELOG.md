@@ -11,6 +11,21 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Esper Communion MP recovery: 3% — 2026-11-01
+
+- Reduce Eiko’s Esper Communion from 5% to 3% of the summoner’s maximum MP
+  per completed esper action, including the final special. Keep the same reward,
+  marker, recovery-effect and Spirit IDs, equip cost and activation sources for
+  Fina and Archmage Fina. Existing learned rewards apply the updated native effect.
+- Update the native description, preset and authoring data. Refresh only the
+  exact previous default description in saved Eiko setups, preserving custom
+  names, descriptions, kit edits, acquisition and learned progress.
+- Verify native effect serialization/readback and the executable lifecycle,
+  MP-recipient, duplicate-callback, equipped-Eiko and Spirit checks. Other esper
+  bonuses and the summoner-ownership runtime are unchanged. Rebuild/install and
+  restart without resetting presets or relearning rewards. In-game 3% recovery
+  still needs a retest.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

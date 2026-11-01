@@ -9,7 +9,7 @@
     },
     "1961": {
       "name": "Esper Communion",
-      "desc": "Restore 5% of the summoner’s max MP whenever their esper acts.",
+      "desc": "Restore 3% of the summoner’s max MP whenever their esper acts.",
       "cost": 20,
       "marker": 196100
     },
@@ -1350,7 +1350,7 @@
           },
           "1961": {
             "name": "Esper Communion",
-            "desc": "Restore 5% of the summoner’s max MP whenever their esper acts."
+            "desc": "Restore 3% of the summoner’s max MP whenever their esper acts."
           },
           "1962": {
             "name": "Enduring Eidolons",

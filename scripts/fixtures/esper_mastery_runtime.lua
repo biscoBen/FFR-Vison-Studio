@@ -69,7 +69,7 @@ function actor(id,key)
         p.effects[id]=true
         if id==196201 then p.maxhp=math.floor(p.maxhp*1.2) end
         if id==196202 then p.hp=math.min(p.maxhp,p.hp+math.floor(p.maxhp*.2)) end
-        if id==196101 then p.mp=math.min(p.maxmp,p.mp+math.floor(p.maxmp*.05)) end
+        if id==196101 then p.mp=math.min(p.maxmp,p.mp+math.floor(p.maxmp*.03)) end
     end
     ai.GetRemainingActionNumSummonedUnit=function(self)
         return call('/Script/mucha.CPP_BtlUnitAI:GetRemainingActionNumSummonedUnit',self,function() return self.remaining end)
@@ -155,13 +155,13 @@ function run_tests()
     -- One MP payment per completed logical action, including the finale. A
     -- multi-hit sequence callback and the following dismiss are not extra pay.
     fina.parameter.mp=10;a.parameter.count=6
-    finish(a,300020,-1);finish(a,300020,-1);finish(a,431100);assert(fina.parameter.mp==15)
-    a.parameter.count=7;finish(a,414010);assert(fina.parameter.mp==20)
+    finish(a,300020,-1);finish(a,300020,-1);finish(a,431100);assert(fina.parameter.mp==13)
+    a.parameter.count=7;finish(a,414010);assert(fina.parameter.mp==16)
     fina.parameter.mp=99;a.parameter.count=8;finish(a,414010);assert(fina.parameter.mp==100)
     -- The same markers supplied through Spirit of Eiko have identical meaning;
     -- changing the equipped vision has no influence on this equipped-effect test.
     fina.parameter.vision=13110;a.parameter.count=9;fina.parameter.mp=10
-    finish(a,414010);assert(fina.parameter.mp==15)
+    finish(a,414010);assert(fina.parameter.mp==13)
     -- No cross-owner/enemy/boss/vision effects, even with identical animations.
     local other=actor(10453,'OtherOwner');other.parameter.m_pVisionOwner=actor(1001)
     local enemy=actor(10452,'Enemy');enemy.parameter.relation=2
@@ -209,7 +209,7 @@ function run_tests()
     local throughVision=actor(10452,'ThroughEiko');actors={fina,eiko,throughVision};tick()
     assert(throughVision.parameter.maxhp==120 and throughVision.ai.effectCalls[196001]==1)
     throughVision.parameter.count=1;fina.parameter.mp=10;finish(throughVision,414010)
-    assert(fina.parameter.mp==15,'Equipped Eiko must supply her learned MP reward')
+    assert(fina.parameter.mp==13,'Equipped Eiko must supply her learned MP reward')
     throughVision.parameter.count=2;throughVision.ai.remaining=0
     assert(throughVision.ai:GetRemainingActionNumSummonedUnit()==1)
     flags(196000,196100,196200,196300);tick()
@@ -231,7 +231,7 @@ function run_tests()
     local throughSpirit=actor(10452,'ThroughSpirit');actors={fina,throughSpirit};tick()
     assert(throughSpirit.parameter.maxhp==120)
     throughSpirit.parameter.count=1;fina.parameter.mp=10;finish(throughSpirit,414010)
-    assert(fina.parameter.mp==15)
+    assert(fina.parameter.mp==13)
     fina.parameter.passives={}
     assert(_G.FFRStudioEsperMastery and #_G.FFRStudioEsperMastery.callbacks==7)
 end
@@ -244,7 +244,7 @@ function run_reader_failure_tests()
     fina.parameter.GetPassiveSkillList=function() error('Unavailable passive reader fixture') end
     local a=actor(10452,'EffectsSurviveReaderFailure');actors={fina,a};tick()
     assert(a.parameter.maxhp==120 and a.ai.effectCalls[196001]==1)
-    a.parameter.count=1;finish(a,414010);assert(fina.parameter.mp==15)
+    a.parameter.count=1;finish(a,414010);assert(fina.parameter.mp==13)
     fina.parameter.GetPassiveSkillList=passiveGetter
     local effectGetter=fina.parameter.GetContEffectList
     fina.parameter.GetContEffectList=function() error('Unavailable continuous reader fixture') end

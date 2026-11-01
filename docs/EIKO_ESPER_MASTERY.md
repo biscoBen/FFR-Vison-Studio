@@ -11,7 +11,7 @@ Summoning remains the native command of Fina and Archmage Fina; Eiko grants no s
 | --- | --- | --- |
 | MR1 | Nullify Silence | 10 |
 | MR3 | Esper Power: esper damage +20% | 30 |
-| MR5 | Esper Communion: recover 5% of the summoner's maximum MP per esper action | 20 |
+| MR5 | Esper Communion: recover 3% of the summoner's maximum MP per esper action | 20 |
 | MR7 | Enduring Eidolons: one extra ordinary action before the finisher, esper max HP +20% | 40 |
 | MR9 | Eidolon Revelry: 30% chance for each ordinary action to become a special; the final special stays guaranteed | 50 |
 
