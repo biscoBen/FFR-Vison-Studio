@@ -11,18 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Resonance element icons and Mog’s wind resistance — 2026-11-01
-
-- Audit all 30 Sephira resonances and fix 12 inherited icon mismatches, including
-  Mog (Wind), Elza (Dark) and A2 (neutral). Derive icons from each private attack’s
-  effective element; preserve explicit icon edits and healing/support icons.
-  Keep damage, audio, animations, descriptions, stable IDs and native donors.
-- Replace Mog’s tier-one Resist Water with native Resist Wind at the same equip
-  cost. Upgrade saved kits once without resetting custom MRs, stats, acquisition,
-  recipes or Spirit. Keep all 75 original MR rewards covered.
-- Focused Python checks pass; native serialization/readback and Windows package
-  validation are pending. In-game presentation needs a retest after install.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -115,6 +103,41 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published resonance icons and Mog’s wind resistance — 2026-11-01
+
+Code [`21e2a38`](https://github.com/biscoBen/FFR-Vison-Studio/commit/21e2a38e6270fdb61fc404cb7a4a3a06d9ce45c5) ·
+[Studio test 1.2.146](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41333171461/Sephira-Studio-Test.zip)
+
+- Audit all 30 Sephira resonances. Fix inherited icons for A2 (neutral), Fran
+  (Wind), Lunafreya (Water), Folka (Water), Fryevia (Ice), Snow White (Dark),
+  Eiko (Light), Alice (Ice), Mog (Wind), Freya (Water), Relm (Thunder) and Elza
+  (Dark). Derive each private damage icon from its effective element at build
+  time, including saved element edits. Keep explicit icon overrides, healing
+  and support icons. Check serialized resonance icons during installation.
+- Replace Mog’s tier-one Resist Water (1251) with native Resist Wind (1248),
+  effect 1276, at the same equip cost of 30. Update existing revised kits once;
+  preserve custom MRs, recipes, stats, acquisition, stable IDs and Spirit.
+  Avoid duplicate Wind grants and respect a deliberately removed resistance.
+  Retain the complete legacy kit migration for older setups. All 75 original
+  MR rewards remain covered; resonance damage, sound and animations are unchanged.
+- All 41 focused Python checks pass. Native SDK serialization/readback checks
+  all 30 private resonance icons, all damage parameters, Mog’s awakening grant,
+  the native Wind resistance definition/cost and preservation of original rows.
+  Repeat those checks with the actual packaged modules, alongside the three
+  packaged icon/migration regressions. Test fixtures use synthetic rows; full
+  native game rows used for local readback are not included in the repository.
+- Windows analysis, Flutter/Python checks, fresh frozen-engine startup and
+  launcher/updater gates pass for this exact commit/run. Verify all 87 extension
+  and 16 Fina manifest files, version 1.2.146 in the executable/installer,
+  workflow provenance/provider SHA and every public App/launcher file against
+  the compiled artifact. In-game icon/resistance presentation still needs a retest.
+- First complete candidate through verified publication: 13m 05s,
+  including checks, correction of the local readback comparator’s enum spelling,
+  reducing the test fixture to synthetic data, approval-review retries, build
+  waiting and package verification. CI wall time: 9m 59s;
+  summed runner time: 15m 06s. These are measured for this
+  update, separate from user-reported installation time.
 
 ## Published Esper Communion MP recovery: 3% — 2026-11-01
 

@@ -4,6 +4,21 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Resonance icons and Mog’s wind resistance — 2026-11-01
+
+[Verified Windows download / run 41333171461](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41333171461/Sephira-Studio-Test.zip)
+(code `21e2a38`, update **1.2.146**; **82.6 MB**).
+
+All 30 Sephira resonance icons have been checked; 12 now match their attack
+instead of the borrowed animation’s element, including Mog (Wind) and Elza
+(Dark). Healing/support icons and explicit edits are preserved. Mog now has
+Resist Wind in place of Resist Water, including existing saved setups.
+
+Rebuild/install and restart; no preset reset is needed. Damage, audio, animation,
+MR rewards and Spirit IDs are unchanged. Native table and Windows package
+checks pass; the in-game result needs a retest.
+[Checks and measured timings](CHANGELOG.md#published-resonance-icons-and-mogs-wind-resistance--2026-11-01).
+
 ### Esper Communion MP recovery: 3% — 2026-11-01
 
 [Verified Windows download / run 41329958207](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41329958207/Sephira-Studio-Test.zip)
