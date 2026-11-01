@@ -13,6 +13,116 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 class EsperMasteryTests(unittest.TestCase):
+    def test_optional_owner_hook_failure_does_not_disable_mastery_for_a_sole_summoner(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute('''
+            local register=RegisterHook
+            function RegisterHook(path,pre,post)
+                if path=='/Script/mucha.CPP_BtlUnitAI:Execute' then error('Unavailable owner hook fixture') end
+                register(path,pre,post)
+            end
+            fina=actor(1006,'ArchmageFina');partyActors={[1006]=fina}
+            fina.parameter.passives={1960,1961,1962,1963}
+        ''')
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            assert(FFRStudioEsperMastery.errors['summoner action hook'])
+            assert(hooks['/Script/mucha.CPP_BtlUnitAI:SetSkill'])
+            local summon=actor(10452,'Ifrit');actors={fina,summon};tick()
+            assert(summon.parameter.maxhp==120 and summon.ai.effectCalls[196001]==1)
+            summon.parameter.count=2;summon.ai.remaining=0
+            assert(summon.ai:GetRemainingActionNumSummonedUnit()==1)
+        ''')
+
+    def test_archmage_fina_preserves_all_rewards_spirit_vision_and_lifecycle_contracts(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute("fina=actor(1006,'ArchmageFina');partyActors={[1006]=fina}")
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.globals().run_tests()
+        lua.globals().run_reader_failure_tests()
+
+    def test_both_finas_use_executing_summoner_without_transferring_existing_espers(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            local archmage=actor(1006,'ArchmageFina')
+            partyActors={[1003]=fina,[1006]=archmage}
+            fina.parameter.passives={1960}
+            archmage.parameter.passives={1961,1962,1963}
+            fina.ai:SetSkill(430990);archmage.ai:SetSkill(430990)
+            assert(next(FFRStudioEsperMastery.summoners)==nil,'Queued choices are not executed summons')
+            local first=actor(10452,'FirstIfrit');actors={fina,archmage,first};tick()
+            assert(next(first.ai.effectCalls)==nil,'Never borrow one candidate caster based on their rewards')
+            archmage.ai:Execute();tick()
+            assert(first.parameter.maxhp==120 and first.ai.effectCalls[196001]==nil)
+            first.parameter.count=2;first.ai.remaining=0
+            assert(first.ai:GetRemainingActionNumSummonedUnit()==1)
+            fina.ai:Execute();tick()
+            assert(FFRStudioEsperMastery.states.FirstIfrit.caster==archmage,'A later cast must not transfer an existing esper')
+            local second=actor(10452,'SecondIfrit');actors={fina,archmage,first,second};tick()
+            assert(second.parameter.maxhp==100 and second.ai.effectCalls[196001]==1)
+            first.parameter.count=3;first.ai.m_SkillId=300020
+            local job={IsValid=function() return true end,HasAnyFlags=function() return false end,
+                       m_pActionUnit=first,m_pSkill=first}
+            hooks['/Script/mucha.CPP_BtlJobSkill:OnFinishedSkillSequence'][2]({get=function() return job end})
+            assert(archmage.parameter.mp==15 and fina.parameter.mp==10,'Recover MP only for the actual summoner')
+            local random=math.random;math.random=function() return 30 end
+            first.ai.remaining=1;first.ai:GetRemainingActionNumSummonedUnit();first.ai:SetSkill(414010)
+            assert(first.ai.skill==300020,'Archmage retains the 30% special proc')
+            first.parameter.count=4;math.random=function() return 31 end;first.ai:SetSkill(414010)
+            assert(first.ai.skill==414010,'Roll 31 must not proc')
+            first.parameter.count=5;first.ai.remaining=0;first.ai:GetRemainingActionNumSummonedUnit()
+            math.random=function() error('Never reroll the final special') end
+            first.ai:SetSkill(300020);assert(first.ai.skill==300020);math.random=random
+        ''')
+
+    def test_explicit_archmage_owner_and_unsupported_casters_do_not_borrow_other_rewards(self):
+        from lupa.lua54 import LuaRuntime
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute('''
+            local archmage=actor(1006,'ArchmageFina')
+            partyActors={[1003]=fina,[1006]=archmage}
+            fina.parameter.passives={1960};archmage.parameter.passives={1962}
+            fina.ai:SetSkill(430990);fina.ai:Execute()
+            local linked=actor(10452,'LinkedIfrit');linked.parameter.m_pVisionOwner=archmage
+            actors={fina,archmage,linked};tick()
+            assert(linked.parameter.maxhp==120 and linked.ai.effectCalls[196001]==nil)
+            local enemyOwner=actor(1006,'EnemyArchmage');enemyOwner.parameter.relation=2
+            local rejected=actor(10452,'EnemyOwnedIfrit');rejected.parameter.m_pVisionOwner=enemyOwner
+            actors={fina,archmage,linked,rejected};tick();assert(next(rejected.ai.effectCalls)==nil)
+            local rain=actor(1001);rain.ai:SetSkill(430990);rain.ai:Execute()
+            partyActors={[1006]=archmage}
+            local unsupported=actor(10452,'UnsupportedCaster');actors={archmage,unsupported};tick()
+            assert(next(unsupported.ai.effectCalls)==nil,'An unsupported summon must not inherit Archmage bonuses')
+            battleUI.bDuringBattle=false;tick()
+            assert(next(FFRStudioEsperMastery.summoners)==nil and next(FFRStudioEsperMastery.states)==nil)
+            battleUI.bDuringBattle=true
+            local fresh=actor(10452,'FreshBattle');actors={archmage,fresh};tick()
+            assert(fresh.parameter.maxhp==120,'A sole native Archmage is recognized without a captured cast')
+        ''')
+
+    def test_captured_native_party_commands_and_nine_summon_targets_match_owner_tracking(self):
+        from lupa.lua54 import LuaRuntime
+        native=json.loads((ROOT/'scripts/fixtures/esper_summoners_native.json').read_bytes())
+        self.assertEqual([u['ID'] for u in native['summoners']],[1003,1006])
+        self.assertTrue(all(any(c['SkillId']==6 for c in u['detailData']) for u in native['summoners']))
+        self.assertEqual(len(native['summons']),9)
+        self.assertEqual(native['executionHook']['path'],'/Script/mucha.CPP_BtlUnitAI.Execute')
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/esper_mastery_runtime.lua').read_text())
+        lua.execute((ROOT/'assets/existing_visions/payload/esper_mastery.lua').read_text())
+        lua.execute("archmage=actor(1006,'ArchmageFina');partyActors={[1006]=archmage}")
+        for row in native['summons']:
+            lua.execute(f"archmage.ai:SetSkill({row['skillId']});archmage.ai:Execute();assert(FFRStudioEsperMastery.summoners[{row['unitId']}].actor==archmage)")
+
     def test_revelry_proc_is_thirty_of_a_hundred_rolls_with_one_roll_per_action_and_native_finale(self):
         from lupa.lua54 import LuaRuntime
         lua=LuaRuntime()

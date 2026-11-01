@@ -11,6 +11,24 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Archmage Fina esper mastery — 2026-10-31
+
+- Include Archmage Fina (native party 1006) alongside Fina (1003) when applying
+  Eiko’s equipable esper bonuses. Existing individual rewards, Spirit of Eiko
+  and learned rewards supplied through equipped Eiko use the same activation
+  path and IDs. No kit, MR, balance or save changes are needed.
+- Resolve explicit native owner links first. Track actual native summon-action
+  execution when both casters are present, keeping existing espers attached to
+  their original summoner and restoring MP only to that character. Never choose
+  an owner based on which candidate has rewards. Clear records outside battle
+  and isolate optional ownership-hook failure from the existing mastery hooks.
+- Add captured native proof of both party summon commands, all nine skill-to-
+  esper routes and the reflected execution callback. Executable Lua checks cover
+  both casters, all activation sources, ownership isolation, KO/dismissal,
+  repeated wrappers, 30% early-special boundaries and the guaranteed finale.
+  Native in-game confirmation is still needed. Keep learned rewards and Spirit;
+  rebuild/install and restart without resetting or relearning them.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

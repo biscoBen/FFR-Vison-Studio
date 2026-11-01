@@ -1,8 +1,11 @@
 -- Eiko's equipable esper mastery. Only native friendly espers 10451..10459
--- summoned by party Fina are eligible. No save/loadout mutation or summon grant.
+-- summoned by Fina or Archmage Fina are eligible. No save/loadout mutation.
 local config = require('config')
 if config.esperMastery ~= 1 then return end
-local runtime = {states={}, callbacks={}, guarded=false, errors={}}
+local runtime = {states={}, summoners={}, callbacks={}, guarded=false, errors={}}
+local SUMMONS = {[430980]=10451,[430990]=10452,[431000]=10453,
+    [431010]=10454,[431020]=10455,[431030]=10456,[431040]=10457,
+    [431050]=10458,[431060]=10459}
 _G.FFRStudioEsperMastery = runtime -- UE4SS callbacks must retain a strong root.
 local function log(message) print('[FFR Esper] ' .. message .. '\n') end
 local function valid(o)
@@ -49,19 +52,50 @@ local function markers(parameter)
     end)
     return found
 end
-local function owner(parameter)
-    local linked=parameter.m_pVisionOwner
-    if valid(linked) then
-        local p=linked:GetUnitParameter()
-        if valid(p) and p:GetUnitId()==1003 then return linked,p end
-        return nil -- A positively identified different summoner never inherits Fina's MR.
+local function summoner(actor)
+    if not valid(actor) then return nil end
+    local p=actor:GetUnitParameter()
+    if valid(p) and (p:GetUnitId()==1003 or p:GetUnitId()==1006) and p:GetRelation()==1 then
+        return actor,p
     end
-    -- Native beasts do not expose a distinct summoner field. Only party Fina
-    -- owns the nine original summon commands; resolve her actual battle actor.
+end
+local function remember_summoner(context)
+    safe('summoner action owner',function()
+        local ai=context:get()
+        if not valid(ai) then return end
+        local id=SUMMONS[ai.m_SkillId]
+        if not id then return end
+        local actor=ai:GetOwnerUnit()
+        if not valid(actor) then return end
+        local p=actor:GetUnitParameter()
+        if not valid(p) or p:GetRelation()~=1 then return end
+        -- Capture actual native action execution, not queued menu choices. Two
+        -- casters may select the same summon before either command executes.
+        -- Keep unsupported friendly casters too, so they cannot borrow an MR.
+        runtime.summoners[id]={actor=actor}
+        log('Summoner action; caster=' .. p:GetUnitId() .. '; esper=' .. id)
+    end)
+end
+local function owner(parameter, previous)
+    local linked=parameter.m_pVisionOwner
+    if valid(linked) then return summoner(linked) end
+    -- A later cast must not transfer an existing esper to the other Fina.
+    if previous then return summoner(previous.caster) end
+    local cast=runtime.summoners[parameter:GetUnitId()]
+    if cast then return summoner(cast.actor) end
+    -- Native beasts often have no owner link. Resolve a sole eligible actor
+    -- when observing an already active summon; never guess between both Finas.
     local battle=native('mucha.Default__CPP_BFL_Battle')
     if not valid(battle) then return nil end
-    local actor=battle:GetBattleUnitByUnitId(1003,false)
-    if valid(actor) then return actor,actor:GetUnitParameter() end
+    local found,wearer
+    for _,id in ipairs({1003,1006}) do
+        local actor,p=summoner(battle:GetBattleUnitByUnitId(id,false))
+        if actor and p:GetUnitId()==id then
+            if found then return nil end
+            found,wearer=actor,p
+        end
+    end
+    return found,wearer
 end
 local function state(ai)
     if not valid(ai) then return nil end
@@ -71,14 +105,15 @@ local function state(ai)
     if not valid(parameter) then return nil end
     local id=parameter:GetUnitId()
     if id<10451 or id>10459 or parameter:GetRelation()~=1 or parameter:IsDead() then return nil end
-    local caster,wearer=owner(parameter)
-    if not valid(caster) or not valid(wearer) then return nil end
     local key=actor:GetFullName()
     local address=actor:GetAddress()
     local s=runtime.states[key]
     -- UE4SS 3.0.1 compares Lua userdata wrappers, not their native pointers.
     -- A fresh wrapper must not grant HP/damage again or reset the extra action.
-    if not s or not valid(s.actor) or s.address~=address then
+    if s and (not valid(s.actor) or s.address~=address) then s=nil end
+    local caster,wearer=owner(parameter,s)
+    if not valid(caster) or not valid(wearer) then return nil end
+    if not s then
         s={address=address,id=id}
         runtime.states[key]=s
     end
@@ -224,13 +259,16 @@ safe('native hooks',function()
     hook('/Script/mucha.CPP_BtlUnitAI:SetTargetList',function() end,targets)
     hook('/Script/mucha.CPP_BtlJobSkill:OnFinishedSkillSequence',function() end,finished)
 end)
+safe('summoner action hook',function()
+    hook('/Script/mucha.CPP_BtlUnitAI:Execute',function() end,remember_summoner)
+end)
 runtime.tick=function()
     safe('esper spawn scan',function()
         local active=false
         for _,ui in ipairs(FindAllOf('CPP_UI_BattleSubsystem') or {}) do
             if valid(ui) and ui.bDuringBattle then active=true;break end
         end
-        if not active then runtime.states={};return end
+        if not active then runtime.states={};runtime.summoners={};return end
         local seen={}
         for _,actor in ipairs(FindAllOf('CPP_BtlUnit') or {}) do
             if valid(actor) and not actor:GetFullName():find('Default__',1,true) then
@@ -266,4 +304,4 @@ if type(LoopInGameThreadWithDelay)=='function' then
     else log('Game-thread loop unavailable; using rooted callback bridge: '..tostring(handle)) end
 end
 if not nativeLoop then LoopAsync(200,runtime.loop) end
-log('Esper mastery ready; native active rewards on Fina/equipped vision; ordinary procs preserve the final special')
+log('Esper mastery ready; native rewards on Fina/Archmage Fina and equipped visions; ordinary procs preserve the final special')

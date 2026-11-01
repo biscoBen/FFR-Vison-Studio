@@ -56,6 +56,9 @@ function actor(id,key)
     a.GetUnitParameter=function(self) return self.parameter end
     a.GetUnitAI=function(self) return self.ai end
     ai.GetOwnerUnit=function() return a.wrappers and setmetatable({}, {__index=a}) or a end
+    ai.Execute=function(self)
+        return call('/Script/mucha.CPP_BtlUnitAI:Execute',self,function() end)
+    end
     ai.GetSkillIdInSkillList=function(_,list,index)
         assert(list==(id==10455 and 1 or 0) and index==(id==10455 and 1 or 0))
         return ({[10451]=300010,[10452]=300020,[10453]=300040,[10454]=300050,
@@ -86,7 +89,10 @@ function actor(id,key)
     return a
 end
 fina=actor(1003)
-local bfl=object({GetBattleUnitByUnitId=function(_,id,alive) assert(id==1003 and not alive);return fina end})
+partyActors={[1003]=fina}
+local bfl=object({GetBattleUnitByUnitId=function(_,id,enemy)
+    assert((id==1003 or id==1006) and not enemy);return partyActors[id]
+end})
 function StaticFindObject(path) assert(path=='/Script/mucha.Default__CPP_BFL_Battle');return bfl end
 battleUI=object({bDuringBattle=true})
 function FindAllOf(name)
@@ -227,7 +233,7 @@ function run_tests()
     throughSpirit.parameter.count=1;fina.parameter.mp=10;finish(throughSpirit,414010)
     assert(fina.parameter.mp==15)
     fina.parameter.passives={}
-    assert(_G.FFRStudioEsperMastery and #_G.FFRStudioEsperMastery.callbacks==6)
+    assert(_G.FFRStudioEsperMastery and #_G.FFRStudioEsperMastery.callbacks==7)
 end
 
 function run_reader_failure_tests()

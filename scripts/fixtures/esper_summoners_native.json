@@ -1,0 +1,160 @@
+{
+  "gameSha256": "8ce7a0746d0cc1b2c9b97e44d186f8036212b156fc52b91571da94703168b5b4",
+  "summoners": [
+    {
+      "ID": 1003,
+      "detailData": [
+        {
+          "SkillId": 403010,
+          "Conditions": []
+        },
+        {
+          "SkillId": 1,
+          "Conditions": []
+        },
+        {
+          "SkillId": 899,
+          "Conditions": []
+        },
+        {
+          "SkillId": 6,
+          "Conditions": [
+            {
+              "Condition": "EventFlag",
+              "conditionParams": [
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "SkillId": 400010,
+          "Conditions": []
+        },
+        {
+          "SkillId": 7,
+          "Conditions": []
+        },
+        {
+          "SkillId": 400020,
+          "Conditions": []
+        }
+      ]
+    },
+    {
+      "ID": 1006,
+      "detailData": [
+        {
+          "SkillId": 408010,
+          "Conditions": []
+        },
+        {
+          "SkillId": 1,
+          "Conditions": []
+        },
+        {
+          "SkillId": 899,
+          "Conditions": []
+        },
+        {
+          "SkillId": 6,
+          "Conditions": [
+            {
+              "Condition": "EventFlag",
+              "conditionParams": [
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "SkillId": 400010,
+          "Conditions": []
+        },
+        {
+          "SkillId": 7,
+          "Conditions": [
+            {
+              "Condition": "EventFlag",
+              "conditionParams": [
+                27
+              ]
+            }
+          ]
+        },
+        {
+          "SkillId": 400020,
+          "Conditions": []
+        }
+      ]
+    }
+  ],
+  "summons": [
+    {
+      "skillId": 430980,
+      "effectId": 13500,
+      "unitId": 10451,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 430990,
+      "effectId": 13501,
+      "unitId": 10452,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431000,
+      "effectId": 13502,
+      "unitId": 10453,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431010,
+      "effectId": 13503,
+      "unitId": 10454,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431020,
+      "effectId": 13504,
+      "unitId": 10455,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431030,
+      "effectId": 13505,
+      "unitId": 10456,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431040,
+      "effectId": 13506,
+      "unitId": 10457,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431050,
+      "effectId": 13507,
+      "unitId": 10458,
+      "ordinaryActions": 2
+    },
+    {
+      "skillId": 431060,
+      "effectId": 13508,
+      "unitId": 10459,
+      "ordinaryActions": 2
+    }
+  ],
+  "executionHook": {
+    "index": 5567684812894607038,
+    "name": "Execute",
+    "outer": 8719473338514559113,
+    "path": "/Script/mucha.CPP_BtlUnitAI.Execute"
+  },
+  "sourceHashes": {
+    "Unit/DT_UnitBattleCmd": "e0cb7d3df2ec749b09df1b812805f5b1649dc2d3f1c6f304d0b0b5aaf43adb87",
+    "Skill/DT_SkillData": "e98b04a941e1bee3db57320ca69d8803bdb9351cf10deb179dc2fa6e3ce97d3a",
+    "Skill/DT_SkillEffectData": "a90dfc0b0bac687ae59e2335f7911cf6fb66aba5fbad0de62693963328a8da21"
+  },
+  "nativeFunctionIndexSha256": "49291cfb1e46831eba97a85a87f629dde36d9265a4f929a01c802018ba73d631"
+}
