@@ -11,24 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Archmage Fina esper mastery — 2026-10-31
-
-- Include Archmage Fina (native party 1006) alongside Fina (1003) when applying
-  Eiko’s equipable esper bonuses. Existing individual rewards, Spirit of Eiko
-  and learned rewards supplied through equipped Eiko use the same activation
-  path and IDs. No kit, MR, balance or save changes are needed.
-- Resolve explicit native owner links first. Track actual native summon-action
-  execution when both casters are present, keeping existing espers attached to
-  their original summoner and restoring MP only to that character. Never choose
-  an owner based on which candidate has rewards. Clear records outside battle
-  and isolate optional ownership-hook failure from the existing mastery hooks.
-- Add captured native proof of both party summon commands, all nine skill-to-
-  esper routes and the reflected execution callback. Executable Lua checks cover
-  both casters, all activation sources, ownership isolation, KO/dismissal,
-  repeated wrappers, 30% early-special boundaries and the guaranteed finale.
-  Native in-game confirmation is still needed. Keep learned rewards and Spirit;
-  rebuild/install and restart without resetting or relearning them.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -121,6 +103,53 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Archmage Fina esper mastery — 2026-10-31
+
+Code [`ddc440f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ddc440f258364ae0a566738426ea8f8eb5fb2aff) ·
+[Studio test 1.2.144](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41270542990/Sephira-Studio-Test.zip)
+
+- Fix the esper runtime’s restriction to native Fina 1003. Include Archmage Fina
+  1006 (Studio’s Dark Fina slot) for individual Eiko MR rewards, Spirit of Eiko
+  and learned rewards supplied through equipped Eiko. Captured native commands
+  confirm both characters own Summon. Keep all reward/Spirit IDs and kit data.
+- Honor explicit native owner links. For unlinked espers, record the actual
+  native summon action, retaining each existing esper’s original owner when
+  another cast occurs. MP recovery goes to that summoner. Never select between
+  both characters based on which one has bonuses; clear ownership outside battle
+  and reject enemy/unsupported owners. Optional execution-hook failure is isolated
+  from the existing six mastery hooks and logged separately.
+- All 88 focused esper, Fina and reward checks pass. Seventeen esper checks rerun
+  with the actual Windows payload, followed by complete original-Fina and
+  Archmage-Fina lifecycle fixtures and three generated-runtime composition checks. They cover all reward sources, both casters,
+  correct MP recipient, no duplicate stat bonuses, KO/dismissal, owner isolation,
+  optional-hook failure, all nine native summon routes, 30% special boundaries
+  and the guaranteed finale. The former runtime reproduces Archmage’s missing
+  HP/damage bonuses. No save edits, new summon grants or relearning are needed.
+- Windows analysis, 336 Flutter tests (one skipped), the separate fresh-engine
+  startup test, 903 Python tests (33 skipped) and launcher/updater gates pass.
+  All 87 extension and 16 Fina manifest files match; every public app file and
+  launcher matches exact verified artifact/source provenance. The only changed
+  payload is esper_mastery.lua; reward definitions, catalog/Spirit data, kits,
+  bosses, voices and other runtime controls match 1.2.143.
+- The first CI pass caught a stale six-callback expectation in the complete
+  generated-runtime test. Verify all seven callbacks and the ownership hook’s
+  presence when enabled (and absence when disabled); runtime bytes are unchanged
+  by that test correction.
+- Rebuild/install and restart with the existing save and learned rewards.
+  In-game Archmage activation and ownership-callback behavior still need the
+  user’s retest; executable fixtures are not a native gameplay pass.
+- Public ZIP: 82,580,493 bytes; SHA-256
+  `8b6dfa664e4a5cd6941b0e96c811bb96f1da23d2f253eed31937a1a981f1e9ea`.
+
+First complete candidate **20:36:33 PDT** to verified
+package **20:57:30 PDT**: **20m 56s**,
+including focused checks, the integrated-test correction, waiting and actual
+package verification. CI wall time across the failed and final runs:
+**18m 53s**; summed runner job time:
+**25m 13s**. Joined exact automatic run 41270542990 without
+a duplicate/manual dispatch. Publication notes change only README/CHANGELOG and
+do not request another binary.
 
 ## Published party voice duplicate-section fix — 2026-10-31
 

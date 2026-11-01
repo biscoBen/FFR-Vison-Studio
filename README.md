@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Archmage Fina esper mastery — 2026-10-31
+
+[Verified Windows download / run 41270542990](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41270542990/Sephira-Studio-Test.zip)
+(code `ddc440f`, update **1.2.144**; **82.6 MB**).
+
+Eiko’s esper bonuses now recognize Archmage Fina as well as Fina. Individual MR
+rewards, Spirit of Eiko and learned rewards through equipped Eiko use the same
+bonuses. Ownership tracking keeps MP recovery and effects with the summoner when
+both characters are in battle. The 30% special chance and native finale remain.
+
+Rebuild/install and restart; already-learned rewards and Spirit keep their IDs.
+No reset or relearning is needed. Package checks pass; native gameplay needs a
+retest. [Checks and measured timings](CHANGELOG.md#published-archmage-fina-esper-mastery--2026-10-31).
+
 ### Party voice installation fix — 2026-10-31
 
 [Verified Windows download / run 41233384884](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41233384884/Sephira-Studio-Test.zip)
