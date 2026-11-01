@@ -11,21 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Esper Communion MP recovery: 3% — 2026-11-01
-
-- Reduce Eiko’s Esper Communion from 5% to 3% of the summoner’s maximum MP
-  per completed esper action, including the final special. Keep the same reward,
-  marker, recovery-effect and Spirit IDs, equip cost and activation sources for
-  Fina and Archmage Fina. Existing learned rewards apply the updated native effect.
-- Update the native description, preset and authoring data. Refresh only the
-  exact previous default description in saved Eiko setups, preserving custom
-  names, descriptions, kit edits, acquisition and learned progress.
-- Verify native effect serialization/readback and the executable lifecycle,
-  MP-recipient, duplicate-callback, equipped-Eiko and Spirit checks. Other esper
-  bonuses and the summoner-ownership runtime are unchanged. Rebuild/install and
-  restart without resetting presets or relearning rewards. In-game 3% recovery
-  still needs a retest.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -118,6 +103,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Esper Communion MP recovery: 3% — 2026-11-01
+
+Code [`b148cbb`](https://github.com/biscoBen/FFR-Vison-Studio/commit/b148cbbf024ab0c12abc2b6cf712a760fc98140d) ·
+[Studio test 1.2.145](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41329958207/Sephira-Studio-Test.zip)
+
+- Reduce Esper Communion from 5% to 3% of the summoner’s maximum MP per
+  completed esper action, including the final special. Keep passive 1961,
+  marker 196100, recovery effect 196101, Spirit of Eiko, equip cost and native
+  activation/ownership behavior for both Fina and Archmage Fina. Existing learned
+  rewards use the updated native effect after rebuild/install and restart.
+- Update preset/native descriptions and authoring data. Refresh only the exact
+  old default text in saved Eiko setups, preserving custom labels/descriptions,
+  all kit/combat/acquisition edits and learned progress. Refresh MR coverage
+  fingerprints; all 75 original MR rewards remain covered with no placement
+  changes. Other esper bonuses and the complete Lua runtime match 1.2.144.
+- All 52 focused esper, reward, coverage and runtime checks pass. Native SDK
+  table serialization/readback verifies private effect [3,2,2], the unchanged
+  original [5,2,2] donor, the same passive ID/cost and all original rows preserved.
+  Repeat that native readback with the actual packaged Python/data, alongside
+  17 esper tests, full lifecycle fixtures for both casters and three generated-
+  runtime composition checks. Check single recovery per action, correct MP
+  recipient, final-special recovery, cap, Spirit/equipped-Eiko activation,
+  30% special proc and guaranteed finale.
+- Windows analysis, 337 Flutter tests (one skipped), the separate fresh-engine
+  startup test, 903 Python tests (33 skipped) and launcher/updater gates pass.
+  The new Flutter migration check preserves saved/custom text and is idempotent.
+  All 87 extension and 16 Fina manifest files match; every public app file and
+  launcher matches exact artifact/source provenance. The only preset change is
+  Eiko’s Communion description; other kits, bosses, voices and ownership fixes
+  are retained. Native 3% gameplay still needs a user retest.
+- Public ZIP: 82,581,280 bytes; SHA-256
+  `8746b37d845c373ef26e98a4868b3c6e0205a5fe5f6a77a2fa5b3d548c2aeed6`.
+
+First complete candidate to verified package: **12m 03s**,
+including focused checks, waiting and actual package verification. CI wall time:
+**8m 30s**; summed runner job time:
+**12m 46s**. Exact candidate/completion timestamps are
+retained in the delivery record. Joined automatic run 41329958207 with no
+manual/duplicate build. Publication notes change only README/CHANGELOG and do
+not request another binary.
 
 ## Published Archmage Fina esper mastery — 2026-10-31
 

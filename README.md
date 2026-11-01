@@ -4,6 +4,20 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Esper Communion MP recovery: 3% — 2026-11-01
+
+[Verified Windows download / run 41329958207](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41329958207/Sephira-Studio-Test.zip)
+(code `b148cbb`, update **1.2.145**; **82.6 MB**).
+
+Esper Communion now restores 3% of the summoner’s maximum MP per esper action,
+including its final special. Individual rewards, Spirit of Eiko and learned
+rewards through equipped Eiko use the new amount for both Finas.
+
+Rebuild/install and restart; no reset or relearning is needed. Other esper
+bonuses and ownership logic are unchanged. Native table readback and package
+checks pass; in-game 3% recovery needs a retest.
+[Checks and measured timings](CHANGELOG.md#published-esper-communion-mp-recovery-3--2026-11-01).
+
 ### Archmage Fina esper mastery — 2026-10-31
 
 [Verified Windows download / run 41270542990](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41270542990/Sephira-Studio-Test.zip)
