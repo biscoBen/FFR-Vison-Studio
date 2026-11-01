@@ -14038,6 +14038,68 @@
       "filters": [
         0
       ]
+    },
+    "401090": {
+      "ID": 401090,
+      "Name": "Provoke",
+      "Description": "Provoke enemies.",
+      "hasUnit": "Rain",
+      "mimicableUnitId": 1001,
+      "skillAttrType": "Ability",
+      "skillEffectType": "None",
+      "parameterVariationType": "Increase",
+      "parameterType": "None",
+      "defaultTargetRelation": "Enemies",
+      "defaultTargetState": "Alive",
+      "damageCalcType": "None",
+      "DamageType": "None",
+      "availableLocation": "BattleOnly",
+      "mapEffectType": "None",
+      "isTargetIgnoreSelf": false,
+      "element": "None",
+      "TargetType": "Group",
+      "Cost": 10,
+      "magnification": 0,
+      "accuracy": 100,
+      "breakDamageValue": 25,
+      "hitCount": 1,
+      "hitDamageRatioList": [
+        1.0
+      ],
+      "belongCommandList": [
+        1
+      ],
+      "commandIdBelongDebuggingAllSkills": [
+        902,
+        -1
+      ],
+      "effectBundleList": [
+        {
+          "effectId": 19000,
+          "TargetType": "SkillTarget",
+          "targetRelation": "Friendlies",
+          "activeSkillAddTiming": "AfterDamageCalculation",
+          "passiveSkillAddTiming": "None",
+          "conditionData": {
+            "Condition": "None",
+            "param1": -1,
+            "param2": -1,
+            "param3": -1
+          }
+        }
+      ],
+      "equipCost": 10,
+      "SkillIcon": {
+        "TagName": "UI.Skill.Action.Icon.Support"
+      },
+      "SortId": 401090,
+      "skillIdAfterModeChange": -1,
+      "isApplyAllMag": false,
+      "playSequencerId": -1,
+      "sequencerIdWhenTargetFriendlies": -1,
+      "voiceLabel": "None",
+      "selfSkillActivateVoiceLabel": "None",
+      "isRemovable": false
     }
   }
 }

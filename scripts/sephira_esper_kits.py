@@ -91,6 +91,35 @@ def revise(catalog):
         mog['kitUpdate']['version'] = 2
         mog['kitUpdate']['managed'] = sorted({*mog['kitUpdate']['managed'], 'PassiveSkill:1248'})
         mog['kitUpdate']['incremental'] = {'fromVersion':1,'awakeningPassiveSwaps':[[1251,1248]]}
+    mystea = next(p for p in catalog['presets'] if p['id'] == 'mystea')
+    unit = mystea['profile']
+    if unit.get('sephiraKitRevision',0) < 2:
+        mystea['provokeKitBefore'] = copy.deepcopy(unit)
+        identity = 486142
+        assert str(identity) not in unit['skills']
+        unit['skills'][str(identity)] = {
+            'from':401090,'visuals':401090,'clone_sequence':True,'mute':['VO_'],
+            'jp':'Sephira_mystea_Provoke','en':'Provoke',
+            'desc':'Provoke enemies into targeting the user.','descAuto':False,
+            'set':{'hasUnit':'All','mimicableUnitId':-1,'belongCommandList':[1],
+                   'commandIdBelongDebuggingAllSkills':[900,-1]}}
+        skill=['ActiveSkill',identity,-1];stat=['BaseParameter',1,30]
+        unit['synchro'][1]=[skill];unit['synchro'][2]=[stat]
+        unit['sephiraKitRevision']=2
+        plan=mystea['kitUpdate'];plan['version']=2
+        plan['incremental']={'fromVersion':1,'mr':[
+            {'rank':1,'from':stat,'to':skill},
+            {'rank':2,'from':['PassiveSkill',1313,-1],'to':stat}]}
+        for op in plan['mr']:
+            if op['rank']==1:op['to']=list(skill)
+            if op['rank']==2:op['to']=list(stat)
+        mystea['balance'].update(mrActiveCount=1,mrPassiveCount=4)
+        budget=mystea['awakeningBalance']
+        budget.update(totalPassiveCount=9,equipCost=275,requestedPassiveDelta=-1)
+        grants=[g for p in catalog['presets'] for tier in p['profile']['synchro'] for g in tier]
+        catalog['passiveCuration'].update(mrActiveCount=sum(g[0]=='ActiveSkill' for g in grants),
+            mrPassiveCount=sum(g[0]=='PassiveSkill' for g in grants),
+            distinctCount=len({g[1] for g in grants if g[0]=='PassiveSkill'}))
     return catalog
 
 
@@ -98,4 +127,14 @@ if __name__=='__main__':
     import json
     from pathlib import Path
     path=Path(__file__).resolve().parents[1]/'assets/sephira_visions/catalog.json'
-    path.write_text(json.dumps(revise(json.loads(path.read_bytes())),indent=2)+'\n')
+    catalog=revise(json.loads(path.read_bytes()))
+    path.write_text(json.dumps(catalog,indent=2)+'\n')
+    assets=path.parents[1]
+    policy=assets/'existing_visions/payload/esper_mastery.json'
+    data=json.loads(policy.read_bytes());preset=next(p for p in catalog['presets'] if p['id']=='mystea')
+    data['kits']['mystea']={k:copy.deepcopy(preset[k]) for k in ('profile','kitUpdate')}
+    policy.write_text(json.dumps(data,indent=2)+'\n')
+    coverage=path.with_name('native_coverage.json');data=json.loads(coverage.read_bytes())
+    for entry in data['entries']:
+        if entry['kind']=='PassiveSkill' and entry['id']==1313 and entry['assignedTo']=='mystea':entry['assignedTo']='barusa'
+    coverage.write_text(json.dumps(data,indent=2)+'\n')

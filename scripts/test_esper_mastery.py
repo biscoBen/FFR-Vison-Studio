@@ -202,7 +202,7 @@ class EsperMasteryTests(unittest.TestCase):
         unit['sephiraVision']={'version':1,'preset':'mystea','enabled':True}
         esper.repair(unit)
         self.assertEqual(unit['synchro'],p['profile']['synchro'])
-        for a,b in ((1,2),(2,1),(5,9),(9,5)):self.assertEqual(unit['synchro'][a][0],before['synchro'][b][0])
+        for a,b in ((2,2),(5,9),(9,5)):self.assertEqual(unit['synchro'][a][0],before['synchro'][b][0])
         self.assertEqual(unit['synchro'][9][1:],before['synchro'][9][1:])
         self.assertEqual(unit['awakening'],before['awakening'])
     def test_reviewed_rewards_no_summons_and_native_healing_operations(self):

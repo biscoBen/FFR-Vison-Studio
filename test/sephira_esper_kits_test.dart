@@ -70,6 +70,62 @@ void main() {
     expect(identical(SephiraVisions.repairKit(conflict, presets), conflict), isTrue);
     expect(() => SephiraVisions.repairKit(conflict, presets, strict: true), throwsStateError);
   });
+  test('Mystea MR1 learns unrestricted Provoke and MR2 keeps HP without resetting edits', () async {
+    final presets = await SephiraVisions.bundled;
+    final p = presets.singleWhere((p) => p['id'] == 'mystea');
+    final unit = CharacterConfig.copy(p['provokeKitBefore'] as Map<String, dynamic>);
+    unit[SephiraVisions.field] = {'version': 1, 'preset': 'mystea', 'enabled': true};
+    unit['stats']['Mind'] = 777;
+    unit['synchro'][3] = [['PassiveSkill', 1280, -1]];
+    final before = CharacterConfig.copy(unit);
+    final actual = SephiraVisions.repairKit(unit, presets, strict: true);
+    expect(actual['synchro'][1], [['ActiveSkill', 486142, -1]]);
+    expect(actual['synchro'][2], [['BaseParameter', 1, 30]]);
+    for (final field in before.keys.where((k) => !['synchro','skills','sephiraKitRevision'].contains(k))) {
+      expect(actual[field], before[field], reason: field);
+    }
+    for (var rank = 0; rank < 10; rank++) {
+      if (rank != 1 && rank != 2) expect(actual['synchro'][rank], before['synchro'][rank]);
+    }
+    expect(actual['skills']['486142']['set'], {
+      'hasUnit': 'All', 'mimicableUnitId': -1, 'belongCommandList': [1],
+      'commandIdBelongDebuggingAllSkills': [900, -1],
+    });
+    expect(actual['master']['id'], 1351100);
+    expect(unit, before);
+    expect(identical(SephiraVisions.repairKit(actual, presets), actual), isTrue);
+    CharacterConfig.decode(CharacterConfig.encode(actual));
+    final conflict = CharacterConfig.copy(unit);
+    conflict['synchro'][1][0][2] = 99;
+    final untouched = CharacterConfig.copy(conflict);
+    expect(identical(SephiraVisions.repairKit(conflict, presets), conflict), isTrue);
+    expect(() => SephiraVisions.repairKit(conflict, presets, strict: true), throwsStateError);
+    expect(conflict, untouched);
+  });
+  test('Mystea reuses an edited Provoke copy and allocates around occupied IDs', () async {
+    final presets = await SephiraVisions.bundled;
+    final p = presets.singleWhere((p) => p['id'] == 'mystea');
+    for (final existing in [false, true]) {
+      final unit = CharacterConfig.copy(p['provokeKitBefore'] as Map<String, dynamic>);
+      unit[SephiraVisions.field] = {'version': 1, 'preset': 'mystea', 'enabled': true};
+      if (existing) {
+        final recipe = CharacterConfig.copy(p['profile']['skills']['486142'] as Map<String, dynamic>);
+        recipe['set'].addAll({'Cost': 13, 'hasUnit': 'Rain', 'mimicableUnitId': 1001});
+        unit['skills']['486106'] = recipe;
+      } else {
+        unit['skills']['486142'] = CharacterConfig.copy(unit['skills']['486136'] as Map<String, dynamic>);
+      }
+      final before = CharacterConfig.copy(unit);
+      final actual = SephiraVisions.repairKit(unit, presets, strict: true);
+      expect(actual['synchro'][1][0][1], 486106);
+      expect(actual['skills']['486106']['set']['hasUnit'], 'All');
+      expect(actual['skills']['486106']['set']['mimicableUnitId'], -1);
+      if (existing) { expect(actual['skills']['486106']['set']['Cost'], 13); }
+      else { expect(actual['skills']['486142'], before['skills']['486142']); }
+      expect(unit, before);
+      CharacterConfig.decode(CharacterConfig.encode(actual));
+    }
+  });
   test('Mog swaps saved water resistance once without resetting edited rewards', () async {
     final presets = await SephiraVisions.bundled;
     final p = presets.singleWhere((p) => p['id'] == 'mog');

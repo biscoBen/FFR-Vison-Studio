@@ -422,6 +422,29 @@
               "selfSkillActivateVoiceLabel": "None",
               "SkillIcon.TagName": "UI.Skill.Action.Icon.Dark"
             }
+          },
+          "486142": {
+            "from": 401090,
+            "visuals": 401090,
+            "clone_sequence": true,
+            "mute": [
+              "VO_"
+            ],
+            "jp": "Sephira_mystea_Provoke",
+            "en": "Provoke",
+            "desc": "Provoke enemies into targeting the user.",
+            "descAuto": false,
+            "set": {
+              "hasUnit": "All",
+              "mimicableUnitId": -1,
+              "belongCommandList": [
+                1
+              ],
+              "commandIdBelongDebuggingAllSkills": [
+                900,
+                -1
+              ]
+            }
           }
         },
         "ffbeMap": {
@@ -544,16 +567,16 @@
           [],
           [
             [
-              "BaseParameter",
-              1,
-              30
+              "ActiveSkill",
+              486142,
+              -1
             ]
           ],
           [
             [
-              "PassiveSkill",
-              1313,
-              -1
+              "BaseParameter",
+              1,
+              30
             ]
           ],
           [
@@ -667,10 +690,10 @@
             "desc": "Evade magic attacks with a 20% chance."
           }
         },
-        "sephiraKitRevision": 1
+        "sephiraKitRevision": 2
       },
       "kitUpdate": {
-        "version": 1,
+        "version": 2,
         "managed": [
           "ActiveSkill:220410",
           "ActiveSkill:220510",
@@ -702,9 +725,9 @@
               -1
             ],
             "to": [
-              "BaseParameter",
-              1,
-              30
+              "ActiveSkill",
+              486142,
+              -1
             ]
           },
           {
@@ -715,9 +738,9 @@
               30
             ],
             "to": [
-              "PassiveSkill",
-              1313,
-              -1
+              "BaseParameter",
+              1,
+              30
             ]
           },
           {
@@ -749,7 +772,38 @@
         ],
         "masterDescriptions": [
           "Mystea's learned mastery rewards flow into the wearer."
-        ]
+        ],
+        "incremental": {
+          "fromVersion": 1,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "BaseParameter",
+                1,
+                30
+              ],
+              "to": [
+                "ActiveSkill",
+                486142,
+                -1
+              ]
+            },
+            {
+              "rank": 2,
+              "from": [
+                "PassiveSkill",
+                1313,
+                -1
+              ],
+              "to": [
+                "BaseParameter",
+                1,
+                30
+              ]
+            }
+          ]
+        }
       }
     },
     "eiko": {

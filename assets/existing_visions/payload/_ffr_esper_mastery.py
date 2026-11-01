@@ -93,9 +93,38 @@ def repair(unit):
     if not update or unit.get('sephiraKitRevision',0)>=update['kitUpdate']['version']:return
     plan=update['kitUpdate']
     incremental=plan.get('incremental')
-    if incremental and unit.get('sephiraKitRevision',0)>=incremental['fromVersion']:
-        result=copy.deepcopy(unit)
-        for previous,replacement in incremental['awakeningPassiveSwaps']:
+    partial=bool(incremental and unit.get('sephiraKitRevision',0)>=incremental['fromVersion'])
+    moves=copy.deepcopy(incremental.get('mr',[]) if partial else plan['mr'])
+    result=copy.deepcopy(unit)
+    owned=result['skills'];template=update['profile']
+    # Private MR actives must be installed even when they are not in awakening.
+    # Reuse an edited copy of the same source, or allocate a free private triple.
+    for op in moves:
+        recipe=template['skills'].get(str(op['to'][1])) if op['to'][0]=='ActiveSkill' else None
+        if not recipe:continue
+        matches=[int(s) for s,r in owned.items() if r['from']==recipe['from']]
+        if len(matches)>1:raise ValueError('Choose one copy of '+recipe['en']+' before applying the kit update.')
+        if matches:target=matches[0]
+        else:
+            occupied={int(s)+d for s in owned for d in range(3)}
+            base=480000+(unit['id']-13450)*100
+            preferred=op['to'][1]+(unit['id']-template['id'])*100
+            target=next((s for s in [preferred,*range(base+3,base+96,3)] if not occupied.intersection((s,s+1,s+2))),None)
+            if target is None:raise ValueError('No space for the updated MR ability.')
+            owned[str(target)]=copy.deepcopy(recipe)
+            owned[str(target)]['jp']+=f'_KitUpdate_{target}'
+        for field in ('hasUnit','mimicableUnitId','belongCommandList','commandIdBelongDebuggingAllSkills'):
+            if field in recipe['set']:owned[str(target)]['set'][field]=copy.deepcopy(recipe['set'][field])
+        op['to'][1]=target
+    for op in moves:
+        kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]}
+        choices=[g for g in result['synchro'][op['rank']] if g[0] in kinds]
+        if len(choices)!=1 or choices[0] not in (op['from'],op['to']):
+            raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Apply its kit update in Studio first.')
+    if partial:
+        for op in moves:
+            result['synchro'][op['rank']]=[list(op['to']) if g in (op['from'],op['to']) else g for g in result['synchro'][op['rank']]]
+        for previous,replacement in incremental.get('awakeningPassiveSwaps',[]):
             present=any(g[:2]==['PassiveSkill',replacement] for tier in result['awakening'] for g in tier)
             for tier in result['awakening']:
                 for grant in list(tier):
@@ -105,20 +134,13 @@ def repair(unit):
         result['sephiraKitRevision']=plan['version']
         unit.clear();unit.update(result)
         return
-    for op in plan['mr']:
-        kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]}
-        choices=[g for g in unit['synchro'][op['rank']] if g[0] in kinds]
-        if len(choices)!=1 or choices[0] not in (op['from'],op['to']):
-            raise ValueError(f'{unit["en"]} MR{op["rank"]} was edited. Apply its kit update in Studio first.')
-    result=copy.deepcopy(unit)
     if plan.get('mrOnly'):
-        for op in plan['mr']:
+        for op in moves:
             result['synchro'][op['rank']]=[list(op['to']) if g in (op['from'],op['to']) else g
                                          for g in result['synchro'][op['rank']]]
         result['sephiraKitRevision']=plan['version']
         unit.clear();unit.update(result)
         return
-    owned=result['skills'];template=update['profile']
     def key(g):
         recipe=owned.get(str(g[1])) if g[0]=='ActiveSkill' else None
         return 'custom:'+str(recipe['from']) if recipe else f'{g[0]}:{g[1]}'
@@ -147,7 +169,7 @@ def repair(unit):
         if len(grants)>8:raise ValueError(f'{unit["en"]} tier {rank+1} has no room for its kit update.')
         awakening.append(grants)
     result['awakening']=awakening
-    for op in plan['mr']:
+    for op in moves:
         result['synchro'][op['rank']]=[list(op['to']) if g in (op['from'],op['to']) else g
                                      for g in result['synchro'][op['rank']]]
     result['sephiraPassiveText']=copy.deepcopy(template['sephiraPassiveText'])

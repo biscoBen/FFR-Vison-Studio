@@ -218,8 +218,51 @@ class SephiraVisions {
     try {
       final result = CharacterConfig.copy(unit);
       final incremental = update['incremental'];
-      if (incremental is Map && (unit['sephiraKitRevision'] as int? ?? 0) >= incremental['fromVersion']) {
-        for (final swap in incremental['awakeningPassiveSwaps'] as List) {
+      final partial = incremental is Map && (unit['sephiraKitRevision'] as int? ?? 0) >= incremental['fromVersion'];
+      final rewardMoves = json.decode(json.encode(partial ? incremental['mr'] ?? [] : update['mr'] ?? [])) as List;
+      final profile = preset!['profile'] as Map;
+      final mrSkills = result['skills'] as Map;
+      for (final op in rewardMoves) {
+        final recipe = op['to'][0] == 'ActiveSkill' ? (profile['skills'] as Map)[op['to'][1].toString()] as Map? : null;
+        if (recipe == null) continue;
+        final matches = mrSkills.entries.where((e) => e.value['from'] == recipe['from']).toList();
+        if (matches.length > 1) throw StateError('Choose one copy of ${recipe['en']} before applying the kit update.');
+        int target;
+        if (matches.isNotEmpty) {
+          target = int.parse(matches.single.key.toString());
+        } else {
+          final occupied = {for (final key in mrSkills.keys) for (final d in [0,1,2]) int.parse(key.toString()) + d};
+          final base = CharacterConfig.skillBase(unit['id'] as int);
+          final preferred = (op['to'][1] as int) + ((unit['id'] as int) - (profile['id'] as int)) * 100;
+          final free = [preferred, for (var s = base + 3; s < base + 96; s += 3) s]
+              .where((s) => [s,s+1,s+2].every((id) => !occupied.contains(id))).firstOrNull;
+          if (free == null) throw StateError('No space for the updated MR ability.');
+          target = free;
+          final copy = CharacterConfig.copy(recipe as Map<String, dynamic>);
+          copy['jp'] = '${copy['jp']}_KitUpdate_$target';
+          mrSkills[target.toString()] = copy;
+        }
+        for (final field in ['hasUnit','mimicableUnitId','belongCommandList','commandIdBelongDebuggingAllSkills']) {
+          if ((recipe['set'] as Map).containsKey(field)) {
+            mrSkills[target.toString()]['set'][field] = json.decode(json.encode(recipe['set'][field]));
+          }
+        }
+        op['to'][1] = target;
+      }
+      for (final op in rewardMoves) {
+        final kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]};
+        final choices = (result['synchro'][op['rank']] as List).where((g) => kinds.contains(g[0])).toList();
+        if (choices.length!=1 || (json.encode(choices.single)!=json.encode(op['from']) && json.encode(choices.single)!=json.encode(op['to']))) {
+          throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve it before applying its kit update.');
+        }
+      }
+      if (partial) {
+        for (final op in rewardMoves) {
+          result['synchro'][op['rank']] = [for (final grant in result['synchro'][op['rank']] as List)
+            if (json.encode(grant)==json.encode(op['from']) || json.encode(grant)==json.encode(op['to']))
+              List<dynamic>.from(op['to'] as List) else grant];
+        }
+        for (final swap in incremental['awakeningPassiveSwaps'] as List? ?? []) {
           var present = (result['awakening'] as List).any((tier) => (tier as List)
               .any((g) => g[0] == 'PassiveSkill' && g[1] == swap[1]));
           for (final tier in result['awakening'] as List) {
@@ -240,16 +283,6 @@ class SephiraVisions {
       }
       // Explicit reward moves are reviewed together with the awakening kit.
       // Validate the whole batch before changing anything, keeping edited MRs open.
-      final rewardMoves = update['mr'] as List? ?? [];
-      for (final op in rewardMoves) {
-        final kinds={'ActiveSkill','PassiveSkill',op['from'][0],op['to'][0]};
-        final choices = (result['synchro'][op['rank']] as List)
-            .where((g) => kinds.contains(g[0])).toList();
-        if (choices.length!=1 ||
-            (json.encode(choices.single)!=json.encode(op['from']) && json.encode(choices.single)!=json.encode(op['to']))) {
-          throw StateError('${unit['en']} MR${op['rank']} was edited. Resolve it before applying its kit update.');
-        }
-      }
       if (update['mrOnly'] == true) {
         for (final op in rewardMoves) {
           result['synchro'][op['rank']] = [for (final grant in result['synchro'][op['rank']] as List)
@@ -260,7 +293,7 @@ class SephiraVisions {
         CharacterConfig.validate(result);
         return result;
       }
-      final template = CharacterConfig.restore(preset!['profile'] as Map<String, dynamic>, [], replacing: unit);
+      final template = CharacterConfig.restore(preset['profile'] as Map<String, dynamic>, [], replacing: unit);
       final owned = result['skills'] as Map;
       String grantKey(List g) {
         final recipe = g[0] == 'ActiveSkill' ? owned[g[1].toString()] as Map? : null;

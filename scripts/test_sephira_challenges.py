@@ -19,7 +19,10 @@ from test_crystal_fina_boss import choose, native_ai
 
 
 def fixture():
-    return json.loads(gzip.decompress((ROOT/'scripts/fixtures/sephira_challenges/rows.json.gz').read_bytes()))
+    result=json.loads(gzip.decompress((ROOT/'scripts/fixtures/sephira_challenges/rows.json.gz').read_bytes()))
+    source=json.loads((ROOT/'scripts/fixtures/sephira_runtime_sources.json').read_bytes())['skills']['401090']
+    result[challenge.SKILL]['Synthetic_Provoke']=source
+    return result
 
 
 def roster():

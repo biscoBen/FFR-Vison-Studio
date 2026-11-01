@@ -18,7 +18,7 @@ class PassiveMasteryTests(unittest.TestCase):
         required = {e['id'] for e in audit['entries'] if e['kind'] == 'PassiveSkill'}
         actual = []; learned = set()
         for preset, unit in zip(catalog['presets'], units):
-            ranks=(2,3,5,7,9) if preset['id']=='mystea' else (1,3,5,7,9)
+            ranks=(1,3,5,7,9)
             choices = [unit['synchro'][rank][0] for rank in ranks]
             self.assertTrue(all(g[0] in ('ActiveSkill','PassiveSkill') for g in choices))
             expected = list(REWARDS[preset['id']])
@@ -104,7 +104,11 @@ class PassiveMasteryTests(unittest.TestCase):
             from sephira_esper_kits import PASSIVES
             native_passives.update({sid:{'equipCost':p['cost']} for sid,p in PASSIVES.items()})
             cost = sum(native_passives[s]['equipCost'] or 20 for s in ids)
-            self.assertTrue(.8*original['cost'] <= cost <= 1.2*original['cost'],unit['key'])
+            if preset['id']=='mystea':
+                # Explicit utility trade: replace the 40-AP defense passive with
+                # the native 10-AP Provoke, preserving all other bonuses.
+                self.assertEqual(cost,275)
+            else:self.assertTrue(.8*original['cost'] <= cost <= 1.2*original['cost'],unit['key'])
         tronn = next(p for p in catalog['presets'] if p['id']=='christine')['profile']
         self.assertEqual(sum(g[0]!='ActiveSkill' for f in ('awakening','synchro')
                              for tier in tronn[f] for g in tier),16)

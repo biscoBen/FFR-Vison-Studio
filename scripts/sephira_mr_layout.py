@@ -12,7 +12,7 @@ REWARDS = {
     'primm': {1: ('PassiveSkill', 1526), 9: ('PassiveSkill', 1038)},
     'trance_terra': {1: ('PassiveSkill', 1011)},
 }
-PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1}
+PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1, 'mystea': -1}
 MR_RANK_OVERRIDES = {('minfilia', 400240): 3}
 EARTH_LABEL = {'name': 'Imbue Earth', 'desc': 'Add earth to non-elemental standard attacks and battle skills.'}
 

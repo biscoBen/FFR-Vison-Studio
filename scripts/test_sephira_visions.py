@@ -27,7 +27,7 @@ class SephiraTests(unittest.TestCase):
             u = p['profile']; budget = catalog['nativeBudgets'][str(p['balance']['nativeBudget'])]
             self.assertEqual(u['stats'], budget['stats'])
             rewards = [[rank,*g] for rank,t in enumerate(u['synchro']) for g in t if g[0]=='BaseParameter']
-            self.assertEqual([r[0] for r in rewards], [1,4,6,8,9] if p['id']=='mystea' else [2,4,6,8,9])
+            self.assertEqual([r[0] for r in rewards], [2,4,6,8,9])
             self.assertEqual([r for r in rewards if r[2] == 11],
                              [[4, 'BaseParameter', 11, 8], [9, 'BaseParameter', 11, 8]])
             stats = [r for r in rewards if r[2] != 11]
@@ -35,7 +35,7 @@ class SephiraTests(unittest.TestCase):
             self.assertEqual([r[3] // {1: 6, 2: 2}.get(r[2], 1) for r in stats], [5, 10, 15])
             for rank in range(1, 9): self.assertEqual(len(u['synchro'][rank]), 1)
             self.assertEqual(len(u['synchro'][9]), 3)
-            for rank in ((2,3,5,7,9) if p['id']=='mystea' else (1,3,5,7,9)):
+            for rank in ((1,3,5,7,9)):
                 self.assertEqual(sum(g[0] in ('ActiveSkill', 'PassiveSkill') for g in u['synchro'][rank]), 1)
             self.assertEqual(u['synchro'][0], [])
             self.assertTrue(all(len(t)<=8 for t in u['awakening']))

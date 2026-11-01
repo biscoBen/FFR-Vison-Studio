@@ -11,17 +11,25 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Cecil-sanctum trio AoE power: 40% — 2026-11-01
+### Trio boss AoE balance and Mystea’s Provoke MR reward — 2026-11-01
 
-- Reduce all enemy-targeted AoE damage skills for Mystea, Snow White and Lilith
-  to 40% of their previous final boss power, rounded to native whole numbers.
-  Current rotation: Dark Pulse 9→4, Barrier Burst 32→13, Shadowbringer 30→12,
-  Nihilistic Solitude 21→8. Cover six other generated AoE skills too.
-- Preserve single-target attacks, support/healing, effects, targeting, timing,
-  AI rotations, player-vision skills and every other challenge. Apply the scale
-  after existing boss power calculations. All 34 focused checks pass; native
-  serialization/readback and Windows package checks are pending. In-game
-  difficulty needs a retest after rebuild/install and restart.
+- Reduce all enemy AoE damage skills for Mystea, Snow White and Lilith to 40%
+  of their previous final power. Current rotation: Dark Pulse 9→4, Barrier Burst
+  32→13, Shadowbringer 30→12, Nihilistic Solitude 21→8. Keep player damage,
+  single-target attacks, support and other fights unchanged.
+- Give Mystea Provoke at MR1 and HP +30 at MR2. Clone Rain’s native Provoke as
+  a transferable, 10-MP/10-AP ability; remove Rain-only usage/mimic restrictions
+  and keep the native caster-relative taunt effect. Preserve the original Rain
+  skill and Mystea’s Spirit/save IDs. Migrate old layouts once, reusing edited
+  private copies or allocating around occupied IDs, with atomic conflict checks.
+- Keep all 75 original MR rewards covered. The replaced Physical Defense +20%
+  bonus remains on other awakening kits. Preserve Mystea’s other MR/awakening,
+  stat, acquisition and recipe edits. The requested utility swap removes one
+  passive from her former passive-only AP budget.
+- All 78 focused Python checks, 10 Flutter tests and focused Dart analysis pass.
+  Windows package
+  checks and native readback of the combined MR/taunt changes are pending.
+  Native gameplay targeting and difficulty still need a retest after install.
 
 ### External crash monitoring after trace stutter — 2026-10-30
 
