@@ -26,7 +26,7 @@ test-update version; the commit and workflow run identify the exact package. Dat
   bonus remains on other awakening kits. Preserve Mystea’s other MR/awakening,
   stat, acquisition and recipe edits. The requested utility swap removes one
   passive from her former passive-only AP budget.
-- All 78 focused Python checks, 10 Flutter tests and focused Dart analysis pass.
+- All 78 focused Python checks, 42 Flutter tests and focused Dart analysis pass.
   Windows package
   checks and native readback of the combined MR/taunt changes are pending.
   Native gameplay targeting and difficulty still need a retest after install.

@@ -377,11 +377,20 @@ void main() {
       expect(awakening, preset['balance']['kitCount']);
       expect(mr, preset['balance']['mrSkillCount']);
       expect(awakening + mr, preset['balance']['totalSkillCount']);
-      for (final skill in (u['skills'] as Map).values) {
+      for (final entry in (u['skills'] as Map).entries) {
+        final skill = entry.value;
         final settings = skill['set'] as Map;
         if (settings.containsKey('belongCommandList')) {
-          expect(settings['belongCommandList'], [u['command']['id']]);
-          expect(settings['commandIdBelongDebuggingAllSkills'], [u['command']['id'], -1]);
+          final originalId = int.parse(entry.key.toString()) +
+              ((preset['profile']['id'] as int) - (u['id'] as int)) * 100;
+          final original = preset['profile']['skills'][originalId.toString()]['set'] as Map;
+          // Remap vision-owned commands while preserving ordinary Skills/Magic
+          // commands on transferable MR abilities such as Provoke.
+          List remap(List values) => [for (final v in values)
+            if (v == preset['profile']['command']['id']) u['command']['id'] else v];
+          expect(settings['belongCommandList'], remap(original['belongCommandList'] as List));
+          expect(settings['commandIdBelongDebuggingAllSkills'],
+              remap(original['commandIdBelongDebuggingAllSkills'] as List));
         }
       }
     }
