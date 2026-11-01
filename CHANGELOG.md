@@ -136,9 +136,10 @@ Code [`ddc440f`](https://github.com/biscoBen/FFR-Vison-Studio/commit/ddc440f2583
   generated-runtime test. Verify all seven callbacks and the ownership hook’s
   presence when enabled (and absence when disabled); runtime bytes are unchanged
   by that test correction.
-- Rebuild/install and restart with the existing save and learned rewards.
-  In-game Archmage activation and ownership-callback behavior still need the
-  user’s retest; executable fixtures are not a native gameplay pass.
+- User confirmation (2026-10-31): Archmage Fina’s summon bonuses worked in
+  game. Keep the existing save and learned rewards. Separate native coverage of
+  each reward source and simultaneous-caster combinations remains unspecified
+  in that report; those combinations retain executable fixture coverage.
 - Public ZIP: 82,580,493 bytes; SHA-256
   `8b6dfa664e4a5cd6941b0e96c811bb96f1da23d2f253eed31937a1a981f1e9ea`.
 
@@ -176,9 +177,10 @@ Code [`df3f376`](https://github.com/biscoBen/FFR-Vison-Studio/commit/df3f376aa99
   startup test, 898 Python tests (33 skipped) and launcher/updater gates pass.
   All 87 extension and 16 Fina manifest files match. Every public app file and
   launcher matches the verified artifact/source and exact workflow provenance.
-- Keep saved voice choices and rebuild/install, then restart. No preset reset or
-  new collector is needed. The user's full setup/install and native listening
-  still need retesting. Other kits, rewards, bosses, cinematics and runtime
+- User confirmation (2026-10-31): voices now seem correct in game after the
+  latest update. This records listening on the tested setup; all 64 voice pairs
+  retain fixture coverage. No preset reset or new collector is needed.
+  Other kits, rewards, bosses, cinematics and runtime
   controls match 1.2.142; the only changed payload module is the party voice
   patcher. This is not a native encounter-crash fix.
 - Public ZIP: 82,579,989 bytes; SHA-256

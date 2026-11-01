@@ -15,8 +15,8 @@ bonuses. Ownership tracking keeps MP recovery and effects with the summoner when
 both characters are in battle. The 30% special chance and native finale remain.
 
 Rebuild/install and restart; already-learned rewards and Spirit keep their IDs.
-No reset or relearning is needed. Package checks pass; native gameplay needs a
-retest. [Checks and measured timings](CHANGELOG.md#published-archmage-fina-esper-mastery--2026-10-31).
+No reset or relearning is needed. Package checks pass, and the user reports
+Archmage Fina’s summon bonuses working in game. [Checks and measured timings](CHANGELOG.md#published-archmage-fina-esper-mastery--2026-10-31).
 
 ### Party voice installation fix — 2026-10-31
 
@@ -28,7 +28,8 @@ sound tracks can reuse section names; the patcher now redirects their voice
 references while preserving effects and timing. It keeps every voice section.
 
 Keep your saved voice selections, rebuild/install and restart. Native package
-readback and all Windows checks pass; installation/listening needs a user retest.
+readback and all Windows checks pass. The user reports that voices now seem
+correct in game after the latest update.
 [Checks and measured timings](CHANGELOG.md#published-party-voice-duplicate-section-fix--2026-10-31).
 
 ### Complete party battle voice swaps — 2026-10-31
