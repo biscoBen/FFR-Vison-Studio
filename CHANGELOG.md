@@ -104,6 +104,31 @@ test-update version; the commit and workflow run identify the exact package. Dat
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
 
+## Standalone cave runtime capture correction — 2026-11-02
+
+- The returned `Cave-Runtime-Reference-20261102-143954-1d798f-001.zip`
+  (SHA-256 `9212ee2ea2965edb32744c26bdddd73da83f7a0e51807e7814a015e7c8eed929`)
+  confirms `~mods/zzz_EstherTsukiko_P.utoc` is present. Its cave builder, default
+  placement and terrain hashes match the current extension. Do not interpret
+  the first collector's missing-map warning as an inactive mod or old engine.
+- The capture's installed assets are byte-identical to native assets. The reader
+  opens only its immediate input directory, so passing Paks missed the nested
+  Studio container. Correct the helper to expose official/global and Studio
+  containers together through temporary same-volume hard links. Originals stay
+  unchanged; duplicate basenames fail rather than overwrite, and links are cleaned.
+- Export only installed cave maps, their world stream and transition declarations.
+  Reuse the already supplied terrain/entrance meshes. Missing generated maps now
+  produce a failure report rather than a misleading successful capture.
+- Six PowerShell fixtures pass, including a reader that deliberately does not
+  recurse into mods, nested-container visibility, scoped exports, unchanged
+  original bytes, duplicate names, missing maps/mod/mappings and failure logs.
+  Replace the existing Library helper and verify the saved download against
+  reviewed sources. [Cave Runtime Reference v2](https://chatgpt.com/api/library/files/libfile_23254d3f8d7c81918e5d1646b37f5751/download):
+  7,026 bytes, SHA-256 `f58dfc03b046fa65911a4b88bbed5e151b48c349a5a36fadd1398ca2ac659ad7`.
+- No app/native cave repair, new binary or gameplay pass is claimed. The green
+  added entrance and fall-through exit remain unresolved until the installed
+  maps can be inspected. App 1.2.152 and all code files are unchanged.
+
 ## Published tablet shard save checker — 2026-11-02
 
 Code [`9ad7027`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9ad7027eeb81e47cdb82b2928ec88d6d4d00cad9) ·

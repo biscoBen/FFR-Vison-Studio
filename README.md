@@ -32,9 +32,13 @@ challenge route with no manual placement override. The green entrance is the
 added structure and the brown cave is native. Use the separate
 [Cave Runtime Reference](https://chatgpt.com/api/library/files/libfile_23254d3f8d7c81918e5d1646b37f5751/download)
 with Studio open: extract it, run **Collect Cave Runtime Reference.cmd**, and
-return the output ZIP(s) from Downloads/FFR Mod. This captures installed cave
-returns and entrance meshes absent from the earlier terrain export; it does not
-repeat terrain collection or require a rebuild or fall-through reproduction.
+return the output ZIP(s) from Downloads/FFR Mod. Download **v2** again and extract
+into a fresh folder: the initial reader missed the Studio mod under `~mods` and
+its missing-map warning did not establish an inactive installation. The returned
+capture confirms the mod exists and the cave-builder/terrain files are current.
+The corrected helper reads the nested Studio container and exports installed
+cave maps/returns, reusing terrain and meshes already supplied. No rebuild,
+preparation, reset or fall-through reproduction is needed.
 
 ### Zoldaad challenge cave grounding — 2026-11-02
 
