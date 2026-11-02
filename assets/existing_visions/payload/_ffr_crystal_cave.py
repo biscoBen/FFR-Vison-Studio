@@ -32,6 +32,7 @@ STONE = 'Map/Dng/01Gra/01Gra_44/Dng_01Gra_44_PL'
 STONE_NAV = 'Map/Dng/01Gra/01Gra_44/NAV/Dng_01Gra_44_01_NAV'
 DONOR_GD = 'Map/Dng/01Gra/01Gra_44/GD/Dng_01Gra_44_01_GD'
 WORLD_BG = 'Map/Wld/01Gra/BG/Wld_01Gra_BG'
+ZOLDAAD_RETURN_WORLD = 'Map/Wld/GD/Wld_06Zol_GD'
 TRANSITION_GD = 'Map/Dng/01Gra/01Gra_43/GD/Dng_01Gra_43_GD'
 PACKAGE = 'Map/StudioCrystalCave/' + NAME
 GRANT_DONOR = 'Sequencer/Event/Main_Event/C01/Ev_C01_014_03/SEQ_C01_014_03'
@@ -115,6 +116,7 @@ class CaveSpec:
     placement_scale: float = 1.0
     ground_z: float | None = None
     return_direction: str = 'South'
+    native_return_point: int | None = None
     fina_test: bool = False
 
     @property
@@ -384,6 +386,14 @@ def cave_plans(units, root, rows=None):
                            ground_z=ground, placement_yaw=saved.get('yaw', 105.0),
                            placement_scale=saved.get('scale', .75))
         base = outside_return(base)
+        # The earned Wilhelm challenge uses a checked native world-map return.
+        # Explicit user cave assignments keep their saved placement and return.
+        if key == 'cave_sephira_wilhelm' and all(
+                (u.get('studioAcquisition') or {}).get('version') == 3 for u in group['units']):
+            import _ffr_shrine_challenges as challenges
+            native = challenges.data()['wilhelmReturn']
+            base = replace(base, native_return_point=native['pointId'],
+                           return_point=tuple(native['position']), return_direction=native['direction'])
         entries = []
         for index, unit in enumerate(sorted(group['units'], key=lambda u: u['id'])):
             fina = str((unit.get('ffbe') or {}).get('id')) == SPRITE
@@ -985,7 +995,8 @@ def transition(actor, conditional_template, map_id, point, auto=True):
 
 def overworld_exit(actor, conditional_template, spec):
     """Keep world-map routing and walking reset independent of banner policy."""
-    transition(actor, conditional_template, 1000, spec.map_id, auto=False)
+    point = spec.map_id if spec.native_return_point is None else spec.native_return_point
+    transition(actor, conditional_template, 1000, point, auto=False)
     # The donor's ID 0 is also the native Earth Shrine entrance's identity.
     # Give each exit its reserved even cave ID, distinct from its odd portal/
     # entrance ID, so interaction metadata cannot alias the donor landmark.
@@ -1721,11 +1732,54 @@ def world_destination_banner(original):
     return result
 
 
+def check_native_zoldaad_return(document, native):
+    """Require the original active actor and approach before targeting its ID."""
+    matches = [(i, e) for i, e in enumerate(document['Exports'], 1)
+               if e.get('ClassIndex', 0) < 0
+               and document['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'BP_MapTransitionPoint_C'
+               if isinstance(e.get('Data'), list)
+               and any(p['Name'] == 'm_PointID' and p['Value'] == native['pointId'] for p in e['Data'])]
+    if len(matches) != 1:
+        raise ValueError('The native Zoldaad return point changed; no cave was built.')
+    index, actor = matches[0]
+    if index not in export(document, 'PersistentLevel')[1]['Actors']:
+        raise ValueError('The native Zoldaad return point is not active; no cave was built.')
+    root = document['Exports'][property_data(actor, 'RootComponent')['Value'] - 1]
+    location = property_data(root, 'RelativeLocation')['Value'][0]['Value']
+    if (any(abs(float(location[k]) - v) > .01 for k, v in zip(('X', 'Y', 'Z'), native['position']))
+            or property_data(actor, 'm_Direction')['Value'] != native['direction']):
+        raise ValueError('The native Zoldaad return approach changed; no cave was built.')
+
+
+def validate_native_returns(plans, env, work):
+    if not any(spec.native_return_point is not None for entries in plans for _, spec in entries): return
+    import _ffr_shrine_challenges as challenges
+    native = challenges.data()['wilhelmReturn']
+    root, legacy = Path(env['ROOT']), Path(env['LEGACY'])
+    path = legacy / ('FFRS/Content/' + ZOLDAAD_RETURN_WORLD + '.umap')
+    if not path.is_file():
+        env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', ZOLDAAD_RETURN_WORLD))
+    dump = work / 'zoldaad-native-return.json'
+    env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', env['USMAP']])
+    raw = json.loads(dump.read_text(encoding='utf-8-sig'))
+    # Discover only the point's Blueprint schema, leaving all other native
+    # actors opaque and untouched. Do not replace the native world package.
+    # Opaque native actors may be RawExport until this schema is loaded. The
+    # discovery view needs only their class references, never their payloads.
+    schema_view = dict(raw, Exports=[{'$type': 'NormalExport', 'ClassIndex': e['ClassIndex']}
+        for e in raw['Exports'] if e['ClassIndex'] < 0
+        and raw['Imports'][-e['ClassIndex']-1]['ObjectName'] == 'BP_MapTransitionPoint_C'])
+    mapping = blueprint_mappings({'native-return': schema_view}, env, work)
+    env['run'](env['FFRDT'] + ['tojson', str(path), str(dump), '--usmap', mapping])
+    check_native_zoldaad_return(json.loads(dump.read_text(encoding='utf-8-sig')), native)
+
+
 def build(units, env):
     plans, _ = cave_plans(units, env['ROOT'], env.get('rows'))
     if not plans: return
     root = Path(env['ROOT']); legacy = Path(env['LEGACY'])
     work = root / 'build/crystal-cave'; work.mkdir(parents=True, exist_ok=True)
+    validate_native_returns(plans, env, work)
     # Binary decoding needs the native Blueprint parents as well as the levels.
     if not (legacy / 'FFRS/Content/BP/Map/Unit/BP_MapUnit_NPC_Field.uasset').is_file():
         env['run'](env['ffrenv'].py(str(root / 'tools/extract_legacy.py'), '--filter', 'BP/Map/'))

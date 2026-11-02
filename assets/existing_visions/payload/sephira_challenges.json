@@ -831,10 +831,15 @@
     "id": "cave_sephira_wilhelm",
     "name": "Zoldaad Challenge Cave",
     "entrance": "rock_cave",
-    "worldX": -7870.0,
-    "worldY": 11580.0,
-    "worldZ": 86.0546875,
+    "worldX": -8230.0,
+    "worldY": 11570.0,
+    "worldZ": 36.265625,
     "yaw": 0.0,
     "scale": 1.0
+  },
+  "wilhelmReturn": {
+    "pointId": 10211,
+    "position": [-8230.0, 11920.0, 40.0],
+    "direction": "South"
   }
 }

@@ -63,22 +63,58 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertAlmostEqual(spec.return_point[2],cave.terrain_height(*spec.return_point[:2]))
         self.assertIsNotNone(cave.terrain_height(*spec.return_point[:2]))
 
-    def test_zoldaad_default_challenge_keeps_xy_rotation_scale_and_shared_cave(self):
+    def test_zoldaad_default_challenge_uses_flat_ground_and_original_native_return(self):
         import _ffr_shrine_challenges as challenges
+        from test_sephira_challenges import roster
         saved=challenges.cave_snapshot()
-        self.assertEqual((saved['worldX'],saved['worldY'],saved['yaw'],saved['scale']),(-7870,11580,0,1))
+        self.assertEqual((saved['worldX'],saved['worldY'],saved['yaw'],saved['scale']),(-8230,11570,0,1))
         self.assertAlmostEqual(saved['worldZ'],cave.terrain_height(saved['worldX'],saved['worldY']))
-        units=[vision(13520),vision(13521)]
-        for unit in units:
-            unit['studioAcquisition'].update(location=saved['id'],cave=copy.deepcopy(saved))
+        heights=[cave.terrain_height(saved['worldX']+x,saved['worldY']+y) for x in (-96,0,96) for y in (-84,0,84)]
+        self.assertLess(max(heights)-min(heights),5)
+        units=[u for u in roster() if u['sephiraVision']['preset'] in ('barusa','ariana')]
         _, rows, _=reference.cave_game()
         with tempfile.TemporaryDirectory() as root:
             plans, _=cave.cave_plans(units,root,rows)
         self.assertEqual(len(plans),1)
         first,second=[spec for _,spec in plans[0]]
         self.assertEqual((first.package,first.stone_id,first.return_point),(second.package,second.stone_id,second.return_point))
-        self.assertAlmostEqual(first.return_point[2],134.063368055556)
-        self.assertEqual((first.return_point[:2],first.return_direction),((-7870,11930),'East'))
+        self.assertEqual(first.native_return_point,10211)
+        self.assertEqual(first.return_point,(-8230,11920,40))
+        self.assertEqual(first.return_direction,'South')
+
+    def test_zoldaad_manual_placement_keeps_custom_return_and_saved_coordinates(self):
+        import _ffr_shrine_challenges as challenges
+        unit=vision(13531, 'cave_sephira_wilhelm', x=-7870, y=11580)
+        unit['studioAcquisition']['cave'].update(version=2,worldZ=90,yaw=0,scale=1)
+        before=copy.deepcopy(unit)
+        _, rows, _=reference.cave_game()
+        with tempfile.TemporaryDirectory() as root:
+            plans, _=cave.cave_plans([unit],root,rows)
+        spec=plans[0][0][1]
+        self.assertIsNone(spec.native_return_point)
+        self.assertEqual(spec.ground_z,90)
+        self.assertEqual(spec.return_point[:2],(-7870,11930))
+        self.assertEqual(unit,before)
+
+    def test_native_zoldaad_return_guard_rejects_changed_duplicate_or_inactive_approaches(self):
+        import _ffr_shrine_challenges as challenges
+        native=challenges.data()['wilhelmReturn']
+        prop=lambda n,v:{'Name':n,'Value':v}
+        original={'Imports':[{'ObjectName':'BP_MapTransitionPoint_C'}],'Exports':[
+            {'ObjectName':'PersistentLevel','Actors':[2]},
+            {'ObjectName':'NativePoint','ClassIndex':-1,'Data':[prop('m_PointID',10211),prop('RootComponent',3),prop('m_Direction','South')]},
+            {'ObjectName':'Root','Data':[prop('RelativeLocation',[{'Value':dict(X=-8230,Y=11920,Z=40)}])]}]}
+        before=copy.deepcopy(original)
+        cave.check_native_zoldaad_return(original,native)
+        self.assertEqual(original,before)
+        for change in ('id','position','direction','inactive','duplicate'):
+            d=copy.deepcopy(original)
+            if change=='id': d['Exports'][1]['Data'][0]['Value']=999
+            elif change=='position': d['Exports'][2]['Data'][0]['Value'][0]['Value']['Z']=400
+            elif change=='direction': d['Exports'][1]['Data'][2]['Value']='North'
+            elif change=='inactive': d['Exports'][0]['Actors']=[]
+            else: d['Exports'].append(copy.deepcopy(d['Exports'][1]))
+            with self.subTest(change=change),self.assertRaises(ValueError): cave.check_native_zoldaad_return(d,native)
 
     def test_zoldaad_height_reference_records_actual_export_and_keeps_native_preview_optional(self):
         data=json.loads((ROOT/'assets/existing_visions/payload/cave_terrain.json').read_bytes())
@@ -88,6 +124,30 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertEqual(source['referenceZipSha256'],'289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380')
         self.assertAlmostEqual(cave.terrain_height(-8220,11580),36.265625)
         self.assertAlmostEqual(cave.terrain_height(-7520,11580),344.4765625)
+
+    def test_native_return_schema_discovery_accepts_raw_actors_without_writing_native_packages(self):
+        raw={'Imports':[{'ObjectName':'BP_MapTransitionPoint_C'}], 'Exports':[
+            {'$type':'RawExport','ClassIndex':-1,'ObjectName':'NativePoint','Data':'opaque native bytes'}]}
+        decoded={'decoded':'native point'}
+        calls=[]
+        with tempfile.TemporaryDirectory() as root:
+            legacy=Path(root)/'legacy';work=Path(root)/'work';work.mkdir()
+            source=legacy/('FFRS/Content/'+cave.ZOLDAAD_RETURN_WORLD+'.umap')
+            source.parent.mkdir(parents=True);source.write_bytes(b'original native package')
+            def run(args):
+                calls.append(args)
+                self.assertEqual(args[:2],['sdk','tojson'])
+                Path(args[3]).write_text(json.dumps(raw if len(calls)==1 else decoded))
+            def mapping(views,env,folder):
+                self.assertEqual(views['native-return']['Exports'],[{'$type':'NormalExport','ClassIndex':-1}])
+                return str(work/'private.usmap')
+            env={'ROOT':root,'LEGACY':str(legacy),'USMAP':'original.usmap','FFRDT':['sdk'],'run':run}
+            with patch.object(cave,'blueprint_mappings',side_effect=mapping),patch.object(cave,'check_native_zoldaad_return') as check:
+                cave.validate_native_returns([[(None,cave.CaveSpec(native_return_point=10211))]],env,work)
+                check.assert_called_once()
+                self.assertEqual(check.call_args.args[0],decoded)
+            self.assertEqual(source.read_bytes(),b'original native package')
+            self.assertEqual(len(calls),2)
 
     def test_thirty_caves_grant_the_assigned_visions_and_keep_ids_after_restart(self):
         original, rows, _ = reference.cave_game()

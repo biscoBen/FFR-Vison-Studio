@@ -11,6 +11,35 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Zoldaad challenge: flat placement and native return — 2026-11-02
+
+- The corrected capture contains all eleven generated cave maps. Installed
+  entry/return heights already match 1.2.151, so the failed height-only retest
+  is not attributed to an uninstalled update. Preserve the green added entrance
+  and the native brown landmark's ownership distinction.
+- Move only the default Barusa/Ariana entrance from (-7870,11580) to nearby
+  (-8230,11570), grounded at 36.265625. Its sampled footprint spans under four
+  units of elevation instead of about 125 on the old slope. Keep rotation,
+  scale, mesh, cave IDs, shared challenge, unlocks, rewards and level-26 balance.
+  Explicit saved user placements remain untouched.
+- Return the earned default challenge through native world point 10211 at
+  (-8230,11920,40), on the entrance's opening side. Use the game's original
+  approach instead of the custom point's terrain-level ray placement. Verify
+  the native point is active, unique and retains its expected position/facing
+  before generating assets; never rewrite that native map or point.
+- Source: `Cave-Runtime-Reference-20261102-145453-d9dd58-001.zip`, SHA-256
+  `4245eb98b16abce708309088c0764629c96244ff4076c560a88c8e7f16363cf3`.
+  This is a placement/return candidate; native gameplay must establish whether
+  it resolves the floating/fall-through reports. Rebuild/install and restart
+  after updating. No reset, repeated preparation or new collector is needed.
+- All 76 focused checks pass, including preserved manual placement, shared IDs,
+  native-point identity/position/facing guards and opaque-actor schema discovery.
+  Full local Python passes 924 tests (73 skips); Flutter analysis is clean and
+  all eleven shard-tab checks pass. Native serialization/readback checks the
+  actual captured entrance and stone exit with the new placement/target. The
+  native point remains unchanged, and the real extraction/schema/guard path
+  passes against the supplied game data.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
