@@ -11,33 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Encounter indicator and effect lifetime correction — 2026-11-02
-
-- The returned light-session capture reproduces a native reflected-member
-  lookup crash after 299 seconds. Its installed Lua checksum matches the
-  encounter/esper/Fina combination without auto-battle or field cycling.
-  The log records 83 interaction-triggered removals followed by effect
-  reapplication, usually one frame later. Memory samples do not prove a leak.
-- Ordinary interaction input no longer tears down the encounter controller.
-  Temporary menus, map UI and story events collapse its native-owned viewport
-  widget and reuse it afterward. Actual map/battle transitions still remove it;
-  a different world/controller gets a new widget. Check the widget class as well
-  as the instance before reflected UI access or creation.
-- Store owned effect/parameter paths and addresses, resolving them afresh before
-  cleanup or comparison. Reject missing, retiring or replaced objects, preserve
-  foreign/equipped effects, and avoid rereading known owned effect structs.
-  F7, digital trigger holds, all ground modes and forced battles retain their
-  existing behavior. Saved kits and unrelated runtime controls are preserved.
-- This addresses the observed churn and retained-pointer risks. The exact Lua
-  caller is still unknown; final package checks and an in-game stability test
-  are required before claiming the crashes resolved. Rebuild/install and restart
-  after updating; no preset reset or repeated game preparation is required.
-- All 135 focused runtime checks pass, including 1,000 movement updates and
-  300 temporary menu/event/map-UI cycles. Four new regressions reject the old
-  runtime. The full local Python suite passes 916 tests (73 platform-dependent
-  skips), and all extension, Fina and optional-library manifests verify.
-  First complete candidate: 2026-11-02 12:15:35 PST; Windows validation pending.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -130,6 +103,50 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published encounter indicator and effect lifetime correction — 2026-11-02
+
+Code [`9e714e7`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9e714e79ec87b1440e909df6fbc7775ed49f1fc4) ·
+[Studio test 1.2.150](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41517848037/Sephira-Studio-Test.zip)
+
+- The returned light-session capture reproduces a native reflected-member
+  lookup crash after 299 seconds. Its installed Lua checksum matches the
+  encounter/esper/Fina combination without auto-battle or field cycling.
+  The log records 83 interaction-triggered removals followed by effect
+  reapplication, usually one frame later. Memory samples do not prove a leak.
+- Ordinary interaction input no longer tears down the encounter controller.
+  Temporary menus, map UI and story events collapse its native-owned viewport
+  widget and reuse it afterward. Actual map/battle transitions still remove it;
+  a different world/controller gets a new widget. Check the widget class as well
+  as the instance before reflected UI access or creation.
+- Store owned effect/parameter paths and addresses, resolving them afresh before
+  cleanup or comparison. Reject missing, retiring or replaced objects, preserve
+  foreign/equipped effects, and avoid rereading known owned effect structs.
+  F7, digital trigger holds, all ground modes and forced battles retain their
+  existing behavior. Saved kits and unrelated runtime controls are preserved.
+- This addresses the observed churn and retained-pointer risks. The exact Lua
+  caller is still unknown; an in-game stability test is still required before
+  claiming the crashes resolved. Rebuild/install and restart
+  after updating; no preset reset or repeated game preparation is required.
+- All 135 focused runtime checks pass, including 1,000 movement updates and
+  300 temporary menu/event/map-UI cycles. Four new regressions reject the old
+  runtime. The full local Python suite passes 916 tests (73 platform-dependent
+  skips), and all extension, Fina and optional-library manifests verify.
+  Windows passes all 916 Python tests (33 skips), Flutter analysis/tests, fresh
+  frozen-engine startup and launcher/updater checks for this exact commit/run.
+  All 87 extension and 16 Fina manifest files verify; the delivered Lua passes
+  the same 135 focused checks. All 190 public application files match the compiled
+  artifact, and every launcher matches source. Other payload files retain their
+  1.2.149 hashes. Public ZIP: 82,594,214 bytes; SHA-256
+  `6067ad47aab057847c6418814fad8cf3d4a5b7d06a8ff2f3e8a58c265e82348e`.
+
+First complete candidate **12:15:35 PST** to verified package **12:29:06 PST**:
+**13m 31s**, including local checks, the startup-message correction, Windows
+waiting and actual delivered-package verification. CI wall time: **10m 18s**;
+summed runner job time: **15m 40s**. Joined automatic run 41517848037 without
+a duplicate/manual dispatch. These are build/delivery measurements, not measured
+installation time or proof of the repeat-install target. Publication notes change
+only README/CHANGELOG and do not request another binary.
 
 ## Published Snow White boss single-target power: +25% — 2026-11-01
 

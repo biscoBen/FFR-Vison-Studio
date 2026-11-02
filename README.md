@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Encounter crash candidate: stable indicator and effect lifetimes — 2026-11-02
+
+[Verified Windows download / run 41517848037](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41517848037/Sephira-Studio-Test.zip)
+(code `9e714e7`, update **1.2.150**; **82.6 MB**).
+
+Ordinary interaction input no longer repeatedly removes and recreates encounter
+suppression. The indicator stays natively owned and hidden through temporary
+menus, map UI and story events, then returns. Actual map/battle transitions still
+release it. Owned effects and parameters are resolved afresh before reuse, and
+retiring widget classes are rejected before reflected UI access.
+
+Close the game, update Studio, keep **In-game encounter toggle** enabled for this
+test, rebuild/install, and restart. Existing settings and kits are retained; no
+preset reset or repeated game preparation is needed. Auto-battle may stay on.
+The Windows/package checks pass, but the exact crashing Lua call is unidentified
+and normal gameplay is still needed to establish native stability. The existing
+light external monitor remains compatible; keep the heavy per-line tracer off.
+[Verification and measured timings](CHANGELOG.md#published-encounter-indicator-and-effect-lifetime-correction--2026-11-02).
+
 ### Snow White boss single-target power: +25% — 2026-11-01
 
 [Verified Windows download / run 41344895049](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41344895049/Sephira-Studio-Test.zip)
