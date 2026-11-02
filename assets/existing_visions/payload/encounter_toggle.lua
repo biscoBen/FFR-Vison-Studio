@@ -20,6 +20,17 @@ local function native(name)
 end
 local function log(s) print('[FFR encounters] '..s..'\n') end
 local function same(a,b) return live(a) and live(b) and a:GetAddress()==b:GetAddress() end
+local function identity(object)
+    return {path=object:GetFullName():match('^[^ ]+ (.+)$') or object:GetFullName(),address=object:GetAddress()}
+end
+local function resolve(saved)
+    if not saved then return end
+    local object=StaticFindObject(saved.path)
+    if live(object) and object:GetAddress()==saved.address then return object end
+end
+local function hud_live(object)
+    return live(object) and live(object:GetClass())
+end
 local function unwrap(value)
     if (type(value)=='userdata' or type(value)=='table') and type(value.get)=='function' then
         return value:get()
@@ -54,13 +65,22 @@ local function remove_badge()
     if display and live(display.widget) then display:remove() end
     display,painted=nil,nil
 end
+local function hide_badge()
+    -- A collapsed viewport widget still has a native owner, keeping its class
+    -- alive through ordinary menus/events. Lua references alone do not do that.
+    if display and not display.suspended then
+        if display:valid() then display.widget:SetVisibility(1);display.suspended=true
+        else remove_badge() end
+    end
+end
 local function restore()
     for key,owned in pairs(runtime.effects) do
-        if live(owned.parameter) and live(owned.effect) then
-            local array=owned.parameter.m_ContEffectList
+        local parameter,effect=resolve(owned.parameter),resolve(owned.effect)
+        if parameter and effect then
+            local array=parameter.m_ContEffectList
             local keep,found={},false
-            for _,effect in ipairs(list(array)) do
-                if same(effect,owned.effect) then found=true else keep[#keep+1]=effect end
+            for _,present in ipairs(list(array)) do
+                if same(present,effect) then found=true else keep[#keep+1]=present end
             end
             if found then
                 -- Pinned UE4SS TArray writes are 1-based and extend on append.
@@ -73,13 +93,16 @@ local function restore()
     end
     runtime.applied=nil
 end
-local function release(reason)
+local function suspend(reason,teardown)
     if runtime.disabled and next(runtime.effects) then
         log('Releasing owned effects; reason='..tostring(reason or 'context/error'))
     end
-    restore();remove_badge();holdStart,held=nil,true
+    restore()
+    if teardown then remove_badge() else hide_badge() end
+    holdStart,held=nil,true
     runtime.inputPath=nil
 end
+local function release(reason) suspend(reason,true) end
 local function walking_actor(map)
     -- InputMove supplies the actual controlled actor, including contexts where
     -- the map-library getter has not published a player. Transitions clear it.
@@ -95,10 +118,10 @@ end
 local function context(borrowed)
     local map=native('mucha.Default__CPP_BFL_Map')
     -- Boundary checks must precede touching any cached/resolved field actor.
-    if map:IsDuringEncount() then return nil,'Encounter transition active' end
+    if map:IsDuringEncount() then return nil,'Encounter transition active',true end
     if native('mucha.Default__CPP_BFL_TalkEvent'):IsPlayingEvent() then return nil,'Story event active' end
     local actor=live(borrowed) and borrowed or walking_actor(map)
-    if not live(actor) then return nil,'Walking player not ready (map getter/input owner unavailable)' end
+    if not live(actor) then return nil,'Walking player not ready (map getter/input owner unavailable)',true end
     if not actor:IsA(native('mucha.CPP_MapUnit_Playable')) then return nil,'Native player is not playable: '..actor:GetFullName() end
     if not actor:IsEnableUnitInput() then return nil,'Player input disabled' end
     if actor:IsPaused() then return nil,'Player paused' end
@@ -131,22 +154,25 @@ end
 local function badge(actor)
     local controller=native('Engine.Default__GameplayStatics'):GetPlayerController(actor,0)
     if not live(controller) then remove_badge();return false end
-    local actorAddress=actor:GetAddress()
-    if display and (not live(display.widget) or not live(display.label) or not live(display.controller)
-        or not same(display.controller,controller) or display.actorAddress~=actorAddress) then remove_badge() end
+    local world=actor:GetWorld()
+    if not live(world) then remove_badge();return false end
+    local worldAddress=world:GetAddress()
+    if display and (not display:valid() or not same(display.controller,controller)
+        or display.worldAddress~=worldAddress) then remove_badge() end
     if not display then
         local class=StaticFindObject('/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C')
         if valid(class) and not live(class) then return false end
-        display=create_status_hud(actor,{anchorX=0,anchorY=1,x=24,y=-24})
+        display=create_status_hud(actor,{anchorX=0,anchorY=1,x=24,y=-24,isLive=hud_live})
         if display then
-            display.actorAddress=actorAddress
+            display.worldAddress=worldAddress
             display.context=nil -- No borrowed field actor pointer survives this update.
         end
     end
-    return display~=nil and live(display.widget) and live(display.label) and live(display.controller)
+    return display~=nil and display:valid()
 end
 local function paint()
     display:show()
+    display.suspended=nil
     if painted==runtime.disabled then return end
     display:set('Random encounters: '..(runtime.disabled and 'OFF' or 'ON')..'   F7 / Hold LT+RT (L2+R2)')
     painted=runtime.disabled
@@ -194,12 +220,15 @@ local function apply(actor)
                 not parameter:IsA(native('mucha.CPP_BtlUnitParameter')),'Expected a native map parameter')
             local key=parameter:GetFullName();seen[key]=true;count=count+1
             local array=parameter.m_ContEffectList
-            local current=list(array);local owned=runtime.effects[key];local found,zero=false,false
+            local current=list(array);local owned=runtime.effects[key];local ownedEffect=owned and resolve(owned.effect)
+            local found,zero=false,false
             for _,effect in ipairs(current) do
                 assert(live(effect),'Invalid or retiring native map effect')
-                if owned and same(effect,owned.effect) then found=true end
-                local entry=effect:GetEffectData()
-                if entry.EffectType==192 and list(entry.ParamList)[1]==0 then zero=true end
+                if same(effect,ownedEffect) then found=true;zero=true
+                else
+                    local entry=effect:GetEffectData()
+                    if entry.EffectType==192 and list(entry.ParamList)[1]==0 then zero=true end
+                end
             end
             if owned and not found then runtime.effects[key]=nil end
             if not zero then
@@ -211,7 +240,7 @@ local function apply(actor)
                 end
                 local effect=skill:CreateContEffect(parameter,parameter,data,1052,true,false)
                 assert(live(effect),'Native Dragon Seal effect could not be created')
-                runtime.effects[key]={parameter=parameter,effect=effect}
+                runtime.effects[key]={parameter=identity(parameter),effect=identity(effect)}
                 assert(effect:IsA(native('mucha.CPP_ContFxEncountRatio')) and
                     same(effect:GetTargetUnitParameter(),parameter),'Native Dragon Seal target did not bind')
                 local attached=false
@@ -235,7 +264,8 @@ end
 runtime.snapshot=function(reason)
     log('Diagnostic '..tostring(reason)..'; requested OFF='..tostring(runtime.disabled)..'; last error='..tostring(lastError))
     for target,owned in pairs(runtime.effects) do
-        log('Owned target='..target..'; effect='..(live(owned.effect) and owned.effect:GetFullName() or 'invalid'))
+        local effect=resolve(owned.effect)
+        log('Owned target='..target..'; effect='..(effect and effect:GetFullName() or 'invalid'))
     end
     local map=native('mucha.Default__CPP_BFL_Map');local actor,source=walking_actor(map)
     if live(actor) then
@@ -272,10 +302,10 @@ local function diagnostic(reason)
     if not ok then log('Diagnostic unavailable: '..tostring(message)) end
 end
 local function update(keypress)
-    local actor,systems=context()
+    local actor,systems,teardown=context()
     if not actor then
         if keypress then log('Toggle ignored outside free-walking context: '..tostring(systems)) end
-        release('walking context unavailable');return
+        suspend('walking context unavailable',teardown);return
     end
     -- Refuse a hidden toggle if the status display is not ready yet.
     if not badge(actor) then
@@ -341,8 +371,10 @@ runtime.move=function(owner)
 end
 runtime.move_post=function() end
 RegisterHook('/Script/mucha.CPP_MapUnit_Playable:InputMove',runtime.move,runtime.move_post)
-for _,path in ipairs({'/Script/mucha.CPP_MapUnit_Playable:InputInteract',
-    '/Script/mucha.CPP_BFL_TalkEvent:PlayEvent','/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition',
+-- InputInteract also fires when no interaction happens. Releasing there caused
+-- effects and HUDs to be recreated on the next movement frame (83 times in the
+-- returned capture). Native event/battle/map entry supplies the real boundary.
+for _,path in ipairs({'/Script/mucha.CPP_BFL_TalkEvent:PlayEvent','/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition',
     '/Script/mucha.CPP_MapManager:Encount'}) do
     if valid(StaticFindObject(path)) then
         local callback=function(_,_,eventBattle)
@@ -351,7 +383,7 @@ for _,path in ipairs({'/Script/mucha.CPP_MapUnit_Playable:InputInteract',
                 log('Native battle entry while OFF; event battle='..(ok and tostring(value) or 'unavailable'))
                 diagnostic('before native battle entry releases owned effects')
             end
-            pcall(release,path)
+            pcall(suspend,path,path~='/Script/mucha.CPP_BFL_TalkEvent:PlayEvent')
         end
         local post=function() end
         runtime.hooks[#runtime.hooks+1]={callback,post}
@@ -377,4 +409,4 @@ if not nativeLoop then
     end
     LoopAsync(100,runtime.async)
 end
-log('Ready: F7 or hold both triggers for 1 second on foot, chocobo or magitek armor. Encounters start ON each launch.')
+log('Ready: F7 or hold both triggers for 1 second on foot, chocobo or magitek armor. Encounters start ON each launch. Stable HUD lifecycle.')

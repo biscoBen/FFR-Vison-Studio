@@ -3,18 +3,23 @@
 clock=0; messages={};keys={};hooks={};loops={};event=false;menuOpen=false;inBattle=false
 inputContexts={{parentMappingContext=1,childMappingContextList={14,18}}}
 buttonReads=0
+local objects=setmetatable({}, {__mode='k'})
 local function obj(o)
     o=o or {};o.valid=true
     o.flags=o.flags or 0;o.address=o.address or {}
     function o:IsValid() return self.valid end
     function o:HasAnyFlags(flags) return (self.flags & flags)~=0 end
     function o:GetAddress() return self.address end
+    function o:GetClass() return self.nativeClass or self.class or nativeObjectClass end
+    function o:GetWorld() return self.world or world end
     function o:GetFullName() return self.name or tostring(self) end
     function o:IsA(class) return self.class==class or
         (self.class==classes['mucha.CPP_MapUnit_Player'] and class==classes['mucha.CPP_MapUnit_Playable']) or
         (self.panel and class==classes['UMG.PanelWidget']) end
-    return o
+    objects[o]=true;return o
 end
+nativeObjectClass=obj({name='NativeObjectClass'})
+world=obj({name='World_A'})
 classes={}
 for _,n in ipairs({'mucha.CPP_MapUnit_Player','mucha.CPP_MapUnit_Playable','mucha.CPP_InputManager','mucha.CPP_MainMenuSubsystem',
     'mucha.CPP_FieldWidgetManager','mucha.CPP_UnitParameter','mucha.CPP_BtlUnitParameter',
@@ -171,6 +176,13 @@ function StaticFindObject(p)
         end
         local name=actor and rawget(actor,'name')
         if name and p==(name:match('^[^ ]+ (.+)$') or name) and not actor.unregistered then return actor end
+        for object in pairs(objects) do
+            -- StaticFindObject resolves live named native objects; never return
+            -- an actor that the fixture explicitly removed from its world.
+            local name=rawget(object,'name')
+            if name and object.class~=classes['mucha.CPP_MapUnit_Player'] and not object.unregistered
+                and p==(name:match('^[^ ]+ (.+)$') or name) then return object end
+        end
         return nil
     end
     local n=p:gsub('^/Script/','')
@@ -217,7 +229,7 @@ function factory:Create(context,c,player)
         self.label=s.value
     end
     function label:GetText() return FText(self.label or '') end
-    local t=part();t.Text_Name=label;t.WBP_DirectionGridPanel=obj();t.Horizontal_Content=part()
+    local t=part();t.nativeClass=guideClass;t.Text_Name=label;t.WBP_DirectionGridPanel=obj();t.Horizontal_Content=part()
     function t.WBP_DirectionGridPanel:SetVisibility(v) assert(v==1) end
     function t.WBP_DirectionGridPanel:GetVisibility() return 1 end
     function t:AddToViewport(z)
@@ -295,7 +307,9 @@ function tests()
     -- Menus, events, transitions and fights release only owned effects.
     press();local oldText=lastWidget
     for _,flag in ipairs({'event','menuOpen','inBattle'}) do
-        _G[flag]=true;press();assert(not has_effect(rain,71000) and oldText.removed)
+        _G[flag]=true;press();assert(not has_effect(rain,71000))
+        if flag=='inBattle' then assert(oldText.removed)
+        else assert(not oldText.removed and oldText.visibility==1) end
         assert(FFRStudioEncounterToggle.disabled and rain.m_ContEffectList[1]==foreign)
         _G[flag]=false;tick();assert(has_effect(rain,71000));oldText=lastWidget
     end
@@ -313,7 +327,7 @@ function tests()
     -- Missing HUD refuses hidden toggles; failed creation cleans up its viewport entry.
     local good=controller;controller=nil;press();assert(not has_effect(rain,71000))
     assert(not FFRStudioEncounterToggle.disabled);controller=good;tick()
-    event=true;tick();event=false;failPosition=true;tick();assert(#viewport==0)
+    inBattle=true;tick();inBattle=false;failPosition=true;tick();assert(#viewport==0)
     failPosition=false;tick();assert(#viewport==1 and lastText.label:find('ON'))
     -- Unsupported native effect data fails without changing any actor/party state.
     badNativeEffect=true;press();assert(not has_effect(rain,71000) and not has_effect(lasswell,71000))

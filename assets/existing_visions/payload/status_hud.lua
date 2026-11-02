@@ -10,8 +10,9 @@ local function native(name)
 end
 local asset='/Game/UI/Studio/WBP_StudioStatus.WBP_StudioStatus_C'
 return function(context,position)
+    local usable=position.isLive or valid
     local controller=native('Engine.Default__GameplayStatics'):GetPlayerController(context,0)
-    if not valid(controller) then return end
+    if not usable(controller) then return end
     local class=StaticFindObject(asset)
     if not valid(class) then
         -- UE4SS LoadAsset only queries AssetRegistry. Private mod packages are
@@ -21,12 +22,12 @@ return function(context,position)
         local path=kismet:MakeSoftObjectPath(asset)
         class=kismet:LoadAsset_Blocking(kismet:Conv_SoftObjPathToSoftObjRef(path))
     end
-    assert(valid(class),'Could not load the private Studio status widget: '..asset)
+    assert(usable(class),'Could not load the private Studio status widget: '..asset)
     local widget=native('UMG.Default__WidgetBlueprintLibrary'):Create(context,class,controller)
-    assert(valid(widget),'Could not create the status UserWidget')
+    assert(usable(widget),'Could not create the status UserWidget')
     local ok,label=pcall(function()
         local label=widget.Text_Name
-        assert(valid(label),'Status UserWidget has no text label')
+        assert(usable(label),'Status UserWidget has no text label')
         -- This private passive UserWidget has one plain TextBlock. It has no
         -- key-guide icons, input subscriptions, bindings, animation or tick.
         widget:AddToViewport(50)
@@ -39,10 +40,11 @@ return function(context,position)
         widget:SetAlignmentInViewport({X=position.anchorX,Y=position.anchorY})
         return label
     end)
-    if not ok then widget:RemoveFromParent();error(label) end
+    if not ok then if usable(widget) then widget:RemoveFromParent() end;error(label) end
     local result={widget=widget,label=label,controller=controller,context=context}
-    function result:valid() return valid(self.widget) and valid(self.label) and valid(self.controller) end
+    function result:valid() return usable(class) and usable(self.widget) and usable(self.label) and usable(self.controller) end
     function result:show()
+        assert(self:valid(),'Status widget is retiring or unavailable')
         for _,part in ipairs({self.widget,self.label}) do
             if part:GetVisibility()~=3 then part:SetVisibility(3) end
             if part:GetRenderOpacity()~=1 then part:SetRenderOpacity(1) end
@@ -56,8 +58,9 @@ return function(context,position)
         self:show()
     end
     function result:remove()
-        if valid(self.widget) then self.widget:RemoveFromParent() end
+        if usable(self.widget) then self.widget:RemoveFromParent() end
         self.widget,self.label,self.text,self.value=nil,nil,nil,nil
+        self.controller,self.context=nil,nil
     end
     result:show()
     return result

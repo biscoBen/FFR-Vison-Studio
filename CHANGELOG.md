@@ -11,6 +11,33 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Encounter indicator and effect lifetime correction — 2026-11-02
+
+- The returned light-session capture reproduces a native reflected-member
+  lookup crash after 299 seconds. Its installed Lua checksum matches the
+  encounter/esper/Fina combination without auto-battle or field cycling.
+  The log records 83 interaction-triggered removals followed by effect
+  reapplication, usually one frame later. Memory samples do not prove a leak.
+- Ordinary interaction input no longer tears down the encounter controller.
+  Temporary menus, map UI and story events collapse its native-owned viewport
+  widget and reuse it afterward. Actual map/battle transitions still remove it;
+  a different world/controller gets a new widget. Check the widget class as well
+  as the instance before reflected UI access or creation.
+- Store owned effect/parameter paths and addresses, resolving them afresh before
+  cleanup or comparison. Reject missing, retiring or replaced objects, preserve
+  foreign/equipped effects, and avoid rereading known owned effect structs.
+  F7, digital trigger holds, all ground modes and forced battles retain their
+  existing behavior. Saved kits and unrelated runtime controls are preserved.
+- This addresses the observed churn and retained-pointer risks. The exact Lua
+  caller is still unknown; final package checks and an in-game stability test
+  are required before claiming the crashes resolved. Rebuild/install and restart
+  after updating; no preset reset or repeated game preparation is required.
+- All 135 focused runtime checks pass, including 1,000 movement updates and
+  300 temporary menu/event/map-UI cycles. Four new regressions reject the old
+  runtime. The full local Python suite passes 916 tests (73 platform-dependent
+  skips), and all extension, Fina and optional-library manifests verify.
+  First complete candidate: 2026-11-02 12:15:35 PST; Windows validation pending.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

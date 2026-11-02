@@ -248,7 +248,7 @@ class NoEncountersTests(unittest.TestCase):
                 for i=1,20 do tick();press() end
                 hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]({get=function() return actor end})
                 assert(buttonReads==before,'Never poll triggers behind the world map/destination list')
-                assert(widget.removed and not has_effect(parameters[1001],71000))
+                assert(not widget.removed and widget.visibility==1 and not has_effect(parameters[1001],71000))
                 assert(FFRStudioEncounterToggle.disabled,'Map input must not toggle encounter state')
                 controller.left,controller.right=0,0
                 inputContexts={{parentMappingContext=1,childMappingContextList={14,18}},
@@ -325,13 +325,87 @@ class NoEncountersTests(unittest.TestCase):
     def test_retiring_private_hud_class_is_not_passed_to_native_widget_creation(self):
         lua=self.lifecycle_runtime()
         lua.execute('''
-            tick();event=true;tick();event=false
+            tick();inBattle=true;tick();inBattle=false
             guideClass.flags=0x10000;assert(guideClass:IsValid())
             local before=created
             tick();assert(created==before and #viewport==0)
             assert(not FFRStudioEncounterToggle.disabled)
             guideClass.flags=0;tick()
             assert(created==before+1 and lastText.label:find('ON'))
+        ''')
+
+    def test_repeated_interactions_do_not_recreate_hud_or_suppression(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();press()
+            local widget=lastWidget;local count=effectCreations
+            assert(not hooks['/Script/mucha.CPP_MapUnit_Playable:InputInteract'])
+            for _=1,1000 do
+                hooks['/Script/mucha.CPP_MapUnit_Playable:InputMove'][1]({get=function() return actor end})
+                tick(.016);collectgarbage('collect')
+            end
+            assert(created==1 and widget==lastWidget and not widget.removed)
+            assert(effectCreations==count and has_effect(parameters[1001],71000))
+        ''')
+
+    def test_temporary_menus_events_and_map_ui_reuse_the_native_owned_widget(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();press();local widget=lastWidget
+            local start=created
+            for _=1,100 do
+                for _,mode in ipairs({'menu','event','worldmap'}) do
+                    menuOpen=mode=='menu';event=mode=='event'
+                    inputContexts={{parentMappingContext=mode=='worldmap' and 24 or 1}}
+                    tick();assert(widget.visibility==1 and not widget.removed)
+                    assert(not has_effect(parameters[1001],71000))
+                    collectgarbage('collect')
+                    menuOpen=false;event=false;inputContexts={{parentMappingContext=1}}
+                    tick();assert(widget==lastWidget and widget.visibility==3)
+                    assert(has_effect(parameters[1001],71000))
+                end
+            end
+            assert(created==start and #viewport==1)
+            -- A real map boundary removes the old viewport entry. Its next
+            -- world gets exactly one fresh widget; raw world actors aren't kept.
+            hooks['/Script/mucha.CPP_MapTransitionTrigger:ExecuteTransition'][1]()
+            assert(widget.removed and #viewport==0)
+            world={IsValid=function() return true end,HasAnyFlags=function() return false end,
+                GetAddress=function(self) return self end}
+            tick();assert(created==start+1 and lastWidget~=widget)
+        ''')
+
+    def test_effect_cleanup_resolves_paths_and_refuses_reused_native_addresses(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();press()
+            for _,owned in pairs(FFRStudioEncounterToggle.effects) do
+                assert(type(owned.parameter.path)=='string' and type(owned.effect.path)=='string')
+                assert(owned.parameter.IsValid==nil and owned.effect.IsValid==nil)
+            end
+            local old=parameters[1001]
+            -- Reuse the same native object name with a different address. The
+            -- old borrowed pointer must never be read or remove its new effects.
+            old.unregistered=true
+            local replacement=parameter('Rain_Parameter');parameters[1001]=replacement
+            local foreign=effect(12000,replacement);replacement.m_ContEffectList[1]=foreign
+            old.m_ContEffectList=nil
+            old.GetFullName=function() error('stale parameter name') end
+            press()
+            assert(replacement.m_ContEffectList:GetArrayNum()==1 and replacement.m_ContEffectList[1]==foreign)
+            tick();press();assert(has_effect(replacement,71000))
+        ''')
+
+    def test_retiring_widget_class_is_rejected_before_reading_blueprint_members(self):
+        lua=self.lifecycle_runtime()
+        lua.execute('''
+            tick();local widget=lastWidget
+            guideClass.flags=0x8000
+            widget.RemoveFromParent=function() error('retiring Blueprint removal') end
+            lastText.GetText=function() error('retiring Blueprint text') end
+            tick();assert(created==1)
+            guideClass.flags=0;tick();assert(created==2 and lastWidget~=widget)
+            assert(lastText.label:find('ON'))
         ''')
 
 
