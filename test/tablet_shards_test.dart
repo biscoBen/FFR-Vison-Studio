@@ -191,4 +191,32 @@ void main() {
     expect(File(paths.first).readAsBytesSync(), original);
     expect(await findTabletSaves(environment: {}), isEmpty);
   });
+
+  test(
+    'portable launcher app-data redirection does not hide real Windows saves',
+    () async {
+      final root = Directory.systemTemp.createTempSync('portable-shard-saves-');
+      addTearDown(() => root.deleteSync(recursive: true));
+      final profile = p.join(root.path, 'Windows user');
+      final path = p.join(
+        profile,
+        'AppData',
+        'Local',
+        'FFRS',
+        'Steam',
+        '76561198000000001',
+        'GameSaveData0.sav',
+      );
+      final file = File(path);
+      file.parent.createSync(recursive: true);
+      file.writeAsBytesSync(fixture('partial'));
+      final files = await findTabletSaves(
+        environment: {
+          'LOCALAPPDATA': p.join(root.path, 'Studio Test Data'),
+          'USERPROFILE': profile,
+        },
+      );
+      expect(files.map((f) => f.path), [path]);
+    },
+  );
 }

@@ -1,14 +1,38 @@
 import unittest
+import base64
 import hashlib
+from types import SimpleNamespace
 from pathlib import Path
 import tempfile
 from unittest.mock import patch
 import zipfile
 
-from cloud_windows_build import BuildError, download_cloud_release, extract_verified_zip, github_environment, matching_run
+from cloud_windows_build import BuildError, build, download_cloud_release, extract_verified_zip, github_environment, matching_run
 
 
 class BuildSelectionTests(unittest.TestCase):
+    def test_joined_failed_run_stops_instead_of_dispatching_another_build(self):
+        active = {'id': 9, 'head_branch': "Sephira's-Update", 'head_sha': 'wanted',
+                  'workflow_id': 42, 'path': '.github/workflows/windows.yml',
+                  'display_title': 'ffr-windows-v1 build=15 cloud=false', 'event': 'push',
+                  'status': 'in_progress', 'conclusion': None, 'html_url': 'https://example.test/run/9'}
+        args = SimpleNamespace(build=15, ref="Sephira's-Update", enable_actions=False,
+                               cloud_download=False, force_rebuild=False, timeout=60)
+        for conclusion in ('failure', 'cancelled', 'timed_out'):
+            with self.subTest(conclusion=conclusion):
+                def api(path, **kwargs):
+                    if path.startswith('git/ref/heads/'): return {'object': {'sha': 'wanted'}}
+                    if path == 'actions/workflows/windows.yml': return {'id': 42, 'state': 'active'}
+                    if path.startswith('contents/'): return {'sha': 'workflow', 'content': base64.b64encode(b'ffr-windows-v1').decode()}
+                    if path.startswith('actions/workflows/windows.yml/runs?'): return {'workflow_runs': [active]}
+                    if path == 'actions/runs/9': return dict(active, status='completed', conclusion=conclusion)
+                    self.fail('Unexpected API request: ' + path)
+                with patch('cloud_windows_build.api', side_effect=api) as requests, \
+                        patch('cloud_windows_build.subprocess.check_output', side_effect=['other-branch', 'wanted']), \
+                        patch('cloud_windows_build.time.sleep'):
+                    with self.assertRaisesRegex(BuildError, 'Build finished with ' + conclusion): build(args)
+                    self.assertFalse(any('dispatches' in call.args[0] for call in requests.call_args_list))
+
     def test_selects_only_new_runs_for_the_requested_branch_and_commit(self):
         runs = [
             {"id": 1, "head_branch": "Sephira's-Update", "head_sha": "wanted", "event": "workflow_dispatch"},

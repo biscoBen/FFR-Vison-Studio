@@ -163,9 +163,19 @@ void main() {
       expect(find.byKey(const Key('added-visions')), findsOneWidget);
       await tester.tap(find.text('2  TABLET SHARDS'));
       await tester.pump();
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 10)),
-      );
+      // Real directory reads need real event-loop turns between Flutter pumps.
+      // A single delay can finish before the Windows scan's next await resumes.
+      for (
+        var i = 0;
+        i < 200 && find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
+        i++
+      ) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 10)),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(find.byType(CircularProgressIndicator), findsNothing);
       await tester.pumpAndSettle();
       expect(find.text('Choose save'), findsOneWidget);
       await tester.tap(find.text('1  VISIONS'));

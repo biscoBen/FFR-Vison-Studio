@@ -175,8 +175,14 @@ Future<List<TabletSaveFile>> findTabletSaves({
 }) async {
   final env = environment ?? Platform.environment;
   final roots = <String>[];
-  final local = env['LOCALAPPDATA'];
-  if (local != null && local.isNotEmpty) {
+  // The portable Studio launcher redirects LOCALAPPDATA to Studio Test Data.
+  // The game's saves still live in the actual Windows user's local folder.
+  final locals = <String>{
+    if (env['LOCALAPPDATA']?.isNotEmpty == true) env['LOCALAPPDATA']!,
+    if (env['USERPROFILE']?.isNotEmpty == true)
+      p.join(env['USERPROFILE']!, 'AppData', 'Local'),
+  };
+  for (final local in locals) {
     final steam = Directory(p.join(local, 'FFRS', 'Steam'));
     roots.add(steam.path);
     try {

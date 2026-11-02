@@ -345,7 +345,7 @@ def build(args):
                         if dispatched:
                             raise
                         print(f"Rejecting incompatible run {run['id']}: {error}", flush=True)
-                elif dispatched:
+                else:
                     raise BuildError(f"Build finished with {run['conclusion']}: {run['html_url']}")
                 rejected.add(run['id'])
                 run = None

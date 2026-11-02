@@ -32,9 +32,17 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Update Studio to use the tab; no game preparation, mod rebuild, install or reset
   is required for the checker. Earlier crash/cave changes remain included.
   Validation uses synthetic encrypted saves, not a new personal save from Ben.
-  All 10 focused checks pass, including real AES decoding and Studio navigation.
+  All 11 focused checks pass, including real AES decoding and Studio navigation.
   Full local Flutter checks pass 350 tests (one skip) with clean analysis; all
   920 Python tests pass (73 skips), and extension/library manifests verify.
+- Check the real Windows user save folder as well as LOCALAPPDATA: the portable
+  launcher redirects LOCALAPPDATA to Studio Test Data. Add a regression for this
+  setup. The Windows navigation test now waits for actual directory reads instead
+  of expecting the scan to settle after one timer turn.
+- Stop the build helper after a joined run fails validation rather than silently
+  submitting the same failed commit again. A regression covers failure,
+  cancellation and timeout. The first Windows run failed only its asynchronous
+  navigation test; its redundant retry was cancelled, and no package published.
 - Cave follow-up: the user confirms the green added entrance still floats and
   returning still falls through the map on 1.2.151. Barusa's supplied character
   config uses the default version-3 challenge route, with no placement override.
