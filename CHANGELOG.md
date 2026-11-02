@@ -11,35 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Zoldaad challenge: flat placement and native return — 2026-11-02
-
-- The corrected capture contains all eleven generated cave maps. Installed
-  entry/return heights already match 1.2.151, so the failed height-only retest
-  is not attributed to an uninstalled update. Preserve the green added entrance
-  and the native brown landmark's ownership distinction.
-- Move only the default Barusa/Ariana entrance from (-7870,11580) to nearby
-  (-8230,11570), grounded at 36.265625. Its sampled footprint spans under four
-  units of elevation instead of about 125 on the old slope. Keep rotation,
-  scale, mesh, cave IDs, shared challenge, unlocks, rewards and level-26 balance.
-  Explicit saved user placements remain untouched.
-- Return the earned default challenge through native world point 10211 at
-  (-8230,11920,40), on the entrance's opening side. Use the game's original
-  approach instead of the custom point's terrain-level ray placement. Verify
-  the native point is active, unique and retains its expected position/facing
-  before generating assets; never rewrite that native map or point.
-- Source: `Cave-Runtime-Reference-20261102-145453-d9dd58-001.zip`, SHA-256
-  `4245eb98b16abce708309088c0764629c96244ff4076c560a88c8e7f16363cf3`.
-  This is a placement/return candidate; native gameplay must establish whether
-  it resolves the floating/fall-through reports. Rebuild/install and restart
-  after updating. No reset, repeated preparation or new collector is needed.
-- All 76 focused checks pass, including preserved manual placement, shared IDs,
-  native-point identity/position/facing guards and opaque-actor schema discovery.
-  Full local Python passes 924 tests (73 skips); Flutter analysis is clean and
-  all eleven shard-tab checks pass. Native serialization/readback checks the
-  actual captured entrance and stone exit with the new placement/target. The
-  native point remains unchanged, and the real extraction/schema/guard path
-  passes against the supplied game data.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -132,6 +103,57 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Zoldaad flat placement and native return — 2026-11-02
+
+Code [`0b25cd9`](https://github.com/biscoBen/FFR-Vison-Studio/commit/0b25cd99396b97e0c7de5b7aa65fa4b81b0329a4) ·
+[Studio test 1.2.153](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41543064950/Sephira-Studio-Test.zip)
+
+- The corrected capture contains all eleven generated cave maps. Installed
+  entry/return heights already match 1.2.151, so the failed height-only retest
+  is not attributed to an uninstalled update. Preserve the green added entrance
+  and the native brown landmark's ownership distinction.
+- Move only the default Barusa/Ariana entrance from (-7870,11580) to nearby
+  (-8230,11570), grounded at 36.265625. Its sampled footprint spans under four
+  units of elevation instead of about 125 on the old slope. Keep rotation,
+  scale, mesh, cave IDs, shared challenge, unlocks, rewards and level-26 balance.
+  Explicit saved user placements remain untouched.
+- Return the earned default challenge through native world point 10211 at
+  (-8230,11920,40), on the entrance's opening side. Use the game's original
+  approach instead of the custom point's terrain-level ray placement. Verify
+  the native point is active, unique and retains its expected position/facing
+  before generating assets; never rewrite that native map or point.
+- Source: `Cave-Runtime-Reference-20261102-145453-d9dd58-001.zip`, SHA-256
+  `4245eb98b16abce708309088c0764629c96244ff4076c560a88c8e7f16363cf3`.
+  This is a placement/return candidate; native gameplay must establish whether
+  it resolves the floating/fall-through reports. Rebuild/install and restart
+  after updating. No reset, repeated preparation or new collector is needed.
+- All 76 focused checks pass, including preserved manual placement, shared IDs,
+  native-point identity/position/facing guards and opaque-actor schema discovery.
+  Full local Python passes 924 tests (73 skips); Flutter analysis is clean and
+  all eleven shard-tab checks pass. Native serialization/readback checks the
+  actual captured entrance and stone exit with the new placement/target. The
+  native point remains unchanged, and the real extraction/schema/guard path
+  passes against the supplied game data.
+- Windows workflow 41543064950 passes analysis, 351 Flutter checks (one skipped),
+  924 Python checks (33 skipped), fresh frozen-engine setup/cache checks,
+  both bundled extension manifests, FFBE library verification and all twelve
+  launcher/updater checks. Compilation and validation both succeed before
+  publication. No second build was dispatched.
+- Independently retrieve the compile artifact and verify its GitHub SHA-256
+  `7eb02521ec2846318c79fcd5e118bccb301fc123994613704e4519daa0aa9b87`.
+  All 192 application files match the public ZIP byte for byte; provenance
+  identifies this commit/run and Flutter 3.47.6. Verify all 87 extension and
+  16 Crystal Fina manifest files against source, all 99 shard identities and
+  included license, launcher text, 76 packaged cave checks and 135 packaged
+  combined-runtime checks. Public ZIP: 83,340,974 bytes, SHA-256
+  `ad77ea0f31df5ca711e7cdc01dda41ebba1818c392103c963eea3ff336544f4c`.
+- First complete candidate: **2026-11-02 15:03:20 PST**; verified download
+  delivered **15:23:56 PST**: **20m 36s**, including the native-schema correction,
+  local checks, CI waiting and package verification. CI wall time is **13m 46s**;
+  summed non-skipped runner job time is **22m 17s**. Compilation checkout alone
+  took 6m 51s. These are build/delivery measurements, not game install timing
+  or a claim that the sub-two-minute install goal is met.
 
 ## Standalone cave runtime capture correction — 2026-11-02
 
