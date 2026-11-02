@@ -13,8 +13,9 @@ The returned full-game reference adds Zoldaad's native terrain heights. The
 Barusa/Charming Kitty Ariana cave exit now uses the higher ground at its own
 position, rather than the entrance height that placed it about 44 units below
 the surface. Its default entrance also uses the measured ground height. Saved
-manual placements and cave identities are preserved. The green structure in the
-screenshot is a separate native vision shrine.
+manual placements and cave identities are preserved. The user confirms the green structure is the added entrance and the brown
+structure is native. The 1.2.151 height correction did not fix the reported
+floating or fall-through exit; this remains unresolved.
 
 Close the game, update Studio, rebuild/install and restart. No reset or repeated
 preparation is needed. This package includes the 1.2.150 encounter crash candidate.

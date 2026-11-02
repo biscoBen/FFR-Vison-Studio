@@ -1,0 +1,799 @@
+{
+  "schema": 1,
+  "source": "https://github.com/heydavee/ffr-shard-finder",
+  "commit": "7886e60e19205874769da9b660a36b5b4fe129ac",
+  "shards": [
+    {
+      "number": 1,
+      "chapter": 1,
+      "mapId": 2015,
+      "uniqueId": 4,
+      "location": "Commercial District",
+      "hint": "Left of the vendor stalls, among crates"
+    },
+    {
+      "number": 2,
+      "chapter": 1,
+      "mapId": 2020,
+      "uniqueId": 5,
+      "location": "Village of Kol",
+      "hint": "Left side of the pool in the southwest"
+    },
+    {
+      "number": 3,
+      "chapter": 1,
+      "mapId": 2040,
+      "uniqueId": 9,
+      "location": "Town of Felicitas",
+      "hint": "East of the wooden bridge, right of the stone wall"
+    },
+    {
+      "number": 4,
+      "chapter": 1,
+      "mapId": 2040,
+      "uniqueId": 8,
+      "location": "Town of Felicitas",
+      "hint": "Hidden path west, behind the wall after the ladder"
+    },
+    {
+      "number": 5,
+      "chapter": 1,
+      "mapId": 3040,
+      "uniqueId": 15,
+      "location": "Kolobos Ruins",
+      "hint": "Second area, behind grey-green cylinders near the steps"
+    },
+    {
+      "number": 6,
+      "chapter": 1,
+      "mapId": 3040,
+      "uniqueId": 14,
+      "location": "Kolobos Ruins",
+      "hint": "After the bridge collapse, behind a fallen pillar"
+    },
+    {
+      "number": 7,
+      "chapter": 1,
+      "mapId": 2030,
+      "uniqueId": 9,
+      "location": "Grandport Harbor",
+      "hint": "South of the Item Shop, behind barrels on the pier"
+    },
+    {
+      "number": 8,
+      "chapter": 1,
+      "mapId": 2030,
+      "uniqueId": 8,
+      "location": "Grandport Harbor",
+      "hint": "West of the Weapon & Armor shop, at the base of a tree"
+    },
+    {
+      "number": 9,
+      "chapter": 1,
+      "mapId": 3031,
+      "uniqueId": 0,
+      "location": "Cavern of Swords",
+      "hint": "Behind a stalagmite at the end of the cave"
+    },
+    {
+      "number": 10,
+      "chapter": 1,
+      "mapId": 3030,
+      "uniqueId": 8,
+      "location": "Siren's Tower",
+      "hint": "Past the fountain, up the right stairs on the ledge"
+    },
+    {
+      "number": 11,
+      "chapter": 1,
+      "mapId": 3030,
+      "uniqueId": 7,
+      "location": "Siren's Tower",
+      "hint": "Top of the first main area, right end of the ledge"
+    },
+    {
+      "number": 12,
+      "chapter": 1,
+      "mapId": 3030,
+      "uniqueId": 6,
+      "location": "Siren's Tower",
+      "hint": "Next room, up the stairs to the visible left ledge"
+    },
+    {
+      "number": 13,
+      "chapter": 2,
+      "mapId": 2060,
+      "uniqueId": 5,
+      "location": "Dilmagia, the Machinopolis",
+      "hint": "First area on the left, corner by the shut gate"
+    },
+    {
+      "number": 14,
+      "chapter": 2,
+      "mapId": 2060,
+      "uniqueId": 6,
+      "location": "Dilmagia, the Machinopolis",
+      "hint": "Second intersection, behind a pile of wooden crates"
+    },
+    {
+      "number": 15,
+      "chapter": 2,
+      "mapId": 2061,
+      "uniqueId": 12,
+      "location": "Shipyard (Dilmagia)",
+      "hint": "First stairs, then the left stairs next to the ladder"
+    },
+    {
+      "number": 16,
+      "chapter": 2,
+      "mapId": 2061,
+      "uniqueId": 13,
+      "location": "Shipyard (Dilmagia)",
+      "hint": "First stairs, then the right stairs beside the third girder"
+    },
+    {
+      "number": 17,
+      "chapter": 2,
+      "mapId": 3050,
+      "uniqueId": 22,
+      "location": "Mt. Thunderclap",
+      "hint": "Harder path, in plain sight after the yellowish tree"
+    },
+    {
+      "number": 18,
+      "chapter": 2,
+      "mapId": 3050,
+      "uniqueId": 21,
+      "location": "Mt. Thunderclap",
+      "hint": "Easier path, next to a tree after the ladder"
+    },
+    {
+      "number": 19,
+      "chapter": 2,
+      "mapId": 3050,
+      "uniqueId": 23,
+      "location": "Mt. Thunderclap",
+      "hint": "Behind rocks near the Ramuh shrine"
+    },
+    {
+      "number": 20,
+      "chapter": 2,
+      "mapId": 2050,
+      "uniqueId": 6,
+      "location": "Dwarven Forge",
+      "hint": "Southwest corner, end of the path past the bridge"
+    },
+    {
+      "number": 21,
+      "chapter": 2,
+      "mapId": 2050,
+      "uniqueId": 5,
+      "location": "Dwarven Forge",
+      "hint": "Northwest, south of the Mom Bomb boss"
+    },
+    {
+      "number": 22,
+      "chapter": 2,
+      "mapId": 3060,
+      "uniqueId": 71,
+      "location": "Mobliz Shipyard",
+      "hint": "First area, behind crates heading west"
+    },
+    {
+      "number": 23,
+      "chapter": 2,
+      "mapId": 3060,
+      "uniqueId": 78,
+      "location": "Mobliz Shipyard",
+      "hint": "First lift area, southeast corner after the ladder down"
+    },
+    {
+      "number": 24,
+      "chapter": 2,
+      "mapId": 3060,
+      "uniqueId": 79,
+      "location": "Mobliz Shipyard",
+      "hint": "Second lift area, behind the shipping container to the north"
+    },
+    {
+      "number": 25,
+      "chapter": 2,
+      "mapId": 3070,
+      "uniqueId": 59,
+      "location": "Wind Shrine",
+      "hint": "First room, behind the right pillar before the elevator"
+    },
+    {
+      "number": 26,
+      "chapter": 2,
+      "mapId": 3070,
+      "uniqueId": 60,
+      "location": "Wind Shrine",
+      "hint": "Top of the staircase, gap between stairs and railing"
+    },
+    {
+      "number": 27,
+      "chapter": 2,
+      "mapId": 3070,
+      "uniqueId": 61,
+      "location": "Wind Shrine",
+      "hint": "Platform to the south, left side"
+    },
+    {
+      "number": 28,
+      "chapter": 3,
+      "mapId": 2070,
+      "uniqueId": 26,
+      "location": "Olderion, the Aquapolis",
+      "hint": "Entrance area, next to the boat tour NPC"
+    },
+    {
+      "number": 29,
+      "chapter": 3,
+      "mapId": 2070,
+      "uniqueId": 29,
+      "location": "Olderion, the Aquapolis",
+      "hint": "Statue pool, behind the bench on the left"
+    },
+    {
+      "number": 30,
+      "chapter": 3,
+      "mapId": 2070,
+      "uniqueId": 27,
+      "location": "Olderion, the Aquapolis",
+      "hint": "Stone bridge, behind a plant pot past the water wheel"
+    },
+    {
+      "number": 31,
+      "chapter": 3,
+      "mapId": 2070,
+      "uniqueId": 28,
+      "location": "Olderion, the Aquapolis",
+      "hint": "North of the statue pool, behind a tree after the steps"
+    },
+    {
+      "number": 32,
+      "chapter": 3,
+      "mapId": 3080,
+      "uniqueId": 38,
+      "location": "Cave of Waters",
+      "hint": "Story boat route, left of the dock"
+    },
+    {
+      "number": 33,
+      "chapter": 3,
+      "mapId": 3080,
+      "uniqueId": 39,
+      "location": "Cave of Waters",
+      "hint": "Waterfall room, in front of the waterfall"
+    },
+    {
+      "number": 34,
+      "chapter": 3,
+      "mapId": 3080,
+      "uniqueId": 40,
+      "location": "Cave of Waters",
+      "hint": "Hidden path left of the entrance, up the ladders"
+    },
+    {
+      "number": 35,
+      "chapter": 3,
+      "mapId": 3100,
+      "uniqueId": 11,
+      "location": "Waterfall Way",
+      "hint": "Second room east of the stairs, next to the ladder"
+    },
+    {
+      "number": 36,
+      "chapter": 3,
+      "mapId": 3100,
+      "uniqueId": 12,
+      "location": "Waterfall Way",
+      "hint": "Large waterfall room, on one of the platforms"
+    },
+    {
+      "number": 37,
+      "chapter": 3,
+      "mapId": 3100,
+      "uniqueId": 13,
+      "location": "Waterfall Way",
+      "hint": "Same room to the north, on a rock between the waterfalls"
+    },
+    {
+      "number": 38,
+      "chapter": 3,
+      "mapId": 2090,
+      "uniqueId": 6,
+      "location": "Town of Amore",
+      "hint": "South of the shops, next to the well on the island"
+    },
+    {
+      "number": 39,
+      "chapter": 3,
+      "mapId": 2090,
+      "uniqueId": 7,
+      "location": "Town of Amore",
+      "hint": "North of the Item Shop, before the bridge by the tree"
+    },
+    {
+      "number": 40,
+      "chapter": 3,
+      "mapId": 3110,
+      "uniqueId": 59,
+      "location": "Water Shrine",
+      "hint": "Circular platform room, down the lowered north stairs"
+    },
+    {
+      "number": 41,
+      "chapter": 3,
+      "mapId": 3110,
+      "uniqueId": 60,
+      "location": "Water Shrine",
+      "hint": "Boat area, northeast ledge past the friendly enemy"
+    },
+    {
+      "number": 42,
+      "chapter": 3,
+      "mapId": 3110,
+      "uniqueId": 58,
+      "location": "Water Shrine",
+      "hint": "Long ladder down, on the left side of the ladder"
+    },
+    {
+      "number": 43,
+      "chapter": 4,
+      "mapId": 2100,
+      "uniqueId": 2,
+      "location": "Mozul Station",
+      "hint": "Southwest corner of the station"
+    },
+    {
+      "number": 44,
+      "chapter": 4,
+      "mapId": 2102,
+      "uniqueId": 1,
+      "location": "Capital Station",
+      "hint": "Next to the eastern staircase by the entrance"
+    },
+    {
+      "number": 45,
+      "chapter": 4,
+      "mapId": 2111,
+      "uniqueId": 4,
+      "location": "Zoldaad Castle Plaza",
+      "hint": "Directly east of the tram exit"
+    },
+    {
+      "number": 46,
+      "chapter": 4,
+      "mapId": 2113,
+      "uniqueId": 4,
+      "location": "Imperial Residences",
+      "hint": "Southeast corner"
+    },
+    {
+      "number": 47,
+      "chapter": 4,
+      "mapId": 2114,
+      "uniqueId": 2,
+      "location": "Slums",
+      "hint": "East of the spawn point near the barrels"
+    },
+    {
+      "number": 48,
+      "chapter": 4,
+      "mapId": 3140,
+      "uniqueId": 11,
+      "location": "Underground Tunnel",
+      "hint": "First area, corner south of the metal walkway"
+    },
+    {
+      "number": 49,
+      "chapter": 4,
+      "mapId": 3140,
+      "uniqueId": 10,
+      "location": "Underground Tunnel",
+      "hint": "Under the bridge, hidden entrance to the right room"
+    },
+    {
+      "number": 50,
+      "chapter": 4,
+      "mapId": 2120,
+      "uniqueId": 11,
+      "location": "Rebel Hideout",
+      "hint": "Northwest corner, hidden path behind Jake's room"
+    },
+    {
+      "number": 51,
+      "chapter": 4,
+      "mapId": 2120,
+      "uniqueId": 10,
+      "location": "Rebel Hideout",
+      "hint": "Northeast, behind a metal pillar by the railing"
+    },
+    {
+      "number": 52,
+      "chapter": 4,
+      "mapId": 3130,
+      "uniqueId": 46,
+      "location": "Weapons Factory",
+      "hint": "Main lava area, west stairs to the crystal switch"
+    },
+    {
+      "number": 53,
+      "chapter": 4,
+      "mapId": 3130,
+      "uniqueId": 45,
+      "location": "Weapons Factory",
+      "hint": "Long ladder platform, second on the left from the north"
+    },
+    {
+      "number": 54,
+      "chapter": 4,
+      "mapId": 3150,
+      "uniqueId": 3,
+      "location": "Dungeon",
+      "hint": "First cell on the right after getting the Master Key"
+    },
+    {
+      "number": 55,
+      "chapter": 4,
+      "mapId": 3150,
+      "uniqueId": 2,
+      "location": "Dungeon",
+      "hint": "Original prison room, unlocked cell on the west side"
+    },
+    {
+      "number": 56,
+      "chapter": 4,
+      "mapId": 3160,
+      "uniqueId": 10,
+      "location": "Zoldaad Castle",
+      "hint": "Behind the left horse statue at the throne room stairs"
+    },
+    {
+      "number": 57,
+      "chapter": 4,
+      "mapId": 3160,
+      "uniqueId": 11,
+      "location": "Zoldaad Castle",
+      "hint": "Right hallway from the throne stairs, first door southeast"
+    },
+    {
+      "number": 58,
+      "chapter": 4,
+      "mapId": 2016,
+      "uniqueId": 2,
+      "location": "Colosseum (Grandshelt)",
+      "hint": "West along the initial path"
+    },
+    {
+      "number": 59,
+      "chapter": 5,
+      "mapId": 2130,
+      "uniqueId": 16,
+      "location": "Mysidia, the Magiapolis",
+      "hint": "Main entrance, corner of the right stairs behind an NPC"
+    },
+    {
+      "number": 60,
+      "chapter": 5,
+      "mapId": 2130,
+      "uniqueId": 17,
+      "location": "Mysidia, the Magiapolis",
+      "hint": "Storefronts, directly south of the Weapon Shop"
+    },
+    {
+      "number": 61,
+      "chapter": 5,
+      "mapId": 2130,
+      "uniqueId": 18,
+      "location": "Mysidia, the Magiapolis",
+      "hint": "Blue teleporter area, second pillar on the right"
+    },
+    {
+      "number": 62,
+      "chapter": 5,
+      "mapId": 3190,
+      "uniqueId": 25,
+      "location": "Arcane Library",
+      "hint": "Southwest of the entrance room, among writing desks"
+    },
+    {
+      "number": 63,
+      "chapter": 5,
+      "mapId": 2140,
+      "uniqueId": 3,
+      "location": "Village of Sunioo",
+      "hint": "Right at the entrance, between the bench and the pot steps"
+    },
+    {
+      "number": 64,
+      "chapter": 5,
+      "mapId": 2140,
+      "uniqueId": 4,
+      "location": "Village of Sunioo",
+      "hint": "Northeast, next to the snowman outside the igloo"
+    },
+    {
+      "number": 65,
+      "chapter": 5,
+      "mapId": 3180,
+      "uniqueId": 13,
+      "location": "Nameless Ruins",
+      "hint": "First room, west side next to a fallen pillar"
+    },
+    {
+      "number": 66,
+      "chapter": 5,
+      "mapId": 3180,
+      "uniqueId": 14,
+      "location": "Nameless Ruins",
+      "hint": "Second area, south of the Save Point near the chandelier"
+    },
+    {
+      "number": 67,
+      "chapter": 5,
+      "mapId": 3190,
+      "uniqueId": 26,
+      "location": "Arcane Library",
+      "hint": "Final room, west balcony after the ladder"
+    },
+    {
+      "number": 68,
+      "chapter": 5,
+      "mapId": 3210,
+      "uniqueId": 26,
+      "location": "Fina's Psyche",
+      "hint": "Left of the padlocked gate, under the chain"
+    },
+    {
+      "number": 69,
+      "chapter": 5,
+      "mapId": 3211,
+      "uniqueId": 3,
+      "location": "Fina's Psyche",
+      "hint": "West of the gate, crates by the tent in the top right"
+    },
+    {
+      "number": 70,
+      "chapter": 5,
+      "mapId": 3212,
+      "uniqueId": 4,
+      "location": "Fina's Psyche",
+      "hint": "Third western area, clearing after unlocking the gate"
+    },
+    {
+      "number": 71,
+      "chapter": 5,
+      "mapId": 3200,
+      "uniqueId": 4,
+      "location": "Tower of Mysidia",
+      "hint": "Main entrance, up the stairs behind the large crystal"
+    },
+    {
+      "number": 72,
+      "chapter": 5,
+      "mapId": 3200,
+      "uniqueId": 5,
+      "location": "Tower of Mysidia",
+      "hint": "Spiral staircase, visible landing"
+    },
+    {
+      "number": 73,
+      "chapter": 5,
+      "mapId": 3200,
+      "uniqueId": 6,
+      "location": "Tower of Mysidia",
+      "hint": "Spiral staircase landing, before the Azure Pot enemy"
+    },
+    {
+      "number": 74,
+      "chapter": 5,
+      "mapId": 3200,
+      "uniqueId": 7,
+      "location": "Tower of Mysidia",
+      "hint": "Further up, snowdrift on the story path"
+    },
+    {
+      "number": 75,
+      "chapter": 5,
+      "mapId": 3211,
+      "uniqueId": 4,
+      "location": "Fina's Psyche",
+      "hint": "Part 2: army camp to the north, supplies in the bottom right"
+    },
+    {
+      "number": 76,
+      "chapter": 6,
+      "mapId": 2150,
+      "uniqueId": 9,
+      "location": "Gaberada, the Undertown",
+      "hint": "Right side of the house, northwestern end"
+    },
+    {
+      "number": 77,
+      "chapter": 6,
+      "mapId": 3220,
+      "uniqueId": 34,
+      "location": "Research Center Ruins",
+      "hint": "Lvl 1 path west, desk room with teleporter"
+    },
+    {
+      "number": 78,
+      "chapter": 6,
+      "mapId": 3220,
+      "uniqueId": 36,
+      "location": "Research Center Ruins",
+      "hint": "Lvl 1 path west, console room, southeast shelves"
+    },
+    {
+      "number": 79,
+      "chapter": 6,
+      "mapId": 3220,
+      "uniqueId": 35,
+      "location": "Research Center Ruins",
+      "hint": "Lvl 2 path east, gantry on the right after the ladder"
+    },
+    {
+      "number": 80,
+      "chapter": 6,
+      "mapId": 3230,
+      "uniqueId": 6,
+      "location": "Rugged Mountain Path",
+      "hint": "West of the first Save Point, under a dead tree"
+    },
+    {
+      "number": 81,
+      "chapter": 6,
+      "mapId": 3230,
+      "uniqueId": 7,
+      "location": "Rugged Mountain Path",
+      "hint": "East of the second Save Point, corner down the ramp"
+    },
+    {
+      "number": 82,
+      "chapter": 6,
+      "mapId": 2160,
+      "uniqueId": 3,
+      "location": "Town of Duggle",
+      "hint": "North area, east of the shop entrance by the waterfall"
+    },
+    {
+      "number": 83,
+      "chapter": 6,
+      "mapId": 3240,
+      "uniqueId": 8,
+      "location": "Gronoa Shrine",
+      "hint": "South end of the landing, before any stairs down"
+    },
+    {
+      "number": 84,
+      "chapter": 6,
+      "mapId": 3240,
+      "uniqueId": 9,
+      "location": "Gronoa Shrine",
+      "hint": "West stairs south path, pillar by the east staircase"
+    },
+    {
+      "number": 85,
+      "chapter": 6,
+      "mapId": 3240,
+      "uniqueId": 10,
+      "location": "Gronoa Shrine",
+      "hint": "After the long ladder, climb the parallel west ladder, south"
+    },
+    {
+      "number": 86,
+      "chapter": 6,
+      "mapId": 3250,
+      "uniqueId": 82,
+      "location": "Sanctissimus Shrine",
+      "hint": "North of the second Save Point, hidden room via the east ladder"
+    },
+    {
+      "number": 87,
+      "chapter": 6,
+      "mapId": 3250,
+      "uniqueId": 84,
+      "location": "Sanctissimus Shrine",
+      "hint": "Third Save Point, crystal elevator room, third area"
+    },
+    {
+      "number": 88,
+      "chapter": 7,
+      "mapId": 2170,
+      "uniqueId": 4,
+      "location": "Town of Sian",
+      "hint": "East past the Item Shop, under the blossom tree"
+    },
+    {
+      "number": 89,
+      "chapter": 7,
+      "mapId": 3260,
+      "uniqueId": 7,
+      "location": "Mt. Reizan",
+      "hint": "First Save Point, down the ramp at the crossroads"
+    },
+    {
+      "number": 90,
+      "chapter": 7,
+      "mapId": 3260,
+      "uniqueId": 8,
+      "location": "Mt. Reizan",
+      "hint": "Story path, platform between the bridges near the pines"
+    },
+    {
+      "number": 91,
+      "chapter": 7,
+      "mapId": 2180,
+      "uniqueId": 0,
+      "location": "Lake Ryusei",
+      "hint": "West side, under a tree"
+    },
+    {
+      "number": 92,
+      "chapter": 7,
+      "mapId": 3271,
+      "uniqueId": 2,
+      "location": "Forest Path",
+      "hint": "North of the first Save Point, bend in the story path"
+    },
+    {
+      "number": 93,
+      "chapter": 7,
+      "mapId": 3271,
+      "uniqueId": 1,
+      "location": "Forest Path",
+      "hint": "Southwest of the second Save Point, dead end"
+    },
+    {
+      "number": 94,
+      "chapter": 7,
+      "mapId": 3272,
+      "uniqueId": 0,
+      "location": "Wandering Lands",
+      "hint": "Story path, left at the first fork after the Save Point"
+    },
+    {
+      "number": 95,
+      "chapter": 7,
+      "mapId": 3272,
+      "uniqueId": 1,
+      "location": "Wandering Lands",
+      "hint": "Story path, among stones after the cutscene"
+    },
+    {
+      "number": 96,
+      "chapter": 8,
+      "mapId": 3280,
+      "uniqueId": 124,
+      "location": "Crystal Tower",
+      "hint": "Main path, right at the first fork"
+    },
+    {
+      "number": 97,
+      "chapter": 8,
+      "mapId": 3280,
+      "uniqueId": 125,
+      "location": "Crystal Tower",
+      "hint": "Previous area, left fork then the next right"
+    },
+    {
+      "number": 98,
+      "chapter": 8,
+      "mapId": 3280,
+      "uniqueId": 126,
+      "location": "Crystal Tower",
+      "hint": "Translucent bridge, north then west from the platform"
+    },
+    {
+      "number": 99,
+      "chapter": 8,
+      "mapId": 3010,
+      "uniqueId": 4,
+      "location": "Dragon's Maw",
+      "hint": "Near the end, by the Rogue Magitek Armor"
+    }
+  ]
+}

@@ -28,6 +28,7 @@ import 'screens/copy_vision_dialog.dart';
 import 'screens/home_screen.dart';
 import 'screens/remove_unit_dialog.dart';
 import 'screens/setup_screen.dart';
+import 'screens/tablet_shards_screen.dart';
 import 'screens/unit_screen.dart';
 import 'services/paths.dart';
 import 'state/app_state.dart';
@@ -149,8 +150,15 @@ class _StudioAppState extends State<StudioApp> with WindowListener {
 }
 
 /// The desk with the spread on it. Header strip carries the title, the unit path, the save state, the version and the switch.
-class Shell extends StatelessWidget {
+class Shell extends StatefulWidget {
   const Shell({super.key});
+  @override
+  State<Shell> createState() => _ShellState();
+}
+
+class _ShellState extends State<Shell> {
+  int _tab = 0;
+  bool _shardsOpened = false;
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
@@ -218,7 +226,15 @@ class Shell extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 12),
-          Expanded(child: Paper(child: AnimatedSwitcher(duration: Guide.fast, layoutBuilder: (current, previous) => Stack(fit: StackFit.expand, children: [...previous, ?current]), child: u == null ? const HomeScreen(key: ValueKey('home')) : UnitScreen(key: ValueKey(u['key']))))),
+          if (u == null) PageTabs(tabs: const ['Visions', 'Tablet shards'], index: _tab,
+            onSelect: (index) => setState(() { _tab = index; _shardsOpened |= index == 1; })),
+          Expanded(child: Paper(child: Material(color: Guide.paper, child: Stack(fit: StackFit.expand, children: [
+            if (_shardsOpened) Offstage(offstage: u != null || _tab != 1,
+              child: TabletShardsScreen(gameRoot: app.gameRoot)),
+            if (u != null || _tab == 0) AnimatedSwitcher(duration: Guide.fast,
+              layoutBuilder: (current, previous) => Stack(fit: StackFit.expand, children: [...previous, ?current]),
+              child: u == null ? const HomeScreen(key: ValueKey('home')) : UnitScreen(key: ValueKey(u['key']))),
+          ])))),
         ]),
       ),
     );

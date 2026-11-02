@@ -11,6 +11,38 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Tablet shard save checker — 2026-11-02
+
+- Add a **Tablet shards** tab beside Visions. Discover this PC's Resonance Steam
+  save slots, select the newest file initially, and support choosing a copied
+  save manually. Refresh reads the selected slot's last written progress.
+- Show the collected total out of 99, chapter progress, and numbered missing
+  shard directions. Match each shard's explicit map/actor identity, including
+  partially completed and multi-map locations. Keep unvisited areas hidden by
+  default, with chapter, missing-only and spoiler controls.
+- Decrypt and parse on this PC, off the UI thread. Never change or upload saves.
+  Reject invalid, truncated and unsupported saves without displaying false zero
+  totals or stale results from another slot. Existing editing/install controls
+  remain available, and changing tabs retains the loaded shard check.
+- Adapt the MIT-licensed mapping and save format from
+  [heydavee/ffr-shard-finder](https://github.com/heydavee/ffr-shard-finder), pinned
+  to `7886e60e19205874769da9b660a36b5b4fe129ac`. Include its license and credit;
+  location guide numbering/directions credit PowerPyx. No online service is needed
+  to check a save. PC Steam saves are supported; console formats are unverified.
+- Update Studio to use the tab; no game preparation, mod rebuild, install or reset
+  is required for the checker. Earlier crash/cave changes remain included.
+  Validation uses synthetic encrypted saves, not a new personal save from Ben.
+  All 10 focused checks pass, including real AES decoding and Studio navigation.
+  Full local Flutter checks pass 350 tests (one skip) with clean analysis; all
+  920 Python tests pass (73 skips), and extension/library manifests verify.
+- Cave follow-up: the user confirms the green added entrance still floats and
+  returning still falls through the map on 1.2.151. Barusa's supplied character
+  config uses the default version-3 challenge route, with no placement override.
+  The prior capture's placement section is empty. Native nearby return points
+  sit about four units above the decoded terrain; ours uses its exact height.
+  Installed entrance/mesh inspection remains necessary. This release does not
+  claim another cave repair, and the earlier screenshot identification is withdrawn.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -121,7 +153,9 @@ Code [`c944674`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c944674b54a
   `289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380`.
   All decoded component height bounds match the native landscape. The capture
   contains no saved placement overrides; it does not establish their current values.
-  The green structure in the screenshot is a separate native vision shrine.
+  Correction from user feedback: the green structure is the added entrance,
+  and the brown cave is native. The user reports 1.2.151 still floats and falls
+  through the map on exit. The earlier native-shrine identification is withdrawn.
 - Focused cave checks pass (73 tests), covering the sloped return, preserved
   explicit height and shared cave identity. All four new regressions reject the
   old terrain dataset. The full local Python suite passes 920 tests (73 skips);
