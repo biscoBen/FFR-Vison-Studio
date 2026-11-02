@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Zoldaad challenge cave grounding — 2026-11-02
+
+[Verified Windows download / run 41528843971](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41528843971/Sephira-Studio-Test.zip)
+(code `c944674`, update **1.2.151**; **83.3 MB**).
+
+The returned full-game reference adds Zoldaad's native terrain heights. The
+Barusa/Charming Kitty Ariana cave exit now uses the higher ground at its own
+position, rather than the entrance height that placed it about 44 units below
+the surface. Its default entrance also uses the measured ground height. Saved
+manual placements and cave identities are preserved. The green structure in the
+screenshot is a separate native vision shrine.
+
+Close the game, update Studio, rebuild/install and restart. No reset or repeated
+preparation is needed. This package includes the 1.2.150 encounter crash candidate.
+Windows and delivered-package checks pass; actual cave collision, floating
+appearance, return placement and crash stability still need normal gameplay
+confirmation. Zoldaad's placement preview has height data with plain shading;
+its native paint and props were not part of this capture.
+[Verification and measured timings](CHANGELOG.md#published-zoldaad-challenge-cave-grounding--2026-11-02).
+
 ### Encounter crash candidate: stable indicator and effect lifetimes — 2026-11-02
 
 [Verified Windows download / run 41517848037](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41517848037/Sephira-Studio-Test.zip)
@@ -2362,7 +2382,8 @@ for **Edit placement**: drag its entrance in the local 3D terrain preview, use X
 size controls, or right-click the map to move it. The pin marks the footprint center; saved edits update all assigned
 visions without changing cave IDs. The 3D preview uses native terrain paint, shaded world meshes and tree/bush instances
 with simplified lighting. It omits unavailable assets and Unreal's animated/transparent shaders. Native height/paint
-coverage includes Grandshelt and Dirnado. Town/landmark models and bridge instances include inherited Blueprint components
+coverage includes Grandshelt and Dirnado. Zoldaad also has decoded native height coverage, with plain shaded
+terrain where painted scenery is unavailable. Town/landmark models and bridge instances include inherited Blueprint components
 and landscape levels. Native capture transparency defines the coast, so low towns remain on land; later-area models
 now include the supplied Lanzelt towns/large bridges, Dirnado settlements and vision shrines (888 mesh instances).
 Unsupported rock geometry and missing shader dependencies remain omitted/simplified. Elsewhere set Z manually.
@@ -2605,7 +2626,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   return points, event timelines and ownership conditions. Retest granting the vision, disappearance, white flash,
   return to the stone cave and controller dialogs. Assigned user-placed Resonance Caves now use this flow; recheck
   their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Refresh the
-  checked landscape mip decoder, source height data and placement preview geometry; expand terrain coverage and
+  checked landscape mip decoder, source height data and placement preview geometry. The returned Zoldaad reference
+  now supplies 44 bounds-checked height patches in verified 1.2.151; its challenge-cave exit and floating appearance
+  still need a live check, and its painted scenery remains unavailable. Continue expanding terrain coverage and
   validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
   instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest
   inherited Blueprint transforms, cooked bridge instances, capture-alpha coastline masks, door-side returns and runtime

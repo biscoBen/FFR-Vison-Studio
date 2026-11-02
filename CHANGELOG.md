@@ -11,28 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Zoldaad challenge cave grounding — 2026-11-02
-
-- Decode the supplied full-game Zoldaad landscape and add its 44 checked native
-  height patches. Preserve the existing 74 Grandshelt/Dirnado patches and all
-  painted scenery; Zoldaad's preview uses the existing plain terrain fallback.
-- Ground the default Barusa/Charming Kitty Ariana entrance at 86.0546875 rather
-  than 90. Its exit is 350 units along the opening, where the actual ground is
-  134.063368; previously missing regional coverage reused 90 below the surface.
-  Existing manual placement coordinates, rotation, scale and cave IDs stay saved.
-  Map routing, level-26 challenge balance, ownership and rewards are unchanged.
-- Reference: `Zoldaad-Cave-Reference-20261102-131821-ed42d0-001.zip`, SHA-256
-  `289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380`.
-  All decoded component height bounds match the native landscape. The capture
-  contains no saved placement overrides; it does not establish their current values.
-  The green structure in the screenshot is a separate native vision shrine.
-- Focused cave checks pass (73 tests), covering the sloped return, preserved
-  explicit height and shared cave identity. All four new regressions reject the
-  old terrain dataset. The full local Python suite passes 920 tests (73 skips);
-  extension, Fina and optional-library manifests verify. Rebuild/install and restart after
-  updating; no reset or repeat preparation is needed. Native collision, apparent
-  floating and the live return still need an in-game check before claiming them fixed.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -125,6 +103,47 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Zoldaad challenge cave grounding — 2026-11-02
+
+Code [`c944674`](https://github.com/biscoBen/FFR-Vison-Studio/commit/c944674b54a5276ea560f3516538c0df1b433cae) ·
+[Studio test 1.2.151](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41528843971/Sephira-Studio-Test.zip)
+
+- Decode the supplied full-game Zoldaad landscape and add its 44 checked native
+  height patches. Preserve the existing 74 Grandshelt/Dirnado patches and all
+  painted scenery; Zoldaad's preview uses the existing plain terrain fallback.
+- Ground the default Barusa/Charming Kitty Ariana entrance at 86.0546875 rather
+  than 90. Its exit is 350 units along the opening, where the actual ground is
+  134.063368; previously missing regional coverage reused 90 below the surface.
+  Existing manual placement coordinates, rotation, scale and cave IDs stay saved.
+  Map routing, level-26 challenge balance, ownership and rewards are unchanged.
+- Reference: `Zoldaad-Cave-Reference-20261102-131821-ed42d0-001.zip`, SHA-256
+  `289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380`.
+  All decoded component height bounds match the native landscape. The capture
+  contains no saved placement overrides; it does not establish their current values.
+  The green structure in the screenshot is a separate native vision shrine.
+- Focused cave checks pass (73 tests), covering the sloped return, preserved
+  explicit height and shared cave identity. All four new regressions reject the
+  old terrain dataset. The full local Python suite passes 920 tests (73 skips);
+  extension, Fina and optional-library manifests verify. Rebuild/install and restart after
+  updating; no reset or repeat preparation is needed. Native collision, apparent
+  floating and the live return still need an in-game check before claiming them fixed.
+
+- Windows passes all 920 Python tests (33 skips), 340 Flutter tests (one skip),
+  analysis, fresh frozen-engine setup and launcher/updater checks. All 87 extension
+  and 16 Fina manifest files verify. The delivered data passes 73 cave checks and
+  its Lua passes 135 runtime checks. All 190 public application files match the
+  separately downloaded compile artifact, and the launchers match source.
+  The 1.2.150 crash changes remain included; only cave terrain/default data changes
+  in the runtime payload. Public ZIP: 83,289,895 bytes; SHA-256
+  `aab913455e5b08f5a6e9ac87167e5b168e60fc62ff5a41e3fdfab9a866fbef99`.
+
+First complete candidate **13:28:33 PST** to verified package **13:39:10 PST**:
+**10m 37s**, including local checks, Windows waiting and delivered-package
+verification. CI wall time: **8m 41s**; summed runner job time: **15m 17s**.
+Joined automatic run 41528843971 without a duplicate/manual dispatch. These are
+build/delivery measurements, not installation time or proof of the repeat-install
+target. Publication notes change only README/CHANGELOG and request no new binary.
 
 ## Published encounter indicator and effect lifetime correction — 2026-11-02
 
