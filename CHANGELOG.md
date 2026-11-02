@@ -11,6 +11,28 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Zoldaad challenge cave grounding — 2026-11-02
+
+- Decode the supplied full-game Zoldaad landscape and add its 44 checked native
+  height patches. Preserve the existing 74 Grandshelt/Dirnado patches and all
+  painted scenery; Zoldaad's preview uses the existing plain terrain fallback.
+- Ground the default Barusa/Charming Kitty Ariana entrance at 86.0546875 rather
+  than 90. Its exit is 350 units along the opening, where the actual ground is
+  134.063368; previously missing regional coverage reused 90 below the surface.
+  Existing manual placement coordinates, rotation, scale and cave IDs stay saved.
+  Map routing, level-26 challenge balance, ownership and rewards are unchanged.
+- Reference: `Zoldaad-Cave-Reference-20261102-131821-ed42d0-001.zip`, SHA-256
+  `289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380`.
+  All decoded component height bounds match the native landscape. The capture
+  contains no saved placement overrides; it does not establish their current values.
+  The green structure in the screenshot is a separate native vision shrine.
+- Focused cave checks pass (73 tests), covering the sloped return, preserved
+  explicit height and shared cave identity. All four new regressions reject the
+  old terrain dataset. The full local Python suite passes 920 tests (73 skips);
+  extension, Fina and optional-library manifests verify. Rebuild/install and restart after
+  updating; no reset or repeat preparation is needed. Native collision, apparent
+  floating and the live return still need an in-game check before claiming them fixed.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

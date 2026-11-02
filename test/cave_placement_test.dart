@@ -25,8 +25,10 @@ void main() {
   });
   test('native height interpolation matches decoded game terrain and rejects unknown regions', () async {
     final terrain = await CaveTerrain.bundled;
-    expect(terrain.patches, hasLength(74));
+    expect(terrain.patches, hasLength(118));
     expect(terrain.height(17600, 21400), closeTo(85.103125, 1e-6));
+    expect(terrain.height(-7870, 11580), closeTo(86.0546875, 1e-6));
+    expect(terrain.height(-7870, 11930), closeTo(134.063368055556, 1e-6));
     expect(terrain.height(0, 0), isNull);
     final p = terrain.patches.first;
     expect(

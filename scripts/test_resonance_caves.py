@@ -36,6 +36,59 @@ def applied(original, operations):
 
 
 class ResonanceCavesTests(unittest.TestCase):
+    def test_zoldaad_return_uses_its_own_ground_above_the_old_entrance_height(self):
+        unit=vision(13520, 'cave_zoldaad', x=-7870, y=11580)
+        saved=unit['studioAcquisition']['cave']
+        saved.update(version=2, worldZ=90, yaw=0, scale=1)
+        before=copy.deepcopy(unit)
+        _, rows, _=reference.cave_game()
+        with tempfile.TemporaryDirectory() as root:
+            plans, _=cave.cave_plans([unit],root,rows)
+        spec=plans[0][0][1]
+        self.assertEqual(spec.ground_z,90, 'Keep an explicit user placement unchanged')
+        self.assertEqual(spec.return_point[:2],(-7870,11930))
+        self.assertAlmostEqual(spec.return_point[2],134.063368055556)
+        self.assertGreater(spec.return_point[2],saved['worldZ']+40)
+        self.assertEqual(unit,before)
+
+    def test_zoldaad_legacy_placement_now_grounds_both_entry_and_return(self):
+        unit=vision(13520, 'cave_zoldaad', x=-7870, y=11580)
+        _, rows, _=reference.cave_game()
+        with tempfile.TemporaryDirectory() as root:
+            plans, _=cave.cave_plans([unit],root,rows)
+        spec=plans[0][0][1]
+        self.assertAlmostEqual(spec.ground_z,86.0546875)
+        self.assertAlmostEqual(spec.entrance[2],246.0546875)
+        # Default 105-degree opening rotates the return onto a different slope.
+        self.assertAlmostEqual(spec.return_point[2],cave.terrain_height(*spec.return_point[:2]))
+        self.assertIsNotNone(cave.terrain_height(*spec.return_point[:2]))
+
+    def test_zoldaad_default_challenge_keeps_xy_rotation_scale_and_shared_cave(self):
+        import _ffr_shrine_challenges as challenges
+        saved=challenges.cave_snapshot()
+        self.assertEqual((saved['worldX'],saved['worldY'],saved['yaw'],saved['scale']),(-7870,11580,0,1))
+        self.assertAlmostEqual(saved['worldZ'],cave.terrain_height(saved['worldX'],saved['worldY']))
+        units=[vision(13520),vision(13521)]
+        for unit in units:
+            unit['studioAcquisition'].update(location=saved['id'],cave=copy.deepcopy(saved))
+        _, rows, _=reference.cave_game()
+        with tempfile.TemporaryDirectory() as root:
+            plans, _=cave.cave_plans(units,root,rows)
+        self.assertEqual(len(plans),1)
+        first,second=[spec for _,spec in plans[0]]
+        self.assertEqual((first.package,first.stone_id,first.return_point),(second.package,second.stone_id,second.return_point))
+        self.assertAlmostEqual(first.return_point[2],134.063368055556)
+        self.assertEqual((first.return_point[:2],first.return_direction),((-7870,11930),'East'))
+
+    def test_zoldaad_height_reference_records_actual_export_and_keeps_native_preview_optional(self):
+        data=json.loads((ROOT/'assets/existing_visions/payload/cave_terrain.json').read_bytes())
+        self.assertEqual(len(data['patches']),118)
+        source=data['sources'][-1]
+        self.assertEqual(source['region'],'Zoldaad')
+        self.assertEqual(source['referenceZipSha256'],'289a8aaf8a3096dd7d5a8a9740386a9e4127b97e1962fb6840a1e73023844380')
+        self.assertAlmostEqual(cave.terrain_height(-8220,11580),36.265625)
+        self.assertAlmostEqual(cave.terrain_height(-7520,11580),344.4765625)
+
     def test_thirty_caves_grant_the_assigned_visions_and_keep_ids_after_restart(self):
         original, rows, _ = reference.cave_game()
         before = copy.deepcopy(original)

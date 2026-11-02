@@ -20,7 +20,11 @@ class CaveSceneryTests(unittest.TestCase):
             data = z.read('scene.json'); scene = json.loads(data)
             self.assertEqual(hashlib.sha256(data).hexdigest(), manifest['sceneSha256'])
             self.assertEqual(set(z.namelist()), set(scene['files']) | {'scene.json'})
-            self.assertEqual(len(scene['terrain']), len(terrain))
+            # Height coverage can grow without inventing unavailable paint or
+            # prop assets. Preserve all 74 painted patches; Zoldaad adds 44
+            # native height-only patches rendered by the existing preview fallback.
+            self.assertEqual(len(scene['terrain']), 74)
+            self.assertEqual(len(terrain), 118)
             for t in scene['terrain']:
                 self.assertTrue(any(abs(t['x']-p['x']) < .01 and abs(t['y']-p['y']) < .01 for p in terrain))
                 with Image.open(io.BytesIO(z.read(t['image']))) as image:
