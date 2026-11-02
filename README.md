@@ -4,6 +4,38 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Tablet shard save checker — 2026-11-02
+
+[Verified Windows download / run 41536381858](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41536381858/Sephira-Studio-Test.zip)
+(code `9ad7027`, update **1.2.152**; **83.3 MB**).
+
+Open **Tablet shards** beside **Visions**. Studio finds this PC's Steam save
+slots, including when the portable launcher redirects Studio's app-data folder.
+Choose another slot or use **Choose save** for a copied file. Save in-game and
+click **Refresh** to read the latest written progress.
+
+The tab shows collected progress out of 99, chapter counts, and numbered missing
+shards with location directions. Unvisited areas stay hidden by default; enable
+**Show unvisited areas (spoilers)** to include them. Reads and decryption stay on
+this PC, off the UI thread; saves are never changed or uploaded. PC Steam saves
+are supported; console formats are unverified. Mapping/save-format credit:
+[heydavee's MIT-licensed finder](https://github.com/heydavee/ffr-shard-finder), with
+PowerPyx guide numbering/directions. The license is included in the package.
+
+Update Studio to use the tab. No game preparation, mod rebuild/install or reset
+is needed for this feature. The package includes the existing crash/cave changes;
+the reported floating entrance and fall-through exit remain unresolved.
+[Validation and measured timings](CHANGELOG.md#published-tablet-shard-save-checker--2026-11-02).
+
+For the cave follow-up, Barusa's supplied config confirms the normal default
+challenge route with no manual placement override. The green entrance is the
+added structure and the brown cave is native. Use the separate
+[Cave Runtime Reference](https://chatgpt.com/api/library/files/libfile_23254d3f8d7c81918e5d1646b37f5751/download)
+with Studio open: extract it, run **Collect Cave Runtime Reference.cmd**, and
+return the output ZIP(s) from Downloads/FFR Mod. This captures installed cave
+returns and entrance meshes absent from the earlier terrain export; it does not
+repeat terrain collection or require a rebuild or fall-through reproduction.
+
 ### Zoldaad challenge cave grounding — 2026-11-02
 
 [Verified Windows download / run 41528843971](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41528843971/Sephira-Studio-Test.zip)
@@ -2629,7 +2661,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   their stable map identities, shared-cave grants, entrance models, terrain heights and full-game regions. Refresh the
   checked landscape mip decoder, source height data and placement preview geometry. The returned Zoldaad reference
   now supplies 44 bounds-checked height patches in verified 1.2.151; its challenge-cave exit and floating appearance
-  still need a live check, and its painted scenery remains unavailable. Continue expanding terrain coverage and
+  still fail in the user's 1.2.151 test. The green entrance is added, the brown cave is native, and Barusa's
+  supplied config has no placement override. Inspect installed entrance/mesh data next; painted Zoldaad scenery
+  remains unavailable. Continue expanding terrain coverage and
   validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
   instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest
   inherited Blueprint transforms, cooked bridge instances, capture-alpha coastline masks, door-side returns and runtime

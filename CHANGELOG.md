@@ -11,46 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Tablet shard save checker — 2026-11-02
-
-- Add a **Tablet shards** tab beside Visions. Discover this PC's Resonance Steam
-  save slots, select the newest file initially, and support choosing a copied
-  save manually. Refresh reads the selected slot's last written progress.
-- Show the collected total out of 99, chapter progress, and numbered missing
-  shard directions. Match each shard's explicit map/actor identity, including
-  partially completed and multi-map locations. Keep unvisited areas hidden by
-  default, with chapter, missing-only and spoiler controls.
-- Decrypt and parse on this PC, off the UI thread. Never change or upload saves.
-  Reject invalid, truncated and unsupported saves without displaying false zero
-  totals or stale results from another slot. Existing editing/install controls
-  remain available, and changing tabs retains the loaded shard check.
-- Adapt the MIT-licensed mapping and save format from
-  [heydavee/ffr-shard-finder](https://github.com/heydavee/ffr-shard-finder), pinned
-  to `7886e60e19205874769da9b660a36b5b4fe129ac`. Include its license and credit;
-  location guide numbering/directions credit PowerPyx. No online service is needed
-  to check a save. PC Steam saves are supported; console formats are unverified.
-- Update Studio to use the tab; no game preparation, mod rebuild, install or reset
-  is required for the checker. Earlier crash/cave changes remain included.
-  Validation uses synthetic encrypted saves, not a new personal save from Ben.
-  All 11 focused checks pass, including real AES decoding and Studio navigation.
-  Full local Flutter checks pass 350 tests (one skip) with clean analysis; all
-  920 Python tests pass (73 skips), and extension/library manifests verify.
-- Check the real Windows user save folder as well as LOCALAPPDATA: the portable
-  launcher redirects LOCALAPPDATA to Studio Test Data. Add a regression for this
-  setup. The Windows navigation test now waits for actual directory reads instead
-  of expecting the scan to settle after one timer turn.
-- Stop the build helper after a joined run fails validation rather than silently
-  submitting the same failed commit again. A regression covers failure,
-  cancellation and timeout. The first Windows run failed only its asynchronous
-  navigation test; its redundant retry was cancelled, and no package published.
-- Cave follow-up: the user confirms the green added entrance still floats and
-  returning still falls through the map on 1.2.151. Barusa's supplied character
-  config uses the default version-3 challenge route, with no placement override.
-  The prior capture's placement section is empty. Native nearby return points
-  sit about four units above the decoded terrain; ours uses its exact height.
-  Installed entrance/mesh inspection remains necessary. This release does not
-  claim another cave repair, and the earlier screenshot identification is withdrawn.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -143,6 +103,80 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published tablet shard save checker — 2026-11-02
+
+Code [`9ad7027`](https://github.com/biscoBen/FFR-Vison-Studio/commit/9ad7027eeb81e47cdb82b2928ec88d6d4d00cad9) ·
+[Studio test 1.2.152](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41536381858/Sephira-Studio-Test.zip)
+
+- Add a **Tablet shards** tab beside Visions. Discover this PC's Resonance Steam
+  save slots, select the newest file initially, and support choosing a copied
+  save manually. Refresh reads the selected slot's last written progress.
+- Show the collected total out of 99, chapter progress, and numbered missing
+  shard directions. Match each shard's explicit map/actor identity, including
+  partially completed and multi-map locations. Keep unvisited areas hidden by
+  default, with chapter, missing-only and spoiler controls.
+- Decrypt and parse on this PC, off the UI thread. Never change or upload saves.
+  Reject invalid, truncated and unsupported saves without displaying false zero
+  totals or stale results from another slot. Existing editing/install controls
+  remain available, and changing tabs retains the loaded shard check.
+- Adapt the MIT-licensed mapping and save format from
+  [heydavee/ffr-shard-finder](https://github.com/heydavee/ffr-shard-finder), pinned
+  to `7886e60e19205874769da9b660a36b5b4fe129ac`. Include its license and credit;
+  location guide numbering/directions credit PowerPyx. No online service is needed
+  to check a save. PC Steam saves are supported; console formats are unverified.
+- Update Studio to use the tab; no game preparation, mod rebuild, install or reset
+  is required for the checker. Earlier crash/cave changes remain included.
+  Validation uses synthetic encrypted saves, not a new personal save from Ben.
+  All 11 focused checks pass, including real AES decoding and Studio navigation.
+  Full local Flutter checks pass 350 tests (one skip) with clean analysis; all
+  920 Python tests pass (73 skips), and extension/library manifests verify.
+- Check the real Windows user save folder as well as LOCALAPPDATA: the portable
+  launcher redirects LOCALAPPDATA to Studio Test Data. Add a regression for this
+  setup. The Windows navigation test now waits for actual directory reads instead
+  of expecting the scan to settle after one timer turn.
+- Stop the build helper after a joined run fails validation rather than silently
+  submitting the same failed commit again. A regression covers failure,
+  cancellation and timeout. The first Windows run failed only its asynchronous
+  navigation test; its redundant retry was cancelled, and no package published.
+- Cave follow-up: the user confirms the green added entrance still floats and
+  returning still falls through the map on 1.2.151. Barusa's supplied character
+  config uses the default version-3 challenge route, with no placement override.
+  The prior capture's placement section is empty. Native nearby return points
+  sit about four units above the decoded terrain; ours uses its exact height.
+  Installed entrance/mesh inspection remains necessary. This release does not
+  claim another cave repair, and the earlier screenshot identification is withdrawn.
+
+- Final Windows validation passes all 351 Flutter tests (one skip), clean
+  analysis, all 921 Python tests (33 skips), fresh frozen-engine startup and
+  launcher/updater checks. The corrected local Python suite passes 921 tests
+  (73 skips); all 11 focused shard checks and seven build-helper checks pass.
+- The delivered ZIP contains all 99 unique shard identities and the upstream
+  license. Their text matches source after Windows line-ending normalization.
+  All 192 public application files match the separately downloaded compile
+  artifact byte for byte; launchers match source. All 87 extension and 16 Fina
+  manifest files verify, and delivered payloads pass 73 cave and 135 runtime
+  checks. Runtime payload files retain their 1.2.151 hashes; only the managed
+  installer version changes. Public ZIP: 83,340,090 bytes; SHA-256
+  `9d76a3f10182bb9938f831552e7b74ecfa5cb58b07af6d7ff391269984fa6181`.
+- Supply a separate read-only [Cave Runtime Reference](https://chatgpt.com/api/library/files/libfile_23254d3f8d7c81918e5d1646b37f5751/download)
+  to compare actual installed entrances/returns and entrance meshes with native
+  assets. It does not repeat terrain capture, modify settings/mods/saves or need
+  a rebuild. Ten PowerShell fixtures verify separate native/installed reads,
+  overrides, scoped collection, original-file preservation, active/default engine
+  selection and both extraction failure logs. ZIP: 7,106 bytes; SHA-256
+  `8c63a565b47a522d5ccd659c0233ced0655fc0b53592ab37c0e7dccfc36a2351`.
+  The installed-data capture is still needed; no new cave repair is claimed.
+
+First complete candidate **13:52:51 PST** to verified package **14:31:53 PST**:
+**39m 02s**, including checks, corrections, the parallel cave investigation/helper,
+failed automatic run 41534835247, cancelled redundant retry 41535826681,
+Windows waiting and delivered-package verification. Successful CI run 41536381858:
+**10m 18s** wall time and **14m 48s** summed job time. Across all three runs,
+summed job time is **31m 43s**. The corrected helper joined the matching automatic
+run without another dispatch. These are build/delivery measurements, not
+installation time or proof of the repeat-install target. Publication notes change
+only README/CHANGELOG and request no new binary.
 
 ## Published Zoldaad challenge cave grounding — 2026-11-02
 
