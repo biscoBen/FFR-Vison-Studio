@@ -70,6 +70,7 @@ void main() {
         '_ffr_existingvisions.py',
         '_ffr_build_progress.py',
         '_ffr_build_cache.py',
+        '_ffr_storage.py',
         '_ffr_ffbe_library.py',
         '_ffr_ffbe_download.py',
         'ffbe_library_manifest.json',

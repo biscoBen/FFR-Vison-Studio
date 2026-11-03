@@ -44,6 +44,12 @@ test-update version; the commit and workflow run identify the exact package. Dat
   backups, retained originals, separate drives and stale previews. All 935
   Python checks pass (73 skips), Flutter analysis is clean, thirteen focused
   UI/shard checks pass and thirteen portable launcher checks pass.
+- The first Windows run blocked publication on the extension's fixed required
+  file count: adding the cleanup module needs 88 files instead of 87. Correct
+  that staging check and include the new module in real frozen-engine startup
+  validation. Preserve the checksum and readiness checks.
+- The corrected full local Flutter suite passes 353 tests (one skipped), including
+  actual extension staging checks, with clean analysis.
 
 ### External crash monitoring after trace stutter — 2026-10-30
 
