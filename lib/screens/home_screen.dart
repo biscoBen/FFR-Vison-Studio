@@ -8,6 +8,7 @@ import '../state/app_state.dart';
 import '../services/sephira_visions.dart';
 import 'add_unit_dialog.dart';
 import 'build_status.dart';
+import 'backup_storage_dialog.dart';
 import 'deck_sync_panel.dart';
 import 'character_config_buttons.dart';
 import 'native_vision_dialog.dart';
@@ -278,9 +279,14 @@ class HomeScreen extends StatelessWidget {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('Vision builds use three files in FFRS/Content/Paks/~mods. Previous vision builds are backed up before installing; the game\'s own files are preserved. Treasure radar is managed separately by the switch above.', style: Guide.text()),
                     const SizedBox(height: 10),
-                    Row(children: [
+                    Wrap(spacing: 12, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
                       GuideButton('Restore the original game', icon: Icons.history, danger: true, onPressed: app.gameRunning || busy || app.api == null ? null : () => showRestoreDialog(context)),
-                      const SizedBox(width: 12),
+                      GuideButton('Mod backup storage', key: const Key('backup-storage'), icon: Icons.storage,
+                        onPressed: app.gameRunning || busy || app.api == null ? null : () async {
+                          await showDialog<void>(context: context, barrierDismissible: false,
+                            builder: (_) => BackupStorageDialog(api: app.api!));
+                          await app.refreshStatus();
+                        }),
                       Text(app.backups == 0 ? 'no backups yet' : '${app.backups} backup${app.backups == 1 ? '' : 's'} kept', style: Guide.small()),
                     ]),
                   ]),

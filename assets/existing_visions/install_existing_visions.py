@@ -14,12 +14,12 @@ import sys
 import tempfile
 import zipfile
 
-VERSION = '1.2.153'
+VERSION = '1.2.154'
 MARKER = '# FFR-EXISTING-VISIONS v1'
 STATE = '.ffr-existing-visions'
 SOURCES = ('tools/make_vision_mod.py', 'tools/devui/server.py', 'tools/verify_mod.py')
 HELPER = 'tools/_ffr_existingvisions.py'
-RESOURCES = ('status_widget.zip', 'minimap_counter.zip', '_ffr_minimap.py', 'minimap_treasure.zip', '_ffr_runtime_loader.py', 'ue4ss_runtime.zip', '_ffr_esper_mastery.py', 'esper_mastery.json', 'esper_mastery.lua', 'sephira_mr_restoration.json', '_ffr_native_voices.py', 'native_voice_codec.ps1', '_ffr_movie_audio.py', '_ffr_incremental.py', '_ffr_build_progress.py', '_ffr_build_cache.py', '_ffr_cave_music_preview.py', 'cave_music_preview.zip', 'CaveHcaV3.cs', 'cave_hca_v3.ps1', '_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'encounter_toggle.lua', 'status_hud.lua', 'auto_battle.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
+RESOURCES = ('status_widget.zip', 'minimap_counter.zip', '_ffr_minimap.py', 'minimap_treasure.zip', '_ffr_runtime_loader.py', 'ue4ss_runtime.zip', '_ffr_esper_mastery.py', 'esper_mastery.json', 'esper_mastery.lua', 'sephira_mr_restoration.json', '_ffr_native_voices.py', 'native_voice_codec.ps1', '_ffr_movie_audio.py', '_ffr_incremental.py', '_ffr_build_progress.py', '_ffr_build_cache.py', '_ffr_storage.py', '_ffr_cave_music_preview.py', 'cave_music_preview.zip', 'CaveHcaV3.cs', 'cave_hca_v3.ps1', '_ffr_fina_cinematic.py', '_ffr_fina_cave_music.py', 'fina_cinematic.zip', '_ffr_sephira_lb_audio.py', 'sephira_lb_audio.zip', '_ffr_sephira_ffbe.py', 'sephira_blood_recovery.zip', '_ffr_sephira_sequences.py', 'sephira_native_presentations.json', '_ffr_shrine_challenges.py', 'sephira_challenges.json', '_ffr_game_tables.py', '_ffr_fina_boss.py', 'crystal_fina_boss.json', '_ffr_launch.py', 'launch_prep.html', 'launch_demo.json.gz', 'launch_tests.json', '_ffr_ffbe_download.py', 'ffbe_library_manifest.json', 'ffbe_library_browser.zip', '_ffr_ffbe_texture.py', '_ffr_ffbe_uv.py', '_ffr_ffbe_library.py', '_ffr_ffbe_placement.py', '_ffr_ffbe_renderer.py', 'ffbe_library.html', '_ffr_ffbe_needles.py', 'ffbe_needles.zip', '_ffr_native_skills.py', 'native_skill_repairs.json', '_ffr_build_icons.py', 'ability_live_tests.json', 'fina_battle.lua', '_ffr_fina_preview.py', 'fina_battle_preview.zip', '_ffr_fina_battle.py', '_ffr_fina_motion.py', '_ffr_deck_sync.py', '_ffr_sephira.py', 'sephira_visuals.json', '_ffr_ability_modes.py', 'ability_hiding_review.json', '_ffr_testing.py', '_ffr_crystal_cave.py', '_ffr_crystal_mesh.py', 'cave_terrain.json', '_ffr_party.py', '_ffr_party_voices.py', 'party_voice_cues.json', '_ffr_overworld.py', '_ffr_field_leader.py', 'field_leader.lua', 'encounter_toggle.lua', 'status_hud.lua', 'auto_battle.lua', 'vagrant_knight_rain_field.png', 'overworld_catalog.json', 'overworld_assets.zip', '_ffr_animation_repair.py', '_ffr_build_sprites.py', '_ffr_library.py', 'ffbe_animation_index.json', 'ffbe_barrage_index.json')
 
 
 def sha(data):
@@ -428,6 +428,8 @@ def hook_server(raw):
     ]) + nl + '    ' + lines[thread.lineno - 1]
     install, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'install_files']
     restore, = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'restore_game']
+    lines[install.lineno - 1] = '@_ffr_storage.installation' + nl + lines[install.lineno - 1]
+    lines[restore.lineno - 1] = '@_ffr_storage.installation' + nl + lines[restore.lineno - 1]
     # Preflight ownership/loader before package copies, then deploy only after
     # those copies succeed. No changes to another loader or mod's configuration.
     lines[install.body[0].lineno - 1] = '    _ffr_launch.guard(globals(), installing=True)' + nl + lines[install.body[0].lineno - 1]
@@ -447,13 +449,17 @@ def hook_server(raw):
         ])
 
         lines[copy_call.lineno - 1] = '        if f not in unchanged: ' + lines[copy_call.lineno - 1].lstrip()
-    lines[returned.lineno - 1] = '    _ffr_field_leader.deploy(leader_plan, bdir, log=log)' + nl + lines[returned.lineno - 1]
+    if copy_calls:
+        backup_start, = [n for n in install.body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'stamp' for t in n.targets)]
+        lines[backup_start.lineno - 1] = '    _ffr_storage.preflight(src, dst, _ffr_field_leader.backup_root(ROOT, _game_root(paks)), files, unchanged)' + nl + lines[backup_start.lineno - 1]
+    lines[returned.lineno - 1] = ('    _ffr_field_leader.deploy(leader_plan, bdir, log=log)' + nl +
+        '    _ffr_storage.after_install(ROOT, _game_root(paks), log)' + nl + lines[returned.lineno - 1])
     game, = [n for n in restore.body if isinstance(n, ast.Assign) and ast.unparse(n.targets[0]) == 'game']
     lines[game.lineno - 1] += '    import _ffr_field_leader, _ffr_minimap' + nl + '    leader_plan = _ffr_field_leader.restore_plan(ROOT, game, backup)' + nl + '    minimap_plan = _ffr_minimap.plan(ROOT, game)' + nl
     for returned in [n for n in ast.walk(restore) if isinstance(n, ast.Return)]:
         indent = ' ' * returned.col_offset
         lines[returned.lineno - 1] = indent + '_ffr_field_leader.deploy(leader_plan)' + nl + indent + '_ffr_minimap.deploy(minimap_plan)' + nl + lines[returned.lineno - 1]
-    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions, _ffr_launch, _ffr_field_leader', '_ffr_existingvisions.register(app, globals())', '']))
+    lines.insert(app.end_lineno, nl.join([MARKER, 'import _ffr_existingvisions, _ffr_launch, _ffr_field_leader, _ffr_storage', '_ffr_existingvisions.register(app, globals())', '']))
     result = ''.join(lines); compile(result, 'server.py', 'exec')
     return (b'\xef\xbb\xbf' if raw.startswith(b'\xef\xbb\xbf') else b'') + result.encode('utf-8')
 

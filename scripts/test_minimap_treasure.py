@@ -147,7 +147,8 @@ class TreasureRadarTests(unittest.TestCase):
         env = {'ROOT': str(self.root), 'GAME_STATE': str(self.root/'game_state.json'), 'BACKUPS': str(self.root/'backups'),
             'MOD_FILES': [Path(p).name for p in sync.PAKS], 'MODS_REL': 'FFRS/Content/Paks/~mods', 'os': os, 'json': json, 'time': time,
             'game_running': lambda: False, 'game_paks': lambda: str(self.game / radar.PAKS),
-            'ffrenv': SimpleNamespace(detect_game=lambda: str(self.game)), '_ffr_field_leader': leader}
+            'ffrenv': SimpleNamespace(detect_game=lambda: str(self.game)), '_ffr_field_leader': leader,
+            '_ffr_storage': __import__('_ffr_storage')}
         exec(compile(ast.Module(body=methods, type_ignores=[]), 'pinned_server', 'exec'), env)
         env['restore_game']()
         self.assertEqual(self.snapshot(), {sync.MARKER: before[sync.MARKER]})

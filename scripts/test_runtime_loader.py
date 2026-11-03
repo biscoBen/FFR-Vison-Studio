@@ -178,7 +178,8 @@ class RuntimeLoaderTests(unittest.TestCase):
                'os': os, 'json': json, 'time': SimpleNamespace(strftime=lambda _: 'first'),
                'game_running': lambda: False, 'game_paks': lambda: str(self.game/'FFRS/Content/Paks'),
                'ffrenv': SimpleNamespace(detect_game=lambda: str(self.game)),
-               '_ffr_launch': SimpleNamespace(guard=lambda *a, **k: None), '_ffr_field_leader': leader}
+               '_ffr_launch': SimpleNamespace(guard=lambda *a, **k: None), '_ffr_field_leader': leader,
+               '_ffr_storage': __import__('_ffr_storage')}
         exec(compile(ast.Module(body=methods, type_ignores=[]), 'pinned_server', 'exec'), env)
         log = []
         self.assertEqual(env['install_files'](log=log.append)['files'], 3)

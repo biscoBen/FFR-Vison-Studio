@@ -410,6 +410,8 @@ def register(app, env):
     if env.get('ffrenv') is not None: _ffr_runtime_loader.register(app, env)
     import _ffr_minimap
     if env.get('ffrenv') is not None: _ffr_minimap.register(app, env)
+    import _ffr_storage
+    if env.get('ffrenv') is not None: _ffr_storage.register(app, env)
     import _ffr_party
     import _ffr_testing
     import _ffr_ability_modes

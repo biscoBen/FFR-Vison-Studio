@@ -292,6 +292,7 @@ class BundledFeatures {
           'payload/_ffr_incremental.py',
           'payload/_ffr_build_progress.py',
           'payload/_ffr_build_cache.py',
+          'payload/_ffr_storage.py',
           'payload/_ffr_cave_music_preview.py',
           'payload/cave_music_preview.zip',
           'payload/CaveHcaV3.cs',

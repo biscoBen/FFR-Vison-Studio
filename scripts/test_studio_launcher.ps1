@@ -126,6 +126,44 @@ try {
     Assert-Check ((Get-FileHash $copiedSpec).Hash -eq $officialHash -and (Get-FileHash $officialSpec).Hash -eq $officialHash) 'The shortcut changed the copied or original vision details.'
     $checks++; Write-Host 'PASS: normal shortcut imports official visions even when update checks are offline'
 
+    $historyRoot = Join-Path $temporary 'version-history'
+    Copy-Item -LiteralPath $first.Folder -Destination $historyRoot -Recurse
+    [void][IO.Directory]::CreateDirectory((Join-Path $historyRoot 'Versions'))
+    for ($number = 11; $number -le 17; $number++) {
+        $fixture = New-Fixture $number
+        Copy-Item -LiteralPath $fixture.Folder -Destination (Join-Path $historyRoot "Versions/$number") -Recurse
+    }
+    $previous = [PSCustomObject]@{ channel='sephira-test'; branch="Sephira's-Update";
+        repository='biscoBen/FFR-Vison-Studio'; commit=('a'*39)+'2'; run_id=12 }
+    $previous | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $historyRoot 'update-state.previous.json')
+    $savedData = Join-Path $historyRoot 'Studio Test Data/keep.txt'
+    [void][IO.Directory]::CreateDirectory((Split-Path $savedData -Parent))
+    [IO.File]::WriteAllText($savedData, 'my settings')
+    $unknown = Join-Path $historyRoot 'Versions/11/user-files'
+    [void][IO.Directory]::CreateDirectory($unknown)
+    Remove-OldTestVersions $historyRoot ([PSCustomObject]@{run_id=17})
+    foreach ($number in @(11,12,15,16,17)) {
+        Assert-Check (Test-Path -LiteralPath (Join-Path $historyRoot "Versions/$number")) 'An active, recent, recovery or unrecognized version was removed.'
+    }
+    foreach ($number in @(13,14)) {
+        Assert-Check (-not (Test-Path -LiteralPath (Join-Path $historyRoot "Versions/$number"))) 'An obsolete application copy was retained.'
+    }
+    Assert-Check ((Get-Content -LiteralPath $savedData -Raw) -eq 'my settings') 'Application cleanup touched Studio Test Data.'
+    Assert-Check (Test-Path -LiteralPath (Join-Path $historyRoot 'App/FFR Vision Studio.exe')) 'Application cleanup removed the root fallback.'
+    $checks++; Write-Host 'PASS: obsolete application copies are bounded while active, previous, recent, unknown and user data stay'
+
+    $linkedVersion = Join-Path $historyRoot 'Versions/13'
+    Copy-Item -LiteralPath (Join-Path $temporary 'fixture-13') -Destination $linkedVersion -Recurse
+    $outside = Join-Path $temporary 'outside-version-data'
+    [void][IO.Directory]::CreateDirectory($outside)
+    [IO.File]::WriteAllText((Join-Path $outside 'keep.txt'), 'outside')
+    $linkType = if ($env:OS -eq 'Windows_NT') { 'Junction' } else { 'SymbolicLink' }
+    [void](New-Item -ItemType $linkType -Path (Join-Path $linkedVersion 'App/linked') -Target $outside)
+    Remove-OldTestVersions $historyRoot ([PSCustomObject]@{run_id=17})
+    Assert-Check (Test-Path -LiteralPath $linkedVersion) 'A version containing a nested link was removed.'
+    Assert-Check ((Get-Content -LiteralPath (Join-Path $outside 'keep.txt') -Raw) -eq 'outside') 'Version cleanup followed a nested link.'
+    $checks++; Write-Host 'PASS: application cleanup preserves nested links and external files'
+
     if ($env:GITHUB_ACTIONS -eq 'true' -and $env:OS -eq 'Windows_NT') {
         $desktopLink = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Sephira Studio Test.lnk'
         Set-TestDesktopShortcut $root (Get-PathInsideRoot $root $next.app)

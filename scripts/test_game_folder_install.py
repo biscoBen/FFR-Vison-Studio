@@ -15,6 +15,7 @@ from unittest import mock
 from test_existing_visions import ROOT, installer
 import _ffr_field_leader as leader
 import _ffr_deck_sync as sync
+import _ffr_storage as storage
 
 PAYLOAD = {'schema': 1, 'files': {
     'enabled.txt': '', 'Scripts/config.lua': 'return {}', 'Scripts/main.lua': 'full-game runtime fixture'}}
@@ -159,7 +160,8 @@ class GameFolderInstallTests(unittest.TestCase):
                'os': os, 'json': json, 'time': SimpleNamespace(strftime=lambda _: 'same-stamp'),
                'game_running': lambda: False, 'game_paks': lambda: str(selected[0] / 'FFRS/Content/Paks'),
                'ffrenv': SimpleNamespace(detect_game=lambda: str(selected[0])),
-               '_ffr_launch': SimpleNamespace(guard=lambda *a, **k: None), '_ffr_field_leader': leader}
+               '_ffr_launch': SimpleNamespace(guard=lambda *a, **k: None), '_ffr_field_leader': leader,
+               '_ffr_storage': storage}
         exec(compile(ast.Module(body=methods, type_ignores=[]), 'pinned_install_server', 'exec'), env)
         original_copy = shutil.copy2
         def select_demo_during_copy(source, target, *args, **kwargs):

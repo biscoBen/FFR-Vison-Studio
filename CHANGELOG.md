@@ -11,6 +11,40 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Mod backup storage and installation space checks — 2026-11-02
+
+- The returned install log passes package verification but fails copying with
+  WinError 112 after 86.2 seconds. The built mod is about 1.28 GB and the user
+  reports more than fifty rollback backups within a 110 GB Studio folder.
+  Each changed install previously kept another full previous package without
+  a retention limit; the separate build reuse cache already has a 4 GiB cap.
+- Add **Mod backup storage** beside Restore the original game. Preview the
+  selected game's backup total and recoverable space. Explicit cleanup deletes
+  only older recorded Studio package copies, retaining the latest three plus
+  every original-file backup required for restoration. Preserve character edits,
+  settings, artwork, prepared data, installed files, other games' histories and
+  unrecognized/partial folders. Reject stale previews or changed histories.
+- The cleanup dialog offers automatic retention after future successful installs;
+  no files are deleted automatically until the user applies that choice. Serialize
+  cleanup with installation/restoration, block it during game/build/preparation/
+  export activity, and check free space for both package copies and backups on
+  their respective drives before installation writes. Cleanup errors never turn
+  an otherwise successful installation into a failed build.
+- Bound cached portable application versions too: retain the latest three,
+  active/previous state targets, the executing updater and the original root
+  fallback. Preserve unrecognized folders, linked paths and Studio Test Data.
+  This runs when the new updater handles a subsequent shortcut launch; the
+  first update may still be executing the older updater.
+- After freeing space use **Install the last build** to retry the verified cave
+  update. No reset or repeated preparation is needed. Exact recoverable bytes
+  are measured on the user's PC; the cloud cannot establish the entire 110 GB
+  breakdown or claim that local disk space has already been reclaimed.
+- Local validation: all eleven cleanup checks pass, including the pinned real
+  installer/restorer with a full-disk failure before any package writes, sixty
+  backups, retained originals, separate drives and stale previews. All 935
+  Python checks pass (73 skips), Flutter analysis is clean, thirteen focused
+  UI/shard checks pass and thirteen portable launcher checks pass.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

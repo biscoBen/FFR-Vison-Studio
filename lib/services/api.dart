@@ -138,6 +138,9 @@ class Api {
   Future<void> publishDeckMod() => post('/api/deck/publish');
   Future<Map<String, dynamic>> forgetDeckToken() async => (await delete('/api/deck/token')) as Map<String, dynamic>;
   Future<Map<String, dynamic>> gameFiles() async => (await get('/api/game/files')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> backupStorage() async => (await get('/api/storage/backups')) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> cleanupBackups(String token, {required bool automatic}) async =>
+      (await post('/api/storage/backups/cleanup', {'token': token, 'automatic': automatic})) as Map<String, dynamic>;
   Future<Map<String, dynamic>> restoreGame({String? backup}) async => (await post('/api/game/restore', backup == null ? {} : {'backup': backup})) as Map<String, dynamic>;
 
   String iconUrl(String png) => '$base/api/ffr/icon/$png';

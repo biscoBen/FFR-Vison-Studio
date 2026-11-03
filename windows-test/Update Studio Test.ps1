@@ -156,6 +156,61 @@ function Test-StudioIsOpen([string]$Root) {
     return Test-StudioDataIsOpen (Join-Path $Root 'Studio Test Data/FFR Vision Studio')
 }
 
+function Remove-OldTestVersions([string]$Root, $Current) {
+    # Only disposable application copies under Versions; never Studio Test Data
+    # or the bundled root app. Preserve active, previous and executing updaters.
+    $versions = Join-Path $Root 'Versions'
+    if (-not (Test-Path -LiteralPath $versions -PathType Container)) { return }
+    if (((Get-Item -LiteralPath $Root).Attributes -band [IO.FileAttributes]::ReparsePoint) -or
+        ((Get-Item -LiteralPath $versions).Attributes -band [IO.FileAttributes]::ReparsePoint)) { return }
+    $protected = @([string]$Current.run_id)
+    foreach ($name in @('update-state.json', 'update-state.previous.json')) {
+        $path = Join-Path $Root $name
+        if (Test-Path -LiteralPath $path) {
+            try {
+                $state = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+                Assert-TestBuild $state
+                $protected += [string]$state.run_id
+            } catch { return } # An unreadable recovery reference is not guessed away.
+        }
+    }
+    $allowed = @('App', 'test-build.json', 'Deck Mod Sync.py', 'Import Official Visions.ps1',
+        'Launch Studio Test.ps1', 'Read me.txt', 'Start Studio Test.cmd', 'Start Studio Test.sh',
+        'Studio Deck Launcher.py', 'Update Studio Test.ps1', 'Update my mod.sh')
+    $eligible = @()
+    foreach ($folder in Get-ChildItem -LiteralPath $versions -Directory -Force) {
+        try {
+            if ($folder.Name -notmatch '^[0-9]+$' -or
+                ($folder.Attributes -band [IO.FileAttributes]::ReparsePoint)) { continue }
+            $prefix = $folder.FullName.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+            if ($PSScriptRoot.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -or
+                $PSScriptRoot -eq $folder.FullName) { $protected += $folder.Name }
+            $build = Get-Content -LiteralPath (Join-Path $folder.FullName 'test-build.json') -Raw | ConvertFrom-Json
+            Assert-TestFolder $folder.FullName $build
+            if ([string]$build.run_id -ne $folder.Name) { continue }
+            if (@(Get-ChildItem -LiteralPath $folder.FullName -Force | Where-Object { $_.Name -notin $allowed }).Count) { continue }
+            # Enumerate without following any links, including nested junctions.
+            $pending = [Collections.Generic.Queue[string]]::new()
+            $pending.Enqueue($folder.FullName)
+            $linked = $false
+            while ($pending.Count -and -not $linked) {
+                foreach ($entry in Get-ChildItem -LiteralPath $pending.Dequeue() -Force) {
+                    if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { $linked = $true; break }
+                    if ($entry.PSIsContainer) { $pending.Enqueue($entry.FullName) }
+                }
+            }
+            if (-not $linked) { $eligible += $folder }
+        } catch { continue }
+    }
+    $protected += @($eligible | Sort-Object { [long]$_.Name } -Descending | Select-Object -First 3 | ForEach-Object { $_.Name })
+    foreach ($folder in $eligible) {
+        if ($folder.Name -notin $protected) {
+            try { Remove-Item -LiteralPath $folder.FullName -Recurse -Force }
+            catch { Write-Host 'An older application copy is still in use; keeping the remaining files.' }
+        }
+    }
+}
+
 function Set-TestDesktopShortcut([string]$Root, [string]$App) {
     if ($env:OS -ne 'Windows_NT') { return }
     $desktop = [Environment]::GetFolderPath('Desktop')
@@ -193,6 +248,8 @@ function Invoke-StudioTest([string]$Root, [switch]$NoLaunch, [switch]$NoShortcut
             Write-Host 'The update could not be retrieved. Using the installed test version.'
         }
         $app = Get-PathInsideRoot $Root $current.app
+        try { Remove-OldTestVersions $Root $current }
+        catch { Write-Host 'Old application copies could not be cleaned; starting the current version.' }
         try { Import-OfficialVisions -Root $Root -OfficialData $OfficialData }
         catch {
             Add-Content -LiteralPath (Join-Path $Root 'update.log') -Value ("$(Get-Date -Format o) Vision import: $($_.Exception.Message)")
