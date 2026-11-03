@@ -4,6 +4,34 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Mod backup storage and disk-space checks — 2026-11-02
+
+[Verified Studio 1.2.154 / run 41556564724](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41556564724/Sephira-Studio-Test.zip)
+(code `5470b24`; **83.4 MB**).
+
+Open **Mod backup storage** beside Restore the original game. Review recoverable
+space, then delete older recorded rollback copies. Keep the latest three and
+all original-file backups needed for restoration. Character edits, settings,
+artwork, prepared data, installed files and other games' histories are retained.
+The checked retention option maintains this limit after future successful installs;
+previewing alone deletes nothing. Installation now checks both the mod-copy and
+backup drives before writing. The portable updater also bounds old application
+copies on a subsequent shortcut launch, retaining recent and recovery versions.
+
+If the disk is too full to update, use the **6 KB**
+[standalone backup cleaner](https://chatgpt.com/api/library/files/libfile_e5b1f6913e9c81919258797db931b493/download).
+Close Studio and the game, extract it and run **Clean Studio Backups.cmd**.
+It measures reclaimable bytes before asking for **CLEAN**. It does not enable
+automatic retention. After freeing space, **Install the last build** can retry
+the already verified mod; no reset or repeated preparation is needed.
+
+The returned log's build passes verification but its install fails with WinError
+112 after 86.2 seconds. The user reports a 110 GB Studio folder and over fifty
+mod backups; the exact reclaimed total is measured on their PC. The user now
+confirms 1.2.153's green entrance is grounded, but it obstructs the railway and
+the exit returns beneath the wrong continent. That cave follow-up is still open.
+[Validation and timings](CHANGELOG.md#published-mod-backup-storage-and-disk-space-checks--2026-11-02).
+
 ### Zoldaad challenge: flat placement and native return — 2026-11-02
 
 [Verified Windows download / run 41543064950](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41543064950/Sephira-Studio-Test.zip)
@@ -2686,7 +2714,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   supplied config has no placement override. The corrected runtime capture supplies all eleven generated maps;
   installed heights were current. Verified 1.2.153 moves only this earned default onto nearby flatter ground
   and targets unchanged native return point 10211. Native serialization/readback and the delivered package pass;
-  appearance, collision and exit behavior await gameplay feedback. Painted Zoldaad scenery remains unavailable.
+  the user confirms the entrance is grounded but lies on the railway, and the exit returns beneath
+  Grandshelt instead of Zoldaad. Both private map rows still inherit Grandshelt from their templates;
+  continent routing and rail clearance need correction. Painted Zoldaad scenery remains unavailable.
   Continue expanding terrain coverage and
   validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
   instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest

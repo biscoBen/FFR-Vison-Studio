@@ -11,50 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Mod backup storage and installation space checks — 2026-11-02
-
-- The returned install log passes package verification but fails copying with
-  WinError 112 after 86.2 seconds. The built mod is about 1.28 GB and the user
-  reports more than fifty rollback backups within a 110 GB Studio folder.
-  Each changed install previously kept another full previous package without
-  a retention limit; the separate build reuse cache already has a 4 GiB cap.
-- Add **Mod backup storage** beside Restore the original game. Preview the
-  selected game's backup total and recoverable space. Explicit cleanup deletes
-  only older recorded Studio package copies, retaining the latest three plus
-  every original-file backup required for restoration. Preserve character edits,
-  settings, artwork, prepared data, installed files, other games' histories and
-  unrecognized/partial folders. Reject stale previews or changed histories.
-- The cleanup dialog offers automatic retention after future successful installs;
-  no files are deleted automatically until the user applies that choice. Serialize
-  cleanup with installation/restoration, block it during game/build/preparation/
-  export activity, and check free space for both package copies and backups on
-  their respective drives before installation writes. Cleanup errors never turn
-  an otherwise successful installation into a failed build.
-- Bound cached portable application versions too: retain the latest three,
-  active/previous state targets, the executing updater and the original root
-  fallback. Preserve unrecognized folders, linked paths and Studio Test Data.
-  This runs when the new updater handles a subsequent shortcut launch; the
-  first update may still be executing the older updater.
-- After freeing space use **Install the last build** to retry the verified cave
-  update. No reset or repeated preparation is needed. Exact recoverable bytes
-  are measured on the user's PC; the cloud cannot establish the entire 110 GB
-  breakdown or claim that local disk space has already been reclaimed.
-- Local validation: all eleven cleanup checks pass, including the pinned real
-  installer/restorer with a full-disk failure before any package writes, sixty
-  backups, retained originals, separate drives and stale previews. All 935
-  Python checks pass (73 skips), Flutter analysis is clean, thirteen focused
-  UI/shard checks pass and thirteen portable launcher checks pass.
-- The first Windows run blocked publication on the extension's fixed required
-  file count: adding the cleanup module needs 88 files instead of 87. Correct
-  that staging check and include the new module in real frozen-engine startup
-  validation. Preserve the checksum and readiness checks.
-- The corrected full local Flutter suite passes 353 tests (one skipped), including
-  actual extension staging checks, with clean analysis.
-- The next Windows run passes Flutter/frozen-engine setup and ten cleanup checks,
-  but its simulated two-drive fixture compares a resolved path with an unresolved
-  temporary-folder path. Normalize both sides in that fixture; keep the actual
-  per-drive disk budgeting checks and production cleanup code unchanged.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -147,6 +103,84 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published mod backup storage and disk-space checks — 2026-11-02
+
+Code [`5470b24`](https://github.com/biscoBen/FFR-Vison-Studio/commit/5470b242f29376dc05e557f8ede3ae0e4408e5a9) ·
+[Studio test 1.2.154](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41556564724/Sephira-Studio-Test.zip)
+
+- The returned install log passes package verification but fails copying with
+  WinError 112 after 86.2 seconds. The built mod is about 1.28 GB and the user
+  reports more than fifty rollback backups within a 110 GB Studio folder.
+  Each changed install previously kept another full previous package without
+  a retention limit; the separate build reuse cache already has a 4 GiB cap.
+- Add **Mod backup storage** beside Restore the original game. Preview the
+  selected game's backup total and recoverable space. Explicit cleanup deletes
+  only older recorded Studio package copies, retaining the latest three plus
+  every original-file backup required for restoration. Preserve character edits,
+  settings, artwork, prepared data, installed files, other games' histories and
+  unrecognized/partial folders. Reject stale previews or changed histories.
+- The cleanup dialog offers automatic retention after future successful installs;
+  no files are deleted automatically until the user applies that choice. Serialize
+  cleanup with installation/restoration, block it during game/build/preparation/
+  export activity, and check free space for both package copies and backups on
+  their respective drives before installation writes. Cleanup errors never turn
+  an otherwise successful installation into a failed build.
+- Bound cached portable application versions too: retain the latest three,
+  active/previous state targets, the executing updater and the original root
+  fallback. Preserve unrecognized folders, linked paths and Studio Test Data.
+  This runs when the new updater handles a subsequent shortcut launch; the
+  first update may still be executing the older updater.
+- After freeing space use **Install the last build** to retry the verified cave
+  update. No reset or repeated preparation is needed. Exact recoverable bytes
+  are measured on the user's PC; the cloud cannot establish the entire 110 GB
+  breakdown or claim that local disk space has already been reclaimed.
+- Local validation: all eleven cleanup checks pass, including the pinned real
+  installer/restorer with a full-disk failure before any package writes, sixty
+  backups, retained originals, separate drives and stale previews. All 935
+  Python checks pass (73 skips), Flutter analysis is clean, thirteen focused
+  UI/shard checks pass and thirteen portable launcher checks pass.
+- The first Windows run blocked publication on the extension's fixed required
+  file count: adding the cleanup module needs 88 files instead of 87. Correct
+  that staging check and include the new module in real frozen-engine startup
+  validation. Preserve the checksum and readiness checks.
+- The corrected full local Flutter suite passes 353 tests (one skipped), including
+  actual extension staging checks, with clean analysis.
+- The next Windows run passes Flutter/frozen-engine setup and ten cleanup checks,
+  but its simulated two-drive fixture compares a resolved path with an unresolved
+  temporary-folder path. Normalize both sides in that fixture; keep the actual
+  per-drive disk budgeting checks and production cleanup code unchanged.
+- Final Windows run 41556564724 passes all 353 Flutter tests (one skipped),
+  935 Python checks (33 skipped), fresh frozen-engine setup, both extension
+  manifests, FFBE library verification and fourteen launcher/updater checks.
+  The first two automatic runs were blocked from publication; each corrected
+  commit joins its own automatic run, with no duplicate dispatch.
+- Verify the separate compile ZIP against GitHub digest
+  `73c5ba5800281331e699fab33dc1af156801415909bf69f6121520a14e7f3c10`.
+  All 193 public application files match that artifact byte for byte; all 88
+  extension and 16 Fina manifest files match source. Delivered payloads pass
+  eleven storage, 76 cave and 135 combined-runtime checks. Public ZIP:
+  83,350,693 bytes, SHA-256
+  `daf436ba3e5acabb2f4f82a7b5d2291f5941c6584eadc1cd08431bcf0876597a`.
+- Provide a small offline recovery helper for a PC without room to update:
+  [Studio-Backup-Cleanup.zip](https://chatgpt.com/api/library/files/libfile_e5b1f6913e9c81919258797db931b493/download),
+  6,149 bytes, SHA-256
+  `3e8bf7ab50a94549fa643dfd6caa3ca6cac80a50e8c3b480f3f40aab701b4aaf`.
+  Its storage module exactly matches the delivered code; cancel/CLEAN fixtures
+  preserve the original, newest three, ledger and settings. PowerShell parses.
+  The helper uses the existing interpreter, asks before deleting, and changes
+  no retention policy. It does not establish an actual reclaimed total on Ben's PC.
+- Cave feedback during verification: 1.2.153 grounds the green structure, but
+  places it on the railway; returning still falls below the wrong continent.
+  The desired return is Zoldaad, the brown continent at the minimap's lower
+  right. Private room/stone rows inherit Grandshelt from their native donors.
+  This storage package does not yet correct that routing or railway placement.
+- First complete candidate: **2026-11-02 16:36:58 PST**; verified download
+  delivered **17:10:08 PST**: **33m 10s**, including corrections, checks, three
+  automatic CI runs, helper delivery, concurrent cave investigation and final
+  package verification. Successful CI wall time: **10m 45s**; final runner job
+  usage: **15m 30s**, or **38m 13s** across all three runs. No game install speed
+  or reclaimed disk-space target is claimed from these build measurements.
 
 ## Published Zoldaad flat placement and native return — 2026-11-02
 
