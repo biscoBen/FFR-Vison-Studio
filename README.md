@@ -4,6 +4,28 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Zoldaad cave continent routing and railway clearance — 2026-11-02
+
+[Verified Studio 1.2.155 / run 41558456406](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41558456406/Sephira-Studio-Test.zip)
+(code `e50a973`; **83.4 MB**).
+
+The user confirms the green entrance is grounded on 1.2.153, but obstructs the
+train tracks and returns beneath a different continent. Both custom cave rooms
+inherited **Grandshelt** from their templates. This update assigns the earned
+Barusa/Charming Kitty Ariana rooms to **Zoldaad** in both map tables, retaining
+the existing native Zoldaad return point. Move the default entrance to nearby
+flat ground with about 290 world units of footprint clearance from native rail
+centerlines. The native brown shrine, cave IDs, manual placements, edits,
+rewards and challenge balance are retained.
+
+Close the game, update Studio, use **GO / Build and install**, then restart.
+This regenerates the changed map records and entrance. No reset, repeated
+preparation or new collector is needed. Native map-table and level readback,
+Windows validation and delivered-package checks pass; the complete in-game
+exit still needs confirmation. This package includes **Mod backup storage**
+and retention from 1.2.154, plus the tablet shard tab and prior crash candidate.
+[Validation and timings](CHANGELOG.md#published-zoldaad-continent-routing-and-railway-clearance--2026-11-02).
+
 ### Mod backup storage and disk-space checks — 2026-11-02
 
 [Verified Studio 1.2.154 / run 41556564724](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41556564724/Sephira-Studio-Test.zip)
@@ -29,7 +51,8 @@ The returned log's build passes verification but its install fails with WinError
 112 after 86.2 seconds. The user reports a 110 GB Studio folder and over fifty
 mod backups; the exact reclaimed total is measured on their PC. The user now
 confirms 1.2.153's green entrance is grounded, but it obstructs the railway and
-the exit returns beneath the wrong continent. That cave follow-up is still open.
+the exit returns beneath the wrong continent. The 1.2.155 candidate above
+corrects the map metadata and railway placement; gameplay confirmation is pending.
 [Validation and timings](CHANGELOG.md#published-mod-backup-storage-and-disk-space-checks--2026-11-02).
 
 ### Zoldaad challenge: flat placement and native return — 2026-11-02
@@ -2715,8 +2738,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   installed heights were current. Verified 1.2.153 moves only this earned default onto nearby flatter ground
   and targets unchanged native return point 10211. Native serialization/readback and the delivered package pass;
   the user confirms the entrance is grounded but lies on the railway, and the exit returns beneath
-  Grandshelt instead of Zoldaad. Both private map rows still inherit Grandshelt from their templates;
-  continent routing and rail clearance need correction. Painted Zoldaad scenery remains unavailable.
+  Grandshelt instead of Zoldaad. Verified 1.2.155 explicitly assigns both private rows to Zoldaad and moves
+  the default shrine clear of native railway paths. Native production-map serialization/readback preserves
+  all 186 original rows and cave IDs 29002/29003; both changed level packages roundtrip. Complete in-game
+  return/collision behavior still needs confirmation. Other manual cave locations retain their existing
+  behavior and still need broader region-specific migration testing. Painted Zoldaad scenery remains unavailable.
   Continue expanding terrain coverage and
   validate existing saved X/Y/Z, rotation and scale without moving caves silently. Refresh painted terrain, native foliage
   instance transforms, visible mesh/material dependencies and square capture sizing; extend scenery coverage. Retest

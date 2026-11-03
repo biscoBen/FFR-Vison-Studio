@@ -11,36 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Zoldaad cave continent routing and railway clearance — 2026-11-02
-
-- The user confirms the 1.2.153 green entrance is grounded but overlaps active
-  train tracks. Exiting still falls below the wrong continent: the player marker
-  is on Grandshelt; the required destination is Zoldaad at the minimap's lower
-  right. Do not describe the height correction as a complete cave repair.
-- Both private cave maps were cloned from Grandshelt templates without replacing
-  their `island` field. Set the earned default Barusa/Ariana room and stone cave
-  to Zoldaad in both native map tables. Keep the checked existing Zoldaad return
-  point 10211, world destination 1000, walking reset and native point unchanged.
-  This corrects a concrete continent-routing defect; gameplay still must confirm
-  the complete return and collision behavior.
-- Move only this earned default entrance to (-8850,12025,36.265625). Sampled
-  terrain across its footprint varies by about 1.13 units. Use transformed native
-  railway spline data to reject the old on-track location and require clearance
-  for the visible shrine, blocking collision and interaction box. The footprint
-  clears the sampled track centerlines by about 290 units. Preserve rotation,
-  scale, private cave IDs, custom edits, manual placements, rewards and balance.
-- No new runtime collector, reset or repeated preparation is needed. Rebuild /
-  install and restart to apply the map records and moved entrance. The storage
-  controls and retention from 1.2.154 remain included.
-- Local validation passes all 937 Python checks (73 skipped) with clean Flutter
-  analysis. Native SDK patch/readback adds both private rows with Zoldaad in the
-  actual captured production map table and preserves all 186 original rows.
-  A fixture derived from 23 transformed native rail curves detects the rejected
-  position and verifies clearances at the moved entrance.
-- Native serialization/readback also passes the actual captured entrance and
-  stone exit packages at the new position. Preserve cave IDs 29002/29003 and
-  the untouched native point; the rendered mesh bottom matches 36.265625.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -133,6 +103,56 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Zoldaad continent routing and railway clearance — 2026-11-02
+
+Code [`e50a973`](https://github.com/biscoBen/FFR-Vison-Studio/commit/e50a9735e784821e190e9ff864b4ac410e9b24fd) ·
+[Studio test 1.2.155](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41558456406/Sephira-Studio-Test.zip)
+
+- The user confirms the 1.2.153 green entrance is grounded but overlaps active
+  train tracks. Exiting still falls below the wrong continent: the player marker
+  is on Grandshelt; the required destination is Zoldaad at the minimap's lower
+  right. Do not describe the height correction as a complete cave repair.
+- Both private cave maps were cloned from Grandshelt templates without replacing
+  their `island` field. Set the earned default Barusa/Ariana room and stone cave
+  to Zoldaad in both native map tables. Keep the checked existing Zoldaad return
+  point 10211, world destination 1000, walking reset and native point unchanged.
+  This corrects a concrete continent-routing defect; gameplay still must confirm
+  the complete return and collision behavior.
+- Move only this earned default entrance to (-8850,12025,36.265625). Sampled
+  terrain across its footprint varies by about 1.13 units. Use transformed native
+  railway spline data to reject the old on-track location and require clearance
+  for the visible shrine, blocking collision and interaction box. The footprint
+  clears the sampled track centerlines by about 290 units. Preserve rotation,
+  scale, private cave IDs, custom edits, manual placements, rewards and balance.
+- No new runtime collector, reset or repeated preparation is needed. Rebuild /
+  install and restart to apply the map records and moved entrance. The storage
+  controls and retention from 1.2.154 remain included.
+- Local validation passes all 937 Python checks (73 skipped) with clean Flutter
+  analysis. Native SDK patch/readback adds both private rows with Zoldaad in the
+  actual captured production map table and preserves all 186 original rows.
+  A fixture derived from 23 transformed native rail curves detects the rejected
+  position and verifies clearances at the moved entrance.
+- Native serialization/readback also passes the actual captured entrance and
+  stone exit packages at the new position. Preserve cave IDs 29002/29003 and
+  the untouched native point; the rendered mesh bottom matches 36.265625.
+- Windows workflow 41558456406 passes analysis, all 353 Flutter tests (one skipped),
+  937 Python checks (33 skipped), fresh frozen-engine setup, extension and FFBE
+  manifests, and fourteen launcher/updater checks. Join the matching automatic
+  run; no duplicate build or manual retry is dispatched.
+- Independently retrieve and check the compile artifact SHA-256
+  `4ab3a8cbd767e9c4e56dce79156a266e7667b23c26d88f1295c0bb8296bd6d6d`.
+  All 193 public application files match the artifact byte for byte; all 88
+  extension and 16 Fina files match their manifests and source. Delivered
+  payloads pass eleven storage, 78 cave and 135 combined-runtime checks; all
+  99 shard identities and the license remain included. Public ZIP:
+  83,350,801 bytes, SHA-256
+  `9a18392d3910923d9d6797a6b7998c788530f786a029104c2e7dbf10da69bf4c`.
+- First complete candidate: **2026-11-02 17:12:07 PST**; verified download
+  delivered **17:26:32 PST**: **14m 25s**, including local/native checks, CI,
+  download and verification. CI wall time is **10m 38s**; summed runner job
+  time is **14m 25s**. These are delivery/build measurements, not a live game
+  install benchmark or confirmation that the corrected exit works in gameplay.
 
 ## Published mod backup storage and disk-space checks — 2026-11-02
 
