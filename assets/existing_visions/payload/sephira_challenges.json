@@ -831,8 +831,8 @@
     "id": "cave_sephira_wilhelm",
     "name": "Zoldaad Challenge Cave",
     "entrance": "rock_cave",
-    "worldX": -8230.0,
-    "worldY": 11570.0,
+    "worldX": -8850.0,
+    "worldY": 12025.0,
     "worldZ": 36.265625,
     "yaw": 0.0,
     "scale": 1.0

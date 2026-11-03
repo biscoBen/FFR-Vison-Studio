@@ -117,6 +117,7 @@ class CaveSpec:
     ground_z: float | None = None
     return_direction: str = 'South'
     native_return_point: int | None = None
+    world_island: str | None = None
     fina_test: bool = False
 
     @property
@@ -393,7 +394,8 @@ def cave_plans(units, root, rows=None):
             import _ffr_shrine_challenges as challenges
             native = challenges.data()['wilhelmReturn']
             base = replace(base, native_return_point=native['pointId'],
-                           return_point=tuple(native['position']), return_direction=native['direction'])
+                           return_point=tuple(native['position']), return_direction=native['direction'],
+                           world_island='Zoldaad')
         entries = []
         for index, unit in enumerate(sorted(group['units'], key=lambda u: u['id'])):
             fina = str((unit.get('ffbe') or {}).get('id')) == SPRITE
@@ -477,10 +479,12 @@ def _prepare_unit(tables, unit, rows, spec, include_maps=True):
         for rel in (MAP, COMPOSITE):
             table(rel)['add'].append({'row': spec.name, 'cloneFrom': '00Com_217', 'set': {
                 'ID': spec.map_id, 'Name': spec.display_name, 'developmentName': spec.name,
-                'Level': '/Game/' + spec.package + '_PL', 'bOverride_MapType': True, 'MapType': 'Dungeon'}})
+                'Level': '/Game/' + spec.package + '_PL', 'bOverride_MapType': True, 'MapType': 'Dungeon',
+                **({'island': spec.world_island} if spec.world_island is not None else {})}})
             table(rel)['add'].append({'row': spec.stone_name, 'cloneFrom': '01Gra_44', 'set': {
                 'ID': spec.stone_id, 'Name': spec.display_name, 'developmentName': spec.stone_name,
-                'Level': '/Game/' + spec.package + '_Stone_PL', 'bOverride_MapType': True}})
+                'Level': '/Game/' + spec.package + '_Stone_PL', 'bOverride_MapType': True,
+                **({'island': spec.world_island} if spec.world_island is not None else {})}})
     _prepare_npc_asset(tables, unit, rows, spec)
     if include_maps:
         placements = rows(PLACEMENT)

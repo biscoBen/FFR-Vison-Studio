@@ -67,10 +67,10 @@ class ResonanceCavesTests(unittest.TestCase):
         import _ffr_shrine_challenges as challenges
         from test_sephira_challenges import roster
         saved=challenges.cave_snapshot()
-        self.assertEqual((saved['worldX'],saved['worldY'],saved['yaw'],saved['scale']),(-8230,11570,0,1))
+        self.assertEqual((saved['worldX'],saved['worldY'],saved['yaw'],saved['scale']),(-8850,12025,0,1))
         self.assertAlmostEqual(saved['worldZ'],cave.terrain_height(saved['worldX'],saved['worldY']))
         heights=[cave.terrain_height(saved['worldX']+x,saved['worldY']+y) for x in (-96,0,96) for y in (-84,0,84)]
-        self.assertLess(max(heights)-min(heights),5)
+        self.assertLess(max(heights)-min(heights),2)
         units=[u for u in roster() if u['sephiraVision']['preset'] in ('barusa','ariana')]
         _, rows, _=reference.cave_game()
         with tempfile.TemporaryDirectory() as root:
@@ -81,6 +81,42 @@ class ResonanceCavesTests(unittest.TestCase):
         self.assertEqual(first.native_return_point,10211)
         self.assertEqual(first.return_point,(-8230,11920,40))
         self.assertEqual(first.return_direction,'South')
+        self.assertEqual((first.world_island, second.world_island), ('Zoldaad', 'Zoldaad'))
+
+    def test_zoldaad_private_rooms_override_donor_continent_in_both_map_tables(self):
+        from test_sephira_challenges import roster
+        units=[u for u in roster() if u['sephiraVision']['preset'] in ('barusa','ariana')]
+        originals, rows, _=reference.cave_game()
+        before=copy.deepcopy(originals)
+        with tempfile.TemporaryDirectory() as root:
+            operations={}
+            cave.prepare(operations, units, root, rows)
+        self.assertEqual(originals,before)
+        for rel in (cave.MAP,cave.COMPOSITE):
+            maps=operations[rel]
+            self.assertEqual(maps['set'],[])
+            self.assertEqual(len(maps['add']),2)
+            for added in maps['add']:
+                self.assertEqual(rows(rel)[added['cloneFrom']]['island'],'Grandshelt')
+                self.assertEqual(added['set']['island'],'Zoldaad')
+                self.assertTrue(added['set']['Level'].startswith('/Game/Map/StudioResonanceCaves/'))
+
+    def test_zoldaad_entrance_and_blocker_clear_native_train_paths(self):
+        import _ffr_shrine_challenges as challenges
+        import math
+        data=json.loads((ROOT/'scripts/fixtures/zoldaad-rail-clearance.json').read_bytes())
+        self.assertEqual(data['schema'],1)
+        def segment_distance(x,y,a,b):
+            dx,dy=b[0]-a[0],b[1]-a[1]
+            length=dx*dx+dy*dy
+            t=max(0,min(1,((x-a[0])*dx+(y-a[1])*dy)/length)) if length else 0
+            return math.hypot(x-a[0]-t*dx,y-a[1]-t*dy)
+        def distance(x,y):
+            return min(segment_distance(x,y,a,b) for line in data['paths'] for a,b in zip(line,line[1:]))
+        self.assertLess(distance(-8230,11570),15, 'The captured rails must detect the rejected on-track placement')
+        saved=challenges.cave_snapshot();x,y=saved['worldX'],saved['worldY']
+        for half_x,half_y,minimum in [(100,90,250),(90,150,250),(160,250,150)]:
+            self.assertGreater(min(distance(x+a,y+b) for a in(-half_x,0,half_x) for b in(-half_y,0,half_y)),minimum)
 
     def test_zoldaad_manual_placement_keeps_custom_return_and_saved_coordinates(self):
         import _ffr_shrine_challenges as challenges
@@ -92,6 +128,7 @@ class ResonanceCavesTests(unittest.TestCase):
             plans, _=cave.cave_plans([unit],root,rows)
         spec=plans[0][0][1]
         self.assertIsNone(spec.native_return_point)
+        self.assertIsNone(spec.world_island)
         self.assertEqual(spec.ground_z,90)
         self.assertEqual(spec.return_point[:2],(-7870,11930))
         self.assertEqual(unit,before)

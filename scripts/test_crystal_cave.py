@@ -23,9 +23,9 @@ def cave_game():
         row['IsOpenDialogByFinishEvent'] = False
     tables[testing.EVENT] = {'C01_014_03': copy.deepcopy(tables[testing.COMPOSITE]['C01_014_03'])}
     room = {'ID': 10020, 'Level': '/Game/' + cave.ROOM, 'Name': 'Original shrine',
-            'MapType': 'VisionSmallShrine', 'startupEventList': [], 'doMovementEncount': False}
+            'MapType': 'VisionSmallShrine', 'island': 'Grandshelt', 'startupEventList': [], 'doMovementEncount': False}
     tables[cave.MAP] = {'00Com_217': room, '01Gra_44': {
-        'ID': 10001, 'Level': '/Game/' + cave.STONE, 'Name': 'Original cave',
+        'ID': 10001, 'Level': '/Game/' + cave.STONE, 'Name': 'Original cave', 'island': 'Grandshelt',
         'startupEventList': [], 'doMovementEncount': False}}
     tables[cave.COMPOSITE] = copy.deepcopy(tables[cave.MAP])
     tables[cave.MAP_UNIT] = {'Shopkeeper': {'ID': 9020, 'Footstep': 'NPC01', 'animationAssetList': [{
