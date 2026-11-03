@@ -160,7 +160,7 @@ class BackupStorageTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'Install the last build'):
                 storage.preflight(source, destination, self.root / 'backups', ['mod'])
             storage.preflight(source, destination, self.root / 'backups', ['mod'], unchanged=['mod'])
-            separate = SimpleNamespace(name='nt', path=SimpleNamespace(splitdrive=lambda p: ('G:' if Path(p).is_relative_to(self.game) else 'C:', p)))
+            separate = SimpleNamespace(name='nt', path=SimpleNamespace(splitdrive=lambda p: ('G:' if Path(p).is_relative_to(self.game.resolve()) else 'C:', p)))
             with mock.patch.object(storage, 'os', separate):
                 storage.preflight(source, destination, self.root / 'backups', ['mod'])
         self.assertEqual((destination / 'mod').read_bytes(), b'o' * 200)

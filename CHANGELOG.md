@@ -50,6 +50,10 @@ test-update version; the commit and workflow run identify the exact package. Dat
   validation. Preserve the checksum and readiness checks.
 - The corrected full local Flutter suite passes 353 tests (one skipped), including
   actual extension staging checks, with clean analysis.
+- The next Windows run passes Flutter/frozen-engine setup and ten cleanup checks,
+  but its simulated two-drive fixture compares a resolved path with an unresolved
+  temporary-folder path. Normalize both sides in that fixture; keep the actual
+  per-drive disk budgeting checks and production cleanup code unchanged.
 
 ### External crash monitoring after trace stutter — 2026-10-30
 
