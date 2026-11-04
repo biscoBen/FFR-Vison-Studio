@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Relm teaches MP Stroll and Mimic — 2026-11-04
-
-- Update 1.2.156 swaps Relm’s MR5 Stagger Power +20% for MP Stroll and her
-  MR9 Fill LB on Stagger for native Mimic. Both displaced bonuses move into
-  awakening tier 4, replacing the two abilities moved to MR. Native skill
-  mechanics, passive AP budget, permanent rewards and Spirit identity are retained.
-- Migrate untouched saved Relm reward layouts once, using the existing roster
-  backup and migration flow. Preserve private recipes, custom stats, allocated
-  IDs, artwork and acquisition settings. Edited affected MR slots or a full
-  target awakening tier remain intact and report a conflict before building.
-- Validate frontend/backend migrations, transferable native Mimic, complete-kit
-  budgets and 75/75 original MR coverage. Live-game learning and equipment
-  behavior have not yet been confirmed.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -117,6 +103,45 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published Relm MP Stroll and Mimic mastery — 2026-11-04
+
+Code [`6393de9`](https://github.com/biscoBen/FFR-Vison-Studio/commit/6393de9ef9d93bf6c8c9e04f3f7d3bad25c1a33c) ·
+[Studio test 1.2.156](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41894643304/Sephira-Studio-Test.zip)
+
+- Update 1.2.156 swaps Relm’s MR5 Stagger Power +20% for MP Stroll and her
+  MR9 Fill LB on Stagger for native Mimic. Both displaced bonuses move into
+  awakening tier 4, replacing the two abilities moved to MR. Native skill
+  mechanics, passive AP budget, permanent rewards and Spirit identity are retained.
+- Migrate untouched saved Relm reward layouts once, using the existing roster
+  backup and migration flow. Preserve private recipes, custom stats, allocated
+  IDs, artwork and acquisition settings. Edited affected MR slots or a full
+  target awakening tier remain intact and report a conflict before building.
+- Validate frontend/backend migrations, transferable native Mimic, complete-kit
+  budgets and 75/75 original MR coverage. Live-game learning and equipment
+  behavior have not yet been confirmed.
+
+- Local checks pass 939 Python tests (73 skipped), focused Flutter migration
+  tests and clean analysis. Windows workflow 41894643304 passes analysis,
+  355 Flutter tests (one skipped), 939 Python tests (33 skipped), fresh frozen
+  engine startup, fourteen launcher checks and ten vision-import checks.
+- Independently verify compile artifact SHA-256
+  `2f2a56253f71c5484f860b016b50e79857ebec7b39c389fefc9253b7a0d85460`.
+  All 193 public application files match the compile artifact. All 88 extension
+  and 16 Fina files match their manifests and source; the delivered Relm catalog
+  and migration policy match the reviewed changes. Delivered checks pass fifteen
+  MR/budget/coverage tests, 135 combined-runtime tests, 78 cave tests and eleven
+  storage tests. Other 29 presets are unchanged.
+- Public ZIP: 83,351,435 bytes; SHA-256
+  `c88a643107037eebd0162b836082531330f7d602e9710b763ebd98269cf41ef1`.
+  Close the game, update Studio, rebuild/install and restart. No preset reset or
+  repeated preparation is required. Existing gameplay confirmations and open
+  crash/cave observations remain separate from these package checks.
+- Measured first-complete-candidate to verified download: **12m 34s**
+  (2026-11-04 11:10:28–11:23:02 America/Los_Angeles), including local checks,
+  a test-fixture correction, build waiting, download and verification. One
+  matching automatic build was joined. CI wall time: **10m 11s**; summed runner
+  usage: **14m 34s**. No user-PC rebuild/install time was measured.
 
 ## Published Zoldaad continent routing and railway clearance — 2026-11-02
 

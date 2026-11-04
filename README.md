@@ -4,6 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Relm teaches MP Stroll and Mimic — 2026-11-04
+
+[Verified Studio 1.2.156 / run 41894643304](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41894643304/Sephira-Studio-Test.zip)
+(code `6393de9`; **83.4 MB**).
+
+Relm now teaches **MP Stroll at MR5** and native **Mimic at MR9**. Her displaced
+**Stagger Power +20%** and **Fill LB on Stagger** move to awakening tier 4 in
+place of those abilities. Her total kit, passive AP budget, permanent rewards
+and Spirit identity are retained. Other presets are unchanged.
+
+Close the game, update Studio, use **GO / Build and install**, then restart.
+Untouched saved Relm reward layouts migrate once with a roster backup, preserving
+custom stats, skill recipes, artwork, allocated IDs and acquisition choices.
+Edited affected MR slots or an overfilled target tier stay intact and report a
+conflict before building. No preset reset or repeated preparation is needed.
+Windows validation, compilation and public-package checks pass; live learning
+and equipment behavior remain unconfirmed.
+[Validation and timings](CHANGELOG.md#published-relm-mp-stroll-and-mimic-mastery--2026-11-04).
+
 ### Zoldaad cave continent routing and railway clearance — 2026-11-02
 
 [Verified Studio 1.2.155 / run 41558456406](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41558456406/Sephira-Studio-Test.zip)
@@ -2717,6 +2736,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Sephira’s Visions presets.** Re-audit the excluded-vision coverage, exact
   skill/passive IDs, command-specific bonus bindings, native power budgets,
   MR stat rewards and unlock ranks. Check recipes against the full game's
+  Relm’s verified 1.2.156 layout teaches MP Stroll at MR5 and Mimic at MR9;
+  both displaced bonuses are in awakening tier 4. Migration/package checks pass;
+  native live learning/equipment behavior remains to be confirmed.
   mechanics and ID reservations; preserve edited and disabled presets instead
   of silently resetting them. See `SEPHIRAS_VISIONS.md` for the agreed design.
   Turn off **Use borrowed Sephira skill visuals** and rebuild/install to evaluate
