@@ -2736,11 +2736,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
 - [ ] **Sephira’s Visions presets.** Re-audit the excluded-vision coverage, exact
   skill/passive IDs, command-specific bonus bindings, native power budgets,
   MR stat rewards and unlock ranks. Check recipes against the full game's
+  mechanics and ID reservations; preserve edited and disabled presets instead
+  of silently resetting them. See `SEPHIRAS_VISIONS.md` for the agreed design.
   Relm’s verified 1.2.156 layout teaches MP Stroll at MR5 and Mimic at MR9;
   both displaced bonuses are in awakening tier 4. Migration/package checks pass;
   native live learning/equipment behavior remains to be confirmed.
-  mechanics and ID reservations; preserve edited and disabled presets instead
-  of silently resetting them. See `SEPHIRAS_VISIONS.md` for the agreed design.
   Turn off **Use borrowed Sephira skill visuals** and rebuild/install to evaluate
   newly available source animations. This restores the 216 preset visual substitutions
   independently of library repairs without removing MP, power or other kit edits.
