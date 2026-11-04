@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Full local map from the controller — 2026-11-04
+
+[Verified Studio 1.2.158 / run 41927944482](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41927944482/Sephira-Studio-Test.zip)
+(code `5cd266e`; **83.4 MB**).
+
+Enable **Full local map on controller** on Home, then **GO / Build and install**
+with the game closed. After restarting, the existing minimap button (right-stick
+click by default) cycles **minimap → full local zone → hidden**. The whole native
+zone image fits inside the larger view, with native exploration visibility and
+markers. The overworld keeps its existing cycle. Requires the existing UE4SS
+runtime; the switch starts off. No preparation or preset reset is needed.
+
+Windows and public-package checks pass, including native asset read-back and
+combined runtime checks. Live controller and rendering feedback remain pending.
+[Validation and timings](CHANGELOG.md#published-controller-local-map--2026-11-04).
+
 ### Reberta challenge at level 30 — 2026-11-04
 
 [Verified Studio 1.2.157 / run 41920746610](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41920746610/Sephira-Studio-Test.zip)

@@ -11,30 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Full local-map controller view — 2026-11-04
-
-- Add an opt-in **Full local map on controller** switch on Home. After rebuilding
-  and installing, the existing minimap button (right-stick click by default)
-  cycles **minimap → full local zone → hidden** on local maps. Native input
-  remapping and the overworld's existing three views remain in place.
-- Center the new view on the native map image and fit its entire bounds inside
-  the native rotating mask. Use the game's projection and current display size;
-  preserve exploration visibility, markers, treasure counter, party identity
-  and saves. Return to native zoom settings when leaving the full view.
-- Use the existing UE4SS loader and map widget notifications, with game-thread
-  work, teardown guards and no input polling, new HUD objects or retained widget
-  pointers. Unknown/invalid image bounds return to the small minimap. The switch
-  defaults off; no game preparation, preset reset or asset recollection is needed.
-- Source: Ben's `Local-Map-Controller-Reference-20261104-142254-16a613-001.zip`
-  (SHA-256 `d6c2ea4f71bf14d28313d79bdeb0c674f6089782129d353a5933864c8cefd922`).
-  Both edited data assets compile and read back through the pinned native SDK;
-  original local/hidden states, four native view definitions, world and airship
-  overrides are preserved. Executable Lua checks cover fitting at arbitrary
-  rotations, restoration, invalid bounds, teardown and all 32 combinations with
-  encounter control, auto-battle, esper mastery, Fina and walking appearances.
-  Windows/package checks and live controller/rendering feedback are pending.
-
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -127,6 +103,54 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published controller local map — 2026-11-04
+
+- Add an opt-in **Full local map on controller** switch on Home. After rebuilding
+  and installing, the existing minimap button (right-stick click by default)
+  cycles **minimap → full local zone → hidden** on local maps. Native input
+  remapping and the overworld's existing three views remain in place.
+- Center the new view on the native map image and fit its entire bounds inside
+  the native rotating mask. Use the game's projection and current display size;
+  preserve exploration visibility, markers, treasure counter, party identity
+  and saves. Return to native zoom settings when leaving the full view.
+- Use the existing UE4SS loader and map widget notifications, with game-thread
+  work, teardown guards and no input polling, new HUD objects or retained widget
+  pointers. Unknown/invalid image bounds return to the small minimap. The switch
+  defaults off; no game preparation, preset reset or asset recollection is needed.
+- Source: Ben's `Local-Map-Controller-Reference-20261104-142254-16a613-001.zip`
+  (SHA-256 `d6c2ea4f71bf14d28313d79bdeb0c674f6089782129d353a5933864c8cefd922`).
+  Both edited data assets compile and read back through the pinned native SDK;
+  original local/hidden states, four native view definitions, world and airship
+  overrides are preserved. Executable Lua checks cover fitting at arbitrary
+  rotations, restoration, invalid bounds, teardown and all 32 combinations with
+  encounter control, auto-battle, esper mastery, Fina and walking appearances.
+  Live controller/rendering feedback remains pending; package checks do not
+  establish in-game rendering or controller success.
+
+
+- Package: **1.2.158**, code
+  [`5cd266e`](https://github.com/biscoBen/FFR-Vison-Studio/commit/5cd266e2f58c687c5d99f7908d9aeef0ec6b7d58),
+  [Windows run 41927944482](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/41927944482),
+  [tested download](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41927944482/Sephira-Studio-Test.zip).
+  ZIP **83,358,293 bytes**, SHA-256
+  `ece4f656bea28a8178e7e6b21ec336cc0050b322f348ff284d181fff90138dcb`.
+- Validation: 952 Python checks pass (73 local platform skips; 33 Windows skips),
+  Flutter analysis, 355 Windows Flutter tests (one skip covered by the separate
+  fresh frozen-engine setup), 14 launcher and 10 vision-import checks. All
+  **196** public application files match the independent compile artifact;
+  **91** extension and **16** Fina manifest entries match reviewed sources.
+  The actual packaged map assets decode and round-trip through the pinned native
+  SDK and match the reviewed read-back. Delivered payload checks pass: 146 runtime
+  and map tests, 80 cave/challenge tests, 15 MR checks, 11 storage checks and 99
+  unique tablet-shard identities. Relm's changes, Reberta's level-30 budget,
+  cave fixes and storage retention remain in the package.
+- Timing: first complete candidate **22:42:37 UTC** → verified download
+  **22:56:53 UTC** on November 4: **14m 16s**, including local checks, the installer
+  resource-validation correction, Windows waiting and download verification.
+  One matching push build was joined; no duplicate dispatch or rebuild.
+  CI wall **10m 45s**, summed runner usage **14m 57s**. These measure this package
+  workflow; the requested sub-two-minute install goal remains unverified.
 
 ## Published level-30 Reberta challenge — 2026-11-04
 
