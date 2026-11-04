@@ -280,6 +280,9 @@ class BundledFeatures {
           'payload/minimap_treasure.zip',
           'payload/minimap_counter.zip',
           'payload/_ffr_field_leader.py',
+          'payload/_ffr_local_map.py',
+          'payload/local_map.lua',
+          'payload/local_map.zip',
           'payload/field_leader.lua',
           'payload/encounter_toggle.lua',
           'payload/status_hud.lua',
@@ -327,7 +330,7 @@ class BundledFeatures {
           'payload/ffbe_animation_index.json',
           'payload/ffbe_barrage_index.json',
         }).isNotEmpty ||
-        (manifest['files'] as Map).length != 88) {
+        (manifest['files'] as Map).length != 91) {
       throw StateError('Existing vision extension is incomplete.');
     }
     final files = <String, Uint8List>{};

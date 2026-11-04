@@ -224,7 +224,8 @@ def build(units, env):
     import _ffr_testing
     encounters = _ffr_testing.settings(root)['noEncounters']
     auto = _ffr_testing.settings(root)['autoBattle']
-    if field or walking or selected or espers or encounters or auto:
+    local_map = _ffr_testing.settings(root)['localMap']
+    if field or walking or selected or espers or encounters or auto or local_map:
         import _ffr_overworld
         config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
@@ -237,6 +238,11 @@ def build(units, env):
         if auto:
             config['autoBattle'] = 1
             code += '(function()\n' + Path(__file__).with_name('auto_battle.lua').read_text(encoding='utf-8') + '\nend)();\n'
+        if local_map:
+            import _ffr_local_map
+            if env.get('OUT'): _ffr_local_map.stage(env['OUT'])
+            config['localMap'] = 1
+            code += '(function()\n' + Path(__file__).with_name('local_map.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if espers:
             config['esperMastery'] = 1
             # A newline does not terminate a Lua call. The next parenthesized

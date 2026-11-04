@@ -1,0 +1,98 @@
+-- A game-thread-only model of the captured Blueprint notification contract.
+hooks, queued, messages, signatures = {}, {}, {}, {}
+local cls = '/Game/UI/Field/MiniMap/Widget/WBP_MiniMap.WBP_MiniMap_C'
+local full = 'UI.Field.MiniMap.View.Decrale'
+local address = 1
+function obj(value)
+    value = value or {}; address=address+1; value.address=address
+    function value:IsValid() return not self.invalid end
+    function value:HasAnyFlags(flags) assert(flags==0x18000); return self.destroying or false end
+    function value:GetAddress() return self.address end
+    return value
+end
+function param(value) return {get=function() return value end} end
+local fields = {
+    ['/Script/mucha.CPP_VM_MapBase:GetIsCurrentMapField']={'BoolProperty'},
+    ['/Script/mucha.CPP_VM_MiniMap:GetCurrentMapLandCaptureData']={'StructProperty'},
+    ['/Script/mucha.CPP_VM_MapBase:CorrectProjectionScale_Vector2D']={'StructProperty','StructProperty'},
+    ['/Script/mucha.CPP_VM_MiniMap:GetMiniMapAppearance']={'StructProperty'},
+    ['/Script/mucha.CPP_VM_MapBase:SetZoomAlpha']={'FloatProperty'},
+    ['/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex']={'IntProperty','BoolProperty'},
+    ['/Script/mucha.CPP_VM_MiniMapBase:UpdateProperty']={},
+    [cls..':SetZoomScale']={'DoubleProperty','StructProperty'},
+    [cls..':SetAppearance']={'StructProperty','DoubleProperty','DoubleProperty','DoubleProperty','DoubleProperty','FloatProperty','FloatProperty'},
+}
+for path,types in pairs(fields) do
+    local fn=obj()
+    function fn:ForEachProperty(callback)
+        for index,kind in ipairs(types) do callback({GetFullName=function() return kind..' '..path..'.Arg'..index end}) end
+    end
+    signatures[path]=fn
+end
+loaded = false
+function StaticFindObject(path)
+    if path:sub(1,6)=='/Game/' and not loaded then return nil end
+    return signatures[path]
+end
+function RegisterHook(path,post)
+    assert(gameThread and loaded and signatures[path], 'Hook only loaded native Blueprint functions on the game thread')
+    hooks[path]=post
+end
+function NotifyOnNewObject(path,callback)
+    assert(path=='/Script/mucha.CPP_WBP_MiniMap'); discover=callback
+end
+function ExecuteInGameThread(callback) queued[#queued+1]=callback end
+function drain()
+    gameThread=true
+    while #queued>0 do table.remove(queued,1)() end
+    gameThread=false
+end
+function print(s) messages[#messages+1]=s end
+package.preload.config=function() return {localMap=1} end
+local vmClass=obj()
+vm=obj({tag=full,width=20000,height=10000,projection=.1,rangeX=640,rangeY=640,
+    ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}})
+vm.ViewPropertyTag={TagName={ToString=function() return vm.tag end}}
+function vm:GetClass() return vmClass end
+function vm:GetIsCurrentMapField() assert(gameThread); return self.world or false end
+function vm:GetCurrentMapLandCaptureData()
+    assert(gameThread); return {LandWholeSize={X=self.width,Y=self.height}}
+end
+function vm:CorrectProjectionScale_Vector2D(size)
+    assert(gameThread); return {X=size.X*self.projection,Y=size.Y*self.projection}
+end
+function vm:GetMiniMapAppearance()
+    assert(gameThread); return {RangeSize={X=self.rangeX,Y=self.rangeY}}
+end
+function vm:SetZoomAlpha(alpha)
+    assert(gameThread and not self.destroying); self.alpha=alpha; self.zoomCalls=(self.zoomCalls or 0)+1
+    -- Native notifications can re-enter the same Blueprint callback.
+    widget:SetZoomScale(self.ZoomProperty.ScaleInterval.min)
+end
+function vm:SetDisplayScaleIndex(index,animate)
+    assert(gameThread and index==0 and not animate); self.fallback=(self.fallback or 0)+1; self.tag=full..'.Instance'
+end
+function vm:UpdateProperty()
+    assert(gameThread); self.restores=(self.restores or 0)+1
+    self.ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}
+    self.alpha=.7; widget:SetZoomScale(1)
+end
+local widgetType=obj({name='WidgetBlueprintGeneratedClass '..cls})
+function widgetType:GetFullName() return self.name end
+widget=obj({MiniMapVM=vm})
+function widget:GetClass() return widgetType end
+function widget:SetZoomScale(scale)
+    assert(gameThread); self.paint=scale; self.paints=(self.paints or 0)+1
+    local hook=hooks[cls..':SetZoomScale']; if hook then hook(param(self),param(scale)) end
+end
+function show()
+    gameThread=true
+    hooks[cls..':SetAppearance'](param(widget))
+    gameThread=false
+end
+function class_name(name) widgetType.name=name end
+function ready()
+    drain(); assert(next(hooks)==nil)
+    loaded=true; discover(widget); assert(next(hooks)==nil)
+    drain(); assert(hooks[cls..':SetAppearance'] and hooks[cls..':SetZoomScale'])
+end

@@ -98,6 +98,7 @@ void main() {
         'party_voice_cues.json',
         '_ffr_overworld.py',
         '_ffr_field_leader.py',
+        '_ffr_local_map.py',
         'field_leader.lua',
         'encounter_toggle.lua',
         'status_hud.lua',

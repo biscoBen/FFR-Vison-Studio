@@ -83,7 +83,7 @@ def practice_game():
 class NativeTestingTests(unittest.TestCase):
     def test_default_off_requires_no_assets_and_does_not_change_tables(self):
         with tempfile.TemporaryDirectory() as root:
-            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False, 'noEncounters': False, 'autoBattle': False})
+            self.assertEqual(testing.settings(root), {'schema': 1, 'maxMr': False, 'practiceBattle': False, 'practiceEncounter': 'standard', 'surviveAtOne': False, 'ffbeNeedles': False, 'finaCinematic': False, 'crystalCave': False, 'crystalCaveTest': False, 'fieldLeader': False, 'noEncounters': False, 'autoBattle': False, 'localMap': False})
             result = {'existing': {'untouched': True}}
             testing.prepare(result, [], root, lambda _: self.fail('No testing assets should be read'))
             self.assertEqual(result, {'existing': {'untouched': True}})
@@ -177,6 +177,10 @@ class NativeTestingTests(unittest.TestCase):
             env['state']['running'] = False
             put({'schema': 1, 'maxMr': False}); self.assertFalse(get()['maxMr'])
             put({'schema': 1, 'maxMr': True})
+            self.assertEqual(json.loads(spec.read_bytes()), [{'existing': True}])
+            put({'schema': 1, 'maxMr': False, 'localMap': True})
+            put({'schema': 1, 'maxMr': True}) # Older clients omit the new flag.
+            self.assertTrue(get()['localMap'])
             self.assertEqual(json.loads(spec.read_bytes()), [{'existing': True}])
             for bad in ({'maxMr': True}, {'schema': True, 'maxMr': True}, {'schema': 1, 'maxMr': 1}):
                 with self.assertRaises(Error): put(bad)

@@ -11,6 +11,30 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Full local-map controller view — 2026-11-04
+
+- Add an opt-in **Full local map on controller** switch on Home. After rebuilding
+  and installing, the existing minimap button (right-stick click by default)
+  cycles **minimap → full local zone → hidden** on local maps. Native input
+  remapping and the overworld's existing three views remain in place.
+- Center the new view on the native map image and fit its entire bounds inside
+  the native rotating mask. Use the game's projection and current display size;
+  preserve exploration visibility, markers, treasure counter, party identity
+  and saves. Return to native zoom settings when leaving the full view.
+- Use the existing UE4SS loader and map widget notifications, with game-thread
+  work, teardown guards and no input polling, new HUD objects or retained widget
+  pointers. Unknown/invalid image bounds return to the small minimap. The switch
+  defaults off; no game preparation, preset reset or asset recollection is needed.
+- Source: Ben's `Local-Map-Controller-Reference-20261104-142254-16a613-001.zip`
+  (SHA-256 `d6c2ea4f71bf14d28313d79bdeb0c674f6089782129d353a5933864c8cefd922`).
+  Both edited data assets compile and read back through the pinned native SDK;
+  original local/hidden states, four native view definitions, world and airship
+  overrides are preserved. Executable Lua checks cover fitting at arbitrary
+  rotations, restoration, invalid bounds, teardown and all 32 combinations with
+  encounter control, auto-battle, esper mastery, Fina and walking appearances.
+  Windows/package checks and live controller/rendering feedback are pending.
+
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
