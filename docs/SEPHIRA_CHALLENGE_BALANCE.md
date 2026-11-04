@@ -2,11 +2,12 @@
 
 This pass applies Christine’s tested approach to all 15 encounters (28 enemy visions). It changes private enemy copies; player abilities and mastery rewards keep their existing values. Live feedback is still needed for each fight.
 
-- Preserve the existing encounter level, combined HP and shared break budget. Split attack power across partners, and stagger their signature turns.
+- Use the reviewed acquisition level and one combined HP/break budget per encounter. Split attack power across partners, and stagger their signature turns.
 - Increase physical and magic offensive stats by 50% over the original challenge curve, and speed by about 15%. Christine already had the magic/speed adjustment; her speed is unchanged in this pass.
 - Apply the earlier bounded attack/spell increases (+50%, or +75% for a configured damaging signature), divide between partners, then apply the additional 50% used by the approved Christine fight. This affects physical and magical damage. Native integer rounding applies; healing remains capped at 15% and control effects keep their existing mechanics.
 - Give caster roles spell basics. Apply explicit elemental resistance/weakness pairs where the vision has a clear theme. Other elements remain neutral.
 - Christine remains level 5 with 2,750 HP and 162 break. Christine’s approved values stay at Blizzard 39, Blizzara 50 and Freezing Spike 78. The extra factor is not applied twice to her. Slumber Mist stays unchanged.
+- Reberta uses level 30, following the user’s confirmed Clive acquisition progression. The shrine’s surrounding level-4 enemies are retained as geographic reference, not used as the challenge budget. The existing native level-30 boss anchor gives 52,000 HP and 1,000 break; the established buffs give Attack/Intelligence 480 and Agility 241. Defence is 240, Mind 220 and MP 999. Existing skill-power buffs already apply, so they are not multiplied again. Her playable kit, Clive prerequisite and rewards are unchanged.
 - Vision rewards use ordinary battle loot with the native guaranteed-drop value (1). No post-battle reward event or acquisition sequence runs. The user confirms Christine now grants her vision in the result screen and returns without a black screen. Other encounters use the same path. Escape/loss give no reward.
 
 | Original unlock | Opponents | Level | Combined HP | Combined break | Speed | Basic actions |
@@ -25,6 +26,6 @@ This pass applies Christine’s tested approach to all 15 encounters (28 enemy v
 | Shantotto | Trance Terra + Relm | 28 | 50,000 | 1000 | 190 | Trance Terra: Fire; Relm: Thunder |
 | Vaan | Oracle Maiden Lunafreya + Aerith | 35 | 96,000 | 1200 | 241 | Oracle Maiden Lunafreya: Water; Aerith: Burning Notes |
 | Noctis | Dragon Knight Freya | 14 | 21,000 | 400 | 72 | Dragon Knight Freya: Attack |
-| Clive | Reberta (JP) | 4 | 2,000 | 145 | 20 | Reberta (JP): Attack |
+| Clive | Reberta (JP) | 30 | 52,000 | 1000 | 241 | Reberta (JP): Attack |
 
 The original vision prerequisite is checked both at the crystal and before battle. Existing shop overrides continue to remove the selected vision from its challenge. These are a common starting point for subsequent tuning at the player’s actual level; they do not establish an exact damage-per-turn prediction for every difficulty.

@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Reberta challenge at level 30 — 2026-11-04
+
+- Update 1.2.157 scales the earned Reberta/Clive challenge for the user’s
+  level-30 acquisition progression. Its old level-4 setting came from nearby
+  starter-area enemies rather than the level at which the challenge is reached.
+- Use the existing level-30 native boss curve and established challenge buffs:
+  52,000 HP, 1,000 stagger, 480 physical/magic attack, 240 defence, 220 magic
+  defence, 241 speed and 999 MP. Existing skill-power buffs apply once. Update
+  the challenge menu to level 30; preserve the Clive prerequisite and rewards.
+- Keep playable Reberta, saved configurations and all other encounters intact.
+  Rebuild/install and restart after updating Studio; no preset reset or repeated
+  preparation is needed. Generated-table and regression checks cover the scoped
+  change; live level-30 difficulty remains unconfirmed.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

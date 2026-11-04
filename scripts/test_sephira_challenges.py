@@ -271,6 +271,55 @@ class SephiraChallengeTests(unittest.TestCase):
         self.assertEqual(testing.apply_fields(originals[500570],slumber['fields'])['effectBundleList'],
                          originals[500570]['effectBundleList'])
 
+    def test_reberta_uses_level_thirty_anchor_with_the_established_boss_buffs(self):
+        spec=next(s for s in challenge.data()['encounters'] if s['origin']==13130)
+        self.assertEqual(spec['level'],30)
+        self.assertEqual(spec['unlock'],'{item:13130}>0|{flag:1016}')
+        self.assertEqual(spec['encounterTable'],'DT_01Gra_Wld_01_Encount')
+        self.assertEqual(set(spec['nearbyEnemies'].values()),{3,4})
+        unit=next(u for u in self.units if u['sephiraVision']['preset']=='reberta')
+        enemy=self.built[challenge.UNIT][challenge.PREFIX+str(unit['id'])]
+        expected={'Level':30,'MaxHitPoint':52000,'MaxMagicPoint':999,
+            'MaxBreakPoint':1000,'Attack':480,'Defence':240,'Intelligence':480,
+            'Mind':220,'Agility':241}
+        self.assertEqual({k:enemy[k] for k in expected},expected)
+        self.assertEqual(enemy['DropNormalItem'],unit['id'])
+        self.assertEqual(enemy['DropNormalItemRate'],1)
+        self.assertEqual(enemy['Experience']+enemy['Money'],0)
+        menu=self.built[challenge.CHOICES][challenge.PREFIX+'13130_Menu']
+        self.assertIn('Challenge Reberta (JP) (level 30)',menu['ChoiceTextList'])
+        native={r['ID']:r for r in self.native[challenge.SKILL].values()}
+        recipes=challenge.kit(unit,self.native.__getitem__,1)
+        for source,power in [(500010,27),(448000,75),(448010,90),(500460,32)]:
+            recipe=next(r for r in recipes if r['source']==source)
+            self.assertEqual(testing.apply_fields(native[source],recipe['fields'])['magnification'],power)
+
+    def test_reberta_level_change_preserves_every_other_boss_and_player_recipe(self):
+        previous=challenge.data()
+        next(s for s in previous['encounters'] if s['origin']==13130)['level']=4
+        units=copy.deepcopy(self.units);source=copy.deepcopy(self.native)
+        with mock.patch.object(challenge,'data',return_value=previous), tempfile.TemporaryDirectory() as root:
+            old=testing.prepare({},units,root,self.native.__getitem__)
+        self.assertEqual(self.units,units)
+        self.assertEqual(self.native,source)
+        self.assertEqual(set(old),set(self.tables))
+        changes=[]
+        for rel,plan in self.tables.items():
+            self.assertEqual(plan['set'],old[rel]['set'],rel)
+            self.assertEqual(len(plan['add']),len(old[rel]['add']),rel)
+            for before,after in zip(old[rel]['add'],plan['add']):
+                if before==after:continue
+                self.assertEqual(before['row'],after['row'])
+                self.assertEqual(before['cloneFrom'],after['cloneFrom'])
+                fields={k for k in before['set'].keys()|after['set'].keys()
+                    if before['set'].get(k)!=after['set'].get(k)}
+                changes.append((rel,after['row'],fields))
+        self.assertCountEqual(changes,[
+            (challenge.UNIT,challenge.PREFIX+'13512',{'Level','MaxHitPoint','MaxMagicPoint',
+                'MagicPoint','MaxBreakPoint','Attack','Defence','Intelligence','Mind','Agility'}),
+            (challenge.CHOICES,challenge.PREFIX+'13130_Menu',{'ChoiceTextList'}),
+        ])
+
     def test_offensive_pressure_and_role_basics_apply_to_all_28_challenge_visions(self):
         native_skills={v['ID']:v for v in self.native[challenge.SKILL].values()}
         for spec,units in challenge.plans(self.units):

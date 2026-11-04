@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "files": {
-    "install_existing_visions.py": "f32acd843f831dc29091dccb108bb90e4fe9dbb955b35181b7d6f4686838b02b",
+    "install_existing_visions.py": "005c92013188186e26ee315d6196ad3aa6b900714af1157c8847eb041f5acca0",
     "payload/CaveHcaV3.cs": "d2e381c4deb8c6986a30aee4c4f74fe2c6094075b115c9bab51e718e44566b4c",
     "payload/_ffr_ability_modes.py": "451effe383e043e99915e53bfff330dd793ee1a76dd1bf4fffd7aa60782a0456",
     "payload/_ffr_animation_repair.py": "fd6cf00b22947ba6efdc5abc805cdc3693561ebf86b987d4c1078d2076903b31",
@@ -71,7 +71,7 @@
     "payload/launch_demo.json.gz": "bb31a2e4ad9b9f4f12079170a64dd893242621cf70a2e6f2b618595f84cad054",
     "payload/launch_prep.html": "d9c506d0a35a53b6adc377426ad8e58bf82a901e5e82bf716c1f643c07940b87",
     "payload/launch_tests.json": "e38536ccbb65d6c8cbaa3576736f798b43c90169971500760bad90db4a5b1f2b",
-    "payload/manifest.json": "a6bd3765fed3d9238a9f0bca18d274e3d3f08e0762c1381a97bcf498e6737762",
+    "payload/manifest.json": "e517723b295d8c6de4c0e8596713072aa756682f0e15b0184e746820f7028e3b",
     "payload/minimap_counter.zip": "2476274686b383c538d1416ac036c7293cee34d03ee27416cf70efda9f0143fb",
     "payload/minimap_treasure.zip": "f9abf345ce225f8a8b55252f1de8c37224956bc135b4c8c482377ac243cf131b",
     "payload/native_skill_repairs.json": "cf2b5dbb5149d7ec763bb85079795fd2a50c6c692854938dabe5bf935378c074",
@@ -80,7 +80,7 @@
     "payload/overworld_catalog.json": "34e93a1a9ff94b8f845c2051ec6296561f1b4ae6635169f3577bbd9dfa03adb1",
     "payload/party_voice_cues.json": "db745f36a4eb91c8207b65733c32962fb3d38201a1aab5dc8a59139611fd93dd",
     "payload/sephira_blood_recovery.zip": "0b87caf4af4e3ac2ea80ef40908ea30a39d66df03b6ca4fcc56b2b523d3b4883",
-    "payload/sephira_challenges.json": "67496a4d8bafe307034b552c5032d65d1abc26309164b6bc3ab0babad2b8878e",
+    "payload/sephira_challenges.json": "b060640e5dc2f857b659ee0593e8d2abe71471fc752f81e60bdb9ea8043503a4",
     "payload/sephira_lb_audio.zip": "f0cb97007627d3b4d3b54bb07c8065203408443a3b93e76bd1671ef0fc070815",
     "payload/sephira_mr_restoration.json": "a7626acfc8066a7651a6ec59ce18a6592d4b8f76305de8bf754ac5c581e4f44f",
     "payload/sephira_native_presentations.json": "e2fe3da639332ab00fc35ec6a05ed7b0f45e567258074f60000a30234375cdbc",

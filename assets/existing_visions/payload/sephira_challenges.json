@@ -475,7 +475,7 @@
       "retry": "Int_LegendEV_Retry_Start_16_01",
       "grantEvent": "Int_LegendEV_16_07",
       "unlock": "{item:13130}>0|{flag:1016}",
-      "level": 4,
+      "level": 30,
       "stage": 9,
       "region": "Wld_GD-actors",
       "position": [
