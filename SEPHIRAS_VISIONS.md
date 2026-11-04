@@ -12,7 +12,7 @@ An existing custom Crystal Fina is adopted with her current edits and acquisitio
 - Existing native grants retain their mechanics. Supplemental skills come from the wider native/enemy catalog on private player copies: zero-MP enemy attacks receive MP costs; excessive accuracy, multipliers and hit counts are reduced. Group spells/healing cost more than comparable single-target spells. No FFBE multipliers or FFBE stat conversion are imported. LBs retain one native resonance’s total mechanics; selected elements/damage types follow the requested role.
 - All 160 distinct active skills and 130 of 131 passives from the 15 excluded original visions are allocated; One for the Road was explicitly replaced with Pharmacology. Each excluded active has one canonical allocation. All 75 original equipable MR rewards remain MR rewards, including 25 original active skills (Minfilia’s Throw is explicitly moved to MR3). 130 of 131 original passives remain covered after the approved Rikku Pharmacology replacement across the complete kits; supplementary awakening choices may repeat across visions. Additional native skills provide thematic attacks and support. Each new vision has its own correctly bound Spirit mastery wrapper.
 - Command/LB-specific bonuses use private rebound copies. Native originals remain unchanged. Minfilia’s Dual Jobs selects her own identity. Specific skill bonuses remain grouped with their required attacks.
-- Each odd MR rank has one learned ability, active or passive. The 150 slots contain 26 active rewards and 124 passive rewards, including Minfilia’s new Libra. Supplemental passives move into awakening to make room for the original MR actives. Minfilia and Barusa each have one fewer passive than their native budgets, while Primm and Trance Terra have one more each; all passive AP totals stay within 20%. Permanent MR stats, the Spirit wrapper and LB are excluded from these skill counts. Crystal Fina and Aria keep their reviewed kits unchanged. See [the MR restoration](docs/SEPHIRA_MR_RESTORATION.md) and [awakening balance report](docs/SEPHIRA_AWAKENING_BALANCE.md). Clive’s Eikon attacks and limit-break bonus remain on Reberta. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s gate, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
+- Each odd MR rank has one learned ability, active or passive. The 150 slots contain 27 active rewards and 123 passive rewards, including Minfilia’s new Libra and Relm’s Mimic. Supplemental passives move into awakening to make room for the original MR actives. Minfilia and Barusa each have one fewer passive than their native budgets, while Primm and Trance Terra have one more each; all passive AP totals stay within 20%. Permanent MR stats, the Spirit wrapper and LB are excluded from these skill counts. Crystal Fina and Aria keep their reviewed kits unchanged. See [the MR restoration](docs/SEPHIRA_MR_RESTORATION.md) and [awakening balance report](docs/SEPHIRA_AWAKENING_BALANCE.md). Clive’s Eikon attacks and limit-break bonus remain on Reberta. Aria is sold in Mitra. Folka unlocks in Olderion’s item shop after its guardian story scene, at twice that shop’s highest other item price. The other 28 visions are challenge rewards at the matched original vision’s gate, with a separate Zoldaad cave for Barusa and Ariana. Acquisition remains editable.
 - Great Dragon is retired from this collection and omitted from builds, including older tagged saved profiles. Reset all presets backs up and removes his old collection entry. His required original grants move to Reberta, Minfilia, Lila, Trance Terra and Primm. Untagged user-created Great Dragons are preserved.
 - New enemy copies belong to the vision’s player command; enemy group-toggle partners are disabled so they cannot switch into unbalanced originals. Replacement bonuses retain native effects and equip costs, with a 20-AP floor for item bonuses that originally cost zero. Revision 5 replaces 52 reused rewards from kept visions with equipment/enemy bonuses and bounded enemy skills. Those protected MR rewards are absent from both awakening and MR; all excluded-vision grants remain allocated. The eight earlier low-tier alternatives remain available. Boss invulnerability and permanent attack buffs are replaced by finite native player effects; drain restores no more than damage dealt. Permanent MR rewards follow the same role-based three-stat budget for every preset. Alice’s three earth slams become ice slams with unchanged power/cost.
 - Eiko uses the demo’s available Ifrit and Shiva summon commands; their native costs and mechanics are retained. Unreleased espers are not required.
@@ -60,7 +60,7 @@ Untouched saved reward layouts migrate automatically once, with a roster backup.
 | Aerith | 17 | 6 | 23 | 1 | 4 |
 | Jade | 18 | 7 | 25 | 1 | 4 |
 | Spirited Heart Primm | 18 | 7 | 25 | 0 | 5 |
-| Relm | 19 | 5 | 24 | 0 | 5 |
+| Relm | 18 | 6 | 24 | 1 | 4 |
 | Rikku (FFX-2) | 17 | 8 | 25 | 3 | 2 |
 | Nalu | 18 | 7 | 25 | 1 | 4 |
 | Elza | 18 | 6 | 24 | 1 | 4 |
@@ -913,16 +913,16 @@ Sprite `206001005` (GL); base-stat budget: Shantotto. Growth: Terra.
 - Awakening 1: Thunder [220090]; Fire Beam [487606]; Drain [487615]; Earth Canvas [487630]; Frost Canvas [487636]; Aether Palette [487624]; Magic Attack +30% [1275]; Nullify Silence [1107].
 - Awakening 2: Thundara [220100]; Thundaga [220110]; Bioblaster [487603]; El Nino [487609]; Banishra Canvas [487618]; Earth Canvas II [487633]; Stone Stroke [487642]; Storm Canvas [487627].
 - Awakening 3: Forbidden Ars Magna [487612]; Erase Canvas [487639]; MP +20% [1381]; Magic Defense +20% [1315].
-- Awakening 4: Flare [220330]; Mind Blast [487621]; Mimic [400330]; MP Stroll [1307].
+- Awakening 4: Flare [220330]; Mind Blast [487621]; Fill LB on Stagger [1280]; Stagger Power +20% [1279].
 - MR 1: HP Stroll [1066].
 - MR 2: Agility +5 (permanent).
 - MR 3: Add Confuse [1237].
 - MR 4: AP +8 (permanent).
-- MR 5: Stagger Power +20% [1279].
+- MR 5: MP Stroll [1307].
 - MR 6: MP +20 (permanent).
 - MR 7: Phase Echo [1360].
 - MR 8: Magic +15 (permanent).
-- MR 9: Fill LB on Stagger [1280]; AP +8 (permanent); Spirit of Relm.
+- MR 9: Mimic [400330]; AP +8 (permanent); Spirit of Relm.
 
 Supplemental player copies (native source ID; final MP/power):
 

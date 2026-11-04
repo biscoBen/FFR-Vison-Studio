@@ -18,9 +18,9 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Original vision | MR | Reward | Sephira MR locations | Status |
 |---|---:|---|---|---|
 | Tronn | 1 | Restore MP on Stagger (1281) | Christine MR1 | covered mr |
-| Tronn | 3 | Fill LB on Stagger (1280) | Christine MR7; Relm MR9 | covered mr |
+| Tronn | 3 | Fill LB on Stagger (1280) | Christine MR7 | covered mr |
 | Tronn | 5 | Focus Magic (400630) | Christine MR5 | covered mr |
-| Tronn | 7 | Stagger Power +20% (1279) | Relm MR5; Nalu MR7 | covered mr |
+| Tronn | 7 | Stagger Power +20% (1279) | Nalu MR7 | covered mr |
 | Tronn | 9 | Half MP Cost (1045) | Christine MR9 | covered mr |
 | Wilhelm | 1 | Strategic Acumen (1336) | Barusa MR1 | covered mr |
 | Wilhelm | 3 | Chakra (400440) | Barusa MR3 | covered mr |
@@ -51,7 +51,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Bartz | 3 | HP Stroll (1066) | Relm MR1 | covered mr |
 | Bartz | 5 | Speed +5% (1316) | Lunera MR5 | covered mr |
 | Bartz | 7 | Dual Spellblade (1414) | Fryevia MR9 | covered mr |
-| Bartz | 9 | Mimic (400330) | Lunera MR9 | covered mr |
+| Bartz | 9 | Mimic (400330) | Relm MR9; Lunera MR9 | covered mr |
 | Cloud | 1 | Restore MP on Critical Hit (1323) | Jade MR1 | covered mr |
 | Cloud | 3 | Deathblow (400530) | Nalu MR3 | covered mr |
 | Cloud | 5 | Fill Gauge (400770) | Jade MR5 | covered mr |
@@ -74,7 +74,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Tidus | 9 | Water Eater (1348) | Folka MR7 | covered mr |
 | Shantotto | 1 | Restore MP on Defeating Foes (1319) | Trance Terra MR3 | covered mr |
 | Shantotto | 3 | Dark Rite (1431) | Snow White MR7 | covered mr |
-| Shantotto | 5 | MP Stroll (1307) | Folka MR3 | covered mr |
+| Shantotto | 5 | MP Stroll (1307) | Folka MR3; Relm MR5 | covered mr |
 | Shantotto | 7 | Area Effect Adept (1351) | Trance Terra MR7 | covered mr |
 | Shantotto | 9 | Dualcast (400730) | Trance Terra MR9 | covered mr |
 | Vaan | 1 | Gil Farmer (400400) | Aerith MR1 | covered mr |
@@ -97,5 +97,5 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `dfb941aa96ed4cc974db7d7ea4bb8a8e9425ad03a42e37d79f1836336219fa2c`.
+Catalog fingerprint: `16b9fb1721f6048bf37454055745a7293e75452f6d34ae9d871fe3522ab95b9c`.
 Native coverage fingerprint: `095c2033010ad96d1530dba5d8b7adc1c3fb66012b29f05236d70bb40a15bac4`.

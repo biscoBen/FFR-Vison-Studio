@@ -54099,13 +54099,13 @@
               -1
             ],
             [
-              "ActiveSkill",
-              400330,
+              "PassiveSkill",
+              1280,
               -1
             ],
             [
               "PassiveSkill",
-              1307,
+              1279,
               -1
             ]
           ]
@@ -54143,7 +54143,7 @@
           [
             [
               "PassiveSkill",
-              1279,
+              1307,
               -1
             ]
           ],
@@ -54170,8 +54170,8 @@
           ],
           [
             [
-              "PassiveSkill",
-              1280,
+              "ActiveSkill",
+              400330,
               -1
             ],
             [
@@ -54233,17 +54233,18 @@
           "hideSpoilers": true,
           "cave": null
         },
-        "sephiraPassiveText": {}
+        "sephiraPassiveText": {},
+        "sephiraMrRevision": 1
       },
       "balance": {
         "nativeBudget": 13123,
         "nativeName": "Shantotto",
         "growthDonor": 13108,
-        "activeCount": 19,
-        "passiveCount": 5,
+        "activeCount": 18,
+        "passiveCount": 6,
         "kitCount": 24,
-        "mrActiveCount": 0,
-        "mrPassiveCount": 5,
+        "mrActiveCount": 1,
+        "mrPassiveCount": 4,
         "mrSkillCount": 5,
         "totalSkillCount": 29,
         "previousCount": 12,
@@ -55429,7 +55430,11 @@
           },
           {
             "rank": 3,
-            "id": 1307
+            "id": 1280
+          },
+          {
+            "rank": 3,
+            "id": 1279
           }
         ],
         "nativePassives": [
@@ -55443,7 +55448,8 @@
           1431,
           1307,
           1351
-        ]
+        ],
+        "requestedPassiveDelta": 0
       },
       "descriptionUpdate": {
         "schema": 1,
@@ -55537,6 +55543,314 @@
           "from": 440240,
           "before": "Native Shantotto resonance mechanics; Relm's own sprite animation.",
           "after": "Deal Lightning magic damage to an enemy and fill LB gauge by 20%."
+        }
+      },
+      "mrRestoration": {
+        "version": 1,
+        "mr": [
+          {
+            "rank": 5,
+            "from": [
+              "PassiveSkill",
+              1279,
+              -1
+            ],
+            "to": [
+              "PassiveSkill",
+              1307,
+              -1
+            ]
+          },
+          {
+            "rank": 9,
+            "from": [
+              "PassiveSkill",
+              1280,
+              -1
+            ],
+            "to": [
+              "ActiveSkill",
+              400330,
+              -1
+            ]
+          }
+        ],
+        "remove": [
+          [
+            3,
+            "ActiveSkill",
+            400330
+          ],
+          [
+            3,
+            "PassiveSkill",
+            1307
+          ]
+        ],
+        "add": [
+          [
+            3,
+            "PassiveSkill",
+            1280
+          ],
+          [
+            3,
+            "PassiveSkill",
+            1279
+          ]
+        ],
+        "move": [],
+        "exactAwakeningRanks": true,
+        "before": {
+          "awakening": [
+            [
+              [
+                "ActiveSkill",
+                220090,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487606,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487615,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487630,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487636,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487624,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1275,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1107,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220100,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                220110,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487603,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487609,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487618,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487633,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487642,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487627,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                487612,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487639,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1381,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1315,
+                -1
+              ]
+            ],
+            [
+              [
+                "ActiveSkill",
+                220330,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                487621,
+                -1
+              ],
+              [
+                "ActiveSkill",
+                400330,
+                -1
+              ],
+              [
+                "PassiveSkill",
+                1307,
+                -1
+              ]
+            ]
+          ],
+          "synchro": [
+            [],
+            [
+              [
+                "PassiveSkill",
+                1066,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                9,
+                5
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1237,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                11,
+                8
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1279,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                2,
+                20
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1360,
+                -1
+              ]
+            ],
+            [
+              [
+                "BaseParameter",
+                7,
+                15
+              ]
+            ],
+            [
+              [
+                "PassiveSkill",
+                1280,
+                -1
+              ],
+              [
+                "BaseParameter",
+                11,
+                8
+              ],
+              [
+                "MasterSkill",
+                1352600,
+                -1
+              ]
+            ]
+          ]
+        },
+        "beforeAwakeningBalance": {
+          "revision": 7,
+          "nativeBudget": 13123,
+          "nativeName": "Shantotto",
+          "nativePassiveCount": 10,
+          "totalPassiveCount": 10,
+          "nativeEquipCost": 310,
+          "equipCost": 310,
+          "grants": [
+            {
+              "rank": 0,
+              "id": 1275
+            },
+            {
+              "rank": 0,
+              "id": 1107
+            },
+            {
+              "rank": 2,
+              "id": 1381
+            },
+            {
+              "rank": 2,
+              "id": 1315
+            },
+            {
+              "rank": 3,
+              "id": 1307
+            }
+          ],
+          "nativePassives": [
+            1275,
+            1432,
+            1315,
+            1107,
+            1381,
+            1433,
+            1319,
+            1431,
+            1307,
+            1351
+          ]
         }
       }
     },
@@ -71315,7 +71629,7 @@
     "extraCount": 19,
     "totalCount": 150,
     "distinctCount": 117,
-    "mrActiveCount": 27,
-    "mrPassiveCount": 123
+    "mrActiveCount": 28,
+    "mrPassiveCount": 122
   }
 }

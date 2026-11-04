@@ -33,7 +33,7 @@ The earlier rule reserving passives for MR is extended here at the user’s requ
 | Aerith | Vaan | 10 | A1: Magic Attack +20%; A2: Nullify Silence; A2: Resist Lightning; A2: MP +20%; A3: Strategic Acumen; A4: Speed +10% | 245 (290) |
 | Jade | Cloud | 11 | A1: Resist Lightning; A1: Physical Attack +20%; A2: Critical Hit Rate +10%; A3: Speed +10%; A3: HP +20%; A3: Power Stagger; A4: Critical Boost | 310 (345) |
 | Spirited Heart Primm | Onion Knight | 12 | A1: Magic Attack +20%; A1: Nullify Slow; A2: MP +20%; A3: Speed +10%; A3: Regen Opener; A4: Restore HP on Stagger; A4: Boundless Flames | 370 (310) |
-| Relm | Shantotto | 10 | A1: Magic Attack +30%; A1: Nullify Silence; A3: MP +20%; A3: Magic Defense +20%; A4: MP Stroll | 310 (310) |
+| Relm | Shantotto | 10 | A1: Magic Attack +30%; A1: Nullify Silence; A3: MP +20%; A3: Magic Defense +20%; A4: Fill LB on Stagger; A4: Stagger Power +20% | 310 (310) |
 | Rikku (FFX-2) | Vaan | 10 | A1: Nullify Berserk; A1: Speed +20%; A1: Thievery; A2: Discerning Eye; A2: HP +20%; A3: Haste on Stagger; A4: Restore MP on Attack; A4: Wings of Freedom | 295 (290) |
 | Nalu | Cloud | 11 | A1: Resist Lightning; A1: Physical Attack +20%; A2: Critical Hit Rate +10%; A2: Imbue Lightning; A3: HP +20%; A4: Signature Moves; A4: Broadsword Mastery | 345 (345) |
 | Elza | Tidus | 10 | A1: Resist Water; A1: Physical Attack +20%; A2: HP +20%; A4: Restore MP on Attack; A4: Fill LB on Defeating Foes; A4: Imbue Dark | 295 (300) |

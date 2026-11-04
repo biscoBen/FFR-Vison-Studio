@@ -138,4 +138,41 @@ void main() {
     expect(()=>SephiraVisions.repairEquipableMr(u,presets,strict:true),throwsStateError);
     expect(u,before);
   });
+  test('Relm swaps MP Stroll and Mimic into MR while retaining both awakening bonuses',() async {
+    final presets=await SephiraVisions.bundled;
+    final p=presets.singleWhere((p)=>p['id']=='relm');
+    final legacy=oldUnit(p)..remove(SephiraVisions.field);
+    final u=CharacterConfig.restore(legacy,presets.map((p)=>p['profile']).toList());
+    u[SephiraVisions.field]={'version':1,'preset':'relm','enabled':true};
+    u['stats']['Magic']=91;
+    (u['skills'] as Map).values.first['set']['Cost']=23;
+    final before=CharacterConfig.copy(u);
+    final next=SephiraVisions.repairEquipableMr(u,presets,strict:true);
+    expect(next['synchro'][5],[['PassiveSkill',1307,-1]]);
+    expect(next['synchro'][9],[['ActiveSkill',400330,-1],
+      ['BaseParameter',11,8],['MasterSkill',u['master']['id'],-1]]);
+    expect(next['awakening'][3],[['ActiveSkill',220330,-1],
+      ['ActiveSkill',CharacterConfig.skillBase(u['id'] as int)+21,-1],
+      ['PassiveSkill',1280,-1],['PassiveSkill',1279,-1]]);
+    for(final f in before.keys.where((k)=>!['awakening','synchro','sephiraMrRevision'].contains(k))) {
+      expect(next[f],before[f],reason:f);
+    }
+    expect(u,before);
+    expect(SephiraVisions.hasRecipeUpdate(next,presets),isFalse);
+    expect(identical(SephiraVisions.repairEquipableMr(next,presets),next),isTrue);
+    CharacterConfig.decode(CharacterConfig.encode(next));
+  });
+  test('Relm edited MR5 or MR9 cannot partially apply the swap',() async {
+    final presets=await SephiraVisions.bundled;
+    final p=presets.singleWhere((p)=>p['id']=='relm');
+    for(final rank in [5,9]) {
+      final u=oldUnit(p);
+      u['synchro'][rank][0]=['PassiveSkill',1009,-1];
+      final before=CharacterConfig.copy(u);
+      expect(identical(SephiraVisions.repairEquipableMr(u,presets),u),isTrue);
+      expect(()=>SephiraVisions.repairEquipableMr(u,presets,strict:true),
+        throwsA(isA<StateError>().having((e)=>e.message,'message',contains('MR$rank was edited'))));
+      expect(u,before);
+    }
+  });
 }

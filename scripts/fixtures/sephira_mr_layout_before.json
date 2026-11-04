@@ -2403,5 +2403,709 @@
         1031
       ]
     }
+  },
+  "relm": {
+    "profile": {
+      "key": "sephira_relm",
+      "id": 13526,
+      "sort": 13596,
+      "jp": "Sephira_relm",
+      "en": "Relm",
+      "desc": "Painter with lightning magic and mimicry. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13108,
+      "attackType": "Magic",
+      "stats": {
+        "MaxHitPoint": 800,
+        "MaxMagicPoint": 100,
+        "Attack": 25,
+        "Defence": 30,
+        "Intelligence": 10,
+        "Mind": 20,
+        "Agility": 15
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 346,
+        "en": "Relm Skills",
+        "desc": "Painter with lightning magic and mimicry."
+      },
+      "master": {
+        "id": 1352600,
+        "en": "Spirit of Relm",
+        "desc": "Relm's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "487603": {
+          "from": 500970,
+          "visuals": 500970,
+          "jp": "Sephira_relm_Kit_1",
+          "en": "Bioblaster",
+          "desc": "Deal magic damage to all enemies. Inflict Poison with a 70% chance.",
+          "descAuto": false,
+          "set": {
+            "Cost": 18,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487606": {
+          "from": 500980,
+          "visuals": 220010,
+          "jp": "Sephira_relm_Kit_2",
+          "en": "Fire Beam",
+          "desc": "Deal Fire magic damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Fire"
+          }
+        },
+        "487609": {
+          "from": 501010,
+          "visuals": 501010,
+          "jp": "Sephira_relm_Kit_3",
+          "en": "El Nino",
+          "desc": "Deal Water magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Water"
+          }
+        },
+        "487612": {
+          "from": 503930,
+          "visuals": 400630,
+          "jp": "Sephira_relm_Kit_4",
+          "en": "Forbidden Ars Magna",
+          "desc": "Deal magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 26,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487615": {
+          "from": 250300,
+          "visuals": 250300,
+          "jp": "Sephira_relm_Kit_5",
+          "en": "Drain",
+          "desc": "Deal magic damage to an enemy. Absorb damage dealt as HP.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None"
+          }
+        },
+        "487618": {
+          "from": 245300,
+          "visuals": 245300,
+          "jp": "Sephira_relm_Kit_6",
+          "en": "Banishra Canvas",
+          "desc": "Deal Light magic damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Light"
+          }
+        },
+        "487621": {
+          "from": 500750,
+          "visuals": 220100,
+          "jp": "Sephira_relm_Kit_7",
+          "en": "Mind Blast",
+          "desc": "Deal Lightning magic damage to an enemy. Inflict Paralysis, Silence and Poison.",
+          "descAuto": false,
+          "set": {
+            "Cost": 45,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder"
+          }
+        },
+        "487630": {
+          "from": 255150,
+          "visuals": 255150,
+          "jp": "Sephira_relm_Kit_10",
+          "en": "Earth Canvas",
+          "desc": "Deal Earth magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "487633": {
+          "from": 255160,
+          "visuals": 220210,
+          "jp": "Sephira_relm_Kit_11",
+          "en": "Earth Canvas II",
+          "desc": "Deal Earth magic damage to all enemies 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "487636": {
+          "from": 225030,
+          "visuals": 225030,
+          "jp": "Sephira_relm_Kit_12",
+          "en": "Frost Canvas",
+          "desc": "Deal Ice magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Ice"
+          }
+        },
+        "487639": {
+          "from": 503200,
+          "visuals": 400630,
+          "jp": "Sephira_relm_Kit_13",
+          "en": "Erase Canvas",
+          "desc": "Deal magic damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 40,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "magnification": 40
+          }
+        },
+        "487642": {
+          "from": 250220,
+          "visuals": 220220,
+          "jp": "Sephira_relm_Kit_14",
+          "en": "Stone Stroke",
+          "desc": "Deal Earth magic damage to an enemy 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 15,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Earth"
+          }
+        },
+        "487624": {
+          "from": 570630,
+          "visuals": 400630,
+          "jp": "Sephira_relm_Kit_8",
+          "en": "Aether Palette",
+          "desc": "Restore 30 MP to an ally.",
+          "descAuto": false,
+          "set": {
+            "Cost": 18,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "magnification": 30,
+            "TargetType": "Single",
+            "defaultTargetRelation": "Friendlies"
+          }
+        },
+        "487627": {
+          "from": 250110,
+          "visuals": 220100,
+          "jp": "Sephira_relm_Kit_9",
+          "en": "Storm Canvas",
+          "desc": "Deal Lightning magic damage to an enemy 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 30,
+            "accuracy": 100,
+            "belongCommandList": [
+              346
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              346,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Thunder"
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            220090,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487606,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487615,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487630,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487636,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487624,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1275,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1107,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            220100,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            220110,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487603,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487609,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487618,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487633,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487642,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487627,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            487612,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487639,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1381,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1315,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            220330,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            487621,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            400330,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1307,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "PassiveSkill",
+            1066,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            9,
+            5
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1237,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1279,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            2,
+            20
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1360,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            7,
+            15
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1280,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1352600,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "206001005",
+        "base": "206001005",
+        "source": "GL",
+        "dir": "units/ffbe/sephira_relm/sprites/206001005"
+      },
+      "lb": 440240,
+      "lb_custom": {
+        "from": 440240,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "206001005",
+        "movement": {
+          "enabled": false
+        },
+        "set": {
+          "element": "Thunder"
+        },
+        "jp": "Sephira_relm_Resonance",
+        "en": "Relm Resonance",
+        "desc": "Deal Lightning magic damage to an enemy and fill LB gauge by 20%.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13123",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13123",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {}
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13123,
+      "nativeName": "Shantotto",
+      "nativePassiveCount": 10,
+      "totalPassiveCount": 10,
+      "nativeEquipCost": 310,
+      "equipCost": 310,
+      "grants": [
+        {
+          "rank": 0,
+          "id": 1275
+        },
+        {
+          "rank": 0,
+          "id": 1107
+        },
+        {
+          "rank": 2,
+          "id": 1381
+        },
+        {
+          "rank": 2,
+          "id": 1315
+        },
+        {
+          "rank": 3,
+          "id": 1307
+        }
+      ],
+      "nativePassives": [
+        1275,
+        1432,
+        1315,
+        1107,
+        1381,
+        1433,
+        1319,
+        1431,
+        1307,
+        1351
+      ]
+    }
   }
 }

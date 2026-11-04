@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Relm teaches MP Stroll and Mimic — 2026-11-04
+
+- Update 1.2.156 swaps Relm’s MR5 Stagger Power +20% for MP Stroll and her
+  MR9 Fill LB on Stagger for native Mimic. Both displaced bonuses move into
+  awakening tier 4, replacing the two abilities moved to MR. Native skill
+  mechanics, passive AP budget, permanent rewards and Spirit identity are retained.
+- Migrate untouched saved Relm reward layouts once, using the existing roster
+  backup and migration flow. Preserve private recipes, custom stats, allocated
+  IDs, artwork and acquisition settings. Edited affected MR slots or a full
+  target awakening tier remain intact and report a conflict before building.
+- Validate frontend/backend migrations, transferable native Mimic, complete-kit
+  budgets and 75/75 original MR coverage. Live-game learning and equipment
+  behavior have not yet been confirmed.
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line

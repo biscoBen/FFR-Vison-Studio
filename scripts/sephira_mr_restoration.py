@@ -83,11 +83,14 @@ def write_reports(catalog,coverage,english):
     for preset in catalog['presets']:
         names['PassiveSkill'].update({int(k):v['name'] for k,v in preset['profile'].get('sephiraPassiveText',{}).items()})
     def label(g):return f"{names[g[0]][g[1]]} ({g[1]})"
+    rewards=[g for p in catalog['presets'] for tier in p['profile']['synchro'] for g in tier]
+    passive_count=sum(g[0]=='PassiveSkill' for g in rewards)
+    active_count=sum(g[0]=='ActiveSkill' for g in rewards)
     lines=['# Sephira mastery reward allocation','',
         'All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: '
         '50 passives and 25 active skills. The original active rewards retain their acquisition families. '
         'The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain '
-        '124 passive grants and 26 active grants, one per rank, including Minfilia’s new Libra. ','',
+        f'{passive_count} passive grants and {active_count} active grants, one per rank, including Minfilia’s new Libra and Relm’s Mimic. ','',
         '130 of 131 distinct excluded-original passives remain available across the complete kits; Rikku’s '
         'Vaan-only One for the Road was explicitly replaced with Pharmacology. Original MR passives stay transferable. '
         'Command/LB-bound traits remain awakening bonuses for their owners. Christine’s True Stagger stays in '
@@ -124,8 +127,10 @@ def write_reports(catalog,coverage,english):
         'within 20% of its native passive AP budget. The historical restoration plan and the later requested swaps are '
         'recorded separately in `scripts/fixtures/sephira_mr_restoration_plan.json` and `scripts/sephira_mr_layout.py`. ','',
         'Trance Terra’s Fire Eater moves to awakening tier 3 and Primm MR9. Primm’s Boundless Flames moves to awakening '
-        'tier4, and Terra’s Trance Apocalypse moves from tier 3 to tier 4 to keep every tier within eight slots. Original '
-        'MR rewards remain transferable. Crystal Fina and Aria are unchanged. '
+        'tier4, and Terra’s Trance Apocalypse moves from tier 3 to tier 4 to keep every tier within eight slots. '
+        'Relm now teaches MP Stroll at MR5 and native Mimic at MR9; Fill LB on Stagger and Stagger Power +20% '
+        'move to awakening tier 4. Her total passive count and AP budget are unchanged. '
+        'Original MR rewards remain transferable. Crystal Fina and Aria are unchanged. '
         'Private recipes, artwork, stats, permanent rewards, allocated IDs and acquisition choices are preserved.','',
         'Studio backs up and migrates untouched saved reward layouts once on loading. The build also applies the '
         'same staged migration to older configs. Previously learned Barusa Earth-imbue IDs remain defined. Edited affected MR slots or full awakening tiers '

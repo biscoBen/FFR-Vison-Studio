@@ -1,4 +1,4 @@
-"""The user's Libra/MR rearrangement; append to the earlier saved-roster migration."""
+"""Reviewed MR rearrangements, including Relm's transferable Mimic/MP Stroll."""
 import copy
 import gzip
 import json
@@ -11,8 +11,9 @@ REWARDS = {
     'barusa': {1: ('PassiveSkill', 1336)},
     'primm': {1: ('PassiveSkill', 1526), 9: ('PassiveSkill', 1038)},
     'trance_terra': {1: ('PassiveSkill', 1011)},
+    'relm': {5: ('PassiveSkill', 1307), 9: ('ActiveSkill', 400330)},
 }
-PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1, 'mystea': -1}
+PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1, 'mystea': -1, 'relm': 0}
 MR_RANK_OVERRIDES = {('minfilia', 400240): 3}
 EARTH_LABEL = {'name': 'Imbue Earth', 'desc': 'Add earth to non-elemental standard attacks and battle skills.'}
 
@@ -23,7 +24,7 @@ def revise(catalog, coverage, rows):
         key = preset['id']
         if key not in REWARDS: continue
         unit = preset['profile']
-        target = 1 if key == 'primm' else 2
+        target = 1 if key in ('primm', 'relm') else 2
         if unit.get('sephiraMrRevision', 0) >= target: continue
         before = copy.deepcopy(unit)
         old_balance = copy.deepcopy(preset['awakeningBalance'])
@@ -49,6 +50,12 @@ def revise(catalog, coverage, rows):
         if key == 'primm':
             add = [[3, 'PassiveSkill', 1460]]
             unit.setdefault('sephiraPassiveText', {})['1526'] = copy.deepcopy(EARTH_LABEL)
+        if key == 'relm':
+            removed = {('ActiveSkill', 400330), ('PassiveSkill', 1307)}
+            for tier in unit['awakening']:
+                tier[:] = [g for g in tier if tuple(g[:2]) not in removed]
+            remove = [[3, 'ActiveSkill', 400330], [3, 'PassiveSkill', 1307]]
+            add = [[3, 'PassiveSkill', 1280], [3, 'PassiveSkill', 1279]]
         for rank, kind, identity in add:
             unit['awakening'][rank].append([kind, identity, -1])
         step = {'version': target, 'mr': operations, 'remove': remove, 'add': add,

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "catalogSha256": "dfb941aa96ed4cc974db7d7ea4bb8a8e9425ad03a42e37d79f1836336219fa2c",
+  "catalogSha256": "16b9fb1721f6048bf37454055745a7293e75452f6d34ae9d871fe3522ab95b9c",
   "nativeAuditSha256": "095c2033010ad96d1530dba5d8b7adc1c3fb66012b29f05236d70bb40a15bac4",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
@@ -73,16 +73,17 @@
           "rank": 7,
           "grantId": 1280,
           "privateCopy": false
-        },
+        }
+      ],
+      "awakening": [
         {
           "preset": "relm",
           "vision": "Relm",
-          "rank": 9,
+          "rank": 4,
           "grantId": 1280,
           "privateCopy": false
         }
       ],
-      "awakening": [],
       "status": "covered_mr"
     },
     {
@@ -119,13 +120,6 @@
       ],
       "mr": [
         {
-          "preset": "relm",
-          "vision": "Relm",
-          "rank": 5,
-          "grantId": 1279,
-          "privateCopy": false
-        },
-        {
           "preset": "nalu",
           "vision": "Nalu",
           "rank": 7,
@@ -138,6 +132,13 @@
           "preset": "freya",
           "vision": "Dragon Knight Freya",
           "rank": 3,
+          "grantId": 1279,
+          "privateCopy": false
+        },
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 4,
           "grantId": 1279,
           "privateCopy": false
         }
@@ -944,6 +945,13 @@
       ],
       "mr": [
         {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 9,
+          "grantId": 400330,
+          "privateCopy": false
+        },
+        {
           "preset": "lunera",
           "vision": "Lunera",
           "rank": 9,
@@ -951,15 +959,7 @@
           "privateCopy": false
         }
       ],
-      "awakening": [
-        {
-          "preset": "relm",
-          "vision": "Relm",
-          "rank": 4,
-          "grantId": 400330,
-          "privateCopy": false
-        }
-      ],
+      "awakening": [],
       "status": "covered_mr"
     },
     {
@@ -1539,19 +1539,19 @@
           "rank": 3,
           "grantId": 1307,
           "privateCopy": false
+        },
+        {
+          "preset": "relm",
+          "vision": "Relm",
+          "rank": 5,
+          "grantId": 1307,
+          "privateCopy": false
         }
       ],
       "awakening": [
         {
           "preset": "trance_terra",
           "vision": "Trance Terra",
-          "rank": 4,
-          "grantId": 1307,
-          "privateCopy": false
-        },
-        {
-          "preset": "relm",
-          "vision": "Relm",
           "rank": 4,
           "grantId": 1307,
           "privateCopy": false

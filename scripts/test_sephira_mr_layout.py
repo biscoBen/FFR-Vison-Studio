@@ -91,4 +91,44 @@ class MrLayoutTests(unittest.TestCase):
         self.assertTrue(any(b['passive']['set']['ID']==oldid for b in barusa['_sephiraBindings']))
         self.assertFalse(any(g[1]==oldid for tier in barusa['synchro'] for g in tier if g[0]=='PassiveSkill'))
 
+    def test_relm_teaches_native_mimic_and_mp_stroll_and_keeps_both_old_bonuses(self):
+        old=self.old('relm');before=copy.deepcopy(old)
+        native=copy.deepcopy(self.rows)
+        player,=pack.player_units([old],self.rows.__getitem__)
+        bound,=pack.bind_units([player],self.rows.__getitem__)
+        self.assertEqual(bound['synchro'][5],[['PassiveSkill',1307,-1]])
+        self.assertEqual(bound['synchro'][9],[['ActiveSkill',400330,-1],
+            ['BaseParameter',11,8],['MasterSkill',1352600,-1]])
+        self.assertEqual(bound['awakening'][3],[['ActiveSkill',220330,-1],
+            ['ActiveSkill',487621,-1],['PassiveSkill',1280,-1],['PassiveSkill',1279,-1]])
+        for kind,sid in [('ActiveSkill',400330),('PassiveSkill',1307),
+                         ('PassiveSkill',1280),('PassiveSkill',1279)]:
+            self.assertEqual(sum(g[:2]==[kind,sid] for f in ('awakening','synchro')
+                for tier in bound[f] for g in tier),1)
+        mimic=next(r for r in self.rows['Skill/DT_SkillData'].values() if r['ID']==400330)
+        self.assertEqual(mimic['hasUnit'],'All')
+        self.assertEqual(mimic['belongCommandList'],[1])
+        self.assertEqual(mimic['mimicableUnitId'],-1)
+        self.assertEqual(mimic['skillAttrType'],'Mimic')
+        self.assertEqual(mimic['equipCost'],40)
+        self.assertEqual(mimic['Cost'],0)
+        self.assertNotIn('400330',bound['skills'])
+        self.assertEqual(self.rows,native,'Native mechanics and shared skill rows stay unchanged')
+        self.assertEqual(old,before,'Building an older roster must not rewrite the saved config')
+
+    def test_relm_conflicts_preserve_the_whole_saved_unit(self):
+        for rank in (5,9):
+            with self.subTest(rank=rank):
+                unit=self.old('relm');unit['synchro'][rank][0]=['PassiveSkill',1009,-1]
+                before=copy.deepcopy(unit)
+                with self.assertRaisesRegex(ValueError,f'MR{rank} was edited'):
+                    pack.repair_equipable_mr(unit)
+                self.assertEqual(unit,before)
+        unit=self.old('relm')
+        unit['awakening'][3]=[['ActiveSkill',220330,-1]]*8
+        before=copy.deepcopy(unit)
+        with self.assertRaisesRegex(ValueError,'awakening slot'):
+            pack.repair_equipable_mr(unit)
+        self.assertEqual(unit,before)
+
 if __name__=='__main__':unittest.main()
