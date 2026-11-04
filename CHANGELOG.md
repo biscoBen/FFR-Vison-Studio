@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Reberta challenge at level 30 — 2026-11-04
-
-- Update 1.2.157 scales the earned Reberta/Clive challenge for the user’s
-  level-30 acquisition progression. Its old level-4 setting came from nearby
-  starter-area enemies rather than the level at which the challenge is reached.
-- Use the existing level-30 native boss curve and established challenge buffs:
-  52,000 HP, 1,000 stagger, 480 physical/magic attack, 240 defence, 220 magic
-  defence, 241 speed and 999 MP. Existing skill-power buffs apply once. Update
-  the challenge menu to level 30; preserve the Clive prerequisite and rewards.
-- Keep playable Reberta, saved configurations and all other encounters intact.
-  Rebuild/install and restart after updating Studio; no preset reset or repeated
-  preparation is needed. Generated-table and regression checks cover the scoped
-  change; live level-30 difficulty remains unconfirmed.
-
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
@@ -117,6 +103,43 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published level-30 Reberta challenge — 2026-11-04
+
+Code [`32a3116`](https://github.com/biscoBen/FFR-Vison-Studio/commit/32a311610026832d1bcc3bad5ad4a4ceb7800d2b) ·
+[Studio test 1.2.157](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41920746610/Sephira-Studio-Test.zip)
+
+- Update 1.2.157 scales the earned Reberta/Clive challenge for the user’s
+  level-30 acquisition progression. Its old level-4 setting came from nearby
+  starter-area enemies rather than the level at which the challenge is reached.
+- Use the existing level-30 native boss curve and established challenge buffs:
+  52,000 HP, 1,000 stagger, 480 physical/magic attack, 240 defence, 220 magic
+  defence, 241 speed and 999 MP. Existing skill-power buffs apply once. Update
+  the challenge menu to level 30; preserve the Clive prerequisite and rewards.
+- Keep playable Reberta, saved configurations and all other encounters intact.
+  Rebuild/install and restart after updating Studio; no preset reset or repeated
+  preparation is needed. Generated-table and regression checks cover the scoped
+  change; live level-30 difficulty remains unconfirmed.
+
+- Local validation passes 941 Python tests (73 skipped), all 25 challenge
+  checks and clean Flutter analysis. Windows workflow 41920746610 passes
+  355 Flutter tests (one skipped), 941 Python tests (33 skipped), fresh frozen
+  engine startup, fourteen launcher checks and ten vision-import checks.
+- Independently verify compile artifact SHA-256
+  `ca134b0812641957b72b7654bc5bba56b4d0aa8c21c8d2ef0e7d4dc69623d9ef`.
+  All 193 public app files match the compile artifact. All 88 extension and
+  16 Fina files match their manifests and source; the packaged challenge is
+  level 30 and the player catalog is unchanged. Delivered checks pass eighty
+  cave/challenge cases, 135 combined-runtime cases, fifteen MR/budget/coverage
+  cases and eleven storage cases.
+- Public ZIP: 83,351,469 bytes; SHA-256
+  `c51f6fa6d491194b70bacbda5e99e310035074e746a97e5d05a192f4ac7a00f7`.
+  These are package and generated-table checks, not a live difficulty result.
+- First complete candidate to verified download: **14m 18s**
+  (2026-11-04 13:55:11–14:09:29 America/Los_Angeles), including local validation,
+  build waiting, verification and the controller-map feasibility discussion
+  requested while CI ran. One matching automatic run was joined. CI wall time:
+  **11m 18s**; summed runner usage: **16m 58s**. No user-PC install time measured.
 
 ## Published Relm MP Stroll and Mimic mastery — 2026-11-04
 

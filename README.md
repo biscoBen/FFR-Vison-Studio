@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Reberta challenge at level 30 — 2026-11-04
+
+[Verified Studio 1.2.157 / run 41920746610](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41920746610/Sephira-Studio-Test.zip)
+(code `32a3116`; **83.4 MB**).
+
+The Reberta/Clive challenge now uses the established boss buffs at level 30.
+Its former level-4 setting came from nearby starter-area enemies despite the
+user reaching this acquisition at level 30. The corrected budget is 52,000 HP,
+1,000 stagger, 480 physical/magic attack, 240 defence, 220 magic defence and
+241 speed. Existing skill-power buffs apply once. The menu shows level 30.
+
+Close the game, update Studio, use **GO / Build and install**, then restart.
+Playable Reberta, saved edits, the Clive prerequisite, reward and other fights
+are retained. No preset reset or repeated preparation is required. Windows
+checks and public-package verification pass; live difficulty remains unconfirmed.
+[Validation and timings](CHANGELOG.md#published-level-30-reberta-challenge--2026-11-04).
+
 ### Relm teaches MP Stroll and Mimic — 2026-11-04
 
 [Verified Studio 1.2.156 / run 41894643304](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41894643304/Sephira-Studio-Test.zip)
@@ -2741,6 +2758,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Relm’s verified 1.2.156 layout teaches MP Stroll at MR5 and Mimic at MR9;
   both displaced bonuses are in awakening tier 4. Migration/package checks pass;
   native live learning/equipment behavior remains to be confirmed.
+  Reberta’s 1.2.157 Clive challenge uses the level-30 native boss budget and
+  existing challenge buffs. Generated-table/package checks pass; live balance
+  remains unconfirmed. Playable skills and the acquisition prerequisite are retained.
   Turn off **Use borrowed Sephira skill visuals** and rebuild/install to evaluate
   newly available source animations. This restores the 216 preset visual substitutions
   independently of library repairs without removing MP, power or other kit edits.
