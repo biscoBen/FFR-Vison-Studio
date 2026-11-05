@@ -2861,7 +2861,7 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   current equipment values on comparison pages; no hovered-item prediction.
   Native compilation/readback, runtime fixtures and Windows/public-package
   verification pass. User feedback confirms displayed values, with label
-  overflow; candidate 1.2.160 adds Phys. Eva/Mag. Eva and native numeric styling.
+  overflow; candidate 1.2.161 includes Phys. Eva/Mag. Eva and native numeric styling.
   Revised layout and broader page coverage/buff refresh remain pending; keep this gameplay
   migration check open. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,

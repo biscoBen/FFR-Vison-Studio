@@ -11,6 +11,26 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Full local map fits the active area and its viewport — 2026-11-04
+
+- User feedback confirms controller switching works, but the enlarged view
+  leaves the map tiny in the center. The old fit used the whole land group's
+  bounds while native Image origin centers the current capture area. Fit that
+  active area's `BoxSize`, selected by `GetCurrentAreaId()`, instead.
+- Fit against the native **DisplaySize** viewport. The smaller **RangeSize**
+  is the range-ring image inside it. Keep the diagonal margin for rotated maps.
+  Area changes refresh through native world-position notifications; resync
+  native UI coordinates after updating zoom so images/player/markers stay together.
+- Keep the three-state controller cycle, native fog, map visibility, markers,
+  overworld behavior and restoration of remembered small-map zoom. No input
+  polling, new widgets, actor retention or save writes. Missing area data falls
+  back to the native minimap rather than a guessed full-land scale.
+- Native code and Blueprint evidence identify the matching area origin and
+  viewport; 13 focused map checks pass, including the tiny-map regression,
+  a much larger surrounding land group, different ring/viewport sizes and
+  area transitions. Combined **1.2.161** includes the compact evasion styling
+  below; Windows/package and real-game layout checks remain pending.
+
 ### Compact evasion labels and native stat typography — 2026-11-04
 
 - User feedback confirms the evasion values appear in game, but the long
@@ -23,7 +43,8 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Retain the current-loadout explanation in tooltips, including equipment
   comparisons. Collapse both labels and values if the data/layout is unavailable.
   Native compilation/readback passes; package checks and live layout feedback
-  remain pending for 1.2.160.
+  remain pending for the combined 1.2.161 update. The earlier 1.2.160 styling
+  build passed Windows checks while the additional map report was investigated.
 
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 

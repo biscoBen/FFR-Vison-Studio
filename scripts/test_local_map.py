@@ -102,12 +102,12 @@ class LocalMapRuntimeTests(unittest.TestCase):
         lua.execute('ready()')
         return lua
 
-    def test_entire_zone_fits_at_any_rotation_across_different_bounds_and_ui_sizes(self):
+    def test_current_area_fits_at_any_rotation_across_different_bounds_and_ui_sizes(self):
         lua=self.runtime()
         lua.execute('''
             for _,size in ipairs({{20000,10000},{1000,90000},{200,200}}) do
                 for _,range in ipairs({320,640,900}) do
-                    vm.width,vm.height=size[1],size[2]; vm.rangeX,vm.rangeY=range,range
+                    vm.width,vm.height=size[1],size[2]; vm.displayX,vm.displayY=range,range
                     show()
                     local scale=widget.paint
                     local x,y=vm.width*vm.projection*scale/2,vm.height*vm.projection*scale/2
@@ -121,6 +121,7 @@ class LocalMapRuntimeTests(unittest.TestCase):
                 end
             end
             assert(vm.zoomCalls==9 and widget.paints==18,'Reentry must be bounded')
+            assert(vm.syncCalls==9,'Native position refresh must be bounded too')
             assert(#messages==1)
         ''')
 
@@ -154,7 +155,7 @@ class LocalMapRuntimeTests(unittest.TestCase):
         ''')
 
     def test_invalid_bounds_fall_back_without_saving_zoom_or_repeated_logging(self):
-        for field,value in [('width','0'),('height','-10'),('projection','0/0'),('rangeX','math.huge')]:
+        for field,value in [('width','0'),('height','-10'),('projection','0/0'),('displayX','math.huge')]:
             lua=self.runtime()
             lua.execute(f"vm.{field}={value}; show(); assert(vm.fallback==1 and not vm.zoomCalls and vm.ZoomProperty.bSaveZoom)")
             lua.execute("vm.tag='UI.Field.MiniMap.View.Decrale'; show(); assert(vm.fallback==2 and #messages==2)")
@@ -162,8 +163,33 @@ class LocalMapRuntimeTests(unittest.TestCase):
     def test_reloaded_blueprint_functions_rebind_but_discovery_does_not_duplicate(self):
         lua=self.runtime()
         lua.execute('''
-            local count=0; for _ in pairs(hooks) do count=count+1 end; assert(count==2)
+            local count=0; for _ in pairs(hooks) do count=count+1 end; assert(count==3)
             discover(); discover(); drain(); show(); assert(vm.zoomCalls==1)
+        ''')
+
+    def test_active_area_bounds_do_not_shrink_when_the_land_group_contains_other_areas(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();local active=widget.paint
+            vm.landWidth,vm.landHeight=2000000,3000000
+            show();assert(math.abs(widget.paint-active)<1e-9)
+            vm.rangeX,vm.rangeY=80,80
+            show();assert(math.abs(widget.paint-active)<1e-9,'Range ring is not the viewport')
+            -- The old whole-land fit made this active area a tiny center speck.
+            local old=.90*640/math.sqrt((vm.landWidth*.1)^2+(vm.landHeight*.1)^2)
+            assert(widget.paint>old*100)
+            vm.areas={[202]={BoxSize={X=10000,Y=10000}},[101]={BoxSize={X=20000,Y=10000}}}
+            vm.areaId=202
+            gameThread=true;widget:SetWorldPosition({X=-100,Y=200});gameThread=false
+            assert(widget.paint>active and widget.position.X==-100 and widget.position.Y==200)
+            assert(math.abs(widget.paint-(.9*640/math.sqrt(2*1000^2)))<1e-9)
+        ''')
+
+    def test_missing_active_area_falls_back_instead_of_using_unrelated_land_bounds(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.areaId=404;show()
+            assert(vm.fallback==1 and not widget.paint and not vm.zoomCalls)
         ''')
 
     def test_combined_generated_script_starts_with_each_runtime_feature_combination(self):

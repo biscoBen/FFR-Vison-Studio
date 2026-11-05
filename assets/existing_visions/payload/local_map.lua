@@ -32,6 +32,28 @@ local function dimensions(vector)
     assert(finite(x) and finite(y) and x>0 and y>0, 'Map image bounds are unavailable')
     return x,y
 end
+local function area_dimensions(vm,capture)
+    signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId','IntProperty')
+    local id=vm:GetCurrentAreaId()
+    assert(type(id)=='number' and id>=0,'Current local-map area is unavailable')
+    local areas=capture.AreaLandCaptureDataMap
+    assert(areas~=nil,'Current local-map capture areas are unavailable')
+    local width,height
+    local function visit(key,value)
+        if unwrap(key)~=id then return end
+        local area=unwrap(value)
+        -- Image origin is the active area's WorldLocation (native
+        -- CPP_VM_MiniMap override), not the whole land group's center.
+        -- Read its BoxSize while the returned struct/map entry is alive.
+        dimensions(area.BoxSize)
+        width,height=dimensions(vm:CorrectProjectionScale_Vector2D(area.BoxSize))
+    end
+    if type(areas)=='table' and type(areas.ForEach)~='function' then
+        for key,value in pairs(areas) do visit(key,value) end
+    else areas:ForEach(visit) end
+    assert(width and height,'Current area has no local-map capture bounds')
+    return width,height
+end
 local function refresh(context)
     if runtime.busy then return end
     local widget = unwrap(context)
@@ -59,12 +81,13 @@ local function refresh(context)
         signature('/Script/mucha.CPP_VM_MapBase:CorrectProjectionScale_Vector2D', 'StructProperty,StructProperty')
         signature('/Script/mucha.CPP_VM_MiniMap:GetMiniMapAppearance', 'StructProperty')
         signature('/Script/mucha.CPP_VM_MapBase:SetZoomAlpha', 'FloatProperty')
+        signature('/Script/mucha.CPP_VM_MapBase:SyncPlayerData', '')
         signature(widgetClass..':SetZoomScale', 'DoubleProperty,StructProperty')
         local capture = vm:GetCurrentMapLandCaptureData()
-        dimensions(capture.LandWholeSize)
-        local size = vm:CorrectProjectionScale_Vector2D(capture.LandWholeSize)
-        local width,height = dimensions(size)
-        local rx,ry = dimensions(vm:GetMiniMapAppearance().RangeSize)
+        local width,height = area_dimensions(vm,capture)
+        -- SetAppearance sizes the map's masked viewport from DisplaySize.
+        -- RangeSize belongs to the smaller range-ring image inside that view.
+        local rx,ry = dimensions(vm:GetMiniMapAppearance().DisplaySize)
         -- A diagonal fits even when the native local minimap rotates, and in
         -- either circular or rectangular masks. Leave room for edge markers.
         local fit = 0.90 * math.min(rx,ry) / math.sqrt(width*width + height*height)
@@ -74,6 +97,10 @@ local function refresh(context)
         zoom.AlphaInterval.min,zoom.AlphaInterval.max = 0,0
         zoom.ScaleInterval.min,zoom.ScaleInterval.max = fit,fit
         vm:SetZoomAlpha(0)
+        -- An area transition can change fit while alpha is already zero.
+        -- Resync native UI coordinates too, keeping the image/player/markers
+        -- together instead of repainting only their render scale.
+        vm:SyncPlayerData()
         -- Field notifications may suppress an unchanged zero alpha. Paint the
         -- same native widget through its own Blueprint setter in that case.
         widget:SetZoomScale(fit)
@@ -93,7 +120,7 @@ local function refresh(context)
 end
 runtime.refresh = refresh
 local function attach()
-    for _,name in ipairs({'SetAppearance','SetZoomScale'}) do
+    for _,name in ipairs({'SetAppearance','SetZoomScale','SetWorldPosition'}) do
         local path = widgetClass..':'..name
         local fn = StaticFindObject(path)
         if live(fn) and runtime.hooks[path] ~= fn:GetAddress() then

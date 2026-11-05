@@ -70,4 +70,5 @@ establish code/package behavior. The user confirmed values appearing in 1.2.159
 and supplied a screenshot showing 25% physical and 35% magical evasion, with
 overflowing labels. Version 1.2.160 shortens the labels and uses native label and
 numeric styles in separate columns. The revised layout, broader page coverage
-and buff refresh still require gameplay confirmation.
+and buff refresh still require gameplay confirmation. The combined 1.2.161
+update retains this styling and also corrects the controller map's area fit.

@@ -14,12 +14,15 @@ function param(value) return {get=function() return value end} end
 local fields = {
     ['/Script/mucha.CPP_VM_MapBase:GetIsCurrentMapField']={'BoolProperty'},
     ['/Script/mucha.CPP_VM_MiniMap:GetCurrentMapLandCaptureData']={'StructProperty'},
+    ['/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId']={'IntProperty'},
     ['/Script/mucha.CPP_VM_MapBase:CorrectProjectionScale_Vector2D']={'StructProperty','StructProperty'},
     ['/Script/mucha.CPP_VM_MiniMap:GetMiniMapAppearance']={'StructProperty'},
     ['/Script/mucha.CPP_VM_MapBase:SetZoomAlpha']={'FloatProperty'},
+    ['/Script/mucha.CPP_VM_MapBase:SyncPlayerData']={},
     ['/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex']={'IntProperty','BoolProperty'},
     ['/Script/mucha.CPP_VM_MiniMapBase:UpdateProperty']={},
     [cls..':SetZoomScale']={'DoubleProperty','StructProperty'},
+    [cls..':SetWorldPosition']={'StructProperty'},
     [cls..':SetAppearance']={'StructProperty','DoubleProperty','DoubleProperty','DoubleProperty','DoubleProperty','FloatProperty','FloatProperty'},
 }
 for path,types in pairs(fields) do
@@ -50,24 +53,39 @@ end
 function print(s) messages[#messages+1]=s end
 package.preload.config=function() return {localMap=1} end
 local vmClass=obj()
-vm=obj({tag=full,width=20000,height=10000,projection=.1,rangeX=640,rangeY=640,
+vm=obj({tag=full,width=20000,height=10000,landWidth=200000,landHeight=200000,areaId=101,
+    projection=.1,displayX=640,displayY=640,rangeX=320,rangeY=320,
     ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}})
 vm.ViewPropertyTag={TagName={ToString=function() return vm.tag end}}
 function vm:GetClass() return vmClass end
 function vm:GetIsCurrentMapField() assert(gameThread); return self.world or false end
+function vm:GetCurrentAreaId() assert(gameThread);return self.areaId end
 function vm:GetCurrentMapLandCaptureData()
-    assert(gameThread); return {LandWholeSize={X=self.width,Y=self.height}}
+    assert(gameThread)
+    local areas=self.areas
+    if areas==nil then
+        areas={ForEach=function(_,callback)
+            callback(param(999),param({BoxSize={X=900000,Y=800000}}))
+            callback(param(101),param({BoxSize={X=self.width,Y=self.height}}))
+        end}
+    end
+    return {LandWholeSize={X=self.landWidth,Y=self.landHeight},AreaLandCaptureDataMap=areas}
 end
 function vm:CorrectProjectionScale_Vector2D(size)
     assert(gameThread); return {X=size.X*self.projection,Y=size.Y*self.projection}
 end
 function vm:GetMiniMapAppearance()
-    assert(gameThread); return {RangeSize={X=self.rangeX,Y=self.rangeY}}
+    assert(gameThread); return {DisplaySize={X=self.displayX,Y=self.displayY},RangeSize={X=self.rangeX,Y=self.rangeY}}
 end
 function vm:SetZoomAlpha(alpha)
     assert(gameThread and not self.destroying); self.alpha=alpha; self.zoomCalls=(self.zoomCalls or 0)+1
     -- Native notifications can re-enter the same Blueprint callback.
     widget:SetZoomScale(self.ZoomProperty.ScaleInterval.min)
+end
+function vm:SyncPlayerData()
+    assert(gameThread);self.syncCalls=(self.syncCalls or 0)+1
+    local hook=hooks[cls..':SetWorldPosition']
+    if hook then hook(param(widget),param({X=0,Y=0})) end
 end
 function vm:SetDisplayScaleIndex(index,animate)
     assert(gameThread and index==0 and not animate); self.fallback=(self.fallback or 0)+1; self.tag=full..'.Instance'
@@ -84,6 +102,10 @@ function widget:GetClass() return widgetType end
 function widget:SetZoomScale(scale)
     assert(gameThread); self.paint=scale; self.paints=(self.paints or 0)+1
     local hook=hooks[cls..':SetZoomScale']; if hook then hook(param(self),param(scale)) end
+end
+function widget:SetWorldPosition(position)
+    assert(gameThread);self.position=position
+    local hook=hooks[cls..':SetWorldPosition'];if hook then hook(param(self),param(position)) end
 end
 function show()
     gameThread=true
