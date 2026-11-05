@@ -2837,12 +2837,15 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   fallback, native source bytes and saved kits. Refresh the labeled Studio preview and cache revision separately.
 - [ ] **Physical and magical evasion on in-game stat pages (requested November 4).**
   Add live values for the selected character, accounting for equipment, applicable
-  MR/passive effects and active battle buffs. Native shared stat widgets and
-  effect-list access points are identified; their complete menu/battle coverage,
-  stacking, conditions and cap application still need verification. No evasion
-  display has shipped. The [read-only stat reference exporter](https://chatgpt.com/api/library/files/libfile_73ff52ac89d8819183ab2728bce0861f/download)
-  collects the missing stat UI/calculation definitions without another game
-  preparation or rebuild. See the [investigation and limits](CHANGELOG.md#physical-and-magical-evasion-stat-page-investigation--2026-11-04).
+  MR/passive effects and active battle buffs. The returned stat-page capture is
+  readable and the native table sets `evasionLimit = 75`; this does not establish
+  final chance, stacking or where the cap applies. No final-evasion getter was
+  identified in current native metadata. The remaining compiled-calculation
+  evidence is requested through the [read-only native-code exporter](https://chatgpt.com/api/library/files/libfile_4cc0e502c1b8819190f10f22851b2c88/download),
+  which requires no restart, tracing mod, preparation or rebuild. Resolve the live
+  cap/effects when implemented; do not hard-code 75 or claim equipment-hover
+  predictions without verifying the preview source. No evasion display has shipped.
+  See the [received evidence and limits](CHANGELOG.md#returned-evasion-stat-page-capture-and-native-code-blocker--2026-11-04).
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table

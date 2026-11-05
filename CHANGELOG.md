@@ -11,6 +11,52 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Returned evasion stat-page capture and native-code blocker — 2026-11-04
+
+- Received `Stat-Page-Reference-20261104-164620-b34644-001.zip`: **2,354,730 bytes**,
+  SHA-256 `6f806e29aadd76d5953ffe7cda4ac8f413f2e6dd835ac461b0dde88a67d15cda`,
+  40 native assets / 87 ZIP entries. Required widgets, effect tables, mappings
+  and the actual `Datatable/Unit/DT_UnitParameterCalc` are present. Decode seven
+  relevant tables plus the parameter UI data asset; six relevant stat/window
+  widgets decode and round-trip through the pinned SDK. Original inputs remain
+  unchanged; no asset or script from the capture is executed.
+- The native calculation row sets **`evasionLimit = 75`**. The effect table has
+  13 `Avoidance` records with physical/magic selectors and raw values ranging
+  from 15 to 500. These establish source data, not the final chance: do not
+  assume addition, independent rolls, a universal 75% cap or a guessed 100% clamp.
+  The native C++ aggregation, activation conditions and cap placement remain
+  unverified. A shipped readout must resolve the live game's data, including any
+  applicable overrides, rather than bake the captured 75 into a formula.
+- Parse and validate the current `scriptobjects.bin` name batch: **48,127 names**,
+  with no dedicated final-evasion getter identified. The ordinary stat enum and
+  the two shared stat grids have no evasion entries. Their existing lists cover
+  physical/magical attack/defence, core stats and equip cost. The shared widgets
+  are `/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail` and
+  `WBP_UnitStatus_Detail`. Preserve their existing rows and selected view-model
+  parameter source; unsupported enum values are not a valid way to add evasion.
+  Equipment-preview totals and complete menu/battle effect coverage also remain
+  unverified; do not silently present current values as projected equip changes.
+- The successful UI/table capture does not contain the compiled native formula.
+  Prepare [Evasion-Code-Reference.zip](https://chatgpt.com/api/library/files/libfile_4cc0e502c1b8819190f10f22851b2c88/download)
+  (**8,286 bytes**, SHA-256
+  `74be0d628f9cd20bacc984b49b2abd4a6e9dd3fba718f8af2aa26d74a8028cfe`)
+  for this distinct missing evidence. It reads the installed x64 game image as
+  data, exporting selected native damage/effect entry points, candidate cap-field
+  function contexts, their candidate direct callers and two levels of direct
+  references, plus read-only lookup data and compiler function boundaries. It
+  never loads/runs the game image, attaches to the process or installs a mod.
+  No game restart, preparation, Studio update, F8 or rebuild is required.
+- Native code output is bounded; selection limits and analysis limitations are
+  explicit in the report. All ranges are checked against the source image,
+  output bytes are checksummed and ZIP planning includes per-entry overhead.
+  Nine fixtures pass for exact source-byte ranges, native registrations,
+  callers/callees, source/save preservation, invalid/truncated/wrong-architecture
+  images, missing evidence and split upload restoration. PowerShell syntax,
+  reader compilation and delivered archive/source equality pass. This is fixture
+  validation, not a real-game collection or a verified evasion calculation.
+  **The evasion display remains unimplemented; 1.2.158 is unchanged.**
+
+
 ### Physical and magical evasion stat-page investigation — 2026-11-04
 
 - Requested: add **Physical Evasion %** and **Magical Evasion %** to the in-game
