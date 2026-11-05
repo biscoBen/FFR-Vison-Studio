@@ -50,11 +50,21 @@ Retain the existing grid, stat enum list, bytecode, bindings and view model.
 Unreal constructs and owns every label. There is no raw UWidget construction,
 live Slate-struct copying or saved actor/HUD pointer.
 
-The captured mappings already declare this BP. A private mapping copy extends
-that exact existing schema with the four text-widget properties, preserving other
-schema indices and extensions. The original mappings and capture stay intact.
-The compiled asset decodes fully and round-trips through the pinned native SDK;
-its readback verifies the original defaults and all existing functions.
+Keep this shared Blueprint's **original six reflected fields** and original
+mappings exactly. The four labels/values are normal WidgetTree children; Lua
+finds them through `UserWidget.WidgetTree.RootWidget` and native panel getters.
+No new BP properties are needed. The compiled class-default stream remains
+byte-for-byte identical to the original (110 bytes), with existing functions
+and bindings preserved.
+
+The 1.2.160/1.2.161 styling added four reflected fields. That shifted inherited
+unversioned property indices for embedded instances in other native packages.
+The reported status-detail page saves index 31 as `Slot` under the original
+schema, but the altered schema reads `TickFrequency`, a one-byte enum, instead
+of a four-byte reference. Its 10-byte stream is consumed as seven bytes,
+matching the fatal error. A self-consistent standalone readback with altered
+mappings did not test this compatibility. Version **1.2.162** removes the schema
+expansion and tests the actual captured parent header and inherited schemas.
 
 Lua refreshes after the real Blueprint view-model/stat notifications. Class-load
 notifications attach hooks on the game thread; a one-time widget scan refreshes
@@ -72,3 +82,5 @@ overflowing labels. Version 1.2.160 shortens the labels and uses native label an
 numeric styles in separate columns. The revised layout, broader page coverage
 and buff refresh still require gameplay confirmation. The combined 1.2.161
 update retains this styling and also corrects the controller map's area fit.
+The subsequent serial-size crash is addressed by the schema-preserving 1.2.162
+layout; the affected page still needs an in-game reopen check after that update.

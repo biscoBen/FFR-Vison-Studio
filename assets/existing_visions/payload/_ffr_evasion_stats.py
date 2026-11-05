@@ -5,7 +5,7 @@ from pathlib import Path
 import zipfile
 
 # Filled from the pinned native SDK's compiled/read-back assets.
-ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': '1cfda7f7b2dd673e27ccf58c3310fe5feff3e3b41647b9c8fc7188033e199ec6', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': 'e5af04e8723a850e26e84c2f78c9bacf1371f35362010a001b432af003ed1e88'}
+ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': 'a8fffe20f8401d8deb91e757d62ee95579adb38cb4f22e84063fdaafbb54034f', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': '4fa60bdc48da43d307536511dadbd648b6a9bf3f7261706882de551960a1faeb'}
 
 
 def validate(raw):

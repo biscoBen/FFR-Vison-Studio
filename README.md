@@ -4,6 +4,11 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+**Known issue in 1.2.160/1.2.161:** the evasion stat-page option can cause a
+serial-size crash when opening status details. Disable that option and
+rebuild/install with the game closed to use the native pages while the 1.2.162
+fix is being packaged. The Studio switch alone does not replace installed assets.
+
 ### Compact evasion stats and readable controller map — 2026-11-04
 
 [Verified Studio 1.2.161 / run 41969081963](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41969081963/Sephira-Studio-Test.zip)
@@ -2881,6 +2886,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   overflow; 1.2.161 includes Phys. Eva/Mag. Eva and native numeric styling.
   Revised layout and broader page coverage/buff refresh remain pending; keep this gameplay
   migration check open. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
+  A later status-detail page crash exposed a shared-class serialization mismatch
+  in 1.2.160/1.2.161. Candidate 1.2.162 restores the original six fields and
+  native class-default bytes while keeping the compact rows in WidgetTree.
+  Its regression checks the embedded parent instance, rather than relying only
+  on the modified widget's standalone readback.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table

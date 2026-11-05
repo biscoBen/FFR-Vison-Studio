@@ -18,6 +18,8 @@ functions={
  ['/Script/mucha.CPP_UnitParameter:GetRelation']={'ByteProperty'},
  ['/Script/mucha.CPP_UnitParameter:GetContEffectList']={'ArrayProperty'},
  ['/Script/mucha.CPP_ContEffect:GetEffectData']={'StructProperty'},
+ ['/Script/UMG.PanelWidget:GetChildrenCount']={'IntProperty'},
+ ['/Script/UMG.PanelWidget:GetChildAt']={'IntProperty','ObjectProperty'},
 }
 natives={}
 function StaticFindObject(path)
@@ -45,8 +47,9 @@ function drain()
     gameThread=false
 end
 function FText(value) return {text=value} end
-function label()
-    local o=object('Text')
+function label(name)
+    local o=object('CommonTextBlock /Fixture.WidgetTree.'..name)
+    o.class='/Script/CommonUI.CommonTextBlock'
     function o:SetText(text) assert(gameThread and type(text)=='table');self.value=text.text end
     function o:SetToolTipText(text) assert(gameThread and type(text)=='table');self.tooltip=text.text end
     function o:SetVisibility(value) assert(gameThread);self.visibility=value end
@@ -54,8 +57,23 @@ function label()
 end
 widget=object('Stat page');widgetType=object('WidgetBlueprintGeneratedClass '..cls)
 function widget:GetClass() return widgetType end
-widget.Text_StudioPhysicalEvasion=label();widget.Text_StudioMagicalEvasion=label()
-widget.Text_StudioPhysicalEvasionValue=label();widget.Text_StudioMagicalEvasionValue=label()
+physicalLabel=label('Text_StudioPhysicalEvasion');magicalLabel=label('Text_StudioMagicalEvasion')
+physicalValue=label('Text_StudioPhysicalEvasionValue');magicalValue=label('Text_StudioMagicalEvasionValue')
+function panel(name,children)
+    local p=object('PanelWidget /Fixture.WidgetTree.'..name)
+    p.class='/Script/UMG.PanelWidget';p.children=children
+    function p:GetChildrenCount() assert(gameThread);return #self.children end
+    function p:GetChildAt(index) assert(gameThread);return self.children[index+1] end
+    return p
+end
+root=panel('VerticalBox_StudioStats',{
+    object('Untouched native grid'),
+    panel('HorizontalBox_StudioPhysicalEvasion',{physicalLabel,physicalValue}),
+    panel('HorizontalBox_StudioMagicalEvasion',{magicalLabel,magicalValue})})
+widget.WidgetTree=object('WidgetTree');widget.WidgetTree.RootWidget=root
+setmetatable(widget,{__index=function(_,key)
+    if key:match('^Text_Studio') then error('Shared widget has no added reflected fields') end
+end})
 function parameter(isBattle)
     local p=object('Parameter')
     p.class='/Script/mucha.CPP_'..(isBattle and 'BtlUnitParameter' or 'UnitParameter')
@@ -94,14 +112,12 @@ function show(name)
     gameThread=true;hooks[cls..':'..(name or 'HandleUnitParamUpdate')](param(widget));gameThread=false
 end
 function values(physical,magical)
-    assert(widget.Text_StudioPhysicalEvasion.value=='Phys. Eva')
-    assert(widget.Text_StudioMagicalEvasion.value=='Mag. Eva')
-    assert(widget.Text_StudioPhysicalEvasionValue.value==physical..'%')
-    assert(widget.Text_StudioMagicalEvasionValue.value==magical..'%')
-    assert(widget.Text_StudioPhysicalEvasion.visibility==3 and widget.Text_StudioMagicalEvasion.visibility==3)
-    assert(widget.Text_StudioPhysicalEvasionValue.visibility==3 and widget.Text_StudioMagicalEvasionValue.visibility==3)
+    assert(physicalLabel.value=='Phys. Eva' and magicalLabel.value=='Mag. Eva')
+    assert(physicalValue.value==physical..'%' and magicalValue.value==magical..'%')
+    assert(physicalLabel.visibility==3 and magicalLabel.visibility==3)
+    assert(physicalValue.visibility==3 and magicalValue.visibility==3)
 end
 function hidden()
-    assert(widget.Text_StudioPhysicalEvasion.visibility==1 and widget.Text_StudioMagicalEvasion.visibility==1)
-    assert(widget.Text_StudioPhysicalEvasionValue.visibility==1 and widget.Text_StudioMagicalEvasionValue.visibility==1)
+    assert(physicalLabel.visibility==1 and magicalLabel.visibility==1)
+    assert(physicalValue.visibility==1 and magicalValue.visibility==1)
 end

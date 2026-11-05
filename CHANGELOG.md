@@ -11,6 +11,32 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Stat-detail page serial-size crash — 2026-11-04
+
+- Fix the reported `WBP_UnitStatus_DetailList.WidgetTree.WBP_UnitParam_Detail`
+  asset-load failure: **Expected read size 10, Actual read size 7**. The evasion
+  update appended four reflected fields to a shared native Blueprint. Existing
+  parent packages still contain instances serialized against its original
+  six-field schema. Their property index 31 then resolves to byte-backed
+  `TickFrequency` instead of the four-byte `Slot` reference, accounting for
+  the exact three-byte discrepancy.
+- Restore the original six fields, mappings and class-default serialization.
+  Keep the short labels, native label/numeric fonts and right-aligned values as
+  ordinary WidgetTree children. Lua finds them through the existing native tree
+  and panel APIs, without adding shared class fields or retaining UI pointers.
+  Current evasion calculations and the controller-map correction stay intact.
+- Add an independent regression using the captured parent header and inherited
+  schemas; it reproduces the 10-versus-7 discrepancy for the previous layout
+  and verifies `Slot` under the corrected class. Verify the compiled class
+  default's **110 bytes** match the original game exactly and reject schema
+  expansion. Previous isolated readback/package checks missed this cross-package
+  compatibility requirement.
+- Native compile/readback and 13 focused checks pass. Windows packaging and
+  in-game opening of the affected page remain pending for **1.2.162**. To play
+  before the fix, disable the evasion stat-page option and rebuild/install with
+  the game closed; switching the Studio option alone does not replace the
+  already installed asset.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

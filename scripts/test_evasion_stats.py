@@ -5,6 +5,7 @@ import hashlib
 import io
 import itertools
 import json
+import struct
 from pathlib import Path
 import tempfile
 import unittest
@@ -29,6 +30,49 @@ def fixture(name):
 
 
 class EvasionAssetsTests(unittest.TestCase):
+    def test_captured_parent_slot_keeps_its_original_type_and_serialized_budget(self):
+        parent=fixture('evasion_parent_schema.json.gz')
+        native=fixture('evasion_ui_native.json.gz')
+        authored=build.author(native)
+        cls=authored['Exports'][24]
+        inherited=[]
+        for schema in ('CommonUserWidget','UserWidget','Widget'):
+            inherited.extend(parent['schemas'][schema]['properties'])
+        blob=bytes.fromhex(parent['bytes'])
+        header=struct.unpack_from('<H',blob)[0]
+        self.assertEqual((header & 0x7f, bool(header & 0x100), (header >> 9) & 0x7f),(31,True,1))
+        fields=[{'name':p['Name']} for p in cls['LoadedProperties']]+inherited
+        prop=fields[31]
+        self.assertEqual(prop['name'],'Slot')
+        self.assertEqual(prop['type']['kind'],4) # Native object reference.
+        self.assertEqual(struct.unpack_from('<i',blob,2)[0],parent['decoded'][0]['Value'])
+        self.assertEqual(len(blob),2+4+4) # Header, reference, trailing object-GUID flag.
+        # Reproduce 1.2.161: four appended BP fields move index 31 to
+        # TickFrequency, consuming one byte instead of the four-byte Slot.
+        bad_fields=fields[:6]+[{'name':'added'}]*4+fields[6:]
+        bad=bad_fields[31]
+        self.assertEqual(bad['name'],'TickFrequency')
+        self.assertEqual(bad['type']['kind'],26) # Byte-backed enum property.
+        self.assertEqual(bad['type']['underlying']['kind'],0)
+        self.assertEqual(len(blob)-4+1,7) # Exactly the reported 10-versus-7 mismatch.
+        # Check the shipped class-default stream, not only a semantic JSON
+        # roundtrip using mappings changed to agree with the altered class.
+        readback=fixture('evasion_ui_readback.json.gz')
+        default=next(e for e in readback['Exports'] if e['ObjectName']==parent['classDefault']['object'])
+        with zipfile.ZipFile(PAYLOAD/'evasion_stats.zip') as z:
+            uasset=z.read(build.ASSET+'.uasset');uexp=z.read(build.ASSET+'.uexp')
+        start=default['SerialOffset']-len(uasset)
+        self.assertEqual(uexp[start:start+default['SerialSize']],bytes.fromhex(parent['classDefault']['bytes']))
+
+    def test_mappings_are_unchanged_and_schema_expansion_is_refused(self):
+        native=fixture('evasion_ui_native.json.gz');asset=build.author(native)
+        payload=bytes(12) # Empty name/enum/schema lists, sufficient for header validation.
+        original=b'\xc4\x30\x04\0\0\0\0\0'+struct.pack('<II',len(payload),len(payload))+payload
+        self.assertEqual(build.mappings(original,asset),original)
+        asset['Exports'][24]['LoadedProperties'].append(copy.deepcopy(asset['Exports'][24]['LoadedProperties'][1]))
+        with self.assertRaisesRegex(ValueError,'schema must remain unchanged'):
+            build.mappings(original,asset)
+
     def test_native_bytecode_grid_stat_types_and_bindings_preserved_after_serialized_readback(self):
         native = fixture('evasion_ui_native.json.gz')
         original = copy.deepcopy(native)
@@ -44,15 +88,17 @@ class EvasionAssetsTests(unittest.TestCase):
             self.assertEqual(semantic(a.get('Data')), semantic(b.get('Data')))
         original_class=original['widget']['Exports'][24]
         cls=readback['Exports'][24]
-        self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'][:-4])
+        # Parent packages contain child instances serialized against the native
+        # six-field schema. Merely preserving its prefix is insufficient: adding
+        # fields shifts inherited unversioned indices and crashes those pages.
+        self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'])
+        self.assertEqual(len(cls['LoadedProperties']),6)
         self.assertEqual(original_class['FuncMap'],cls['FuncMap'])
         self.assertEqual(original_class['Children'],cls['Children'])
-        self.assertEqual([p['Name'] for p in cls['LoadedProperties'][-4:]],
-                         ['Text_StudioPhysicalEvasion','Text_StudioPhysicalEvasionValue',
-                          'Text_StudioMagicalEvasion','Text_StudioMagicalEvasionValue'])
         self.assertEqual(build.field(readback['Exports'][25],'RootWidget')['Value'],27)
         for e in readback['Exports'][30:34:2]+readback['Exports'][36:40:2]:
             self.assertEqual(build.field(e,'Visibility')['Value'],'Collapsed')
+            self.assertFalse(build.field(e,'bIsVariable')['Value'])
             self.assertEqual(e['OuterIndex'],26)
             style=readback['Imports'][-build.field(e,'Style')['Value']-1]
             is_value=e['ObjectName'].endswith('Value')

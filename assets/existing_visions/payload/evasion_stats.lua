@@ -109,13 +109,39 @@ local function current(parameter, limit)
     end
     return decoy and 100 or capped(physical),capped(magical)
 end
-local function hide(widget)
-    for _,kind in ipairs({'Physical','Magical'}) do
-        for _,suffix in ipairs({'','Value'}) do
-            local ok,child=pcall(function() return widget['Text_Studio'..kind..'Evasion'..suffix] end)
-            if ok and live(child) then child:SetVisibility(1) end
-        end
+local function named(object,name)
+    return live(object) and object:GetFullName():match('[%.:]([^%.:]+)$')==name
+end
+local function labels(widget)
+    -- Keep the shared Blueprint's original six fields. Existing parent pages
+    -- serialize child instances against that exact unversioned schema. Added
+    -- text is game-owned WidgetTree content, not new reflected BP properties.
+    local tree=widget.WidgetTree
+    if not live(tree) then return end
+    local root=tree.RootWidget
+    if not named(root,'VerticalBox_StudioStats') or not root:IsA(native('UMG.PanelWidget')) then return end
+    signature('/Script/UMG.PanelWidget:GetChildrenCount','IntProperty')
+    signature('/Script/UMG.PanelWidget:GetChildAt','IntProperty,ObjectProperty')
+    if root:GetChildrenCount()~=3 then return end
+    local result={}
+    for i,kind in ipairs({'Physical','Magical'}) do
+        local row=root:GetChildAt(i) -- Child 0 is the untouched native stat grid.
+        if not named(row,'HorizontalBox_Studio'..kind..'Evasion') or
+            not row:IsA(native('UMG.PanelWidget')) or row:GetChildrenCount()~=2 then return end
+        local label,number=row:GetChildAt(0),row:GetChildAt(1)
+        if not named(label,'Text_Studio'..kind..'Evasion') or
+            not named(number,'Text_Studio'..kind..'EvasionValue') then return end
+        local textClass=native('CommonUI.CommonTextBlock')
+        if not label:IsA(textClass) or not number:IsA(textClass) then return end
+        result[kind]={label,number}
     end
+    return result
+end
+local function hide(widget)
+    local rows=labels(widget)
+    if rows then for _,pair in pairs(rows) do
+        for _,child in ipairs(pair) do if live(child) then child:SetVisibility(1) end end
+    end end
 end
 local function refresh(context)
     if runtime.busy then return end
@@ -128,10 +154,10 @@ local function refresh(context)
         if not parameter then hide(widget); return end
         local physical,magical=current(parameter,cap(widget))
         local values={Physical=physical,Magical=magical}
+        local rows=labels(widget)
+        assert(rows,'Evasion stat rows are missing; rebuild/install the mod')
         for kind,short in pairs({Physical='Phys. Eva',Magical='Mag. Eva'}) do
-            local label=widget['Text_Studio'..kind..'Evasion']
-            local number=widget['Text_Studio'..kind..'EvasionValue']
-            assert(live(label) and live(number),'Evasion stat rows are missing; rebuild/install the mod')
+            local label,number=rows[kind][1],rows[kind][2]
             label:SetText(FText(short))
             number:SetText(FText(tostring(values[kind])..'%'))
             for _,child in ipairs({label,number}) do
