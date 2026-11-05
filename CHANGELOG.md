@@ -11,35 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Session map size and interleaved evasion rows — 2026-11-05
-
-- The user confirms the large local map now fits correctly and the stat
-  labels/icons load and align. Remember the selected map view in Lua memory
-  across world-map/town/building/area transitions, mapping native wide world
-  view to full local view. Preserve manual small/large/hidden cycling. An
-  automatic large-to-small zone reset does not overwrite the last choice.
-  No new saved preference or Studio setting; restarting the game starts with
-  native defaults. A failed fit falls back once rather than forcing resize on
-  every world-position notification.
-- Move the Attributes section up by reducing its existing Role-to-Attributes
-  spacer from 60 to 24 Slate units. Role, fonts, widths and numbers stay intact.
-  Put **Phys. Eva.** immediately after physical defence and **Mag. Eva.** after
-  magical defence. Use the native entry height/padding for equal row pitch,
-  with real extra desired-height space so the final AP row remains visible.
-- Keep native entries in their own grid with their original bindings and slot
-  indices. Apply idempotent presentation offsets; the two passive rows stay
-  owned by the cooked WidgetTree. Multi-column comparison layouts retain native
-  positions and a readout below. Failed stat reads hide the added rows and
-  remove the reserved gaps. Preserve the six-field schema, embedded parent's
-  ten-byte child instance, original class-default bytes and fixed icon bulk data.
-- 41 focused checks pass: map transitions/manual cycles/bootstrap/failure
-  bounds, thirteen equally spaced row centres, repeated refresh, comparison
-  layouts, original role/parent bytecode/schema and embedded instance bytes.
-  Both widgets compile/read back with original mappings. A real UE5.6 container
-  verifies and reverse-extracts all four assets with zero failures.
-  **1.2.165** Windows/public-package checks and real-game transition/layout
-  confirmation remain pending.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -268,6 +239,64 @@ test-update version; the commit and workflow run identify the exact package. Dat
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
 
+## Published session map size and evasion row spacing — 2026-11-05
+
+- **1.2.165**, code `046b92746e24c4aa46391a5e30c475ee431055a8`,
+  [run 42101380363](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42101380363).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42101380363/Sephira-Studio-Test.zip):
+  **83,406,668 bytes**, SHA-256
+  `e929c3cc846931d12a9316d2f62bdbc96ff6afd226ad91427721bc3fc3cbe39b`.
+- The user confirms the large local map now fits correctly and the stat
+  labels/icons load and align. Remember the selected map view in Lua memory
+  across world-map/town/building/area transitions, mapping native wide world
+  view to full local view. Preserve manual small/large/hidden cycling. An
+  automatic large-to-small zone reset does not overwrite the last choice.
+  No new saved preference or Studio setting; restarting the game starts with
+  native defaults. A failed fit falls back once rather than forcing resize on
+  every world-position notification.
+- Move the Attributes section up by reducing its existing Role-to-Attributes
+  spacer from 60 to 24 Slate units. Role, fonts, widths and numbers stay intact.
+  Put **Phys. Eva.** immediately after physical defence and **Mag. Eva.** after
+  magical defence. Use the native entry height/padding for equal row pitch,
+  with real extra desired-height space so the final AP row remains visible.
+- Keep native entries in their own grid with their original bindings and slot
+  indices. Apply idempotent presentation offsets; the two passive rows stay
+  owned by the cooked WidgetTree. Multi-column comparison layouts retain native
+  positions and a readout below. Failed stat reads hide the added rows and
+  remove the reserved gaps. Preserve the six-field schema, embedded parent's
+  ten-byte child instance, original class-default bytes and fixed icon bulk data.
+- 41 focused checks pass: map transitions/manual cycles/bootstrap/failure
+  bounds, thirteen equally spaced row centres, repeated refresh, comparison
+  layouts, original role/parent bytecode/schema and embedded instance bytes.
+  Both widgets compile/read back with original mappings. A real UE5.6 container
+  verifies and reverse-extracts all four assets with zero failures.
+- Windows checks pass: **982 Python tests** (33 skipped; local 73), **355 Flutter
+  tests** (one skipped), clean analysis, fresh bundled-engine startup, engine
+  archive checks, 14 launcher and 10 vision-import checks. Compilation and
+  validation succeed for the same commit before publication.
+- All **199 public App files** match independent compile artifact **13449634549**,
+  SHA-256 `2c818eaea849b4f30a30682dc79a0e4f2e37de9f008558fcd312081bdfbae2a5`.
+  All 94 extension and 16 Fina manifest entries match source. Delivered-byte
+  checks pass: **176 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and
+  all 99 shard identities.
+- Inspect the actual compiled assets: stat widget **46 exports**, unchanged six
+  reflected fields and 110-byte default; parent **29 exports**, unchanged schema
+  and embedded ten-byte stat instance. Both private icons retain their approved
+  pixels and one valid resource entry, consuming **65,661 of 65,661 bytes**.
+  Repack all four compiled packages into a real UE5.6 container, verify it and
+  reverse-extract with zero failures.
+- Close the game, update Studio, keep the existing map/evasion options enabled,
+  **GO / Build and install**, then restart. No preparation or preset reset.
+  Live transitions and vertical spacing remain unconfirmed; package tests do
+  not establish Unreal gameplay behavior.
+- Timing, America/Los_Angeles on November 5: first complete candidate
+  **12:01:58 PST** → verified ZIP/download-link delivery **12:22:45 PST**:
+  **20m 47s**. Includes local checks and final defensive tests, native/container
+  verification, the matching automatic build, waiting and independent
+  compiled/public-package checks; the timer was not restarted. CI wall
+  **8m 23s**, summed runner usage **11m 45s**. This candidate interval does not
+  measure the entire request or user-PC installation time; no install-speed claim.
+
 ## Published evasion icon bulk-data crash fix — 2026-11-05
 
 - **1.2.164**, code `f8f96179fb82b61e1b156155e9b7556c5359eaee`,
@@ -310,8 +339,9 @@ test-update version; the commit and workflow run identify the exact package. Dat
   establish package/reader behavior, not live Unreal rendering.
 - Close the game, update Studio, re-enable **Physical and magical evasion on
   stat pages** if disabled as a workaround, then **GO / Build and install** and
-  restart. No preparation or preset reset. In-game opening and icon appearance
-  still need confirmation. This fix does not resolve the older encounter crashes.
+  restart. No preparation or preset reset. The next user screenshot confirms
+  opening, icons and horizontal alignment. This fix does not resolve the older
+  encounter crashes.
 - Timing, America/Los_Angeles on November 5: first complete candidate
   **10:59:12 PST** → verified ZIP/download-link delivery
   **11:12:50 PST**: **13m 38s**.

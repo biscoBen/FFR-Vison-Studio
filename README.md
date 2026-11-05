@@ -4,6 +4,26 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Session map size and evasion row spacing — 2026-11-05
+
+[Verified Studio 1.2.165 / run 42101380363](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42101380363/Sephira-Studio-Test.zip)
+(code `046b927`; **83.4 MB**).
+
+The selected map size now carries across world-map, town, building and area
+transitions for the game session. The normal small/large/hidden button cycle
+still applies; no saved preference is added.
+
+Move Attributes up into the gap below Role and use the native vertical spacing
+throughout. **Phys. Eva.** follows **Phys. Def.**; **Mag. Eva.** follows
+**Mag. Def.**. Retain the approved icons, fonts, horizontal columns and live values.
+
+Close the game, update Studio, keep the existing map/evasion options enabled,
+then **GO / Build and install** and restart. No preparation or preset reset.
+Windows, native container and public-package checks pass. The user confirms the
+previous map fit and icon alignment; these new transitions and vertical spacing
+still need in-game confirmation.
+[Validation and timings](CHANGELOG.md#published-session-map-size-and-evasion-row-spacing--2026-11-05).
+
 ### Evasion icon crash fix — 2026-11-05
 
 [Verified Studio 1.2.164 / run 42089808485](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42089808485/Sephira-Studio-Test.zip)
@@ -16,8 +36,8 @@ stat-widget schema, evasion calculations and controller-map update are retained.
 Close the game, update Studio, re-enable the evasion option if disabled as a
 workaround, then **GO / Build and install** and restart. No preparation or preset
 reset. Windows checks, native-stream regression, real UE5.6 container conversion
-and public-package verification pass. In-game opening and icon appearance still
-need confirmation; this is separate from the older encounter crash investigation.
+and public-package verification pass. The next user screenshot confirms that
+the page opens and both icons display; this is separate from the older encounter crash investigation.
 [Validation and timings](CHANGELOG.md#published-evasion-icon-bulk-data-crash-fix--2026-11-05).
 
 ### Evasion icons, aligned columns and controller-map fit — 2026-11-05
@@ -2944,11 +2964,21 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Its regression checks the embedded parent instance, rather than relying only
   on the modified widget's standalone readback. Windows/public-package checks
   pass; the November 5 screenshot confirms that the page opens and values display.
-  Version 1.2.163 adds approved icons and native horizontal columns; live alignment
-  and broader page/buff coverage remain pending.
+  Version 1.2.163 adds approved icons and native horizontal columns.
   The 1.2.163 icon texture bulk-table omission caused a separate load failure;
   1.2.164 supplies that metadata and passes independent native-stream and real
-  container checks. In-game reopening and icon appearance remain pending.
+  container checks. The next user screenshot confirms reopening, both icons and
+  horizontal alignment. Version 1.2.165 moves Attributes up and interleaves the
+  evasion rows after the corresponding defence, using native vertical spacing
+  and final periods in both labels. Windows, compiled native/container and
+  public-package checks pass; revised spacing and broader page/buff coverage
+  remain pending in-game.
+- [ ] **Controller local map.** The user confirms that the large map fits its
+  box correctly after the 1.2.163 update. Published 1.2.165 carries the selected
+  view through world/town/building/area transitions in session memory, retaining
+  native button cycling and exploration visibility. Transition/runtime and
+  Windows/public-package checks pass; real-game transition confirmation remains
+  pending. No saved preference is introduced.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
