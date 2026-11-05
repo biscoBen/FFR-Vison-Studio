@@ -2835,6 +2835,14 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   no idle glow, direct parameter-driven aura fades, the frame-134 fall and frame-258 reformation in real battles.
   Verify owned runtime staging/restoration and Deck transfer with cycling on and off. Keep the authorized seated
   fallback, native source bytes and saved kits. Refresh the labeled Studio preview and cache revision separately.
+- [ ] **Physical and magical evasion on in-game stat pages (requested November 4).**
+  Add live values for the selected character, accounting for equipment, applicable
+  MR/passive effects and active battle buffs. Native shared stat widgets and
+  effect-list access points are identified; their complete menu/battle coverage,
+  stacking, conditions and cap application still need verification. No evasion
+  display has shipped. The [read-only stat reference exporter](https://chatgpt.com/api/library/files/libfile_73ff52ac89d8819183ab2728bce0861f/download)
+  collects the missing stat UI/calculation definitions without another game
+  preparation or rebuild. See the [investigation and limits](CHANGELOG.md#physical-and-magical-evasion-stat-page-investigation--2026-11-04).
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table

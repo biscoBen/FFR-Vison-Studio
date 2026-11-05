@@ -11,6 +11,49 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Physical and magical evasion stat-page investigation — 2026-11-04
+
+- Requested: add **Physical Evasion %** and **Magical Evasion %** to the in-game
+  character stat pages, reflecting the selected character's equipment, applicable
+  MR/passive bonuses and current effects. Use live battle parameters for battle
+  buffs; an outside-battle page must not imply those buffs are active. Learned
+  but unequipped MR skills must follow the game's activation rules.
+- Confirmed in the pinned generated native SDK: the shared `WBP_UnitParam_Detail`
+  and `WBP_UnitStatus_Detail` widgets receive `CPP_VM_UnitParam`; its `UnitParam`
+  points to the selected native parameter object. `CPP_VM_BtlUnitParam` also has
+  a battle parameter reference. `CPP_UnitParameter:GetContEffectList` and
+  `CPP_ContEffect:GetEffectData` expose native effect records. Evasion is absent
+  from the ordinary `eUnitParameterType` list; no reflected final-evasion getter
+  has been verified. This metadata establishes candidate access points, not a
+  proven complete menu/battle readout.
+- Existing captured `Skill/DT_SkillEffectData` contains `Avoidance` records for
+  passive equipment effects and temporary buffs. Their parameters identify
+  physical/magic types, and `UNIT_PARAMETER_CALC_DATA` declares `evasionLimit`.
+  The cap's current value, native aggregation, conditional activation and the
+  exact point where the cap applies remain unverified. Do not ship a simple
+  description sum or a guessed 100% clamp as the game's actual evasion.
+- Prepare the standalone [Stat-Page-Reference.zip](https://chatgpt.com/api/library/files/libfile_73ff52ac89d8819183ab2728bce0861f/download)
+  (**7,332 bytes**, SHA-256
+  `eb357973661ba2504635dd49dbfdaae72b916ca08c5f0e64ffd8c5a27d64c07d`).
+  It exports shared stat/status widgets, their native UI definitions, relevant
+  effect/passive/equipment/MR tables and available calculation-table candidates
+  from official full-game containers, including patches. It reads no saves or
+  executable code, installs no script, and requires no F8, game restart,
+  preparation or rebuild. Compatible previous stat captures can be reused;
+  missing or partial required definitions produce a failure report.
+- Twelve PowerShell fixtures pass: narrow asset selection, source preservation,
+  official/patch dependencies, exact filter batches, partial-export failure,
+  mappings, full-game path recovery, compatible/stale cache handling, reporting
+  absent cap definitions and splitting/restoring large files. PowerShell syntax
+  and delivered ZIP/source equality pass. The real returned capture and native
+  stacking/cap verification are pending. **No evasion display or new app binary
+  has shipped; Studio 1.2.158 remains the current tested package.**
+- Native SDK metadata source, pinned `08b17943b0781704f4176dfca019f316a7641fa9`:
+  [parameter and effect types](https://github.com/PolarWizard/final-fantasy-resonance-fix/blob/08b17943b0781704f4176dfca019f316a7641fa9/5.6.1-0%2BUE5-FFRS/RustSDK/src/mucha/mod.rs),
+  [shared stat widget](https://github.com/PolarWizard/final-fantasy-resonance-fix/blob/08b17943b0781704f4176dfca019f316a7641fa9/5.6.1-0%2BUE5-FFRS/RustSDK/src/WBP_UnitParam_Detail/mod.rs).
+  Generated signatures are not the game's unreflected C++ calculation source.
+
+
 ### External crash monitoring after trace stutter — 2026-10-30
 
 - The user reports severe gameplay stuttering with the temporary per-line
