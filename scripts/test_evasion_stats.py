@@ -17,6 +17,7 @@ from lupa.lua54 import LuaRuntime
 from test_existing_visions import ROOT
 from test_local_map import clean
 import build_evasion_ui as build
+import verify_evasion_texture as texture_reader
 import _ffr_evasion_stats as assets
 import _ffr_field_leader as leader
 import _ffr_runtime_loader as loader
@@ -31,6 +32,35 @@ def fixture(name):
 
 
 class EvasionAssetsTests(unittest.TestCase):
+    def test_missing_bulk_table_reproduces_the_reported_65661_versus_141_read(self):
+        crash=fixture('evasion_texture_crash.json.gz')
+        read=texture_reader.native_read(crash['asset'])
+        self.assertEqual((read['expected'],read['consumed']),(crash['expectedRead'],crash['actualRead']))
+        self.assertEqual((read['expected'],read['consumed']),(65661,141))
+        self.assertEqual(read['pixels'],b'')
+        with self.assertRaisesRegex(ValueError,'Missing texture bulk-data table'):
+            texture_reader.validate(crash['asset'])
+
+    def test_compiled_icon_bulk_entry_consumes_the_whole_native_export_and_approved_pixels(self):
+        from PIL import Image
+        for kind,asset in fixture('evasion_icon_readback.json.gz').items():
+            read=texture_reader.validate(asset)
+            self.assertEqual((read['expected'],read['consumed']),(65661,65661))
+            self.assertEqual(read['index'],0)
+            expected=Image.open(ROOT/'scripts/fixtures/evasion_icons'/(kind.lower()+'.png')).convert('RGBA')
+            self.assertEqual(read['pixels'],expected.tobytes('raw','BGRA'))
+
+    def test_icon_reader_rejects_bad_resource_indices_sizes_and_deferred_read_offsets(self):
+        original=fixture('evasion_icon_readback.json.gz')['Magical']
+        for key,value in [('RawSize',0),('SerialSize',65535),('SerialOffset',105),('LegacyBulkDataFlags',0)]:
+            asset=copy.deepcopy(original);asset['DataResources'][0][key]=value
+            with self.subTest(key=key),self.assertRaises((ValueError,struct.error,IndexError)):
+                texture_reader.validate(asset)
+        asset=copy.deepcopy(original)
+        raw=bytearray(base64.b64decode(asset['Exports'][0]['Extras']));struct.pack_into('<i',raw,80,99)
+        asset['Exports'][0]['Extras']=base64.b64encode(raw).decode()
+        with self.assertRaises(ValueError):texture_reader.validate(asset)
+
     def test_captured_parent_slot_keeps_its_original_type_and_serialized_budget(self):
         parent=fixture('evasion_parent_schema.json.gz')
         native=fixture('evasion_ui_native.json.gz')

@@ -5,7 +5,7 @@ from pathlib import Path
 import zipfile
 
 # Filled from the pinned native SDK's compiled/read-back assets.
-ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': '733d3a846e040c487bda0d22e844e4cf86833cffaa9a2c4f377c93325f63491c', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': 'b61f1446b4f8cfc426ceb917f55da7da2023b235829fa7d190ab6b37fead9629', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uasset': 'c97a6839fa4de58f64a51694467470ddf9bf9f73e9ba0bb6ff27750a65eb82aa', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uexp': 'a7183bc631981af34aad8a7b2236833185f4c31b857e8fdf018bc822f1bb50e4', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uasset': 'ebc25a20c649b26aec78e0d3106299cf6a2ddcf7f504642a0d4faa6bee5ee30a', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uexp': '38438799dc1097f8189762abe2676bc9ec341ceec38feeb2f7c9a129e0351b2a'}
+ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': '733d3a846e040c487bda0d22e844e4cf86833cffaa9a2c4f377c93325f63491c', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': 'b61f1446b4f8cfc426ceb917f55da7da2023b235829fa7d190ab6b37fead9629', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uasset': '77d6781cd6849d40f9067383c7126becb8fb47e242168327e22727f0cf7a517d', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uexp': 'ea79bcc647ef0d734ff9c5671ef7744d2150b4330e1df107afae7eb926b31630', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uasset': '1d73966decf9d83494cfa792432683c56f6309a441e7e07703667b9827ef0cde', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uexp': '2493f4693cde1fd90c4005e10fd24473ece73b8d9ab9785c76bf85b5ecc01143'}
 
 
 def validate(raw):

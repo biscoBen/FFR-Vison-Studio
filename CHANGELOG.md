@@ -11,6 +11,32 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Evasion icon bulk-data serialization crash — 2026-11-05
+
+- Fix the reported **T_EvasionMagical** load failure in 1.2.163:
+  **Expected read size 65661, Actual read size 141**. I copied a four-byte
+  UE5.6 mip bulk-data index from the native donor but omitted its resource
+  table. Unreal then interprets that index and transparent pixels as a classic
+  empty bulk header and stops after 141 bytes. Earlier opaque readback/pixel
+  comparisons did not validate this metadata and missed the failure.
+- Give each private icon one valid inline resource entry, index zero, with
+  **65,536 pixel bytes**, the correct **101-byte export-relative offset** and
+  native inline/single-use flags. Preserve approved artwork, native columns,
+  the original six-field widget schema and 110-byte class default. The map
+  update and evasion calculations are unchanged.
+- An independent native-stream reader reproduces 65661-versus-141 from the
+  previous shipped asset. Both corrected textures consume all 65,661 bytes and
+  retain the approved pixels. Reject missing tables, wrong indices, sizes,
+  flags and deferred-read offsets. Real UE5.6 container conversion, integrity
+  verification and reverse extraction recover all three widget/texture assets
+  with no failures using official retoc v0.1.5. Native readback alone is not
+  treated as a load test.
+- **1.2.164** Windows/package checks and in-game opening remain pending.
+  While using 1.2.163, disable evasion stats and rebuild/install with the game
+  closed; changing the Studio switch alone does not replace installed assets.
+  No new diagnostic capture is needed. This is separate from the older
+  encounter/UE4SS crash investigation.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

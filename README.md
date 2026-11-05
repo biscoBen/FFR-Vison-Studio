@@ -4,6 +4,10 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+**Known issue in 1.2.163:** its new evasion icon textures can crash while
+loading. Disable evasion stats and rebuild/install with the game closed while
+1.2.164 is being packaged. A Studio switch alone does not replace installed assets.
+
 ### Evasion icons, aligned columns and controller-map fit — 2026-11-05
 
 [Verified Studio 1.2.163 / run 42084732633](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42084732633/Sephira-Studio-Test.zip)

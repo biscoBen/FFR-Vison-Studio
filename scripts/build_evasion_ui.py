@@ -43,6 +43,18 @@ def icon_textures(native):
         binary.pack_into('<II', header, 12, asset['NameMap'].index('PF_B8G8R8A8'), 0)
         binary.pack_into('<I', header, 20, 84 + len(pixels) + 24 - 28)
         binary.pack_into('<I', header, 76, 1)
+        # UE5.6 writes a bulk-data MAP INDEX here, not a classic inline bulk
+        # header. The extracted terrain donor used index 352; this private
+        # single-mip texture owns entry zero. Without the table Unreal reads
+        # the first transparent pixels as zero-sized classic bulk metadata.
+        binary.pack_into('<I', header, 80, 0)
+        asset['DataResourceVersion'] = 'Initial'
+        asset['DataResources'] = [{
+            '$type': 'UAssetAPI.UnrealTypes.FObjectDataResource, UAssetAPI',
+            'Flags': 'None', 'CookedIndex': 0,
+            'SerialOffset': native['iconTexture']['serializedPropertyBytes'] + len(header),
+            'DuplicateSerialOffset': -1, 'SerialSize': len(pixels), 'RawSize': len(pixels),
+            'OuterIndex': 0, 'LegacyBulkDataFlags': 72}]
         export['Extras'] = base64.b64encode(header + pixels + binary.pack('<3I', 128, 128, 1)
                                           + binary.pack('<3I', 0, asset['NameMap'].index('None'), 0)).decode()
         names(asset)

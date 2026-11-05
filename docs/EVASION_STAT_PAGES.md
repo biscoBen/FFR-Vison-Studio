@@ -57,6 +57,17 @@ alongside the widget JSON. It replaces no official icon or texture.
 Relocate both opaque platform-data FNames (pixel-format marker and final None)
 against each private texture's name table. Ordinary UAssetAPI roundtrip alone
 does not decode those Extras references; inspect the compiled stream explicitly.
+The 1.2.163 in-game crash exposed another omission: the four-byte mip header
+is a UE5.6 **data-resource index**, not a classic inline bulk header. Version
+1.2.164 supplies one native resource-table entry with index zero, 65,536-byte
+inline payload and export-relative offset 101 (17 property bytes + 84 header
+bytes). Keeping the old index 352 without its table makes the native reader
+interpret transparent pixels as zero-sized bulk metadata, consuming 141 bytes
+instead of the export's 65,661. `verify_evasion_texture.py` follows the
+independent bulk-header lookup/fallback contract, reproduces that exact mismatch
+and validates the complete mip read and deferred payload offset. A real UE5.6
+mod-container conversion/reverse extraction supplements the opaque JSON check.
+Source: [CUE4Parse bulk-header reader](https://github.com/FabianFG/CUE4Parse/blob/f7303f56da41b9bc43b983e48ecc4644a684c310/CUE4Parse/UE4/Assets/Objects/FByteBulkDataHeader.cs).
 Unreal constructs and owns every label. There is no raw UWidget construction,
 live Slate-struct copying or saved actor/HUD pointer.
 
@@ -94,5 +105,7 @@ and buff refresh still require gameplay confirmation. The combined 1.2.161
 update retains this styling and also corrects the controller map's area fit.
 The subsequent serial-size crash is addressed by the schema-preserving 1.2.162
 layout. The next user screenshot confirms the stat page opens and values appear;
-1.2.163 adds the requested icons and horizontal alignment. Their real-game
-appearance and broader buff/page coverage remain pending.
+1.2.163 adds the requested icons and horizontal alignment, but its texture bulk
+table omission causes the newly reported crash. Candidate 1.2.164 corrects that
+metadata without changing the approved pixels or row layout. In-game opening,
+icon appearance and broader buff/page coverage remain pending.
