@@ -4,7 +4,31 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Native stat spacing and map view-state follow-up — 2026-11-05
+
+[Verified Studio 1.2.166 / run 42107067672](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42107067672/Sephira-Studio-Test.zip)
+(code `9a44de5`; **83.4 MB**).
+
+Corrects the overlapping evasion rows from 1.2.165 by measuring the native grid's
+actual spacer rows. **Phys. Eva.** follows **Phys. Def.** and **Mag. Eva.** follows
+**Mag. Def.**, retaining the approved icons, columns and raised Attributes section.
+
+The controller map reads the game's separate visibility state to recover the
+small → large → off cycle. Preserve the selected step during native zoom
+restoration and retry a remembered full view when a new zone's bounds become
+ready. Session memory, native input and the accepted map fit remain in place.
+
+Close the game, update Studio, then **GO / Build and install** and restart.
+No preparation or preset reset. Windows, compiled-native/container and
+public-package checks pass; live spacing, cycling and zone transitions remain
+unconfirmed. The original Ariana FFBE battle loop was also recovered from the
+APK's delivery catalog; automatic party music is a separate feature still to add.
+[Validation and timings](CHANGELOG.md#published-native-stat-spacing-and-map-view-state-follow-up--2026-11-05).
+
 ### Session map size and evasion row spacing — 2026-11-05
+
+**Superseded by 1.2.166 above:** the user reports overlapping rows, large/off-only
+cycling and a return to small when zones change.
 
 [Verified Studio 1.2.165 / run 42101380363](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42101380363/Sephira-Studio-Test.zip)
 (code `046b927`; **83.4 MB**).
@@ -2972,13 +2996,17 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   evasion rows after the corresponding defence, using native vertical spacing
   and final periods in both labels. Windows, compiled native/container and
   public-package checks pass; revised spacing and broader page/buff coverage
-  remain pending in-game.
+  remain pending in-game. The user reports overlapping evasion rows on 1.2.165;
+  1.2.166 measures separate native spacer rows instead of inferring their gap.
+  Revised live spacing still needs confirmation.
 - [ ] **Controller local map.** The user confirms that the large map fits its
-  box correctly after the 1.2.163 update. Published 1.2.165 carries the selected
-  view through world/town/building/area transitions in session memory, retaining
-  native button cycling and exploration visibility. Transition/runtime and
-  Windows/public-package checks pass; real-game transition confirmation remains
-  pending. No saved preference is introduced.
+  box correctly after the 1.2.163 update. The 1.2.165 session-memory attempt
+  cycles only large/off and returns to small across zones in the user's test.
+  Published 1.2.166 reads the separate native visibility flag, preserves the
+  display step during zoom restoration and retries when new zone geometry
+  becomes ready. Native input and exploration visibility are retained.
+  Transition/runtime and Windows/public-package checks pass; real-game cycling
+  and transition confirmation remain pending. No saved preference is introduced.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table

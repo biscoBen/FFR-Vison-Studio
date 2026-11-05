@@ -11,38 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Native stat spacing and map view-state follow-up — 2026-11-05
-
-- The user reports that 1.2.165 overlaps Phys. Eva. with Phys. Def., puts
-  Mag. Eva. above Mag. Def., cycles only large/off and returns to small on
-  zone changes. The previous fixtures did not model two native details.
-- Measure the complete native stat GridPanel, including its separate spacer
-  rows and each child's desired height/padding. The prior inference chose
-  the opposite-direction gap (EnhancedUI Vertical is 0). Derive actual native
-  entry positions and pitch, then insert the two evasion readouts after their
-  respective defence rows. Preserve original grid slots, stat calculations,
-  approved icons, horizontal columns, raised Attributes and native assets.
-- Read map visibility separately with native GetIsDisplay(); hidden mode can
-  keep the old tag or use .Default. Handle visible .Default setup and finish
-  native zoom/property recovery by preserving the selected display step.
-  Retain native input, fitting, session memory and bounded reentry.
-- Retain the large-map choice when a zone's first notification precedes its
-  geometry. Retry on newly available/changed bounds using existing notifications;
-  remember the fallback source so unsupported data cannot force a resize loop.
-- 47 focused tests pass with separate native spacer widgets, zero horizontal
-  gap, hidden retained/default tags, repeated three-step cycling, zone setup
-  and a native property restore that resets the step. **1.2.166** full Windows
-  and delivered-package checks, plus live layout/cycling/transition feedback,
-  remain pending.
-- Ariana research: recover the supplied v208 APK by its recorded SHA-256 and
-  extract the catalog-linked **la561_bgm_Touch_It_Remix_Verse_to_Chorus.acb**
-  (2,345,568 bytes, SHA-256
-  `88904dd6d68dc73c785291279263594db3c3283bf7ff30cf1ce54abd44cd7bf4`).
-  Its single stereo 44.1 kHz recording decodes to 3,512,320 samples per channel,
-  **79.644444 seconds**, and carries native looping information. It is the game
-  battle loop, separate from the seven-second Resonance cue. Extraction only;
-  automatic party battle music is not enabled by this UI/map update.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -270,6 +238,73 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native stat spacing and map view-state follow-up — 2026-11-05
+
+- **1.2.166**, code `9a44de5c64e634d7506338b18ad76676c0c3cb19`,
+  [run 42107067672](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42107067672).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42107067672/Sephira-Studio-Test.zip):
+  **83,407,341 bytes**, SHA-256
+  `d093877732575241bc0e9dad4e95fdac0e007e52edc6a6f264fe31184565ad5a`.
+- The user reports that 1.2.165 overlaps Phys. Eva. with Phys. Def., puts
+  Mag. Eva. above Mag. Def., cycles only large/off and returns to small on
+  zone changes. The previous fixtures did not model two native details.
+- Measure the complete native stat GridPanel, including its separate spacer
+  rows and each child's desired height/padding. The prior inference chose
+  the opposite-direction gap (EnhancedUI Vertical is 0). Derive actual native
+  entry positions and pitch, then insert the two evasion readouts after their
+  respective defence rows. Preserve original grid slots, stat calculations,
+  approved icons, horizontal columns, raised Attributes and native assets.
+- Read map visibility separately with native GetIsDisplay(); hidden mode can
+  keep the old tag or use .Default. Handle visible .Default setup and finish
+  native zoom/property recovery by preserving the selected display step.
+  Retain native input, fitting, session memory and bounded reentry.
+- Retain the large-map choice when a zone's first notification precedes its
+  geometry. Retry on newly available/changed bounds using existing notifications;
+  remember the fallback source so unsupported data cannot force a resize loop.
+- 47 focused tests pass with separate native spacer widgets, zero horizontal
+  gap, hidden retained/default tags, repeated three-step cycling, zone setup
+  and a native property restore that resets the step. Replaying the updated
+  fixtures against the prior code reproduces the defect: the physical evasion
+  top is 76.5 instead of 108.5 Slate units, and hidden → small ends at index 1.
+  The corrected code ends at index 0. Late-geometry retry is bounded over repeated
+  notifications and resumes the large view when geometry becomes available.
+- Windows checks pass: **988 Python tests** (33 skipped; local 73), **355 Flutter
+  tests** (one skipped), clean analysis, fresh bundled-engine startup, cache
+  verification, 14 launcher and 10 vision-import checks. The initial automatic
+  build was superseded before publication to include the late-geometry fix;
+  join each matching automatic run without duplicate dispatch.
+- All **199 public App files** match independent compile artifact **13451368760**,
+  SHA-256 `5a5a337193df037e9a2ca7a12bd926acc959f4312d6ba824aa736c96d56a2240`.
+  All 94 extension and 16 Fina manifest entries match source. Delivered-byte
+  checks pass: **182 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and
+  all 99 shard identities.
+- Read back the actual compiled native assets: 46 stat-widget exports, six
+  original fields, byte-identical 110-byte default; 29 parent exports with its
+  embedded ten-byte stat instance preserved. Both icons consume all 65,661
+  native bytes with their valid bulk entry and approved pixels. Real UE5.6
+  container verification and reverse extraction recover all four packages
+  with zero failures. Native asset bytes are unchanged by this Lua-only fix.
+- Close the game, update Studio, **GO / Build and install**, then restart.
+  No preparation or preset reset. Live layout, cycling and zone transitions
+  remain unconfirmed; package checks do not establish gameplay behavior.
+- Ariana research: recover the supplied v208 APK by its recorded SHA-256 and
+  extract the catalog-linked **la561_bgm_Touch_It_Remix_Verse_to_Chorus.acb**
+  (2,345,568 bytes, SHA-256
+  `88904dd6d68dc73c785291279263594db3c3283bf7ff30cf1ce54abd44cd7bf4`).
+  Its single stereo 44.1 kHz recording decodes to 3,512,320 samples per channel,
+  **79.644444 seconds**, and carries native looping information. It is the game
+  battle loop, separate from the seven-second Resonance cue. Extraction only;
+  automatic party battle music is not enabled by this UI/map update.
+
+- Timing, America/Los_Angeles on November 5: first complete candidate
+  **12:44:27 PST** → verified ZIP/download-link delivery **13:02:14 PST**:
+  **17m 47s**. Includes local checks, the late-geometry correction, native/container
+  verification, both automatic builds, audio archiving, waiting and independent
+  compiled/public-package checks; the timer was not restarted. Final CI wall
+  **10m 57s**; final runner usage **14m 24s**, or **22m 14s** across both runs.
+  This candidate interval does not measure the entire APK investigation or
+  user-PC installation time; no install-speed claim.
 
 ## Published session map size and evasion row spacing — 2026-11-05
 
