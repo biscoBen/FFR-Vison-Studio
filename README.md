@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Aerith and Lunafreya challenge AoE reduction — 2026-11-05
+
+[Verified Studio 1.2.168 / run 42118798307](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42118798307/Sephira-Studio-Test.zip)
+(code `23bbe9f`; **83.4 MB**).
+
+Aerith and Oracle Maiden Lunafreya's boss AoE powers are now **40% of their
+previous values**, with integer rounding. Their level-35 Vaan challenge keeps
+its existing single-target skills, healing/support, AI, stats and rewards.
+Playable skills retain their current values.
+
+Includes the 1.2.167 fixes for missing evasion rows, controller map cycling and
+map-size memory across zones. Close the game, update Studio, then **GO / Build
+and install** and restart. No preparation or preset reset. Windows, compiled
+native/container and public-package checks pass; live balance/UI confirmation
+remains pending.
+[Validation and timings](CHANGELOG.md#published-aerith-and-lunafreya-challenge-aoe-reduction--2026-11-05).
+
 ### Evasion visibility and controller-map session recovery — 2026-11-05
 
 [Verified Studio 1.2.167 / run 42116545039](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42116545039/Sephira-Studio-Test.zip)

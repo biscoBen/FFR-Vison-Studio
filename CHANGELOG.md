@@ -11,20 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Aerith and Lunafreya challenge AoE reduction — 2026-11-05
-
-- **1.2.168 candidate.** Reduce final damaging AoE power for both bosses in the
-  level-35 Vaan challenge to **40% of its previous value**, after existing buffs
-  and shared-team scaling, with integer rounding. Use the existing private
-  boss-kit setting for Lunafreya and Aerith's migrated `elephim` preset identity.
-- Seven Lunafreya skill entries and three Aerith entries change. Graceful Deluge
-  goes 39 → 16, Maelstrom 27 → 11, and Burning Notes / Flame Chant 14 → 6.
-  Preserve single-target damage, healing/support, AI, level/stats, rewards and
-  playable skills. Include the 1.2.167 map/session and evasion visibility fixes.
-- All 26 challenge checks pass, including a comparison of complete generated
-  table plans proving that only these ten private AoE magnifications change.
-  Package validation and in-game tuning confirmation remain pending.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -252,6 +238,49 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published aerith and lunafreya challenge aoe reduction — 2026-11-05
+
+- **1.2.168**, code `23bbe9f683fba9917e578d7911b866dca8e3ed1b`,
+  [run 42118798307](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42118798307).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42118798307/Sephira-Studio-Test.zip):
+  **83,408,927 bytes**, SHA-256
+  `59e41bf4dd2717ebbc68932729f671e0b719ff21becbd3548c29eabf48c3f890`.
+- Reduce final damaging AoE power for both bosses in the level-35 Vaan
+  challenge to **40% of its previous value**, after existing buffs and shared
+  team scaling, with integer rounding. Apply the existing private boss-kit
+  setting to Lunafreya and Aerith's migrated `elephim` preset identity.
+- Seven Lunafreya entries and three Aerith entries change: Graceful Deluge
+  39 → 16, Maelstrom 27 → 11, the two 12-power tides → 5, the two 45-power
+  group spells → 18, her 14-power group skill → 6; Aerith's Burning Notes /
+  Flame Chant 14 → 6 and her 45-power group spell → 18.
+- Compare complete generated battle-table plans: only these ten private skill
+  magnifications change. Preserve single-target damage, healing/support, AI,
+  level/stats, rewards and playable skills. Source roster/native rows remain
+  unchanged. Include the 1.2.167 evasion visibility, measured spacing and
+  controller-map cycling/session recovery described below.
+- **84 focused checks**, **1,000 full Python tests** (Windows 33 skipped;
+  local 73), clean analysis, **355 Flutter tests** (one skipped), verified
+  engine cache, fresh engine startup, 14 launcher and ten import checks pass.
+- All **199 public App files** match independent compile artifact
+  **13457942646**, `sha256:29ffe92f5ccb2a755c2d1f791e5ff35038fd19142ccda6a5e77c74c9c0e93e7b`. All 94 extension and 16 Fina
+  manifest entries match source. Delivered-byte checks pass:
+  **193 runtime/UI**, **81 cave/challenge**, 15 MR, 11 storage
+  and all 99 shard identities. Both packaged boss-kit factors equal 0.4.
+  Actual compiled assets retain the six-field schema, 110-byte default, ten-byte
+  parent instance and complete icon bulk data; real UE5.6 container verification
+  and reverse extraction preserve all four packages and both geometry helpers.
+- Close the game, update Studio, **GO / Build and install**, then restart.
+  No preparation or preset reset. The battle tuning and previous UI fixes
+  still require live game confirmation; package checks do not establish that.
+- First UI candidate **2026-11-05T21:50:41Z**; later requested balance candidate
+  **2026-11-05T22:06:36Z**; verified combined delivery **2026-11-05T22:19:30Z**.
+  Original-candidate-to-delivery elapsed **28m 49s** includes both Windows
+  builds, local checks, the additional request, waiting and verification; the
+  balance-candidate interval is **12m 54s**. Join each matching automatic
+  run without duplicate dispatch. Current CI wall time **10m 18s**, aggregate
+  runner usage **14m 33s**; preceding UI run was 10m 38s wall / 14m 53s runner
+  usage. These measurements do not establish a sub-two-minute game install.
 
 ## Published evasion visibility and controller-map session recovery — 2026-11-05
 
