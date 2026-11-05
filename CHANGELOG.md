@@ -11,34 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Evasion icons, column alignment and visible local-map fit — 2026-11-05
-
-- The user confirms the corrected stat page opens and its values appear.
-  Add the approved white winged-dodge and crescent-ward icons alongside
-  **Phys. Eva** and **Mag. Eva**. Match the native 32-unit icon column and
-  four-unit label gap, retaining native label/numeric fonts and the shared
-  right-aligned percentage edge. Icons hide together with unavailable values.
-- Package both as private 128px RGBA UI textures. Preserve the original
-  six reflected widget fields, mappings, native class-default bytes, original
-  grid and game icons. No equipment/MR/buff calculation changes.
-  Pre-release stream inspection caught and corrected the opaque texture
-  pixel-format/terminator FName references; verify them against each compiled
-  texture's own name table, in addition to ordinary JSON readback and pixels.
-- The user reports the controller map still tiny after the earlier change.
-  Read the visible Blueprint's **VM_MiniMap** source, rather than relying on
-  its separate native cache. Fit the active area's actual **AreaDataMap.Size**
-  UI geometry, without projecting it again; retain capture-bound fallback
-  while native layout data is unavailable. Refresh an already initialized
-  map once when attaching hooks and coalesce class-load notifications.
-  Keep native markers, exploration visibility, overworld behavior and zoom
-  restoration; no polling, retained UI objects or save writes.
-- Native stat-widget and texture compilation/readback and 30 focused checks
-  pass, including the original embedded-parent serialization regression,
-  icon pixels/columns/visibility, bound map source and first-view initialization.
-  **1.2.163** Windows packaging and real-game icon alignment/map sizing are
-  pending. Previous mathematical fixtures did not cover the visible source
-  or its actual UI-area geometry, so passing them was not gameplay proof.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -266,6 +238,65 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published evasion icons and visible local-map fit — 2026-11-05
+
+- **1.2.163**, code `46e0834c41cdd5cce44d9e75a01c932ea6431dfb`,
+  [run 42084732633](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42084732633).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42084732633/Sephira-Studio-Test.zip):
+  **83,400,871 bytes**, SHA-256
+  `40edeecd5606cd24cff8a0e0307a9bb836bca51f9c2c8dbbddab52764cde407b`.
+- The user confirms the corrected stat page opens and its values appear.
+  Add the approved white winged-dodge and crescent-ward icons alongside
+  **Phys. Eva** and **Mag. Eva**. Match the native 32-unit icon column and
+  four-unit label gap, retaining native label/numeric fonts and the shared
+  right-aligned percentage edge. Icons hide together with unavailable values.
+- Package both as private 128px RGBA UI textures. Preserve the original
+  six reflected widget fields, mappings, native class-default bytes, original
+  grid and game icons. No equipment/MR/buff calculation changes.
+  Pre-release stream inspection caught and corrected the opaque texture
+  pixel-format/terminator FName references; verify them against each compiled
+  texture's own name table, in addition to ordinary JSON readback and pixels.
+- The user reports the controller map still tiny after the earlier change.
+  Read the visible Blueprint's **VM_MiniMap** source, rather than relying on
+  its separate native cache. Fit the active area's actual **AreaDataMap.Size**
+  UI geometry, without projecting it again; retain capture-bound fallback
+  while native layout data is unavailable. Refresh an already initialized
+  map once when attaching hooks and coalesce class-load notifications.
+  Keep native markers, exploration visibility, overworld behavior and zoom
+  restoration; no polling, retained UI objects or save writes.
+- Native stat-widget and texture compilation/readback and 30 focused checks
+  pass, including the original embedded-parent serialization regression,
+  icon pixels/columns/visibility, bound map source and first-view initialization.
+  Windows/public-package verification now passes for **1.2.163**;
+  real-game icon alignment and revised map sizing remain pending. Previous
+  mathematical fixtures did not cover the visible source or its actual UI-area
+  geometry, so passing them was not gameplay proof.
+- Checks pass: **971 Python tests** (local 73 environment skips; Windows 33),
+  Flutter analysis, **355 Flutter tests** (one skipped), fresh frozen-engine
+  startup, engine-cache transactions, 14 launcher and 10 import checks.
+- All **199 public App files** match independently downloaded compile artifact
+  **13442349911**, SHA-256
+  `3568f0160014c8a6e9e6459c9ad8311ba5a9c39c81bd3e2ad61d8cd08494ae36`.
+  All 94 extension and 16 Fina manifest entries match source. Delivered-byte
+  checks pass: **165 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and
+  all 99 shard identities. Compiled native readback verifies **44 widget exports,
+  six original fields, the unchanged 110-byte class default**, and both textures'
+  exact approved pixels and opaque name references. This is package/metadata
+  evidence; it does not establish live rendering or resolve older encounter crashes.
+- Close the game, update Studio, keep **Physical and magical evasion on stat
+  pages** and **Full local map on controller** enabled, then **GO / Build and
+  install** and restart. No preparation or preset reset is needed.
+- Timing, America/Los_Angeles on November 5: first complete candidate
+  **10:24:04 PST** → verified ZIP/download-link delivery
+  **10:41:55 PST**: **17m 51s**.
+  Includes local checks, the pre-release texture correction, the superseded
+  automatic run, queueing, final build and independent package verification;
+  the timer was not restarted. Superseded run 42084012823: CI wall
+  **5m 28s**, runner usage **10m 23s**. Final run: CI wall
+  **10m 38s**, runner usage **13m 45s**. Total runner usage
+  **24m 08s**. This candidate interval is not the complete
+  original request or user-PC installation time; no sub-two-minute install claim.
 
 ## Published stat-detail page crash fix — 2026-11-04
 

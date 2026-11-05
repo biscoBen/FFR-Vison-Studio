@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Evasion icons, aligned columns and controller-map fit — 2026-11-05
+
+[Verified Studio 1.2.163 / run 42084732633](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42084732633/Sephira-Studio-Test.zip)
+(code `46e0834`; **83.4 MB**).
+
+Adds the approved white dodge and magical-ward icons beside **Phys. Eva** and
+**Mag. Eva**, matching the native icon slot, label gap and right-aligned values.
+Preserves the six-field stat-widget crash fix and the current evasion calculation.
+The controller map now fits the active area's actual UI layout, reads the view
+model bound to the visible map and refreshes an already initialized first view.
+
+Close the game, update Studio, keep the existing evasion/map options enabled,
+then **GO / Build and install** and restart. No preparation or preset reset.
+Windows, native-asset and public-package checks pass; the revised icon alignment
+and map sizing still need in-game confirmation.
+[Validation and timings](CHANGELOG.md#published-evasion-icons-and-visible-local-map-fit--2026-11-05).
+
 ### Stat-detail page crash fix — 2026-11-04
 
 [Verified Studio 1.2.162 / run 41973801915](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41973801915/Sephira-Studio-Test.zip)
@@ -19,9 +36,9 @@ Close the game, update Studio, re-enable **Physical and magical evasion on stat
 pages** if disabled as a workaround, then **GO / Build and install** and restart.
 The Studio switch alone does not replace installed assets. No preparation or
 preset reset is needed. Windows checks, public-package comparison and an
-independent embedded-parent serialization regression pass. Opening the affected
-page in game still needs confirmation. This is separate from the older encounter
-crash investigation.
+independent embedded-parent serialization regression pass. The user's next
+screenshot confirms the page opens and values display. This is separate from
+the older encounter crash investigation.
 [Validation and timings](CHANGELOG.md#published-stat-detail-page-crash-fix--2026-11-04).
 
 ### Compact evasion stats and readable controller map — 2026-11-04
@@ -2908,7 +2925,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   native class-default bytes while keeping the compact rows in WidgetTree.
   Its regression checks the embedded parent instance, rather than relying only
   on the modified widget's standalone readback. Windows/public-package checks
-  pass; reopening the affected page in game remains pending.
+  pass; the November 5 screenshot confirms that the page opens and values display.
+  Version 1.2.163 adds approved icons and native horizontal columns; live alignment
+  and broader page/buff coverage remain pending.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
