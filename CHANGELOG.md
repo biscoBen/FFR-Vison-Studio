@@ -11,32 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Evasion icon bulk-data serialization crash — 2026-11-05
-
-- Fix the reported **T_EvasionMagical** load failure in 1.2.163:
-  **Expected read size 65661, Actual read size 141**. I copied a four-byte
-  UE5.6 mip bulk-data index from the native donor but omitted its resource
-  table. Unreal then interprets that index and transparent pixels as a classic
-  empty bulk header and stops after 141 bytes. Earlier opaque readback/pixel
-  comparisons did not validate this metadata and missed the failure.
-- Give each private icon one valid inline resource entry, index zero, with
-  **65,536 pixel bytes**, the correct **101-byte export-relative offset** and
-  native inline/single-use flags. Preserve approved artwork, native columns,
-  the original six-field widget schema and 110-byte class default. The map
-  update and evasion calculations are unchanged.
-- An independent native-stream reader reproduces 65661-versus-141 from the
-  previous shipped asset. Both corrected textures consume all 65,661 bytes and
-  retain the approved pixels. Reject missing tables, wrong indices, sizes,
-  flags and deferred-read offsets. Real UE5.6 container conversion, integrity
-  verification and reverse extraction recover all three widget/texture assets
-  with no failures using official retoc v0.1.5. Native readback alone is not
-  treated as a load test.
-- **1.2.164** Windows/package checks and in-game opening remain pending.
-  While using 1.2.163, disable evasion stats and rebuild/install with the game
-  closed; changing the Studio switch alone does not replace installed assets.
-  No new diagnostic capture is needed. This is separate from the older
-  encounter/UE4SS crash investigation.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -265,7 +239,64 @@ test-update version; the commit and workflow run identify the exact package. Dat
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
 
+## Published evasion icon bulk-data crash fix — 2026-11-05
+
+- **1.2.164**, code `f8f96179fb82b61e1b156155e9b7556c5359eaee`,
+  [run 42089808485](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42089808485).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42089808485/Sephira-Studio-Test.zip):
+  **83,400,896 bytes**, SHA-256
+  `a28fb34d47415558083081546acf27d4f9f18c4a0c61d18514aab334e7074125`.
+- Fix the reported **T_EvasionMagical** load failure in 1.2.163:
+  **Expected read size 65661, Actual read size 141**. I copied a four-byte
+  UE5.6 mip bulk-data index from the native donor but omitted its resource
+  table. Unreal then interprets that index and transparent pixels as a classic
+  empty bulk header and stops after 141 bytes. Earlier opaque readback/pixel
+  comparisons did not validate this metadata and missed the failure.
+- Give each private icon one valid inline resource entry, index zero, with
+  **65,536 pixel bytes**, the correct **101-byte export-relative offset** and
+  native inline/single-use flags. Preserve approved artwork, native columns,
+  the original six-field widget schema and 110-byte class default. The map
+  update and evasion calculations are unchanged.
+- An independent native-stream reader reproduces 65661-versus-141 from the
+  previous shipped asset. Both corrected textures consume all 65,661 bytes and
+  retain the approved pixels. Reject missing tables, wrong indices, sizes,
+  flags and deferred-read offsets. Real UE5.6 container conversion, integrity
+  verification and reverse extraction recover all three widget/texture assets
+  with no failures using official retoc v0.1.5. Native readback alone is not
+  treated as a load test.
+- Checks pass: **974 Python tests** (local 73 environment skips; Windows 33),
+  **355 Flutter tests** (one skipped), Flutter analysis, fresh frozen-engine
+  startup, engine-cache transactions, 14 launcher and 10 import checks.
+  All **199 public App files** match independent compile artifact **13444712833**,
+  SHA-256 `922657f471810a35b5abea47d7cfcd5ee94556441449bea939ebad497bc709d8`.
+  All 94 extension and 16 Fina manifest entries match source. Delivered-byte
+  checks pass: **168 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and
+  all 99 shard identities.
+- Verify the actual compiled artifact's textures with the native-stream reader:
+  each has one valid bulk entry and consumes **65,661 of 65,661 bytes**.
+  Each deferred read points to its 65,536 approved pixel bytes. Repack that
+  artifact into a real UE5.6 container, verify it and reverse-extract all three
+  assets with zero failures. The stat widget retains **44 exports, six original
+  reflected fields and its byte-identical 110-byte class default**. These checks
+  establish package/reader behavior, not live Unreal rendering.
+- Close the game, update Studio, re-enable **Physical and magical evasion on
+  stat pages** if disabled as a workaround, then **GO / Build and install** and
+  restart. No preparation or preset reset. In-game opening and icon appearance
+  still need confirmation. This fix does not resolve the older encounter crashes.
+- Timing, America/Los_Angeles on November 5: first complete candidate
+  **10:59:12 PST** → verified ZIP/download-link delivery
+  **11:12:50 PST**: **13m 38s**.
+  Includes local checks, native/container verification, the matching automatic
+  build, waiting and independent compiled/public-package checks; the timer was
+  not restarted. CI wall **9m 46s**, summed runner job usage **13m 16s**.
+  This candidate interval does not measure the entire investigation or user-PC
+  installation time; no sub-two-minute install claim.
+
 ## Published evasion icons and visible local-map fit — 2026-11-05
+
+**Superseded by 1.2.164:** 1.2.163 omits the icons' native bulk-data table and
+can crash while loading them. Its opaque readback/pixel checks missed that
+metadata requirement; those successful checks did not establish game loading.
 
 - **1.2.163**, code `46e0834c41cdd5cce44d9e75a01c932ea6431dfb`,
   [run 42084732633](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42084732633).

@@ -4,11 +4,25 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-**Known issue in 1.2.163:** its new evasion icon textures can crash while
-loading. Disable evasion stats and rebuild/install with the game closed while
-1.2.164 is being packaged. A Studio switch alone does not replace installed assets.
+### Evasion icon crash fix — 2026-11-05
+
+[Verified Studio 1.2.164 / run 42089808485](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42089808485/Sephira-Studio-Test.zip)
+(code `f8f9617`; **83.4 MB**).
+
+Corrects the missing native bulk-data table behind the **T_EvasionMagical**
+65,661-versus-141 load failure in 1.2.163. The approved icons, native columns,
+stat-widget schema, evasion calculations and controller-map update are retained.
+
+Close the game, update Studio, re-enable the evasion option if disabled as a
+workaround, then **GO / Build and install** and restart. No preparation or preset
+reset. Windows checks, native-stream regression, real UE5.6 container conversion
+and public-package verification pass. In-game opening and icon appearance still
+need confirmation; this is separate from the older encounter crash investigation.
+[Validation and timings](CHANGELOG.md#published-evasion-icon-bulk-data-crash-fix--2026-11-05).
 
 ### Evasion icons, aligned columns and controller-map fit — 2026-11-05
+
+**Superseded by 1.2.164 above:** 1.2.163 can crash while loading its icon textures.
 
 [Verified Studio 1.2.163 / run 42084732633](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42084732633/Sephira-Studio-Test.zip)
 (code `46e0834`; **83.4 MB**).
@@ -2932,6 +2946,9 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   pass; the November 5 screenshot confirms that the page opens and values display.
   Version 1.2.163 adds approved icons and native horizontal columns; live alignment
   and broader page/buff coverage remain pending.
+  The 1.2.163 icon texture bulk-table omission caused a separate load failure;
+  1.2.164 supplies that metadata and passes independent native-stream and real
+  container checks. In-game reopening and icon appearance remain pending.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
