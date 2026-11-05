@@ -37,10 +37,14 @@ def icon_textures(native):
         export = asset['Exports'][0]
         export['ObjectName'] = name
         header = bytearray.fromhex(native['iconTexture']['header'])
+        # The platform-data marker and final terminator are serialized FNames,
+        # even though UAssetAPI exposes this native block as opaque Extras.
+        # Relocate both against this private texture's name table.
+        binary.pack_into('<II', header, 12, asset['NameMap'].index('PF_B8G8R8A8'), 0)
         binary.pack_into('<I', header, 20, 84 + len(pixels) + 24 - 28)
         binary.pack_into('<I', header, 76, 1)
         export['Extras'] = base64.b64encode(header + pixels + binary.pack('<3I', 128, 128, 1)
-                                          + bytes.fromhex(native['iconTexture']['tail'])).decode()
+                                          + binary.pack('<3I', 0, asset['NameMap'].index('None'), 0)).decode()
         names(asset)
         result[name] = asset
     return result

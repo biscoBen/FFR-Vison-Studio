@@ -21,6 +21,9 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Package both as private 128px RGBA UI textures. Preserve the original
   six reflected widget fields, mappings, native class-default bytes, original
   grid and game icons. No equipment/MR/buff calculation changes.
+  Pre-release stream inspection caught and corrected the opaque texture
+  pixel-format/terminator FName references; verify them against each compiled
+  texture's own name table, in addition to ordinary JSON readback and pixels.
 - The user reports the controller map still tiny after the earlier change.
   Read the visible Blueprint's **VM_MiniMap** source, rather than relying on
   its separate native cache. Fit the active area's actual **AreaDataMap.Size**

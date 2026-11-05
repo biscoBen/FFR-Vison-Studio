@@ -54,6 +54,9 @@ share the native text/number columns. Images hide with unavailable values.
 The approved artwork and prepared texture inputs are kept in
 `scripts/fixtures/evasion_icons`; the generator emits each private texture
 alongside the widget JSON. It replaces no official icon or texture.
+Relocate both opaque platform-data FNames (pixel-format marker and final None)
+against each private texture's name table. Ordinary UAssetAPI roundtrip alone
+does not decode those Extras references; inspect the compiled stream explicitly.
 Unreal constructs and owns every label. There is no raw UWidget construction,
 live Slate-struct copying or saved actor/HUD pointer.
 
