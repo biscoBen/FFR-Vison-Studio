@@ -4,11 +4,30 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Evasion visibility and controller-map session recovery — 2026-11-05
+
+[Verified Studio 1.2.167 / run 42116545039](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42116545039/Sephira-Studio-Test.zip)
+(code `408e161`; **83.4 MB**).
+
+Addresses the errors in Ben's supplied log: keep valid **Phys. Eva.** and
+**Mag. Eva.** visible while layout settles, then use actual native geometry
+to position them after their defence rows. Retain the approved icons, columns,
+native fields and earlier asset compatibility fixes.
+
+The controller map observes the separate hidden state and zone initialization
+to recover small → large → off and carry the selected size across map/area
+transitions for the session. Missing bounds no longer force small. Preserve
+the accepted fit and native input; no saved preference is added.
+
+Close the game, update Studio, then **GO / Build and install** and restart.
+No preparation or preset reset. Windows, native-container and public-package
+checks pass; live spacing, cycling and transitions remain unconfirmed.
+[Validation and timings](CHANGELOG.md#published-evasion-visibility-and-controller-map-session-recovery--2026-11-05).
+
 ### Native stat spacing and map view-state follow-up — 2026-11-05
 
-**Follow-up in progress:** Ben's log confirms that 1.2.166 rejects the live stat
-layout and loses map size during transitions. The evasion rows are absent and
-map cycling/zone memory remain broken in that build. See the Unreleased entry.
+**Superseded by 1.2.167 above:** Ben reports absent evasion rows, large/off-only
+cycling and a return to small on zone changes; his log identifies the failures.
 
 [Verified Studio 1.2.166 / run 42107067672](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42107067672/Sephira-Studio-Test.zip)
 (code `9a44de5`; **83.4 MB**).

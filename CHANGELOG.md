@@ -11,33 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Evasion visibility and controller-map session recovery — 2026-11-05
-
-- **1.2.167 candidate.** Ben's supplied `UE4SS.log` identifies our rejected
-  stat-grid row span and unavailable current-area bounds. Stat hooks eventually
-  register successfully; those initial warnings are not the permanent blocker.
-  Do not infer the actual span or an encounter-crash cause from these messages.
-- Remove the span assumption. Keep valid **Phys. Eva.** / **Mag. Eva.** values
-  visible while native layout settles, then place them after their respective
-  defence rows using measured native rectangles. A bounded five-attempt layout
-  observer and a below-grid fallback separate presentation from data failures.
-  Two pure Blueprint geometry functions return coordinates only: FGeometry's
-  opaque transforms never roundtrip through UE4SS's reflected Lua tables. Keep
-  all six native class fields, original bytecode, defaults and parent instances.
-- Observe the active map HUD by its object hash path on the game thread, including
-  hidden changes that do not call `SetAppearance`. Respect every manual native
-  step and restore the session preference after a map/area/source change and
-  input initialization. Missing bounds no longer force small; a sole native area
-  supports maps without an area ID, while ambiguous bounds wait for native data.
-  Preserve approved map fitting, native input and no persistence across game restarts.
-- UI observers retain paths/scalars, use no repeated global/actor scans, support
-  both native and legacy UE4SS scheduling, and coalesce legacy queued work.
-  Unchanged map fits cause no zoom writes, position resyncs or repaints.
-- Focused checks pass for row spans, delayed/failed layout, nonuniform spacing and
-  DPI, serialized Blueprint geometry with opaque native tokens, hidden changes
-  without appearance notifications, silent zone resets, area-less maps and loading
-  guards. Package validation and live game confirmation are still pending.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -265,6 +238,57 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published evasion visibility and controller-map session recovery — 2026-11-05
+
+- **1.2.167**, code `408e161f16ce843882545c2af3cf249ed6ca9cf5`,
+  [run 42116545039](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42116545039).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42116545039/Sephira-Studio-Test.zip):
+  **83,408,941 bytes**, SHA-256
+  `33ebf213b05679382d9ff585ab4d6b4c73ce57619083495eabe875dd4a9846f2`.
+- Ben's actual `UE4SS.log` shows our rejected stat-grid row span and unavailable
+  current-area bounds. Stat hooks eventually register. The log does not establish
+  the actual span, a fatal crash or a cause for the older encounter crashes.
+- Remove the span assumption and preserve valid evasion values during layout
+  initialization. Measure actual native row rectangles, including nonuniform
+  spacing and DPI, to insert **Phys. Eva.** after **Phys. Def.** and **Mag. Eva.**
+  after **Mag. Def.**. A bounded five-attempt observer and below-grid fallback
+  separate layout readiness from failed data reads. Approved icons, native text,
+  horizontal columns, raised Attributes and stat calculations remain intact.
+- Two pure Blueprint helpers keep opaque FGeometry transforms inside Unreal;
+  only Vector2D coordinates cross Lua. The original six class fields and native
+  bytecode remain intact. The compiled widget has 48 exports; its 110-byte default
+  and the parent's ten-byte embedded instance remain byte-identical. Both icons
+  consume the expected 65,661 bytes with approved pixels and valid bulk entries.
+- Observe the active HUD by hash path to catch hidden changes that bypass
+  SetAppearance and zone resets without widget notifications. Respect all three
+  manual steps, restore the session preference after map/area/source changes and
+  input initialization, and stop forcing small when bounds are unavailable.
+  Maps without an area ID may use their sole native area; ambiguous bounds wait.
+  Preserve approved fitting, native input and no persistence across game restarts.
+- Observers retain paths/scalars, avoid repeated global/actor scans, support
+  legacy UE4SS scheduling and coalesce queued game-thread work. An unchanged map
+  fit causes no zoom writes, position resyncs or repaints.
+- **58 focused checks** and **999 full Python tests** pass (Windows 33 skipped;
+  local 73). Windows also passes clean analysis, **355 Flutter tests** (one
+  skipped), verified engine cache, fresh engine startup, 14 launcher and ten
+  vision-import checks. These are fixture/package results, not live game proof.
+- All **199 public App files** match independent compile artifact
+  **13457217071**, `sha256:545791a9404632b59abfe5ec8455b945c55ef0bef0f44cce5b547ea2d6e323d4`. All 94 extension and 16 Fina
+  manifest entries match source. Delivered-byte checks pass:
+  **193 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and all 99
+  shard identities. Read back actual compiled assets, verify a real UE5.6
+  container and reverse-extract all four packages without failures; the new
+  geometry function metadata and Kismet remain intact through conversion.
+- Close the game, update Studio, **GO / Build and install**, then restart.
+  No preparation or preset reset. Live evasion spacing, controller cycling and
+  zone transitions still require in-game confirmation.
+- First complete candidate **2026-11-05T21:50:41Z**; verified public delivery
+  **2026-11-05T22:04:33Z**: **13m 52s** including local checks, Windows
+  validation/compilation, waiting and delivery verification. One automatic run
+  was joined with no duplicate dispatch. Measured CI wall time **10m 38s**;
+  aggregate runner usage **14m 53s**, separately from candidate-to-delivery
+  elapsed time. This does not establish a sub-two-minute game installation.
 
 ## Published native stat spacing and map view-state follow-up — 2026-11-05
 
