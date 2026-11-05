@@ -11,6 +11,52 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Returned evasion code and corrected lookup follow-up — 2026-11-04
+
+- Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
+  merged. Part 001: **9,445,008 bytes**, SHA-256
+  `576dfd741083b6b720f81ee60518eb32bce3c7d3c6d7f44d13cbe0602f9140f9`;
+  part 002: **4,296,501 bytes**, SHA-256
+  `ab59e657e5304b70cccf911798a6d05bd227f6223890b471ac76fa84196991ed`.
+  All 16,585 recorded payload files verify, including 16,582 compiler function
+  records / **11,940,250 code bytes**. The report has no selection-limit omissions.
+  Source `FFRS-Win64-Shipping.exe`: **495,708,416 bytes**, SHA-256
+  `b8c588e46ebadbe37feca7bdf2da0ae63a8538099d14a53ec0c2241b086e5ffa`.
+  Code is disassembled as data; the game image is not executed.
+- Confirm one aggregation fragment at RVAs `0x05233d7f`–`0x05233e73`:
+  load the native UnitParameterCalc row (table type `0x13`), read its int32
+  limit at `+0x144`, and use literal **75** if that row is unavailable. Iterate
+  an instance effect array at `+0xb8`, call each eligible effect's virtual member
+  at `+0x4a8` with a byte argument, sum its integer return values, take the
+  smaller of that sum and the configured limit, then truncate to an integer.
+  This verifies that fragment's operations. Instance-role assignment, individual
+  getter semantics, conditional behavior and the full surrounding hit calculation
+  remain unverified; this is not yet an actual evasion display or final dodge chance.
+- Identify an exporter defect: this executable's read-only lookup section is
+  named **`.data1`** (RVA `0x07731000`, raw offset `124978176`, **36,884,480 bytes**,
+  flags `0x40000040`). The first reader exported only sections named `.rdata`
+  or `.xdata`. The compiler also splits a logical function across exception
+  records; selected records leave gaps around the confirmed fragment. No size
+  limit being reached does not mean the calculation is semantically complete.
+  This omission belongs to the exporter, not to the user's supplied ZIPs.
+- Provide [Evasion-Lookup-Reference.zip](https://chatgpt.com/api/library/files/libfile_dd535192d96081919520cb3f46c065a0/download),
+  **7,454 bytes**, SHA-256
+  `063b55d4cccc186867931662e62666fa584c064976e1d65c03679d8b3e898138`.
+  It fills the missing lookup section by read-only flags and the verified native
+  registration address, plus an uninterrupted 8 MiB application-code interval
+  (`0x04d00000`–`0x05500000`) covering the relevant native area. It checks the
+  exact prior executable hash before using these addresses. It does not repeat
+  the UI/table export or function search, attach to a process, run the game,
+  install scripts or alter saves/mods/settings. No restart, preparation or rebuild.
+- Seven fixtures pass for renamed sections, exact contiguous source bytes
+  including gaps, executable-hash gating, source/save preservation, rejecting
+  writable lookup data and non-code intervals, and compressible/incompressible
+  large-file upload restoration below 25 MiB. Planning uses compressed payload
+  sizes and header budgets to reduce upload count. Syntax, reader compilation
+  and delivered archive/source equality pass. The corrected real-game follow-up
+  and remaining native semantics are pending; no evasion feature has shipped.
+
+
 ### Returned evasion stat-page capture and native-code blocker — 2026-11-04
 
 - Received `Stat-Page-Reference-20261104-164620-b34644-001.zip`: **2,354,730 bytes**,
