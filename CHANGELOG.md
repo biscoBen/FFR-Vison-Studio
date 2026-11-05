@@ -11,36 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Native stat grid, map-load memory and reward-label follow-up — 2026-11-05
-
-- **1.2.169 candidate.** Ben confirms controller cycling now works, while large
-  size still resets between zones and the stat page overlaps Phys. Eva. with AP.
-  His current log reports `Stat overlay has not been arranged yet`; stat and map
-  hooks register successfully, and the loader finds the real engine LoadMap hook.
-- Top-align the native stat grid: its captured centre alignment made added
-  Overlay height shift AP into the fallback readouts. Use native grid slots and
-  spacer widgets to reserve the two defence gaps, normalizing vertical spans to
-  single rows. Compute positions from desired sizes and padding without cached
-  geometry, render translations, new class fields or geometry Blueprint helpers.
-  Restore owned slot/spacer values for comparison pages, failed data reads and
-  native rebuilds. Preserve approved icons, columns, fonts and evasion values.
-- Freeze the selected map step across the actual engine map-load boundary; use
-  world/HUD identity and a load epoch alongside view-model IDs. Restore after
-  input/data initialization, retaining the now-confirmed three-step cycle.
-- Replace Aerith's party-wide **Berserker Samba** turn with her existing reduced
-  basic Burning Notes in scripted and casual AI. Retain the 40% AoE settings,
-  other turns, powers, stats and playable kit.
-- Correct Reberta MR9's passive title to **Reberta's Limit Break** in Studio and
-  the game. Use a stable private label (1946) for source passive 1442, retaining
-  native effect data, 30 AP cost, MR placement, Spirit and the original Clive row.
-  Existing editable configurations keep their original source IDs and custom text.
-- Focused runtime, generated battle-table and Studio label checks pass. Windows
-  package verification and live in-game confirmation remain pending.
-  Native UI assets round-trip with the original schema; AI selection uses
-  authored fixtures and retains the installer's native readback check. An extra
-  historical AI-fixture cook does not match this capture's class mapping, so it
-  is not a full-game AI serialization result from this cloud workspace.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -268,6 +238,79 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published native stat grid, map-load memory and reward-label follow-up — 2026-11-05
+
+- **1.2.169**, code `c5113e60d375cfa3cc2031ad393d2be3d8c934f4`,
+  [run 42130074168](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42130074168).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42130074168/Sephira-Studio-Test.zip):
+  **83,409,601 bytes**, SHA-256
+  `81fcd88f4ffc584a123dc95287f5d48b0d0f9caab8cccd72eb79f48dc31a42f0`.
+- Ben confirms three-step cycling works in 1.2.168, but large map size resets
+  across zones and Phys. Eva. overlaps AP. His latest log shows the stat page
+  remains in fallback because cached geometry is unavailable. Both sets of
+  widget hooks register successfully; the loader also finds engine LoadMap.
+- Top-align the native grid instead of centring it in an Overlay whose height
+  grows with the added rows. In a representative captured-layout model, the
+  old fallback places AP and Phys. Eva. centres just 0.25 Slate units apart.
+  Normalize the single-column native grid's vertical spans and expand its own
+  spacer widgets to reserve real rows after Phys. Def. and Mag. Def. Desired
+  sizes and padding determine positions without cached geometry or render
+  translations. Restore owned values for comparison pages, source failures and
+  native rebuilds; unchanged stat updates do not rewrite native slots/spacers.
+- Preserve the six native class fields, original function map/bytecode,
+  approved icons/fonts/columns and raised Attributes. Remove the two unused
+  geometry helpers. Compiled readback has 46 widget exports; native default
+  remains byte-identical at 110 bytes, parent has 29 exports and its embedded
+  stat instance remains ten bytes. Both icons consume all 65,661 expected bytes.
+  Real UE5.6 container verification and reverse extraction recover all four
+  packages without failures, retaining the original 19 functions.
+- Freeze the selected map step across engine LoadMap, then restore after
+  input/data initialization. Include world/HUD identity and a load epoch in
+  addition to VM IDs, covering reused models and old-HUD resets. Keep the
+  user-confirmed small → large → off cycle and accepted fit. Load callbacks
+  retain no world/context pointers and do not alter save data or native input.
+  Old code reproduces a lost large choice in the load-boundary fixture (0);
+  corrected code retains it (1). These are fixture results, not live proof.
+- Replace Aerith's **Berserker Samba** (source 570420, group Berserk effect 1095)
+  turn with her existing reduced-power **Burning Notes**. Scripted eight-action
+  and casual/random AI exclude Samba. Preserve the other seven turns, all
+  powers including both bosses' 0.4 AoE settings, stats, rewards and playable kit.
+- Rename Reberta MR9's passive to **Reberta's Limit Break** in Studio and game.
+  Stable private label 1946 clones source 1442 with only ID/name changes:
+  preserve native effects, description, 30 AP cost, MR position and Spirit.
+  Editable configs keep source IDs and deliberate text; original Clive row
+  and established private IDs remain unchanged.
+- **103 focused Python checks**, **11 focused Flutter checks**, clean local
+  analysis and **1,006 full Python tests** pass (Windows 33 skipped; local 73).
+  Windows also passes **356 Flutter tests** (one skipped), verified engine cache,
+  fresh engine startup, 14 launcher and ten vision-import checks. A historical
+  AI fixture does not match this capture's class mapping; it is not a current
+  full-game AI cook result. Selection tests exercise authored AI, and the
+  installer retains native AI serialization/readback against the installed game.
+- All **199 public App files** match independent compile artifact
+  **13462512665**, `sha256:ad554a62b0259653f121dbbbe1e99c9099ff4a3c68da656e8bbcc0fc3abbbb68`. All 94 extension and 16 Fina
+  manifest files match source. Delivered checks pass:
+  **197 runtime/UI**, **82 cave/challenge**, **16 MR**,
+  11 storage and all 99 shard identities. The packaged boss settings and
+  Reberta's name-only binding were also checked.
+- Initial [run 42127865426](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/42127865426)
+  passed validation, compilation and the required `windows` gate, then received
+  GitHub HTTP 500 creating its release. An exact-artifact cloud recovery also
+  failed authentication on the separate upload host and left no public release.
+  An intentional full retry of the same code through GitHub Actions produced
+  a fresh build record, passed all required checks and published its own artifact.
+- Close the game, update Studio, **GO / Build and install**, then restart.
+  No preparation or preset reset. Stat layout, map memory, battle action removal
+  and the game MR label still require in-game confirmation.
+- First complete candidate **2026-11-05T23:01:51Z**; verified public delivery
+  **2026-11-05T23:45:59Z**: **44m 08s** including corrections, local checks,
+  cloud startup, Windows validation/compilation, waiting and package verification.
+  The first automatic run was joined; the explicit retry was dispatched after
+  its publication failure. Final-run CI wall time **12m 57s**, aggregate runner usage
+  **17m 50s**; initial run **10m 10s** wall / **14m 21s** runner usage.
+  These are separate from candidate-to-delivery elapsed time. This does not
+  establish a sub-two-minute game install.
 
 ## Published aerith and lunafreya challenge aoe reduction — 2026-11-05
 

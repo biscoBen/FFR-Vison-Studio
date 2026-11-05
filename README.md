@@ -4,12 +4,31 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Stat layout, map memory and battle follow-up — 2026-11-05
+
+[Verified Studio 1.2.169 / run 42130074168](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42130074168/Sephira-Studio-Test.zip)
+(code `c5113e6`; **83.4 MB**).
+
+Reserve native grid space for **Phys. Eva.** after **Phys. Def.** and
+**Mag. Eva.** after **Mag. Def.** Top alignment prevents the native grid from
+moving into fallback readouts; cached geometry is no longer needed.
+
+Remember map size across the actual map-load boundary while retaining the
+confirmed three-step cycle. Aerith's boss AI replaces **Berserker Samba** with
+her reduced-power basic attack. Reberta's MR9 is labelled **Reberta's Limit
+Break**, keeping its effect and AP cost. Both bosses retain the 40% AoE setting.
+
+Close the game, update Studio, then **GO / Build and install** and restart.
+No preparation or preset reset. Windows, native UI/container and public-package
+checks pass; these latest layout, transition and battle changes remain
+unconfirmed in the running game.
+[Validation and timings](CHANGELOG.md#published-native-stat-grid-map-load-memory-and-reward-label-follow-up--2026-11-05).
+
 ### Aerith and Lunafreya challenge AoE reduction — 2026-11-05
 
-Ben confirms the three-step map cycle works in 1.2.168. The large view still
-resets between zones, and the stat page still overlaps Phys. Eva. with AP.
-Those follow-ups, Berserker Samba removal and Reberta's MR9 label are in progress
-under Unreleased.
+**1.2.168 feedback:** Ben confirmed cycling worked, but reported that large
+size reset between zones and Phys. Eva. overlapped AP. See the 1.2.169 update
+above for those corrections, which still await in-game confirmation.
 
 [Verified Studio 1.2.168 / run 42118798307](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42118798307/Sephira-Studio-Test.zip)
 (code `23bbe9f`; **83.4 MB**).
