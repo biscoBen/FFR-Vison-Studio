@@ -111,8 +111,10 @@ local function current(parameter, limit)
 end
 local function hide(widget)
     for _,kind in ipairs({'Physical','Magical'}) do
-        local label=widget['Text_Studio'..kind..'Evasion']
-        if live(label) then label:SetVisibility(1) end
+        for _,suffix in ipairs({'','Value'}) do
+            local ok,child=pcall(function() return widget['Text_Studio'..kind..'Evasion'..suffix] end)
+            if ok and live(child) then child:SetVisibility(1) end
+        end
     end
 end
 local function refresh(context)
@@ -126,14 +128,16 @@ local function refresh(context)
         if not parameter then hide(widget); return end
         local physical,magical=current(parameter,cap(widget))
         local values={Physical=physical,Magical=magical}
-        -- Labels explicitly describe the current loadout, including when the
-        -- surrounding native equipment page is comparing a hovered item.
-        for _,kind in ipairs({'Physical','Magical'}) do
+        for kind,short in pairs({Physical='Phys. Eva',Magical='Mag. Eva'}) do
             local label=widget['Text_Studio'..kind..'Evasion']
-            assert(live(label),'Evasion stat rows are missing; rebuild/install the mod')
-            label:SetText(FText('Current '..kind..' Evasion: '..tostring(values[kind])..'%'))
-            label:SetToolTipText(FText('Current equipped loadout and active effects on this page. Attack accuracy and guaranteed-hit rules can change the result.'))
-            label:SetVisibility(3)
+            local number=widget['Text_Studio'..kind..'EvasionValue']
+            assert(live(label) and live(number),'Evasion stat rows are missing; rebuild/install the mod')
+            label:SetText(FText(short))
+            number:SetText(FText(tostring(values[kind])..'%'))
+            for _,child in ipairs({label,number}) do
+                child:SetToolTipText(FText('Equipped loadout and active effects on this page. Equipment comparisons show equipped values. Attack accuracy and guaranteed-hit rules can change the result.'))
+                child:SetVisibility(3)
+            end
         end
     end)
     if not ok then

@@ -44,16 +44,27 @@ class EvasionAssetsTests(unittest.TestCase):
             self.assertEqual(semantic(a.get('Data')), semantic(b.get('Data')))
         original_class=original['widget']['Exports'][24]
         cls=readback['Exports'][24]
-        self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'][:-2])
+        self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'][:-4])
         self.assertEqual(original_class['FuncMap'],cls['FuncMap'])
         self.assertEqual(original_class['Children'],cls['Children'])
-        self.assertEqual([p['Name'] for p in cls['LoadedProperties'][-2:]],
-                         ['Text_StudioPhysicalEvasion','Text_StudioMagicalEvasion'])
+        self.assertEqual([p['Name'] for p in cls['LoadedProperties'][-4:]],
+                         ['Text_StudioPhysicalEvasion','Text_StudioPhysicalEvasionValue',
+                          'Text_StudioMagicalEvasion','Text_StudioMagicalEvasionValue'])
         self.assertEqual(build.field(readback['Exports'][25],'RootWidget')['Value'],27)
-        for e in readback['Exports'][28::2]:
+        for e in readback['Exports'][30:34:2]+readback['Exports'][36:40:2]:
             self.assertEqual(build.field(e,'Visibility')['Value'],'Collapsed')
             self.assertEqual(e['OuterIndex'],26)
-        self.assertEqual(len(readback['Exports']),32)
+            style=readback['Imports'][-build.field(e,'Style')['Value']-1]
+            is_value=e['ObjectName'].endswith('Value')
+            self.assertEqual(style['ObjectName'],'BP_SystemTextStyle_PramNUM_C' if is_value else 'BP_SystemTextStyle_C')
+            if is_value:
+                self.assertEqual(build.field(e,'Justification')['Value'],'Right')
+                self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['number'],'Font')))
+            else:
+                self.assertEqual(build.field(e,'Text')['CultureInvariantString'],
+                                 'Phys. Eva' if 'Physical' in e['ObjectName'] else 'Mag. Eva')
+                self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['label'],'Font')))
+        self.assertEqual(len(readback['Exports']),40)
 
     def test_packaged_native_assets_stage_exactly_and_reject_tampering(self):
         with tempfile.TemporaryDirectory() as directory:

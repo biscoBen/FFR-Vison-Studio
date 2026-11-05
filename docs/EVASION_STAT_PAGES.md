@@ -2,8 +2,8 @@
 
 Home → **Physical and magical evasion on stat pages** is optional and defaults
 to OFF. Enable it, build/install with the existing UE4SS loader and restart the
-game. The shared character stat grid gains **Current Physical Evasion** and
-**Current Magical Evasion** rows. Equipment comparisons report the current
+game. The shared character stat grid gains **Phys. Eva** and **Mag. Eva** rows,
+with percentages in a separate right-aligned column. Equipment comparisons report the current
 loadout, not an unverified prediction for a hovered item.
 
 The page's own `CPP_VM_UnitParam.UnitParam` supplies the selected character.
@@ -43,13 +43,15 @@ reflected methods/properties, not these addresses or private memory offsets.
 ## UI and lifecycle
 
 `scripts/build_evasion_ui.py` extends the captured native
-`WBP_UnitParam_Detail` WidgetTree with two passive CommonTextBlocks, retaining its
-font style, existing grid, stat enum list, bytecode, bindings and view model.
+`WBP_UnitParam_Detail` WidgetTree with two passive label/value rows. Labels use
+the captured `BP_SystemTextStyle`; percentages use the native
+`BP_SystemTextStyle_PramNUM`, the ordinary white color and right alignment.
+Retain the existing grid, stat enum list, bytecode, bindings and view model.
 Unreal constructs and owns every label. There is no raw UWidget construction,
 live Slate-struct copying or saved actor/HUD pointer.
 
 The captured mappings already declare this BP. A private mapping copy extends
-that exact existing schema with the two object properties, preserving other
+that exact existing schema with the four text-widget properties, preserving other
 schema indices and extensions. The original mappings and capture stay intact.
 The compiled asset decodes fully and round-trips through the pinned native SDK;
 its readback verifies the original defaults and all existing functions.
@@ -64,5 +66,8 @@ Fixture checks cover active-effect stacking, live cap changes, Decoy, raw 500,
 float32 rounding, expired/garbage effects, selected-character changes, battle
 versus menu sources, missing data/signature guards, initial class loading,
 combined runtime controls, settings and checked native staging. These checks
-establish code/package behavior. Real-game rendering, page coverage and buff
-refresh remain unverified until gameplay feedback is available.
+establish code/package behavior. The user confirmed values appearing in 1.2.159
+and supplied a screenshot showing 25% physical and 35% magical evasion, with
+overflowing labels. Version 1.2.160 shortens the labels and uses native label and
+numeric styles in separate columns. The revised layout, broader page coverage
+and buff refresh still require gameplay confirmation.

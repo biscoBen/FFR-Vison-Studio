@@ -55,6 +55,7 @@ end
 widget=object('Stat page');widgetType=object('WidgetBlueprintGeneratedClass '..cls)
 function widget:GetClass() return widgetType end
 widget.Text_StudioPhysicalEvasion=label();widget.Text_StudioMagicalEvasion=label()
+widget.Text_StudioPhysicalEvasionValue=label();widget.Text_StudioMagicalEvasionValue=label()
 function parameter(isBattle)
     local p=object('Parameter')
     p.class='/Script/mucha.CPP_'..(isBattle and 'BtlUnitParameter' or 'UnitParameter')
@@ -93,10 +94,14 @@ function show(name)
     gameThread=true;hooks[cls..':'..(name or 'HandleUnitParamUpdate')](param(widget));gameThread=false
 end
 function values(physical,magical)
-    assert(widget.Text_StudioPhysicalEvasion.value=='Current Physical Evasion: '..physical..'%')
-    assert(widget.Text_StudioMagicalEvasion.value=='Current Magical Evasion: '..magical..'%')
+    assert(widget.Text_StudioPhysicalEvasion.value=='Phys. Eva')
+    assert(widget.Text_StudioMagicalEvasion.value=='Mag. Eva')
+    assert(widget.Text_StudioPhysicalEvasionValue.value==physical..'%')
+    assert(widget.Text_StudioMagicalEvasionValue.value==magical..'%')
     assert(widget.Text_StudioPhysicalEvasion.visibility==3 and widget.Text_StudioMagicalEvasion.visibility==3)
+    assert(widget.Text_StudioPhysicalEvasionValue.visibility==3 and widget.Text_StudioMagicalEvasionValue.visibility==3)
 end
 function hidden()
     assert(widget.Text_StudioPhysicalEvasion.visibility==1 and widget.Text_StudioMagicalEvasion.visibility==1)
+    assert(widget.Text_StudioPhysicalEvasionValue.visibility==1 and widget.Text_StudioMagicalEvasionValue.visibility==1)
 end

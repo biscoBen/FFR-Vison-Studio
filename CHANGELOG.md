@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Compact evasion labels and native stat typography — 2026-11-04
+
+- User feedback confirms the evasion values appear in game, but the long
+  labels extend beyond the attributes panel. Replace them with **Phys. Eva**
+  and **Mag. Eva**, removing the visible word “Current” and the colons.
+- Put percentages in a separate right-aligned column. Reuse the captured
+  native stat-label and numeric font styles, with the ordinary white numeric
+  color and space matching the native icon column. The live calculation,
+  selected parameter, equipment/MR handling and battle effects are unchanged.
+- Retain the current-loadout explanation in tooltips, including equipment
+  comparisons. Collapse both labels and values if the data/layout is unavailable.
+  Native compilation/readback passes; package checks and live layout feedback
+  remain pending for 1.2.160.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
