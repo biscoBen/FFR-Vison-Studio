@@ -11,32 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Stat-detail page serial-size crash — 2026-11-04
-
-- Fix the reported `WBP_UnitStatus_DetailList.WidgetTree.WBP_UnitParam_Detail`
-  asset-load failure: **Expected read size 10, Actual read size 7**. The evasion
-  update appended four reflected fields to a shared native Blueprint. Existing
-  parent packages still contain instances serialized against its original
-  six-field schema. Their property index 31 then resolves to byte-backed
-  `TickFrequency` instead of the four-byte `Slot` reference, accounting for
-  the exact three-byte discrepancy.
-- Restore the original six fields, mappings and class-default serialization.
-  Keep the short labels, native label/numeric fonts and right-aligned values as
-  ordinary WidgetTree children. Lua finds them through the existing native tree
-  and panel APIs, without adding shared class fields or retaining UI pointers.
-  Current evasion calculations and the controller-map correction stay intact.
-- Add an independent regression using the captured parent header and inherited
-  schemas; it reproduces the 10-versus-7 discrepancy for the previous layout
-  and verifies `Slot` under the corrected class. Verify the compiled class
-  default's **110 bytes** match the original game exactly and reject schema
-  expansion. Previous isolated readback/package checks missed this cross-package
-  compatibility requirement.
-- Native compile/readback and 13 focused checks pass. Windows packaging and
-  in-game opening of the affected page remain pending for **1.2.162**. To play
-  before the fix, disable the evasion stat-page option and rebuild/install with
-  the game closed; switching the Studio option alone does not replace the
-  already installed asset.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -265,7 +239,62 @@ test-update version; the commit and workflow run identify the exact package. Dat
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
 
+## Published stat-detail page crash fix — 2026-11-04
+
+- **1.2.162**, code `34f280b41a278e84880edecc230ad1cd8ab82245`,
+  [run 41973801915](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/41973801915).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41973801915/Sephira-Studio-Test.zip):
+  **83,376,481 bytes**, SHA-256
+  `2633efa2108e6905722da310bbc04802a9f98e6126df06eac5cbee50deb1bbea`.
+- Fix the reported `WBP_UnitStatus_DetailList.WidgetTree.WBP_UnitParam_Detail`
+  asset-load failure: **Expected read size 10, Actual read size 7**. The evasion
+  styling appended four reflected fields to a shared native Blueprint. Existing
+  parent packages still contain instances serialized against its original
+  six-field schema. Property index 31 then resolves to byte-backed
+  `TickFrequency` instead of the four-byte `Slot` reference, accounting for
+  the exact three-byte discrepancy.
+- Restore the original six fields, mappings and class-default serialization.
+  Keep the short labels, native label/numeric fonts and right-aligned values as
+  ordinary WidgetTree children. Lua finds them through the existing native tree
+  and panel APIs, without adding shared class fields or retaining UI pointers.
+  Current evasion calculations and the controller-map correction stay intact.
+- The independent captured-parent regression reproduces the previous 10-versus-7
+  discrepancy and verifies the corrected `Slot` type. Actual compiled widget
+  readback passes with original mappings: **40 exports, six reflected fields**.
+  The class default's **110 bytes** match the original game exactly, SHA-256
+  `edce2438d513f1fd590e014676eb59d1cf0b216f29e229c3195e2edb04317fc4`.
+  Reject schema expansion. Previous isolated readback/package checks missed
+  embedded native-instance compatibility; their success did not prove this page
+  could load.
+- Checks pass: **967 Python tests** (local 73 environment skips; Windows 33),
+  Flutter analysis, **355 Flutter tests** (one skipped), fresh frozen-engine
+  startup, engine-cache transactions, 14 launcher and 10 import checks.
+  Thirteen focused evasion checks include the parent regression, unchanged
+  mappings/default bytes, native fonts, selected parameters and combined runtime.
+- All **199 public App files** match independent compile artifact **13390049325**,
+  SHA-256 `e7d48d9fb1fed2c137457ff140f6abda24d6e91d6cf810643174b97df3e97b94`.
+  All 94 extension and 16 Fina manifest entries match source. Delivered-byte
+  checks pass: **161 runtime/UI**, 80 cave/challenge, 15 MR, 11 storage and
+  99 shard identities. Source commit, workflow, versions and release digest match.
+- Close the game, update Studio, re-enable **Physical and magical evasion on
+  stat pages** if disabled as a workaround, then **GO / Build and install** and
+  restart. A Studio switch alone does not replace installed assets. No repeated
+  preparation or preset reset. Opening the affected page in game remains
+  pending. This serialization fix does not establish resolution of the older
+  encounter/UE4SS crashes. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
+- Timing, America/Los_Angeles on November 4: first complete candidate
+  **21:16:56 PST** → verified ZIP/download-link delivery **21:35:15 PST**:
+  **18m 19s**. Includes final native correction, local checks, the matching
+  automatic build, waiting and independent compiled/public-package verification;
+  the timer was not restarted. CI wall **10m 01s**, summed runner job usage
+  **13m 59s**. This candidate interval does not measure the entire crash
+  investigation or user-PC install time; no sub-two-minute install claim.
+
 ## Published compact evasion stats and readable controller map — 2026-11-04
+
+**Superseded by 1.2.162:** the original shared-class compatibility checks below
+missed the embedded parent instances and these styling builds can crash when
+opening status details. The corrected layout retains their map and font changes.
 
 - **1.2.161**, code `5d1052d92e3308c44af9fa8f5a66d15904c89fd3`,
   [run 41969081963](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/41969081963).

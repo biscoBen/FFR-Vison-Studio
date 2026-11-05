@@ -4,12 +4,29 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
-**Known issue in 1.2.160/1.2.161:** the evasion stat-page option can cause a
-serial-size crash when opening status details. Disable that option and
-rebuild/install with the game closed to use the native pages while the 1.2.162
-fix is being packaged. The Studio switch alone does not replace installed assets.
+### Stat-detail page crash fix — 2026-11-04
+
+[Verified Studio 1.2.162 / run 41973801915](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41973801915/Sephira-Studio-Test.zip)
+(code `34f280b`; **83.4 MB**).
+
+Fixes the reported **Expected read size 10, Actual read size 7** fatal error
+when opening status details. The evasion styling changed a shared widget's
+reflected fields, invalidating embedded instances in native pages. Restore the
+original six-field schema and class-default bytes; the compact **Phys. Eva** /
+**Mag. Eva** rows, native fonts and controller-map sizing correction remain.
+
+Close the game, update Studio, re-enable **Physical and magical evasion on stat
+pages** if disabled as a workaround, then **GO / Build and install** and restart.
+The Studio switch alone does not replace installed assets. No preparation or
+preset reset is needed. Windows checks, public-package comparison and an
+independent embedded-parent serialization regression pass. Opening the affected
+page in game still needs confirmation. This is separate from the older encounter
+crash investigation.
+[Validation and timings](CHANGELOG.md#published-stat-detail-page-crash-fix--2026-11-04).
 
 ### Compact evasion stats and readable controller map — 2026-11-04
+
+**Superseded by 1.2.162 above:** 1.2.160/1.2.161 can crash on status details.
 
 [Verified Studio 1.2.161 / run 41969081963](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41969081963/Sephira-Studio-Test.zip)
 (code `5d1052d`; **83.4 MB**).
@@ -2887,10 +2904,11 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Revised layout and broader page coverage/buff refresh remain pending; keep this gameplay
   migration check open. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
   A later status-detail page crash exposed a shared-class serialization mismatch
-  in 1.2.160/1.2.161. Candidate 1.2.162 restores the original six fields and
+  in 1.2.160/1.2.161. Published 1.2.162 restores the original six fields and
   native class-default bytes while keeping the compact rows in WidgetTree.
   Its regression checks the embedded parent instance, rather than relying only
-  on the modified widget's standalone readback.
+  on the modified widget's standalone readback. Windows/public-package checks
+  pass; reopening the affected page in game remains pending.
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
 - [ ] **Engine, extraction and cooked assets.** Check executable/Pak paths, engine version, `Mappings.usmap`, table
