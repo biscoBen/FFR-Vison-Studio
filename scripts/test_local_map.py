@@ -184,6 +184,41 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Wide' and vm.index==1)
         ''')
 
+    def test_engine_load_freezes_choice_before_old_hud_resets_even_with_reused_vm_ids(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();assert(FFRStudioLocalMap.choice==1)
+            local source=vm.address;local map,area=vm.mapId,vm.areaId
+            FindAllOf=function() error('No object scans during map travel') end
+            loadMapPre();assert(FFRStudioLocalMap.loading)
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.display=true;vm.index=0
+            show();tick();assert(FFRStudioLocalMap.choice==1 and vm.index==0)
+            loadMapPost();tick()
+            assert(vm.address==source and vm.mapId==map and vm.areaId==area)
+            assert(vm.index==1 and FFRStudioLocalMap.choice==1 and not FFRStudioLocalMap.restorePending)
+            set_view(2);tick();set_view(0);assert(vm.index==0 and FFRStudioLocalMap.choice==0)
+            set_view(1);assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+        ''')
+
+    def test_world_identity_restores_large_when_model_ids_stay_the_same(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();local old=world;world=obj()
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.display=true;vm.index=0
+            show();tick()
+            assert(world.address~=old.address and vm.index==1 and FFRStudioLocalMap.choice==1)
+        ''')
+
+    def test_legacy_loader_keeps_world_identity_fallback_without_engine_callbacks(self):
+        lua=LuaRuntime();lua.execute((ROOT/'scripts/fixtures/local_map_runtime.lua').read_text())
+        lua.execute('RegisterLoadMapPreHook=nil;RegisterLoadMapPostHook=nil')
+        lua.execute((PAYLOAD/'local_map.lua').read_text())
+        lua.execute('''
+            ready();show();world=obj()
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.display=true;vm.index=0
+            show();tick();assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+        ''')
+
     def test_direct_native_small_step_is_respected_even_when_hidden_notification_is_absent(self):
         lua=self.runtime()
         lua.execute('''

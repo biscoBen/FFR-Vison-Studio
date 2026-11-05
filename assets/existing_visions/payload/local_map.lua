@@ -81,17 +81,26 @@ local function input_ready(widget,vm)
     return live(input) and input:IsEnableInput()
 end
 local function remember_view(widget,vm)
+    local tag=vm.ViewPropertyTag.TagName:ToString()
+    if runtime.loading then return tag,false end
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentMapId','IntProperty')
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId','IntProperty')
     local map,area=vm:GetCurrentMapId(),vm:GetCurrentAreaId()
-    local tag=vm.ViewPropertyTag.TagName:ToString()
     if type(map)~='number' or map<0 or type(area)~='number' then return tag,false end
-    local key=tostring(vm:GetAddress())..':'..map..':'..area
+    local world=widget:GetWorld()
+    if not live(world) then return tag,false end
+    -- View-model IDs can stay unchanged while the old world is torn down.
+    -- Use the real world/HUD lifetime and engine load epoch as well.
+    local key=table.concat({runtime.loadEpoch or 0,tostring(world:GetAddress()),
+        tostring(widget:GetAddress()),tostring(vm:GetAddress()),map,area},':')
     if key~=runtime.viewKey then
         runtime.viewKey=key;runtime.restorePending=runtime.choice~=nil
     end
     -- Loading/teardown must not replace an explicit user preference.
-    if not input_ready(widget,vm) then return tag,false end
+    if not input_ready(widget,vm) then
+        runtime.restorePending=runtime.choice~=nil
+        return tag,false
+    end
     local mode=view_mode(vm,tag)
     if mode==nil then return tag,false end
     if runtime.choice==nil then
@@ -105,7 +114,10 @@ local function remember_view(widget,vm)
         end
         -- Appearance can initialize before other zone setup. The lightweight
         -- UI observer finishes restoration after input/data initialization.
-        if runtime.polling then runtime.restorePending=false end
+        if runtime.polling then
+            runtime.restorePending=false
+            print('[FFR local map] Restored session view '..runtime.choice..' after map initialization\n')
+        end
     else
         -- Every stable native state is a valid manual choice, including a
         -- direct large -> small change when the hidden notification was absent.
@@ -262,6 +274,26 @@ runtime.discover = function()
     ExecuteInGameThread(runtime.queued)
 end
 runtime.callbacks = {refresh,attach,runtime.discover,runtime.queued,runtime.tick}
+-- Engine-level load hooks cover native C++ travel, including a reused minimap
+-- VM. Carry no world/context pointer across travel, and never read hook params.
+runtime.load_pre=function()
+    if not runtime.mapLifecycle then return end
+    runtime.loading=true
+    runtime.loadEpoch=(runtime.loadEpoch or 0)+1
+    runtime.restorePending=runtime.choice~=nil
+    runtime.fitted=nil
+end
+runtime.load_post=function()
+    if not runtime.mapLifecycle then return end
+    runtime.loading=false
+    runtime.restorePending=runtime.choice~=nil
+end
+if type(RegisterLoadMapPreHook)=='function' and type(RegisterLoadMapPostHook)=='function' then
+    local post=pcall(RegisterLoadMapPostHook,runtime.load_post)
+    local pre=post and pcall(RegisterLoadMapPreHook,runtime.load_pre)
+    runtime.mapLifecycle=pre and post
+    if not runtime.mapLifecycle then print('[FFR local map] Map-load observer unavailable; using world identity\n') end
+end
 NotifyOnNewObject('/Script/UMG.WidgetBlueprintGeneratedClass', runtime.discover)
 ExecuteInGameThread(attach)
 local observer=false

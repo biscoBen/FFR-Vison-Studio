@@ -19,6 +19,21 @@ def inputs():
 
 
 class SephiraRuntimeRewardTests(unittest.TestCase):
+    def test_reberta_mr9_name_only_alias_preserves_effect_cost_and_original_clive_row(self):
+        _,native,units=inputs();before=copy.deepcopy(native)
+        unit=next(u for u in units if u[pack.FIELD]['preset']=='reberta')
+        original=copy.deepcopy(unit)
+        bound,=pack.bind_units([unit],native.__getitem__)
+        self.assertEqual(bound['synchro'][9][0],['PassiveSkill',1946,-1])
+        row=next(b['passive'] for b in bound['_sephiraBindings'] if b['passive']['set']['ID']==1946)
+        self.assertEqual(row['set'],{'ID':1946,'Name':"Reberta's Limit Break"})
+        base=native[pack.PASSIVE][row['cloneFrom']]
+        self.assertEqual(base['ID'],1442)
+        self.assertEqual(base['equipCost'],30)
+        self.assertEqual(native,before)
+        self.assertEqual(unit,original)
+        self.assertEqual(bound['master'],unit['master'])
+
     def test_independent_fina_identity_survives_old_import_keys_and_edited_artwork(self):
         unit = json.loads((ROOT / 'assets/crystal_fina/profile.json').read_bytes())
         unit['key'] = 'my_imported_fina'
@@ -72,8 +87,8 @@ class SephiraRuntimeRewardTests(unittest.TestCase):
         private = [b['passive'] for u in bound for b in u['_sephiraBindings']]
         identities = [r['set']['ID'] for r in private]
         native_ids = {r['ID'] for r in native[pack.PASSIVE].values()}
-        self.assertEqual(len(identities), 25)  # Retain Barusa's old learned Earth imbue row too.
-        self.assertEqual(len(set(identities)), 25)
+        self.assertEqual(len(identities), 26)  # Retain Barusa's Earth row; label Reberta's MR9 privately.
+        self.assertEqual(len(set(identities)), 26)
         self.assertTrue(all(1000 <= sid < 2000 for sid in identities))
         self.assertFalse(set(identities) & native_ids)
         for unit in bound:

@@ -515,6 +515,36 @@ class SephiraChallengeTests(unittest.TestCase):
                     self.assertGreater(len(allowed),1)
                     self.assertNotIn(500010,{r['source'] for r in recipes})
 
+    def test_aerith_cannot_cast_berserker_samba_in_scripted_or_casual_ai(self):
+        unit=next(u for u in self.units if u['sephiraVision']['preset']=='elephim')
+        before=copy.deepcopy(unit);recipes=challenge.kit(unit,self.native.__getitem__,2)
+        berserk=next(r for r in recipes if r['source']==570420)
+        native={v['ID']:v for v in self.native[challenge.SKILL].values()}
+        effects={v['ID']:v for v in self.native['Skill/DT_SkillEffectData'].values()}
+        skill=testing.apply_fields(native[570420],berserk['fields'])
+        self.assertEqual(skill['Name'],'Berserker Samba')
+        self.assertEqual(skill['TargetType'],'Group')
+        self.assertTrue(any(effects[b['effectId']]['EffectType']=='Berserk'
+            for b in skill['effectBundleList'] if b['effectId']>=0))
+        actions=challenge.rotation(unit,recipes,1)
+        self.assertEqual(len(actions),8)
+        self.assertNotIn(berserk['id'],{r['id'] for r in actions})
+        # Exactly the former Samba turn becomes the already-reduced basic
+        # Burning Notes. Keep the other seven turns and every skill power.
+        old=copy.deepcopy(challenge.data());old['kits']['elephim'].pop('rotationReplacements')
+        with mock.patch.object(challenge,'data',return_value=old):previous=challenge.rotation(unit,recipes,1)
+        changes=[(a,b) for a,b in zip(previous,actions) if a!=b]
+        self.assertEqual(len(changes),1)
+        self.assertEqual(changes[0][0]['id'],berserk['id'])
+        self.assertEqual(changes[0][1],recipes[0])
+        ai=self.built[challenge.AI][challenge.PREFIX+str(unit['id'])]
+        for field in ('skillRandData1','skillRandData2'):
+            self.assertNotIn(berserk['id'],{r['SkillId'] for r in ai[field]})
+        authored=fina.author_ai(native_ai(),actions)
+        for turn in range(32):
+            for hp in (.2,.7,1):self.assertNotEqual(choose(authored,turn,hp),berserk['id'])
+        self.assertEqual(unit,before)
+
     def test_team_durability_is_one_boss_budget_and_rotation_executes(self):
         rows = lambda rel: self.native[rel]
         for spec, units in challenge.plans(self.units):

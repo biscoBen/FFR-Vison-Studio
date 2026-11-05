@@ -5,6 +5,19 @@ import 'package:ffr_vision_studio/state/catalog_source_reference.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Reberta MR9 has its own label while original and edited labels remain intact', () {
+    final row = {'id': 1442, 'name': "Clive's Limit Break"};
+    final unit = <String, dynamic>{
+      'sephiraVision': {'version': 1, 'preset': 'reberta', 'enabled': true},
+    };
+    final before = json.encode(unit);
+    expect(catalogEntryTitle({}, 'passives', row, nativeUnit: unit), "Reberta's Limit Break");
+    expect(json.encode(unit), before);
+    expect(catalogEntryTitle({}, 'passives', row), startsWith("Clive's Limit Break"));
+    unit['sephiraPassiveText'] = {'1442': {'name': 'My Break', 'desc': 'My text'}};
+    expect(catalogEntryTitle({}, 'passives', row, nativeUnit: unit), 'My Break');
+  });
+
   String title(int id, {String name = 'Move', String kind = 'skills'}) =>
       catalogEntryTitle({}, kind, {'id': id, 'name': name});
 

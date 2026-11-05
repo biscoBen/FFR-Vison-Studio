@@ -740,6 +740,7 @@
     },
     "elephim": {
       "aoePowerScale": 0.4,
+      "rotationReplacements": {"570420": 0},
       "attacks": [
         414200,
         414210,

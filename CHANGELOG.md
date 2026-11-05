@@ -11,6 +11,36 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native stat grid, map-load memory and reward-label follow-up — 2026-11-05
+
+- **1.2.169 candidate.** Ben confirms controller cycling now works, while large
+  size still resets between zones and the stat page overlaps Phys. Eva. with AP.
+  His current log reports `Stat overlay has not been arranged yet`; stat and map
+  hooks register successfully, and the loader finds the real engine LoadMap hook.
+- Top-align the native stat grid: its captured centre alignment made added
+  Overlay height shift AP into the fallback readouts. Use native grid slots and
+  spacer widgets to reserve the two defence gaps, normalizing vertical spans to
+  single rows. Compute positions from desired sizes and padding without cached
+  geometry, render translations, new class fields or geometry Blueprint helpers.
+  Restore owned slot/spacer values for comparison pages, failed data reads and
+  native rebuilds. Preserve approved icons, columns, fonts and evasion values.
+- Freeze the selected map step across the actual engine map-load boundary; use
+  world/HUD identity and a load epoch alongside view-model IDs. Restore after
+  input/data initialization, retaining the now-confirmed three-step cycle.
+- Replace Aerith's party-wide **Berserker Samba** turn with her existing reduced
+  basic Burning Notes in scripted and casual AI. Retain the 40% AoE settings,
+  other turns, powers, stats and playable kit.
+- Correct Reberta MR9's passive title to **Reberta's Limit Break** in Studio and
+  the game. Use a stable private label (1946) for source passive 1442, retaining
+  native effect data, 30 AP cost, MR placement, Spirit and the original Clive row.
+  Existing editable configurations keep their original source IDs and custom text.
+- Focused runtime, generated battle-table and Studio label checks pass. Windows
+  package verification and live in-game confirmation remain pending.
+  Native UI assets round-trip with the original schema; AI selection uses
+  authored fixtures and retains the installer's native readback check. An extra
+  historical AI-fixture cook does not match this capture's class mapping, so it
+  is not a full-game AI serialization result from this cloud workspace.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

@@ -1,10 +1,8 @@
 """Add two passive label/value rows to the captured shared stat widget.
 
 The original grid, class schema, bytecode, bindings and stat enums remain intact.
-Two pure geometry functions keep FGeometry inside Unreal's VM: its opaque
-transforms cannot safely roundtrip through UE4SS's reflected Lua tables.
-Unreal owns all children from its cooked WidgetTree; Lua finds labels through
-that tree and only updates text and visibility.
+Unreal owns all children from its cooked WidgetTree; Lua updates their labels
+and arranges the existing grid's native slots and spacer widgets.
 Compile/read back with pinned ffr-dt and the capture's original Mappings.usmap.
 """
 import copy
@@ -14,75 +12,12 @@ import json
 import struct as binary
 from pathlib import Path
 
-from build_treasure_ui import dependencies, expr, field, importer, names, prop, struct
+from build_treasure_ui import dependencies, field, importer, names, prop, struct
 
 FIXTURE = Path(__file__).with_name('fixtures') / 'evasion_ui_native.json.gz'
 ASSET = 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail'
 STATUS_LIST = 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitStatus_DetailList'
 ICON_BASE = 'FFRS/Content/UI/Studio/Evasion/T_Evasion'
-
-
-def geometry_functions(asset, cls):
-    add, package = importer(asset)
-    umg, core = package('/Script/UMG'), package('/Script/CoreUObject')
-    widget = add('Widget', umg)
-    slate = add('SlateBlueprintLibrary', umg)
-    vector = add('Vector2D', core, 'ScriptStruct')
-    cached = add('GetCachedGeometry', widget, 'Function')
-    functions = {name: add(name, slate, 'Function') for name in
-                 ('GetLocalSize', 'LocalToAbsolute', 'AbsoluteToLocal')}
-    exports = asset['Exports']
-    owner = exports.index(cls) + 1
-    template = next(e for e in exports if e['ObjectName'] == 'GetUnitId')
-
-    def pointer(name, scope):
-        return {'$type': 'UAssetAPI.Kismet.Bytecode.KismetPropertyPointer, UAssetAPI',
-                'New': {'$type': 'UAssetAPI.UnrealTypes.FFieldPath, UAssetAPI',
-                        'Path': [name], 'ResolvedOwner': scope}}
-
-    def parameter(name, kind, returned=False):
-        p = copy.deepcopy(template['LoadedProperties'][0])
-        p.update(Name=name, SerializedType=kind,
-                 PropertyFlags='CPF_Parm, CPF_OutParm, CPF_ReturnParm' if returned else 'CPF_Parm')
-        if kind == 'ObjectProperty':
-            p.update({'$type': 'UAssetAPI.FieldTypes.FObjectProperty, UAssetAPI',
-                      'ElementSize': 8, 'PropertyClass': widget})
-        else:
-            p.update({'$type': 'UAssetAPI.FieldTypes.FStructProperty, UAssetAPI',
-                      'ElementSize': 16, 'Struct': vector})
-        return p
-
-    for name in ('Studio_GetRowSize', 'Studio_RowPoint'):
-        index = len(exports) + 1
-        local = lambda n: expr('EX_LocalVariable', Variable=pointer(n, index))
-        # Context's result property is the real native function's FGeometry
-        # return field. No geometry local or shared class field is introduced.
-        geometry = lambda n: expr('EX_Context', ObjectExpression=local(n),
-            Offset=10, PropertyType=0, RValuePointer=pointer('ReturnValue', cached),
-            ContextExpression=expr('EX_FinalFunction', StackNode=cached, Parameters=[]))
-        call = lambda n, *args: expr('EX_CallMath', StackNode=functions[n], Parameters=list(args))
-        params = [parameter('Entry', 'ObjectProperty')]
-        if name == 'Studio_GetRowSize':
-            value = call('GetLocalSize', geometry('Entry'))
-            byte_size = 44
-        else:
-            params += [parameter('Origin', 'ObjectProperty'), parameter('Point', 'StructProperty')]
-            value = call('AbsoluteToLocal', geometry('Origin'),
-                         call('LocalToAbsolute', geometry('Entry'), local('Point')))
-            byte_size = 95
-        params.append(parameter('ReturnValue', 'StructProperty', returned=True))
-        function = copy.deepcopy(template)
-        function.update(ObjectName=name, OuterIndex=owner, SuperIndex=0, SuperStruct=0,
-            FunctionFlags='FUNC_Public, FUNC_HasOutParms, FUNC_BlueprintCallable, FUNC_BlueprintPure, FUNC_Const',
-            LoadedProperties=params, Children=[], Data=[], ScriptBytecodeRaw=None,
-            ScriptBytecode=[expr('EX_Return', ReturnExpression=value), expr('EX_EndOfScript')],
-            ScriptBytecodeSize=byte_size)
-        dependencies(function, before=(widget, vector, cached, *functions.values()),
-                     classes=(function['ClassIndex'], function['TemplateIndex']), outers=(owner,))
-        exports.append(function)
-        cls['FuncMap'].append([name, index])
-        cls['Children'].append(index)
-        cls['CreateBeforeSerializationDependencies'].append(index)
 
 
 def icon_textures(native):
@@ -137,6 +72,12 @@ def author(native):
     old_root_index = field(tree, 'RootWidget')['Value']
     old_root = exports[old_root_index - 1]
     assert old_root['ObjectName'] == 'Overlay_0'
+    native_grid_slot = exports[field(old_root, 'Slots')['Value'][0]['Value'] - 1]
+    alignment = field(native_grid_slot, 'VerticalAlignment')
+    assert alignment['Value'] == 'VAlign_Center'
+    # The added rows contribute to Overlay desired height. Keeping the native
+    # grid centred in that changing height moves it into the fallback rows.
+    alignment['Value'] = 'VAlign_Top'
     add, package = importer(asset)
     umg = package('/Script/UMG')
     common = package('/Script/CommonUI')
@@ -258,8 +199,8 @@ def author(native):
         horizontal['CreateBeforeSerializationDependencies'].append(slot_index)
         exports.extend([image, icon_slot])
     # Leave every native grid entry in its own native grid. The passive rows
-    # share the original overlay; runtime offsets reserve gaps after Defence.
-    # A trailing spacer gives the two visual gaps real desired-height space.
+    # share the original overlay; native grid spacers reserve Defence gaps.
+    # Keep the existing zero-size trailing spacer/tree shape for compatibility.
     reserve, reserve_slot = len(exports) + 1, len(exports) + 2
     for i, kind in enumerate(('Physical', 'Magical')):
         row, row_slot = first + 2 + i * 6, first + 3 + i * 6
@@ -283,7 +224,6 @@ def author(native):
     exports.extend([space, slot('VerticalBoxSlot_StudioEvasionRoom', reserve)])
     field(tree, 'RootWidget')['Value'] = root_index
     tree['CreateBeforeSerializationDependencies'].append(root_index)
-    geometry_functions(asset, cls)
     names(asset)
     return asset
 

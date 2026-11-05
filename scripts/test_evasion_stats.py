@@ -111,7 +111,7 @@ class EvasionAssetsTests(unittest.TestCase):
         readback = fixture('evasion_ui_readback.json.gz')
         self.assertEqual(native, original)
         for i, export in enumerate(original['widget']['Exports']):
-            if export['ObjectName'] not in ('Overlay_0', 'WidgetTree', 'WBP_UnitParam_Detail_C'):
+            if export['ObjectName'] not in ('Overlay_0', 'OverlaySlot_0', 'WidgetTree', 'WBP_UnitParam_Detail_C'):
                 self.assertEqual(clean(export.get('Data')), clean(readback['Exports'][i].get('Data')))
                 if 'ScriptBytecode' in export:
                     self.assertEqual(export['ScriptBytecode'], readback['Exports'][i]['ScriptBytecode'])
@@ -124,10 +124,8 @@ class EvasionAssetsTests(unittest.TestCase):
         # fields shifts inherited unversioned indices and crashes those pages.
         self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'])
         self.assertEqual(len(cls['LoadedProperties']),6)
-        self.assertEqual(original_class['FuncMap'],cls['FuncMap'][:-2])
-        self.assertEqual(original_class['Children'],cls['Children'][:-2])
-        self.assertEqual(cls['FuncMap'][-2:],[['Studio_GetRowSize',47],['Studio_RowPoint',48]])
-        self.assertEqual(cls['Children'][-2:],[47,48])
+        self.assertEqual(original_class['FuncMap'],cls['FuncMap'])
+        self.assertEqual(original_class['Children'],cls['Children'])
         self.assertEqual(build.field(readback['Exports'][25],'RootWidget')['Value'],27)
         for e in readback['Exports'][30:34:2]+readback['Exports'][36:40:2]:
             self.assertEqual(build.field(e,'Visibility')['Value'],'Collapsed')
@@ -143,58 +141,21 @@ class EvasionAssetsTests(unittest.TestCase):
                 self.assertEqual(build.field(e,'Text')['CultureInvariantString'],
                                  'Phys. Eva.' if 'Physical' in e['ObjectName'] else 'Mag. Eva.')
                 self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['label'],'Font')))
-        self.assertEqual(len(readback['Exports']),48)
+        self.assertEqual(len(readback['Exports']),46)
 
-    def test_serialized_geometry_bridge_keeps_opaque_transforms_in_native_calls(self):
-        asset=fixture('evasion_ui_readback.json.gz')
-        # Interpret the actual serialized Kismet, with opaque native geometry
-        # tokens: only the native Slate functions may read their transforms.
-        geometries={object():(180,240,1.75,280,33),object():(40,100,1.25,400,800)}
-        entry,origin=geometries
-        observed=[]
-        def imported(index):
-            imp=asset['Imports'][-index-1]
-            return imp['ObjectName']
-        for fn in asset['Exports'][-2:]:
-            self.assertNotIn('FUNC_Native',fn['FunctionFlags'])
-            self.assertEqual(fn['SuperStruct'],0)
-            self.assertEqual(fn['LoadedProperties'][-1]['Name'],'ReturnValue')
-            self.assertTrue(all(p['SerializedType'] in ('ObjectProperty','StructProperty')
-                                for p in fn['LoadedProperties']))
-            for p in fn['LoadedProperties']:
-                if p['SerializedType']=='StructProperty':self.assertEqual(imported(p['Struct']),'Vector2D')
-                else:self.assertEqual(imported(p['PropertyClass']),'Widget')
-        def evaluate(node,params,context=None):
-            op=node['$type'].split('.')[-1].split(',')[0]
-            if op=='EX_Return':return evaluate(node['ReturnExpression'],params)
-            if op=='EX_LocalVariable':return params[node['Variable']['New']['Path'][0]]
-            if op=='EX_Context':
-                self.assertEqual(node['Offset'],10)
-                pointer=node['RValuePointer']['New']
-                self.assertEqual(pointer['Path'],['ReturnValue'])
-                self.assertEqual(imported(pointer['ResolvedOwner']),'GetCachedGeometry')
-                return evaluate(node['ContextExpression'],params,evaluate(node['ObjectExpression'],params))
-            if op=='EX_FinalFunction':
-                self.assertEqual(imported(node['StackNode']),'GetCachedGeometry')
-                self.assertEqual(node['Parameters'],[])
-                return context
-            self.assertEqual(op,'EX_CallMath')
-            name=imported(node['StackNode']);observed.append(name)
-            args=[evaluate(a,params) for a in node['Parameters']]
-            x,y,scale,w,h=geometries[args[0]]
-            if name=='GetLocalSize':return (w,h)
-            if name=='LocalToAbsolute':return (x+args[1][0]*scale,y+args[1][1]*scale)
-            self.assertEqual(name,'AbsoluteToLocal')
-            return ((args[1][0]-x)/scale,(args[1][1]-y)/scale)
-        size,point=asset['Exports'][-2:]
-        self.assertEqual(evaluate(size['ScriptBytecode'][0],{'Entry':entry}),(280,33))
-        result=evaluate(point['ScriptBytecode'][0],{'Entry':entry,'Origin':origin,'Point':(0,33)})
-        self.assertEqual(result,((180-40)/1.25,(240+33*1.75-100)/1.25))
-        self.assertEqual(observed,['GetLocalSize','AbsoluteToLocal','LocalToAbsolute'])
-        # Catch a regression back to the tempting but lossy Lua struct bridge.
+    def test_native_grid_anchor_prevents_overlay_height_from_recentering_stats(self):
+        native=fixture('evasion_ui_native.json.gz')['widget']
+        cooked=fixture('evasion_ui_readback.json.gz')
+        old=next(e for e in native['Exports'] if e['ObjectName']=='OverlaySlot_0')
+        new=next(e for e in cooked['Exports'] if e['ObjectName']=='OverlaySlot_0')
+        self.assertEqual(build.field(old,'VerticalAlignment')['Value'],'VAlign_Center')
+        self.assertEqual(build.field(new,'VerticalAlignment')['Value'],'VAlign_Top')
+        self.assertEqual(semantic([p for p in old['Data'] if p['Name']!='VerticalAlignment']),
+                         semantic([p for p in new['Data'] if p['Name']!='VerticalAlignment']))
+        self.assertEqual(native['Exports'][24]['FuncMap'],cooked['Exports'][24]['FuncMap'])
         source=(PAYLOAD/'evasion_stats.lua').read_text()
-        self.assertNotIn(':GetCachedGeometry(',source)
-        self.assertNotIn('slate:LocalToAbsolute(',source)
+        self.assertNotIn('Studio_GetRowSize',source)
+        self.assertNotIn('GetCachedGeometry',source)
 
     def test_icon_and_text_columns_match_the_captured_native_layout(self):
         native=fixture('evasion_ui_native.json.gz');asset=fixture('evasion_ui_readback.json.gz')
@@ -334,86 +295,112 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua=self.runtime()
         lua.execute('''
             local function centres()
+                gameThread=true;local rects,height=native_rects();gameThread=false
                 local result={}
                 for i,e in ipairs(nativeEntries) do
-                    result[#result+1]=10+(i-1)*49+33/2+e.RenderTransform.Translation.Y
-                    if i==2 then result[#result+1]=physicalRow.Slot.Padding.Top+16 end
-                    if i==4 then result[#result+1]=magicalRow.Slot.Padding.Top+16 end
+                    result[#result+1]=rects[i].top+rects[i].height/2
+                    if e.UnitParamType==13 then result[#result+1]=physicalRow.Slot.Padding.Top+16 end
+                    if e.UnitParamType==15 then result[#result+1]=magicalRow.Slot.Padding.Top+16 end
                 end
-                assert(#result==13)
+                assert(#result==13 and height==621)
                 for i=2,#result do assert(math.abs(result[i]-result[i-1]-49)<1e-9) end
             end
-            centres();assert(reserve.Size.Y==98)
-            for i=1,10 do show();centres() end
-            assert(nativeEntries[3].Slot.Row==4 and nativeEntries[3].RenderTransform.Translation.Y==49)
-            assert(nativeEntries[11].Slot.Row==20 and nativeEntries[11].RenderTransform.Translation.Y==98)
+            centres();assert(reserve.Size.Y==0)
+            local writes=gridWrites
+            for i=1,20 do show();centres() end
+            assert(gridWrites==writes,'Unchanged stat updates must not rewrite native slots/spacers')
+            assert(nativeEntries[3].Slot.Row==4 and nativeEntries[3].Slot.RowSpan==1)
+            assert(nativeEntries[3].RenderTransform.Translation.Y==0)
+            assert(nativeSpacers[2].Size.Y==65 and nativeSpacers[4].Size.Y==65)
             hiddenSource=menu;vm.dead=true;show();hidden()
-            assert(reserve.Size.Y==0 and nativeEntries[11].RenderTransform.Translation.Y==0)
+            assert(nativeSpacers[2].Size.Y==16 and nativeEntries[3].Slot.RowSpan==2)
         ''')
 
-    def test_shared_multi_column_comparison_layout_keeps_native_positions(self):
+    def test_comparison_grid_preserves_slots_and_fallback_is_after_the_full_panel(self):
         lua=self.runtime()
         lua.execute('''
             for i,e in ipairs(nativeEntries) do e.Slot.Column=(i-1)%2 end
             show();tick();values('0','0')
-            for _,e in ipairs(nativeEntries) do assert(e.RenderTransform.Translation.Y==0) end
-            assert(reserve.Size.Y==0 and magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
+            for _,e in ipairs(nativeEntries) do assert(e.Slot.RowSpan==2) end
+            assert(nativeSpacers[2].Size.Y==16 and reserve.Size.Y==0)
+            assert(physicalRow.Slot.Padding.Top==549.5)
+            assert(magicalRow.Slot.Padding.Top==598.5)
+            assert(nativeWrapper.Slot.VerticalAlignment==1)
         ''')
 
-    def test_native_spacer_rows_set_pitch_when_the_opposite_direction_gap_is_zero(self):
+    def test_real_native_spacers_set_pitch_and_native_changes_are_not_undone(self):
         lua=self.runtime()
         lua.execute('''
-            for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=0,Bottom=0} end
-            for _,spacer in ipairs(nativeSpacers) do spacer.height=20 end
+            for _,spacer in ipairs(nativeSpacers) do spacer.Size.Y=20 end
             show();tick();values('0','0')
-            assert(reserve.Size.Y==106 and nativeEntries[3].RenderTransform.Translation.Y==53)
+            assert(nativeSpacers[2].Size.Y==73 and nativeSpacers[4].Size.Y==73)
+            assert(physicalRow.Slot.Padding.Top==116.5)
             assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==159)
+            show();assert(nativeSpacers[2].Size.Y==73)
+            vm.dead=true;show();hidden();assert(nativeSpacers[2].Size.Y==20)
         ''')
 
-    def test_all_native_row_padding_is_measured_without_moving_original_slots(self):
+    def test_asymmetric_padding_preserves_native_row_centres(self):
         lua=self.runtime()
         lua.execute('''
             for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=3,Bottom=5} end
             show();tick();values('0','0')
             local pitch=33+3+5+16
-            assert(reserve.Size.Y==2*pitch)
+            assert(nativeSpacers[2].Size.Y==16+pitch)
             assert(physicalRow.Slot.Padding.Top==10+3+2*pitch+.5)
             assert(magicalRow.Slot.Padding.Top==10+3+5*pitch+.5)
-            assert(nativeEntries[3].Slot.Row==4 and nativeEntries[3].RenderTransform.Translation.Y==pitch)
-            assert(nativeSpacers[1].Slot.Row==1)
+            gameThread=true;local r=native_rects();gameThread=false
+            assert(physicalRow.Slot.Padding.Top+16-(r[2].top+r[2].height/2)==pitch)
+            assert(r[3].top+r[3].height/2-(physicalRow.Slot.Padding.Top+16)==pitch)
         ''')
 
-    def test_native_spanning_rows_keep_values_and_use_arranged_geometry(self):
+    def test_original_spanning_cells_are_normalized_and_restored_on_source_loss(self):
         lua=self.runtime()
         lua.execute('''
             nativeEntries[2].Slot.RowSpan=4;show();tick();values('0','0')
-            assert(reserve.Size.Y==98 and physicalRow.Slot.Padding.Top==108.5)
-            assert(nativeEntries[3].RenderTransform.Translation.Y==49)
+            assert(nativeEntries[2].Slot.RowSpan==1 and physicalRow.Slot.Padding.Top==108.5)
+            vm.dead=true;show();hidden();assert(nativeEntries[2].Slot.RowSpan==4)
         ''')
 
-    def test_geometry_delay_keeps_valid_values_visible_and_retries_are_bounded(self):
+    def test_zero_cached_geometry_from_the_actual_log_cannot_block_layout(self):
         lua=self.runtime()
         lua.execute('''
-            geometryReady=false;show('CreateList');values('0','0')
+            geometryReady=false
+            widget.Studio_GetRowSize=function() error('Geometry is not available in the real log') end
+            widget.Studio_RowPoint=function() error('No geometry access') end
+            show('CreateList');tick();values('0','0')
+            assert(physicalRow.Slot.Padding.Top==108.5 and magicalRow.Slot.Padding.Top==255.5)
+            assert(nativeSpacers[2].Size.Y==65 and #logs==1)
+        ''')
+
+    def test_entry_population_delay_keeps_fallback_clear_of_ap_and_retries_are_bounded(self):
+        lua=self.runtime()
+        lua.execute('''
+            local populated=nativeWrapper.EntryList;nativeWrapper.EntryList={}
+            show('CreateList');values('0','0')
             for i=1,10 do tick();values('0','0') end
-            local key=tostring(widget:GetAddress());local cache=FFRStudioEvasionStats.layouts[key]
-            assert(not cache.pending and cache.attempts==5 and reserve.Size.Y==0)
-            assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
-            geometryReady=true;show('CreateList');tick();values('0','0')
-            assert(reserve.Size.Y==98)
+            local cache=FFRStudioEvasionStats.layouts[tostring(widget:GetAddress())]
+            assert(not cache.pending and cache.attempts==5)
+            assert(nativeSpacers[2].Size.Y==16 and physicalRow.Slot.Padding.Top==549.5)
+            -- Correct top alignment keeps native AP at 516.5, one pitch above
+            -- the physical evasion centre, even when the overlay grows.
+            assert(physicalRow.Slot.Padding.Top+16-516.5==49)
+            nativeWrapper.EntryList=populated;show('CreateList');tick();values('0','0')
+            assert(nativeSpacers[2].Size.Y==65 and physicalRow.Slot.Padding.Top==108.5)
         ''')
 
-    def test_nonuniform_native_geometry_and_dpi_preserve_the_defence_insertions(self):
+    def test_variable_native_heights_and_dpi_cannot_overlap_the_defence_insertions(self):
         lua=self.runtime()
         lua.execute('''
-            nativeTops={};for i=1,11 do nativeTops[i]=10+(i-1)*49+(i>4 and 5 or 0) end
+            for i,e in ipairs(nativeEntries) do e.height=33+(i%3)*2 end
+            for i,s in ipairs(nativeSpacers) do s.Size.Y=12+i end
             for _,scale in ipairs({1,1.25,1.75,2}) do
                 dpi=scale;show('CreateList');tick();values('0','0')
-                assert(math.abs(reserve.Size.Y-103)<1e-7)
-                assert(math.abs(physicalRow.Slot.Padding.Top-108.5)<1e-7)
-                assert(math.abs(magicalRow.Slot.Padding.Top-260.5)<1e-7)
-                show();tick()
-                assert(math.abs(nativeEntries[11].RenderTransform.Translation.Y-103)<1e-7)
+                gameThread=true;local r=native_rects();gameThread=false
+                assert((physicalRow.Slot.Padding.Top-r[2].top-r[2].height)*dpi>=13*dpi)
+                assert((r[3].top-physicalRow.Slot.Padding.Top-32)*dpi>=13*dpi)
+                assert((magicalRow.Slot.Padding.Top-r[4].top-r[4].height)*dpi>=15*dpi)
+                assert((r[5].top-magicalRow.Slot.Padding.Top-32)*dpi>=15*dpi)
             end
         ''')
 
@@ -427,7 +414,7 @@ class EvasionRuntimeTests(unittest.TestCase):
                 else assert(type(value)=='string' or type(value)=='number' or type(value)=='boolean') end
             end
             plain(FFRStudioEvasionStats.layouts)
-            show('CreateList');widget.dead=true;tick()
+            nativeWrapper.EntryList={};show('CreateList');widget.dead=true;tick()
             assert(next(FFRStudioEvasionStats.targets)==nil)
         ''')
 
@@ -438,9 +425,10 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua.execute((PAYLOAD/'evasion_stats.lua').read_text())
         lua.execute('''
             ready();assert(asyncTick)
-            gameThread=true;paint();gameThread=false
+            local populated=nativeWrapper.EntryList;nativeWrapper.EntryList={};show('CreateList')
+            nativeWrapper.EntryList=populated
             asyncTick();asyncTick();assert(#queue==1)
-            drain();values('0','0');assert(reserve.Size.Y==98)
+            drain();values('0','0');assert(nativeSpacers[2].Size.Y==65)
         ''')
 
     def test_live_effect_types_stack_by_damage_type_and_cap_overrides_are_read_fresh(self):

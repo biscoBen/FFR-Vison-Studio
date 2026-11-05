@@ -122,6 +122,8 @@ end
 local widgetType=obj({name='WidgetBlueprintGeneratedClass '..cls})
 function widgetType:GetFullName() return self.name end
 widget=obj({VM_MiniMap=vm})
+world=obj()
+function widget:GetWorld() return world end
 function widget:GetFullName() return 'WBP_MiniMap_C /Fixture.MapWidget' end
 instances['/Fixture/MapWidget']=widget
 instances['/Fixture.MapWidget']=widget
@@ -139,6 +141,8 @@ function widget:SetWorldPosition(position)
     local hook=hooks[cls..':SetWorldPosition'];if hook then hook(param(self),param(position)) end
 end
 function LoopInGameThreadWithDelay(ms,callback) assert(ms==100);timers[#timers+1]=callback end
+function RegisterLoadMapPreHook(fn) loadMapPre=fn end
+function RegisterLoadMapPostHook(fn) loadMapPost=fn end
 function tick()
     gameThread=true;FFRStudioLocalMap.tick();gameThread=false
 end

@@ -1,6 +1,6 @@
 -- Read the selected native parameter's current effects. No stat/save mutation,
 -- actor lookup, equipment prediction, retained UObjects or raw memory. A bounded
--- game-thread UI observer waits for native layout without hiding valid values.
+-- game-thread UI observer waits for native entries without hiding valid values.
 local config = require('config')
 if config.evasionStats ~= 1 then return end
 local runtime = {hooks={}, callbacks={}, busy=false, errors={}, layouts={}, targets={}}
@@ -169,19 +169,44 @@ local function position(row,top)
     assert(live(slot) and slot:IsA(native('UMG.OverlaySlot')),'Evasion overlay slot is unavailable')
     slot:SetPadding({Left=0,Top=top,Right=0,Bottom=0})
 end
+local function set_slot(slot,name,value)
+    if name=='Row' then slot:SetRow(value)
+    elseif name=='RowSpan' then slot:SetRowSpan(value)
+    elseif name=='Column' then slot:SetColumn(value)
+    else slot:SetColumnSpan(value) end
+end
 local function clear_layout(widget,rows)
-    local children=entries(widget)
-    if children then for _,entry in ipairs(children) do
-        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=0})
-    end end
+    local cache=runtime.layouts[tostring(widget:GetAddress())]
+    local _,panel=entries(widget)
+    local nodes={}
+    if live(panel) then
+        for i=0,panel:GetChildrenCount()-1 do
+            local node=panel:GetChildAt(i);if live(node) then nodes[#nodes+1]=node end
+        end
+    end
+    if cache then for _,node in ipairs(nodes) do
+        local slot=node.Slot
+        if live(slot) then
+            for name,value in pairs(cache.slots[tostring(slot:GetAddress())] or {}) do
+                -- A native rebuild may already have reset a slot. Restore only
+                -- values we still own, preserving newly generated native data.
+                if slot[name]==value.applied then set_slot(slot,name,value.original) end
+            end
+        end
+        local size=cache.spacers[tostring(node:GetAddress())]
+        if size and node.Size.X==size.x and node.Size.Y==size.applied then node:SetSize({X=size.x,Y=size.y}) end
+    end
+        cache.slots={};cache.spacers={};cache.stamp=nil
+    end
     rows.reserve:SetSize({X=0,Y=0})
     for _,kind in ipairs({'Physical','Magical'}) do position(rows[kind].row,0) end
 end
 local function finite(n) return type(n)=='number' and n==n and math.abs(n)<1e6 end
 local function fallback(widget,rows,children,panel,wrapper)
-    -- Valid stat values remain readable while the first Slate layout is pending.
-    -- This uses the complete native panel's desired extent, not row-span guesses.
+    -- The native grid is top aligned in the cooked asset, so extra Overlay
+    -- height cannot centre it down into these temporary below-grid rows.
     clear_layout(widget,rows)
+    widget:ForceLayoutPrepass()
     local height=children[1]:GetDesiredSize().Y
     if not finite(height) or height<=0 then height=32 end
     local profile=wrapper.DirGridPanelProperty
@@ -193,85 +218,102 @@ local function fallback(widget,rows,children,panel,wrapper)
     position(rows.Physical.row,top+(height-rows.Physical.row:GetDesiredSize().Y)/2)
     position(rows.Magical.row,top+height+gap+(height-rows.Magical.row:GetDesiredSize().Y)/2)
 end
-local function measured(widget,rows,children)
-    signature(widgetClass..':Studio_GetRowSize','ObjectProperty,StructProperty')
-    signature(widgetClass..':Studio_RowPoint','ObjectProperty,ObjectProperty,StructProperty,StructProperty')
-    -- FGeometry contains opaque transforms lost by UE4SS's struct-to-table
-    -- marshaller. Our pure Blueprint functions keep all geometry inside the
-    -- native VM and return only ordinary Vector2D coordinates to Lua.
-    local extent=widget:Studio_GetRowSize(rows.overlay)
-    assert(finite(extent.X) and extent.X>0,'Stat overlay has not been arranged yet')
-    local result={rects={}}
-    for i,entry in ipairs(children) do
-        local size=widget:Studio_GetRowSize(entry)
-        assert(finite(size.Y) and size.Y>0,'Native stat row has not been arranged yet')
-        local top=widget:Studio_RowPoint(entry,rows.overlay,{X=0,Y=0})
-        local bottom=widget:Studio_RowPoint(entry,rows.overlay,{X=0,Y=size.Y})
-        local height=bottom.Y-top.Y
-        assert(finite(top.Y) and finite(height) and height>0,'Native stat geometry is unavailable')
-        result.rects[i]={left=top.X,top=top.Y,height=height,scale=height/size.Y}
-        if entry.UnitParamType==13 then result.physical=i end
-        if entry.UnitParamType==15 then result.magical=i end
-        if i>1 and math.abs(top.X-result.rects[1].left)>1 then result.comparison=true end
+local function layout_stamp(widget,rows)
+    local children,panel,wrapper=entries(widget)
+    assert(children and live(panel),'Native stat entries are not ready')
+    local types={};for _,entry in ipairs(children) do types[tostring(entry:GetAddress())]=entry.UnitParamType end
+    local parts={tostring(wrapper:GetAddress()),wrapper.Slot.Padding.Top,wrapper.DirGridPanelProperty.GridDirection,
+        #list(wrapper.EntryList),tostring(rows.Physical.row:GetAddress()),tostring(rows.Magical.row:GetAddress()),
+        rows.Physical.row:GetDesiredSize().Y,rows.Magical.row:GetDesiredSize().Y}
+    for i=0,panel:GetChildrenCount()-1 do
+        local node=panel:GetChildAt(i);local slot=node.Slot
+        if live(node) and live(slot) then
+            parts[#parts+1]=table.concat({tostring(node:GetAddress()),types[tostring(node:GetAddress())] or -1,node:GetDesiredSize().Y,
+                slot.Row,slot.RowSpan,slot.Column,slot.ColumnSpan,slot.Padding.Top,slot.Padding.Bottom,
+                node:IsA(native('UMG.Spacer')) and node.Size.Y or -1},':')
+        end
     end
-    if result.comparison then return result end
-    local a,b=result.physical,result.magical
-    assert(a and b and a<b and children[a+1] and children[b+1],'Native defence rows are unavailable')
-    local function centre(i) local r=result.rects[i];return r.top+r.height/2 end
-    result.physicalGap=centre(a+1)-centre(a)
-    result.magicalGap=centre(b+1)-centre(b)
-    for _,gap in ipairs({result.physicalGap,result.magicalGap}) do
-        assert(finite(gap) and gap>=32 and gap<200,'Native stat row pitch is unavailable')
-    end
-    return result -- Only scalar geometry survives this call, never FGeometry/UObjects.
+    return table.concat(parts,'|')
 end
 local function reflow(widget,rows)
     signature('/Script/UMG.Widget:ForceLayoutPrepass','')
     signature('/Script/UMG.Widget:GetDesiredSize','StructProperty')
-    signature('/Script/UMG.Widget:SetRenderTranslation','StructProperty')
     signature('/Script/UMG.OverlaySlot:SetPadding','StructProperty')
     signature('/Script/UMG.Spacer:SetSize','StructProperty')
-    signature('/Script/UMG.Widget:SetClipping',{['EnumProperty']=true,['ByteProperty']=true})
+    for _,name in ipairs({'SetRow','SetRowSpan','SetColumn','SetColumnSpan'}) do
+        signature('/Script/UMG.GridSlot:'..name,'IntProperty')
+    end
+    local key=tostring(widget:GetAddress())
+    local cache=runtime.layouts[key]
+    if not cache then cache={slots={},spacers={},attempts=0};runtime.layouts[key]=cache end
+    if cache.stamp and not cache.pending then
+        widget:ForceLayoutPrepass()
+        if cache.stamp==layout_stamp(widget,rows) then return end
+    end
+    clear_layout(widget,rows)
     widget:ForceLayoutPrepass()
     local children,panel,wrapper=entries(widget)
     assert(children and #children>0,'Native stat entries are not ready')
-    local key=tostring(widget:GetAddress())
-    local parts={#children,panel:GetDesiredSize().Y}
-    for _,e in ipairs(children) do
-        parts[#parts+1]=table.concat({tostring(e:GetAddress()),e.Slot.Row,e.Slot.Column,e.UnitParamType},':')
-    end
-    local generation=table.concat(parts,'|')
-    local cache=runtime.layouts[key]
-    if not cache or cache.generation~=generation then
-        -- Clear our previous render offsets, then let Slate arrange the native
-        -- rows before reading their actual rectangles on a later game-thread tick.
-        runtime.layouts[key]={generation=generation,pending=true,attempts=0}
-        fallback(widget,rows,children,panel,wrapper)
-        return
-    end
-    if cache.pending and runtime.measuring then
-        local ok,value=pcall(measured,widget,rows,children)
-        if ok then cache.geometry=value;cache.pending=false
-        else
-            local message='Layout pending: '..tostring(value)
-            if not runtime.errors[message] then runtime.errors[message]=true;print('[FFR evasion] '..message..'\n') end
-            if cache.attempts>=5 then cache.pending=false end
+    cache.pending=false
+    for _,entry in ipairs(children) do
+        if entry.Slot.Column~=children[1].Slot.Column or wrapper.DirGridPanelProperty.GridDirection~=0 then
+            fallback(widget,rows,children,panel,wrapper);return -- Preserve native comparison grids.
         end
     end
-    local g=cache.geometry
-    if not g or g.comparison then fallback(widget,rows,children,panel,wrapper);return end
-    wrapper:SetClipping(0);panel:SetClipping(0)
-    rows.reserve:SetSize({X=0,Y=g.physicalGap+g.magicalGap})
-    for i,entry in ipairs(children) do
-        local shift=(i>g.physical and g.physicalGap or 0)+(i>g.magical and g.magicalGap or 0)
-        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=shift/g.rects[i].scale})
+    local spacers={}
+    for _,record in ipairs(list(wrapper.EntryList)) do
+        if live(record) and live(record.Widget) and live(record.Spacer) then
+            spacers[tostring(record.Widget:GetAddress())]=record.Spacer
+        end
     end
-    local physical,magical=g.rects[g.physical],g.rects[g.magical]
-    position(rows.Physical.row,physical.top+physical.height/2+g.physicalGap-rows.Physical.row:GetDesiredSize().Y/2)
-    position(rows.Magical.row,magical.top+magical.height/2+g.physicalGap+g.magicalGap-rows.Magical.row:GetDesiredSize().Y/2)
+    local plan={};local top=wrapper.Slot.Padding.Top;local found={}
+    for i,entry in ipairs(children) do
+        local slot=entry.Slot;local size=entry:GetDesiredSize();local padding=slot.Padding
+        assert(finite(size.Y) and size.Y>0,'Native stat desired size is not ready')
+        local height=size.Y+padding.Top+padding.Bottom
+        local spacer=spacers[tostring(entry:GetAddress())]
+        local gap=0
+        if i<#children then
+            assert(live(spacer) and live(spacer.Slot) and spacer.Slot:IsA(native('UMG.GridSlot')),
+                'Native stat spacer is not ready')
+            gap=spacer:GetDesiredSize().Y+spacer.Slot.Padding.Top+spacer.Slot.Padding.Bottom
+            assert(finite(gap) and gap>=0 and gap<200,'Native stat gap is unavailable')
+        end
+        local kind=entry.UnitParamType==13 and 'Physical' or entry.UnitParamType==15 and 'Magical'
+        local extra=0
+        if kind then
+            assert(i<#children and spacer.Visibility~=1,'Native defence spacer is unavailable')
+            extra=height+gap
+            found[kind]=top+height+gap+padding.Top+(size.Y-rows[kind].row:GetDesiredSize().Y)/2
+        end
+        plan[#plan+1]={entry=entry,spacer=spacer,row=2*(i-1),extra=extra}
+        top=top+height+gap+extra
+    end
+    assert(found.Physical and found.Magical,'Native defence rows are unavailable')
+    local function set(slot,name,value)
+        local id=tostring(slot:GetAddress());cache.slots[id]=cache.slots[id] or {}
+        cache.slots[id][name]={original=slot[name],applied=value};set_slot(slot,name,value)
+    end
+    for _,record in ipairs(plan) do
+        local entry,spacer=record.entry,record.spacer
+        -- One native row per entry and one per spacer makes desired-height
+        -- layout deterministic even when the original grid uses spanning cells.
+        set(entry.Slot,'Row',record.row);set(entry.Slot,'RowSpan',1)
+        if live(spacer) then
+            set(spacer.Slot,'Row',record.row+1);set(spacer.Slot,'RowSpan',1)
+            set(spacer.Slot,'Column',entry.Slot.Column);set(spacer.Slot,'ColumnSpan',entry.Slot.ColumnSpan)
+            if record.extra>0 then
+                local x,y=spacer.Size.X,spacer.Size.Y
+                cache.spacers[tostring(spacer:GetAddress())]={x=x,y=y,applied=y+record.extra}
+                spacer:SetSize({X=x,Y=y+record.extra})
+            end
+        end
+    end
+    for kind,value in pairs(found) do position(rows[kind].row,value) end
+    widget:ForceLayoutPrepass()
+    cache.stamp=layout_stamp(widget,rows)
 end
 local function hide(widget)
-    runtime.layouts[tostring(widget:GetAddress())]=nil
     local rows=labels(widget)
     if rows then for _,kind in ipairs({'Physical','Magical'}) do
         local pair=rows[kind]
@@ -279,6 +321,7 @@ local function hide(widget)
     end
         pcall(clear_layout,widget,rows)
     end
+    runtime.layouts[tostring(widget:GetAddress())]=nil
 end
 local function refresh(context)
     if runtime.busy then return end
@@ -289,7 +332,18 @@ local function refresh(context)
     if path then
         runtime.targets[path]=tostring(widget:GetAddress())
         local count=0;for _ in pairs(runtime.targets) do count=count+1 end
-        if count>4 then runtime.targets={[path]=tostring(widget:GetAddress())};runtime.layouts={} end
+        if count>4 then
+            runtime.busy=true
+            for oldPath,oldKey in pairs(runtime.targets) do
+                local oldWidget=StaticFindObject(oldPath)
+                if live(oldWidget) and tostring(oldWidget:GetAddress())==oldKey then
+                    local oldRows=labels(oldWidget)
+                    if oldRows then pcall(clear_layout,oldWidget,oldRows) end
+                end
+            end
+            runtime.busy=false
+            runtime.targets={[path]=tostring(widget:GetAddress())};runtime.layouts={}
+        end
     end
     runtime.busy=true
     local ok,err=pcall(function()
@@ -310,6 +364,9 @@ local function refresh(context)
         end
         local positioned,message=pcall(reflow,widget,rows)
         if not positioned then
+            local key=tostring(widget:GetAddress())
+            local cache=runtime.layouts[key] or {slots={},spacers={},attempts=0}
+            runtime.layouts[key]=cache;cache.pending=cache.attempts<5
             local available,children,panel,wrapper=pcall(entries,widget)
             if available and children and #children>0 then pcall(fallback,widget,rows,children,panel,wrapper) end
             message='Layout fallback: '..tostring(message)
@@ -325,7 +382,10 @@ local function refresh(context)
 end
 runtime.rebuild=function(context)
     local widget=unwrap(context)
-    if live(widget) then runtime.layouts[tostring(widget:GetAddress())]=nil end
+    if live(widget) then
+        local cache=runtime.layouts[tostring(widget:GetAddress())]
+        if cache then cache.attempts=0;cache.stamp=nil end
+    end
     refresh(context)
 end
 runtime.tick=function()

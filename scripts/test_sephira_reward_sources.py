@@ -86,9 +86,11 @@ class SephiraRewardSourceTests(unittest.TestCase):
         before = copy.deepcopy(units)
         bound = pack.bind_units(units,native.__getitem__)
         tables = {}; pack.prepare(tables,bound)
-        labels = {int(k):v for u in units for k,v in u.get('sephiraPassiveText',{}).items()}
+        labels = {sid:{'name':label[0],'desc':label[1]} for values in pack.MASTERY_LABELS.values()
+                  for sid,label in values.items()}
+        labels.update({int(k):v for u in units for k,v in u.get('sephiraPassiveText',{}).items()})
         bonus_rows = [r for r in tables[pack.PASSIVE]['add'] if 'Name' in r['set'] and 'effectBundleList' not in r['set']]
-        self.assertEqual(len(bonus_rows),17)  # Primm plus the retained old Barusa Earth imbue.
+        self.assertEqual(len(bonus_rows),18)  # Retained Barusa Earth, Primm, and Reberta's name-only MR9 alias.
         for row in bonus_rows:
             source = native[pack.PASSIVE][row['cloneFrom']]
             result = testing.apply_fields(source,row['set'])

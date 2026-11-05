@@ -162,6 +162,7 @@ def repair_default_acquisition(unit):
         if value.get('version') == 3 and value.get('location') == old:
             unit[field] = dict(value, location=new)
 MASTERY_LABELS = {
+    'reberta': {1442: ("Reberta's Limit Break", None)},
     'christine': {1406: ('True Stagger', 'Increases the stagger power of Christine’s skills.')},
     'barusa': {1454: ('Bastion', 'Increases the stagger power of Barusa’s skills. The effect increases with the number of allies under Protect.')},
     'minfilia': {
@@ -212,6 +213,7 @@ _PRIVATE_PASSIVES = {key: 1600 + index for index, key in enumerate(_PASSIVE_KEYS
 # Appended independently: never shift the established private passive IDs.
 _PRIVATE_PASSIVES[('mog',1498)] = 1944
 _PRIVATE_PASSIVES[('primm',1526)] = 1945
+_PRIVATE_PASSIVES[('reberta',1442)] = 1946
 _FALLBACK_FIRST = 1970
 
 
@@ -620,7 +622,8 @@ def bind_units(units, rows):
                         if new_sid in passives:
                             raise ValueError('Sephira private passive ID overlaps the game catalog.')
                         label = labels[str(sid)]
-                        fields = {'ID': new_sid, 'Name': label['name'], 'Description': label['desc']}
+                        fields = {'ID': new_sid, 'Name': label['name']}
+                        if label.get('desc') is not None: fields['Description'] = label['desc']
                         # Item-granted imbues/evasion can have zero equip cost;
                         # learned equivalents use the native 20-AP utility tier.
                         if passive['equipCost'] == 0: fields['equipCost'] = 20

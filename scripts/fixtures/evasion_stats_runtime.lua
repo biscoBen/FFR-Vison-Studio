@@ -22,8 +22,10 @@ functions={
  ['/Script/UMG.PanelWidget:GetChildAt']={'IntProperty','ObjectProperty'},
  ['/Script/UMG.Widget:ForceLayoutPrepass']={},
  ['/Script/UMG.Widget:GetDesiredSize']={'StructProperty'},
- [cls..':Studio_GetRowSize']={'ObjectProperty','StructProperty'},
- [cls..':Studio_RowPoint']={'ObjectProperty','ObjectProperty','StructProperty','StructProperty'},
+ ['/Script/UMG.GridSlot:SetRow']={'IntProperty'},
+ ['/Script/UMG.GridSlot:SetRowSpan']={'IntProperty'},
+ ['/Script/UMG.GridSlot:SetColumn']={'IntProperty'},
+ ['/Script/UMG.GridSlot:SetColumnSpan']={'IntProperty'},
  ['/Script/UMG.Widget:SetRenderTranslation']={'StructProperty'},
  ['/Script/UMG.OverlaySlot:SetPadding']={'StructProperty'},
  ['/Script/UMG.Spacer:SetSize']={'StructProperty'},
@@ -86,22 +88,30 @@ for _,row in ipairs({physicalRow,magicalRow}) do
 end
 reserve=object('Spacer /Fixture.WidgetTree.Spacer_StudioEvasionRoom')
 function reserve:SetSize(size) assert(gameThread);self.Size=size end
-nativeEntries={};nativeCells={};nativeSpacers={}
+nativeEntries={};nativeCells={};nativeSpacers={};gridWrites=0
+function gridSlot(name,row)
+    local slot=object(name);slot.class='/Script/UMG.GridSlot'
+    slot.Row=row;slot.Column=0;slot.RowSpan=1;slot.ColumnSpan=2;slot.Padding={Top=0,Bottom=0}
+    function slot:SetRow(v) assert(gameThread);self.Row=v;gridWrites=gridWrites+1 end
+    function slot:SetRowSpan(v) assert(gameThread);self.RowSpan=v;gridWrites=gridWrites+1 end
+    function slot:SetColumn(v) assert(gameThread);self.Column=v;gridWrites=gridWrites+1 end
+    function slot:SetColumnSpan(v) assert(gameThread);self.ColumnSpan=v;gridWrites=gridWrites+1 end
+    return slot
+end
 for i,kind in ipairs({12,13,14,15,16,5,6,7,8,9,19}) do
     local e=object('Native stat '..i);e.UnitParamType=kind;e.class='/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_DetailEntry.WBP_UnitParam_DetailEntry_C'
     e.RenderTransform={Translation={X=0,Y=0},Scale={X=1,Y=1}}
-    function e:GetDesiredSize() assert(gameThread);return {X=280,Y=33} end
+    e.height=33
+    function e:GetDesiredSize() assert(gameThread);return {X=280,Y=desiredReady==false and 0 or self.height} end
     function e:SetRenderTranslation(t) assert(gameThread);self.RenderTransform.Translation=t end
-    e.Slot=object('GridSlot');e.Slot.class='/Script/UMG.GridSlot'
-    e.Slot.Row=2*(i-1);e.Slot.Column=0;e.Slot.RowSpan=2;e.Slot.Padding={Top=0,Bottom=0}
+    e.Slot=gridSlot('GridSlot native '..i,2*(i-1));e.Slot.RowSpan=2
     nativeEntries[i]=e
     nativeCells[#nativeCells+1]=e
     if i<11 then
-        local spacer=object('Native row spacer '..i);spacer.height=16
-        function spacer:GetDesiredSize() assert(gameThread);return {X=0,Y=self.height} end
-        spacer.Slot=object('GridSlot');spacer.Slot.class='/Script/UMG.GridSlot'
-        spacer.Slot.Row=2*i-1;spacer.Slot.Column=0;spacer.Slot.RowSpan=1
-        spacer.Slot.Padding={Top=0,Bottom=0}
+        local spacer=object('Native row spacer '..i);spacer.Size={X=0,Y=16};spacer.Visibility=0;spacer.class='/Script/UMG.Spacer'
+        function spacer:GetDesiredSize() assert(gameThread);return {X=self.Size.X,Y=self.Size.Y} end
+        function spacer:SetSize(v) assert(gameThread);self.Size=v;gridWrites=gridWrites+1 end
+        spacer.Slot=gridSlot('GridSlot spacer '..i,2*i-1)
         nativeSpacers[#nativeSpacers+1]=spacer;nativeCells[#nativeCells+1]=spacer
     end
 end
@@ -109,12 +119,16 @@ nativePanel=panel('GridPanel_28',nativeCells);nativePanel.parents={['/Script/UMG
 function nativePanel:GetDesiredSize()
     assert(gameThread)
     local height=0
-    for _,entry in ipairs(nativeEntries) do height=height+33+entry.Slot.Padding.Top+entry.Slot.Padding.Bottom end
-    for _,spacer in ipairs(nativeSpacers) do height=height+spacer.height end
+    for _,entry in ipairs(nativeEntries) do height=height+entry.height+entry.Slot.Padding.Top+entry.Slot.Padding.Bottom end
+    for _,spacer in ipairs(nativeSpacers) do height=height+spacer.Size.Y+spacer.Slot.Padding.Top+spacer.Slot.Padding.Bottom end
     return {X=280,Y=height}
 end
 nativeWrapper=object('Native grid wrapper');nativeWrapper.GridPanel_28=nativePanel
-nativeWrapper.Slot=object('Native overlay slot');nativeWrapper.Slot.Padding={Top=10}
+nativeWrapper.Slot=object('Native overlay slot');nativeWrapper.Slot.Padding={Top=10};nativeWrapper.Slot.VerticalAlignment=1
+nativeWrapper.EntryList={}
+for i,entry in ipairs(nativeEntries) do nativeWrapper.EntryList[i]=object('DirectionGridPanelEntry '..i)
+    nativeWrapper.EntryList[i].Widget=entry;nativeWrapper.EntryList[i].Spacer=nativeSpacers[i]
+end
 nativeWrapper.DirGridPanelProperty={GridDirection=0,SpaceBetweenLine=0,SpaceBetweenEntryInGridDirection=16}
 function nativeWrapper:SetClipping(mode) assert(gameThread);self.clipping=mode end
 function nativePanel:SetClipping(mode) assert(gameThread);self.clipping=mode end
@@ -126,6 +140,7 @@ widget.WidgetTree=object('WidgetTree');widget.WidgetTree.RootWidget=root
 local overlayWidget=root.children[1]
 function widget:Studio_GetRowSize(entry)
     assert(gameThread)
+    if not geometryReady then return {X=0,Y=0} end
     if entry==overlayWidget then return {X=280,Y=700} end
     return {X=entry.geometry.w,Y=entry.geometry.h}
 end
@@ -140,8 +155,27 @@ function paint()
         local y=(nativeTops and nativeTops[i]) or top+e.Slot.Padding.Top
         e.geometry={kind='Geometry',x=100+e.Slot.Column*140*dpi,y=200+(y+e.RenderTransform.Translation.Y)*dpi,
             scale=dpi,w=280,h=geometryReady and 33 or 0}
-        top=top+33+e.Slot.Padding.Top+e.Slot.Padding.Bottom+((nativeSpacers[i] and nativeSpacers[i].height) or 0)
+        top=top+e.height+e.Slot.Padding.Top+e.Slot.Padding.Bottom+((nativeSpacers[i] and nativeSpacers[i].Size.Y) or 0)
     end
+end
+function native_rects()
+    -- Independent unspanned SGridPanel arrangement: each grid row takes the
+    -- largest desired child size plus slot padding. Read actual mutated slots.
+    local heights={};local last=0
+    for _,node in ipairs(nativeCells) do
+        assert(node.Slot.RowSpan==1,'Normalized grid must have no spanning cells')
+        local desired=node:GetDesiredSize().Y+node.Slot.Padding.Top+node.Slot.Padding.Bottom
+        heights[node.Slot.Row]=math.max(heights[node.Slot.Row] or 0,desired)
+        last=math.max(last,node.Slot.Row)
+    end
+    local offsets={};local top=10
+    for row=0,last do offsets[row]=top;top=top+(heights[row] or 0) end
+    local result={}
+    for i,node in ipairs(nativeEntries) do
+        local h=node:GetDesiredSize().Y
+        result[i]={top=offsets[node.Slot.Row]+node.Slot.Padding.Top,height=h}
+    end
+    return result,top-10
 end
 function LoopInGameThreadWithDelay(ms,callback) assert(ms==100);timers[#timers+1]=callback end
 function tick()

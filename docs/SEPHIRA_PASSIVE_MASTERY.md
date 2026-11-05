@@ -18,7 +18,7 @@ All 75 individual equipable MR rewards from the 15 excluded originals are availa
 | Lenneth | Restore HP on Stagger (1284) | Multi-Cover (400390) | Physical Counter (1029) | Lustrous Shield (1408) | Heroic Nature (1409) |
 | Lila | Fill LB when Taking Damage (1331) | Bladeblitz (400310) | Bravery on Stagger (1288) | Nullify Instant Death (1325) | Arms Akimbo (400650) |
 | Mystea | Physical Defense +20% (1313) | Magic Defense +20% (1315) | Magic Counter (1030) | Magic Evasion +20% (1530) | Shell at Half HP (1299) |
-| Reberta (JP) | Opening Honed Senses (1507) | Restore HP on Defeating Foes (1318) | Power Stagger (1385) | Mirage (400670) | Clive’s Limit Break (1442) |
+| Reberta (JP) | Opening Honed Senses (1507) | Restore HP on Defeating Foes (1318) | Power Stagger (1385) | Mirage (400670) | Reberta’s Limit Break (1442; private label 1946 at build time) |
 | Snow White | Darkness (400490) | Vigorous Attacks (1358) | Staggeringly Risky (1405) | Dark Rite (1431) | Dark Sword (1457) |
 | Aria | Nullify Poison (1104) | Resist Water (1251) | MP +20% (1381) | Magic Attack +20% (1311) | Imbue Water (1524) |
 | Eiko | Nullify Silence (1107) | Esper Power (1960) | Esper Communion (1961) | Enduring Eidolons (1962) | Eidolon Revelry (1963) |

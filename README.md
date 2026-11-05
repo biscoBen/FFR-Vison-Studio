@@ -6,6 +6,11 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 
 ### Aerith and Lunafreya challenge AoE reduction — 2026-11-05
 
+Ben confirms the three-step map cycle works in 1.2.168. The large view still
+resets between zones, and the stat page still overlaps Phys. Eva. with AP.
+Those follow-ups, Berserker Samba removal and Reberta's MR9 label are in progress
+under Unreleased.
+
 [Verified Studio 1.2.168 / run 42118798307](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42118798307/Sephira-Studio-Test.zip)
 (code `23bbe9f`; **83.4 MB**).
 

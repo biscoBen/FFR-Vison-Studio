@@ -191,6 +191,9 @@ def rotation(unit, recipes, index):
     by_source = {r['source']: r for r in recipes}
     attack = recipes[0]
     def find(identity):
+        # Explicit encounter tuning only changes enemy action selection. Keep
+        # source/player skills and their powers intact (including signatures).
+        identity = spec.get('rotationReplacements', {}).get(str(identity), identity)
         return by_source.get(identity) or attack
     first, second, special = [find(v) for v in spec['attacks']]
     utility = find(spec.get('utility', 0))
