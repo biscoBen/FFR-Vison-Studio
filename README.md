@@ -4,6 +4,24 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Current physical and magical evasion — 2026-11-04
+
+[Verified Studio 1.2.159 / run 41953153487](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41953153487/Sephira-Studio-Test.zip)
+(code `16ff799`; **83.4 MB**).
+
+Enable **Physical and magical evasion on stat pages** on Home, then
+**GO / Build and install** with the game closed and restart. The shared character
+stat grid shows current physical and magical evasion from the selected live
+parameter's equipment, applicable MR/passives and active effects. Battle pages
+use current battle effects. Equipment comparisons explicitly show current
+values. Uses the installed limit and native physical Decoy handling. Requires
+UE4SS; the switch starts off. No preparation or preset reset is needed.
+
+Windows checks, public-package comparison and native asset readback pass.
+In-game rendering, page coverage and buff refresh remain pending. Evasion is a
+stat component; attack accuracy and guaranteed-hit rules can change the result.
+[Validation and timings](CHANGELOG.md#published-current-evasion-stat-pages--2026-11-04).
+
 ### Full local map from the controller — 2026-11-04
 
 [Verified Studio 1.2.158 / run 41927944482](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41927944482/Sephira-Studio-Test.zip)
@@ -2836,13 +2854,13 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   Verify owned runtime staging/restoration and Deck transfer with cycling on and off. Keep the authorized seated
   fallback, native source bytes and saved kits. Refresh the labeled Studio preview and cache revision separately.
 - [ ] **Physical and magical evasion on in-game stat pages (requested November 4).**
-  Implemented for candidate 1.2.159: optional Home switch, two current-value
+  Published in 1.2.159: optional Home switch, two current-value
   rows on the shared stat grid, selected live menu/battle parameter, native
   active effects, installed limit and physical Decoy bypass. The corrected
   capture verifies the ordinary getter and target-side aggregation. Preserve
   current equipment values on comparison pages; no hovered-item prediction.
-  Native compilation/readback and runtime fixtures pass. Windows packaging and
-  real-game page coverage/buff refresh remain pending; keep this gameplay
+  Native compilation/readback, runtime fixtures and Windows/public-package
+  verification pass. Real-game page coverage/buff refresh remain pending; keep this gameplay
   migration check open. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
   active-party lookup and input bindings. Check battle/cutscene/dialog guards and preservation of party order/save identity.
