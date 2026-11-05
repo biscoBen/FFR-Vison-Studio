@@ -184,14 +184,12 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Wide' and vm.index==1)
         ''')
 
-    def test_automatic_small_reset_does_not_replace_choice_but_manual_cycle_does(self):
+    def test_direct_native_small_step_is_respected_even_when_hidden_notification_is_absent(self):
         lua=self.runtime()
         lua.execute('''
-            show();vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
-            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and FFRStudioLocalMap.choice==1)
-            vm.tag='None';show();assert(FFRStudioLocalMap.choice==2)
-            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show();assert(FFRStudioLocalMap.choice==0)
-            vm.mapId=3000;vm.tag='UI.Field.MiniMap.View.Decrale';show()
+            show();set_view(2);set_view(0)
+            assert(vm.index==0 and FFRStudioLocalMap.choice==0)
+            vm.mapId=3000;vm.tag='UI.Field.MiniMap.View.Decrale';show();tick()
             assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Instance' and FFRStudioLocalMap.choice==0)
         ''')
 
@@ -206,17 +204,17 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(old.address~=vm.address and FFRStudioLocalMap.fitted==vm.address)
         ''')
 
-    def test_hidden_bootstrap_and_failed_fit_do_not_loop_or_persist_objects(self):
+    def test_hidden_bootstrap_and_missing_fit_keep_native_visibility_without_resize_loops(self):
         lua=self.runtime()
         lua.execute('''
             vm.tag='None';show();assert(FFRStudioLocalMap.choice==nil)
             vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show();assert(FFRStudioLocalMap.choice==0)
             vm.tag='UI.Field.MiniMap.View.Decrale';vm.width=0;show()
-            assert(vm.fallback==1)
-            for i=1,20 do show() end
-            assert(vm.fallback==1,'Failed fit must not force another size change every refresh')
-            vm.width=20000;vm.mapId=3001;show();assert(vm.tag=='UI.Field.MiniMap.View.Decrale')
-            assert(type(FFRStudioLocalMap.viewKey)=='string' and type(FFRStudioLocalMap.choice)=='number')
+            assert(not vm.fallback and FFRStudioLocalMap.choice==1)
+            for i=1,20 do show();tick() end
+            assert(not vm.stepCalls)
+            vm.width=20000;tick();assert(widget.paint and FFRStudioLocalMap.choice==1)
+            assert(type(FFRStudioLocalMap.viewKey)=='string')
         ''')
 
     def test_native_visibility_and_default_tag_cycle_through_all_three_steps(self):
@@ -224,7 +222,7 @@ class LocalMapRuntimeTests(unittest.TestCase):
         lua.execute('''
             show();vm.resetOnRestore=true
             for i=1,5 do
-                set_view(2)
+                set_view(2);tick()
                 assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Default' and vm.display==false)
                 assert(FFRStudioLocalMap.choice==2 and vm.index==2)
                 set_view(0)
@@ -259,19 +257,92 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(vm.index==1 and FFRStudioLocalMap.choice==1)
         ''')
 
-    def test_new_zone_retries_when_initially_missing_geometry_becomes_ready(self):
+    def test_new_zone_keeps_large_while_geometry_is_missing_then_fits_when_ready(self):
         lua=self.runtime()
         lua.execute('''
-            show();vm.mapId=9200;vm.width=0;set_view(0)
-            assert(FFRStudioLocalMap.choice==1 and vm.index==0)
-            local failures=vm.fallback
-            for i=1,20 do show() end
-            assert(vm.fallback==failures)
-            vm.width=20000;show()
-            assert(vm.index==1 and vm.tag=='UI.Field.MiniMap.View.Decrale' and widget.paint)
+            show();vm.mapId=9200;vm.width=0;set_view(0);tick()
+            assert(FFRStudioLocalMap.choice==1 and vm.index==1)
+            local changes=vm.stepCalls
+            for i=1,20 do tick() end
+            assert(vm.stepCalls==changes and vm.index==1)
+            vm.width=20000;tick()
+            assert(vm.index==1 and widget.paint)
             local calls=vm.stepCalls
-            for i=1,20 do show() end
+            for i=1,20 do tick() end
             assert(vm.stepCalls==calls)
+        ''')
+
+    def test_hidden_visibility_without_appearance_notification_keeps_the_full_native_cycle(self):
+        lua=self.runtime()
+        lua.execute('''
+            show()
+            for i=1,10 do
+                set_view(2);assert(FFRStudioLocalMap.choice==1)
+                tick();assert(FFRStudioLocalMap.choice==2)
+                set_view(0);assert(vm.index==0 and FFRStudioLocalMap.choice==0)
+                set_view(1);assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+            end
+            -- Rapid off -> small between observer ticks still respects small.
+            set_view(2);set_view(0);assert(vm.index==0)
+        ''')
+
+    def test_zone_reset_without_any_widget_notification_is_reconciled_by_path_lookup(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();local wanted=widget.paint
+            FindAllOf=function() error('No repeated object scans') end
+            vm.mapId=9300;vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.display=true
+            tick();assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+            local zooms,syncs,paints=vm.zoomCalls,vm.syncCalls,widget.paints
+            for i=1,20 do tick() end
+            assert(widget.paint==wanted)
+            assert(vm.zoomCalls==zooms and vm.syncCalls==syncs and widget.paints==paints,
+                'Unchanged observer ticks must not resync or repaint the native map')
+            for path,key in pairs(FFRStudioLocalMap.targets) do assert(type(path)=='string' and type(key)=='string') end
+        ''')
+
+    def test_area_less_maps_use_only_a_sole_unambiguous_native_area(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.areaId=-1
+            vm.AreaLayoutVM=obj({AreaDataMap={[777]={Size={X=400,Y=300}}}})
+            show();assert(math.abs(widget.paint-(.9*640/500))<1e-7)
+            vm.AreaLayoutVM=nil;vm.areas={[777]={BoxSize={X=4000,Y=3000}}}
+            tick();assert(math.abs(widget.paint-(.9*640/500))<1e-7)
+        ''')
+
+    def test_ambiguous_area_less_map_keeps_large_and_waits_for_the_current_area(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.areaId=-1
+            vm.AreaLayoutVM=obj({AreaDataMap={[101]={Size={X=400,Y=300}},[202]={Size={X=800,Y=600}}}})
+            show();tick();assert(not widget.paint and not vm.fallback)
+            assert(FFRStudioLocalMap.choice==1)
+            vm.areaId=101;tick();assert(widget.paint and FFRStudioLocalMap.choice==1)
+        ''')
+
+    def test_loading_input_guard_does_not_learn_transient_hidden_or_small_setup(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();input.enabled=false
+            vm.display=false;vm.tag='UI.Field.MiniMap.View.Decrale.Default';show();tick()
+            assert(FFRStudioLocalMap.choice==1)
+            vm.mapId=9400;vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.display=true;show();tick()
+            assert(FFRStudioLocalMap.choice==1)
+            input.enabled=true;tick();assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+            set_view(2);set_view(0);assert(vm.index==0 and FFRStudioLocalMap.choice==0)
+        ''')
+
+    def test_legacy_async_observer_coalesces_work_on_the_game_thread(self):
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/local_map_runtime.lua').read_text())
+        lua.execute('LoopInGameThreadWithDelay=nil;function LoopAsync(ms,fn) assert(ms==100);asyncTick=fn end')
+        lua.execute((PAYLOAD/'local_map.lua').read_text())
+        lua.execute('''
+            ready();show();set_view(2);assert(asyncTick)
+            asyncTick();asyncTick();assert(#queued==1)
+            drain();assert(FFRStudioLocalMap.choice==2)
+            set_view(0);assert(vm.index==0)
         ''')
 
     def test_destroying_or_missing_objects_do_not_read_map_properties(self):
@@ -283,11 +354,11 @@ class LocalMapRuntimeTests(unittest.TestCase):
             widget.VM_MiniMap=saved; vm.invalid=true; show(); assert(not vm.zoomCalls)
         ''')
 
-    def test_invalid_bounds_fall_back_without_saving_zoom_or_repeated_logging(self):
+    def test_invalid_bounds_keep_the_selected_step_without_saving_zoom_or_repeated_logging(self):
         for field,value in [('width','0'),('height','-10'),('projection','0/0'),('displayX','math.huge')]:
             lua=self.runtime()
-            lua.execute(f"vm.{field}={value}; show(); assert(vm.fallback==1 and not vm.zoomCalls and vm.ZoomProperty.bSaveZoom)")
-            lua.execute("vm.tag='UI.Field.MiniMap.View.Decrale'; show(); assert(vm.fallback==2 and #messages==2)")
+            lua.execute(f"vm.{field}={value}; show(); assert(not vm.fallback and not vm.zoomCalls and vm.ZoomProperty.bSaveZoom)")
+            lua.execute("show();tick();assert(not vm.fallback and #messages==2)")
 
     def test_reloaded_blueprint_functions_rebind_but_discovery_does_not_duplicate(self):
         lua=self.runtime()
@@ -314,11 +385,11 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(math.abs(widget.paint-(.9*640/math.sqrt(2*1000^2)))<1e-9)
         ''')
 
-    def test_missing_active_area_falls_back_instead_of_using_unrelated_land_bounds(self):
+    def test_missing_active_area_defers_fit_instead_of_using_unrelated_land_bounds(self):
         lua=self.runtime()
         lua.execute('''
             vm.areaId=404;show()
-            assert(vm.fallback==1 and not widget.paint and not vm.zoomCalls)
+            assert(not vm.fallback and not widget.paint and not vm.zoomCalls)
         ''')
 
     def test_combined_generated_script_starts_with_each_runtime_feature_combination(self):

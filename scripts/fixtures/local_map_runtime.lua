@@ -3,6 +3,7 @@ hooks, queued, messages, signatures = {}, {}, {}, {}
 local cls = '/Game/UI/Field/MiniMap/Widget/WBP_MiniMap.WBP_MiniMap_C'
 local full = 'UI.Field.MiniMap.View.Decrale'
 local address = 1
+instances={};timers={}
 function obj(value)
     value = value or {}; address=address+1; value.address=address
     function value:IsValid() return not self.invalid end
@@ -36,6 +37,7 @@ for path,types in pairs(fields) do
 end
 loaded = false
 function StaticFindObject(path)
+    if path:sub(1,8)=='/Fixture' then return instances[path] end
     if path:sub(1,6)=='/Game/' and not loaded then return nil end
     return signatures[path]
 end
@@ -54,10 +56,17 @@ function drain()
 end
 function print(s) messages[#messages+1]=s end
 package.preload.config=function() return {localMap=1} end
+input=obj({enabled=true})
+function input:IsEnableInput() assert(gameThread);return self.enabled end
+signatures['/Script/mucha.CPP_InputManager']=obj()
+signatures['/Script/Engine.Default__SubsystemBlueprintLibrary']=obj()
+function signatures_GetWorldSubsystem(self,widget,kind) assert(gameThread);return input end
+signatures['/Script/Engine.Default__SubsystemBlueprintLibrary'].GetWorldSubsystem=signatures_GetWorldSubsystem
 local vmClass=obj()
 vm=obj({tag=full,width=20000,height=10000,landWidth=200000,landHeight=200000,areaId=101,
     mapId=1001,projection=.1,displayX=640,displayY=640,rangeX=320,rangeY=320,
     ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}})
+vm.MiniMapDA=obj()
 vm.ViewPropertyTag={TagName={ToString=function() return vm.tag end}}
 function vm:GetClass() return vmClass end
 function vm:GetIsCurrentMapField() assert(gameThread); return self.world or false end
@@ -102,7 +111,7 @@ function vm:SetDisplayScaleIndex(index,animate)
     if index==0 then self.fallback=(self.fallback or 0)+1 end
     self.display=index~=2
     self.tag=index==2 and full..'.Default' or index==1 and (self.world and full..'.Wide' or full) or (self.world and full..'.World' or full..'.Instance')
-    local hook=hooks[cls..':SetAppearance'];if hook then hook(param(widget)) end
+    local hook=hooks[cls..':SetAppearance'];if hook and index~=2 then hook(param(widget)) end
 end
 function vm:UpdateProperty()
     assert(gameThread); self.restores=(self.restores or 0)+1
@@ -113,6 +122,9 @@ end
 local widgetType=obj({name='WidgetBlueprintGeneratedClass '..cls})
 function widgetType:GetFullName() return self.name end
 widget=obj({VM_MiniMap=vm})
+function widget:GetFullName() return 'WBP_MiniMap_C /Fixture.MapWidget' end
+instances['/Fixture/MapWidget']=widget
+instances['/Fixture.MapWidget']=widget
 setmetatable(widget,{__index=function(_,key)
     if key=='MiniMapVM' then error('Use the visible Blueprint MVVM source, not the native cache') end
 end})
@@ -125,6 +137,10 @@ end
 function widget:SetWorldPosition(position)
     assert(gameThread);self.position=position
     local hook=hooks[cls..':SetWorldPosition'];if hook then hook(param(self),param(position)) end
+end
+function LoopInGameThreadWithDelay(ms,callback) assert(ms==100);timers[#timers+1]=callback end
+function tick()
+    gameThread=true;FFRStudioLocalMap.tick();gameThread=false
 end
 function show()
     gameThread=true
@@ -143,5 +159,5 @@ function ready()
     vm.zoomCalls=nil;vm.syncCalls=nil;widget.paints=nil;widget.paint=nil
     vm.ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}
     vm.alpha=nil
-    FFRStudioLocalMap.fitted=nil;FFRStudioLocalMap.choice=nil;FFRStudioLocalMap.viewKey=nil;FFRStudioLocalMap.lastMode=nil
+    FFRStudioLocalMap.fitted=nil;FFRStudioLocalMap.choice=nil;FFRStudioLocalMap.viewKey=nil;FFRStudioLocalMap.lastMode=nil;FFRStudioLocalMap.restorePending=false
 end

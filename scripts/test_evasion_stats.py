@@ -124,8 +124,10 @@ class EvasionAssetsTests(unittest.TestCase):
         # fields shifts inherited unversioned indices and crashes those pages.
         self.assertEqual(original_class['LoadedProperties'],cls['LoadedProperties'])
         self.assertEqual(len(cls['LoadedProperties']),6)
-        self.assertEqual(original_class['FuncMap'],cls['FuncMap'])
-        self.assertEqual(original_class['Children'],cls['Children'])
+        self.assertEqual(original_class['FuncMap'],cls['FuncMap'][:-2])
+        self.assertEqual(original_class['Children'],cls['Children'][:-2])
+        self.assertEqual(cls['FuncMap'][-2:],[['Studio_GetRowSize',47],['Studio_RowPoint',48]])
+        self.assertEqual(cls['Children'][-2:],[47,48])
         self.assertEqual(build.field(readback['Exports'][25],'RootWidget')['Value'],27)
         for e in readback['Exports'][30:34:2]+readback['Exports'][36:40:2]:
             self.assertEqual(build.field(e,'Visibility')['Value'],'Collapsed')
@@ -141,7 +143,58 @@ class EvasionAssetsTests(unittest.TestCase):
                 self.assertEqual(build.field(e,'Text')['CultureInvariantString'],
                                  'Phys. Eva.' if 'Physical' in e['ObjectName'] else 'Mag. Eva.')
                 self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['label'],'Font')))
-        self.assertEqual(len(readback['Exports']),46)
+        self.assertEqual(len(readback['Exports']),48)
+
+    def test_serialized_geometry_bridge_keeps_opaque_transforms_in_native_calls(self):
+        asset=fixture('evasion_ui_readback.json.gz')
+        # Interpret the actual serialized Kismet, with opaque native geometry
+        # tokens: only the native Slate functions may read their transforms.
+        geometries={object():(180,240,1.75,280,33),object():(40,100,1.25,400,800)}
+        entry,origin=geometries
+        observed=[]
+        def imported(index):
+            imp=asset['Imports'][-index-1]
+            return imp['ObjectName']
+        for fn in asset['Exports'][-2:]:
+            self.assertNotIn('FUNC_Native',fn['FunctionFlags'])
+            self.assertEqual(fn['SuperStruct'],0)
+            self.assertEqual(fn['LoadedProperties'][-1]['Name'],'ReturnValue')
+            self.assertTrue(all(p['SerializedType'] in ('ObjectProperty','StructProperty')
+                                for p in fn['LoadedProperties']))
+            for p in fn['LoadedProperties']:
+                if p['SerializedType']=='StructProperty':self.assertEqual(imported(p['Struct']),'Vector2D')
+                else:self.assertEqual(imported(p['PropertyClass']),'Widget')
+        def evaluate(node,params,context=None):
+            op=node['$type'].split('.')[-1].split(',')[0]
+            if op=='EX_Return':return evaluate(node['ReturnExpression'],params)
+            if op=='EX_LocalVariable':return params[node['Variable']['New']['Path'][0]]
+            if op=='EX_Context':
+                self.assertEqual(node['Offset'],10)
+                pointer=node['RValuePointer']['New']
+                self.assertEqual(pointer['Path'],['ReturnValue'])
+                self.assertEqual(imported(pointer['ResolvedOwner']),'GetCachedGeometry')
+                return evaluate(node['ContextExpression'],params,evaluate(node['ObjectExpression'],params))
+            if op=='EX_FinalFunction':
+                self.assertEqual(imported(node['StackNode']),'GetCachedGeometry')
+                self.assertEqual(node['Parameters'],[])
+                return context
+            self.assertEqual(op,'EX_CallMath')
+            name=imported(node['StackNode']);observed.append(name)
+            args=[evaluate(a,params) for a in node['Parameters']]
+            x,y,scale,w,h=geometries[args[0]]
+            if name=='GetLocalSize':return (w,h)
+            if name=='LocalToAbsolute':return (x+args[1][0]*scale,y+args[1][1]*scale)
+            self.assertEqual(name,'AbsoluteToLocal')
+            return ((args[1][0]-x)/scale,(args[1][1]-y)/scale)
+        size,point=asset['Exports'][-2:]
+        self.assertEqual(evaluate(size['ScriptBytecode'][0],{'Entry':entry}),(280,33))
+        result=evaluate(point['ScriptBytecode'][0],{'Entry':entry,'Origin':origin,'Point':(0,33)})
+        self.assertEqual(result,((180-40)/1.25,(240+33*1.75-100)/1.25))
+        self.assertEqual(observed,['GetLocalSize','AbsoluteToLocal','LocalToAbsolute'])
+        # Catch a regression back to the tempting but lossy Lua struct bridge.
+        source=(PAYLOAD/'evasion_stats.lua').read_text()
+        self.assertNotIn(':GetCachedGeometry(',source)
+        self.assertNotIn('slate:LocalToAbsolute(',source)
 
     def test_icon_and_text_columns_match_the_captured_native_layout(self):
         native=fixture('evasion_ui_native.json.gz');asset=fixture('evasion_ui_readback.json.gz')
@@ -274,7 +327,7 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua=LuaRuntime()
         lua.execute((ROOT/'scripts/fixtures/evasion_stats_runtime.lua').read_text())
         lua.execute((PAYLOAD/'evasion_stats.lua').read_text())
-        lua.execute('ready()')
+        lua.execute('ready();tick()')
         return lua
 
     def test_native_row_centres_use_the_same_pitch_with_evasion_after_each_defence(self):
@@ -302,7 +355,7 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua=self.runtime()
         lua.execute('''
             for i,e in ipairs(nativeEntries) do e.Slot.Column=(i-1)%2 end
-            show();values('0','0')
+            show();tick();values('0','0')
             for _,e in ipairs(nativeEntries) do assert(e.RenderTransform.Translation.Y==0) end
             assert(reserve.Size.Y==0 and magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
         ''')
@@ -312,7 +365,7 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua.execute('''
             for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=0,Bottom=0} end
             for _,spacer in ipairs(nativeSpacers) do spacer.height=20 end
-            show();values('0','0')
+            show();tick();values('0','0')
             assert(reserve.Size.Y==106 and nativeEntries[3].RenderTransform.Translation.Y==53)
             assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==159)
         ''')
@@ -321,7 +374,7 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua=self.runtime()
         lua.execute('''
             for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=3,Bottom=5} end
-            show();values('0','0')
+            show();tick();values('0','0')
             local pitch=33+3+5+16
             assert(reserve.Size.Y==2*pitch)
             assert(physicalRow.Slot.Padding.Top==10+3+2*pitch+.5)
@@ -330,12 +383,64 @@ class EvasionRuntimeTests(unittest.TestCase):
             assert(nativeSpacers[1].Slot.Row==1)
         ''')
 
-    def test_unsupported_spans_hide_the_readout_and_restore_the_native_grid(self):
+    def test_native_spanning_rows_keep_values_and_use_arranged_geometry(self):
         lua=self.runtime()
         lua.execute('''
-            nativeEntries[2].Slot.RowSpan=2;show();hidden()
-            assert(reserve.Size.Y==0)
-            for _,entry in ipairs(nativeEntries) do assert(entry.RenderTransform.Translation.Y==0) end
+            nativeEntries[2].Slot.RowSpan=4;show();tick();values('0','0')
+            assert(reserve.Size.Y==98 and physicalRow.Slot.Padding.Top==108.5)
+            assert(nativeEntries[3].RenderTransform.Translation.Y==49)
+        ''')
+
+    def test_geometry_delay_keeps_valid_values_visible_and_retries_are_bounded(self):
+        lua=self.runtime()
+        lua.execute('''
+            geometryReady=false;show('CreateList');values('0','0')
+            for i=1,10 do tick();values('0','0') end
+            local key=tostring(widget:GetAddress());local cache=FFRStudioEvasionStats.layouts[key]
+            assert(not cache.pending and cache.attempts==5 and reserve.Size.Y==0)
+            assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
+            geometryReady=true;show('CreateList');tick();values('0','0')
+            assert(reserve.Size.Y==98)
+        ''')
+
+    def test_nonuniform_native_geometry_and_dpi_preserve_the_defence_insertions(self):
+        lua=self.runtime()
+        lua.execute('''
+            nativeTops={};for i=1,11 do nativeTops[i]=10+(i-1)*49+(i>4 and 5 or 0) end
+            for _,scale in ipairs({1,1.25,1.75,2}) do
+                dpi=scale;show('CreateList');tick();values('0','0')
+                assert(math.abs(reserve.Size.Y-103)<1e-7)
+                assert(math.abs(physicalRow.Slot.Padding.Top-108.5)<1e-7)
+                assert(math.abs(magicalRow.Slot.Padding.Top-260.5)<1e-7)
+                show();tick()
+                assert(math.abs(nativeEntries[11].RenderTransform.Translation.Y-103)<1e-7)
+            end
+        ''')
+
+    def test_layout_cache_keeps_only_scalars_and_invalid_pending_targets_are_removed(self):
+        lua=self.runtime()
+        lua.execute('''
+            local function plain(value)
+                if type(value)=='table' then
+                    assert(not value.IsValid and not value.GetCachedGeometry and not value.kind)
+                    for _,v in pairs(value) do plain(v) end
+                else assert(type(value)=='string' or type(value)=='number' or type(value)=='boolean') end
+            end
+            plain(FFRStudioEvasionStats.layouts)
+            show('CreateList');widget.dead=true;tick()
+            assert(next(FFRStudioEvasionStats.targets)==nil)
+        ''')
+
+    def test_legacy_async_observer_only_reads_ui_after_queuing_the_game_thread(self):
+        lua=LuaRuntime()
+        lua.execute((ROOT/'scripts/fixtures/evasion_stats_runtime.lua').read_text())
+        lua.execute('LoopInGameThreadWithDelay=nil;function LoopAsync(ms,fn) assert(ms==100);asyncTick=fn end')
+        lua.execute((PAYLOAD/'evasion_stats.lua').read_text())
+        lua.execute('''
+            ready();assert(asyncTick)
+            gameThread=true;paint();gameThread=false
+            asyncTick();asyncTick();assert(#queue==1)
+            drain();values('0','0');assert(reserve.Size.Y==98)
         ''')
 
     def test_live_effect_types_stack_by_damage_type_and_cap_overrides_are_read_fresh(self):

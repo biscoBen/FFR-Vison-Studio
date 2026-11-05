@@ -1,6 +1,6 @@
 -- Reflection, out-struct and lifecycle boundaries model the pinned UE4SS API.
 config={evasionStats=1}; package.preload.config=function() return config end
-hooks,queue,logs={}, {}, {}; loaded=false; gameThread=false
+hooks,queue,logs={}, {}, {}; loaded=false; gameThread=false; instances={};timers={};geometryReady=true;dpi=1.5
 function print(message) logs[#logs+1]=message end
 function param(value) return {get=function() return value end} end
 function object(name)
@@ -22,6 +22,8 @@ functions={
  ['/Script/UMG.PanelWidget:GetChildAt']={'IntProperty','ObjectProperty'},
  ['/Script/UMG.Widget:ForceLayoutPrepass']={},
  ['/Script/UMG.Widget:GetDesiredSize']={'StructProperty'},
+ [cls..':Studio_GetRowSize']={'ObjectProperty','StructProperty'},
+ [cls..':Studio_RowPoint']={'ObjectProperty','ObjectProperty','StructProperty','StructProperty'},
  ['/Script/UMG.Widget:SetRenderTranslation']={'StructProperty'},
  ['/Script/UMG.OverlaySlot:SetPadding']={'StructProperty'},
  ['/Script/UMG.Spacer:SetSize']={'StructProperty'},
@@ -29,6 +31,7 @@ functions={
 }
 natives={}
 function StaticFindObject(path)
+    if path:sub(1,8)=='/Fixture' then return instances[path] end
     if path:sub(1,#cls)==cls and not loaded then return object('unloaded').missing end
     local o=natives[path]
     if not o then
@@ -61,7 +64,7 @@ function label(name)
     function o:SetVisibility(value) assert(gameThread);self.visibility=value end
     return o
 end
-widget=object('Stat page');widgetType=object('WidgetBlueprintGeneratedClass '..cls)
+widget=object('WBP_UnitParam_Detail_C /Fixture.StatPage');instances['/Fixture.StatPage']=widget;widgetType=object('WidgetBlueprintGeneratedClass '..cls)
 function widget:GetClass() return widgetType end
 physicalLabel=label('Text_StudioPhysicalEvasion');magicalLabel=label('Text_StudioMagicalEvasion')
 physicalValue=label('Text_StudioPhysicalEvasionValue');magicalValue=label('Text_StudioMagicalEvasionValue')
@@ -90,7 +93,7 @@ for i,kind in ipairs({12,13,14,15,16,5,6,7,8,9,19}) do
     function e:GetDesiredSize() assert(gameThread);return {X=280,Y=33} end
     function e:SetRenderTranslation(t) assert(gameThread);self.RenderTransform.Translation=t end
     e.Slot=object('GridSlot');e.Slot.class='/Script/UMG.GridSlot'
-    e.Slot.Row=2*(i-1);e.Slot.Column=0;e.Slot.RowSpan=1;e.Slot.Padding={Top=0,Bottom=0}
+    e.Slot.Row=2*(i-1);e.Slot.Column=0;e.Slot.RowSpan=2;e.Slot.Padding={Top=0,Bottom=0}
     nativeEntries[i]=e
     nativeCells[#nativeCells+1]=e
     if i<11 then
@@ -103,7 +106,13 @@ for i,kind in ipairs({12,13,14,15,16,5,6,7,8,9,19}) do
     end
 end
 nativePanel=panel('GridPanel_28',nativeCells);nativePanel.parents={['/Script/UMG.GridPanel']=true}
-function nativePanel:GetDesiredSize() assert(gameThread);return {X=280,Y=523} end
+function nativePanel:GetDesiredSize()
+    assert(gameThread)
+    local height=0
+    for _,entry in ipairs(nativeEntries) do height=height+33+entry.Slot.Padding.Top+entry.Slot.Padding.Bottom end
+    for _,spacer in ipairs(nativeSpacers) do height=height+spacer.height end
+    return {X=280,Y=height}
+end
 nativeWrapper=object('Native grid wrapper');nativeWrapper.GridPanel_28=nativePanel
 nativeWrapper.Slot=object('Native overlay slot');nativeWrapper.Slot.Padding={Top=10}
 nativeWrapper.DirGridPanelProperty={GridDirection=0,SpaceBetweenLine=0,SpaceBetweenEntryInGridDirection=16}
@@ -114,6 +123,30 @@ function widget:ForceLayoutPrepass() assert(gameThread);self.prepasses=(self.pre
 root=panel('VerticalBox_StudioStats',{
     panel('Overlay_0',{nativeWrapper,physicalRow,magicalRow}),reserve})
 widget.WidgetTree=object('WidgetTree');widget.WidgetTree.RootWidget=root
+local overlayWidget=root.children[1]
+function widget:Studio_GetRowSize(entry)
+    assert(gameThread)
+    if entry==overlayWidget then return {X=280,Y=700} end
+    return {X=entry.geometry.w,Y=entry.geometry.h}
+end
+function widget:Studio_RowPoint(entry,origin,p)
+    assert(gameThread and origin==overlayWidget)
+    return {X=(entry.geometry.x+p.X*entry.geometry.scale-100)/dpi,
+            Y=(entry.geometry.y+p.Y*entry.geometry.scale-200)/dpi}
+end
+function paint()
+    local top=10
+    for i,e in ipairs(nativeEntries) do
+        local y=(nativeTops and nativeTops[i]) or top+e.Slot.Padding.Top
+        e.geometry={kind='Geometry',x=100+e.Slot.Column*140*dpi,y=200+(y+e.RenderTransform.Translation.Y)*dpi,
+            scale=dpi,w=280,h=geometryReady and 33 or 0}
+        top=top+33+e.Slot.Padding.Top+e.Slot.Padding.Bottom+((nativeSpacers[i] and nativeSpacers[i].height) or 0)
+    end
+end
+function LoopInGameThreadWithDelay(ms,callback) assert(ms==100);timers[#timers+1]=callback end
+function tick()
+    gameThread=true;paint();FFRStudioEvasionStats.tick();gameThread=false
+end
 setmetatable(widget,{__index=function(_,key)
     if key:match('^Text_Studio') then error('Shared widget has no added reflected fields') end
 end})
@@ -147,6 +180,7 @@ function input:GetDataTable(kind) assert(kind==19);return source end
 systems=StaticFindObject('/Script/Engine.Default__SubsystemBlueprintLibrary')
 function systems:GetWorldSubsystem(context,kind) assert(context==widget);return input end
 function ready()
+    gameThread=true;paint();gameThread=false
     drain(); assert(next(hooks)==nil)
     loaded=true;discover(widgetType);drain()
     local count=0;for _ in pairs(hooks) do count=count+1 end;assert(count==6)

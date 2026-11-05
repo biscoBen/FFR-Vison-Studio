@@ -11,6 +11,33 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Evasion visibility and controller-map session recovery — 2026-11-05
+
+- **1.2.167 candidate.** Ben's supplied `UE4SS.log` identifies our rejected
+  stat-grid row span and unavailable current-area bounds. Stat hooks eventually
+  register successfully; those initial warnings are not the permanent blocker.
+  Do not infer the actual span or an encounter-crash cause from these messages.
+- Remove the span assumption. Keep valid **Phys. Eva.** / **Mag. Eva.** values
+  visible while native layout settles, then place them after their respective
+  defence rows using measured native rectangles. A bounded five-attempt layout
+  observer and a below-grid fallback separate presentation from data failures.
+  Two pure Blueprint geometry functions return coordinates only: FGeometry's
+  opaque transforms never roundtrip through UE4SS's reflected Lua tables. Keep
+  all six native class fields, original bytecode, defaults and parent instances.
+- Observe the active map HUD by its object hash path on the game thread, including
+  hidden changes that do not call `SetAppearance`. Respect every manual native
+  step and restore the session preference after a map/area/source change and
+  input initialization. Missing bounds no longer force small; a sole native area
+  supports maps without an area ID, while ambiguous bounds wait for native data.
+  Preserve approved map fitting, native input and no persistence across game restarts.
+- UI observers retain paths/scalars, use no repeated global/actor scans, support
+  both native and legacy UE4SS scheduling, and coalesce legacy queued work.
+  Unchanged map fits cause no zoom writes, position resyncs or repaints.
+- Focused checks pass for row spans, delayed/failed layout, nonuniform spacing and
+  DPI, serialized Blueprint geometry with opaque native tokens, hidden changes
+  without appearance notifications, silent zone resets, area-less maps and loading
+  guards. Package validation and live game confirmation are still pending.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

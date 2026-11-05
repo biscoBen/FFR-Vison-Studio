@@ -1,8 +1,9 @@
 -- Read the selected native parameter's current effects. No stat/save mutation,
--- actor lookup, equipment prediction, timers, retained UObjects or raw memory.
+-- actor lookup, equipment prediction, retained UObjects or raw memory. A bounded
+-- game-thread UI observer waits for native layout without hiding valid values.
 local config = require('config')
 if config.evasionStats ~= 1 then return end
-local runtime = {hooks={}, callbacks={}, busy=false, errors={}}
+local runtime = {hooks={}, callbacks={}, busy=false, errors={}, layouts={}, targets={}}
 _G.FFRStudioEvasionStats = runtime
 local widgetClass = '/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.WBP_UnitParam_Detail_C'
 local checked = {}
@@ -126,7 +127,7 @@ local function labels(widget)
     local overlay,reserve=root:GetChildAt(0),root:GetChildAt(1)
     if not named(overlay,'Overlay_0') or not overlay:IsA(native('UMG.PanelWidget')) or
         overlay:GetChildrenCount()~=3 or not named(reserve,'Spacer_StudioEvasionRoom') then return end
-    local result={reserve=reserve}
+    local result={reserve=reserve,overlay=overlay}
     for i,kind in ipairs({'Physical','Magical'}) do
         local row=overlay:GetChildAt(i) -- Child 0 remains the native grid wrapper.
         if not named(row,'HorizontalBox_Studio'..kind..'Evasion') or
@@ -148,7 +149,7 @@ local function entries(widget)
     local panel=wrapper.GridPanel_28 -- The captured Blueprint's visible native grid.
     if not live(panel) or not panel:IsA(native('UMG.GridPanel')) then return end
     local count=panel:GetChildrenCount()
-    assert(count>=0 and count<=32,'Unsupported stat-grid entry count')
+    assert(count>=0 and count<=128,'Unsupported stat-grid entry count')
     local result={}
     local entryType=StaticFindObject('/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_DetailEntry.WBP_UnitParam_DetailEntry_C')
     assert(live(entryType),'Native stat entry class is unavailable')
@@ -176,32 +177,53 @@ local function clear_layout(widget,rows)
     rows.reserve:SetSize({X=0,Y=0})
     for _,kind in ipairs({'Physical','Magical'}) do position(rows[kind].row,0) end
 end
-local function grid_layout(panel,children)
-    -- EnhancedUI owns real spacer widgets between entries. Slot padding and
-    -- the opposite-direction gap do not describe the native vertical pitch.
-    local heights,tops,last={},{},0
-    for i=0,panel:GetChildrenCount()-1 do
-        local child=panel:GetChildAt(i)
-        if live(child) and live(child.Slot) and child.Slot:IsA(native('UMG.GridSlot')) then
-            local slot=child.Slot
-            assert(slot.Row>=0 and slot.Row<64 and slot.RowSpan==1,'Unsupported stat-grid row span')
-            local height=child:GetDesiredSize().Y+slot.Padding.Top+slot.Padding.Bottom
-            assert(type(height)=='number' and height>=0 and height<200,'Unsupported stat-grid height')
-            heights[slot.Row]=math.max(heights[slot.Row] or 0,height)
-            last=math.max(last,slot.Row)
-        end
-    end
-    local total=0
-    for row=0,last do tops[row]=total;total=total+(heights[row] or 0) end
-    local positions,pitch={},nil
+local function finite(n) return type(n)=='number' and n==n and math.abs(n)<1e6 end
+local function fallback(widget,rows,children,panel,wrapper)
+    -- Valid stat values remain readable while the first Slate layout is pending.
+    -- This uses the complete native panel's desired extent, not row-span guesses.
+    clear_layout(widget,rows)
+    local height=children[1]:GetDesiredSize().Y
+    if not finite(height) or height<=0 then height=32 end
+    local profile=wrapper.DirGridPanelProperty
+    local gap=profile.GridDirection==0 and profile.SpaceBetweenEntryInGridDirection or profile.SpaceBetweenLine
+    if not finite(gap) or gap<0 or gap>100 then gap=0 end
+    local total=panel:GetDesiredSize().Y
+    assert(finite(total) and total>=0,'Native stat panel extent is unavailable')
+    local top=wrapper.Slot.Padding.Top+total+gap
+    position(rows.Physical.row,top+(height-rows.Physical.row:GetDesiredSize().Y)/2)
+    position(rows.Magical.row,top+height+gap+(height-rows.Magical.row:GetDesiredSize().Y)/2)
+end
+local function measured(widget,rows,children)
+    signature(widgetClass..':Studio_GetRowSize','ObjectProperty,StructProperty')
+    signature(widgetClass..':Studio_RowPoint','ObjectProperty,ObjectProperty,StructProperty,StructProperty')
+    -- FGeometry contains opaque transforms lost by UE4SS's struct-to-table
+    -- marshaller. Our pure Blueprint functions keep all geometry inside the
+    -- native VM and return only ordinary Vector2D coordinates to Lua.
+    local extent=widget:Studio_GetRowSize(rows.overlay)
+    assert(finite(extent.X) and extent.X>0,'Stat overlay has not been arranged yet')
+    local result={rects={}}
     for i,entry in ipairs(children) do
-        positions[i]=tops[entry.Slot.Row]+entry.Slot.Padding.Top
-        if i>1 and positions[i]>positions[i-1] then
-            local delta=positions[i]-positions[i-1]
-            pitch=pitch and math.min(pitch,delta) or delta
-        end
+        local size=widget:Studio_GetRowSize(entry)
+        assert(finite(size.Y) and size.Y>0,'Native stat row has not been arranged yet')
+        local top=widget:Studio_RowPoint(entry,rows.overlay,{X=0,Y=0})
+        local bottom=widget:Studio_RowPoint(entry,rows.overlay,{X=0,Y=size.Y})
+        local height=bottom.Y-top.Y
+        assert(finite(top.Y) and finite(height) and height>0,'Native stat geometry is unavailable')
+        result.rects[i]={left=top.X,top=top.Y,height=height,scale=height/size.Y}
+        if entry.UnitParamType==13 then result.physical=i end
+        if entry.UnitParamType==15 then result.magical=i end
+        if i>1 and math.abs(top.X-result.rects[1].left)>1 then result.comparison=true end
     end
-    return positions,pitch,total
+    if result.comparison then return result end
+    local a,b=result.physical,result.magical
+    assert(a and b and a<b and children[a+1] and children[b+1],'Native defence rows are unavailable')
+    local function centre(i) local r=result.rects[i];return r.top+r.height/2 end
+    result.physicalGap=centre(a+1)-centre(a)
+    result.magicalGap=centre(b+1)-centre(b)
+    for _,gap in ipairs({result.physicalGap,result.magicalGap}) do
+        assert(finite(gap) and gap>=32 and gap<200,'Native stat row pitch is unavailable')
+    end
+    return result -- Only scalar geometry survives this call, never FGeometry/UObjects.
 end
 local function reflow(widget,rows)
     signature('/Script/UMG.Widget:ForceLayoutPrepass','')
@@ -213,47 +235,43 @@ local function reflow(widget,rows)
     widget:ForceLayoutPrepass()
     local children,panel,wrapper=entries(widget)
     assert(children and #children>0,'Native stat entries are not ready')
-    local first=children[1]
-    local height=first:GetDesiredSize().Y
-    local positions,pitch,total=grid_layout(panel,children)
-    assert(type(pitch)=='number' and height>0 and pitch>=height and pitch<200,'Unsupported native stat spacing')
-    local physical,magical,single
-    single=true
-    for i,entry in ipairs(children) do
-        if entry.Slot.Column~=0 then single=false end
-        if entry.UnitParamType==13 then physical=i-1 end -- Native PhysicalDefense.
-        if entry.UnitParamType==15 then magical=i-1 end -- Native MagicalDefense.
+    local key=tostring(widget:GetAddress())
+    local parts={#children,panel:GetDesiredSize().Y}
+    for _,e in ipairs(children) do
+        parts[#parts+1]=table.concat({tostring(e:GetAddress()),e.Slot.Row,e.Slot.Column,e.UnitParamType},':')
     end
-    local interleave=single and physical and magical and physical<magical
-    local base=wrapper.Slot.Padding.Top
-    local physicalTop,magicalTop
-    if interleave then
-        -- The outer WidgetTree reserves the expanded height. Let the shifted
-        -- native rows use it rather than clipping them to the old grid bounds.
-        wrapper:SetClipping(0)
-        panel:SetClipping(0)
-        physicalTop=base+positions[physical+1]+pitch
-        magicalTop=base+positions[magical+1]+2*pitch
-        rows.reserve:SetSize({X=0,Y=2*pitch})
-    else
-        -- Shared equipment/comparison layouts may have multiple columns. Keep
-        -- those native entries in place and retain a full-width readout below.
-        physicalTop=base+total+(pitch-height)
-        magicalTop=physicalTop+pitch
-        rows.reserve:SetSize({X=0,Y=0})
+    local generation=table.concat(parts,'|')
+    local cache=runtime.layouts[key]
+    if not cache or cache.generation~=generation then
+        -- Clear our previous render offsets, then let Slate arrange the native
+        -- rows before reading their actual rectangles on a later game-thread tick.
+        runtime.layouts[key]={generation=generation,pending=true,attempts=0}
+        fallback(widget,rows,children,panel,wrapper)
+        return
     end
-    for i,entry in ipairs(children) do
-        local shift=0
-        if interleave then
-            if i-1>physical then shift=shift+pitch end
-            if i-1>magical then shift=shift+pitch end
+    if cache.pending and runtime.measuring then
+        local ok,value=pcall(measured,widget,rows,children)
+        if ok then cache.geometry=value;cache.pending=false
+        else
+            local message='Layout pending: '..tostring(value)
+            if not runtime.errors[message] then runtime.errors[message]=true;print('[FFR evasion] '..message..'\n') end
+            if cache.attempts>=5 then cache.pending=false end
         end
-        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=shift})
     end
-    position(rows.Physical.row,physicalTop+(height-rows.Physical.row:GetDesiredSize().Y)/2)
-    position(rows.Magical.row,magicalTop+(height-rows.Magical.row:GetDesiredSize().Y)/2)
+    local g=cache.geometry
+    if not g or g.comparison then fallback(widget,rows,children,panel,wrapper);return end
+    wrapper:SetClipping(0);panel:SetClipping(0)
+    rows.reserve:SetSize({X=0,Y=g.physicalGap+g.magicalGap})
+    for i,entry in ipairs(children) do
+        local shift=(i>g.physical and g.physicalGap or 0)+(i>g.magical and g.magicalGap or 0)
+        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=shift/g.rects[i].scale})
+    end
+    local physical,magical=g.rects[g.physical],g.rects[g.magical]
+    position(rows.Physical.row,physical.top+physical.height/2+g.physicalGap-rows.Physical.row:GetDesiredSize().Y/2)
+    position(rows.Magical.row,magical.top+magical.height/2+g.physicalGap+g.magicalGap-rows.Magical.row:GetDesiredSize().Y/2)
 end
 local function hide(widget)
+    runtime.layouts[tostring(widget:GetAddress())]=nil
     local rows=labels(widget)
     if rows then for _,kind in ipairs({'Physical','Magical'}) do
         local pair=rows[kind]
@@ -267,6 +285,12 @@ local function refresh(context)
     local widget=unwrap(context)
     if not live(widget) or not live(widget:GetClass()) or
         widget:GetClass():GetFullName()~='WidgetBlueprintGeneratedClass '..widgetClass then return end
+    local path=widget:GetFullName():match('^%S+ (.+)$')
+    if path then
+        runtime.targets[path]=tostring(widget:GetAddress())
+        local count=0;for _ in pairs(runtime.targets) do count=count+1 end
+        if count>4 then runtime.targets={[path]=tostring(widget:GetAddress())};runtime.layouts={} end
+    end
     runtime.busy=true
     local ok,err=pcall(function()
         local parameter=selected(widget)
@@ -284,7 +308,13 @@ local function refresh(context)
                 child:SetVisibility(3)
             end
         end
-        reflow(widget,rows)
+        local positioned,message=pcall(reflow,widget,rows)
+        if not positioned then
+            local available,children,panel,wrapper=pcall(entries,widget)
+            if available and children and #children>0 then pcall(fallback,widget,rows,children,panel,wrapper) end
+            message='Layout fallback: '..tostring(message)
+            if not runtime.errors[message] then runtime.errors[message]=true;print('[FFR evasion] '..message..'\n') end
+        end
     end)
     if not ok then
         pcall(hide,widget) -- Never leave stale/partial figures after a failed read.
@@ -293,6 +323,27 @@ local function refresh(context)
     end
     runtime.busy=false
 end
+runtime.rebuild=function(context)
+    local widget=unwrap(context)
+    if live(widget) then runtime.layouts[tostring(widget:GetAddress())]=nil end
+    refresh(context)
+end
+runtime.tick=function()
+    for path,key in pairs(runtime.targets) do
+        local cache=runtime.layouts[key]
+        if cache and cache.pending then
+            local widget=StaticFindObject(path)
+            if live(widget) and tostring(widget:GetAddress())==key then
+                cache.attempts=cache.attempts+1
+                runtime.measuring=true
+                local ok,message=pcall(refresh,widget)
+                runtime.measuring=false
+                if not ok then print('[FFR evasion] Layout retry: '..tostring(message)..'\n') end
+            else runtime.targets[path]=nil;runtime.layouts[key]=nil end
+        end
+    end
+    return false
+end
 local function attach()
     local added=false
     for _,name in ipairs({'CreateList','HandleUnitParamUpdate','SetCPP_VM_UnitParam','SetUnitParamVM','SetUnitId','SetItemId'}) do
@@ -300,7 +351,7 @@ local function attach()
         local fn=StaticFindObject(path)
         if live(fn) and runtime.hooks[path]~=fn:GetAddress() then
             local ok=pcall(function()
-                RegisterHook(path,refresh) -- Blueprint callback runs after the original body.
+                RegisterHook(path,name=='CreateList' and runtime.rebuild or refresh) -- Post-Blueprint callback.
                 runtime.hooks[path]=fn:GetAddress()
                 added=true
             end)
@@ -321,9 +372,23 @@ runtime.discover=function()
     runtime.pending=true
     ExecuteInGameThread(runtime.queued)
 end
-runtime.callbacks={refresh,attach,runtime.discover,runtime.queued}
+runtime.callbacks={refresh,attach,runtime.discover,runtime.queued,runtime.rebuild,runtime.tick}
 -- Observe class loading rather than every actor/widget instance. No borrowed
 -- object pointer is carried into the game-thread attachment callback.
 NotifyOnNewObject('/Script/UMG.WidgetBlueprintGeneratedClass',runtime.discover)
 ExecuteInGameThread(attach)
+local observer=false
+if type(LoopInGameThreadWithDelay)=='function' then observer=pcall(LoopInGameThreadWithDelay,100,runtime.tick) end
+if not observer and type(LoopAsync)=='function' then
+    runtime.uiQueued=function() runtime.uiPending=false;runtime.tick() end
+    runtime.uiAsync=function()
+        if not runtime.uiPending then
+            runtime.uiPending=true
+            if not pcall(ExecuteInGameThread,runtime.uiQueued) then runtime.uiPending=false end
+        end
+        return false
+    end
+    observer=pcall(LoopAsync,100,runtime.uiAsync)
+end
+if not observer then print('[FFR evasion] UI observer unavailable\n') end
 print('[FFR evasion] Current physical/magical stat rows ready\n')

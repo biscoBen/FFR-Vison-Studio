@@ -6,6 +6,10 @@ Keep demo-dependent work in the project's [full-game release checklist](#full-ga
 
 ### Native stat spacing and map view-state follow-up — 2026-11-05
 
+**Follow-up in progress:** Ben's log confirms that 1.2.166 rejects the live stat
+layout and loses map size during transitions. The evasion rows are absent and
+map cycling/zone memory remain broken in that build. See the Unreleased entry.
+
 [Verified Studio 1.2.166 / run 42107067672](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42107067672/Sephira-Studio-Test.zip)
 (code `9a44de5`; **83.4 MB**).
 
