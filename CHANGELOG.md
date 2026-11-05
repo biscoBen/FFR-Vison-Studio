@@ -26,7 +26,10 @@ test-update version; the commit and workflow run identify the exact package. Dat
   keep the old tag or use .Default. Handle visible .Default setup and finish
   native zoom/property recovery by preserving the selected display step.
   Retain native input, fitting, session memory and bounded reentry.
-- 46 focused tests pass with separate native spacer widgets, zero horizontal
+- Retain the large-map choice when a zone's first notification precedes its
+  geometry. Retry on newly available/changed bounds using existing notifications;
+  remember the fallback source so unsupported data cannot force a resize loop.
+- 47 focused tests pass with separate native spacer widgets, zero horizontal
   gap, hidden retained/default tags, repeated three-step cycling, zone setup
   and a native property restore that resets the step. **1.2.166** full Windows
   and delivered-package checks, plus live layout/cycling/transition feedback,

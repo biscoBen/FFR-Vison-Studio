@@ -73,6 +73,13 @@ local function view_mode(vm,tag)
     if tag==full or tag==full..'.Wide' then return 1 end
     if tag==full..'.Instance' or tag==full..'.World' or tag==full..'.Default' then return 0 end
 end
+local function fit_source(vm)
+    signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentMapLandCaptureData','StructProperty')
+    signature('/Script/mucha.CPP_VM_MiniMap:GetMiniMapAppearance','StructProperty')
+    local width,height=area_dimensions(vm,vm:GetCurrentMapLandCaptureData())
+    local x,y=dimensions(vm:GetMiniMapAppearance().DisplaySize)
+    return table.concat({width,height,x,y},':')
+end
 local function remember_view(vm)
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentMapId','IntProperty')
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId','IntProperty')
@@ -92,6 +99,13 @@ local function remember_view(vm)
         if mode==1 or (mode==2 and runtime.lastMode==1) or
             (mode==0 and runtime.lastMode==2) then runtime.choice=mode end
     end
+    if runtime.choice==1 and runtime.failedKey==key and mode==0 then
+        local ok,source=pcall(fit_source,vm)
+        -- Initial zone notifications can precede map geometry. Try once for
+        -- each newly ready source, using existing notifications rather than
+        -- a timer or a forced resize on every world-position update.
+        if ok and source~=runtime.failedSource then runtime.failedKey=nil end
+    end
     if mode~=runtime.choice and not (runtime.failedKey==key and mode==0) then
         signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex','IntProperty,BoolProperty')
         vm:SetDisplayScaleIndex(runtime.choice,false)
@@ -99,7 +113,7 @@ local function remember_view(vm)
         mode=view_mode(vm,tag)
     end
     runtime.viewKey,runtime.lastMode=key,mode
-    if mode==1 then runtime.failedKey=nil end
+    if mode==1 then runtime.failedKey=nil;runtime.failedSource=nil end
     return tag
 end
 local function refresh(context)
@@ -177,8 +191,19 @@ local function refresh(context)
         runtime.failedKey=runtime.viewKey
         pcall(function()
             signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex', 'IntProperty,BoolProperty')
-            if live(vm) then vm:SetDisplayScaleIndex(0,false) end
+            if live(vm) then
+                if runtime.fitted==vm:GetAddress() then
+                    runtime.fitted=nil
+                    signature('/Script/mucha.CPP_VM_MiniMapBase:UpdateProperty','')
+                    vm:UpdateProperty()
+                end
+                vm:SetDisplayScaleIndex(0,false)
+            end
         end)
+        -- Capture the fallback view's source, not the failed full viewport:
+        -- changing between small/full appearance sizes alone is not a retry.
+        local ready,source=pcall(fit_source,vm)
+        runtime.failedSource=ready and source or nil
         local message = tostring(err)
         if message ~= lastError then print('[FFR local map] '..message..'\n'); lastError=message end
     end

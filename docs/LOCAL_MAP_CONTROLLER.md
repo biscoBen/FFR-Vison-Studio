@@ -25,6 +25,10 @@ This operation stays under the existing reentry guard. Tests cover repeated
 three-step cycles, both hidden tag representations, default setup, world/local
 transitions and a property restore that resets the display step. Native input
 handling is retained; live cycling and transition confirmation remain pending.
+If a new zone initially has no usable geometry, keep the remembered choice and
+retry when its area dimensions/viewport become ready or change. Record the
+fallback view's source signature so ordinary small/full size differences cannot
+cause a retry loop. This uses existing notifications and retains no objects.
 
 The user reports the map is still tiny after 1.2.161. Version 1.2.163 uses
 the visible widget's captured **VM_MiniMap** Blueprint property, which is the

@@ -259,6 +259,21 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(vm.index==1 and FFRStudioLocalMap.choice==1)
         ''')
 
+    def test_new_zone_retries_when_initially_missing_geometry_becomes_ready(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();vm.mapId=9200;vm.width=0;set_view(0)
+            assert(FFRStudioLocalMap.choice==1 and vm.index==0)
+            local failures=vm.fallback
+            for i=1,20 do show() end
+            assert(vm.fallback==failures)
+            vm.width=20000;show()
+            assert(vm.index==1 and vm.tag=='UI.Field.MiniMap.View.Decrale' and widget.paint)
+            local calls=vm.stepCalls
+            for i=1,20 do show() end
+            assert(vm.stepCalls==calls)
+        ''')
+
     def test_destroying_or_missing_objects_do_not_read_map_properties(self):
         lua=self.runtime()
         lua.execute('''
