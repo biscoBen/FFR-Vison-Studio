@@ -127,13 +127,14 @@ local function labels(widget)
     for i,kind in ipairs({'Physical','Magical'}) do
         local row=root:GetChildAt(i) -- Child 0 is the untouched native stat grid.
         if not named(row,'HorizontalBox_Studio'..kind..'Evasion') or
-            not row:IsA(native('UMG.PanelWidget')) or row:GetChildrenCount()~=2 then return end
-        local label,number=row:GetChildAt(0),row:GetChildAt(1)
+            not row:IsA(native('UMG.PanelWidget')) or row:GetChildrenCount()~=3 then return end
+        local icon,label,number=row:GetChildAt(0),row:GetChildAt(1),row:GetChildAt(2)
+        if not named(icon,'Image_Studio'..kind..'Evasion') or not icon:IsA(native('UMG.Image')) then return end
         if not named(label,'Text_Studio'..kind..'Evasion') or
             not named(number,'Text_Studio'..kind..'EvasionValue') then return end
         local textClass=native('CommonUI.CommonTextBlock')
         if not label:IsA(textClass) or not number:IsA(textClass) then return end
-        result[kind]={label,number}
+        result[kind]={label,number,icon}
     end
     return result
 end
@@ -160,7 +161,7 @@ local function refresh(context)
             local label,number=rows[kind][1],rows[kind][2]
             label:SetText(FText(short))
             number:SetText(FText(tostring(values[kind])..'%'))
-            for _,child in ipairs({label,number}) do
+            for _,child in ipairs(rows[kind]) do
                 child:SetToolTipText(FText('Equipped loadout and active effects on this page. Equipment comparisons show equipped values. Attack accuracy and guaranteed-hit rules can change the result.'))
                 child:SetVisibility(3)
             end

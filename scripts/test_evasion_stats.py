@@ -1,5 +1,6 @@
 """Selected-parameter correctness, native layout preservation and delivery paths."""
 import copy
+import base64
 import gzip
 import hashlib
 import io
@@ -110,7 +111,50 @@ class EvasionAssetsTests(unittest.TestCase):
                 self.assertEqual(build.field(e,'Text')['CultureInvariantString'],
                                  'Phys. Eva' if 'Physical' in e['ObjectName'] else 'Mag. Eva')
                 self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['label'],'Font')))
-        self.assertEqual(len(readback['Exports']),40)
+        self.assertEqual(len(readback['Exports']),44)
+
+    def test_icon_and_text_columns_match_the_captured_native_layout(self):
+        native=fixture('evasion_ui_native.json.gz');asset=fixture('evasion_ui_readback.json.gz')
+        size=build.field(native['iconLayout']['box'],'WidthOverride')['Value']
+        gap=build.field(native['iconLayout']['gap'],'Size')['Value'][0]['Value']['X']
+        self.assertEqual((size,gap),(32,4))
+        for kind in ('Physical','Magical'):
+            row=next(e for e in asset['Exports'] if e['ObjectName']=='HorizontalBox_Studio'+kind+'Evasion')
+            children=[asset['Exports'][p['Value']-1] for p in build.field(row,'Slots')['Value']]
+            widgets=[asset['Exports'][build.field(slot,'Content')['Value']-1] for slot in children]
+            self.assertEqual([e['ObjectName'] for e in widgets],['Image_Studio'+kind+'Evasion',
+                'Text_Studio'+kind+'Evasion','Text_Studio'+kind+'EvasionValue'])
+            brush=build.field(widgets[0],'Brush')['Value']
+            image_size=next(p for p in brush if p['Name']=='ImageSize')['Value'][0]['Value']
+            self.assertEqual((image_size['X'],image_size['Y']),(size,size))
+            self.assertEqual(build.field(children[1],'Padding')['Value'][0]['Value'],gap)
+            self.assertEqual(build.field(children[2],'HorizontalAlignment')['Value'],'HAlign_Right')
+            self.assertEqual(build.field(children[2],'Padding')['Value'][0]['Value'],4)
+            self.assertEqual(build.field(widgets[0],'Visibility')['Value'],'Collapsed')
+            ref=next(p for p in brush if p['Name']=='ResourceObject')['Value']
+            self.assertEqual(asset['Imports'][-ref-1]['ObjectName'],'T_Evasion'+kind)
+
+    def test_private_icon_texture_pixels_alpha_and_ui_settings_match_approved_artwork(self):
+        from PIL import Image
+        native=fixture('evasion_ui_native.json.gz')
+        for name,asset in build.icon_textures(native).items():
+            export=asset['Exports'][0];raw=base64.b64decode(export['Extras'],validate=True)
+            self.assertEqual(len(raw),84+128*128*4+24)
+            self.assertEqual(struct.unpack_from('<3I',raw,44),(128,128,1))
+            self.assertEqual(struct.unpack_from('<I',raw,76)[0],1)
+            self.assertEqual(raw[60:72],b'PF_B8G8R8A8\0')
+            kind=name.removeprefix('T_Evasion')
+            image=Image.open(ROOT/'scripts/fixtures/evasion_icons'/(kind.lower()+'.png')).convert('RGBA')
+            self.assertEqual(raw[84:-24],image.tobytes('raw','BGRA'))
+            self.assertEqual(image.getchannel('A').getextrema(),(0,255))
+            self.assertEqual(build.field(export,'LODGroup')['Value'],'TEXTUREGROUP_UI')
+            self.assertTrue(build.field(export,'NeverStream')['Value'])
+            self.assertEqual(asset['FolderName'],'/Game/UI/Studio/Evasion/'+name)
+            self.assertEqual(export['OuterIndex'],0)
+            self.assertEqual(len(asset['Exports']),1)
+            with zipfile.ZipFile(PAYLOAD/'evasion_stats.zip') as z:
+                uasset=z.read(build.ICON_BASE+kind+'.uasset');uexp=z.read(build.ICON_BASE+kind+'.uexp')
+            self.assertIn(raw,uexp)
 
     def test_packaged_native_assets_stage_exactly_and_reject_tampering(self):
         with tempfile.TemporaryDirectory() as directory:

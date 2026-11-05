@@ -4,8 +4,21 @@ The Home **Full local map on controller** option retains the native minimap
 button cycle: minimap → full current area → hidden. The overworld keeps its
 native cycle. Native exploration visibility and markers are unchanged.
 
+The user reports the map is still tiny after 1.2.161. Version 1.2.163 uses
+the visible widget's captured **VM_MiniMap** Blueprint property, which is the
+MVVM binding source, instead of relying on the separate private native cache.
+When available, fit the active **AreaLayoutVM.AreaDataMap[id].Size**: these are
+the actual UI-area dimensions, so do not apply world projection again. The
+world capture conversion below remains a fallback while that layout initializes.
+Attach on Blueprint class loading and refresh existing map widgets once, covering
+the first map initialized before queued hooks attach. Coalesce queued discovery;
+do not retain widgets, poll the HUD or change native save/visibility rules.
+Focused tests now cover the real captured Blueprint source, missing native cache,
+first-view attachment and UI-area geometry differing from world capture bounds.
+Live map sizing after this correction still needs confirmation.
+
 The user confirmed switching in 1.2.158/1.2.159, but showed an enlarged frame
-with a tiny map in its center. Version 1.2.161 corrects two sizing inputs:
+with a tiny map in its center. Version 1.2.161 changed two sizing inputs:
 
 - Native Image origin centers the **current area**, while the old fit used
   `MapLandCaptureData.LandWholeSize`, which can span many unrelated areas.

@@ -36,9 +36,22 @@ local function area_dimensions(vm,capture)
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId','IntProperty')
     local id=vm:GetCurrentAreaId()
     assert(type(id)=='number' and id>=0,'Current local-map area is unavailable')
+    -- Fit the geometry supplied to the visible area layout. It is already in
+    -- projected UI units; applying world/projection conversion again shrinks it.
+    local layout=vm.AreaLayoutVM
+    local rendered=live(layout) and layout.AreaDataMap or nil
+    local width,height
+    local function rendered_area(key,value)
+        if unwrap(key)==id then width,height=dimensions(unwrap(value).Size) end
+    end
+    if rendered then
+        if type(rendered)=='table' and type(rendered.ForEach)~='function' then
+            for key,value in pairs(rendered) do rendered_area(key,value) end
+        else rendered:ForEach(rendered_area) end
+    end
+    if width and height then return width,height end
     local areas=capture.AreaLandCaptureDataMap
     assert(areas~=nil,'Current local-map capture areas are unavailable')
-    local width,height
     local function visit(key,value)
         if unwrap(key)~=id then return end
         local area=unwrap(value)
@@ -59,7 +72,9 @@ local function refresh(context)
     local widget = unwrap(context)
     if not live(widget) or not live(widget:GetClass()) or
         widget:GetClass():GetFullName() ~= 'WidgetBlueprintGeneratedClass '..widgetClass then return end
-    local vm = widget.MiniMapVM
+    -- This is the actual MVVM source bound by WBP_MiniMap, not the separate
+    -- native MiniMapVM cache, which can be absent or point at an older source.
+    local vm = widget.VM_MiniMap
     if not live(vm) or not live(vm:GetClass()) then return end
     if vm.ViewPropertyTag.TagName:ToString() ~= full then
         if runtime.fitted == vm:GetAddress() then
@@ -120,6 +135,7 @@ local function refresh(context)
 end
 runtime.refresh = refresh
 local function attach()
+    local added=false
     for _,name in ipairs({'SetAppearance','SetZoomScale','SetWorldPosition'}) do
         local path = widgetClass..':'..name
         local fn = StaticFindObject(path)
@@ -130,17 +146,31 @@ local function attach()
             local ok = pcall(function()
                 RegisterHook(path, refresh)
                 runtime.hooks[path] = fn:GetAddress()
+                added=true
             end)
             if not ok then print('[FFR local map] Map view hook unavailable: '..name..'\n') end
         end
     end
+    if added then
+        -- The first map can initialize before the queued hooks attach. Refresh
+        -- those existing widgets once; never retain them or poll the HUD.
+        local widgets=FindAllOf('WBP_MiniMap_C')
+        if widgets then
+            if type(widgets)=='table' and type(widgets.ForEach)~='function' then
+                for _,widget in ipairs(widgets) do refresh(unwrap(widget)) end
+            else widgets:ForEach(function(_,widget) refresh(unwrap(widget)) end) end
+        end
+    end
 end
 runtime.attach = attach
+runtime.queued=function() runtime.pending=false;attach() end
 runtime.discover = function()
     -- Construction can occur off-thread. Carry no object pointer to this work.
-    ExecuteInGameThread(attach)
+    if runtime.pending then return end
+    runtime.pending=true
+    ExecuteInGameThread(runtime.queued)
 end
-runtime.callbacks = {refresh,attach,runtime.discover}
-NotifyOnNewObject('/Script/mucha.CPP_WBP_MiniMap', runtime.discover)
+runtime.callbacks = {refresh,attach,runtime.discover,runtime.queued}
+NotifyOnNewObject('/Script/UMG.WidgetBlueprintGeneratedClass', runtime.discover)
 ExecuteInGameThread(attach)
 print('[FFR local map] Ready: minimap / full local zone / hidden\n')

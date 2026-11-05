@@ -11,6 +11,31 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Evasion icons, column alignment and visible local-map fit — 2026-11-05
+
+- The user confirms the corrected stat page opens and its values appear.
+  Add the approved white winged-dodge and crescent-ward icons alongside
+  **Phys. Eva** and **Mag. Eva**. Match the native 32-unit icon column and
+  four-unit label gap, retaining native label/numeric fonts and the shared
+  right-aligned percentage edge. Icons hide together with unavailable values.
+- Package both as private 128px RGBA UI textures. Preserve the original
+  six reflected widget fields, mappings, native class-default bytes, original
+  grid and game icons. No equipment/MR/buff calculation changes.
+- The user reports the controller map still tiny after the earlier change.
+  Read the visible Blueprint's **VM_MiniMap** source, rather than relying on
+  its separate native cache. Fit the active area's actual **AreaDataMap.Size**
+  UI geometry, without projecting it again; retain capture-bound fallback
+  while native layout data is unavailable. Refresh an already initialized
+  map once when attaching hooks and coalesce class-load notifications.
+  Keep native markers, exploration visibility, overworld behavior and zoom
+  restoration; no polling, retained UI objects or save writes.
+- Native stat-widget and texture compilation/readback and 30 focused checks
+  pass, including the original embedded-parent serialization regression,
+  icon pixels/columns/visibility, bound map source and first-view initialization.
+  **1.2.163** Windows packaging and real-game icon alignment/map sizing are
+  pending. Previous mathematical fixtures did not cover the visible source
+  or its actual UI-area geometry, so passing them was not gameplay proof.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

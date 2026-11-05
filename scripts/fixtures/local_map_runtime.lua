@@ -42,7 +42,7 @@ function RegisterHook(path,post)
     hooks[path]=post
 end
 function NotifyOnNewObject(path,callback)
-    assert(path=='/Script/mucha.CPP_WBP_MiniMap'); discover=callback
+    assert(path=='/Script/UMG.WidgetBlueprintGeneratedClass'); discover=callback
 end
 function ExecuteInGameThread(callback) queued[#queued+1]=callback end
 function drain()
@@ -97,7 +97,11 @@ function vm:UpdateProperty()
 end
 local widgetType=obj({name='WidgetBlueprintGeneratedClass '..cls})
 function widgetType:GetFullName() return self.name end
-widget=obj({MiniMapVM=vm})
+widget=obj({VM_MiniMap=vm})
+setmetatable(widget,{__index=function(_,key)
+    if key=='MiniMapVM' then error('Use the visible Blueprint MVVM source, not the native cache') end
+end})
+function FindAllOf(name) assert(gameThread and name=='WBP_MiniMap_C');return {param(widget)} end
 function widget:GetClass() return widgetType end
 function widget:SetZoomScale(scale)
     assert(gameThread); self.paint=scale; self.paints=(self.paints or 0)+1
@@ -117,4 +121,9 @@ function ready()
     drain(); assert(next(hooks)==nil)
     loaded=true; discover(widget); assert(next(hooks)==nil)
     drain(); assert(hooks[cls..':SetAppearance'] and hooks[cls..':SetZoomScale'])
+    initialPaint=widget.paint
+    vm.zoomCalls=nil;vm.syncCalls=nil;widget.paints=nil;widget.paint=nil
+    vm.ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}
+    vm.alpha=nil
+    FFRStudioLocalMap.fitted=nil
 end

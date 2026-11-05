@@ -5,7 +5,7 @@ from pathlib import Path
 import zipfile
 
 # Filled from the pinned native SDK's compiled/read-back assets.
-ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': 'a8fffe20f8401d8deb91e757d62ee95579adb38cb4f22e84063fdaafbb54034f', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': '4fa60bdc48da43d307536511dadbd648b6a9bf3f7261706882de551960a1faeb'}
+ASSETS = {'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uasset': '733d3a846e040c487bda0d22e844e4cf86833cffaa9a2c4f377c93325f63491c', 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail.uexp': 'b61f1446b4f8cfc426ceb917f55da7da2023b235829fa7d190ab6b37fead9629', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uasset': '8f2114eefab7ac4945b942a1aef6b95324dd2c523c56c7e5dcf42eb4f0ccc2cc', 'FFRS/Content/UI/Studio/Evasion/T_EvasionPhysical.uexp': 'ab52031cdab23bcde20fcd0aacd10f3b3c3ae763d8ca450a8ce7ada9efc4ab48', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uasset': 'ebc5af8e957cfa18591b7b4b2f913890d6bb2bd9bdf65db7167f0e85cb268d8b', 'FFRS/Content/UI/Studio/Evasion/T_EvasionMagical.uexp': '4f490c10c40e6b40d9f70b55c433c5fb6010cf4fe455058d6456c36a39ae02d8'}
 
 
 def validate(raw):

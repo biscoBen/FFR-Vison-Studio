@@ -6,6 +6,7 @@ that tree and only updates text and visibility.
 Compile/read back with pinned ffr-dt and the capture's original Mappings.usmap.
 """
 import copy
+import base64
 import gzip
 import json
 import struct as binary
@@ -15,6 +16,34 @@ from build_treasure_ui import dependencies, field, importer, names, prop, struct
 
 FIXTURE = Path(__file__).with_name('fixtures') / 'evasion_ui_native.json.gz'
 ASSET = 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail'
+ICON_BASE = 'FFRS/Content/UI/Studio/Evasion/T_Evasion'
+
+
+def icon_textures(native):
+    """Package the approved artwork as private inline BGRA8 UI textures.
+
+    Use the captured native texture format, a single 128px mip and no external
+    bulk file. No official icon or texture package is replaced.
+    """
+    from PIL import Image
+    result = {}
+    for kind in ('Physical', 'Magical'):
+        image = Image.open(FIXTURE.parent / 'evasion_icons' / (kind.lower() + '.png')).convert('RGBA')
+        if image.size != (128, 128): raise ValueError('Expected a 128px RGBA stat icon')
+        pixels = image.tobytes('raw', 'BGRA')
+        asset = copy.deepcopy(native['iconTexture']['asset'])
+        name = 'T_Evasion' + kind
+        asset['FolderName'] = '/Game/UI/Studio/Evasion/' + name
+        export = asset['Exports'][0]
+        export['ObjectName'] = name
+        header = bytearray.fromhex(native['iconTexture']['header'])
+        binary.pack_into('<I', header, 20, 84 + len(pixels) + 24 - 28)
+        binary.pack_into('<I', header, 76, 1)
+        export['Extras'] = base64.b64encode(header + pixels + binary.pack('<3I', 128, 128, 1)
+                                          + bytes.fromhex(native['iconTexture']['tail'])).decode()
+        names(asset)
+        result[name] = asset
+    return result
 
 
 def author(native):
@@ -37,6 +66,8 @@ def author(native):
     hbs_default = add('Default__HorizontalBoxSlot', umg, 'HorizontalBoxSlot', '/Script/UMG')
     text_class = add('CommonTextBlock', common)
     text_default = add('Default__CommonTextBlock', common, 'CommonTextBlock', '/Script/CommonUI')
+    image_class = add('Image', umg)
+    image_default = add('Default__Image', umg, 'Image', '/Script/UMG')
     style_pkg = package('/Game/UI/Common/Text/TextStyle/SystemText/BP_SystemTextStyle')
     style = add('BP_SystemTextStyle_C', style_pkg, 'BlueprintGeneratedClass', '/Script/Engine')
     number_pkg = package('/Game/UI/Common/Text/TextStyle/SystemText/BP_SystemTextStyle_PramNUM')
@@ -102,7 +133,7 @@ def author(native):
                     struct('Size','SlateChildSize',[prop('Value','FloatPropertyData',1.0),
                         prop('SizeRule','EnumPropertyData','Automatic' if is_number else 'Fill',
                             EnumType='ESlateSizeRule',InnerType='ByteProperty')]),
-                    struct('Padding','Margin',[prop('Right' if is_number else 'Left','FloatPropertyData',4.0 if is_number else 24.0)]),
+                    struct('Padding','Margin',[prop('Right' if is_number else 'Left','FloatPropertyData',4.0)]),
                     prop('HorizontalAlignment','EnumPropertyData','HAlign_Right' if is_number else 'HAlign_Fill',
                         EnumType='EHorizontalAlignment',InnerType='ByteProperty'),
                     prop('VerticalAlignment','EnumPropertyData','VAlign_Center',EnumType='EVerticalAlignment',InnerType='ByteProperty'),
@@ -110,6 +141,36 @@ def author(native):
             child_slot['CreateBeforeSerializationDependencies'] = [index]
             additions.extend([title,child_slot])
     exports.extend(additions)
+    # The native stat icon occupies 32 Slate units, followed by a four-unit
+    # gap. Use the same actual columns rather than a text-only left indent.
+    icon_size = field(native['iconLayout']['box'], 'WidthOverride')['Value']
+    assert icon_size == field(native['iconLayout']['box'], 'HeightOverride')['Value'] == 32.0
+    for i, kind in enumerate(('Physical', 'Magical')):
+        row = first + 2 + i * 6
+        index, slot_index = len(exports) + 1, len(exports) + 2
+        path = '/Game/UI/Studio/Evasion/T_Evasion' + kind
+        texture = add('T_Evasion' + kind, package(path), 'Texture2D', '/Script/Engine')
+        image_size = struct('ImageSize', 'DeprecateSlateVector2D', [
+            prop('ImageSize', 'DeprecateSlateVector2DPropertyData',
+                 {'$type': 'UAssetAPI.UnrealTypes.FVector2f, UAssetAPI', 'X': icon_size, 'Y': icon_size},
+                 **{'$type': 'UAssetAPI.PropertyTypes.Structs.DeprecateSlateVector2DPropertyData, UAssetAPI'})])
+        brush = copy.deepcopy(field(native['image'], 'Brush'))
+        next(p for p in brush['Value'] if p['Name'] == 'ResourceObject')['Value'] = texture
+        brush['Value'].append(image_size)
+        image = widget('Image_Studio' + kind + 'Evasion', image_class, image_default, tree_index, [
+            brush, prop('Slot', 'ObjectPropertyData', slot_index),
+            prop('Visibility', 'EnumPropertyData', 'Collapsed', EnumType='ESlateVisibility', InnerType='ByteProperty')])
+        dependencies(image, before=(texture, slot_index), classes=(image_class, image_default), outers=(tree_index,))
+        icon_slot = widget('HorizontalBoxSlot_Studio' + kind + 'Icon', hbs, hbs_default, row, [
+            prop('VerticalAlignment', 'EnumPropertyData', 'VAlign_Center', EnumType='EVerticalAlignment', InnerType='ByteProperty'),
+            prop('Parent', 'ObjectPropertyData', row), prop('Content', 'ObjectPropertyData', index)])
+        icon_slot['CreateBeforeSerializationDependencies'] = [index]
+        horizontal = exports[row - 1]
+        slots = field(horizontal, 'Slots')['Value']
+        slots.insert(0, prop('0', 'ObjectPropertyData', slot_index))
+        for j, value in enumerate(slots): value['Name'] = str(j)
+        horizontal['CreateBeforeSerializationDependencies'].append(slot_index)
+        exports.extend([image, icon_slot])
     field(tree, 'RootWidget')['Value'] = root_index
     tree['CreateBeforeSerializationDependencies'].append(root_index)
     names(asset)
@@ -146,5 +207,7 @@ if __name__ == '__main__':
     args.output.parent.mkdir(parents=True, exist_ok=True)
     asset = author(native)
     args.output.write_text(json.dumps(asset), encoding='utf-8')
+    for name, texture in icon_textures(native).items():
+        (args.output.parent / (name + '.json')).write_text(json.dumps(texture), encoding='utf-8')
     if args.mappings:
         args.output.with_suffix('.usmap').write_bytes(mappings(args.mappings.read_bytes(), asset))

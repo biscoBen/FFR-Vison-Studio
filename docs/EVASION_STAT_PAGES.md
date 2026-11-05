@@ -47,6 +47,13 @@ reflected methods/properties, not these addresses or private memory offsets.
 the captured `BP_SystemTextStyle`; percentages use the native
 `BP_SystemTextStyle_PramNUM`, the ordinary white color and right alignment.
 Retain the existing grid, stat enum list, bytecode, bindings and view model.
+Version 1.2.163 adds the user-approved white winged-dodge and crescent-ward
+icons as private 128px BGRA8 UI textures. Each occupies the native 32-unit icon
+column, followed by the captured four-unit gap; labels and percentages then
+share the native text/number columns. Images hide with unavailable values.
+The approved artwork and prepared texture inputs are kept in
+`scripts/fixtures/evasion_icons`; the generator emits each private texture
+alongside the widget JSON. It replaces no official icon or texture.
 Unreal constructs and owns every label. There is no raw UWidget construction,
 live Slate-struct copying or saved actor/HUD pointer.
 
@@ -83,4 +90,6 @@ numeric styles in separate columns. The revised layout, broader page coverage
 and buff refresh still require gameplay confirmation. The combined 1.2.161
 update retains this styling and also corrects the controller map's area fit.
 The subsequent serial-size crash is addressed by the schema-preserving 1.2.162
-layout; the affected page still needs an in-game reopen check after that update.
+layout. The next user screenshot confirms the stat page opens and values appear;
+1.2.163 adds the requested icons and horizontal alignment. Their real-game
+appearance and broader buff/page coverage remain pending.

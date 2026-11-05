@@ -102,6 +102,27 @@ class LocalMapRuntimeTests(unittest.TestCase):
         lua.execute('ready()')
         return lua
 
+    def test_initial_visible_widget_uses_the_captured_blueprint_view_model_without_native_cache(self):
+        fields=load_fixture('local_map_native.json.gz')['widgetFields']
+        self.assertIn('VM_MiniMap',[p['Name'] for p in fields])
+        lua=self.runtime()
+        lua.execute("assert(initialPaint and initialPaint>0);assert(widget.VM_MiniMap==vm)")
+        lua.execute("discover();discover();assert(#queued==1);drain();assert(not widget.paint)")
+
+    def test_actual_native_area_layout_size_is_not_projected_or_scaled_twice(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.AreaLayoutVM=obj({AreaDataMap={ForEach=function(_,callback)
+                callback(param(101),param({Size={X=400,Y=300}}))
+            end}})
+            vm.width,vm.height=200000,200000;vm.projection=.1
+            show();assert(math.abs(widget.paint-(.9*640/500))<1e-7)
+            local fitted=widget.paint
+            vm.projection=.001;show();assert(math.abs(widget.paint-fitted)<1e-7)
+            vm.AreaLayoutVM.AreaDataMap={[101]={Size={X=800,Y=600}}}
+            show();assert(math.abs(widget.paint-fitted/2)<1e-7)
+        ''')
+
     def test_current_area_fits_at_any_rotation_across_different_bounds_and_ui_sizes(self):
         lua=self.runtime()
         lua.execute('''
@@ -150,8 +171,8 @@ class LocalMapRuntimeTests(unittest.TestCase):
         lua.execute('''
             widget.destroying=true; show(); assert(not vm.zoomCalls); widget.destroying=false
             vm.destroying=true; show(); assert(not vm.zoomCalls); vm.destroying=false
-            local saved=widget.MiniMapVM; widget.MiniMapVM=nil; show(); assert(not vm.zoomCalls)
-            widget.MiniMapVM=saved; vm.invalid=true; show(); assert(not vm.zoomCalls)
+            local saved=widget.VM_MiniMap; widget.VM_MiniMap=nil; show(); assert(not vm.zoomCalls)
+            widget.VM_MiniMap=saved; vm.invalid=true; show(); assert(not vm.zoomCalls)
         ''')
 
     def test_invalid_bounds_fall_back_without_saving_zoom_or_repeated_logging(self):

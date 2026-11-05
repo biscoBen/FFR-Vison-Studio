@@ -59,6 +59,8 @@ widget=object('Stat page');widgetType=object('WidgetBlueprintGeneratedClass '..c
 function widget:GetClass() return widgetType end
 physicalLabel=label('Text_StudioPhysicalEvasion');magicalLabel=label('Text_StudioMagicalEvasion')
 physicalValue=label('Text_StudioPhysicalEvasionValue');magicalValue=label('Text_StudioMagicalEvasionValue')
+physicalIcon=label('Image_StudioPhysicalEvasion');magicalIcon=label('Image_StudioMagicalEvasion')
+physicalIcon.class='/Script/UMG.Image';magicalIcon.class='/Script/UMG.Image'
 function panel(name,children)
     local p=object('PanelWidget /Fixture.WidgetTree.'..name)
     p.class='/Script/UMG.PanelWidget';p.children=children
@@ -68,8 +70,8 @@ function panel(name,children)
 end
 root=panel('VerticalBox_StudioStats',{
     object('Untouched native grid'),
-    panel('HorizontalBox_StudioPhysicalEvasion',{physicalLabel,physicalValue}),
-    panel('HorizontalBox_StudioMagicalEvasion',{magicalLabel,magicalValue})})
+    panel('HorizontalBox_StudioPhysicalEvasion',{physicalIcon,physicalLabel,physicalValue}),
+    panel('HorizontalBox_StudioMagicalEvasion',{magicalIcon,magicalLabel,magicalValue})})
 widget.WidgetTree=object('WidgetTree');widget.WidgetTree.RootWidget=root
 setmetatable(widget,{__index=function(_,key)
     if key:match('^Text_Studio') then error('Shared widget has no added reflected fields') end
@@ -116,8 +118,10 @@ function values(physical,magical)
     assert(physicalValue.value==physical..'%' and magicalValue.value==magical..'%')
     assert(physicalLabel.visibility==3 and magicalLabel.visibility==3)
     assert(physicalValue.visibility==3 and magicalValue.visibility==3)
+    assert(physicalIcon.visibility==3 and magicalIcon.visibility==3)
 end
 function hidden()
     assert(physicalLabel.visibility==1 and magicalLabel.visibility==1)
     assert(physicalValue.visibility==1 and magicalValue.visibility==1)
+    assert(physicalIcon.visibility==1 and magicalIcon.visibility==1)
 end
