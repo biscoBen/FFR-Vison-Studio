@@ -11,41 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Full local map fits the active area and its viewport — 2026-11-04
-
-- User feedback confirms controller switching works, but the enlarged view
-  leaves the map tiny in the center. The old fit used the whole land group's
-  bounds while native Image origin centers the current capture area. Fit that
-  active area's `BoxSize`, selected by `GetCurrentAreaId()`, instead.
-- Fit against the native **DisplaySize** viewport. The smaller **RangeSize**
-  is the range-ring image inside it. Keep the diagonal margin for rotated maps.
-  Area changes refresh through native world-position notifications; resync
-  native UI coordinates after updating zoom so images/player/markers stay together.
-- Keep the three-state controller cycle, native fog, map visibility, markers,
-  overworld behavior and restoration of remembered small-map zoom. No input
-  polling, new widgets, actor retention or save writes. Missing area data falls
-  back to the native minimap rather than a guessed full-land scale.
-- Native code and Blueprint evidence identify the matching area origin and
-  viewport; 13 focused map checks pass, including the tiny-map regression,
-  a much larger surrounding land group, different ring/viewport sizes and
-  area transitions. Combined **1.2.161** includes the compact evasion styling
-  below; Windows/package and real-game layout checks remain pending.
-
-### Compact evasion labels and native stat typography — 2026-11-04
-
-- User feedback confirms the evasion values appear in game, but the long
-  labels extend beyond the attributes panel. Replace them with **Phys. Eva**
-  and **Mag. Eva**, removing the visible word “Current” and the colons.
-- Put percentages in a separate right-aligned column. Reuse the captured
-  native stat-label and numeric font styles, with the ordinary white numeric
-  color and space matching the native icon column. The live calculation,
-  selected parameter, equipment/MR handling and battle effects are unchanged.
-- Retain the current-loadout explanation in tooltips, including equipment
-  comparisons. Collapse both labels and values if the data/layout is unavailable.
-  Native compilation/readback passes; package checks and live layout feedback
-  remain pending for the combined 1.2.161 update. The earlier 1.2.160 styling
-  build passed Windows checks while the additional map report was investigated.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -273,6 +238,79 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published compact evasion stats and readable controller map — 2026-11-04
+
+- **1.2.161**, code `5d1052d92e3308c44af9fa8f5a66d15904c89fd3`,
+  [run 41969081963](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/41969081963).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41969081963/Sephira-Studio-Test.zip):
+  **83,376,068 bytes**, SHA-256
+  `3287eeb12fd6b2e7c71f8a5ad830fb8b5048c3997bac48398c70a3d196c4941b`.
+- Includes both requested display corrections below. Keep the existing Home
+  switches enabled, close the game, update Studio, **GO / Build and install**
+  and restart. Current evasion calculations and native game visibility remain intact.
+- Checks pass: **965 Python tests** (local 73 environment skips; Windows 33),
+  Flutter analysis, **355 Flutter tests** (one skipped), fresh frozen-engine
+  startup, engine-cache transactions, 14 launcher and 10 import checks.
+  Thirteen focused map and eleven evasion checks cover the corrected bounds,
+  native fonts, selected parameters, transitions, bounded reentry, failures and
+  combined generated runtime startup.
+- All **199 public App files** match independent compile artifact **13389056538**,
+  SHA-256 `fccc19df829ad535c9073d34ec57d6a473ee18d54f976f2e71d9baf9b60a342b`.
+  Verify 94 extension and 16 Fina manifest entries against source. The actual
+  packaged stat widget decodes fully and round-trips through the pinned native
+  SDK: **40 exports**, original bindings/functions/defaults and native font
+  references verified. Delivered-byte fixtures pass: **159 runtime/UI checks**,
+  80 cave/challenge, 15 MR, 11 storage and all 99 shard identities.
+- Timing, America/Los_Angeles on November 4: first complete styling candidate
+  **20:13:59 PST** → verified ZIP/download-link delivery **20:53:04 PST**:
+  **39m 05s**. The map report arrived during that build; its corrected candidate
+  was complete **20:35:11 PST**, **17m 53s** before delivery. The original timer
+  was not restarted. Includes local checks, both builds, additional map
+  investigation, waiting and final verification. Styling run 41966908564:
+  CI wall **9m 45s**, runner usage **13m 55s**. Combined run 41969081963:
+  CI wall **9m 03s**, runner usage **12m 48s**. Total job usage **26m 43s**.
+  Candidate intervals do not measure the full original request or installation
+  time; no sub-two-minute install claim.
+- User feedback confirms 1.2.159 values and the controller cycle. The revised
+  typography/map scale still need gameplay confirmation. Package and native
+  metadata checks are not gameplay proof.
+  [Map evidence](docs/LOCAL_MAP_CONTROLLER.md), [evasion details](docs/EVASION_STAT_PAGES.md).
+
+### Full local map fits the active area and its viewport — 2026-11-04
+
+- User feedback confirms controller switching works, but the enlarged view
+  leaves the map tiny in the center. The old fit used the whole land group's
+  bounds while native Image origin centers the current capture area. Fit that
+  active area's `BoxSize`, selected by `GetCurrentAreaId()`, instead.
+- Fit against the native **DisplaySize** viewport. The smaller **RangeSize**
+  is the range-ring image inside it. Keep the diagonal margin for rotated maps.
+  Area changes refresh through native world-position notifications; resync
+  native UI coordinates after updating zoom so images/player/markers stay together.
+- Keep the three-state controller cycle, native fog, map visibility, markers,
+  overworld behavior and restoration of remembered small-map zoom. No input
+  polling, new widgets, actor retention or save writes. Missing area data falls
+  back to the native minimap rather than a guessed full-land scale.
+- Native code and Blueprint evidence identify the matching area origin and
+  viewport; 13 focused map checks pass, including the tiny-map regression,
+  a much larger surrounding land group, different ring/viewport sizes and
+  area transitions. Combined **1.2.161** includes the compact evasion styling
+  below; Windows/public-package checks now pass. Real-game layout feedback remains pending.
+
+### Compact evasion labels and native stat typography — 2026-11-04
+
+- User feedback confirms the evasion values appear in game, but the long
+  labels extend beyond the attributes panel. Replace them with **Phys. Eva**
+  and **Mag. Eva**, removing the visible word “Current” and the colons.
+- Put percentages in a separate right-aligned column. Reuse the captured
+  native stat-label and numeric font styles, with the ordinary white numeric
+  color and space matching the native icon column. The live calculation,
+  selected parameter, equipment/MR handling and battle effects are unchanged.
+- Retain the current-loadout explanation in tooltips, including equipment
+  comparisons. Collapse both labels and values if the data/layout is unavailable.
+  Native compilation/readback and package checks pass for the combined
+  1.2.161 update. Live layout feedback remains pending. The earlier 1.2.160
+  styling build passed Windows checks while the map report was investigated.
 
 ## Published current evasion stat pages — 2026-11-04
 

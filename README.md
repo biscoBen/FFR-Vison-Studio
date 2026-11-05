@@ -4,6 +4,23 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Compact evasion stats and readable controller map — 2026-11-04
+
+[Verified Studio 1.2.161 / run 41969081963](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41969081963/Sephira-Studio-Test.zip)
+(code `5d1052d`; **83.4 MB**).
+
+The stat rows now read **Phys. Eva** and **Mag. Eva**, using the native label and
+numeric font styles with percentages aligned on the right. The expanded
+controller map fits the current area's capture bounds to the map window,
+correcting the tiny-center view caused by fitting the whole land group to the
+smaller range ring. Native exploration visibility and controller cycling remain.
+
+Keep the existing Home options enabled. With the game closed, update Studio,
+use **GO / Build and install** and restart. Windows checks, public-package
+comparison and native widget readback pass. The revised layout and map scale
+still need in-game confirmation.
+[Validation and timings](CHANGELOG.md#published-compact-evasion-stats-and-readable-controller-map--2026-11-04).
+
 ### Current physical and magical evasion — 2026-11-04
 
 [Verified Studio 1.2.159 / run 41953153487](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-41953153487/Sephira-Studio-Test.zip)
@@ -2861,7 +2878,7 @@ retain unresolved cases and record the date/source fingerprints when refreshing 
   current equipment values on comparison pages; no hovered-item prediction.
   Native compilation/readback, runtime fixtures and Windows/public-package
   verification pass. User feedback confirms displayed values, with label
-  overflow; candidate 1.2.161 includes Phys. Eva/Mag. Eva and native numeric styling.
+  overflow; 1.2.161 includes Phys. Eva/Mag. Eva and native numeric styling.
   Revised layout and broader page coverage/buff refresh remain pending; keep this gameplay
   migration check open. [Evidence and limits](docs/EVASION_STAT_PAGES.md).
 - [ ] **Field-character cycling and controller input.** Verify UE4SS compatibility, reflected function signatures,
