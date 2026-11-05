@@ -558,6 +558,7 @@
       "utility": 0
     },
     "lunafreya": {
+      "aoePowerScale": 0.4,
       "attacks": [
         446800,
         446820,
@@ -738,6 +739,7 @@
       "basicName": "Wind Aria"
     },
     "elephim": {
+      "aoePowerScale": 0.4,
       "attacks": [
         414200,
         414210,

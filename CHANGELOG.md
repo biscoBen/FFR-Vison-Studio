@@ -11,6 +11,20 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Aerith and Lunafreya challenge AoE reduction — 2026-11-05
+
+- **1.2.168 candidate.** Reduce final damaging AoE power for both bosses in the
+  level-35 Vaan challenge to **40% of its previous value**, after existing buffs
+  and shared-team scaling, with integer rounding. Use the existing private
+  boss-kit setting for Lunafreya and Aerith's migrated `elephim` preset identity.
+- Seven Lunafreya skill entries and three Aerith entries change. Graceful Deluge
+  goes 39 → 16, Maelstrom 27 → 11, and Burning Notes / Flame Chant 14 → 6.
+  Preserve single-target damage, healing/support, AI, level/stats, rewards and
+  playable skills. Include the 1.2.167 map/session and evasion visibility fixes.
+- All 26 challenge checks pass, including a comparison of complete generated
+  table plans proving that only these ten private AoE magnifications change.
+  Package validation and in-game tuning confirmation remain pending.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

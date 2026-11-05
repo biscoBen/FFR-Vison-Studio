@@ -419,6 +419,57 @@ class SephiraChallengeTests(unittest.TestCase):
             ('snow_white',505970,22,9),('snow_white',400490,15,6),
             ('lilith',445310,30,12),('lilith',505580,22,9),('lilith',506040,21,8)])
 
+    def test_aerith_lunafreya_reduction_changes_only_their_private_aoe_damage(self):
+        current=challenge.data();previous=copy.deepcopy(current)
+        pair={'lunafreya','elephim'} # Aerith retains the migrated preset identity.
+        for preset in pair:previous['kits'][preset].pop('aoePowerScale')
+        original_units=copy.deepcopy(self.units);original_native=copy.deepcopy(self.native)
+        with mock.patch.object(challenge,'data',return_value=previous),tempfile.TemporaryDirectory() as root:
+            before=testing.prepare({},self.units,root,self.native.__getitem__)
+        self.assertEqual(self.units,original_units)
+        self.assertEqual(self.native,original_native)
+        expected={}
+        changes=[]
+        native={v['ID']:v for v in self.native[challenge.SKILL].values()}
+        for spec,units in challenge.plans(self.units):
+            for unit in units:
+                preset=unit['sephiraVision']['preset']
+                if preset not in pair:continue
+                self.assertEqual(spec['origin'],13124)
+                self.assertEqual(spec['level'],35)
+                with mock.patch.object(challenge,'data',return_value=previous):
+                    old_recipes=challenge.kit(unit,self.native.__getitem__,len(units))
+                recipes=challenge.kit(unit,self.native.__getitem__,len(units))
+                for old,recipe in zip(old_recipes,recipes):
+                    a=testing.apply_fields(native[old['source']],old['fields'])
+                    b=testing.apply_fields(native[recipe['source']],recipe['fields'])
+                    if recipe['damaging'] and a['TargetType'] in ('Group','All','SingleAndGroup'):
+                        expected[recipe['name']]=(a['magnification'],max(1,round(a['magnification']*.4)))
+                        changes.append((preset,recipe['source'],a['magnification'],b['magnification']))
+                    else:self.assertEqual(a,b)
+        self.assertCountEqual(changes,[
+            ('lunafreya',446820,45,18),('lunafreya',500760,27,11),
+            ('lunafreya',503670,12,5),('lunafreya',503680,12,5),
+            ('lunafreya',501420,39,16),('lunafreya',446830,45,18),
+            ('lunafreya',400250,14,6),('elephim',500340,14,6),
+            ('elephim',500340,14,6),('elephim',414210,45,18)])
+        # Compare the complete generated table plans, including every other
+        # encounter, AI/rewards and native/player rows, not just a scale flag.
+        observed={}
+        self.assertEqual(before.keys(),self.tables.keys())
+        for rel,plan in self.tables.items():
+            self.assertEqual(plan['set'],before[rel]['set'],rel)
+            self.assertEqual(len(plan['add']),len(before[rel]['add']),rel)
+            for a,b in zip(before[rel]['add'],plan['add']):
+                if a==b:continue
+                self.assertEqual(rel,challenge.SKILL)
+                self.assertEqual(a['row'],b['row'])
+                self.assertEqual(a['cloneFrom'],b['cloneFrom'])
+                self.assertEqual({k for k in a['set'].keys()|b['set'].keys()
+                    if a['set'].get(k)!=b['set'].get(k)},{'magnification'})
+                observed[b['row']]=(a['set']['magnification'],b['set']['magnification'])
+        self.assertEqual(observed,expected)
+
     def test_snow_white_boost_changes_only_her_single_target_enemy_damage(self):
         current=challenge.data();previous=copy.deepcopy(current)
         previous['kits']['snow_white'].pop('singleTargetPowerScale')
