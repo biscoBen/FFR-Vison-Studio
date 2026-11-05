@@ -15,6 +15,7 @@ local fields = {
     ['/Script/mucha.CPP_VM_MapBase:GetIsCurrentMapField']={'BoolProperty'},
     ['/Script/mucha.CPP_VM_MiniMap:GetCurrentMapLandCaptureData']={'StructProperty'},
     ['/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId']={'IntProperty'},
+    ['/Script/mucha.CPP_VM_MiniMap:GetCurrentMapId']={'IntProperty'},
     ['/Script/mucha.CPP_VM_MapBase:CorrectProjectionScale_Vector2D']={'StructProperty','StructProperty'},
     ['/Script/mucha.CPP_VM_MiniMap:GetMiniMapAppearance']={'StructProperty'},
     ['/Script/mucha.CPP_VM_MapBase:SetZoomAlpha']={'FloatProperty'},
@@ -54,11 +55,12 @@ function print(s) messages[#messages+1]=s end
 package.preload.config=function() return {localMap=1} end
 local vmClass=obj()
 vm=obj({tag=full,width=20000,height=10000,landWidth=200000,landHeight=200000,areaId=101,
-    projection=.1,displayX=640,displayY=640,rangeX=320,rangeY=320,
+    mapId=1001,projection=.1,displayX=640,displayY=640,rangeX=320,rangeY=320,
     ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}})
 vm.ViewPropertyTag={TagName={ToString=function() return vm.tag end}}
 function vm:GetClass() return vmClass end
 function vm:GetIsCurrentMapField() assert(gameThread); return self.world or false end
+function vm:GetCurrentMapId() assert(gameThread);return self.mapId end
 function vm:GetCurrentAreaId() assert(gameThread);return self.areaId end
 function vm:GetCurrentMapLandCaptureData()
     assert(gameThread)
@@ -88,7 +90,11 @@ function vm:SyncPlayerData()
     if hook then hook(param(widget),param({X=0,Y=0})) end
 end
 function vm:SetDisplayScaleIndex(index,animate)
-    assert(gameThread and index==0 and not animate); self.fallback=(self.fallback or 0)+1; self.tag=full..'.Instance'
+    assert(gameThread and index>=0 and index<=2 and not animate)
+    self.index=index;self.stepCalls=(self.stepCalls or 0)+1
+    if index==0 then self.fallback=(self.fallback or 0)+1 end
+    self.tag=index==2 and 'None' or index==1 and (self.world and full..'.Wide' or full) or (self.world and full..'.World' or full..'.Instance')
+    local hook=hooks[cls..':SetAppearance'];if hook then hook(param(widget)) end
 end
 function vm:UpdateProperty()
     assert(gameThread); self.restores=(self.restores or 0)+1
@@ -125,5 +131,5 @@ function ready()
     vm.zoomCalls=nil;vm.syncCalls=nil;widget.paints=nil;widget.paint=nil
     vm.ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}
     vm.alpha=nil
-    FFRStudioLocalMap.fitted=nil
+    FFRStudioLocalMap.fitted=nil;FFRStudioLocalMap.choice=nil;FFRStudioLocalMap.viewKey=nil;FFRStudioLocalMap.lastMode=nil
 end

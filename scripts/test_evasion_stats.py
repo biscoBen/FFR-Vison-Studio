@@ -139,9 +139,9 @@ class EvasionAssetsTests(unittest.TestCase):
                 self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['number'],'Font')))
             else:
                 self.assertEqual(build.field(e,'Text')['CultureInvariantString'],
-                                 'Phys. Eva' if 'Physical' in e['ObjectName'] else 'Mag. Eva')
+                                 'Phys. Eva.' if 'Physical' in e['ObjectName'] else 'Mag. Eva.')
                 self.assertEqual(semantic(build.field(e,'Font')),semantic(build.field(native['label'],'Font')))
-        self.assertEqual(len(readback['Exports']),44)
+        self.assertEqual(len(readback['Exports']),46)
 
     def test_icon_and_text_columns_match_the_captured_native_layout(self):
         native=fixture('evasion_ui_native.json.gz');asset=fixture('evasion_ui_readback.json.gz')
@@ -163,6 +163,24 @@ class EvasionAssetsTests(unittest.TestCase):
             self.assertEqual(build.field(widgets[0],'Visibility')['Value'],'Collapsed')
             ref=next(p for p in brush if p['Name']=='ResourceObject')['Value']
             self.assertEqual(asset['Imports'][-ref-1]['ObjectName'],'T_Evasion'+kind)
+
+    def test_attributes_spacing_preserves_role_parent_schema_and_embedded_child_bytes(self):
+        original=fixture('evasion_ui_native.json.gz')['statusList']
+        readback=fixture('evasion_status_list_readback.json.gz')
+        for old,new in zip(original['Exports'],readback['Exports']):
+            if old['ObjectName']=='Spacer_142':
+                self.assertEqual(build.field(old,'Size')['Value'][0]['Value']['Y'],60)
+                self.assertEqual(build.field(new,'Size')['Value'][0]['Value']['Y'],24)
+            else:
+                self.assertEqual(clean(old.get('Data')),clean(new.get('Data')))
+            if 'LoadedProperties' in old:self.assertEqual(old['LoadedProperties'],new['LoadedProperties'])
+            if 'ScriptBytecode' in old:self.assertEqual(old['ScriptBytecode'],new['ScriptBytecode'])
+        child=next(e for e in readback['Exports'] if e['ObjectName']=='WBP_UnitParam_Detail')
+        with zipfile.ZipFile(PAYLOAD/'evasion_stats.zip') as z:
+            uasset=z.read(build.STATUS_LIST+'.uasset');uexp=z.read(build.STATUS_LIST+'.uexp')
+        start=child['SerialOffset']-len(uasset)
+        self.assertEqual(child['SerialSize'],10)
+        self.assertEqual(uexp[start:start+child['SerialSize']],bytes.fromhex(fixture('evasion_parent_schema.json.gz')['bytes']))
 
     def test_private_icon_texture_pixels_alpha_and_ui_settings_match_approved_artwork(self):
         from PIL import Image
@@ -258,6 +276,46 @@ class EvasionRuntimeTests(unittest.TestCase):
         lua.execute((PAYLOAD/'evasion_stats.lua').read_text())
         lua.execute('ready()')
         return lua
+
+    def test_native_row_centres_use_the_same_pitch_with_evasion_after_each_defence(self):
+        lua=self.runtime()
+        lua.execute('''
+            local function centres()
+                local result={}
+                for i,e in ipairs(nativeEntries) do
+                    result[#result+1]=10+e.Slot.Row*49+8+33/2+e.RenderTransform.Translation.Y
+                    if i==2 then result[#result+1]=physicalRow.Slot.Padding.Top+16 end
+                    if i==4 then result[#result+1]=magicalRow.Slot.Padding.Top+16 end
+                end
+                assert(#result==13)
+                for i=2,#result do assert(math.abs(result[i]-result[i-1]-49)<1e-9) end
+            end
+            centres();assert(reserve.Size.Y==98)
+            for i=1,10 do show();centres() end
+            assert(nativeEntries[3].Slot.Row==2 and nativeEntries[3].RenderTransform.Translation.Y==49)
+            assert(nativeEntries[11].Slot.Row==10 and nativeEntries[11].RenderTransform.Translation.Y==98)
+            hiddenSource=menu;vm.dead=true;show();hidden()
+            assert(reserve.Size.Y==0 and nativeEntries[11].RenderTransform.Translation.Y==0)
+        ''')
+
+    def test_shared_multi_column_comparison_layout_keeps_native_positions(self):
+        lua=self.runtime()
+        lua.execute('''
+            for i,e in ipairs(nativeEntries) do e.Slot.Column=(i-1)%2 end
+            show();values('0','0')
+            for _,e in ipairs(nativeEntries) do assert(e.RenderTransform.Translation.Y==0) end
+            assert(reserve.Size.Y==0 and magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
+        ''')
+
+    def test_unpadded_native_grid_uses_its_configured_line_gap(self):
+        lua=self.runtime()
+        lua.execute('''
+            for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=0,Bottom=0} end
+            nativeWrapper.DirGridPanelProperty.SpaceBetweenLine=20
+            show();values('0','0')
+            assert(reserve.Size.Y==106 and nativeEntries[3].RenderTransform.Translation.Y==53)
+            assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==159)
+        ''')
 
     def test_live_effect_types_stack_by_damage_type_and_cap_overrides_are_read_fresh(self):
         lua=self.runtime()

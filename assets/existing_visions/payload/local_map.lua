@@ -67,6 +67,40 @@ local function area_dimensions(vm,capture)
     assert(width and height,'Current area has no local-map capture bounds')
     return width,height
 end
+local function view_mode(tag)
+    if tag==full or tag==full..'.Wide' then return 1 end
+    if tag==full..'.Instance' or tag==full..'.World' then return 0 end
+    if tag=='None' then return 2 end
+end
+local function remember_view(vm)
+    signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentMapId','IntProperty')
+    signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentAreaId','IntProperty')
+    local map,area=vm:GetCurrentMapId(),vm:GetCurrentAreaId()
+    signature('/Script/mucha.CPP_VM_MapBase:GetIsCurrentMapField','BoolProperty')
+    local world=vm:GetIsCurrentMapField()
+    local tag=vm.ViewPropertyTag.TagName:ToString()
+    local mode=view_mode(tag)
+    if type(map)~='number' or map<0 or type(area)~='number' or
+        (area<0 and not world) or mode==nil then return tag end
+    if runtime.choice==nil and mode==2 then return tag end -- Uninitialized/hidden first HUD.
+    local key=tostring(vm:GetAddress())..':'..map..':'..area
+    if runtime.choice==nil then runtime.choice=mode end
+    if key==runtime.viewKey then
+        -- The real cycle is small -> large -> hidden -> small. A direct
+        -- large -> small reset is automatic map setup, not a controller step.
+        if mode==1 or (mode==2 and runtime.lastMode==1) or
+            (mode==0 and runtime.lastMode==2) then runtime.choice=mode end
+    end
+    if mode~=runtime.choice and not (runtime.failedKey==key and mode==0) then
+        signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex','IntProperty,BoolProperty')
+        vm:SetDisplayScaleIndex(runtime.choice,false)
+        tag=vm.ViewPropertyTag.TagName:ToString()
+        mode=view_mode(tag)
+    end
+    runtime.viewKey,runtime.lastMode=key,mode
+    if mode==1 then runtime.failedKey=nil end
+    return tag
+end
 local function refresh(context)
     if runtime.busy then return end
     local widget = unwrap(context)
@@ -76,7 +110,15 @@ local function refresh(context)
     -- native MiniMapVM cache, which can be absent or point at an older source.
     local vm = widget.VM_MiniMap
     if not live(vm) or not live(vm:GetClass()) then return end
-    if vm.ViewPropertyTag.TagName:ToString() ~= full then
+    runtime.busy=true
+    local remembered,tag=pcall(remember_view,vm)
+    runtime.busy=false
+    if not remembered then
+        local message=tostring(tag)
+        if message~=lastError then print('[FFR local map] '..message..'\n');lastError=message end
+        return
+    end
+    if tag ~= full then
         if runtime.fitted == vm:GetAddress() then
             runtime.fitted = nil
             runtime.busy = true
@@ -124,6 +166,7 @@ local function refresh(context)
     end)
     if not ok then
         -- Do not leave a misleading enlarged crop when bounds are unavailable.
+        runtime.failedKey=runtime.viewKey
         pcall(function()
             signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex', 'IntProperty,BoolProperty')
             if live(vm) then vm:SetDisplayScaleIndex(0,false) end

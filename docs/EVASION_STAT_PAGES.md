@@ -54,6 +54,17 @@ share the native text/number columns. Images hide with unavailable values.
 The approved artwork and prepared texture inputs are kept in
 `scripts/fixtures/evasion_icons`; the generator emits each private texture
 alongside the widget JSON. It replaces no official icon or texture.
+Version 1.2.165 inserts **Phys. Eva.** after physical defence and **Mag. Eva.**
+after magical defence in the single-column stat page. The passive rows share
+the native overlay while native entries keep their own grid/bindings. Native
+desired height plus live grid padding sets row pitch. Presentation offsets are
+absolute, not accumulated; a game-owned spacer reserves the additional height
+and the inner grid inherits the expanded clipping bounds. The existing gap
+before Attributes drops from 60 to 24 Slate units, moving that section up while
+leaving Role in place. No new reflected Blueprint fields or gameplay parameters.
+Multi-column shared comparison pages keep their native positions and a readout
+below; failed reads clear added gaps/offsets. Both owning widgets are serialized
+against their original schemas, including the embedded ten-byte stat instance.
 Relocate both opaque platform-data FNames (pixel-format marker and final None)
 against each private texture's name table. Ordinary UAssetAPI roundtrip alone
 does not decode those Extras references; inspect the compiled stream explicitly.

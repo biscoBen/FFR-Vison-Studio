@@ -4,6 +4,17 @@ The Home **Full local map on controller** option retains the native minimap
 button cycle: minimap → full current area → hidden. The overworld keeps its
 native cycle. Native exploration visibility and markers are unchanged.
 
+Version 1.2.165 remembers the selected small/large/hidden view for the current
+Lua/game session across map and area IDs and newly created view models. Native
+world tags `.World`/`.Wide` map to local small/full indices 0/1; index 2 is hidden.
+The actual cycle is small → large → hidden → small, so a direct large → small
+reset is automatic setup and does not replace the preference. Unknown/hidden
+bootstrap views do not seed a preference. World areas may have no local area ID.
+Only scalar IDs, strings and a numeric choice are retained. No new save/config
+entry is written; the preference is not restored after restarting the game.
+Native bounds failure suppresses repeated forced resizing for that context,
+while a manual full-view selection or new area can try again.
+
 The user reports the map is still tiny after 1.2.161. Version 1.2.163 uses
 the visible widget's captured **VM_MiniMap** Blueprint property, which is the
 MVVM binding source, instead of relying on the separate private native cache.

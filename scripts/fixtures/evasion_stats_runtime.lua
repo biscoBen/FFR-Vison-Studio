@@ -20,6 +20,12 @@ functions={
  ['/Script/mucha.CPP_ContEffect:GetEffectData']={'StructProperty'},
  ['/Script/UMG.PanelWidget:GetChildrenCount']={'IntProperty'},
  ['/Script/UMG.PanelWidget:GetChildAt']={'IntProperty','ObjectProperty'},
+ ['/Script/UMG.Widget:ForceLayoutPrepass']={},
+ ['/Script/UMG.Widget:GetDesiredSize']={'StructProperty'},
+ ['/Script/UMG.Widget:SetRenderTranslation']={'StructProperty'},
+ ['/Script/UMG.OverlaySlot:SetPadding']={'StructProperty'},
+ ['/Script/UMG.Spacer:SetSize']={'StructProperty'},
+ ['/Script/UMG.Widget:SetClipping']={'EnumProperty'},
 }
 natives={}
 function StaticFindObject(path)
@@ -68,10 +74,36 @@ function panel(name,children)
     function p:GetChildAt(index) assert(gameThread);return self.children[index+1] end
     return p
 end
+physicalRow=panel('HorizontalBox_StudioPhysicalEvasion',{physicalIcon,physicalLabel,physicalValue})
+magicalRow=panel('HorizontalBox_StudioMagicalEvasion',{magicalIcon,magicalLabel,magicalValue})
+for _,row in ipairs({physicalRow,magicalRow}) do
+    row.Slot=object('OverlaySlot');row.Slot.class='/Script/UMG.OverlaySlot'
+    function row.Slot:SetPadding(p) assert(gameThread);self.Padding=p end
+    function row:GetDesiredSize() assert(gameThread);return {X=280,Y=32} end
+end
+reserve=object('Spacer /Fixture.WidgetTree.Spacer_StudioEvasionRoom')
+function reserve:SetSize(size) assert(gameThread);self.Size=size end
+nativeEntries={}
+for i,kind in ipairs({12,13,14,15,16,5,6,7,8,9,19}) do
+    local e=object('Native stat '..i);e.UnitParamType=kind;e.class='/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_DetailEntry.WBP_UnitParam_DetailEntry_C'
+    e.RenderTransform={Translation={X=0,Y=0},Scale={X=1,Y=1}}
+    function e:GetDesiredSize() assert(gameThread);return {X=280,Y=33} end
+    function e:SetRenderTranslation(t) assert(gameThread);self.RenderTransform.Translation=t end
+    e.Slot=object('GridSlot');e.Slot.class='/Script/UMG.GridSlot'
+    e.Slot.Row=i-1;e.Slot.Column=0;e.Slot.Padding={Top=8,Bottom=8}
+    nativeEntries[i]=e
+end
+nativePanel=panel('GridPanel_28',nativeEntries);nativePanel.parents={['/Script/UMG.GridPanel']=true}
+function nativePanel:GetDesiredSize() assert(gameThread);return {X=280,Y=#self.children*49} end
+nativeWrapper=object('Native grid wrapper');nativeWrapper.GridPanel_28=nativePanel
+nativeWrapper.Slot=object('Native overlay slot');nativeWrapper.Slot.Padding={Top=10}
+nativeWrapper.DirGridPanelProperty={GridDirection=0,SpaceBetweenLine=16,SpaceBetweenEntryInGridDirection=16}
+function nativeWrapper:SetClipping(mode) assert(gameThread);self.clipping=mode end
+function nativePanel:SetClipping(mode) assert(gameThread);self.clipping=mode end
+widget.WBP_DirectionGridPanel=nativeWrapper
+function widget:ForceLayoutPrepass() assert(gameThread);self.prepasses=(self.prepasses or 0)+1 end
 root=panel('VerticalBox_StudioStats',{
-    object('Untouched native grid'),
-    panel('HorizontalBox_StudioPhysicalEvasion',{physicalIcon,physicalLabel,physicalValue}),
-    panel('HorizontalBox_StudioMagicalEvasion',{magicalIcon,magicalLabel,magicalValue})})
+    panel('Overlay_0',{nativeWrapper,physicalRow,magicalRow}),reserve})
 widget.WidgetTree=object('WidgetTree');widget.WidgetTree.RootWidget=root
 setmetatable(widget,{__index=function(_,key)
     if key:match('^Text_Studio') then error('Shared widget has no added reflected fields') end
@@ -114,7 +146,7 @@ function show(name)
     gameThread=true;hooks[cls..':'..(name or 'HandleUnitParamUpdate')](param(widget));gameThread=false
 end
 function values(physical,magical)
-    assert(physicalLabel.value=='Phys. Eva' and magicalLabel.value=='Mag. Eva')
+    assert(physicalLabel.value=='Phys. Eva.' and magicalLabel.value=='Mag. Eva.')
     assert(physicalValue.value==physical..'%' and magicalValue.value==magical..'%')
     assert(physicalLabel.visibility==3 and magicalLabel.visibility==3)
     assert(physicalValue.visibility==3 and magicalValue.visibility==3)

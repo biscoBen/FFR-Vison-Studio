@@ -11,6 +11,35 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Session map size and interleaved evasion rows — 2026-11-05
+
+- The user confirms the large local map now fits correctly and the stat
+  labels/icons load and align. Remember the selected map view in Lua memory
+  across world-map/town/building/area transitions, mapping native wide world
+  view to full local view. Preserve manual small/large/hidden cycling. An
+  automatic large-to-small zone reset does not overwrite the last choice.
+  No new saved preference or Studio setting; restarting the game starts with
+  native defaults. A failed fit falls back once rather than forcing resize on
+  every world-position notification.
+- Move the Attributes section up by reducing its existing Role-to-Attributes
+  spacer from 60 to 24 Slate units. Role, fonts, widths and numbers stay intact.
+  Put **Phys. Eva.** immediately after physical defence and **Mag. Eva.** after
+  magical defence. Use the native entry height/padding for equal row pitch,
+  with real extra desired-height space so the final AP row remains visible.
+- Keep native entries in their own grid with their original bindings and slot
+  indices. Apply idempotent presentation offsets; the two passive rows stay
+  owned by the cooked WidgetTree. Multi-column comparison layouts retain native
+  positions and a readout below. Failed stat reads hide the added rows and
+  remove the reserved gaps. Preserve the six-field schema, embedded parent's
+  ten-byte child instance, original class-default bytes and fixed icon bulk data.
+- 41 focused checks pass: map transitions/manual cycles/bootstrap/failure
+  bounds, thirteen equally spaced row centres, repeated refresh, comparison
+  layouts, original role/parent bytecode/schema and embedded instance bytes.
+  Both widgets compile/read back with original mappings. A real UE5.6 container
+  verifies and reverse-extracts all four assets with zero failures.
+  **1.2.165** Windows/public-package checks and real-game transition/layout
+  confirmation remain pending.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

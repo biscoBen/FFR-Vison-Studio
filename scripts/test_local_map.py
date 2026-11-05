@@ -160,10 +160,63 @@ class LocalMapRuntimeTests(unittest.TestCase):
         lua=self.runtime()
         lua.execute('''
             show(); assert(widget.paint<1)
+            vm.tag='None'; show() -- User cycle: large -> hidden -> small.
             vm.tag='UI.Field.MiniMap.View.Decrale.Instance'; show()
             assert(vm.restores==1 and vm.alpha==.7 and vm.ZoomProperty.bSaveZoom)
             assert(vm.ZoomProperty.ScaleInterval.min==1 and widget.paint==1)
             show(); assert(vm.restores==1)
+        ''')
+
+    def test_large_view_stays_large_from_world_to_town_building_and_area_section(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.world=true;vm.areaId=-1;vm.tag='UI.Field.MiniMap.View.Decrale.World';show()
+            vm.tag='UI.Field.MiniMap.View.Decrale.Wide';show()
+            assert(FFRStudioLocalMap.choice==1)
+            vm.world=false;vm.areaId=101;vm.mapId=2001;vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and vm.index==1 and widget.paint)
+            vm.mapId=2002;vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and FFRStudioLocalMap.choice==1)
+            vm.areaId=202;vm.areas={[202]={BoxSize={X=9000,Y=6000}}}
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and FFRStudioLocalMap.choice==1)
+            vm.world=true;vm.mapId=1000;vm.areaId=-1;vm.tag='UI.Field.MiniMap.View.Decrale.World';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Wide' and vm.index==1)
+        ''')
+
+    def test_automatic_small_reset_does_not_replace_choice_but_manual_cycle_does(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and FFRStudioLocalMap.choice==1)
+            vm.tag='None';show();assert(FFRStudioLocalMap.choice==2)
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show();assert(FFRStudioLocalMap.choice==0)
+            vm.mapId=3000;vm.tag='UI.Field.MiniMap.View.Decrale';show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Instance' and FFRStudioLocalMap.choice==0)
+        ''')
+
+    def test_new_view_model_reuses_the_session_choice_without_retaining_the_old_object(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();local old=vm;local replacement=obj()
+            for key,value in pairs(old) do if key~='address' then replacement[key]=value end end
+            vm=replacement;widget.VM_MiniMap=vm
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';vm.mapId=4401
+            show();assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and vm.index==1)
+            assert(old.address~=vm.address and FFRStudioLocalMap.fitted==vm.address)
+        ''')
+
+    def test_hidden_bootstrap_and_failed_fit_do_not_loop_or_persist_objects(self):
+        lua=self.runtime()
+        lua.execute('''
+            vm.tag='None';show();assert(FFRStudioLocalMap.choice==nil)
+            vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show();assert(FFRStudioLocalMap.choice==0)
+            vm.tag='UI.Field.MiniMap.View.Decrale';vm.width=0;show()
+            assert(vm.fallback==1)
+            for i=1,20 do show() end
+            assert(vm.fallback==1,'Failed fit must not force another size change every refresh')
+            vm.width=20000;vm.mapId=3001;show();assert(vm.tag=='UI.Field.MiniMap.View.Decrale')
+            assert(type(FFRStudioLocalMap.viewKey)=='string' and type(FFRStudioLocalMap.choice)=='number')
         ''')
 
     def test_destroying_or_missing_objects_do_not_read_map_properties(self):

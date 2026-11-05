@@ -122,10 +122,13 @@ local function labels(widget)
     if not named(root,'VerticalBox_StudioStats') or not root:IsA(native('UMG.PanelWidget')) then return end
     signature('/Script/UMG.PanelWidget:GetChildrenCount','IntProperty')
     signature('/Script/UMG.PanelWidget:GetChildAt','IntProperty,ObjectProperty')
-    if root:GetChildrenCount()~=3 then return end
-    local result={}
+    if root:GetChildrenCount()~=2 then return end
+    local overlay,reserve=root:GetChildAt(0),root:GetChildAt(1)
+    if not named(overlay,'Overlay_0') or not overlay:IsA(native('UMG.PanelWidget')) or
+        overlay:GetChildrenCount()~=3 or not named(reserve,'Spacer_StudioEvasionRoom') then return end
+    local result={reserve=reserve}
     for i,kind in ipairs({'Physical','Magical'}) do
-        local row=root:GetChildAt(i) -- Child 0 is the untouched native stat grid.
+        local row=overlay:GetChildAt(i) -- Child 0 remains the native grid wrapper.
         if not named(row,'HorizontalBox_Studio'..kind..'Evasion') or
             not row:IsA(native('UMG.PanelWidget')) or row:GetChildrenCount()~=3 then return end
         local icon,label,number=row:GetChildAt(0),row:GetChildAt(1),row:GetChildAt(2)
@@ -135,14 +138,107 @@ local function labels(widget)
         local textClass=native('CommonUI.CommonTextBlock')
         if not label:IsA(textClass) or not number:IsA(textClass) then return end
         result[kind]={label,number,icon}
+        result[kind].row=row
     end
     return result
 end
+local function entries(widget)
+    local wrapper=widget.WBP_DirectionGridPanel
+    if not live(wrapper) then return end
+    local panel=wrapper.GridPanel_28 -- The captured Blueprint's visible native grid.
+    if not live(panel) or not panel:IsA(native('UMG.GridPanel')) then return end
+    local count=panel:GetChildrenCount()
+    assert(count>=0 and count<=32,'Unsupported stat-grid entry count')
+    local result={}
+    local entryType=StaticFindObject('/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_DetailEntry.WBP_UnitParam_DetailEntry_C')
+    assert(live(entryType),'Native stat entry class is unavailable')
+    for i=0,count-1 do
+        local entry=panel:GetChildAt(i)
+        if live(entry) and entry:IsA(entryType) and live(entry.Slot) and entry.Slot:IsA(native('UMG.GridSlot')) then
+            result[#result+1]=entry
+        end
+    end
+    table.sort(result,function(a,b)
+        return a.Slot.Row<b.Slot.Row or (a.Slot.Row==b.Slot.Row and a.Slot.Column<b.Slot.Column)
+    end)
+    return result,panel,wrapper
+end
+local function position(row,top)
+    local slot=row.Slot
+    assert(live(slot) and slot:IsA(native('UMG.OverlaySlot')),'Evasion overlay slot is unavailable')
+    slot:SetPadding({Left=0,Top=top,Right=0,Bottom=0})
+end
+local function clear_layout(widget,rows)
+    local children=entries(widget)
+    if children then for _,entry in ipairs(children) do
+        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=0})
+    end end
+    rows.reserve:SetSize({X=0,Y=0})
+    for _,kind in ipairs({'Physical','Magical'}) do position(rows[kind].row,0) end
+end
+local function reflow(widget,rows)
+    signature('/Script/UMG.Widget:ForceLayoutPrepass','')
+    signature('/Script/UMG.Widget:GetDesiredSize','StructProperty')
+    signature('/Script/UMG.Widget:SetRenderTranslation','StructProperty')
+    signature('/Script/UMG.OverlaySlot:SetPadding','StructProperty')
+    signature('/Script/UMG.Spacer:SetSize','StructProperty')
+    signature('/Script/UMG.Widget:SetClipping',{['EnumProperty']=true,['ByteProperty']=true})
+    widget:ForceLayoutPrepass()
+    local children,panel,wrapper=entries(widget)
+    assert(children and #children>0,'Native stat entries are not ready')
+    local first=children[1]
+    local height=first:GetDesiredSize().Y
+    local padding=first.Slot.Padding
+    local pitch=height+padding.Top+padding.Bottom
+    if padding.Top+padding.Bottom==0 then
+        local profile=wrapper.DirGridPanelProperty
+        local gap=profile.GridDirection==1 and profile.SpaceBetweenEntryInGridDirection or profile.SpaceBetweenLine
+        pitch=height+gap
+    end
+    assert(type(pitch)=='number' and height>0 and pitch>=height and pitch<200,'Unsupported native stat spacing')
+    local physical,magical,single
+    single=true
+    for i,entry in ipairs(children) do
+        if entry.Slot.Column~=0 then single=false end
+        if entry.UnitParamType==13 then physical=i-1 end -- Native PhysicalDefense.
+        if entry.UnitParamType==15 then magical=i-1 end -- Native MagicalDefense.
+    end
+    local interleave=single and physical and magical and physical<magical
+    local base=wrapper.Slot.Padding.Top
+    local physicalTop,magicalTop
+    if interleave then
+        -- The outer WidgetTree reserves the expanded height. Let the shifted
+        -- native rows use it rather than clipping them to the old grid bounds.
+        wrapper:SetClipping(0)
+        panel:SetClipping(0)
+        physicalTop,magicalTop=base+(physical+1)*pitch+padding.Top,base+(magical+2)*pitch+padding.Top
+        rows.reserve:SetSize({X=0,Y=2*pitch})
+    else
+        -- Shared equipment/comparison layouts may have multiple columns. Keep
+        -- those native entries in place and retain a full-width readout below.
+        physicalTop=base+panel:GetDesiredSize().Y+(pitch-height)
+        magicalTop=physicalTop+pitch
+        rows.reserve:SetSize({X=0,Y=0})
+    end
+    for i,entry in ipairs(children) do
+        local shift=0
+        if interleave then
+            if i-1>physical then shift=shift+pitch end
+            if i-1>magical then shift=shift+pitch end
+        end
+        entry:SetRenderTranslation({X=entry.RenderTransform.Translation.X,Y=shift})
+    end
+    position(rows.Physical.row,physicalTop+(height-rows.Physical.row:GetDesiredSize().Y)/2)
+    position(rows.Magical.row,magicalTop+(height-rows.Magical.row:GetDesiredSize().Y)/2)
+end
 local function hide(widget)
     local rows=labels(widget)
-    if rows then for _,pair in pairs(rows) do
+    if rows then for _,kind in ipairs({'Physical','Magical'}) do
+        local pair=rows[kind]
         for _,child in ipairs(pair) do if live(child) then child:SetVisibility(1) end end
-    end end
+    end
+        pcall(clear_layout,widget,rows)
+    end
 end
 local function refresh(context)
     if runtime.busy then return end
@@ -157,7 +253,7 @@ local function refresh(context)
         local values={Physical=physical,Magical=magical}
         local rows=labels(widget)
         assert(rows,'Evasion stat rows are missing; rebuild/install the mod')
-        for kind,short in pairs({Physical='Phys. Eva',Magical='Mag. Eva'}) do
+        for kind,short in pairs({Physical='Phys. Eva.',Magical='Mag. Eva.'}) do
             local label,number=rows[kind][1],rows[kind][2]
             label:SetText(FText(short))
             number:SetText(FText(tostring(values[kind])..'%'))
@@ -166,6 +262,7 @@ local function refresh(context)
                 child:SetVisibility(3)
             end
         end
+        reflow(widget,rows)
     end)
     if not ok then
         pcall(hide,widget) -- Never leave stale/partial figures after a failed read.

@@ -16,6 +16,7 @@ from build_treasure_ui import dependencies, field, importer, names, prop, struct
 
 FIXTURE = Path(__file__).with_name('fixtures') / 'evasion_ui_native.json.gz'
 ASSET = 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_Detail'
+STATUS_LIST = 'FFRS/Content/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitStatus_DetailList'
 ICON_BASE = 'FFRS/Content/UI/Studio/Evasion/T_Evasion'
 
 
@@ -80,6 +81,10 @@ def author(native):
     vbs_default = add('Default__VerticalBoxSlot', umg, 'VerticalBoxSlot', '/Script/UMG')
     hb_default = add('Default__HorizontalBox', umg, 'HorizontalBox', '/Script/UMG')
     hbs_default = add('Default__HorizontalBoxSlot', umg, 'HorizontalBoxSlot', '/Script/UMG')
+    overlay_slot_class = add('OverlaySlot', umg)
+    overlay_slot_default = add('Default__OverlaySlot', umg, 'OverlaySlot', '/Script/UMG')
+    spacer_class = add('Spacer', umg)
+    spacer_default = add('Default__Spacer', umg, 'Spacer', '/Script/UMG')
     text_class = add('CommonTextBlock', common)
     text_default = add('Default__CommonTextBlock', common, 'CommonTextBlock', '/Script/CommonUI')
     image_class = add('Image', umg)
@@ -115,7 +120,7 @@ def author(native):
     old_root['Data'].append(prop('Slot', 'ObjectPropertyData', original_slot))
     old_root['CreateBeforeSerializationDependencies'].append(original_slot)
     additions = [root, slot('VerticalBoxSlot_OriginalStats', old_root_index)]
-    for i, (kind, short) in enumerate((('Physical','Phys. Eva'), ('Magical','Mag. Eva'))):
+    for i, (kind, short) in enumerate((('Physical','Phys. Eva.'), ('Magical','Mag. Eva.'))):
         row, row_slot = first+2+i*6, first+3+i*6
         label, label_slot, number, number_slot = row+2, row+3, row+4, row+5
         horizontal = widget('HorizontalBox_Studio'+kind+'Evasion', hb, hb_default, tree_index, [
@@ -187,9 +192,44 @@ def author(native):
         for j, value in enumerate(slots): value['Name'] = str(j)
         horizontal['CreateBeforeSerializationDependencies'].append(slot_index)
         exports.extend([image, icon_slot])
+    # Leave every native grid entry in its own native grid. The passive rows
+    # share the original overlay; runtime offsets reserve gaps after Defence.
+    # A trailing spacer gives the two visual gaps real desired-height space.
+    reserve, reserve_slot = len(exports) + 1, len(exports) + 2
+    for i, kind in enumerate(('Physical', 'Magical')):
+        row, row_slot = first + 2 + i * 6, first + 3 + i * 6
+        exports[row_slot - 1] = widget('OverlaySlot_Studio' + kind + 'Evasion',
+            overlay_slot_class, overlay_slot_default, old_root_index, [
+                struct('Padding', 'Margin', [prop('Top', 'FloatPropertyData', 0.0)]),
+                prop('HorizontalAlignment', 'EnumPropertyData', 'HAlign_Fill', EnumType='EHorizontalAlignment', InnerType='ByteProperty'),
+                prop('VerticalAlignment', 'EnumPropertyData', 'VAlign_Top', EnumType='EVerticalAlignment', InnerType='ByteProperty'),
+                prop('Parent', 'ObjectPropertyData', old_root_index), prop('Content', 'ObjectPropertyData', row)])
+        exports[row_slot - 1]['CreateBeforeSerializationDependencies'] = [row]
+        field(old_root, 'Slots')['Value'].append(prop(str(i + 1), 'ObjectPropertyData', row_slot))
+        old_root['CreateBeforeSerializationDependencies'].append(row_slot)
+    field(root, 'Slots')['Value'] = [prop(str(i), 'ObjectPropertyData', index)
+        for i, index in enumerate((original_slot, reserve_slot))]
+    root['CreateBeforeSerializationDependencies'] = [original_slot, reserve_slot]
+    space = widget('Spacer_StudioEvasionRoom', spacer_class, spacer_default, tree_index, [
+        struct('Size', 'Vector2D', [prop('Size', 'Vector2DPropertyData',
+            {'$type': 'UAssetAPI.UnrealTypes.FVector2D, UAssetAPI', 'X': 0.0, 'Y': 0.0},
+            **{'$type': 'UAssetAPI.PropertyTypes.Structs.Vector2DPropertyData, UAssetAPI'})]),
+        prop('Slot', 'ObjectPropertyData', reserve_slot)])
+    exports.extend([space, slot('VerticalBoxSlot_StudioEvasionRoom', reserve)])
     field(tree, 'RootWidget')['Value'] = root_index
     tree['CreateBeforeSerializationDependencies'].append(root_index)
     names(asset)
+    return asset
+
+
+def status_list(native):
+    asset = copy.deepcopy(native['statusList'])
+    # Role and its text stay where they are. This is the existing spacer
+    # immediately before the Attributes subhead, not a global font/scale edit.
+    gap = next(e for e in asset['Exports'] if e['ObjectName'] == 'Spacer_142')
+    size = field(gap, 'Size')['Value'][0]['Value']
+    assert size['Y'] == 60.0
+    size['Y'] = 24.0
     return asset
 
 
@@ -225,5 +265,6 @@ if __name__ == '__main__':
     args.output.write_text(json.dumps(asset), encoding='utf-8')
     for name, texture in icon_textures(native).items():
         (args.output.parent / (name + '.json')).write_text(json.dumps(texture), encoding='utf-8')
+    (args.output.parent / 'WBP_UnitStatus_DetailList.json').write_text(json.dumps(status_list(native)), encoding='utf-8')
     if args.mappings:
         args.output.with_suffix('.usmap').write_bytes(mappings(args.mappings.read_bytes(), asset))
