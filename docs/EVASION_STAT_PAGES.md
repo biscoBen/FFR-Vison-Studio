@@ -65,6 +65,15 @@ leaving Role in place. No new reflected Blueprint fields or gameplay parameters.
 Multi-column shared comparison pages keep their native positions and a readout
 below; failed reads clear added gaps/offsets. Both owning widgets are serialized
 against their original schemas, including the embedded ten-byte stat instance.
+The user reports overlapping/interleaved rows in 1.2.165. Its spacing inference
+used the opposite grid-direction gap: native EnhancedUI defines Vertical as 0,
+and the actual spacing is carried by separate spacer widgets. Version 1.2.166
+measures all native GridPanel child rows, including spacer desired heights and
+slot padding, and derives the entry positions/pitch from that complete layout.
+The original stat slots, ordering, parent widgets and cooked assets stay intact.
+Regression fixtures now model those real spacer rows with zero opposite-direction
+spacing, instead of making the inferred pitch agree with the expected result.
+Revised in-game layout confirmation remains pending.
 Relocate both opaque platform-data FNames (pixel-format marker and final None)
 against each private texture's name table. Ordinary UAssetAPI roundtrip alone
 does not decode those Extras references; inspect the compiled stream explicitly.

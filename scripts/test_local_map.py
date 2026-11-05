@@ -219,6 +219,46 @@ class LocalMapRuntimeTests(unittest.TestCase):
             assert(type(FFRStudioLocalMap.viewKey)=='string' and type(FFRStudioLocalMap.choice)=='number')
         ''')
 
+    def test_native_visibility_and_default_tag_cycle_through_all_three_steps(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();vm.resetOnRestore=true
+            for i=1,5 do
+                set_view(2)
+                assert(vm.tag=='UI.Field.MiniMap.View.Decrale.Default' and vm.display==false)
+                assert(FFRStudioLocalMap.choice==2 and vm.index==2)
+                set_view(0)
+                assert(FFRStudioLocalMap.choice==0 and vm.index==0 and vm.display)
+                set_view(1)
+                assert(FFRStudioLocalMap.choice==1 and vm.index==1 and vm.display)
+            end
+        ''')
+
+    def test_hidden_view_can_retain_the_large_tag_without_being_forced_on(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();local calls=vm.zoomCalls
+            vm.display=false;show()
+            assert(vm.tag=='UI.Field.MiniMap.View.Decrale' and FFRStudioLocalMap.choice==2)
+            assert(vm.zoomCalls==calls)
+            set_view(0);assert(FFRStudioLocalMap.choice==0)
+        ''')
+
+    def test_default_setup_view_and_zoom_restoration_do_not_reset_remembered_world_size(self):
+        lua=self.runtime()
+        lua.execute('''
+            show();vm.resetOnRestore=true
+            vm.world=true;vm.mapId=9100;vm.areaId=-1
+            vm.tag='UI.Field.MiniMap.View.Decrale.Default';vm.display=true;show()
+            assert(vm.index==1 and vm.tag=='UI.Field.MiniMap.View.Decrale.Wide')
+            assert(FFRStudioLocalMap.choice==1 and vm.restores==1)
+            vm.world=false;vm.mapId=9101;vm.areaId=101
+            vm.tag='UI.Field.MiniMap.View.Decrale.Default';vm.display=true;show()
+            assert(vm.index==1 and vm.tag=='UI.Field.MiniMap.View.Decrale' and widget.paint)
+            vm.mapId=9102;vm.tag='UI.Field.MiniMap.View.Decrale.Instance';show()
+            assert(vm.index==1 and FFRStudioLocalMap.choice==1)
+        ''')
+
     def test_destroying_or_missing_objects_do_not_read_map_properties(self):
         lua=self.runtime()
         lua.execute('''

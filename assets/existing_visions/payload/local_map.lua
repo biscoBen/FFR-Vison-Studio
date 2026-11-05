@@ -67,10 +67,11 @@ local function area_dimensions(vm,capture)
     assert(width and height,'Current area has no local-map capture bounds')
     return width,height
 end
-local function view_mode(tag)
+local function view_mode(vm,tag)
+    signature('/Script/mucha.CPP_VM_MiniMapBase:GetIsDisplay','BoolProperty')
+    if not vm:GetIsDisplay() then return 2 end
     if tag==full or tag==full..'.Wide' then return 1 end
-    if tag==full..'.Instance' or tag==full..'.World' then return 0 end
-    if tag=='None' then return 2 end
+    if tag==full..'.Instance' or tag==full..'.World' or tag==full..'.Default' then return 0 end
 end
 local function remember_view(vm)
     signature('/Script/mucha.CPP_VM_MiniMap:GetCurrentMapId','IntProperty')
@@ -79,7 +80,7 @@ local function remember_view(vm)
     signature('/Script/mucha.CPP_VM_MapBase:GetIsCurrentMapField','BoolProperty')
     local world=vm:GetIsCurrentMapField()
     local tag=vm.ViewPropertyTag.TagName:ToString()
-    local mode=view_mode(tag)
+    local mode=view_mode(vm,tag)
     if type(map)~='number' or map<0 or type(area)~='number' or
         (area<0 and not world) or mode==nil then return tag end
     if runtime.choice==nil and mode==2 then return tag end -- Uninitialized/hidden first HUD.
@@ -95,7 +96,7 @@ local function remember_view(vm)
         signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex','IntProperty,BoolProperty')
         vm:SetDisplayScaleIndex(runtime.choice,false)
         tag=vm.ViewPropertyTag.TagName:ToString()
-        mode=view_mode(tag)
+        mode=view_mode(vm,tag)
     end
     runtime.viewKey,runtime.lastMode=key,mode
     if mode==1 then runtime.failedKey=nil end
@@ -118,13 +119,20 @@ local function refresh(context)
         if message~=lastError then print('[FFR local map] '..message..'\n');lastError=message end
         return
     end
-    if tag ~= full then
+    if tag ~= full or not vm:GetIsDisplay() then
         if runtime.fitted == vm:GetAddress() then
             runtime.fitted = nil
             runtime.busy = true
             pcall(function()
                 signature('/Script/mucha.CPP_VM_MiniMapBase:UpdateProperty', '')
                 vm:UpdateProperty()
+                -- Native property restoration can reset the display step too.
+                -- Finish with the remembered step, under the reentry guard.
+                local current=vm.ViewPropertyTag.TagName:ToString()
+                if runtime.choice~=nil and view_mode(vm,current)~=runtime.choice then
+                    signature('/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex','IntProperty,BoolProperty')
+                    vm:SetDisplayScaleIndex(runtime.choice,false)
+                end
             end)
             runtime.busy = false
         end

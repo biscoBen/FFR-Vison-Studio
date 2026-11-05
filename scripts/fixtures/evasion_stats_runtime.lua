@@ -83,21 +83,30 @@ for _,row in ipairs({physicalRow,magicalRow}) do
 end
 reserve=object('Spacer /Fixture.WidgetTree.Spacer_StudioEvasionRoom')
 function reserve:SetSize(size) assert(gameThread);self.Size=size end
-nativeEntries={}
+nativeEntries={};nativeCells={};nativeSpacers={}
 for i,kind in ipairs({12,13,14,15,16,5,6,7,8,9,19}) do
     local e=object('Native stat '..i);e.UnitParamType=kind;e.class='/Game/UI/Common/Info/Unit/SystemStatus/Detail/WBP_UnitParam_DetailEntry.WBP_UnitParam_DetailEntry_C'
     e.RenderTransform={Translation={X=0,Y=0},Scale={X=1,Y=1}}
     function e:GetDesiredSize() assert(gameThread);return {X=280,Y=33} end
     function e:SetRenderTranslation(t) assert(gameThread);self.RenderTransform.Translation=t end
     e.Slot=object('GridSlot');e.Slot.class='/Script/UMG.GridSlot'
-    e.Slot.Row=i-1;e.Slot.Column=0;e.Slot.Padding={Top=8,Bottom=8}
+    e.Slot.Row=2*(i-1);e.Slot.Column=0;e.Slot.RowSpan=1;e.Slot.Padding={Top=0,Bottom=0}
     nativeEntries[i]=e
+    nativeCells[#nativeCells+1]=e
+    if i<11 then
+        local spacer=object('Native row spacer '..i);spacer.height=16
+        function spacer:GetDesiredSize() assert(gameThread);return {X=0,Y=self.height} end
+        spacer.Slot=object('GridSlot');spacer.Slot.class='/Script/UMG.GridSlot'
+        spacer.Slot.Row=2*i-1;spacer.Slot.Column=0;spacer.Slot.RowSpan=1
+        spacer.Slot.Padding={Top=0,Bottom=0}
+        nativeSpacers[#nativeSpacers+1]=spacer;nativeCells[#nativeCells+1]=spacer
+    end
 end
-nativePanel=panel('GridPanel_28',nativeEntries);nativePanel.parents={['/Script/UMG.GridPanel']=true}
-function nativePanel:GetDesiredSize() assert(gameThread);return {X=280,Y=#self.children*49} end
+nativePanel=panel('GridPanel_28',nativeCells);nativePanel.parents={['/Script/UMG.GridPanel']=true}
+function nativePanel:GetDesiredSize() assert(gameThread);return {X=280,Y=523} end
 nativeWrapper=object('Native grid wrapper');nativeWrapper.GridPanel_28=nativePanel
 nativeWrapper.Slot=object('Native overlay slot');nativeWrapper.Slot.Padding={Top=10}
-nativeWrapper.DirGridPanelProperty={GridDirection=0,SpaceBetweenLine=16,SpaceBetweenEntryInGridDirection=16}
+nativeWrapper.DirGridPanelProperty={GridDirection=0,SpaceBetweenLine=0,SpaceBetweenEntryInGridDirection=16}
 function nativeWrapper:SetClipping(mode) assert(gameThread);self.clipping=mode end
 function nativePanel:SetClipping(mode) assert(gameThread);self.clipping=mode end
 widget.WBP_DirectionGridPanel=nativeWrapper

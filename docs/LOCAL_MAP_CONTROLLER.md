@@ -15,6 +15,17 @@ entry is written; the preference is not restored after restarting the game.
 Native bounds failure suppresses repeated forced resizing for that context,
 while a manual full-view selection or new area can try again.
 
+The user reports 1.2.165 cycles only large/off and returns to small across zones.
+Version 1.2.166 reads native **GetIsDisplay()** independently of the view tag.
+The hidden step can retain a large tag or resolve to `.Default`, rather than
+the fixture's assumed literal `None`. Visible `.Default` is supported as setup
+for the small view. After recovering native zoom/property settings on leaving
+the local full view, reapply the remembered step if that recovery changed it.
+This operation stays under the existing reentry guard. Tests cover repeated
+three-step cycles, both hidden tag representations, default setup, world/local
+transitions and a property restore that resets the display step. Native input
+handling is retained; live cycling and transition confirmation remain pending.
+
 The user reports the map is still tiny after 1.2.161. Version 1.2.163 uses
 the visible widget's captured **VM_MiniMap** Blueprint property, which is the
 MVVM binding source, instead of relying on the separate private native cache.
@@ -26,7 +37,7 @@ the first map initialized before queued hooks attach. Coalesce queued discovery;
 do not retain widgets, poll the HUD or change native save/visibility rules.
 Focused tests now cover the real captured Blueprint source, missing native cache,
 first-view attachment and UI-area geometry differing from world capture bounds.
-Live map sizing after this correction still needs confirmation.
+The user confirms the resulting map fit; sizing itself is no longer the open issue.
 
 The user confirmed switching in 1.2.158/1.2.159, but showed an enlarged frame
 with a tiny map in its center. Version 1.2.161 changed two sizing inputs:

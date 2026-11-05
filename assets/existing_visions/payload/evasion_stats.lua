@@ -176,6 +176,33 @@ local function clear_layout(widget,rows)
     rows.reserve:SetSize({X=0,Y=0})
     for _,kind in ipairs({'Physical','Magical'}) do position(rows[kind].row,0) end
 end
+local function grid_layout(panel,children)
+    -- EnhancedUI owns real spacer widgets between entries. Slot padding and
+    -- the opposite-direction gap do not describe the native vertical pitch.
+    local heights,tops,last={},{},0
+    for i=0,panel:GetChildrenCount()-1 do
+        local child=panel:GetChildAt(i)
+        if live(child) and live(child.Slot) and child.Slot:IsA(native('UMG.GridSlot')) then
+            local slot=child.Slot
+            assert(slot.Row>=0 and slot.Row<64 and slot.RowSpan==1,'Unsupported stat-grid row span')
+            local height=child:GetDesiredSize().Y+slot.Padding.Top+slot.Padding.Bottom
+            assert(type(height)=='number' and height>=0 and height<200,'Unsupported stat-grid height')
+            heights[slot.Row]=math.max(heights[slot.Row] or 0,height)
+            last=math.max(last,slot.Row)
+        end
+    end
+    local total=0
+    for row=0,last do tops[row]=total;total=total+(heights[row] or 0) end
+    local positions,pitch={},nil
+    for i,entry in ipairs(children) do
+        positions[i]=tops[entry.Slot.Row]+entry.Slot.Padding.Top
+        if i>1 and positions[i]>positions[i-1] then
+            local delta=positions[i]-positions[i-1]
+            pitch=pitch and math.min(pitch,delta) or delta
+        end
+    end
+    return positions,pitch,total
+end
 local function reflow(widget,rows)
     signature('/Script/UMG.Widget:ForceLayoutPrepass','')
     signature('/Script/UMG.Widget:GetDesiredSize','StructProperty')
@@ -188,13 +215,7 @@ local function reflow(widget,rows)
     assert(children and #children>0,'Native stat entries are not ready')
     local first=children[1]
     local height=first:GetDesiredSize().Y
-    local padding=first.Slot.Padding
-    local pitch=height+padding.Top+padding.Bottom
-    if padding.Top+padding.Bottom==0 then
-        local profile=wrapper.DirGridPanelProperty
-        local gap=profile.GridDirection==1 and profile.SpaceBetweenEntryInGridDirection or profile.SpaceBetweenLine
-        pitch=height+gap
-    end
+    local positions,pitch,total=grid_layout(panel,children)
     assert(type(pitch)=='number' and height>0 and pitch>=height and pitch<200,'Unsupported native stat spacing')
     local physical,magical,single
     single=true
@@ -211,12 +232,13 @@ local function reflow(widget,rows)
         -- native rows use it rather than clipping them to the old grid bounds.
         wrapper:SetClipping(0)
         panel:SetClipping(0)
-        physicalTop,magicalTop=base+(physical+1)*pitch+padding.Top,base+(magical+2)*pitch+padding.Top
+        physicalTop=base+positions[physical+1]+pitch
+        magicalTop=base+positions[magical+1]+2*pitch
         rows.reserve:SetSize({X=0,Y=2*pitch})
     else
         -- Shared equipment/comparison layouts may have multiple columns. Keep
         -- those native entries in place and retain a full-width readout below.
-        physicalTop=base+panel:GetDesiredSize().Y+(pitch-height)
+        physicalTop=base+total+(pitch-height)
         magicalTop=physicalTop+pitch
         rows.reserve:SetSize({X=0,Y=0})
     end

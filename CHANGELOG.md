@@ -11,6 +11,35 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Native stat spacing and map view-state follow-up — 2026-11-05
+
+- The user reports that 1.2.165 overlaps Phys. Eva. with Phys. Def., puts
+  Mag. Eva. above Mag. Def., cycles only large/off and returns to small on
+  zone changes. The previous fixtures did not model two native details.
+- Measure the complete native stat GridPanel, including its separate spacer
+  rows and each child's desired height/padding. The prior inference chose
+  the opposite-direction gap (EnhancedUI Vertical is 0). Derive actual native
+  entry positions and pitch, then insert the two evasion readouts after their
+  respective defence rows. Preserve original grid slots, stat calculations,
+  approved icons, horizontal columns, raised Attributes and native assets.
+- Read map visibility separately with native GetIsDisplay(); hidden mode can
+  keep the old tag or use .Default. Handle visible .Default setup and finish
+  native zoom/property recovery by preserving the selected display step.
+  Retain native input, fitting, session memory and bounded reentry.
+- 46 focused tests pass with separate native spacer widgets, zero horizontal
+  gap, hidden retained/default tags, repeated three-step cycling, zone setup
+  and a native property restore that resets the step. **1.2.166** full Windows
+  and delivered-package checks, plus live layout/cycling/transition feedback,
+  remain pending.
+- Ariana research: recover the supplied v208 APK by its recorded SHA-256 and
+  extract the catalog-linked **la561_bgm_Touch_It_Remix_Verse_to_Chorus.acb**
+  (2,345,568 bytes, SHA-256
+  `88904dd6d68dc73c785291279263594db3c3283bf7ff30cf1ce54abd44cd7bf4`).
+  Its single stereo 44.1 kHz recording decodes to 3,512,320 samples per channel,
+  **79.644444 seconds**, and carries native looping information. It is the game
+  battle loop, separate from the seven-second Resonance cue. Extraction only;
+  automatic party battle music is not enabled by this UI/map update.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

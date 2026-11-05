@@ -21,6 +21,7 @@ local fields = {
     ['/Script/mucha.CPP_VM_MapBase:SetZoomAlpha']={'FloatProperty'},
     ['/Script/mucha.CPP_VM_MapBase:SyncPlayerData']={},
     ['/Script/mucha.CPP_VM_MiniMapBase:SetDisplayScaleIndex']={'IntProperty','BoolProperty'},
+    ['/Script/mucha.CPP_VM_MiniMapBase:GetIsDisplay']={'BoolProperty'},
     ['/Script/mucha.CPP_VM_MiniMapBase:UpdateProperty']={},
     [cls..':SetZoomScale']={'DoubleProperty','StructProperty'},
     [cls..':SetWorldPosition']={'StructProperty'},
@@ -62,6 +63,12 @@ function vm:GetClass() return vmClass end
 function vm:GetIsCurrentMapField() assert(gameThread); return self.world or false end
 function vm:GetCurrentMapId() assert(gameThread);return self.mapId end
 function vm:GetCurrentAreaId() assert(gameThread);return self.areaId end
+function vm:GetIsDisplay()
+    assert(gameThread)
+    if self.tag=='None' then return false end -- Legacy synthetic bootstrap.
+    if self.display~=nil then return self.display end
+    return self.tag~=full..'.Default'
+end
 function vm:GetCurrentMapLandCaptureData()
     assert(gameThread)
     local areas=self.areas
@@ -93,13 +100,15 @@ function vm:SetDisplayScaleIndex(index,animate)
     assert(gameThread and index>=0 and index<=2 and not animate)
     self.index=index;self.stepCalls=(self.stepCalls or 0)+1
     if index==0 then self.fallback=(self.fallback or 0)+1 end
-    self.tag=index==2 and 'None' or index==1 and (self.world and full..'.Wide' or full) or (self.world and full..'.World' or full..'.Instance')
+    self.display=index~=2
+    self.tag=index==2 and full..'.Default' or index==1 and (self.world and full..'.Wide' or full) or (self.world and full..'.World' or full..'.Instance')
     local hook=hooks[cls..':SetAppearance'];if hook then hook(param(widget)) end
 end
 function vm:UpdateProperty()
     assert(gameThread); self.restores=(self.restores or 0)+1
     self.ZoomProperty={bSaveZoom=true,AlphaInterval={min=0,max=1},ScaleInterval={min=1,max=1}}
     self.alpha=.7; widget:SetZoomScale(1)
+    if self.resetOnRestore then self:SetDisplayScaleIndex(0,false) end
 end
 local widgetType=obj({name='WidgetBlueprintGeneratedClass '..cls})
 function widgetType:GetFullName() return self.name end
@@ -121,6 +130,9 @@ function show()
     gameThread=true
     hooks[cls..':SetAppearance'](param(widget))
     gameThread=false
+end
+function set_view(index)
+    gameThread=true;vm:SetDisplayScaleIndex(index,false);gameThread=false
 end
 function class_name(name) widgetType.name=name end
 function ready()

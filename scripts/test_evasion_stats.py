@@ -283,7 +283,7 @@ class EvasionRuntimeTests(unittest.TestCase):
             local function centres()
                 local result={}
                 for i,e in ipairs(nativeEntries) do
-                    result[#result+1]=10+e.Slot.Row*49+8+33/2+e.RenderTransform.Translation.Y
+                    result[#result+1]=10+(i-1)*49+33/2+e.RenderTransform.Translation.Y
                     if i==2 then result[#result+1]=physicalRow.Slot.Padding.Top+16 end
                     if i==4 then result[#result+1]=magicalRow.Slot.Padding.Top+16 end
                 end
@@ -292,8 +292,8 @@ class EvasionRuntimeTests(unittest.TestCase):
             end
             centres();assert(reserve.Size.Y==98)
             for i=1,10 do show();centres() end
-            assert(nativeEntries[3].Slot.Row==2 and nativeEntries[3].RenderTransform.Translation.Y==49)
-            assert(nativeEntries[11].Slot.Row==10 and nativeEntries[11].RenderTransform.Translation.Y==98)
+            assert(nativeEntries[3].Slot.Row==4 and nativeEntries[3].RenderTransform.Translation.Y==49)
+            assert(nativeEntries[11].Slot.Row==20 and nativeEntries[11].RenderTransform.Translation.Y==98)
             hiddenSource=menu;vm.dead=true;show();hidden()
             assert(reserve.Size.Y==0 and nativeEntries[11].RenderTransform.Translation.Y==0)
         ''')
@@ -307,14 +307,35 @@ class EvasionRuntimeTests(unittest.TestCase):
             assert(reserve.Size.Y==0 and magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==49)
         ''')
 
-    def test_unpadded_native_grid_uses_its_configured_line_gap(self):
+    def test_native_spacer_rows_set_pitch_when_the_opposite_direction_gap_is_zero(self):
         lua=self.runtime()
         lua.execute('''
             for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=0,Bottom=0} end
-            nativeWrapper.DirGridPanelProperty.SpaceBetweenLine=20
+            for _,spacer in ipairs(nativeSpacers) do spacer.height=20 end
             show();values('0','0')
             assert(reserve.Size.Y==106 and nativeEntries[3].RenderTransform.Translation.Y==53)
             assert(magicalRow.Slot.Padding.Top-physicalRow.Slot.Padding.Top==159)
+        ''')
+
+    def test_all_native_row_padding_is_measured_without_moving_original_slots(self):
+        lua=self.runtime()
+        lua.execute('''
+            for _,entry in ipairs(nativeEntries) do entry.Slot.Padding={Top=3,Bottom=5} end
+            show();values('0','0')
+            local pitch=33+3+5+16
+            assert(reserve.Size.Y==2*pitch)
+            assert(physicalRow.Slot.Padding.Top==10+3+2*pitch+.5)
+            assert(magicalRow.Slot.Padding.Top==10+3+5*pitch+.5)
+            assert(nativeEntries[3].Slot.Row==4 and nativeEntries[3].RenderTransform.Translation.Y==pitch)
+            assert(nativeSpacers[1].Slot.Row==1)
+        ''')
+
+    def test_unsupported_spans_hide_the_readout_and_restore_the_native_grid(self):
+        lua=self.runtime()
+        lua.execute('''
+            nativeEntries[2].Slot.RowSpan=2;show();hidden()
+            assert(reserve.Size.Y==0)
+            for _,entry in ipairs(nativeEntries) do assert(entry.RenderTransform.Translation.Y==0) end
         ''')
 
     def test_live_effect_types_stack_by_damage_type_and_cap_overrides_are_read_fresh(self):
