@@ -67,6 +67,7 @@ class AppState extends ChangeNotifier {
   bool noEncounters = false;
   bool autoBattle = false;
   bool localMap = false;
+  bool evasionStats = false;
   bool finaCinematic = false;
   bool ffbeNeedles = false;
   bool crystalCave = false;
@@ -479,6 +480,8 @@ class AppState extends ChangeNotifier {
     catch (e) { notice = 'Could not load survival testing settings: $e'; }
     try { localMap = await api!.localMap(); }
     catch (e) { notice = 'Could not load local-map settings: $e'; }
+    try { evasionStats = await api!.evasionStats(); }
+    catch (e) { notice = 'Could not load evasion stat-page settings: $e'; }
     try { autoBattle = await api!.autoBattle(); }
     catch (e) { notice = 'Could not load auto-battle settings: $e'; }
     try { noEncounters = await api!.noEncounters(); }
@@ -1275,6 +1278,13 @@ class AppState extends ChangeNotifier {
     if (building) { throw StateError('Wait for the current build to finish.'); }
     await api!.saveLocalMap(value);
     localMap = value; notifyListeners();
+  });
+
+  Future<void> setEvasionStats(bool value) => _withRoster(() async {
+    if (api == null || engineDown) { throw StateError('The engine is not running.'); }
+    if (building) { throw StateError('Wait for the current build to finish.'); }
+    await api!.saveEvasionStats(value);
+    evasionStats = value; notifyListeners();
   });
 
   Future<void> setAutoBattle(bool value) => _withRoster(() async {

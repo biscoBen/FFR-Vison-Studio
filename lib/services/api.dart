@@ -47,6 +47,8 @@ class Api {
   Future<bool> surviveAtOne() async => (await get('/api/testing'))['surviveAtOne'] == true;
   Future<bool> localMap() async => (await get('/api/testing'))['localMap'] == true;
   Future<void> saveLocalMap(bool value) => _saveTestingFlag('localMap', value);
+  Future<bool> evasionStats() async => (await get('/api/testing'))['evasionStats'] == true;
+  Future<void> saveEvasionStats(bool value) => _saveTestingFlag('evasionStats', value);
   Future<bool> autoBattle() async => (await get('/api/testing'))['autoBattle'] == true;
   Future<void> saveAutoBattle(bool value) => _saveTestingFlag('autoBattle', value);
   Future<bool> noEncounters() async => (await get('/api/testing'))['noEncounters'] == true;
@@ -93,6 +95,7 @@ class Api {
       'noEncounters': current['noEncounters'] == true,
       'autoBattle': current['autoBattle'] == true,
       'localMap': current['localMap'] == true,
+      'evasionStats': current['evasionStats'] == true,
       'ffbeNeedles': current['ffbeNeedles'] == true,
       'finaCinematic': current['finaCinematic'] == true,
       'crystalCave': current['crystalCave'] == true,

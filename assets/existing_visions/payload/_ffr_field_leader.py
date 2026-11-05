@@ -225,7 +225,8 @@ def build(units, env):
     encounters = _ffr_testing.settings(root)['noEncounters']
     auto = _ffr_testing.settings(root)['autoBattle']
     local_map = _ffr_testing.settings(root)['localMap']
-    if field or walking or selected or espers or encounters or auto or local_map:
+    evasion = _ffr_testing.settings(root)['evasionStats']
+    if field or walking or selected or espers or encounters or auto or local_map or evasion:
         import _ffr_overworld
         config = bank(units, env['rows'])[1] if field else _ffr_overworld.runtime_config(units, env['rows'])
         code = ''
@@ -248,6 +249,11 @@ def build(units, env):
             # A newline does not terminate a Lua call. The next parenthesized
             # block would call this nil result and abort the entire mod startup.
             code += '(function()\n' + Path(__file__).with_name('esper_mastery.lua').read_text(encoding='utf-8') + '\nend)();\n'
+        if evasion:
+            import _ffr_evasion_stats
+            if env.get('OUT'): _ffr_evasion_stats.stage(env['OUT'])
+            config['evasionStats'] = 1
+            code += '(function()\n' + Path(__file__).with_name('evasion_stats.lua').read_text(encoding='utf-8') + '\nend)();\n'
         if selected:
             native = json.loads((root / 'build/crystal-fina-battle/runtime.json').read_bytes())
             if native.get('schema') != 1 or native.get('id') != selected['id']:

@@ -19,9 +19,9 @@ void main() {
       final api = Api('http://studio');
       await api.saveCrystalCave(true);
       await api.saveTestingPracticeBattle(true);
-      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'ffbeNeedles': false, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': true});
+      expect(settings, {'schema': 1, 'maxMr': true, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'evasionStats': false, 'ffbeNeedles': false, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': true});
       await api.saveTestingMaxMr(false);
-      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'ffbeNeedles': false, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': true});
+      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'evasionStats': false, 'ffbeNeedles': false, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': true});
       expect(await api.surviveAtOne(), isFalse);
       await api.saveSurviveAtOne(true);
       await api.saveSurviveAtOne(false);
@@ -31,7 +31,7 @@ void main() {
       expect(await api.ffbeNeedles(), isTrue);
       expect(await api.fieldLeader(), isTrue);
       await api.saveFieldLeader(false);
-      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'ffbeNeedles': true, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': false});
+      expect(settings, {'schema': 1, 'maxMr': false, 'practiceBattle': true, 'practiceEncounter': 'standard', 'surviveAtOne': false, 'noEncounters': false, 'autoBattle': false, 'localMap': false, 'evasionStats': false, 'ffbeNeedles': true, 'finaCinematic': false, 'crystalCave': true, 'crystalCaveTest': false, 'fieldLeader': false});
       expect(await api.testingPracticeBattle(), isTrue);
       expect(await api.crystalCave(), isTrue);
       await api.saveFinaCinematic(true);
@@ -39,11 +39,14 @@ void main() {
       expect(await api.finaCinematic(), isTrue);
       expect(settings['ffbeNeedles'], isTrue);
       await api.saveLocalMap(true);
+      await api.saveEvasionStats(true);
       await api.saveAutoBattle(true);
       expect(await api.localMap(), isTrue);
+      expect(await api.evasionStats(), isTrue);
       await api.saveNoEncounters(true);
       expect(await api.autoBattle(), isTrue);
       await api.saveTestingPracticeBattle(false);
+      expect(await api.evasionStats(), isTrue);
       expect(await api.noEncounters(), isTrue);
       expect(settings['maxMr'], isTrue);
       expect(settings['ffbeNeedles'], isTrue);
@@ -62,6 +65,7 @@ void main() {
       expect(await Api('http://studio').noEncounters(), isFalse);
       expect(await Api('http://studio').autoBattle(), isFalse);
       expect(await Api('http://studio').localMap(), isFalse);
+      expect(await Api('http://studio').evasionStats(), isFalse);
       expect(await Api('http://studio').crystalCaveTest(), isFalse);
       expect(await Api('http://studio').finaCinematic(), isFalse);
     }, () => client);

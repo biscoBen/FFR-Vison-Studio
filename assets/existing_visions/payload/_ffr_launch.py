@@ -133,6 +133,7 @@ def flags(root):
     for key, label in (('ffbeNeedles', 'FFBE 1,000 Needles import'), ('practiceBattle', 'Shop practice battle'),
                        ('noEncounters', 'In-game encounter toggle (F7 / hold both triggers)'),
                        ('localMap', 'Full local map on controller'),
+                       ('evasionStats', 'Physical and magical evasion on stat pages'),
                        ('finaCinematic', 'Crystal Fina resonance cinematic'),
                        ('maxMr', 'One-battle MR'), ('crystalCave', 'Legacy Crystal Fina cave'),
                        ('crystalCaveTest', 'Legacy Crystal Fina test cave'), ('fieldLeader', 'Walking-character cycling')):
@@ -260,7 +261,7 @@ def original_preset(root):
     files = input_bytes(root)
     options = testing.settings(root)
     options.update({key: False for key in ('maxMr', 'practiceBattle', 'surviveAtOne', 'ffbeNeedles', 'finaCinematic',
-                                           'fieldLeader', 'crystalCave', 'crystalCaveTest', 'noEncounters', 'localMap')})
+                                           'fieldLeader', 'crystalCave', 'crystalCaveTest', 'noEncounters', 'localMap', 'evasionStats')})
     files['mods/EstherTsukiko/testing.json'] = json.dumps(options).encode()
     files['mods/EstherTsukiko/ability-modes.json'] = json.dumps(
         {'schema': 1, 'showUnverified': True, 'useChanges': False, 'useNativeRepairs': False}).encode()

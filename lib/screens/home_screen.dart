@@ -51,7 +51,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final app = context.watch<AppState>();
     final busy = app.building || app.deckWorking || app.minimapWorking;
-    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles || app.surviveAtOne || app.noEncounters || app.autoBattle || app.localMap;
+    final canBuild = app.includedUnitCount > 0 || app.modInstalled || app.testingMaxMr || app.testingPracticeBattle || app.fieldLeader || app.ffbeNeedles || app.surviveAtOne || app.noEncounters || app.autoBattle || app.localMap || app.evasionStats;
     final editedNativeIds = app.units.where((u) => u['native'] != null).map((u) => u['id']).toSet();
     final added = app.units.where((u) => !SephiraVisions.member(u as Map) && u['party'] == null && (u['native'] == null || u['testAcquire'] == true)).cast<Map<String, dynamic>>().toList();
     final defaults = [...app.units.where((u) => u['native'] != null && u['testAcquire'] != true), ...app.nativeVisions.where((u) => !editedNativeIds.contains(u['id']))].cast<Map<String, dynamic>>();
@@ -212,6 +212,15 @@ class HomeScreen extends StatelessWidget {
                   value: app.localMap,
                   onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
                     try { await app.setLocalMap(value); } catch (e) { app.showNotice('$e'); }
+                  },
+                ),
+                SwitchListTile(
+                  key: const Key('evasion-stats'), contentPadding: EdgeInsets.zero,
+                  title: Text('Physical and magical evasion on stat pages', style: Guide.text()),
+                  subtitle: Text('Shows the selected character’s current evasion from equipment and active effects, including buffs on battle pages. Equipment comparisons show current values. Requires UE4SS; rebuild/install after switching.', style: Guide.small()),
+                  value: app.evasionStats,
+                  onChanged: busy || app.engineDown || app.api == null ? null : (value) async {
+                    try { await app.setEvasionStats(value); } catch (e) { app.showNotice('$e'); }
                   },
                 ),
                 SwitchListTile(

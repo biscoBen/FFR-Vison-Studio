@@ -11,6 +11,32 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Current physical and magical evasion on stat pages — 2026-11-04
+
+- Add the optional Home switch **Physical and magical evasion on stat pages**.
+  The shared in-game character stat grid gains two current-value rows, reading
+  the selected character's live parameter and active effects. Battle pages use
+  the selected battle parameter, including current buffs. Equipment comparisons
+  explicitly show current values. Enable the switch and rebuild/install with
+  UE4SS; it defaults OFF.
+- Receive and verify the corrected lookup capture. Trace the native Avoidance
+  getter and target-side float32 sum/min/truncation, the installed evasion limit
+  and Decoy's separate physical bypass. Raw 500 Avoidance uses the ordinary cap;
+  an active Decoy forces physical avoidance. Read the live calculation table,
+  rather than hard-code the captured 75. These are evasion stats; attack accuracy
+  and guaranteed-hit rules can still change the result.
+- Preserve the original stat grid, enum list, native functions, bindings and
+  defaults. Add only game-owned text children and refresh after Blueprint stat
+  notifications. No raw memory reads, new input binding, polling, actor/HUD
+  retention, gameplay changes or save edits. Hide unsupported/unavailable data
+  and exclude enemy parameters.
+- Native compilation/readback, 11 focused evasion fixtures, 963 Python checks
+  (73 environment skips), Flutter analysis and four settings tests pass. Combined
+  generated scripts start with Eiko mastery and each controller-feature
+  combination. Windows packaging and real-game page/buff rendering remain pending. The tested
+  public package remains **1.2.158** until publication succeeds.
+  [Implementation, evidence and limits](docs/EVASION_STAT_PAGES.md).
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
