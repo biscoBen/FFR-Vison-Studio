@@ -1,4 +1,4 @@
-"""Reviewed MR rearrangements, including Relm's transferable Mimic/MP Stroll."""
+"""Reviewed MR rearrangements, including Lunera's learnable Auto-Haste."""
 import copy
 import gzip
 import json
@@ -12,9 +12,14 @@ REWARDS = {
     'primm': {1: ('PassiveSkill', 1526), 9: ('PassiveSkill', 1038)},
     'trance_terra': {1: ('PassiveSkill', 1011)},
     'relm': {5: ('PassiveSkill', 1307), 9: ('ActiveSkill', 400330)},
+    'lunera': {9: ('PassiveSkill', 1074)},
 }
-PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1, 'mystea': -1, 'relm': 0}
+PASSIVE_DELTAS = {'minfilia': -1, 'barusa': -1, 'primm': 1, 'trance_terra': 1, 'mystea': -1, 'relm': 0, 'lunera': 1}
 MR_RANK_OVERRIDES = {('minfilia', 400240): 3}
+# Relm's requested Mimic reward remains the sole teacher after Lunera's swap.
+# Preserve Relm's Shantotto acquisition instead of moving either vision's gate.
+MR_TEACHER_OVERRIDES = {400330: 'relm'}
+MR_ACQUISITION_OVERRIDES = {400330: 'sephira_13123'}
 EARTH_LABEL = {'name': 'Imbue Earth', 'desc': 'Add earth to non-elemental standard attacks and battle skills.'}
 
 
@@ -95,6 +100,8 @@ def revise(catalog, coverage, rows):
         replacement = {1336: 'barusa', 1038: 'primm', 1011: 'trance_terra', 1526: 'primm'}
         if entry['kind'] == 'PassiveSkill' and entry['id'] in replacement:
             entry['assignedTo'] = replacement[entry['id']]
+        if entry['kind'] == 'ActiveSkill' and entry['id'] in MR_TEACHER_OVERRIDES:
+            entry['assignedTo'] = MR_TEACHER_OVERRIDES[entry['id']]
     choices = [g for p in catalog['presets'] for t in p['profile']['synchro'] for g in t]
     catalog['passiveCuration'].update(mrActiveCount=sum(g[0] == 'ActiveSkill' for g in choices),
         mrPassiveCount=sum(g[0] == 'PassiveSkill' for g in choices),

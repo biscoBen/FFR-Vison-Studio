@@ -64,7 +64,7 @@ Untouched saved reward layouts migrate automatically once, with a roster backup.
 | Rikku (FFX-2) | 17 | 8 | 25 | 3 | 2 |
 | Nalu | 18 | 7 | 25 | 1 | 4 |
 | Elza | 18 | 6 | 24 | 1 | 4 |
-| Lunera | 17 | 6 | 23 | 2 | 3 |
+| Lunera | 17 | 6 | 23 | 1 | 4 |
 
 ## Selected forms and kits
 
@@ -1058,7 +1058,7 @@ Sprite `100007506` (GL); base-stat budget: Bartz. Growth: Cloud.
 - MR 6: HP +60 (permanent).
 - MR 7: Guiding Wind [1458].
 - MR 8: Attack +15 (permanent).
-- MR 9: Mimic [400330]; AP +8 (permanent); Spirit of Lunera.
+- MR 9: Auto-Haste [1074]; AP +8 (permanent); Spirit of Lunera.
 
 Supplemental player copies (native source ID; final MP/power):
 

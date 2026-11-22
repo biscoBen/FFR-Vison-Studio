@@ -2,7 +2,7 @@
 
 The complete-kit audit previously counted 25 original MR active skills as covered because they were learned in awakening. Those skills were not transferable MR rewards. The revised layout restores all 25 as MR rewards without increasing the number of rewards at any rank. All 50 original passive MR rewards remain transferable. The [reproducible coverage report](SEPHIRA_MR_COVERAGE.md) now shows 75/75.
 
-Each restored active has its stock native mechanics, equip cost, MP cost, general-command membership and animation. Acquisition families match the originals. Minfilia’s Throw is now MR3 instead of the original MR1, as explicitly requested alongside Libra at MR1. Saved acquisition overrides remain user choices. Rikku retains the Zidane gate.
+Each restored active has its stock native mechanics, equip cost, MP cost, general-command membership and animation. Acquisition families match the originals except the requested Relm Mimic reward at the Shantotto challenge. Minfilia’s Throw is now MR3 instead of the original MR1, as explicitly requested alongside Libra at MR1. Saved acquisition overrides remain user choices. Rikku retains the Zidane gate.
 
 | Original vision | Reward | MR | New MR teacher |
 |---|---|---:|---|
@@ -16,7 +16,7 @@ Each restored active has its stock native mechanics, equip cost, MP cost, genera
 | Cecil | Darkness (400490) | 1 | Snow White |
 | Cecil | Cover (400380) | 3 | Lilith |
 | Bartz | Wait (400760) | 1 | Lunera |
-| Bartz | Mimic (400330) | 9 | Lunera |
+| Bartz | Mimic (400330) | 9 | Relm |
 | Cloud | Deathblow (400530) | 3 | Nalu |
 | Cloud | Fill Gauge (400770) | 5 | Jade |
 | Squall | Gut Rip (400690) | 3 | A2 |
@@ -39,5 +39,7 @@ Twelve original MR passive placements move to another compatible slot, retaining
 Trance Terra’s Fire Eater moves to awakening tier 3 and Primm MR9. Primm’s Boundless Flames moves to awakening tier 4, and Terra’s Trance Apocalypse moves from tier 3 to tier 4 to keep every tier within eight slots. Relm now teaches MP Stroll at MR5 and native Mimic at MR9; Fill LB on Stagger and Stagger Power +20% move to awakening tier 4. Her total passive count and AP budget are unchanged. Original MR rewards remain transferable. Crystal Fina and Aria are unchanged. Private recipes, artwork, stats, permanent rewards, allocated IDs and acquisition choices are preserved.
 
 Studio backs up and migrates untouched saved reward layouts once on loading. The build also applies the same staged migration to older configs. Previously learned Barusa Earth-imbue IDs remain defined. Edited affected MR slots or full awakening tiers are left intact and reported before building; use **Apply MR and acquisition update** after resolving the conflict. Later edits to migrated units remain user edits.
+
+Lunera MR9 now teaches native **Auto-Haste (1074, 30 AP)**, replacing her duplicate Mimic. Her permanent AP +8, Spirit, awakening kit and acquisition stay unchanged. Relm remains the Mimic teacher. Lunera's second MR migration step accepts the previous unedited Mimic reward, preserves custom choices and runs once. Her total passive count becomes ten and her combined passive AP budget becomes 320 (native Bartz: 270).
 
 Native table writing/readback checks verify all 30 collection kits plus an independent Fina, Spirit owner bindings and all 25 stock active rows. Live-game equipment and balance still need playtesting.

@@ -20,7 +20,8 @@ void main() {
     final presets=await SephiraVisions.bundled;
     final plan=json.decode(File('scripts/fixtures/sephira_mr_restoration_plan.json').readAsStringSync()) as Map;
     for(final row in plan['placements'] as List) {
-      final u=presets.singleWhere((p)=>p['id']==row[0])['profile'];
+      final teacher=row[2]==400330?'relm':row[0];
+      final u=presets.singleWhere((p)=>p['id']==teacher)['profile'];
       final rank=row[0]=='minfilia' && row[2]==400240?3:row[1];
       expect(u['synchro'][rank][0],['ActiveSkill',row[2],-1]);
     }
@@ -174,5 +175,29 @@ void main() {
         throwsA(isA<StateError>().having((e)=>e.message,'message',contains('MR$rank was edited'))));
       expect(u,before);
     }
+  });
+  test('Lunera replaces MR9 Mimic with Auto-Haste once, retaining edits, AP and Spirit',() async {
+    final presets=await SephiraVisions.bundled;
+    final fixture=json.decode(File('scripts/fixtures/sephira_mr_layout_before.json').readAsStringSync()) as Map;
+    final u=CharacterConfig.copy(Map<String,dynamic>.from(fixture['lunera']['profile'] as Map));
+    u[SephiraVisions.field]={'version':1,'preset':'lunera','enabled':true};
+    u['stats']['Attack']=87;
+    (u['skills'] as Map).values.first['set']['Cost']=19;
+    final before=CharacterConfig.copy(u);
+    final next=SephiraVisions.repairEquipableMr(u,presets,strict:true);
+    expect(next['synchro'][9],[['PassiveSkill',1074,-1],
+      ['BaseParameter',11,8],['MasterSkill',u['master']['id'],-1]]);
+    for(final f in before.keys.where((k)=>!['synchro','sephiraMrRevision'].contains(k))) {
+      expect(next[f],before[f],reason:f);
+    }
+    expect(u,before);
+    expect(SephiraVisions.hasRecipeUpdate(next,presets),isFalse);
+    expect(identical(SephiraVisions.repairEquipableMr(next,presets),next),isTrue);
+    CharacterConfig.decode(CharacterConfig.encode(next));
+    u['synchro'][9][0]=['PassiveSkill',1009,-1];
+    final edited=CharacterConfig.copy(u);
+    expect(identical(SephiraVisions.repairEquipableMr(u,presets),u),isTrue);
+    expect(()=>SephiraVisions.repairEquipableMr(u,presets,strict:true),throwsStateError);
+    expect(u,edited);
   });
 }

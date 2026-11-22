@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "catalogSha256": "16b9fb1721f6048bf37454055745a7293e75452f6d34ae9d871fe3522ab95b9c",
-  "nativeAuditSha256": "095c2033010ad96d1530dba5d8b7adc1c3fb66012b29f05236d70bb40a15bac4",
+  "catalogSha256": "c5a95142e0fb665d4d39c22f451650b42dbac3f66e397d6780a6fe7012529013",
+  "nativeAuditSha256": "cf5ec4a7afa36ede3e1b53ffb8f4524450a5298e109d69162e4931dfc2395536",
   "source": "assets/sephira_visions/native_coverage.json",
   "summary": {
     "originalVisions": 15,
@@ -947,13 +947,6 @@
         {
           "preset": "relm",
           "vision": "Relm",
-          "rank": 9,
-          "grantId": 400330,
-          "privateCopy": false
-        },
-        {
-          "preset": "lunera",
-          "vision": "Lunera",
           "rank": 9,
           "grantId": 400330,
           "privateCopy": false

@@ -51,7 +51,7 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 | Bartz | 3 | HP Stroll (1066) | Relm MR1 | covered mr |
 | Bartz | 5 | Speed +5% (1316) | Lunera MR5 | covered mr |
 | Bartz | 7 | Dual Spellblade (1414) | Fryevia MR9 | covered mr |
-| Bartz | 9 | Mimic (400330) | Relm MR9; Lunera MR9 | covered mr |
+| Bartz | 9 | Mimic (400330) | Relm MR9 | covered mr |
 | Cloud | 1 | Restore MP on Critical Hit (1323) | Jade MR1 | covered mr |
 | Cloud | 3 | Deathblow (400530) | Nalu MR3 | covered mr |
 | Cloud | 5 | Fill Gauge (400770) | Jade MR5 | covered mr |
@@ -97,5 +97,5 @@ Each new Spirit follows its own vision's MR list. It does not grant an awakening
 
 Run `python scripts/audit_sephira_mr.py` after changing the catalog. The accompanying JSON records source IDs, original MR ranks, current MR/awakening placements and input fingerprints. A repository check rejects stale reports. This report does not change a kit or reward.
 
-Catalog fingerprint: `16b9fb1721f6048bf37454055745a7293e75452f6d34ae9d871fe3522ab95b9c`.
-Native coverage fingerprint: `095c2033010ad96d1530dba5d8b7adc1c3fb66012b29f05236d70bb40a15bac4`.
+Catalog fingerprint: `c5a95142e0fb665d4d39c22f451650b42dbac3f66e397d6780a6fe7012529013`.
+Native coverage fingerprint: `cf5ec4a7afa36ede3e1b53ffb8f4524450a5298e109d69162e4931dfc2395536`.

@@ -1,6 +1,6 @@
 # Sephira awakening bonus balance
 
-The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, 130 of 131 excluded-original passives after the approved Rikku Pharmacology replacement, permanent stats and acquisition settings. The requested Libra swaps give Minfilia and Barusa one fewer passive each, and Primm and Trance Terra one more each. This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.
+The current layout retains all 75 excluded-original equipable MR rewards as MR rewards, 130 of 131 excluded-original passives after the approved Rikku Pharmacology replacement, permanent stats and acquisition settings. The requested Libra swaps give Minfilia and Barusa one fewer passive each, and Primm and Trance Terra one more each. Lunera's requested Auto-Haste MR9 replaces a duplicate Mimic and adds one passive to her total. This is a per-vision comparison: paired challenge rewards do not divide one original kit between two visions.
 
 Choices follow each unit’s role. Native effects and AP equip costs are unchanged, so these are learned options rather than free permanent bonuses. Combined passive equip-cost totals stay within 20% of the counterpart; this is a useful budget check, not a claim that AP costs measure combat strength exactly. No second percentage tier of the same main stat is added to a kit. The existing active skill, stat and Resonance budgets remain; playing the game is still needed to assess difficult combinations.
 
@@ -37,6 +37,6 @@ The earlier rule reserving passives for MR is extended here at the user’s requ
 | Rikku (FFX-2) | Vaan | 10 | A1: Nullify Berserk; A1: Speed +20%; A1: Thievery; A2: Discerning Eye; A2: HP +20%; A3: Haste on Stagger; A4: Restore MP on Attack; A4: Wings of Freedom | 295 (290) |
 | Nalu | Cloud | 11 | A1: Resist Lightning; A1: Physical Attack +20%; A2: Critical Hit Rate +10%; A2: Imbue Lightning; A3: HP +20%; A4: Signature Moves; A4: Broadsword Mastery | 345 (345) |
 | Elza | Tidus | 10 | A1: Resist Water; A1: Physical Attack +20%; A2: HP +20%; A4: Restore MP on Attack; A4: Fill LB on Defeating Foes; A4: Imbue Dark | 295 (300) |
-| Lunera | Bartz | 9 | A1: Physical Attack +20%; A2: Resist Wind; A3: Restore MP on Stagger; A3: Lingering Debuffs; A4: Double MRP; A4: Stagger Power +30% | 290 (270) |
+| Lunera | Bartz | 10 | A1: Physical Attack +20%; A2: Resist Wind; A3: Restore MP on Stagger; A3: Lingering Debuffs; A4: Double MRP; A4: Stagger Power +30% | 320 (270) |
 
 For saved collection entries, use **Apply MR and acquisition update**, then rebuild/install. Unedited saved reward layouts migrate automatically with a roster backup. The MR restoration replaces 25 supplemental MR passives with the original active rewards and moves supplemental passives into awakening. Deliberate edits to affected MR slots and full awakening kits report conflicts before saving. Artwork, identities, private combat recipes, permanent rewards and locations are retained. New/restored presets include the current layout. See [the MR restoration](SEPHIRA_MR_RESTORATION.md).

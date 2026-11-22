@@ -1162,7 +1162,7 @@
       ]
     },
     "lunera": {
-      "version": 1,
+      "version": 2,
       "mr": [
         {
           "rank": 1,
@@ -1227,6 +1227,98 @@
           "PassiveSkill",
           1051
         ]
+      ],
+      "steps": [
+        {
+          "version": 1,
+          "mr": [
+            {
+              "rank": 1,
+              "from": [
+                "PassiveSkill",
+                1248,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400760,
+                -1
+              ]
+            },
+            {
+              "rank": 5,
+              "from": [
+                "PassiveSkill",
+                1510,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1316,
+                -1
+              ]
+            },
+            {
+              "rank": 9,
+              "from": [
+                "PassiveSkill",
+                1051,
+                -1
+              ],
+              "to": [
+                "ActiveSkill",
+                400330,
+                -1
+              ]
+            }
+          ],
+          "remove": [
+            [
+              1,
+              "PassiveSkill",
+              1277
+            ]
+          ],
+          "add": [
+            [
+              1,
+              "PassiveSkill",
+              1248
+            ],
+            [
+              2,
+              "PassiveSkill",
+              1510
+            ],
+            [
+              3,
+              "PassiveSkill",
+              1051
+            ]
+          ]
+        },
+        {
+          "version": 2,
+          "mr": [
+            {
+              "rank": 9,
+              "from": [
+                "ActiveSkill",
+                400330,
+                -1
+              ],
+              "to": [
+                "PassiveSkill",
+                1074,
+                -1
+              ]
+            }
+          ],
+          "remove": [],
+          "add": [],
+          "move": [],
+          "exactAwakeningRanks": true
+        }
       ]
     }
   }

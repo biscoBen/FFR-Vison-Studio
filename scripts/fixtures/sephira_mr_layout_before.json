@@ -3107,5 +3107,662 @@
         1351
       ]
     }
+  },
+  "lunera": {
+    "profile": {
+      "key": "sephira_lunera",
+      "id": 13530,
+      "sort": 13600,
+      "jp": "Sephira_lunera",
+      "en": "Lunera",
+      "desc": "Wind physical and stagger support. A Sephira vision with native-budget Resonance skills.",
+      "donor": 13110,
+      "attackType": "Physic",
+      "stats": {
+        "MaxHitPoint": 800,
+        "MaxMagicPoint": 100,
+        "Attack": 25,
+        "Defence": 30,
+        "Intelligence": 10,
+        "Mind": 20,
+        "Agility": 15
+      },
+      "roles": [
+        "eUnitRole::Attacker"
+      ],
+      "elemRes": {},
+      "command": {
+        "id": 350,
+        "en": "Lunera Skills",
+        "desc": "Wind physical and stagger support."
+      },
+      "master": {
+        "id": 1353000,
+        "en": "Spirit of Lunera",
+        "desc": "Lunera's learned mastery rewards flow into the wearer."
+      },
+      "price": 1000,
+      "skills": {
+        "488003": {
+          "from": 500450,
+          "visuals": 220180,
+          "jp": "Sephira_lunera_Kit_1",
+          "en": "Shamshir",
+          "desc": "Deal Wind physical damage to an enemy.",
+          "descAuto": false,
+          "set": {
+            "Cost": 16,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488006": {
+          "from": 503720,
+          "visuals": 220170,
+          "jp": "Sephira_lunera_Kit_2",
+          "en": "Gale Volley",
+          "desc": "Deal Wind magic damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488009": {
+          "from": 505270,
+          "visuals": 220180,
+          "jp": "Sephira_lunera_Kit_3",
+          "en": "Merciless Gale",
+          "desc": "Deal Wind physical damage to an enemy 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 38,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "magnification": 40,
+            "hitCount": 3,
+            "hitDamageRatioList": [
+              0.34,
+              0.33,
+              0.33,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488012": {
+          "from": 500900,
+          "visuals": 400530,
+          "jp": "Sephira_lunera_Kit_4",
+          "en": "Star Volley",
+          "desc": "Deal physical damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 32,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "magnification": 30
+          }
+        },
+        "488015": {
+          "from": 501900,
+          "visuals": 220170,
+          "jp": "Sephira_lunera_Kit_5",
+          "en": "Venom Gale",
+          "desc": "Deal Wind physical damage to all enemies. Inflict Poison with a 30% chance.",
+          "descAuto": false,
+          "set": {
+            "Cost": 24,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "element": "Wind",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488030": {
+          "from": 225140,
+          "visuals": 225140,
+          "jp": "Sephira_lunera_Kit_10",
+          "en": "Tempest Volley",
+          "desc": "Deal Wind physical damage to all enemies 3 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 42,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "magnification": 40,
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488033": {
+          "from": 255120,
+          "visuals": 255120,
+          "jp": "Sephira_lunera_Kit_11",
+          "en": "Gale Sweep",
+          "desc": "Deal Wind physical damage to all enemies.",
+          "descAuto": false,
+          "set": {
+            "Cost": 12,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488036": {
+          "from": 506150,
+          "visuals": 220180,
+          "jp": "Sephira_lunera_Kit_12",
+          "en": "Silencing Gale",
+          "desc": "Deal Wind physical damage to all enemies 3 times. Inflict Silence.",
+          "descAuto": false,
+          "set": {
+            "Cost": 34,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "DamageType": "Physic",
+            "damageCalcType": "Physic",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488039": {
+          "from": 502620,
+          "visuals": 220180,
+          "jp": "Sephira_lunera_Kit_13",
+          "en": "Gale Reprisal",
+          "desc": "Deal Wind physical damage to an enemy 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 20,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "element": "Wind",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        },
+        "488042": {
+          "from": 500120,
+          "visuals": 500120,
+          "jp": "Sephira_lunera_Kit_14",
+          "en": "Twin Gale Shot",
+          "desc": "Deal Wind physical damage to an enemy 2 times.",
+          "descAuto": false,
+          "set": {
+            "Cost": 8,
+            "accuracy": 100,
+            "belongCommandList": [
+              350
+            ],
+            "commandIdBelongDebuggingAllSkills": [
+              350,
+              -1
+            ],
+            "skillIdAfterModeChange": -1,
+            "isApplyAllMag": false,
+            "playSequencerId": -1,
+            "sequencerIdWhenTargetFriendlies": -1,
+            "voiceLabel": "None",
+            "selfSkillActivateVoiceLabel": "None",
+            "element": "Wind",
+            "SkillIcon.TagName": "UI.Skill.Action.Icon.Wind"
+          }
+        }
+      },
+      "ffbeMap": {
+        "skills": {},
+        "passives": {}
+      },
+      "menuScale": 2.0,
+      "sephiraRecipe": 7,
+      "awakening": [
+        [
+          [
+            "ActiveSkill",
+            420130,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488033,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488042,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1309,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            420140,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            445500,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            414400,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488003,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488006,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488015,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488039,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1248,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            420150,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            445510,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            414410,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488009,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488012,
+            -1
+          ],
+          [
+            "ActiveSkill",
+            488036,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1281,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1510,
+            -1
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            488030,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1051,
+            -1
+          ],
+          [
+            "PassiveSkill",
+            1376,
+            -1
+          ]
+        ]
+      ],
+      "synchro": [
+        [],
+        [
+          [
+            "ActiveSkill",
+            400760,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            9,
+            5
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1258,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            11,
+            8
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1316,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            1,
+            60
+          ]
+        ],
+        [
+          [
+            "PassiveSkill",
+            1458,
+            -1
+          ]
+        ],
+        [
+          [
+            "BaseParameter",
+            5,
+            15
+          ]
+        ],
+        [
+          [
+            "ActiveSkill",
+            400330,
+            -1
+          ],
+          [
+            "BaseParameter",
+            11,
+            8
+          ],
+          [
+            "MasterSkill",
+            1353000,
+            -1
+          ]
+        ]
+      ],
+      "ffbe": {
+        "id": "100007506",
+        "base": "100007505",
+        "source": "GL",
+        "dir": "units/ffbe/sephira_lunera/sprites/100007506"
+      },
+      "lb": 440060,
+      "lb_custom": {
+        "from": 440060,
+        "presentation": "ffbe",
+        "mechanics": "custom",
+        "audio": "native",
+        "visuals": 440110,
+        "clone_sequence": true,
+        "mute": [
+          "VO_"
+        ],
+        "field_color_mode": "element",
+        "ffbe_lb_id": "100007506",
+        "movement": {
+          "enabled": false
+        },
+        "set": {},
+        "jp": "Sephira_lunera_Resonance",
+        "en": "Lunera Resonance",
+        "desc": "Deal physical damage to an enemy.",
+        "descAuto": false,
+        "nameAuto": false,
+        "audio_codec": "host",
+        "sephiraAudio": 1
+      },
+      "sephiraAcquisition": {
+        "version": 3,
+        "location": "sephira_13105",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "studioAcquisition": {
+        "version": 3,
+        "location": "sephira_13105",
+        "random": false,
+        "hideSpoilers": true,
+        "cave": null
+      },
+      "sephiraPassiveText": {
+        "1510": {
+          "name": "Lingering Debuffs",
+          "desc": "Increase the duration of inflicted ailments and debuffs by 2 turns."
+        },
+        "1051": {
+          "name": "Double MRP",
+          "desc": "Double MRP gained."
+        }
+      },
+      "sephiraMrRevision": 1
+    },
+    "awakeningBalance": {
+      "revision": 7,
+      "nativeBudget": 13105,
+      "nativeName": "Bartz",
+      "nativePassiveCount": 9,
+      "totalPassiveCount": 9,
+      "nativeEquipCost": 270,
+      "equipCost": 290,
+      "grants": [
+        {
+          "rank": 3,
+          "id": 1051
+        },
+        {
+          "rank": 1,
+          "id": 1248
+        },
+        {
+          "rank": 2,
+          "id": 1281
+        },
+        {
+          "rank": 0,
+          "id": 1309
+        },
+        {
+          "rank": 3,
+          "id": 1376
+        },
+        {
+          "rank": 2,
+          "id": 1510
+        }
+      ],
+      "nativePassives": [
+        1376,
+        1458,
+        1277,
+        1248,
+        1415,
+        1416,
+        1066,
+        1316,
+        1414
+      ]
+    },
+    "sourceCommit": "27439d05561fc264edb1e7212843519aaec047a5"
   }
 }

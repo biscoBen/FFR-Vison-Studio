@@ -11,6 +11,37 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
+### Locked vision portraits and Lunera Auto-Haste — 2026-11-21
+
+- **1.2.170 candidate.** Imported menu sprites previously used their ordinary
+  full-color frames for the native `Lock` animation, revealing color in the
+  locked vision list. Generate dark grayscale copies of that clip's own cells
+  and bind them only to the menu lock state. No separate artwork is required.
+- Preserve the original color cells, alpha, poses, pivots and animation timing.
+  Repack the menu atlas and write its matching dimensions, PNG and BGRA together.
+  Shared locked frames reuse one copy. Ordinary unlocked menu animations and
+  every battle sprite remain in color; native visions keep their existing art.
+- Existing converter fingerprints invalidate cached sprites on the next normal
+  build/install. Source sprite files, saved character edits, acquisition flags
+  and saves are preserved. No runtime ownership hook or new native asset format.
+- Focused conversion checks cover transparent pixels, animated locked poses,
+  missing-standby fallback, repeated frames, atlas growth and CLI mode isolation.
+  Windows CI also checks the actual checksum-pinned engine converter. Windows
+  package verification and in-game confirmation remain pending.
+- Lunera MR9 now teaches native **Auto-Haste (1074, 30 AP)** instead of Mimic.
+  Keep permanent AP +8, Spirit of Lunera, her other MR rewards and awakening
+  kit. Her Spirit follows her updated MR rewards through its existing owner
+  binding. Relm remains the sole Mimic MR teacher at her Shantotto acquisition.
+  All 75 excluded-original MR abilities remain available through MR.
+- Append an automatic, backed-up migration for unchanged older Lunera presets.
+  Preserve custom MR edits and unrelated setup; later changes remain user edits.
+  Her ten-passive budget is 320 AP versus Bartz's original 270, within the
+  existing 20% comparison. Reuse native Auto-Haste mechanics and effect data.
+- Local validation passes: **1,014 Python tests** (74 platform skips), **nine
+  focused Flutter migration tests**, clean analysis and bundled-file checks.
+  A real bundled Fina sprite converts with separate color and dark grayscale
+  cells. The Windows package and live-game appearance remain unverified.
+
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and

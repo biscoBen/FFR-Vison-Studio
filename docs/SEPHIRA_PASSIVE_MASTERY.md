@@ -1,6 +1,6 @@
 # Sephira mastery reward allocation
 
-All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: 50 passives and 25 active skills. The original active rewards retain their acquisition families. The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain 123 passive grants and 27 active grants, one per rank, including Minfilia’s new Libra and Relm’s Mimic.
+All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: 50 passives and 25 active skills. Original active rewards retain their acquisition families except Mimic, selected for Relm at the Shantotto challenge. The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain 124 passive grants and 26 active grants, one per rank, including Minfilia’s Libra, Relm’s Mimic and Lunera’s Auto-Haste.
 
 130 of 131 distinct excluded-original passives remain available across the complete kits; Rikku’s Vaan-only One for the Road was explicitly replaced with Pharmacology. Original MR passives stay transferable. Command/LB-bound traits remain awakening bonuses for their owners. Christine’s True Stagger stays in awakening; her transferable MR7 reward is Fill LB on Stagger. Permanent stats, AP and Spirit identities stay unchanged.
 
@@ -35,6 +35,6 @@ All 75 individual equipable MR rewards from the 15 excluded originals are availa
 | Rikku (FFX-2) | Steal (400260) | Treasure Hunter (1387) | Mug (400270) | Pharmacology (1044) | Misfortune (400750) |
 | Nalu | Restore MP on Attack (1124) | Deathblow (400530) | Scan and Strike (1399) | Stagger Power +20% (1279) | Critical Boost (1234) |
 | Elza | Resist Dark (1253) | Speed +20% (1317) | Reckless Abandonment (400700) | Skyward Dreams (1434) | Tip-Top Shape (1428) |
-| Lunera | Wait (400760) | Spry Steps (1258) | Speed +5% (1316) | Guiding Wind (1458) | Mimic (400330) |
+| Lunera | Wait (400760) | Spry Steps (1258) | Speed +5% (1316) | Guiding Wind (1458) | Auto-Haste (1074) |
 
 The native Spirit wrapper follows its owner’s current MR rewards, including active rewards. Awakening bonuses and permanent MR stats are not copied into the Spirit. Crystal Fina and Aria retain their reviewed kits, rewards and Spirit identities unchanged. See [the healer kits](SEPHIRA_USER_KITS.md), [the MR coverage audit](SEPHIRA_MR_COVERAGE.md), and [the restoration details](SEPHIRA_MR_RESTORATION.md).

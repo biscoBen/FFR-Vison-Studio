@@ -20,13 +20,15 @@ class MrRestorationTests(unittest.TestCase):
         by={p['id']:p for p in catalog['presets']};original={r['id']:r for r in result['rewards']}
         origin_ids={v['name']:v['id'] for v in source['excludedVisions']}
         native={r['ID']:r for r in rows['Skill/DT_SkillData'].values()}
-        from sephira_mr_layout import MR_RANK_OVERRIDES
+        from sephira_mr_layout import MR_RANK_OVERRIDES, MR_TEACHER_OVERRIDES, MR_ACQUISITION_OVERRIDES
         for key,rank,identity in plan['placements']:
+            key=MR_TEACHER_OVERRIDES.get(identity,key)
             requested=MR_RANK_OVERRIDES.get((key,identity),rank)
             self.assertEqual(by[key]['profile']['synchro'][requested][0],['ActiveSkill',identity,-1])
             old=original[identity]['originalMr'][0]
             self.assertEqual(rank,old['rank'])
-            self.assertEqual(by[key]['profile']['studioAcquisition']['location'],'sephira_'+str(origin_ids[old['vision']]))
+            gate=MR_ACQUISITION_OVERRIDES.get(identity,'sephira_'+str(origin_ids[old['vision']]))
+            self.assertEqual(by[key]['profile']['studioAcquisition']['location'],gate)
             self.assertEqual(native[identity]['belongCommandList'],[1])
             self.assertGreaterEqual(native[identity]['equipCost'],0)
         for key in ('crystal_fina','aria'):self.assertNotIn('mrRestoration',by[key])

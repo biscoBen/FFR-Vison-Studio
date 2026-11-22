@@ -88,7 +88,8 @@ def write_reports(catalog,coverage,english):
     active_count=sum(g[0]=='ActiveSkill' for g in rewards)
     lines=['# Sephira mastery reward allocation','',
         'All 75 individual equipable MR rewards from the 15 excluded originals are available as Sephira MR rewards: '
-        '50 passives and 25 active skills. The original active rewards retain their acquisition families. '
+        '50 passives and 25 active skills. Original active rewards retain their acquisition families except '
+        'Mimic, which Ben selected for Relm at the Shantotto challenge. '
         'The remaining MR choices preserve themed transferable bonuses. The 150 odd-rank slots contain '
         f'{passive_count} passive grants and {active_count} active grants, one per rank, including Minfilia’s new Libra and Relm’s Mimic. ','',
         '130 of 131 distinct excluded-original passives remain available across the complete kits; Rikku’s '
@@ -111,11 +112,13 @@ def write_reports(catalog,coverage,english):
         'rewards without increasing the number of rewards at any rank. All 50 original passive MR rewards remain '
         'transferable. The [reproducible coverage report](SEPHIRA_MR_COVERAGE.md) now shows 75/75.','',
         'Each restored active has its stock native mechanics, equip cost, MP cost, general-command membership and '
-        'animation. Acquisition families match the originals. Minfilia’s Throw is now MR3 instead of the original MR1, '
+        'animation. Acquisition families match the originals except the requested Relm Mimic reward at '
+        'the Shantotto challenge. Minfilia’s Throw is now MR3 instead of the original MR1, '
         'as explicitly requested alongside Libra at MR1. Saved acquisition overrides remain user choices. Rikku retains the Zidane gate.','',
         '| Original vision | Reward | MR | New MR teacher |','|---|---|---:|---|']
-    from sephira_mr_layout import MR_RANK_OVERRIDES
+    from sephira_mr_layout import MR_RANK_OVERRIDES, MR_TEACHER_OVERRIDES
     for key,rank,sid in plan['placements']:
+        key=MR_TEACHER_OVERRIDES.get(sid,key)
         rank=MR_RANK_OVERRIDES.get((key,sid),rank)
         origins=', '.join(sorted({g['vision'] for g in originals[sid]['nativeGrants'] if g['track']=='synchro'}))
         lines.append(f"| {origins} | {names['ActiveSkill'][sid]} ({sid}) | {rank} | {by[key]['name']} |")
@@ -130,6 +133,8 @@ def write_reports(catalog,coverage,english):
         'tier4, and Terra’s Trance Apocalypse moves from tier 3 to tier 4 to keep every tier within eight slots. '
         'Relm now teaches MP Stroll at MR5 and native Mimic at MR9; Fill LB on Stagger and Stagger Power +20% '
         'move to awakening tier 4. Her total passive count and AP budget are unchanged. '
+        'Lunera now teaches native Auto-Haste (1074, 30 AP) at MR9 instead of duplicating Mimic; '
+        'her AP +8 and Spirit are unchanged. Relm remains the Mimic teacher at her existing Shantotto gate. '
         'Original MR rewards remain transferable. Crystal Fina and Aria are unchanged. '
         'Private recipes, artwork, stats, permanent rewards, allocated IDs and acquisition choices are preserved.','',
         'Studio backs up and migrates untouched saved reward layouts once on loading. The build also applies the '

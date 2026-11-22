@@ -131,4 +131,35 @@ class MrLayoutTests(unittest.TestCase):
             pack.repair_equipable_mr(unit)
         self.assertEqual(unit,before)
 
+    def test_lunera_teaches_native_auto_haste_with_unchanged_permanent_ap_and_spirit(self):
+        unit=self.old('lunera');before=copy.deepcopy(unit)
+        native=copy.deepcopy(self.rows)
+        player,=pack.player_units([unit],self.rows.__getitem__)
+        bound,=pack.bind_units([player],self.rows.__getitem__)
+        self.assertEqual(bound['synchro'][9],[['PassiveSkill',1074,-1],
+            ['BaseParameter',11,8],['MasterSkill',1353000,-1]])
+        self.assertEqual(player['awakening'],before['awakening'])
+        self.assertEqual(bound['master'],before['master'])
+        self.assertEqual(bound['studioAcquisition'],before['studioAcquisition'])
+        auto=next(r for r in self.rows[pack.PASSIVE].values() if r['ID']==1074)
+        self.assertEqual(auto['equipCost'],30)
+        self.assertEqual(auto['effectBundleList'][0]['effectId'],1173)
+        self.assertEqual(auto['effectBundleList'][0]['passiveSkillAddTiming'],'SpawnUnit')
+        self.assertEqual(self.rows,native)
+        self.assertEqual(unit,before)
+        teachers=[p['id'] for p in self.catalog['presets'] if any(
+            g[:2]==['ActiveSkill',400330] for tier in p['profile']['synchro'] for g in tier)]
+        self.assertEqual(teachers,['relm'])
+
+    def test_lunera_custom_mr9_is_preserved_and_post_update_edits_stay_user_edits(self):
+        unit=self.old('lunera');unit['synchro'][9][0]=['PassiveSkill',1009,-1]
+        before=copy.deepcopy(unit)
+        with self.assertRaisesRegex(ValueError,'MR9 was edited'):
+            pack.repair_equipable_mr(unit)
+        self.assertEqual(unit,before)
+        unit=self.old('lunera');pack.repair_equipable_mr(unit)
+        unit['synchro'][9][0]=['ActiveSkill',400330,-1]
+        before=copy.deepcopy(unit);pack.repair_equipable_mr(unit)
+        self.assertEqual(unit,before)
+
 if __name__=='__main__':unittest.main()

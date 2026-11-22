@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import runpy
 import sys
+from PIL import Image, ImageOps
 
 tools = Path(__file__).parent
 sys.path.insert(0, str(tools / 'ffbe2ss6'))
@@ -34,6 +35,62 @@ def steps_for(self, spec):
 sheets.steps_for = steps_for
 motions = converter['BATTLE_ANIMS']
 motions[:] = [(name, {'attack_B': 'atk2', 'attack_C': 'atk3'}.get(name, motion)) for name, motion in motions]
+
+
+def locked_menu(atlas, spec, pack, max_w):
+    """Give only the menu Lock clip dark grey copies of its own source cells.
+
+    The native vision list chooses Lock while a vision is unowned. Imported
+    menus used the same full-colour cells for Lock and the ordinary poses.
+    Baking private cells avoids changing the shared texture or relying on
+    PartsColor attributes unsupported by the pinned native writer.
+    """
+    locked, = [clip for clip in spec['animations'] if clip['name'] == 'Lock']
+    references = [key for part in locked['parts'].values() for key in part.get('Cell', [])]
+    if not references:
+        raise ValueError('The imported menu Lock animation has no sprite cells.')
+    images = {}
+    cells = {cell['name']: cell for cell in spec['cells']}
+    for name, cell in cells.items():
+        x, y = cell['pos']; w, h = cell['size']
+        images[name] = atlas.crop((int(x), int(y), int(x + w), int(y + h)))
+    replacements = {}
+    for _, name in references:
+        if name in replacements:
+            continue
+        replacement = name + '_locked'
+        if replacement in cells:
+            raise ValueError('Duplicate locked menu sprite cell: ' + replacement)
+        source = images[name]
+        grey = ImageOps.grayscale(source).point(lambda value: round(value * .4))
+        images[replacement] = Image.merge('RGBA', (grey, grey, grey, source.getchannel('A')))
+        spec['cells'].append(dict(cells[name], name=replacement))
+        replacements[name] = replacement
+    (width, height), positions = pack(images, max_w)
+    result = Image.new('RGBA', (width, height))
+    for cell in spec['cells']:
+        name = cell['name']
+        result.paste(images[name], positions[name])
+        cell['pos'] = [float(n) for n in positions[name]]
+    spec['pixelSize'] = [float(width), float(height)]
+    for key in references:
+        key[1] = replacements[key[1]]
+    return result, spec
+
+
+original_build = converter['build']
+
+
+def build(sheets, animations, prefix, max_w):
+    atlas, spec = original_build(sheets, animations, prefix, max_w)
+    if animations is converter['MENU_ANIMS']:
+        atlas, spec = locked_menu(atlas, spec, converter['pack'], max_w)
+    return atlas, spec
+
+
+# runpy returns a copy of the module dictionary. Bind the function in main's
+# actual globals so the existing CLI writes the new spec, PNG and BGRA together.
+converter['main'].__globals__['build'] = build
 converter['main']()
 trial = tools.parent / 'build/barrage-trial.json'
 spec_file = Path(sys.argv[4]) / 'battle/spec.json'
