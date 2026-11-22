@@ -11,37 +11,6 @@ test-update version; the commit and workflow run identify the exact package. Dat
 
 ## Unreleased
 
-### Locked vision portraits and Lunera Auto-Haste — 2026-11-21
-
-- **1.2.170 candidate.** Imported menu sprites previously used their ordinary
-  full-color frames for the native `Lock` animation, revealing color in the
-  locked vision list. Generate dark grayscale copies of that clip's own cells
-  and bind them only to the menu lock state. No separate artwork is required.
-- Preserve the original color cells, alpha, poses, pivots and animation timing.
-  Repack the menu atlas and write its matching dimensions, PNG and BGRA together.
-  Shared locked frames reuse one copy. Ordinary unlocked menu animations and
-  every battle sprite remain in color; native visions keep their existing art.
-- Existing converter fingerprints invalidate cached sprites on the next normal
-  build/install. Source sprite files, saved character edits, acquisition flags
-  and saves are preserved. No runtime ownership hook or new native asset format.
-- Focused conversion checks cover transparent pixels, animated locked poses,
-  missing-standby fallback, repeated frames, atlas growth and CLI mode isolation.
-  Windows CI also checks the actual checksum-pinned engine converter. Windows
-  package verification and in-game confirmation remain pending.
-- Lunera MR9 now teaches native **Auto-Haste (1074, 30 AP)** instead of Mimic.
-  Keep permanent AP +8, Spirit of Lunera, her other MR rewards and awakening
-  kit. Her Spirit follows her updated MR rewards through its existing owner
-  binding. Relm remains the sole Mimic MR teacher at her Shantotto acquisition.
-  All 75 excluded-original MR abilities remain available through MR.
-- Append an automatic, backed-up migration for unchanged older Lunera presets.
-  Preserve custom MR edits and unrelated setup; later changes remain user edits.
-  Her ten-passive budget is 320 AP versus Bartz's original 270, within the
-  existing 20% comparison. Reuse native Auto-Haste mechanics and effect data.
-- Local validation passes: **1,014 Python tests** (74 platform skips), **nine
-  focused Flutter migration tests**, clean analysis and bundled-file checks.
-  A real bundled Fina sprite converts with separate color and dark grayscale
-  cells. The Windows package and live-game appearance remain unverified.
-
 ### Returned evasion code and corrected lookup follow-up — 2026-11-04
 
 - Both `Evasion-Code-Reference-20261104-171201-4add28` parts are received and
@@ -269,6 +238,56 @@ test-update version; the commit and workflow run identify the exact package. Dat
 - Do not mark its original visuals verified; preserve native-only behavior. The existing ordinary-Needle substitute remains
   under **Use our skill changes**. Save the comparison in the shared full-release checklist. Documentation only;
   no new Studio package, substitute, gameplay change or repeated extraction is required for this observation.
+
+## Published locked vision portraits and Lunera Auto-Haste — 2026-11-21
+
+- **1.2.170**, code `ee4f7da25d2d1315ee0d04c6bbe2fff4c0cb17e8`,
+  [run 44998014761](https://github.com/biscoBen/FFR-Vison-Studio/actions/runs/44998014761).
+  [Verified Windows ZIP](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-44998014761/Sephira-Studio-Test.zip): **83,408,978 bytes**, SHA-256
+  `3aa97edec1ad0cedce07ffbe031142ace9803ec0e33dd8e5453052a15ae073ba`.
+- Imported menu sprites previously showed full color while locked. The native
+  menu `Lock` clip now uses dark grayscale copies of its own source cells.
+  Preserve alpha, pivots, poses, key times and every unlocked color cell.
+  Repeated frames share one copy; the atlas, spec dimensions, PNG and BGRA
+  update together. Battle sprites and original native vision art are unchanged.
+  No separate monochrome art, new shader attribute or runtime ownership hook.
+- Existing converter fingerprints rebuild affected sprites on the next normal
+  GO / Build and install. Keep original sprite files and saved character edits.
+  The real bundled Fina art converts to color and grayscale menu states; this
+  preview is a conversion check, not an in-game screenshot.
+- Lunera **MR9 teaches native Auto-Haste (1074, 30 AP)** instead of Mimic.
+  Preserve permanent AP +8, Spirit, other MR rewards, awakening, acquisition,
+  skills and stat choices. Auto-Haste's native effect 1173 remains unchanged.
+  Her Spirit retains its owner binding and follows the updated MR list.
+- Append MR migration step two, accepting the previous native Mimic reward.
+  Studio's existing backup/migration updates untouched saved presets once;
+  the builder applies the same staged policy. Custom MR9 choices stay intact
+  and are reported before conversion; later edits remain user edits. Tests use
+  an actual 1.2.169 Lunera profile from code 27439d0 as their previous-release
+  fixture. The ten-passive budget totals 320 AP (native Bartz: 270), within 20%.
+- Relm is the collection's sole Mimic MR teacher, retaining her Shantotto gate.
+  Update the allocation report and its explicit teacher/gate exception while
+  keeping historical migration plans. All **75/75** original MR abilities
+  remain MR rewards. The 150 slots contain 124 passives and 26 active grants.
+- Local **1,014 Python tests** pass (74 platform skips), **nine focused Flutter
+  migration tests**, clean analysis and bundle checks. Windows passes **1,014
+  Python tests** (33 skips), including the actual checksum-pinned engine's
+  converter, **357 Flutter tests** (one skipped), fresh engine startup,
+  verified engine cache, 14 launcher and ten vision-import checks.
+- All **199 public App files** match independent compile artifact
+  **14745025981**, `sha256:07bbd437bd3b06ca721e90eb508705ff099eb01d49fd96b5442d20d988b1586f`.
+  All **94 extension / 16 Fina** manifest entries match source. Delivered
+  conversion/MR checks pass: **32 checks**, one Windows-only
+  check skipped locally after passing in Windows CI. The delivered catalog,
+  staged MR policy and converter bytes were checked.
+- Close the game, update Studio, **GO / Build and install**, then restart.
+  No preparation or preset reset. Locked-list appearance and learned Auto-Haste
+  remain pending in-game confirmation; no claim of live-game validation.
+- First complete candidate **2026-11-22T07:21:21Z**; verified public delivery
+  **2026-11-22T07:36:12Z**: **14m 51s**, including local checks, Windows
+  validation/compilation, waiting and package verification. Joined the matching
+  automatic run; no duplicate dispatch. CI wall time **10m 55s**, aggregate runner
+  usage **18m 09s**, recorded separately from candidate-to-delivery time.
 
 ## Published native stat grid, map-load memory and reward-label follow-up — 2026-11-05
 

@@ -4,6 +4,22 @@ This fork's additions and fixes are tracked in [CHANGELOG.md](CHANGELOG.md), sep
 release history. Use the `Sephira's-Update` test packages to try these changes; `master` stays the inherited baseline.
 Keep demo-dependent work in the project's [full-game release checklist](#full-game-release-checklist), shared across task threads.
 
+### Locked vision art and Lunera MR9 — 2026-11-21
+
+[Verified Studio 1.2.170 / run 44998014761](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-44998014761/Sephira-Studio-Test.zip)
+(code `ee4f7da`; **83.4 MB**).
+
+Added visions use dark grayscale artwork while locked, generated automatically
+from their own sprites. Unlocked menu poses and battle sprites retain color.
+Lunera MR9 teaches **Auto-Haste** at its native **30 AP equip cost**, keeping
+permanent AP +8 and Spirit of Lunera. Relm remains the Mimic teacher.
+
+Existing unedited Lunera presets migrate with a backup; custom MR choices and
+other character edits remain yours. Close the game, update Studio, then
+**GO / Build and install** and restart. Windows and public-package checks pass;
+in-game confirmation remains pending.
+[Validation and timings](CHANGELOG.md#published-locked-vision-portraits-and-lunera-auto-haste--2026-11-21).
+
 ### Stat layout, map memory and battle follow-up — 2026-11-05
 
 [Verified Studio 1.2.169 / run 42130074168](https://github.com/biscoBen/FFR-Vison-Studio/releases/download/sephira-test-42130074168/Sephira-Studio-Test.zip)
